@@ -178,9 +178,23 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     public EntityManager createSharedEMFEntityManager(){
         return createEntityManager(getMULTI_TENANT_PU());
     }
-
+   
     public EntityManager create123EntityManager(){
         return createEntityManager(getMULTI_TENANT_PU_123());
+    }
+
+    public EntityManager createTenant123EntityManager(){
+        Map<String, String> properties = new HashMap<String, String>();
+        EntityManager em = null;
+        //properties passed in createEntityManager() won't work on server since server side entity manager is injected, so we have "eclipselink.tenant-id" in server persistence.xml
+        if (! isOnServer()) {
+            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getMULTI_TENANT_PU_123()));
+            properties.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "123");
+            em = createEntityManager(getMULTI_TENANT_PU_123(), properties);
+        }else{
+            em = create123EntityManager();
+        }
+        return em;
     }
     
     public EntityManager createVPDEntityManager(){
@@ -829,17 +843,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testCreateMafiaFamily123() {
-        Map<String, String> properties = new HashMap<String, String>();
-        EntityManager em = null;
-        //properties passed in createEntityManager() won't work on server since server side entity manager is injected, so we have "eclipselink.tenant-id" in server persistence.xml
-        if (! isOnServer()) {
-            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getMULTI_TENANT_PU_123()));
-            properties.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "123");
-            em = createEntityManager(getMULTI_TENANT_PU_123(), properties);
-        }else{
-            em = create123EntityManager();
-        }
-        
+        EntityManager em = createTenant123EntityManager();
         try {
             beginTransaction(em);
             
@@ -993,7 +997,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testValidateMafiaFamily123() {
-        EntityManager em = create123EntityManager();
+        EntityManager em = createTenant123EntityManager();
 
         try {
             clearCache(getMULTI_TENANT_PU_123());
@@ -1175,7 +1179,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testComplexMultitenantQueries() {
-        EntityManager em = create123EntityManager();
+        EntityManager em = createTenant123EntityManager();
 
         try {
             clearCache(getMULTI_TENANT_PU_123());
@@ -1250,8 +1254,8 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 fail("Exception encountered on delete all query with single table (with tenant discriminator columns): " + e);
             }
             
-            if(getServerSession(getMULTI_TENANT_PU()).getPlatform().isSymfoware()) {
-                getServerSession(getMULTI_TENANT_PU()).logMessage("Test AdvancedMultiTenantJunitTest partially skipped for this platform, "
+            if(getServerSession(getMULTI_TENANT_PU_123()).getPlatform().isSymfoware()) {
+                getServerSession(getMULTI_TENANT_PU_123()).logMessage("Test AdvancedMultiTenantJunitTest partially skipped for this platform, "
                         +"Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             } else {
                 // Try a delete all on multiple table (MafiaFamily)
@@ -1268,38 +1272,38 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 } catch (Exception e) {
                     fail("Exception encountered on delete all query with multiple table (with tenant discriminator columns): " + e);
                 }
-                // Some verification of what was deleted.
-                EntityManager em007 = createSharedEMFEntityManager();
-                
-                try {
-                    List<MafiaFamily> families = em007.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
-                    assertTrue("Incorrect number of families found through SQL [" + families.size() + "], expected [2]", families.size() == 2);     
-                    
-                    // Clear out the shared cache with what we read through native SQL.
-                    clearCache(getMULTI_TENANT_PU());
-                    em007.clear();
-                    
-                    beginTransaction(em007);
-                    em007.setProperty("tenant.id", "007");
-                    em007.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
-                    MafiaFamily family = em007.find(MafiaFamily.class, family007);
-                    assertFalse("Family 007 tags were nuked in delete all query above!", family.getTags().isEmpty());
-                    assertFalse("Family 007 revenue was nuked in delete all query above!", family.getRevenue() == null);
-                    commitTransaction(em007);
-                } catch (Exception e) {
-                    fail("Exception caught: " + e);
-                } finally {
-                    if (isTransactionActive(em007)) {
-                        rollbackTransaction(em007);
-                    }
-                    closeEntityManager(em007);
-                }
             }
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
+        }
+
+        // Some verification of what was deleted.
+        EntityManager em007 = createSharedEMFEntityManager();
+        try {
+            List<MafiaFamily> families = em007.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
+            assertTrue("Incorrect number of families found through SQL [" + families.size() + "], expected [2]", families.size() == 2);     
+            
+            // Clear out the shared cache with what we read through native SQL.
+            clearCache(getMULTI_TENANT_PU());
+            em007.clear();
+            
+            beginTransaction(em007);
+            em007.setProperty("tenant.id", "007");
+            em007.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "007");
+            MafiaFamily family = em007.find(MafiaFamily.class, family007);
+            assertFalse("Family 007 tags were nuked in delete all query above!", family.getTags().isEmpty());
+            assertFalse("Family 007 revenue was nuked in delete all query above!", family.getRevenue() == null);
+            commitTransaction(em007);
+        } catch (Exception e) {
+            fail("Exception caught: " + e);
+        } finally {
+            if (isTransactionActive(em007)) {
+                rollbackTransaction(em007);
+            }
+            closeEntityManager(em007);
         }
     }
     
