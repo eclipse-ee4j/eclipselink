@@ -27,4 +27,34 @@ public class Competency {
     
     @Column(name="RATING")
     public Integer rating;
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @return the rating
+     */
+    public Integer getRating() {
+        return rating;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * @param rating the rating to set
+     */
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+    
+    
 }

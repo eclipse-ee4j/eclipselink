@@ -472,7 +472,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         DESCRIP_field.setTypeName("VARCHAR");
         DESCRIP_field.setSize(40);
         DESCRIP_field.setShouldAllowNull(true);
-        DESCRIP_field.setIsPrimaryKey(false);
+        DESCRIP_field.setIsPrimaryKey(true);
         DESCRIP_field.setUnique(false);
         DESCRIP_field.setIsIdentity(false);
         table.addField(DESCRIP_field);

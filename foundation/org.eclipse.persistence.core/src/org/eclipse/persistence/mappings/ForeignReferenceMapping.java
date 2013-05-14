@@ -1417,11 +1417,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Force instantiation of the load group.
      */
     @Override
-    public void load(final Object object, AttributeItem item, final AbstractSession session) {
+    public void load(final Object object, AttributeItem item, final AbstractSession session, final boolean fromFetchGroup) {
         instantiateAttribute(object, session);
-        if (item.getGroup() != null) {
+        if (item.getGroup() != null && !fromFetchGroup) { // if fromFetchGroup then the above instantiate already loaded the elements
             Object value = getRealAttributeValueFromObject(object, session);
-            session.load(value, item.getGroup());
+            session.load(value, item.getGroup(), getReferenceDescriptor(), fromFetchGroup);
         }
     }
     

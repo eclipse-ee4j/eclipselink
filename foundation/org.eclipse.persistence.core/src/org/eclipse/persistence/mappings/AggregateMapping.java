@@ -547,10 +547,10 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Force instantiation of the load group.
      */
     @Override
-    public void load(final Object object, AttributeItem item, final AbstractSession session) {
+    public void load(final Object object, AttributeItem item, final AbstractSession session, final boolean fromFetchGroup) {
         if (item.getGroup() != null) {
             Object value = getAttributeValueFromObject(object);
-            getObjectBuilder(value, session).load(value, item.getGroup(), session);
+            getObjectBuilder(value, session).load(value, item.getGroup(), session, fromFetchGroup);
         }
     }
     

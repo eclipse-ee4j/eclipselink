@@ -671,7 +671,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /**
      * Force instantiation to any mappings in the load group.
      */
-    public void load(final Object object, AttributeGroup group, final AbstractSession session) {
+    public void load(final Object object, AttributeGroup group, final AbstractSession session, final boolean fromFetchGroup) {
         FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
         if (fetchGroupManager != null) {
             FetchGroup fetchGroup = fetchGroupManager.getObjectFetchGroup(object);
@@ -694,12 +694,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (group.isConcurrent() && session.isServerSession()) {
                 Runnable runnable = new Runnable() {
                     public void run() {
-                        mapping.load(object, item, session);
+                        mapping.load(object, item, session, fromFetchGroup);
                     }
                 };
                 session.getServerPlatform().launchContainerRunnable(runnable);
             } else {
-                mapping.load(object, item, session);
+                mapping.load(object, item, session, fromFetchGroup);
             }
         }
     }
@@ -947,7 +947,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (query instanceof ObjectLevelReadQuery) {
             LoadGroup group = ((ObjectLevelReadQuery)query).getLoadGroup();
             if (group != null) {
-                session.load(domainObject, group);
+                session.load(domainObject, group, query.getDescriptor(), false);
             }
         }
         
