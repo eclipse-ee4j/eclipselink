@@ -36,15 +36,27 @@ import org.eclipse.persistence.queries.ReportQuery;
  *
  */
 public abstract class AbstractSingleResultQueryResource extends AbstractResource {
+
+    /**
+     * Named query single result.
+     *
+     * @param version the version
+     * @param persistenceUnit the persistence unit
+     * @param name the name
+     * @param headers the http headers
+     * @param uriInfo the uriInfo
+     * @param baseURI the base uri
+     * @return the response
+     */
     @SuppressWarnings("rawtypes")
-    protected Response namedQuerySingleResult(String version, String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
-        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (app == null) {
+    protected Response namedQuerySingleResult(String version, String persistenceUnit, String name, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
+        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+        if (context == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
-        Query query = app.buildQuery(getMatrixParameters(ui, persistenceUnit), name, getMatrixParameters(ui, name), getQueryParameters(ui));
+        Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), name, getMatrixParameters(uriInfo, name), getQueryParameters(uriInfo));
         DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
         if (dbQuery instanceof ReportQuery) {
             List<ReportItem> reportItems = ((ReportQuery) dbQuery).getItems();
@@ -59,20 +71,20 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
                     JAXBElement element = item.get(0);
                     Object elementValue = element.getValue();
                     if (elementValue instanceof byte[]) {
-                        List<MediaType> acceptableMediaTypes = hh.getAcceptableMediaTypes();
+                        List<MediaType> acceptableMediaTypes = headers.getAcceptableMediaTypes();
                         if (acceptableMediaTypes.contains(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
-                            return Response.ok(new StreamingOutputMarshaller(app, elementValue, hh.getAcceptableMediaTypes())).build();
+                            return Response.ok(new StreamingOutputMarshaller(context, elementValue, headers.getAcceptableMediaTypes())).build();
                         }
                     }
                 }
-                return Response.ok(new StreamingOutputMarshaller(app, list, hh.getAcceptableMediaTypes())).build();
+                return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes())).build();
             } else {
                 // something went wrong with the descriptors, return error
-                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
         }
         Object queryResults = query.getSingleResult();
-        return Response.ok(new StreamingOutputMarshaller(app, queryResults, hh.getAcceptableMediaTypes())).build();
+        return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();
     }
 
     @SuppressWarnings({ "rawtypes" })

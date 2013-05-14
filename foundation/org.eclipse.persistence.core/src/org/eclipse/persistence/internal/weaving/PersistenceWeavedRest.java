@@ -26,4 +26,7 @@ public interface PersistenceWeavedRest {
     public void _persistence_setRelationships(List<RelationshipInfo> relationships);
     Link _persistence_getHref();
     void _persistence_setHref(Link href);
+    
+    public List<Link> _persistence_getLinks();
+    public void _persistence_setLinks(List<Link> links);
 }

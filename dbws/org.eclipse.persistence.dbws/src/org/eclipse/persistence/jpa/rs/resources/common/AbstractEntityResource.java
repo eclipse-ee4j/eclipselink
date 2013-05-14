@@ -52,84 +52,81 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 public abstract class AbstractEntityResource extends AbstractResource {
 
     @SuppressWarnings({ "rawtypes" })
-    protected Response findAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI) {
-        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (app == null || app.getClass(type) == null) {
-            if (app == null) {
+    protected Response findAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
+        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+        if (context == null || context.getClass(type) == null) {
+            if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
-        Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
-        Object id = IdHelper.buildId(app, type, key);
+        Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
+        Object id = IdHelper.buildId(context, type, key);
 
-        Object entity = app.findAttribute(discriminators, type, id, getQueryParameters(ui), attribute);
+        Object entity = context.findAttribute(discriminators, type, id, getQueryParameters(uriInfo), attribute);
 
         if (entity == null) {
-            JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[] { type, key, attribute, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[] { attribute, type, key, persistenceUnit });
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
         Boolean collectionContainsDomainObjects = collectionContainsDomainObjects(entity);
         if (collectionContainsDomainObjects != null) {
             if (collectionContainsDomainObjects.booleanValue()) {
-                return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
+                return Response.ok(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes())).build();
             } else {
                 // Classes derived from PersistenceWeavedRest class are already in the JAXB context and marshalled properly.
                 // Here, we will only need to deal with collection of classes that are not in the JAXB context, such as String, Integer...
-                //
-                // Jersey 1.2 introduced a new api JResponse to support this better, but in order to be able to work with 
-                // older versions of Jersey, we will use our own wrapper.
-                return Response.ok(new StreamingOutputMarshaller(app, populateSimpleHomogeneousList((Collection) entity, attribute), hh.getAcceptableMediaTypes())).build();
+                return Response.ok(new StreamingOutputMarshaller(context, populateSimpleHomogeneousList((Collection) entity, attribute), headers.getAcceptableMediaTypes())).build();
             }
         }
-        return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
+        return Response.ok(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes())).build();
     }
 
-    protected Response find(String version, String persistenceUnit, String type, String key, HttpHeaders hh, UriInfo ui, URI baseURI) {
-        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (app == null || app.getClass(type) == null) {
-            if (app == null) {
+    protected Response find(String version, String persistenceUnit, String type, String key, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
+        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+        if (context == null || context.getClass(type) == null) {
+            if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
-        Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
+        Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
 
-        Object id = IdHelper.buildId(app, type, key);
+        Object id = IdHelper.buildId(context, type, key);
 
-        Object entity = app.find(discriminators, type, id, getQueryParameters(ui));
+        Object entity = context.find(discriminators, type, id, getQueryParameters(uriInfo));
 
         if (entity == null) {
             JPARSLogger.fine("jpars_could_not_entity_for_key", new Object[] { type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         } else {
-            return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
+            return Response.ok(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes())).build();
         }
     }
 
     @SuppressWarnings("rawtypes")
-    protected Response create(String version, String persistenceUnit, String type, HttpHeaders hh, UriInfo uriInfo, URI baseURI, InputStream in) throws JAXBException {
-        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (app == null) {
+    protected Response create(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) throws JAXBException {
+        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+        if (context == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
-        ClassDescriptor descriptor = app.getDescriptor(type);
+        ClassDescriptor descriptor = context.getDescriptor(type);
         if (descriptor == null) {
             JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
         Object entity = null;
         try {
-            entity = app.unmarshalEntity(type, mediaType(hh.getAcceptableMediaTypes()), in);
+            entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
         } catch (JAXBException e) {
             JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
         // maintain idempotence on PUT by disallowing sequencing
@@ -140,10 +137,10 @@ public abstract class AbstractEntityResource extends AbstractResource {
             if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
                     || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
                 JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
-                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
         }
-        
+
         // maintain idempotence on PUT by disallowing sequencing in relationships
         List<DatabaseMapping> mappings = descriptor.getMappings();
         if ((mappings != null) && (!mappings.isEmpty())) {
@@ -184,76 +181,76 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
 
         // No sequencing in relationships, we can create the object now...
-        app.create(getMatrixParameters(uriInfo, persistenceUnit), entity);
+        context.create(getMatrixParameters(uriInfo, persistenceUnit), entity);
         ResponseBuilder rb = Response.status(Status.CREATED);
-        rb.entity(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes()));
+        rb.entity(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes()));
         return rb.build();
     }
 
-    protected Response update(String version, String persistenceUnit, String type, HttpHeaders hh, UriInfo uriInfo, URI baseURI, InputStream in) {
-        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (app == null || app.getClass(type) == null) {
-            if (app == null) {
+    protected Response update(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
+        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+        if (context == null || context.getClass(type) == null) {
+            if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
         Object entity = null;
         try {
-            entity = app.unmarshalEntity(type, mediaType(hh.getAcceptableMediaTypes()), in);
+            entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
         } catch (JAXBException e) {
             JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
-        entity = app.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
-        return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
+        entity = context.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
+        return Response.ok(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes())).build();
     }
 
-    protected Response setOrAddAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI, InputStream in) {
-        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (app == null || app.getClass(type) == null) {
-            if (app == null) {
+    protected Response setOrAddAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
+        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+        if (context == null || context.getClass(type) == null) {
+            if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
-        Object id = IdHelper.buildId(app, type, key);
+        Object id = IdHelper.buildId(context, type, key);
 
         Object entity = null;
-        String partner = getRelationshipPartner(getMatrixParameters(ui, attribute), getQueryParameters(ui));
+        String partner = getRelationshipPartner(getMatrixParameters(uriInfo, attribute), getQueryParameters(uriInfo));
         try {
-            ClassDescriptor descriptor = app.getDescriptor(type);
+            ClassDescriptor descriptor = context.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
                 JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { attribute, type, key, persistenceUnit });
-                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
-            entity = app.unmarshalEntity(((ForeignReferenceMapping) mapping).getReferenceDescriptor().getAlias(), mediaType(hh.getAcceptableMediaTypes()), in);
+            entity = context.unmarshalEntity(((ForeignReferenceMapping) mapping).getReferenceDescriptor().getAlias(), mediaType(headers.getAcceptableMediaTypes()), in);
         } catch (JAXBException e) {
             JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
-        Object result = app.updateOrAddAttribute(getMatrixParameters(ui, persistenceUnit), type, id, getQueryParameters(ui), attribute, entity, partner);
+        Object result = context.updateOrAddAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, getQueryParameters(uriInfo), attribute, entity, partner);
 
         if (result == null) {
             JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         } else {
-            return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
+            return Response.ok(new StreamingOutputMarshaller(context, result, headers.getAcceptableMediaTypes())).build();
         }
     }
 
-    protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui) {
+    protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo) {
         String listItemId = null;
-        Map<String, String> matrixParams = getMatrixParameters(ui, attribute);
-        Map<String, Object> queryParams = getQueryParameters(ui);
+        Map<String, String> matrixParams = getMatrixParameters(uriInfo, attribute);
+        Map<String, Object> queryParams = getQueryParameters(uriInfo);
 
         if ((queryParams != null) && (!queryParams.isEmpty())) {
             listItemId = (String) queryParams.get(QueryParameters.JPARS_LIST_ITEM_ID);
@@ -261,55 +258,55 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
         String partner = getRelationshipPartner(matrixParams, queryParams);
 
-        PersistenceContext app = getPersistenceContext(persistenceUnit, ui.getBaseUri(), version, null);
-        if (app == null || app.getClass(type) == null) {
-            if (app == null) {
+        PersistenceContext context = getPersistenceContext(persistenceUnit, uriInfo.getBaseUri(), version, null);
+        if (context == null || context.getClass(type) == null) {
+            if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
         if ((attribute == null) && (listItemId == null)) {
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
-        Object id = IdHelper.buildId(app, type, key);
+        Object id = IdHelper.buildId(context, type, key);
 
-        ClassDescriptor descriptor = app.getDescriptor(type);
+        ClassDescriptor descriptor = context.getDescriptor(type);
         DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
         if (!mapping.isForeignReferenceMapping()) {
             JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
-        Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
-        Object entity = app.find(discriminators, type, id, getQueryParameters(ui));
-        Object result = app.removeAttribute(getMatrixParameters(ui, persistenceUnit), type, id, attribute, listItemId, entity, partner);
+        Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
+        Object entity = context.find(discriminators, type, id, getQueryParameters(uriInfo));
+        Object result = context.removeAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, attribute, listItemId, entity, partner);
 
         if (result == null) {
             JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         } else {
-            return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
+            return Response.ok(new StreamingOutputMarshaller(context, result, headers.getAcceptableMediaTypes())).build();
         }
     }
 
-    protected Response delete(String version, String persistenceUnit, String type, String key, UriInfo ui, HttpHeaders hh, URI baseURI) {
-        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (app == null || app.getClass(type) == null) {
-            if (app == null) {
+    protected Response delete(String version, String persistenceUnit, String type, String key, UriInfo uriInfo, HttpHeaders headers, URI baseURI) {
+        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+        if (context == null || context.getClass(type) == null) {
+            if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
-        Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
-        Object id = IdHelper.buildId(app, type, key);
-        app.delete(discriminators, type, id);
+        Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
+        Object id = IdHelper.buildId(context, type, key);
+        context.delete(discriminators, type, id);
         return Response.ok().build();
     }
 

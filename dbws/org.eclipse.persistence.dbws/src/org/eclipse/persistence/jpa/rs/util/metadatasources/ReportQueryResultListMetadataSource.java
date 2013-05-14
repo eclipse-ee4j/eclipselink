@@ -19,25 +19,25 @@ import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
-import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
+import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 
 /**
- * Makes the MultiResultQueryList class available to JPA-RS JAXB context.  
+ * Makes the ReportQueryResultList class available to JPA-RS JAXB context.  
  * 
- * @see MultiResultQueryList
+ * @see ReportQueryResultList
  * @author gonural
  *
  */
-public class MultiResultQueryListMetadataSource implements MetadataSource {
+public class ReportQueryResultListMetadataSource implements MetadataSource {
     private XmlBindings xmlBindings;
 
-    public MultiResultQueryListMetadataSource() {
+    public ReportQueryResultListMetadataSource() {
         xmlBindings = new XmlBindings();
-        xmlBindings.setPackageName(MultiResultQueryList.class.getPackage().getName());
+        xmlBindings.setPackageName(ReportQueryResultList.class.getPackage().getName());
         JavaTypes javaTypes = new JavaTypes();
         xmlBindings.setJavaTypes(javaTypes);
         JavaType javaType = new JavaType();
-        javaType.setName(MultiResultQueryList.class.getSimpleName());
+        javaType.setName(ReportQueryResultList.class.getSimpleName());
         javaTypes.getJavaType().add(javaType);
     }
 

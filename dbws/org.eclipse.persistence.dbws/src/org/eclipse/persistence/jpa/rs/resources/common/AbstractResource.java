@@ -12,7 +12,10 @@
 package org.eclipse.persistence.jpa.rs.resources.common;
 
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,10 +57,11 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */
 
 public abstract class AbstractResource {
-    public static final String SERVICE_VERSION_FORMAT = "v\\d\\.\\d"; 
+    public static final String SERVICE_VERSION_FORMAT = "v\\d\\.\\d";
     protected PersistenceContextFactory factory;
 
-    public static final String SERVICE_VERSION_1_0 = "v1.0"; 
+    public static final String SERVICE_VERSION_1_0 = "v1.0";
+    public static final String SERVICE_VERSION_2_0 = "v2.0";
 
     /**
      * Sets the persistence factory.
@@ -76,6 +80,7 @@ public abstract class AbstractResource {
     public PersistenceContextFactory getPersistenceFactory() {
         return getPersistenceFactory(Thread.currentThread().getContextClassLoader());
     }
+
     /**
      * Gets the persistence factory.
      *
@@ -87,13 +92,19 @@ public abstract class AbstractResource {
         }
         return factory;
     }
-    
-    protected PersistenceContextFactory buildPersistenceContextFactory(ClassLoader loader){
+
+    /**
+     * Builds the persistence context factory.
+     *
+     * @param loader the loader
+     * @return the persistence context factory
+     */
+    protected PersistenceContextFactory buildPersistenceContextFactory(ClassLoader loader) {
         ServiceLoader<PersistenceContextFactoryProvider> contextFactoryLoader = ServiceLoader.load(PersistenceContextFactoryProvider.class, loader);
 
-        for (PersistenceContextFactoryProvider provider: contextFactoryLoader){
+        for (PersistenceContextFactoryProvider provider : contextFactoryLoader) {
             PersistenceContextFactory factory = provider.getPersistenceContextFactory(null);
-            if (factory != null){
+            if (factory != null) {
                 return factory;
             }
         }
@@ -143,7 +154,7 @@ public abstract class AbstractResource {
         }
         return queryParameters;
     }
-    
+
     /**
      * Creates the shell jaxb element list.
      *
@@ -173,7 +184,7 @@ public abstract class AbstractResource {
                         ClassDescriptor desc = reportItem.getDescriptor();
                         if (desc != null) {
                             reportItemValueType = desc.getJavaClass();
-                        } 
+                        }
                     }
                 }
 
@@ -181,22 +192,36 @@ public abstract class AbstractResource {
                 if (reportItemValueType == null) {
                     return null;
                 }
-                
+
                 JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValueType, reportItemValue);
                 jaxbElements.add(reportItem.getResultIndex(), element);
             }
         }
         return jaxbElements;
     }
-    
-    
+
+    /**
+     * Checks if is valid version.
+     *
+     * @param version the version
+     * @return true, if is valid version
+     */
     protected static boolean isValidVersion(String version) {
-        if ((version == null) || (SERVICE_VERSION_1_0.equals(version))) {
+        if ((version == null) || (SERVICE_VERSION_1_0.equals(version)) || (SERVICE_VERSION_2_0.equals(version))) {
             return true;
         }
         return false;
     }
-    
+
+    /**
+     * Gets the persistence context.
+     *
+     * @param persistenceUnit the persistence unit
+     * @param baseURI the base uri
+     * @param version the version
+     * @param initializationProperties the initialization properties
+     * @return the persistence context
+     */
     protected PersistenceContext getPersistenceContext(String persistenceUnit, URI baseURI, String version, Map<String, Object> initializationProperties) {
         if (!isValidVersion(version)) {
             JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
@@ -205,11 +230,17 @@ public abstract class AbstractResource {
 
         return getPersistenceFactory().get(persistenceUnit, baseURI, version, initializationProperties);
     }
-    
+
+    /**
+     * Gets the relationship partner.
+     *
+     * @param matrixParams the matrix params
+     * @param queryParams the query params
+     * @return the relationship partner
+     */
     protected String getRelationshipPartner(Map<String, String> matrixParams, Map<String, Object> queryParams) {
         String partner = null;
         // Fix for Bug 396791 - JPA-RS: partner should be treated as a query parameter
-        //
         // For backwards compatibility, we check both, matrix and query parameters.
         if ((queryParams != null) && (!queryParams.isEmpty())) {
             partner = (String) queryParams.get(QueryParameters.JPARS_RELATIONSHIP_PARTNER);
@@ -222,7 +253,15 @@ public abstract class AbstractResource {
         }
         return partner;
     }
-    
+
+    /**
+     * Marshall metadata.
+     *
+     * @param metadata the metadata
+     * @param mediaType the media type
+     * @return the string
+     * @throws JAXBException the jAXB exception
+     */
     protected String marshallMetadata(Object metadata, String mediaType) throws JAXBException {
         Class<?>[] jaxbClasses = new Class[] { Link.class, Attribute.class, Descriptor.class, LinkTemplate.class, PersistenceUnit.class, Query.class, LinkList.class, QueryList.class };
         JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
@@ -234,6 +273,27 @@ public abstract class AbstractResource {
         StringWriter writer = new StringWriter();
         marshaller.marshal(metadata, writer);
         return writer.toString();
+    }
+
+    @SuppressWarnings("unused")
+    private static String getEncodedUri(String uri) {
+        try {
+            return URLEncoder.encode(uri, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // TODO: Log it
+            return uri;
+        }
+    }
+    
+    
+    @SuppressWarnings("unused")
+    private static String getDecodedUri(String uri) {
+        try {
+            return URLDecoder.decode(uri, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // TODO: Log it
+            return uri;
+        }
     }
 
 }

@@ -15,14 +15,15 @@ package org.eclipse.persistence.jpa.rs;
 import org.eclipse.persistence.config.QueryHints;
 
 public class QueryParameters extends QueryHints {
-    private QueryParameters() {
-    }
-
     // Currently, in JPA-RS, the separation between query parameters and matrix parameters
     // is done such a way that: 
     // - the predefined attributes (i.e. eclipselink query hints) are treated as query parameters
     // - anything that user sets (such as parameters of named queries, etc.) are treated as matrix parameters. 
-
     public static final String JPARS_LIST_ITEM_ID = "eclipselink.jpars.list.item-id";
     public static final String JPARS_RELATIONSHIP_PARTNER  = "eclipselink.jpars.partner";
+    
+    // Paging related query parameters
+    public static final String JPARS_PAGING_OFFSET = "offset";
+    public static final String JPARS_PAGING_LIMIT = "limit";
+    
 }

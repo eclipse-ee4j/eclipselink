@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.ReservedWords;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
@@ -69,7 +70,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         T t = (T) descriptor.getObjectBuilder().buildNewInstance();
         Link link = new Link();
         link.setMethod("GET");
-        link.setRel("self");
+        link.setRel(ReservedWords.JPARS_REL_SELF);
         String id = IdHelper.stringifyId(o, descriptor.getAlias(), context);
         String version = context.getVersion();
         if (version != null) {

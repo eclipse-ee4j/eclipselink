@@ -18,7 +18,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
+import org.eclipse.persistence.jpa.rs.ReservedWords;
 
 /**
  * This class is used to wrap collection of homogeneous simple java type attributes, such as 
@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
  * @author gonural
  *
  */
-@XmlRootElement(name = ConfigDefaults.JPARS_LIST_GROUPING_NAME)
+@XmlRootElement(name = ReservedWords.JPARS_LIST_GROUPING_NAME)
 public class SimpleHomogeneousList {
     @SuppressWarnings("rawtypes")
     private List<JAXBElement> items;
@@ -58,41 +58,5 @@ public class SimpleHomogeneousList {
     @SuppressWarnings("rawtypes")
     public void setItems(List<JAXBElement> items) {
         this.items = items;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((items == null) ? 0 : items.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SimpleHomogeneousList other = (SimpleHomogeneousList) obj;
-        if (items == null) {
-            if (other.items != null) {
-                return false;
-            }
-        } else if (!items.equals(other.items)) {
-            return false;
-        }
-        return true;
     }
 }

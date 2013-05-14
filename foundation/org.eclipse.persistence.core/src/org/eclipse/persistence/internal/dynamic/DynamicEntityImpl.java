@@ -588,6 +588,22 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         this.session = session;
     }
 
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_getLinks()
+     */
+    public List<Link> _persistence_getLinks(){
+        return (List<Link>)get("_persistence_links");
+    }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_setLinks(java.util.List)
+     */
+    public void _persistence_setLinks(List<Link> links){
+        set("_persistence_links", links, false);
+    }
+    
+    
     /**
      * String representation of the dynamic entity using the entity type name
      * and the primary key values - something like {Emp 10} or {Phone 234-5678 10}.

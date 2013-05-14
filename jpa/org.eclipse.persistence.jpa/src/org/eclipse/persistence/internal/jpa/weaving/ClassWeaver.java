@@ -27,7 +27,6 @@ import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
-import org.eclipse.persistence.internal.libraries.asm.signature.SignatureReader;
 
 /**
  * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.
@@ -82,6 +81,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     // REST
     public static final String WEAVED_REST_LAZY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeavedRest";
     public static final String LIST_RELATIONSHIP_INFO_SIGNATURE = "Ljava/util/List;";
+    public static final String LIST_LINKS_SIGNATURE = "Ljava/util/List;";
  
     // Cloneable
     public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
@@ -821,11 +821,27 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_setHref.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_href", LINK_SIGNATURE);
         cv_setHref.visitInsn(RETURN);
         cv_setHref.visitMaxs(0, 0);
+        
+        
+        MethodVisitor cv_getLinks = cv.visitMethod(ACC_PUBLIC, "_persistence_getLinks", "()" + LIST_LINKS_SIGNATURE, null, null);
+        cv_getLinks.visitVarInsn(ALOAD, 0);
+        cv_getLinks.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_links", LIST_LINKS_SIGNATURE);
+        cv_getLinks.visitInsn(ARETURN);
+        cv_getLinks.visitMaxs(0, 0);
+
+        MethodVisitor cv_setLinks = cv.visitMethod(ACC_PUBLIC, "_persistence_setLinks", "(" + LIST_LINKS_SIGNATURE + ")V", null, null);
+        cv_setLinks.visitVarInsn(ALOAD, 0);
+        cv_setLinks.visitVarInsn(ALOAD, 1);
+        cv_setLinks.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_links", LIST_LINKS_SIGNATURE);
+        cv_setLinks.visitInsn(RETURN);
+        cv_setLinks.visitMaxs(0, 0);
+
     }
     
     public void addPersistenceRestVariables() {
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, null, null);
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_href", LINK_SIGNATURE, null, null);
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_links", LIST_LINKS_SIGNATURE, null, null);
     }
     
     /**

@@ -18,7 +18,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
+import org.eclipse.persistence.jpa.rs.ReservedWords;
 
 /**
  * This class is used to wrap collection of attributes returned by the single-result JPA report query.
@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
  * @author gonural
  *
  */
-@XmlRootElement(name = ConfigDefaults.JPARS_LIST_ITEM_NAME)
+@XmlRootElement(name = ReservedWords.JPARS_LIST_ITEM_NAME)
 public class SingleResultQueryList {
     @SuppressWarnings("rawtypes")
     private List<JAXBElement> fields;
@@ -56,41 +56,5 @@ public class SingleResultQueryList {
     @SuppressWarnings("rawtypes")
     public void setFields(List<JAXBElement> fields) {
         this.fields = fields;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((fields == null) ? 0 : fields.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        SingleResultQueryList other = (SingleResultQueryList) obj;
-        if (fields == null) {
-            if (other.fields != null) {
-                return false;
-            }
-        } else if (!fields.equals(other.fields)) {
-            return false;
-        }
-        return true;
     }
 }

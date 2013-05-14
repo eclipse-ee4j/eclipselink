@@ -12,34 +12,59 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.list;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
 
 /**
- * This class is used to wrap collection of Link objects
- * @see Link
- * 
+ * This class is used to wrap collection of records returned by a JPA report query.
+ *
  * @author gonural
  *
  */
 @XmlRootElement(name = ReservedWords.JPARS_LIST_GROUPING_NAME)
-public class LinkList {
-    private List<Link> list;
+public class ReportQueryResultList {
 
-    public LinkList() {
+    private List<ReportQueryResultListItem> items;
+
+    /**
+     * Instantiates a new query result list.
+     */
+    public ReportQueryResultList() {
     }
 
+    /**
+     * Gets the items.
+     *
+     * @return the items
+     */
     @XmlElement(name = ReservedWords.JPARS_LIST_ITEM_NAME)
-    public List<Link> getList() {
-        return list;
+    public List<ReportQueryResultListItem> getItems() {
+        return items;
     }
 
-    public void setList(List<Link> list) {
-        this.list = list;
+    /**
+     * Sets the items.
+     *
+     * @param items the new items
+     */
+    public void setItems(List<ReportQueryResultListItem> items) {
+        this.items = items;
+    }
+
+    /**
+     * Adds the item.
+     *
+     * @param item the item
+     */
+    public void addItem(ReportQueryResultListItem item) {
+        if (items == null) {
+            items = new ArrayList<ReportQueryResultListItem>();
+        }
+        items.add(item);
     }
 }

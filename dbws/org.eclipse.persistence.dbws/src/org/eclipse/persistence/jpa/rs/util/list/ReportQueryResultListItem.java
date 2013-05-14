@@ -18,19 +18,19 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAnyElement;
 
 /**
- * This class is used to wrap collection of attributes returned by the multi-result JPA report query.
+ * This class is used to wrap collection of attributes of a record returned by a JPA report query.
  *
  * @author gonural
  *
  */
-public class MultiResultQueryListItem {
+public class ReportQueryResultListItem {
     @SuppressWarnings("rawtypes")
     private List<JAXBElement> fields;
 
     /**
      * Instantiates a new query result list item.
      */
-    public MultiResultQueryListItem() {
+    public ReportQueryResultListItem() {
     }
 
     /**
@@ -52,35 +52,5 @@ public class MultiResultQueryListItem {
     @SuppressWarnings("rawtypes")
     public void setFields(List<JAXBElement> fields) {
         this.fields = fields;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((fields == null) ? 0 : fields.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        MultiResultQueryListItem other = (MultiResultQueryListItem) obj;
-        if (fields == null) {
-            if (other.fields != null) {
-                return false;
-            }
-        } else if (!fields.equals(other.fields)) {
-            return false;
-        }
-        return true;
     }
 }

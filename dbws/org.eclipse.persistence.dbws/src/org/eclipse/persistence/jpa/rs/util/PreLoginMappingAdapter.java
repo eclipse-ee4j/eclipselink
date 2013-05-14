@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
+import org.eclipse.persistence.jpa.rs.ReservedWords;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -96,6 +97,18 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 hrefMapping.setReferenceClass(Link.class);
                 hrefMapping.setXPath(".");
                 descriptor.addMapping(hrefMapping);
+
+                XMLCompositeCollectionMapping linksMapping = new XMLCompositeCollectionMapping();
+                linksMapping.setAttributeName("_persistence_links");
+                linksMapping.setGetMethodName("_persistence_getLinks");
+                linksMapping.setSetMethodName("_persistence_setLinks");
+                linksMapping.setDescriptor(descriptor);
+                containerPolicy = new CollectionContainerPolicy(ArrayList.class);
+                linksMapping.setContainerPolicy(containerPolicy);
+                linksMapping.setField(new XMLField(ReservedWords.JPARS_LINKS_NAME));
+                linksMapping.setReferenceClass(Link.class);
+                linksMapping.setDefaultEmptyContainer(false);
+                descriptor.addMapping(linksMapping);
             }
 
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
@@ -201,8 +214,6 @@ public class PreLoginMappingAdapter extends SessionEventListener {
             }
         }
     }
-    
-    
 
     /**
      * Update the targetMapping to have the same accessor as the originMapping
@@ -239,7 +250,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
             if (!(mapping.isXMLMapping())) {
                 return;
             }
-            
+
             if ((jpaMapping.isAggregateCollectionMapping()) || (jpaMapping.isAggregateMapping())) {
                 return;
             }

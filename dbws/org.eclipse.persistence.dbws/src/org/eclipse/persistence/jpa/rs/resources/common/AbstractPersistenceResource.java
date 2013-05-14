@@ -49,16 +49,16 @@ import org.eclipse.persistence.jpa.rs.util.list.LinkList;
  */
 public abstract class AbstractPersistenceResource extends AbstractResource {
 
-    protected Response getContexts(String version, HttpHeaders hh, URI baseURI) throws JAXBException {
+    protected Response getContexts(String version, HttpHeaders headers, URI baseURI) throws JAXBException {
         if (!isValidVersion(version)) {
             JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
         Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
         Iterator<String> contextIterator = contexts.iterator();
         List<Link> links = new ArrayList<Link>();
-        String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
+        String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
         while (contextIterator.hasNext()) {
             String context = contextIterator.next();
             if (version != null) {
@@ -75,15 +75,15 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
         } else {
             result = marshallMetadata(linkList, mediaType);
         }
-        return Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes())).build();
+        return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
     }
 
     @SuppressWarnings("rawtypes")
-    protected Response callSessionBeanInternal(String version, HttpHeaders hh, UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException,
+    protected Response callSessionBeanInternal(String version, HttpHeaders headers, UriInfo uriInfo, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException,
             InvocationTargetException, IllegalAccessException {
         if (!isValidVersion(version)) {
             JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
         SessionBeanCall call = null;
@@ -94,15 +94,15 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
         Object ans = ctx.lookup(jndiName);
         if (ans == null) {
             JPARSLogger.fine("jpars_could_not_find_session_bean", new Object[] { jndiName });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
 
         PersistenceContext context = null;
         if (call.getContext() != null) {
-            context = getPersistenceFactory().get(call.getContext(), ui.getBaseUri(), version, null);
+            context = getPersistenceFactory().get(call.getContext(), uriInfo.getBaseUri(), version, null);
             if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { call.getContext() });
-                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
         }
 
@@ -116,7 +116,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
                 parameterClass = context.getClass(param.getTypeName());
             }
             if (parameterClass != null) {
-                parameterValue = context.unmarshalEntity(param.getTypeName(), hh.getMediaType(), is);
+                parameterValue = context.unmarshalEntity(param.getTypeName(), headers.getMediaType(), is);
             } else {
                 parameterClass = Thread.currentThread().getContextClassLoader().loadClass(param.getTypeName());
                 parameterValue = ConversionManager.getDefaultManager().convertObject(param.getValue(), parameterClass);
@@ -127,7 +127,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
         }
         Method method = ans.getClass().getMethod(call.getMethodName(), parameters);
         Object returnValue = method.invoke(ans, args);
-        return Response.ok(new StreamingOutputMarshaller(null, returnValue, hh.getAcceptableMediaTypes())).build();
+        return Response.ok(new StreamingOutputMarshaller(null, returnValue, headers.getAcceptableMediaTypes())).build();
     }
 
     protected SessionBeanCall unmarshallSessionBeanCall(InputStream data) throws JAXBException {

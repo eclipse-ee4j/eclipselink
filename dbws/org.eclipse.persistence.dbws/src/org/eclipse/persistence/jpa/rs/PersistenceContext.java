@@ -72,26 +72,30 @@ import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSConfigurationException;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
 import org.eclipse.persistence.jpa.rs.util.ResourceLocalTransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
-import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
-import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryListItem;
+import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
+import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
+import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
+import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.DynamicXMLMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaLangMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaMathMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaUtilMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.LinkMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.MultiResultQueryListItemMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.MultiResultQueryListMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.ReadAllQueryResultCollectionMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.ReportQueryResultCollectionMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.ReportQueryResultListItemMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.ReportQueryResultListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.SimpleHomogeneousListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.SingleResultQueryListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
@@ -313,10 +317,12 @@ public class PersistenceContext {
         }
 
         metadataLocations.add(new LinkMetadataSource());
-        metadataLocations.add(new MultiResultQueryListMetadataSource());
-        metadataLocations.add(new MultiResultQueryListItemMetadataSource());
+        metadataLocations.add(new ReportQueryResultListMetadataSource());
+        metadataLocations.add(new ReportQueryResultListItemMetadataSource());
         metadataLocations.add(new SingleResultQueryListMetadataSource());
         metadataLocations.add(new SimpleHomogeneousListMetadataSource());
+        metadataLocations.add(new ReportQueryResultCollectionMetadataSource());
+        metadataLocations.add(new ReadAllQueryResultCollectionMetadataSource());
 
         metadataLocations.add(new JavaLangMetadataSource());
         metadataLocations.add(new JavaMathMetadataSource());
@@ -1111,7 +1117,7 @@ public class PersistenceContext {
             try {
                 writer = outputFactory.createXMLStreamWriter(output);
                 writer.writeStartDocument();
-                writer.writeStartElement(ConfigDefaults.JPARS_LIST_GROUPING_NAME);
+                writer.writeStartElement(ReservedWords.JPARS_LIST_GROUPING_NAME);
                 for (Object o : (List<Object>) object) {
                     marshaller.marshal(o, writer);
                 }
@@ -1152,8 +1158,8 @@ public class PersistenceContext {
      */
     @SuppressWarnings("rawtypes")
     protected void preMarshallIndividualEntity(Object entity) {
-        if (entity instanceof MultiResultQueryListItem) {
-            MultiResultQueryListItem item = (MultiResultQueryListItem) entity;
+        if (entity instanceof ReportQueryResultListItem) {
+            ReportQueryResultListItem item = (ReportQueryResultListItem) entity;
             List<JAXBElement> fields = item.getFields();
             for (int i = 0; i < fields.size(); i++) {
                 // one or more fields in the MultiResultQueryListItem might be a domain object,
@@ -1168,17 +1174,31 @@ public class PersistenceContext {
                 // so, we need to set the relationshipInfo for those domain objects.
                 setRelationshipInfo(fields.get(i).getValue());
             }
-        } else if (entity instanceof MultiResultQueryList) {
-            MultiResultQueryList list = (MultiResultQueryList) entity;
-            List<MultiResultQueryListItem> items = list.getItems();
+        } else if (entity instanceof ReportQueryResultList) {
+            ReportQueryResultList list = (ReportQueryResultList) entity;
+            List<ReportQueryResultListItem> items = list.getItems();
             for (int i = 0; i < items.size(); i++) {
-                MultiResultQueryListItem item = items.get(i);
+                ReportQueryResultListItem item = items.get(i);
                 List<JAXBElement> fields = item.getFields();
                 for (int index = 0; index < fields.size(); index++) {
                     // one or more fields in the MultiResultQueryList might be a domain object,
                     // so, we need to set the relationshipInfo for those domain objects.
                     setRelationshipInfo(fields.get(index).getValue());
                 }
+            }
+        } else if (entity instanceof ReadAllQueryResultCollection) {
+            ReadAllQueryResultCollection list = (ReadAllQueryResultCollection) entity;
+            List<JAXBElement> items = list.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                JAXBElement item = items.get(i);
+                setRelationshipInfo(item.getValue());
+            }
+        } else if (entity instanceof ReportQueryResultCollection) {
+            ReportQueryResultCollection list = (ReportQueryResultCollection) entity;
+            List<ReportQueryResultListItem> items = list.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                ReportQueryResultListItem item = items.get(i);
+                setRelationshipInfo(item);
             }
         } else {
             setRelationshipInfo(entity);
@@ -1292,5 +1312,39 @@ public class PersistenceContext {
             }
         }
         return (weavingEnabled && restWeavingEnabled && fetchGroupWeavingEnabled);
+    }
+    
+    /**
+     * Checks if is version greater or equal to.
+     *
+     * @param version the version
+     * @return true, if is version greater or equal to
+     */
+    public boolean isVersionGreaterOrEqualTo(String version) {
+        String currentVersion = this.version;
+        if ((currentVersion != null) && (!currentVersion.isEmpty())) {
+            if ((version != null) && (!version.isEmpty())) {
+                try {
+                    int current = new Integer(currentVersion.replace("v", "").replace(".", "")).intValue();
+                    int requested = new Integer(version.replace("v", "").replace(".", "")).intValue();
+                    if (current >= requested) {
+                        return true;
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Checks if is paging supported.
+     *
+     * @return true, if is paging supported
+     */
+    public boolean isPagingSupported() {
+        return (isVersionGreaterOrEqualTo(AbstractResource.SERVICE_VERSION_2_0));
     }
 }
