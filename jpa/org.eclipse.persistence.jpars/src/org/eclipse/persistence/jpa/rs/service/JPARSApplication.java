@@ -14,11 +14,15 @@ package org.eclipse.persistence.jpa.rs.service;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.ServiceLoader;
 import java.util.Set;
 
+import javax.annotation.PreDestroy;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
+import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.exceptions.ClassNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.ConversionExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.DatabaseExceptionMapper;
@@ -106,5 +110,21 @@ public class JPARSApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         return classes;
+    }
+
+    /**
+     * Clean up.
+     */
+    @PreDestroy
+    public void preDestroy() {
+        ServiceLoader<PersistenceContextFactoryProvider> persistenceContextFactoryProviderLoader =
+                ServiceLoader.load(PersistenceContextFactoryProvider.class, Thread.currentThread().getContextClassLoader());
+
+        for (PersistenceContextFactoryProvider persistenceContextFactoryProvider : persistenceContextFactoryProviderLoader) {
+            PersistenceContextFactory persistenceContextFactory = persistenceContextFactoryProvider.getPersistenceContextFactory(null);
+            if (persistenceContextFactory != null) {
+                persistenceContextFactory.close();
+            }
+        }
     }
 }
