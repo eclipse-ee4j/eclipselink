@@ -71,16 +71,18 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
-import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
+
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.oxm.Constants.INT_QNAME;
 import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
 import static org.eclipse.persistence.internal.xr.Util.sqlToXmlName;
 import static org.eclipse.persistence.internal.xr.Util.EMPTY_STR;
 import static org.eclipse.persistence.internal.xr.Util.SLASH_CHAR;
+import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 import static org.eclipse.persistence.internal.xr.Util.TEMP_DOC;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
@@ -397,6 +399,14 @@ public class QueryOperation extends Operation {
         Object value = xrService.getORSession().getActiveSession().executeQuery(query);
 
         if (value != null) {
+        	// a recent change in core results in an empty vector being returned in cases
+        	// where before we'd expect an int value (typically 1) - need to handle this
+        	if (value instanceof Vector && ((Vector) value).isEmpty()) {
+        		if (result != null && (result.getType() == INT_QNAME || result.getType().equals(SXF_QNAME))) {
+        			((Vector) value).add(1);
+        		}
+        	}
+        	
             // JPA spec returns an ArrayList<Object[]> for stored procedure queries - will need to unwrap.
             // Note that for legacy deployment XML projects this is not the case.
             if (value instanceof ArrayList) {
