@@ -48,7 +48,7 @@ public class XMLSerializer implements Serializer {
         try {
             if (this.context == null) {
                 String packageName = object.getClass().getPackage().getName();
-                this.context = JAXBContext.newInstance(packageName);
+                this.context = JAXBContext.newInstance(packageName, object.getClass().getClassLoader());
             }
             Marshaller marshaller = this.context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
