@@ -504,7 +504,6 @@ public class TestSelectListTypes extends JPA1Base {
 
     // immutable reference types
     @Test
-    @Bugzilla(bugid=320120, databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testSumBigDecimal() {
         validateSum("bigDecimal", BigDecimal.class);
     }
