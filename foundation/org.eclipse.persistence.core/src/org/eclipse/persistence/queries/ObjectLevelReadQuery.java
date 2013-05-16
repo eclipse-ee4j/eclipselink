@@ -2045,7 +2045,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         } else {
             // FetchGroupManager is null
-            if ((this.fetchGroup != null && !this.fetchGroup.isValidated()) || this.fetchGroupName != null) {
+            if (this.fetchGroup != null || this.fetchGroupName != null) {
                 throw QueryException.fetchGroupValidOnlyIfFetchGroupManagerInDescriptor(getDescriptor().getJavaClassName(), getName());
             }
         }
