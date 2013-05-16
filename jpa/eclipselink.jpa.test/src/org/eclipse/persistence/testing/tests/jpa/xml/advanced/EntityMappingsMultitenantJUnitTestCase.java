@@ -21,38 +21,36 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
+import static org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mafioso.Gender.Female;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NamedQuery;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.helper.Helper;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Candidate;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mason;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Party;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Riding;
-import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Supporter;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.AdvancedMultiTenantTableCreator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Boss;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Candidate;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Capo;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Contract;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.MafiaFamily;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mafioso;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mafioso.Gender;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mason;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Party;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Riding;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Soldier;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Supporter;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Trowel;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Underboss;
 
@@ -641,6 +639,12 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
         // Find our boss and make sure his name has not been compromised from the 707 family.
         Boss boss = em.find(Boss.class, family007Mafiosos.get(0));
         assertFalse("The Boss name has been compromised", boss.getFirstName().equals("Compromised"));
+        
+        // Check if the conversion of the Gender enum values works
+        List result = em.createNativeQuery("SELECT GENDER FROM XML_MAFIOSO WHERE ID = " + boss.getId()).getResultList();
+        assertTrue("Boss with id = " + boss.getId() + " not found", result.size() == 1);
+        String genderFieldExpected = (boss.getGender() == Female) ? "F" : "M";
+        assertTrue("Gender value conversion failed, expected [" + genderFieldExpected + "] but got [" + result.get(0) + "]", genderFieldExpected.equals(result.get(0)) );
         commitTransaction(em);
     }
     

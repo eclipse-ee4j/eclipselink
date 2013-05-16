@@ -3068,6 +3068,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             closeEntityManager(em);
             return;
         }
+        // Bug 407285
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isSybase())
+        {
+            warning("The test 'caseTypeTest' is not supported on Sybase, "
+                  + "because Sybase does not support implicit type conversion from Varchar to Integer.");
+            closeEntityManager(em);
+            return;
+        }
         String jpqlString2 = "SELECT case e.firstName when 'Bob' then 1 when 'Jill' then 2 else 0 end + 1 FROM Employee e";
         em.createQuery(jpqlString2).getResultList();
 

@@ -31,6 +31,7 @@ import org.eclipse.persistence.testing.framework.wdf.customizer.AdjustArrayTypeC
 public class TravelProfile {
 	
 	static final String BINARY_16_COLUMN = "BINARY(16)";
+    static final String BINARY_16_COLUMN_NOT_NULL = "BINARY(16) NOT NULL";
 
     /**
      * @param guid
@@ -92,7 +93,7 @@ public class TravelProfile {
      * @return Returns the guid.
      */
     @Id
-    @Column(length = 16, columnDefinition=BINARY_16_COLUMN)
+    @Column(length = 16, columnDefinition=BINARY_16_COLUMN_NOT_NULL)
     public byte[] getGuid() {
         return guid;
     }
