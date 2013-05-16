@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.identitymaps;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Record;
 
@@ -209,6 +210,39 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         super.acquireDeferredLock();
     }
     
+    public void acquireLock(ObjectBuildingQuery query){
+        
+        // PERF: Only use deferred locking if required.
+        // CR#3876308 If joining is used, deferred locks are still required.
+        if (query.requiresDeferredLocks()) {
+            this.acquireDeferredLock();
+
+            int counter = 0;
+            while ((this.object == null) && (counter < 1000)) {
+                if (this.getActiveThread() == Thread.currentThread()) {
+                    break;
+                }
+                //must release lock here to prevent acquiring multiple deferred locks but only
+                //releasing one at the end of the build object call.
+                //bug 5156075
+                this.releaseDeferredLock();
+                //sleep and try again if we are not the owner of the lock for CR 2317
+                // prevents us from modifying a cache key that another thread has locked.
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException exception) {
+                }
+                this.acquireDeferredLock();
+                counter++;
+            }
+            if (counter == 1000) {
+                throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(this.getActiveThread(), Thread.currentThread());
+            }
+        } else {
+            this.acquire();
+        }
+    }
+
     /**
      * Check the read lock on the cache key object.
      * This can be called to ensure the cache key has a valid built object.

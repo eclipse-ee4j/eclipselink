@@ -135,16 +135,6 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
-     * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
-     * In certain circumstances this can have large performance improvements over loading each item individually.
-     * @param pkList List of Entity PKs to extract from the cache
-     * @param ClassDescriptor Descriptor type to be retrieved.
-     * @return Map of Entity PKs associated to the Entities that were retrieved
-     * @throws QueryException
-     */
-    public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor);
-    /**
-     * ADVANCED:
      * Queries the cache in-memory with the passed in criteria and returns matching Objects.
      * If the expression is too complex an exception will be thrown.
      * @param selectionCriteria Expression selecting the Objects to be returned

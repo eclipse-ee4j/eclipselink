@@ -98,6 +98,12 @@ public class CachePolicy implements Cloneable, Serializable {
     /** This flag controls how the MergeManager should merge an Entity when merging into the shared cache.*/
     protected boolean fullyMergeEntity;
     
+    /**
+     * In certain cases and cache types it is more efficient to preFetch the cache keys from the cache when 
+     * building the results of the query.  Set this flag to true to prefetch the results. 
+     */
+    protected boolean prefetchCacheKeys;
+    
     protected Map<List<DatabaseField>, CacheIndex> cacheIndexes;
 
     /** Allows configuration of database change event notification. */
@@ -1012,5 +1018,13 @@ public class CachePolicy implements Cloneable, Serializable {
      */
     public void useWeakIdentityMap() {
         setIdentityMapClass(ClassConstants.WeakIdentityMap_Class);
+    }
+
+    public void setPrefetchCacheKeys(boolean prefetchCacheKeys) {
+        this.prefetchCacheKeys = prefetchCacheKeys;
+    }
+
+    public boolean shouldPrefetchCacheKeys() {
+        return this.prefetchCacheKeys ;
     }
 }

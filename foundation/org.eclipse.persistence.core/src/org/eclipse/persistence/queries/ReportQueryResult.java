@@ -205,6 +205,7 @@ public class ReportQueryResult implements Serializable, Map {
                 if (mapping != null && mapping.isAggregateObjectMapping()){
                     value = ((AggregateObjectMapping)mapping).buildAggregateFromRow(subRow, null, null, joinManager, query, false, query.getSession(), true);
                 } else {
+                    //TODO : Support prefrechedCacheKeys in report query
                     value = descriptor.getObjectBuilder().buildObject(query, subRow, joinManager);
                 }
                 

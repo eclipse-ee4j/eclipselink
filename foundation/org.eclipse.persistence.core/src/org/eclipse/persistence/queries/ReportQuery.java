@@ -582,7 +582,7 @@ public class ReportQuery extends ReadAllQuery {
      */
     @Override
     public Object buildObject(AbstractRecord row) {
-        return buildObject(row, null);
+        return buildObject(row, (Vector)null);
     }
 
     /**

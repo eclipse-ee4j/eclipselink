@@ -16,6 +16,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 import org.eclipse.persistence.internal.expressions.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -95,6 +96,8 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     
     /** was a check early return completed */
     protected boolean isCacheCheckComplete;
+
+    protected Map<Object, CacheKey> prefetchedCacheKeys;
 
     /**
      * INTERNAL:
@@ -300,6 +303,10 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      */
     public long getExecutionTime() {
         return executionTime;
+    }
+
+    public Map<Object, CacheKey> getPrefetchedCacheKeys() {
+        return prefetchedCacheKeys;
     }
 
     /**
@@ -560,6 +567,10 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      */
     public void setLockMode(short lockMode) {
         lockingClause = ForUpdateClause.newInstance(lockMode);
+    }
+
+    public void setPrefetchedCacheKeys(Map<Object, CacheKey> prefetchedCacheKeys) {
+        this.prefetchedCacheKeys = prefetchedCacheKeys;
     }
 
     /**
