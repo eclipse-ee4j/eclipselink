@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,7 +18,6 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
@@ -396,15 +395,18 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     protected void updateForeignKeyFieldAfterInsert(WriteObjectQuery writeQuery) {
         ClassDescriptor descriptor = getDescriptor();
         for (DatabaseTable table : descriptor.getTables()) {
-            SQLUpdateStatement updateStatement = new SQLUpdateStatement();
-            updateStatement.setModifyRow(descriptor.getObjectBuilder().buildRowForUpdate(writeQuery));
-            updateStatement.setTranslationRow(getTranslationRow());
-            updateStatement.setTable(table);
-            updateStatement.setWhereClause(descriptor.getObjectBuilder().buildPrimaryKeyExpression(table));// Must not check version, ok as just inserted it.
-            // Bug 2996585
-            StatementQueryMechanism updateMechanism = new StatementQueryMechanism(writeQuery, updateStatement);
-            writeQuery.setModifyRow(updateStatement.getModifyRow());
-            updateMechanism.updateObject();
+            AbstractRecord row = descriptor.getObjectBuilder().buildRowForUpdateAfterShallowInsert(writeQuery.getObject(), writeQuery.getSession(), table);
+            if (!row.isEmpty()) {
+                SQLUpdateStatement updateStatement = new SQLUpdateStatement();
+                updateStatement.setModifyRow(row);
+                updateStatement.setTranslationRow(getTranslationRow());
+                updateStatement.setTable(table);
+                updateStatement.setWhereClause(descriptor.getObjectBuilder().buildPrimaryKeyExpression(table));// Must not check version, ok as just inserted it.
+                // Bug 2996585
+                StatementQueryMechanism updateMechanism = new StatementQueryMechanism(writeQuery, updateStatement);
+                writeQuery.setModifyRow(row);
+                updateMechanism.updateObject();
+            }
         }
     }
 
@@ -416,19 +418,20 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
     @Override
     public void updateForeignKeyFieldBeforeDelete() {
         ClassDescriptor descriptor = getDescriptor();
+        DeleteObjectQuery deleteQuery = (DeleteObjectQuery)getQuery();
         for (DatabaseTable table : descriptor.getTables()) {
-            SQLUpdateStatement updateStatement = new SQLUpdateStatement();
-            AbstractRecord row = descriptor.getObjectBuilder().createRecord(getSession());
-            for (DatabaseMapping mapping : descriptor.getPreDeleteMappings()) {
-                mapping.writeUpdateFieldsIntoRow(row, getSession());
+            // need nullify the same fields that would be updated after shallow insert
+            AbstractRecord row = descriptor.getObjectBuilder().buildRowForUpdateBeforeShallowDelete(deleteQuery.getObject(), deleteQuery.getSession(), table);
+            if (!row.isEmpty()) {
+                SQLUpdateStatement updateStatement = new SQLUpdateStatement();
+                updateStatement.setModifyRow(row);
+                updateStatement.setTranslationRow(getTranslationRow());
+                updateStatement.setTable(table);
+                updateStatement.setWhereClause(descriptor.getObjectBuilder().buildPrimaryKeyExpression(table));// Must not check version, ok as delete will.
+                StatementQueryMechanism updateMechanism = new StatementQueryMechanism(deleteQuery, updateStatement);
+                deleteQuery.setModifyRow(row);
+                updateMechanism.updateObject();
             }
-            updateStatement.setModifyRow(row);
-            updateStatement.setTranslationRow(getTranslationRow());
-            updateStatement.setTable(table);
-            updateStatement.setWhereClause(descriptor.getObjectBuilder().buildPrimaryKeyExpression(table));// Must not check version, ok as delete will.
-            StatementQueryMechanism updateMechanism = new StatementQueryMechanism(getQuery(), updateStatement);
-            ((DeleteObjectQuery)getQuery()).setModifyRow(row);
-            updateMechanism.updateObject();
         }
     }
 }

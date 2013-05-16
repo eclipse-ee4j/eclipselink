@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1684,9 +1684,29 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * This row is built for shallow insert which happens in case of bidirectional inserts.
+     * If mapping overrides this method it must override writeFromObjectIntoRowForUpdateAfterShallowInsert method, too.
      */
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord row, AbstractSession session) {
         writeFromObjectIntoRow(object, row, session, WriteType.INSERT);
+    }
+    
+    /**
+     * INTERNAL:
+     * This row is built for update after shallow insert which happens in case of bidirectional inserts.
+     * It contains the foreign keys with non null values that were set to null for shallow insert.
+     * If mapping overrides writeFromObjectIntoRowForShallowInsert method it must override this one, too.
+     */
+    public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord databaseRow, AbstractSession session, DatabaseTable table) {
+        // Do nothing by default.
+    }
+    
+    /**
+     * INTERNAL:
+     * This row is built for update before shallow delete which happens in case of bidirectional inserts.
+     * It contains the same fields as the row built by writeFromObjectIntoRowForUpdateAfterShallowInsert, but all the values are null.
+     */
+    public void writeFromObjectIntoRowForUpdateBeforeShallowDelete(Object object, AbstractRecord databaseRow, AbstractSession session, DatabaseTable table) {
+        // Do nothing by default.
     }
     
     /**

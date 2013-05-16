@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -237,6 +237,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testObjectReferencedInBothEmAndSharedCache_AggregateObjectMapping");
         tests.add("testObjectReferencedInBothEmAndSharedCache_ObjectReferenceMappingVH");
         tests.add("testCharFieldDefaultNullValue");
+        tests.add("testCycleReferencesWithNonNullableField");
         Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new EntityManagerJUnitTestSuite(test));
@@ -5445,5 +5446,42 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+    }
+    
+    // Bug 341709 - Delete fails with DB constraint violation due to an internal update
+    public void testCycleReferencesWithNonNullableField() {
+        EntityManager em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try {
+            TargetA tA = new TargetA("1", "TargetA");
+            em.persist(tA);
+            TargetB tB = new TargetB("2", "TargetB");        
+            Source src = new Source("0", "Source");
+            src.setTargetA(tA);
+            src.setTargetB(tB);
+            tB.setSource(src);
+            em.persist(src);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        
+        em = createEntityManager("fieldaccess");
+        beginTransaction(em);
+        try {
+            Source src = em.find(Source.class, "0");
+            TargetA tA = src.getTargetA();
+            em.remove(src);
+            em.remove(tA);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }        
     }
 }
