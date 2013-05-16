@@ -4055,8 +4055,8 @@
     <target name="server-test-mongotest" depends="clean-test" if="is.glassfish.or.weblogic">
         <copy file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original"/>
         <copy file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_nonjtaDS" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" overwrite="true"/>
-        <antcall target="server-test-mongo" inheritRefs="true"/>
         <antcall target="server-test-mongo-xml" inheritRefs="true"/>
+        <antcall target="server-test-mongo" inheritRefs="true"/>
         <move file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" overwrite="true"/>
         <antcall target="generate-report" inheritRefs="true"/>    </target>
 
@@ -4146,7 +4146,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     <target name="server-stop-cachecoordination" depends="detect-os,config-classpath">
         <ant antfile="${jpatest.basedir}/cachecoordination_${server.name}.xml" target="${server.name}-stop-cachecoordination" inheritRefs="true"/>
     </target>
-    <target name="server-run-test-cachecoordination" depends="detect-os,config-classpath">
+    <target name="server-run-test-cachecoordination" depends="clean-test,detect-os,config-classpath">
         <ant antfile="${jpatest.basedir}/cachecoordination-cluster.xml" target="${server.name}-run-test-cachecoordination" inheritRefs="true"/>
     </target>
 </project>
