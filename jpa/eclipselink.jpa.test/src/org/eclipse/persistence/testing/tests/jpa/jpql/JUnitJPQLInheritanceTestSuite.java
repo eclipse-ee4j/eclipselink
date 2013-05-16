@@ -29,6 +29,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Engineer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritancePopulator;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
