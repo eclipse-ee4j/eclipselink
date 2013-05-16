@@ -95,7 +95,8 @@ public class EmulatedResultSet implements ResultSet {
 	}
 
 	public BigDecimal getBigDecimal(int columnIndex, int scale) {
-                return new BigDecimal(String.valueOf(getObject(columnIndex)));
+	    Number number = (Number) getObject(columnIndex);
+	    return convertNumber2BigDecimal(number);
 	}
 
 	public byte[] getBytes(int columnIndex) {
@@ -159,8 +160,21 @@ public class EmulatedResultSet implements ResultSet {
 	}
 
 	public BigDecimal getBigDecimal(String columnName, int scale) {
-		return (BigDecimal) getObject(columnName);
+	    Number number = (Number) getObject(columnName);
+	    return convertNumber2BigDecimal(number);
 	}
+	
+    private BigDecimal convertNumber2BigDecimal(Number number) {
+         if (number == null) {
+             return null;
+         } 
+         if (number instanceof BigDecimal) {
+             return (BigDecimal) number;
+         }
+         return new BigDecimal(number.longValue());
+     }
+ 
+
 
 	public byte[] getBytes(String columnName) {
 		return (byte[]) getObject(columnName);
@@ -233,11 +247,13 @@ public class EmulatedResultSet implements ResultSet {
 	}
 
 	public BigDecimal getBigDecimal(int columnIndex) {
-		return new BigDecimal(String.valueOf(getObject(columnIndex)));
+        Number number = (Number)  getObject(columnIndex);
+         return convertNumber2BigDecimal(number);
 	}
 
 	public BigDecimal getBigDecimal(String columnName) {
-                return new BigDecimal(String.valueOf(getObject(columnName)));
+        Number number = (Number)  getObject(columnName);
+        return convertNumber2BigDecimal(number);
 	}
 
 	// ---------------------------------------------------------------------

@@ -67,7 +67,6 @@ public class TestSetFunctions extends JPA1Base {
     }
 
     @Test
-    @Bugzilla(bugid=320120, databaseNames="org.eclipse.persistence.platform.database.MaxDBPlatform")
     public void testSum() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
