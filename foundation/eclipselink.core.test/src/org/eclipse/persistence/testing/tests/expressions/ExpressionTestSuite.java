@@ -562,6 +562,8 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Test expression math package");
         test.addUnsupportedPlatform(TimesTenPlatform.class);
         test.addUnsupportedPlatform(SymfowarePlatform.class);
+        // MaxDB doesn't support CAST function
+        test.addUnsupportedPlatform(MaxDBPlatform.class);
         addTest(test);
     }
 
