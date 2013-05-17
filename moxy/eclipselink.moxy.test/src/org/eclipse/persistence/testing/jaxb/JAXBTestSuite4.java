@@ -32,6 +32,7 @@ import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlgregoriancalendar.XMLGregorianCalendarObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.XmlInverseRefBidirectionalTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlschematype.XSDSchemaTypesTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlvariablenode.AllVariableElementTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -65,6 +66,7 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(ObjectGraphDynamicTestCases.class);
         suite.addTestSuite(ObjectGraphRefSubTestCases.class);
         suite.addTestSuite(ObjectGraphInheritanceTestCases.class);
+        suite.addTest(AllVariableElementTestCases.suite());
 	    
 	    return suite;
 	}

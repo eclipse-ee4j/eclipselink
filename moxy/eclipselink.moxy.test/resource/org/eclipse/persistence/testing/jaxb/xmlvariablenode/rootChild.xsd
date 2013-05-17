@@ -1,0 +1,25 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="child">
+      <xsd:complexContent>
+         <xsd:extension base="thing">
+            <xsd:sequence>
+               <xsd:element minOccurs="0" name="childAttribute" type="xsd:string"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="root">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="name" type="xsd:string"/>
+         <xsd:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="skip"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="thing">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="thingName" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="thingValue" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="thingInt" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="root" type="root"/>
+</xsd:schema>

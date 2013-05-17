@@ -48,6 +48,8 @@ import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.TransformationMapping;
+import org.eclipse.persistence.internal.oxm.mappings.VariableXPathCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.VariableXPathObjectMapping;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
@@ -381,6 +383,10 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         if (collectionMapping.getWrapperNullPolicy() != null) {
                             addChild(xmlField.getXPathFragment(), new CollectionGroupingElementNodeValue((ContainerValue) mappingNodeValue), xmlDescriptor.getNamespaceResolver());
                         }
+                    } else if (xmlMapping instanceof VariableXPathCollectionMapping) {
+                        mappingNodeValue = new XMLVariableXPathCollectionMappingNodeValue((VariableXPathCollectionMapping)xmlMapping);
+                    } else if (xmlMapping instanceof VariableXPathObjectMapping){ 
+                    	mappingNodeValue = new XMLVariableXPathObjectMappingNodeValue((VariableXPathObjectMapping)xmlMapping);
                     } else if (xmlMapping instanceof AnyObjectMapping) {
                         mappingNodeValue = new XMLAnyObjectMappingNodeValue((AnyObjectMapping)xmlMapping);
                     } else if (xmlMapping instanceof AnyCollectionMapping) {

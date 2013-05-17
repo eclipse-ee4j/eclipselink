@@ -56,7 +56,7 @@ public class XPathNode {
     private List<XPathNode> selfChildren;
     private Map<XPathFragment, XPathNode> attributeChildrenMap;
     private Map<XPathFragment, XPathNode> nonAttributeChildrenMap;
-    private XMLAnyAttributeMappingNodeValue anyAttributeNodeValue;
+    private MappingNodeValue anyAttributeNodeValue;
     private XPathNode anyAttributeNode;
     private XPathNode textNode;
     private XPathNode anyNode;
@@ -137,11 +137,11 @@ public class XPathNode {
         return this.attributeChildrenMap;
     }
 
-    public void setAnyAttributeNodeValue(XMLAnyAttributeMappingNodeValue nodeValue) {
+    public void setAnyAttributeNodeValue(MappingNodeValue nodeValue) {
         this.anyAttributeNodeValue = nodeValue;
     }
 
-    public XMLAnyAttributeMappingNodeValue getAnyAttributeNodeValue() {
+    public MappingNodeValue getAnyAttributeNodeValue() {
         return this.anyAttributeNodeValue;
     }
 
@@ -269,8 +269,8 @@ public class XPathNode {
                 xPathNode.setUnmarshalNodeValue(aNodeValue);
             }
             xPathNode.setParent(this);
-            if (aNodeValue instanceof XMLAnyAttributeMappingNodeValue) {
-                setAnyAttributeNodeValue((XMLAnyAttributeMappingNodeValue)aNodeValue);
+            if (aNodeValue instanceof XMLAnyAttributeMappingNodeValue || (aNodeValue instanceof XMLVariableXPathObjectMappingNodeValue && ((XMLVariableXPathObjectMappingNodeValue)aNodeValue).getMapping().isAttribute() ) || (aNodeValue instanceof XMLVariableXPathCollectionMappingNodeValue && ((XMLVariableXPathCollectionMappingNodeValue)aNodeValue).getMapping().isAttribute() )) {
+                setAnyAttributeNodeValue((MappingNodeValue)aNodeValue);
                 anyAttributeNode = xPathNode;
             } else {
                 if(!children.contains(xPathNode)) {

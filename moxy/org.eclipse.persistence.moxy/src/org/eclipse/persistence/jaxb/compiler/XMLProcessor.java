@@ -71,6 +71,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlRegistries;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlProperties.XmlProperty;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlVariableNode;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 
@@ -655,7 +656,10 @@ public class XMLProcessor {
      * @return
      */
     private Property processJavaAttribute(TypeInfo typeInfo, JavaAttribute javaAttribute, Property oldProperty, NamespaceInfo nsInfo, JavaType javaType) {
-        if (javaAttribute instanceof XmlAnyAttribute) {
+    	 if (javaAttribute instanceof XmlVariableNode) {
+             return processXmlVariableNodeAttribute((XmlVariableNode) javaAttribute, oldProperty, typeInfo, javaType);
+         } 
+    	if (javaAttribute instanceof XmlAnyAttribute) {
             return processXmlAnyAttribute((XmlAnyAttribute) javaAttribute, oldProperty, typeInfo, javaType);
         } 
         if (javaAttribute instanceof XmlAnyElement) {
@@ -811,6 +815,38 @@ public class XMLProcessor {
         return oldProperty;
     }
 
+    
+    
+    private Property processXmlVariableNodeAttribute(XmlVariableNode xmlVariableNode, Property oldProperty, TypeInfo tInfo, JavaType javaType) {
+    	processObjectFactory(tInfo);
+
+    	// reset any existing values
+        resetProperty(oldProperty, tInfo);
+        
+        oldProperty.setVariableAttributeName(xmlVariableNode.getJavaVariableAttribute());
+        String type = xmlVariableNode.getType();
+        if(!type.equals(DEFAULT)){
+        	oldProperty.setVariableClassName(type);
+        }
+        
+        if (xmlVariableNode.getXmlPath() != null) {
+            oldProperty.setXmlPath(xmlVariableNode.getXmlPath());
+        } else {
+            // no xml-path, so use name/namespace from xml-element, and process wrapper
+            XmlElementWrapper xmlElementWrapper = xmlVariableNode.getXmlElementWrapper();
+            if (xmlElementWrapper != null) {
+                if (DEFAULT.equals(xmlElementWrapper.getName())) {
+                    xmlElementWrapper.setName(tInfo.getXmlNameTransformer().transformElementName(oldProperty.getPropertyName()));
+                }
+                oldProperty.setXmlElementWrapper(xmlVariableNode.getXmlElementWrapper());
+            }
+        }
+
+        
+    	return oldProperty;
+    }
+
+    
     /**
      * Handle xml-any-element. If the property was annotated with @XmlAnyElement
      * in code all values will be overridden.

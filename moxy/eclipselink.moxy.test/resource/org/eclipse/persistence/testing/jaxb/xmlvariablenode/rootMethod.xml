@@ -1,0 +1,15 @@
+<root>
+   <name>theRootName</name>
+   <thinga_IDENTIFIER>
+      <thingName>thinga</thingName>
+	  <thingValue>thingavalue</thingValue>
+   </thinga_IDENTIFIER>
+   <thingb_IDENTIFIER>
+      <thingName>thingb</thingName>
+	  <thingValue>thingbvalue</thingValue>
+   </thingb_IDENTIFIER>
+   <thingc_IDENTIFIER>
+      <thingName>thingc</thingName>
+	  <thingValue>thingcvalue</thingValue>
+   </thingc_IDENTIFIER>
+</root>

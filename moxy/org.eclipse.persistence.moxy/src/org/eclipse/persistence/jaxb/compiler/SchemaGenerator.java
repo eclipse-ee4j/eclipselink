@@ -536,7 +536,7 @@ public class SchemaGenerator {
                 } else if (next.isReference()) {
                     addReferenceToSchema(next, currentSchema, parentCompositor);
                 // handle any
-                } else if (next.isAny()) {
+                } else if (next.isAny() || next.getVariableAttributeName() !=null) {
                     addAnyToSchema(next, parentCompositor);
                 // add an element
                 } else if (!(ownerTypeInfo.getXmlValueProperty() != null && ownerTypeInfo.getXmlValueProperty() == next)) {

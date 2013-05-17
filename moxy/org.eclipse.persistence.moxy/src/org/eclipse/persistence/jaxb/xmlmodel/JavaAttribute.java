@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "java-attribute")
 @XmlSeeAlso({
     XmlValue.class,
+    XmlVariableNode.class,
     XmlElementRefs.class,
     XmlInverseReference.class,
     org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute.class,

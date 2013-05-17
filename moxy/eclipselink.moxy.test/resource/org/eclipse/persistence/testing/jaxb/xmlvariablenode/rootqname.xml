@@ -1,0 +1,15 @@
+<root>
+   <name>theRootName</name>
+   <thingQNamea>
+      <thingName>thinga</thingName>
+	  <thingValue>thingavalue</thingValue>
+   </thingQNamea>
+   <thingQNameb>
+      <thingName>thingb</thingName>
+	  <thingValue>thingbvalue</thingValue>
+   </thingQNameb>
+   <thingQNamec>
+      <thingName>thingc</thingName>
+	  <thingValue>thingcvalue</thingValue>
+   </thingQNamec>
+</root>

@@ -111,7 +111,10 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50089", "The java interface {0} can not be mapped by JAXB as it has multiple mappable parent interfaces. Multiple inheritence is not supported"},
         {"50090", "Invalid value for object graph: {0}. The value must be a string or an instance of ObjectGraph."},
         {"50091", "The element name {0} has more than one mapping."},
-        {"50092", "Only one XmlElementRef property of type {0} allowed on class {1}."}
+        {"50092", "Only one XmlElementRef property of type {0} allowed on class {1}."},
+        {"50093", "The class {0} is not a mapped type in the JAXBContext."},
+        {"50094", "The property {0} specified on the XmlVariableNode annotation was not found on the class {1}."},
+        {"50095", "The property {0} of type {1} on the class {2} is not valid for a XmlVariableNode.  Only properties of type String or QName are allowed."}
     };
 
     /**

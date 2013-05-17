@@ -1,0 +1,6 @@
+{"root":{
+     "name":"theRootName",
+     "thinga_IDENTIFIER":{"thingName":"thinga","thingValue":"thingavalue"},
+     "thingb_IDENTIFIER":{"thingName":"thingb","thingValue":"thingbvalue"},
+     "thingc_IDENTIFIER":{"thingName":"thingc","thingValue":"thingcvalue"}
+ }}

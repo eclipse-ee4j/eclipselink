@@ -47,6 +47,12 @@ public interface CoreAttributeAccessor {
     public boolean isMethodAttributeAccessor();
 
     /**
+     * INTERNAL:
+     * @return
+     */
+    public boolean isWriteOnly();
+    
+    /**
      * Set the attribute value into the object.
      */
     public void setAttributeValueInObject(Object object, Object value);

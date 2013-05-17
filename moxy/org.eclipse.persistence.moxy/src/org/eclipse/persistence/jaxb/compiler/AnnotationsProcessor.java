@@ -129,6 +129,7 @@ import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 import org.eclipse.persistence.oxm.annotations.XmlElementsJoinNodes;
 import org.eclipse.persistence.oxm.annotations.XmlLocation;
+import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
 import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
@@ -1959,6 +1960,28 @@ public class AnnotationsProcessor {
         }else{
             updatePropertyType(property, ptype, ptype);
         }
+    	
+        if(helper.isAnnotationPresent(javaHasAnnotations, XmlVariableNode.class)){
+            XmlVariableNode variableNode = (XmlVariableNode) helper.getAnnotation(javaHasAnnotations, XmlVariableNode.class);
+            if(variableNode.type() != XmlVariableNode.DEFAULT.class){
+            	property.setVariableClassName(variableNode.type().getName());            	
+                            	
+            	JavaClass componentType = helper.getJavaClass(variableNode.type());
+            	
+            	if(helper.isCollectionType(ptype)){
+            		property.setGenericType(componentType);
+            	}else{
+            		property.setType(componentType);
+            	}
+            	
+            }
+            if(!variableNode.value().equals("##default")){
+            	property.setVariableAttributeName(variableNode.value());	
+            }
+            property.setVariableNodeAttribute(variableNode.attribute());
+        }
+        
+        
         if((ptype.isArray()  && !areEquals(ptype, byte[].class))  || (helper.isCollectionType(ptype) && !helper.isAnnotationPresent(javaHasAnnotations, XmlList.class)) ){
         	property.setNillable(true);
         }

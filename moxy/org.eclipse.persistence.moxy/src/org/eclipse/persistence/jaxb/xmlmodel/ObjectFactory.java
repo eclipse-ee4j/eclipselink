@@ -47,6 +47,7 @@ public class ObjectFactory {
     private final static QName _XmlValue_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-value");
     private final static QName _XmlAccessMethods_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-access-methods");
     private final static QName _XmlTransient_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-transient");
+    private final static QName _XmlVariableNode_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-variable-node");
     private final static QName _XmlElement_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element");
     private final static QName _XmlAbstractNullPolicy_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-abstract-null-policy");
     private final static QName _XmlElementRef_QNAME = new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element-ref");
@@ -197,6 +198,13 @@ public class ObjectFactory {
      */
     public org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry createXmlRegistry() {
         return new org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry();
+    }
+    /**
+     * Create an instance of {@link XmlVariableNode }
+     * 
+     */
+    public XmlVariableNode createXmlVariableNode() {
+        return new XmlVariableNode();
     }
 
     /**
@@ -482,6 +490,15 @@ public class ObjectFactory {
     @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-transient", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
     public JAXBElement<XmlTransient> createXmlTransient(XmlTransient value) {
         return new JAXBElement<XmlTransient>(_XmlTransient_QNAME, XmlTransient.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XmlVariableNode }{@code >}}
+     * 
+     */
+    @javax.xml.bind.annotation.XmlElementDecl(namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", name = "xml-variable-node", substitutionHeadNamespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", substitutionHeadName = "java-attribute")
+    public JAXBElement<XmlVariableNode> createXmlVariableNode(XmlVariableNode value) {
+        return new JAXBElement<XmlVariableNode>(_XmlVariableNode_QNAME, XmlVariableNode.class, null, value);
     }
 
     /**
