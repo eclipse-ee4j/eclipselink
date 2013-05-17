@@ -24,7 +24,7 @@ import javax.persistence.Table;
 @NamedQueries({
         @NamedQuery(
                 name = "EmployeeAddress.getRegion",
-                query = "SELECT u.postalCode, u.province, u.street FROM EmployeeAddress u"
+                query = "SELECT u.postalCode, u.province, u.street FROM EmployeeAddress u ORDER BY u.id"
         ),
         @NamedQuery(
                 name = "EmployeeAddress.getById",

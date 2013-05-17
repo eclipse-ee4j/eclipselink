@@ -74,8 +74,8 @@ import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSConfigurationException;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
-import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
@@ -149,6 +149,8 @@ public class PersistenceContext {
     private Boolean weavingEnabled = null;
     
     private String version = null;
+    
+    private FeatureSet supportedFeatureSet;
 
     protected PersistenceContext() {
     }
@@ -1338,13 +1340,22 @@ public class PersistenceContext {
         }
         return false;
     }
-    
+
     /**
-     * Checks if is paging supported.
+     * Gets the supported feature set.
      *
-     * @return true, if is paging supported
+     * @return the supported feature set
      */
-    public boolean isPagingSupported() {
-        return (isVersionGreaterOrEqualTo(AbstractResource.SERVICE_VERSION_2_0));
+    public FeatureSet getSupportedFeatureSet() {
+        return supportedFeatureSet;
+    }
+
+    /**
+     * Sets the supported feature set.
+     *
+     * @param supportedFeatureSet the new supported feature set
+     */
+    public void setSupportedFeatureSet(FeatureSet supportedFeatureSet) {
+        this.supportedFeatureSet = supportedFeatureSet;
     }
 }

@@ -30,7 +30,10 @@ import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSConfigurationException;
+import org.eclipse.persistence.jpa.rs.features.FeatureSetPreV2;
+import org.eclipse.persistence.jpa.rs.features.FeatureSetV2;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 /**
@@ -40,10 +43,9 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
  *
  */
 public class PersistenceFactoryBase implements PersistenceContextFactory {
-    
+
     protected Map<String, PersistenceContext> dynamicPersistenceContexts = new HashMap<String, PersistenceContext>();
 
-    
     /**
      * Bootstrap a PersistenceContext based on an pre-existing EntityManagerFactory
      * @param name
@@ -52,39 +54,44 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
      * @param replace
      * @return
      */
-    public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, String version, boolean replace){
-        PersistenceContext persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl)emf, baseURI);
+    public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, String version, boolean replace) {
+        PersistenceContext persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl) emf, baseURI);
         persistenceContext.setBaseURI(baseURI);
         persistenceContext.setVersion(version);
+        if (persistenceContext.isVersionGreaterOrEqualTo(AbstractResource.SERVICE_VERSION_2_0)) {
+            persistenceContext.setSupportedFeatureSet(new FeatureSetV2());
+        } else {
+            persistenceContext.setSupportedFeatureSet(new FeatureSetPreV2());
+        }
         return persistenceContext;
     }
 
     /**
      * Stop the factory.  Remove all the PersistenceContexts.
      */
-    public void close(){
-        for (String key: dynamicPersistenceContexts.keySet()){
+    public void close() {
+        for (String key : dynamicPersistenceContexts.keySet()) {
             dynamicPersistenceContexts.get(key).stop();
         }
         synchronized (this) {
             dynamicPersistenceContexts.clear();
         }
     }
-    
+
     /**
      * Close the PersistenceContext of a given name and clean it out of our list of PersistenceContexts
      * @param name
      */
-    public void closePersistenceContext(String name){
+    public void closePersistenceContext(String name) {
         synchronized (this) {
             PersistenceContext context = dynamicPersistenceContexts.get(name);
-            if (context != null){
+            if (context != null) {
                 context.stop();
                 dynamicPersistenceContexts.remove(name);
             }
         }
     }
-    
+
     /**
      * Provide an initial set of properties for bootstrapping PersistenceContexts.
      * @param dcl
@@ -108,56 +115,55 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
 
     public PersistenceContext get(String persistenceUnit, URI defaultURI, String version, Map<String, Object> initializationProperties) {
         PersistenceContext app = getDynamicPersistenceContext(persistenceUnit);
-        if (app == null){
-            try{
+        if (app == null) {
+            try {
                 DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
                 Map<String, Object> properties = new HashMap<String, Object>();
                 properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
-                if (initializationProperties != null){
+                if (initializationProperties != null) {
                     properties.putAll(initializationProperties);
                 }
-                
+
                 EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(persistenceUnit, properties);
                 ClassLoader sessionLoader = factory.getServerSession().getLoader();
-                if (!DynamicClassLoader.class.isAssignableFrom(sessionLoader.getClass()) ) {
+                if (!DynamicClassLoader.class.isAssignableFrom(sessionLoader.getClass())) {
                     properties = new HashMap<String, Object>();
                     dcl = new DynamicClassLoader(sessionLoader);
                     properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
-                    if (initializationProperties != null){
+                    if (initializationProperties != null) {
                         properties.putAll(initializationProperties);
                     }
                     factory.refreshMetadata(properties);
                 }
-    
-                if (factory != null){
+
+                if (factory != null) {
                     app = bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, version, true);
-                    if (app != null){
+                    if (app != null) {
                         synchronized (this) {
                             dynamicPersistenceContexts.put(persistenceUnit, app);
                         }
                     }
                 }
-            } catch (Exception e){
-                JPARSLogger.exception("exception_creating_persistence_context", new Object[]{persistenceUnit, e.toString()}, e);
+            } catch (Exception e) {
+                JPARSLogger.exception("exception_creating_persistence_context", new Object[] { persistenceUnit, e.toString() }, e);
             }
         }
-        
+
         if ((app != null) && (!app.isWeavingEnabled())) {
             throw new JPARSConfigurationException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[] { persistenceUnit }));
         }
-        
+
         return app;
     }
 
-    
-    public Set<String> getPersistenceContextNames(){
+    public Set<String> getPersistenceContextNames() {
         Set<String> contextNames = new HashSet<String>();
-        try{
+        try {
             Set<Archive> archives = PersistenceUnitProcessor.findPersistenceArchives();
-            for (Archive archive : archives){
+            for (Archive archive : archives) {
                 List<SEPersistenceUnitInfo> infos = PersistenceUnitProcessor.processPersistenceArchive(archive, Thread.currentThread().getContextClassLoader());
-                for (SEPersistenceUnitInfo info: infos){
-                    if (!info.getPersistenceUnitName().equals("jpa-rs")){
+                for (SEPersistenceUnitInfo info : infos) {
+                    if (!info.getPersistenceUnitName().equals("jpa-rs")) {
                         if (EntityManagerSetupImpl.mustBeCompositeMember(info)) {
                             continue;
                         }
@@ -165,14 +171,14 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                     }
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         contextNames.addAll(dynamicPersistenceContexts.keySet());
         return contextNames;
     }
-    
-    public PersistenceContext getDynamicPersistenceContext(String name){
+
+    public PersistenceContext getDynamicPersistenceContext(String name) {
         synchronized (this) {
             return dynamicPersistenceContexts.get(name);
         }
