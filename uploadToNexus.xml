@@ -336,8 +336,8 @@
 
     <target name="upload-eclipselink" depends="upload-maven-init,upload-static-built-jars">
         <!-- While JPA is pre-release use "upload-artifact" with fixed up 2.1.0-(EL ${build.type}) as version -->
-        <!-- Change back for (and post) release                                                               -->
-        <antcall target="upload-artifact">
+        <!-- Changed back (commented out) for post-release builds                                                               -->
+        <!-- antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${jpaapi.prefix}"/>
             <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
@@ -345,7 +345,7 @@
             <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}.source_${jpaapi.version}.jar"/>
             <param name="artifactName"    value="${jpaapi.name}"/>
             <param name="dependencies"    value=""/>
-        </antcall>
+        </antcall -->
         <!-- call upload for each artifact we want to upload -->
         <antcall target="upload-artifact-with-javadoc">
             <param name="groupId"         value="org.eclipse.persistence"/>
