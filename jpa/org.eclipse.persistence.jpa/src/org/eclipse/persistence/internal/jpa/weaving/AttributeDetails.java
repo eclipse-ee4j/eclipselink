@@ -180,6 +180,10 @@ public class AttributeDetails {
         return mapping.isOneToOneMapping();
     }
 	
+    public boolean isLazy() {
+        return mapping.isLazy();
+    }
+
     public String toString() {
         StringBuffer sb = new StringBuffer(attributeName);
         if (referenceClassName != null) {

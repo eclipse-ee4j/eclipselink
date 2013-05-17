@@ -443,7 +443,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
      * valueholderinterface){ _persistence_foo_vh = valueholderinterface; if
      * (valueholderinterface.isInstantiated()){ Object object = getFoo(); Object
      * value = valueholderinterface.getValue(); if (object != value){
-     * setFoo((EntityC)value); } } }
+     * setFoo((EntityC)value); } } else { foo = null; } }
      */
     public void addSetterMethodForValueHolder(ClassDetails classDetails, AttributeDetails attributeDetails) {
         String attribute = attributeDetails.getAttributeName();
@@ -479,23 +479,43 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         // if (object != value){
         cv_set_value.visitVarInsn(ALOAD, 2);
         cv_set_value.visitVarInsn(ALOAD, 3);
-        cv_set_value.visitJumpInsn(IF_ACMPEQ, l0);
-
-        // setFoo((EntityC)value);
-        cv_set_value.visitVarInsn(ALOAD, 0);
-        cv_set_value.visitVarInsn(ALOAD, 3);
-        cv_set_value.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
         if (attributeDetails.getSetterMethodName() != null) {
+            cv_set_value.visitJumpInsn(IF_ACMPEQ, l0);
+            // setFoo((EntityC)value);
+            cv_set_value.visitVarInsn(ALOAD, 0);
+            cv_set_value.visitVarInsn(ALOAD, 3);
+            cv_set_value.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
             cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
+            //}
+            cv_set_value.visitLabel(l0);
         } else {
+            Label l1 = new Label();
+            cv_set_value.visitJumpInsn(IF_ACMPEQ, l1);
+            // _persistence_setFoo((EntityC)value);
+            cv_set_value.visitVarInsn(ALOAD, 0);
+            cv_set_value.visitVarInsn(ALOAD, 3);
+            cv_set_value.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
             cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
+            // }
+            cv_set_value.visitLabel(l1);
+            cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
+            Label l2 = new Label();
+            cv_set_value.visitJumpInsn(GOTO, l2);
+            // }  
+            cv_set_value.visitLabel(l0);
+            // else {
+            cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
+            // foo = null;
+            cv_set_value.visitVarInsn(ALOAD, 0);
+            cv_set_value.visitInsn(ACONST_NULL);
+            cv_set_value.visitFieldInsn(PUTFIELD, className, attributeDetails.attributeName, attributeDetails.getReferenceClassType().getDescriptor());
+            //}
+            cv_set_value.visitLabel(l2);
+            cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
         }
-
-        cv_set_value.visitLabel(l0);
-
+        
         cv_set_value.visitInsn(RETURN);
         cv_set_value.visitMaxs(0, 0);
-
     }
 
     /**
