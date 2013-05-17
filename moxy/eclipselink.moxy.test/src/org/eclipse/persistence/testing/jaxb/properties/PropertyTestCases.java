@@ -137,8 +137,29 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testMarshallerCharacterEscapeHandler() throws Exception {
-        String SUN_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.bind.marshaller.CharacterEscapeHandler";
-        String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler";
+        String SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "com.sun.xml.bind.marshaller.CharacterEscapeHandler";
+        String SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler";
+
+        CharacterEscapeHandler handler = new CustomCharacterEscapeHandler();
+        m.setProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER, handler);
+        assertEquals(handler, m.getProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER));
+        m.setProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER, null);
+        assertNull(m.getProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER));
+
+        m.setProperty(SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER, handler);
+        assertEquals(handler, m.getProperty(SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER));
+        m.setProperty(SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER, null);
+        assertNull(m.getProperty(SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER));
+
+        m.setProperty(SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER, handler);
+        assertEquals(handler, m.getProperty(SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER));
+        m.setProperty(SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER, null);
+        assertNull(m.getProperty(SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER));
+    }
+
+    public void testMarshallerCharacterEscapeHandler2() throws Exception {
+        String SUN_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.bind.characterEscapeHandler";
+        String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.characterEscapeHandler";
 
         CharacterEscapeHandler handler = new CustomCharacterEscapeHandler();
         m.setProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER, handler);
