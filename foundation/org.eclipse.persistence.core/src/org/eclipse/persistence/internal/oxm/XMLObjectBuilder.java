@@ -159,10 +159,12 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
         if(newNode == null) {
            newNode = XPathEngine.getInstance().createUnownedElement(parentRecord.getDOM(), xmlField);
-           if(xmlField.isSelfField()) {
-               policy.addObjectToCache(attributeValue, newNode, mapping);
-           } else {
-               policy.addObjectToCache(attributeValue, newNode);
+           if(policy !=null ){
+	           if(xmlField.isSelfField()) {
+	               policy.addObjectToCache(attributeValue, newNode, mapping);
+	           } else {
+	               policy.addObjectToCache(attributeValue, newNode);
+	           }
            }
         }
 

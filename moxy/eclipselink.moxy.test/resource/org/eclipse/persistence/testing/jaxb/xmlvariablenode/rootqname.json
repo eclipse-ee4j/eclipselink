@@ -1,0 +1,6 @@
+{"root":{
+     "name":"theRootName",
+     "thingQNamea":{"thingName":"thinga","thingValue":"thingavalue"},
+     "thingQNameb":{"thingName":"thingb","thingValue":"thingbvalue"},
+     "thingQNamec":{"thingName":"thingc","thingValue":"thingcvalue"}
+ }}

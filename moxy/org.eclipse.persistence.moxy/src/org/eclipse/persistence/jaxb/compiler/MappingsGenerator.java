@@ -98,6 +98,8 @@ import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.TransformationMapping;
+import org.eclipse.persistence.internal.oxm.mappings.VariableXPathCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.VariableXPathObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -141,6 +143,8 @@ import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
+import org.eclipse.persistence.oxm.mappings.XMLVariableXPathCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLVariableXPathObjectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLListConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
@@ -679,9 +683,14 @@ public class MappingsGenerator {
                         XMLJavaTypeConverter converter = new XMLJavaTypeConverter(adapterClass.getQualifiedName());
                         converter.setNestedConverter(((DirectCollectionMapping)mapping).getValueConverter());
                         ((DirectCollectionMapping)mapping).setValueConverter(converter);
-                    } else {                    
-                        mapping = generateCompositeCollectionMapping(property, descriptor,descriptorJavaClass, namespaceInfo, valueType.getQualifiedName());
-                        ((CompositeCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    } else {   
+                    	if(property.getVariableAttributeName() !=null){
+                    		mapping = generateVariableXPathCollectionMapping(property, descriptor, namespaceInfo, valueType);
+                            ((VariableXPathCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    	}else{
+                            mapping = generateCompositeCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo, valueType.getQualifiedName());
+                            ((CompositeCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    	}
                     }
                 } else {
                     if (reference.isEnumerationType()) {
@@ -692,8 +701,13 @@ public class MappingsGenerator {
                     } else if (property.isInverseReference()) {
                         mapping = generateInverseReferenceMapping(property, descriptor, namespaceInfo);
                     } else {                    
-                        mapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName());
-                        ((CompositeObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    	if(property.getVariableAttributeName() !=null){
+                    		mapping = generateVariableXPathObjectMapping(property, descriptor, namespaceInfo, valueType);
+                            ((VariableXPathObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    	}else{
+                            mapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName());
+                            ((CompositeObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    	}
                     }
                 }
             } else {
@@ -741,6 +755,13 @@ public class MappingsGenerator {
                 }
             }
             return mapping;
+        }
+        if (property.getVariableAttributeName() != null){
+        	if (helper.isCollectionType(property.getType()) || property.getType().isArray() || property.isMap()){
+                return generateVariableXPathCollectionMapping(property, descriptor, namespaceInfo, property.getActualType());
+        	}else{
+        		return generateVariableXPathObjectMapping(property, descriptor, namespaceInfo, property.getActualType());
+        	}
         }
         if (property.isSetXmlJoinNodes()) {
             if (helper.isCollectionType(property.getType())) {
@@ -834,6 +855,157 @@ public class MappingsGenerator {
         return generateDirectMapping(property, descriptor, namespaceInfo);
     }
 
+    private Mapping generateVariableXPathCollectionMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, JavaClass actualType) {    	
+        XMLVariableXPathCollectionMapping mapping = new XMLVariableXPathCollectionMapping();        
+        mapping.setAttributeName(property.getPropertyName());
+        
+        if(property.isMap()){
+        	actualType = property.getValueType();
+        }
+        
+        initializeXMLContainerMapping(mapping, property.getType().isArray());
+        initializeXMLMapping(mapping, property);
+        initializeVariableXPathMapping(mapping, property, actualType);
+        
+        if (property.getXmlPath() != null) {
+            mapping.setField(new XMLField(property.getXmlPath()));
+        } else {
+            if (property.isSetXmlElementWrapper()) {
+                mapping.setField((XMLField)getXPathForField(property, namespaceInfo, false, true));
+            }
+        }
+                
+        if (property.isSetXmlElementWrapper()) {
+            mapping.setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
+        }
+        JavaClass collectionType = property.getType();
+        if (collectionType.isArray()){
+            JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
+            JavaClass componentType = collectionType.getComponentType();
+            if(componentType.isArray()) {
+                JavaClass baseComponentType = getBaseComponentType(componentType);
+                if (baseComponentType.isPrimitive()){
+                    Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(baseComponentType.getRawName());
+                    accessor.setComponentClass(primitiveClass);
+                } else {
+                    accessor.setComponentClassName(baseComponentType.getQualifiedName());
+                }
+            } else {
+                accessor.setComponentClassName(componentType.getQualifiedName());
+            }
+            mapping.setAttributeAccessor(accessor);
+        }
+        
+
+        
+        if(property.isMap()){
+        	JavaClass mapType = property.getType(); 
+        	if(mapType.isInterface()){        		
+        		mapping.useMapClass("java.util.HashMap");
+        	}else{
+        	    mapping.useMapClass(property.getType().getName());
+        	}
+        	
+        }else{
+        	collectionType = containerClassImpl(collectionType);
+            mapping.useCollectionClass(helper.getClassForJavaClass(collectionType));
+        }
+       
+        
+        return mapping;
+    }
+
+    private Mapping generateVariableXPathObjectMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, JavaClass actualType) {    	
+        XMLVariableXPathObjectMapping mapping = new XMLVariableXPathObjectMapping();        
+        initializeXMLMapping(mapping, property);
+        initializeVariableXPathMapping(mapping, property, actualType);
+
+        // handle null policy set via xml metadata
+        if (property.isSetNullPolicy()) {
+            mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
+        } else {
+            NullPolicy nullPolicy = (NullPolicy) mapping.getNullPolicy();
+            nullPolicy.setSetPerformedForAbsentNode(false);
+            if(property.isNillable()) {
+                nullPolicy.setNullRepresentedByXsiNil(true);
+                nullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+            }
+        }
+    
+        if (property.getXmlPath() != null) {
+            mapping.setField(new XMLField(property.getXmlPath()));
+        } else {
+            if (property.isSetXmlElementWrapper()) {
+                mapping.setField((XMLField)getXPathForField(property, namespaceInfo, false, true));
+            }
+        }
+                
+        return mapping;
+    }
+    
+    private void initializeVariableXPathMapping(VariableXPathObjectMapping mapping, Property property, JavaClass actualType){
+        String variableAttributeName = property.getVariableAttributeName();
+        
+        TypeInfo refInfo = typeInfo.get(actualType.getName());
+        
+        if(refInfo == null){
+        	throw JAXBException.unknownTypeForVariableNode(actualType.getName());
+        }
+        
+        Property refProperty = refInfo.getProperties().get(variableAttributeName);
+                
+        
+        while(refProperty == null){
+         	JavaClass superClass = CompilerHelper.getNextMappedSuperClass(actualType, typeInfo, helper);
+	        if (superClass != null){
+	        	refInfo = typeInfo.get(superClass.getName());
+	            refProperty = refInfo.getProperties().get(variableAttributeName);	           
+	        }else{
+	        	break;
+	        }
+        }
+        
+        
+        if(refProperty == null){
+        	throw JAXBException.unknownPropertyForVariableNode(variableAttributeName, actualType.getName());
+        }
+       
+        String refPropertyType = refProperty.getActualType().getQualifiedName();
+        
+        if(!(refPropertyType.equals("java.lang.String") || refPropertyType.equals("javax.xml.namespace.QName"))){
+        	throw JAXBException.invalidTypeForVariableNode(variableAttributeName, refPropertyType, actualType.getName());
+        }
+        if (refProperty.isMethodProperty()) {
+            if (refProperty.getGetMethodName() == null) {
+                // handle case of set with no get method
+                String paramTypeAsString = refProperty.getType().getName();
+                JAXBSetMethodAttributeAccessor accessor = new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader());
+                accessor.setIsReadOnly(true);
+                accessor.setSetMethodName(refProperty.getSetMethodName());
+                mapping.setIsReadOnly(true);
+                accessor.setAttributeName("thingBLAH");
+                mapping.setVariableAttributeAccessor(accessor);
+            } else if (refProperty.getSetMethodName() == null) {
+            	mapping.setVariableGetMethodName(refProperty.getGetMethodName());
+            } else {
+            	mapping.setVariableGetMethodName(refProperty.getGetMethodName());
+            	mapping.setVariableSetMethodName(refProperty.getSetMethodName());
+            }
+        }else{
+        	mapping.setVariableAttributeName(property.getVariableAttributeName());
+        }
+        
+    
+        if(property.getVariableClassName() != null){
+        	mapping.setReferenceClassName(property.getVariableClassName());		
+        }else{
+            mapping.setReferenceClassName(actualType.getQualifiedName());
+        } 
+        	
+        mapping.setAttribute(property.isVariableNodeAttribute());
+        
+    }
+    
     private InverseReferenceMapping generateInverseReferenceMapping(Property property, Descriptor descriptor, NamespaceInfo namespace) {
         InverseReferenceMapping invMapping = new XMLInverseReferenceMapping();
         boolean isCollection = helper.isCollectionType(property.getType());
@@ -929,30 +1101,8 @@ public class MappingsGenerator {
     
     public ChoiceObjectMapping generateChoiceMapping(Property property, Descriptor descriptor, NamespaceInfo namespace) {
         ChoiceObjectMapping mapping = new XMLChoiceObjectMapping();
-        mapping.setAttributeName(property.getPropertyName());
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+        initializeXMLMapping((XMLChoiceObjectMapping)mapping, property);
+      
         boolean isIdRef = property.isXmlIdRef();
         Iterator<Property> choiceProperties = property.getChoiceProperties().iterator();
         while (choiceProperties.hasNext()) {
@@ -1027,30 +1177,8 @@ public class MappingsGenerator {
     public ChoiceCollectionMapping generateChoiceCollectionMapping(Property property, Descriptor descriptor, NamespaceInfo namespace) {
         ChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         initializeXMLContainerMapping(mapping, property.getType().isArray());
-        mapping.setAttributeName(property.getPropertyName());
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+        initializeXMLMapping((XMLChoiceCollectionMapping)mapping, property);
+       
         JavaClass collectionType = property.getType();
         collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
@@ -1124,8 +1252,8 @@ public class MappingsGenerator {
                         
             if(xmlField !=null){
                 Mapping nestedMapping = (Mapping) mapping.getChoiceElementMappings().get(xmlField);
-                if(nestedMapping.isAbstractCompositeCollectionMapping()){                   
-                   // handle null policy set via xml metadata
+                if(nestedMapping.isAbstractCompositeCollectionMapping()){ 
+                   //handle null policy set via xml metadata
                    if (property.isSetNullPolicy()) {
                 	   ((CompositeCollectionMapping)nestedMapping).setNullPolicy(getNullPolicyFromProperty(property, namespace.getNamespaceResolverForDescriptor()));
                    } else if (next.isNillable() && property.isNillable()){
@@ -1191,25 +1319,8 @@ public class MappingsGenerator {
                 ((ChoiceObjectMapping) mapping).setIsWriteOnly(property.isWriteOnly());
             }
         }
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        mapping.setAttributeName(property.getPropertyName());
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                ((XMLMapping)mapping).setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+      
+        initializeXMLMapping((XMLMapping)mapping, property);
 
         List<ElementDeclaration> referencedElements = property.getReferencedElements();
         JavaClass propertyType = property.getType();
@@ -1366,31 +1477,9 @@ public class MappingsGenerator {
     
     public AnyCollectionMapping generateAnyCollectionMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, boolean isMixed) {
         AnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
-        mapping.setAttributeName(property.getPropertyName());
         initializeXMLContainerMapping(mapping, property.getType().isArray());
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+        initializeXMLMapping((XMLMapping)mapping, property);
+
         // if the XPath is set (via xml-path) use it
         if (property.getXmlPath() != null) {
             mapping.setField(new XMLField(property.getXmlPath()));
@@ -1454,33 +1543,9 @@ public class MappingsGenerator {
 
     public CompositeObjectMapping generateCompositeObjectMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, String referenceClassName) {
         CompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+      
+        initializeXMLMapping((XMLMapping)mapping, property);
 
-        mapping.setAttributeName(property.getPropertyName());
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                if (!property.isXmlLocation()) {
-                    mapping.setIsWriteOnly(true);
-                }
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
         // if the XPath is set (via xml-path) use it; otherwise figure it out
         mapping.setXPath(getXPathForField(property, namespaceInfo, false, false).getXPath());
         // handle null policy set via xml metadata
@@ -1518,34 +1583,13 @@ public class MappingsGenerator {
     public DirectMapping generateDirectMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo) {
     	DirectMapping mapping = new XMLDirectMapping();
         mapping.setNullValueMarshalled(true);
-        mapping.setAttributeName(property.getPropertyName());
+        
         String fixedValue = property.getFixedValue();
         if (fixedValue != null) {
             mapping.setIsWriteOnly(true);
         }
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+        initializeXMLMapping((XMLMapping)mapping, property);
+   
         // if the XPath is set (via xml-path) use it; otherwise figure it out
         Field xmlField = getXPathForField(property, namespaceInfo, true, false);
         mapping.setField(xmlField);
@@ -1608,30 +1652,9 @@ public class MappingsGenerator {
 
     public BinaryDataMapping generateBinaryMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo) {
         BinaryDataMapping mapping = new XMLBinaryDataMapping();
-        mapping.setAttributeName(property.getPropertyName());
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+      
+        initializeXMLMapping((XMLMapping)mapping, property);
+
         // if the XPath is set (via xml-path) use it
         mapping.setField(getXPathForField(property, namespaceInfo, false, false));
         if (property.isSwaAttachmentRef()) {
@@ -1678,34 +1701,14 @@ public class MappingsGenerator {
 
     public BinaryDataCollectionMapping generateBinaryDataCollectionMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo) {
         BinaryDataCollectionMapping mapping = new XMLBinaryDataCollectionMapping();
-        mapping.setAttributeName(property.getPropertyName());
+        initializeXMLMapping((XMLMapping)mapping, property);
+
         initializeXMLContainerMapping(mapping, property.getType().isArray());
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
+    
         if (property.isSetXmlElementWrapper()) {
             mapping.setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
         }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+     
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
@@ -1713,6 +1716,7 @@ public class MappingsGenerator {
             mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
             mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
         }
+        
         // if the XPath is set (via xml-path) use it
         mapping.setField(getXPathForField(property, namespaceInfo, false, false));
         if (property.isSwaAttachmentRef()) {
@@ -1751,24 +1755,9 @@ public class MappingsGenerator {
     
     public DirectMapping generateDirectEnumerationMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo enumInfo) {
     	DirectMapping mapping = new XMLDirectMapping();
+    	initializeXMLMapping((XMLMapping)mapping, property);
         mapping.setNullValueMarshalled(true);
         mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
-        mapping.setAttributeName(property.getPropertyName());
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
         mapping.setField(getXPathForField(property, namespaceInfo, true, false));
         if (!mapping.getXPath().equals("text()")) {
             ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
@@ -1823,31 +1812,9 @@ public class MappingsGenerator {
     }
     public AnyAttributeMapping generateAnyAttributeMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo) {
         AnyAttributeMapping mapping = new XMLAnyAttributeMapping();
-        mapping.setAttributeName(property.getPropertyName());
+        initializeXMLMapping((XMLAnyAttributeMapping)mapping, property);
         initializeXMLContainerMapping(mapping, property.getType().isArray());
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+     
         // if the XPath is set (via xml-path) use it
         if (property.getXmlPath() != null) {
             mapping.setField(new XMLField(property.getXmlPath()));
@@ -1866,30 +1833,8 @@ public class MappingsGenerator {
 
     public AnyObjectMapping generateAnyObjectMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo)  {
         AnyObjectMapping mapping = new XMLAnyObjectMapping();
-        mapping.setAttributeName(property.getPropertyName());
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+        initializeXMLMapping((XMLMapping)mapping, property);
+
         // if the XPath is set (via xml-path) use it
         if (property.getXmlPath() != null) {
             mapping.setField(new XMLField(property.getXmlPath()));
@@ -1913,6 +1858,7 @@ public class MappingsGenerator {
         } else {
             mapping.setUseXMLRoot(true);
         }
+        
         return mapping;
     }
 
@@ -2099,37 +2045,14 @@ public class MappingsGenerator {
 
     public CompositeCollectionMapping generateCompositeCollectionMapping(Property property, Descriptor descriptor, JavaClass javaClass, NamespaceInfo namespaceInfo, String referenceClassName) {
         CompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
-        mapping.setAttributeName(property.getPropertyName());
+        initializeXMLMapping((XMLMapping)mapping, property);
         initializeXMLContainerMapping(mapping, property.getType().isArray());
         
         JavaClass manyValueJavaClass = helper.getJavaClass(ManyValue.class);        
         if (manyValueJavaClass.isAssignableFrom(javaClass)){
             mapping.setReuseContainer(false);
         }
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
-
+     
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
@@ -2202,31 +2125,10 @@ public class MappingsGenerator {
 
     public DirectCollectionMapping generateDirectCollectionMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo) {
         DirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
-        mapping.setAttributeName(property.getPropertyName());
+        initializeXMLMapping((XMLMapping)mapping, property);
+
         initializeXMLContainerMapping(mapping, property.getType().isArray());
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+     
         JavaClass collectionType = property.getType();
 
         if (collectionType.isArray()){
@@ -2606,35 +2508,12 @@ public class MappingsGenerator {
      */
     public CollectionReferenceMapping generateXMLCollectionReferenceMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         CollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
-        mapping.setAttributeName(property.getPropertyName());
+        initializeXMLMapping((XMLMapping)mapping, property);
+
         initializeXMLContainerMapping(mapping, property.getType().isArray());
         mapping.setUsesSingleNode(property.isXmlList() || (property.isAttribute() && (property.getXmlPath() == null || !property.getXmlPath().contains("/"))));
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
-        String referenceClassName = referenceClass.getQualifiedName();
-        
-
+       
+        String referenceClassName = referenceClass.getQualifiedName();      
         JavaClass collectionType = property.getType();
 
         if (collectionType.isArray()){
@@ -2715,31 +2594,7 @@ public class MappingsGenerator {
      */
     public ObjectReferenceMapping generateXMLObjectReferenceMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         ObjectReferenceMapping mapping = new XMLObjectReferenceMapping();
-        mapping.setAttributeName(property.getPropertyName());
-
-        // handle read-only set via metadata
-        if (property.isSetReadOnly()) {
-            mapping.setIsReadOnly(property.isReadOnly());
-        }
-        // handle write-only set via metadata
-        if (property.isSetWriteOnly()) {
-            mapping.setIsWriteOnly(property.isWriteOnly());
-        }
-        if (property.isMethodProperty()) {
-            if (property.getGetMethodName() == null) {
-                // handle case of set with no get method
-                String paramTypeAsString = property.getType().getName();
-                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
-                mapping.setIsReadOnly(true);
-                mapping.setSetMethodName(property.getSetMethodName());
-            } else if (property.getSetMethodName() == null) {
-                mapping.setGetMethodName(property.getGetMethodName());
-                mapping.setIsWriteOnly(true);
-            } else {
-                mapping.setSetMethodName(property.getSetMethodName());
-                mapping.setGetMethodName(property.getGetMethodName());
-            }
-        }
+        initializeXMLMapping((XMLMapping)mapping, property);
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
 
         // here we need to setup source/target key field associations
@@ -3492,7 +3347,36 @@ public class MappingsGenerator {
         xmlContainerMapping.setReuseContainer(!isArray);
         xmlContainerMapping.setDefaultEmptyContainer(false);
     }
+    
+    private void initializeXMLMapping(XMLMapping mapping, Property property){
+        mapping.setAttributeName(property.getPropertyName());
 
+    	 // handle read-only set via metadata
+        if (property.isSetReadOnly()) {
+            mapping.setIsReadOnly(property.isReadOnly());
+        }
+        // handle write-only set via metadata
+        if (property.isSetWriteOnly()) {
+            mapping.setIsWriteOnly(property.isWriteOnly());
+        }
+        
+        if (property.isMethodProperty()) {
+            if (property.getGetMethodName() == null) {
+                // handle case of set with no get method
+                String paramTypeAsString = property.getType().getName();
+                mapping.setAttributeAccessor(new JAXBSetMethodAttributeAccessor(paramTypeAsString, helper.getClassLoader()));
+                mapping.setIsReadOnly(true);
+                mapping.setSetMethodName(property.getSetMethodName());
+            } else if (property.getSetMethodName() == null) {
+                mapping.setGetMethodName(property.getGetMethodName());
+                mapping.setIsWriteOnly(true);
+            } else {
+                mapping.setSetMethodName(property.getSetMethodName());
+                mapping.setGetMethodName(property.getGetMethodName());
+            }
+        }
+    }
+    
     private JavaClass containerClassImpl(JavaClass collectionType) {
         if (areEquals(collectionType, List.class) || areEquals(collectionType, Collection.class) || collectionType.isArray() || helper.isMapType(collectionType) ) {
             return jotArrayList;

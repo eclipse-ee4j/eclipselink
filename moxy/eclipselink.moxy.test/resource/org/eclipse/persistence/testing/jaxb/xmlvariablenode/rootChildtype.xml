@@ -1,0 +1,16 @@
+<root>
+   <name>theRootName</name>
+   <thinga>
+      <thingName>thinga</thingName>
+	  <thingValue>thingavalue</thingValue>
+   </thinga>
+   <thingb>
+      <thingName>thingb</thingName>
+	  <thingValue>thingbvalue</thingValue>
+   </thingb>
+   <thingc>
+      <thingName>thingc</thingName>
+	  <thingValue>thingcvalue</thingValue>
+      <childAttribute>childAttr</childAttribute>
+   </thingc>
+</root>

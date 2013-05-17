@@ -1,0 +1,15 @@
+<root xmlns:yyy="uri2">
+   <name>theRootName</name>
+   <ns0:thingQNamea xmlns:ns0="uri1">
+      <thingName>thinga</thingName>
+	  <thingValue>thingavalue</thingValue>
+   </ns0:thingQNamea>
+   <yyy:thingQNameb>
+      <thingName>thingb</thingName>
+	  <thingValue>thingbvalue</thingValue>
+   </yyy:thingQNameb>
+   <ns1:thingQNamec xmlns:ns1="uri3">
+      <thingName>thingc</thingName>
+	  <thingValue>thingcvalue</thingValue>
+   </ns1:thingQNamec>
+</root>

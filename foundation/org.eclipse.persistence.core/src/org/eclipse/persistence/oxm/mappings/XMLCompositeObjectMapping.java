@@ -353,7 +353,16 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(referenceClassName));
             }
         }
-        if (this.referenceClass != null) {
+        initializeReferenceDescriptorAndField(session);
+        
+        if(null != getContainerAccessor()) {
+            getContainerAccessor().initializeAttributes(this.referenceClass);
+        }
+
+    }
+
+    protected void initializeReferenceDescriptorAndField(AbstractSession session){
+    	if (this.referenceClass != null) {
             super.initialize(session);
         } else {
             //below should be the same as AbstractCompositeObjectMapping.initialize
@@ -368,12 +377,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 getConverter().initialize(this, session);
             }
         }
-        if(null != getContainerAccessor()) {
-            getContainerAccessor().initializeAttributes(this.referenceClass);
-        }
-
     }
-
     /**
      * Set the AbstractNullPolicy on the mapping<br>
      * The default policy is NullPolicy.<br>
@@ -434,13 +438,8 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         XMLRecord parent = (XMLRecord) databaseRow;
 
         if (xmlReferenceDescriptor != null) {
-            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) xmlReferenceDescriptor.getObjectBuilder();
-            
-            XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parent, this);            
-            child.setNamespaceResolver(parent.getNamespaceResolver());
-            child.setSession(session);
-            objectBuilder.buildIntoNestedRow(child, attributeValue, session, (XMLDescriptor)getReferenceDescriptor(), (XMLField) getField());
-            return child;
+        	return buildCompositeRowForDescriptor(xmlReferenceDescriptor, attributeValue, session, parent, writeType);
+           
         } else {
             if (attributeValue instanceof Element && getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) {
                 return new DOMRecord((Element) attributeValue);
@@ -452,6 +451,16 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         }
     }
 
+    protected AbstractRecord buildCompositeRowForDescriptor(ClassDescriptor classDesc, Object attributeValue, AbstractSession session, XMLRecord parentRow, WriteType writeType) {
+    	 XMLObjectBuilder objectBuilder = (XMLObjectBuilder) classDesc.getObjectBuilder();
+         
+         XMLRecord child = (XMLRecord) objectBuilder.createRecordFor(attributeValue, (XMLField) getField(), parentRow, this);            
+         child.setNamespaceResolver(parentRow.getNamespaceResolver());
+         child.setSession(session);
+         objectBuilder.buildIntoNestedRow(child, attributeValue, session, (XMLDescriptor)getReferenceDescriptor(), (XMLField) getField());
+         return child;
+    }
+    
     @Override
     protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, AbstractSession targetSession) {
         return objectBuilder.buildObject(query, nestedRow, joinManager);

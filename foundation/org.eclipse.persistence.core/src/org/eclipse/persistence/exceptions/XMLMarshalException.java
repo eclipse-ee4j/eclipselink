@@ -64,6 +64,7 @@ public class XMLMarshalException extends ValidationException {
     public static final int UNMARSHAL_FROM_STRING_FAILED = 25039;
     public static final int MISSING_ID_FOR_IDREF = 25040;
     public static final int INVALID_ATTRIBUTE_GROUP_NAME = 25041;
+    public static final int NULL_VALUE_NOT_ALLOWED_FOR_VARIABLE = 25042;
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -435,6 +436,13 @@ public class XMLMarshalException extends ValidationException {
         Object[] args = {groupName, className};
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, INVALID_ATTRIBUTE_GROUP_NAME, args));
         exception.setErrorCode(INVALID_ATTRIBUTE_GROUP_NAME);
+        return exception;
+    }
+    
+    public static XMLMarshalException nullValueNotAllowed(String variableName, String className) {
+        Object[] args = {variableName, className};
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, NULL_VALUE_NOT_ALLOWED_FOR_VARIABLE, args));
+        exception.setErrorCode(NULL_VALUE_NOT_ALLOWED_FOR_VARIABLE);
         return exception;
     }
 }

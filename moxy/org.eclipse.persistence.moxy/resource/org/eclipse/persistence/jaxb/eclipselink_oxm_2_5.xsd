@@ -365,6 +365,29 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+     <xs:element name="xml-variable-node" substitutionGroup="java-attribute">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="java-attribute">
+                    <xs:all>
+                        <xs:element ref="xml-access-methods" minOccurs="0" />
+                        <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
+                        <xs:element ref="xml-element-wrapper" minOccurs="0"/>
+                        <xs:element ref="xml-properties" minOccurs="0" />
+                    </xs:all>
+                    <xs:attribute name="xml-path" type="xs:string" />
+                    <xs:attribute name="read-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="write-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="container-type" type="xs:string" default="##default" />
+                    <xs:attribute name="type" type="xs:string" default="##default" />
+                    <xs:attribute name="isAttribute" type="xs:boolean" default="false" />
+                    <xs:attribute name="java-variable-attribute" type="xs:string"  />
+                    <xs:attribute name="nillable" type="xs:boolean" default="false" />
+                    <xs:attribute name="required" type="xs:boolean" default="false" />
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
     <xs:element name="xml-element" substitutionGroup="java-attribute">
         <xs:complexType>
             <xs:complexContent>

@@ -74,7 +74,7 @@ import org.w3c.dom.Node;
  * current Element.
  *
  */
-public class XMLAnyAttributeMapping extends DatabaseMapping implements AnyAttributeMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLRecord> {
+public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping,AnyAttributeMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLRecord> {
     private AbstractNullPolicy wrapperNullPolicy;
     private XMLField field;
     private MappedKeyMapContainerPolicy containerPolicy;

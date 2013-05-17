@@ -1,0 +1,16 @@
+<root>
+   <name>theRootName</name>
+   <thinga>
+      <thingName>thinga</thingName>
+	  <thingValue>thingavalue</thingValue>
+   </thinga>
+   <thingb>
+      <thingName>thingb</thingName>
+	  <thingValue>thingbvalue</thingValue>
+   </thingb>
+   <thingc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="child">
+      <thingName>thingc</thingName>
+	  <thingValue>thingcvalue</thingValue>
+      <childAttribute>childAttr</childAttribute>
+   </thingc>
+</root>
