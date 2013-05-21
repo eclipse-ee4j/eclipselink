@@ -246,8 +246,29 @@ public class EntityManagerProperties {
      * updating the same objects in different order.
      * If not set to true, the order of updates is not guaranteed.
      * "false" by default.
-     */    
+     * @deprecated since 2.6 replaced by PERSISTENCE_CONTEXT_COMMIT_ORDER
+     */
+    @Deprecated
     public static final String ORDER_UPDATES = PersistenceUnitProperties.ORDER_UPDATES;
+
+    /**
+     * Defines the ordering of updates and deletes of a set of the same entity type during a commit or flush operation.
+     * The commit order of entities is defined by their foreign key constraints, and then sorted alphabetically.\
+     * <p>
+     * By default the commit of a set of the same entity type is ordered by its Id.
+     * <p>
+     * Entity type commit order can be modified using a DescriptorCustomizer and the ClassDescriptor.addConstraintDependency() API.
+     * Commit order can also be controlled using the EntityManager.flush() API.
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"Id" (DEFAULT) : Updates and deletes are ordered by the object's id.  This can help avoid deadlocks on highly concurrent systems.
+     * <li>"Changes": Updates are ordered by the object's changes, then by id.  This can improve batch writing efficiency.
+     * <li>"None": No ordering is done.
+     * </ul>
+     * @see CommitOrderType
+     */    
+    public static final String PERSISTENCE_CONTEXT_COMMIT_ORDER = PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER;
     
     /**
      * Defines EntityManager cache behavior after a call to flush method
@@ -302,6 +323,7 @@ public class EntityManagerProperties {
             add(CONNECTION_POLICY);
             add(VALIDATE_EXISTENCE);
             add(ORDER_UPDATES);
+            add(PERSISTENCE_CONTEXT_COMMIT_ORDER);
             add(FLUSH_CLEAR_CACHE);
             add(COMPOSITE_UNIT_PROPERTIES);
         }

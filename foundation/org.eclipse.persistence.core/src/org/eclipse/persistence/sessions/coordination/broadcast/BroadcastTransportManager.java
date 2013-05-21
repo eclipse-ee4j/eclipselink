@@ -36,10 +36,14 @@ public abstract class BroadcastTransportManager extends TransportManager {
     // JNDI topic name
     protected String topicName;
 
+    public BroadcastTransportManager() {
+        initialize();
+    }
+    
     public BroadcastTransportManager(RemoteCommandManager rcm) {
         this.rcm = rcm;
         rcm.setTransportManager(this);
-        this.initialize();
+        initialize();
     }
 
     /**

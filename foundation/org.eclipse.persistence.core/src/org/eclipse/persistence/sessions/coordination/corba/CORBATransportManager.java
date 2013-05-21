@@ -143,7 +143,7 @@ public abstract class CORBATransportManager extends TransportManager {
      */
     public static byte[] processCommand(byte[] command, RemoteCommandManager rcm) {
         try {
-            if (((AbstractSession)rcm.getCommandProcessor()).getSerializer() != null) {
+            if (rcm.getSerializer() != null) {
                 rcm.processCommandFromRemoteConnection(command);                
             } else {
                 // deserialize byte [] to Command object

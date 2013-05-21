@@ -112,6 +112,7 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
 		}
 
 		query.setAsOfClause(asOfClause);
+		query.setShouldMaintainCache(false);
 	}
 
 	/**

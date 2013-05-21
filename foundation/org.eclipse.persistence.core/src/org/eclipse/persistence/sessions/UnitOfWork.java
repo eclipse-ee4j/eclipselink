@@ -42,7 +42,21 @@ import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
  * </ul>
  */
 public interface UnitOfWork extends Session {
-
+    /**
+     * Defines the ordering of updates and deletes of a set of the same entity type during a commit or flush operation.
+     * The commit order of entities is defined by their foreign key constraints, and then sorted alphabetically.
+     * <p>
+     * By default the commit of a set of the same entity type is ordered by primary key.
+     */
+    public enum CommitOrderType {
+        /** Updates and deletes are ordered by the object's id.  This can help avoid deadlocks on highly concurrent systems. */
+        ID,
+        /** Updates are ordered by the object's changes, then by id.  This can improve batch writing efficiency. */
+        CHANGES,
+        /** No ordering is done. */
+        NONE
+    }
+    
     /**
      * ADVANCED:
      * Returns the set of read-only classes in this UnitOfWork.
@@ -680,12 +694,28 @@ public interface UnitOfWork extends Session {
     /**
      * ADVANCED:
      * Return if updates should be ordered by primary key to avoid possible database deadlocks.
+     * @deprecated since 2.6 replaced by #getCommitOrder()
      */
+    @Deprecated
     public boolean shouldOrderUpdates();
 
     /**
      * ADVANCED:
      * Set if updates should be ordered by primary key to avoid possible database deadlocks.
+     * @deprecated since 2.6 replaced by #setCommitOrder(CommitOrderType)
      */
+    @Deprecated
     public void setShouldOrderUpdates(boolean shouldOrderUpdates);
+
+    /**
+     * ADVANCED:
+     * Return the commit order.
+     */
+    public CommitOrderType getCommitOrder();
+    
+    /**
+     * ADVANCED:
+     * Set the commit order.
+     */
+    public void setCommitOrder(CommitOrderType order);
 }

@@ -33,6 +33,13 @@ import org.jgroups.JChannel;
  */
 public class JGroupsTransportManager extends BroadcastTransportManager {
     protected String configFile = "";
+
+    /**  
+     * PUBLIC:  
+     * Creates a JGroupsTransportManager.  
+     */  
+    public JGroupsTransportManager() {
+    }
     
     /**  
      * PUBLIC:  

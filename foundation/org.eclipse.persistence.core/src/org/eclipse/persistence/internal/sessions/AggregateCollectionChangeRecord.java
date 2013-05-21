@@ -12,7 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
@@ -21,7 +22,7 @@ import org.eclipse.persistence.mappings.AggregateCollectionMapping;
  * This change record records the changes for AggregateCollectionMapping.
  */
 public class AggregateCollectionChangeRecord extends CollectionChangeRecord implements org.eclipse.persistence.sessions.changesets.AggregateCollectionChangeRecord {
-    protected Vector changedValues;
+    protected List<ObjectChangeSet> changedValues;
 
     /**
      * This default constructor.
@@ -43,9 +44,9 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
      * ADVANCED:
      * Return the values representing the changed AggregateCollection.
      */
-    public Vector getChangedValues() {
+    public List<ObjectChangeSet> getChangedValues() {
         if (changedValues == null) {
-            changedValues = new Vector(2);
+            changedValues = new ArrayList(2);
         }
         return changedValues;
     }
@@ -66,9 +67,8 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
 
         //an aggregate collection changerecord contains a copy of the entire collection, not just the changes
         //so there in no need to merge it, just replace it.
-        for (int index = 0; index < this.getChangedValues().size(); ++index) {
-            ((ObjectChangeSet)this.getChangedValues().get(index)).updateReferences(mergeToChangeSet, mergeFromChangeSet);
-            ;
+        for (ObjectChangeSet change : getChangedValues()) {
+            change.updateReferences(mergeToChangeSet, mergeFromChangeSet);
         }
     }
 
@@ -76,8 +76,8 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
      * INTERNAL:
      * Set the changed values.
      */
-    public void setChangedValues(Vector newValues) {
-        changedValues = newValues;
+    public void setChangedValues(List<ObjectChangeSet> newValues) {
+        this.changedValues = newValues;
     }
 
     /**
@@ -89,8 +89,7 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
      * extra garbage.
      */
     public void updateReferences(UnitOfWorkChangeSet mergeToChangeSet, UnitOfWorkChangeSet mergeFromChangeSet) {
-        for (int index = 0; index < this.getChangedValues().size(); ++index) {
-            ObjectChangeSet mergedChangeSet = (ObjectChangeSet)this.getChangedValues().get(index);
+        for (ObjectChangeSet mergedChangeSet : getChangedValues()) {
             Object localObject = mergeToChangeSet.getUOWCloneForObjectChangeSet(mergedChangeSet);
             if (localObject == null) {
                 mergeToChangeSet.addObjectChangeSetForIdentity(mergedChangeSet, mergeFromChangeSet.getUOWCloneForObjectChangeSet(mergedChangeSet));

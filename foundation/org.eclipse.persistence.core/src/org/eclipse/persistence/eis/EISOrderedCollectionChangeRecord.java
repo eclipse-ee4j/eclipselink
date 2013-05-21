@@ -12,9 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.eis;
 
-import java.util.*;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.mappings.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * INTERNAL:
@@ -24,19 +27,19 @@ import org.eclipse.persistence.mappings.*;
 public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord implements org.eclipse.persistence.sessions.changesets.EISOrderedCollectionChangeRecord {
 
     /** The added stuff. */
-    private Vector adds;
+    private List adds;
 
     /** The indexes into the new collection of the elements that were added. */
     private int[] addIndexes;
 
     /** The moved stuff. */
-    private Vector moves;
+    private List moves;
 
     /** The index pairs of the elements that were moved (before and after indexes). */
     private int[][] moveIndexPairs;
 
     /** The removed stuff. */
-    private Vector removes;
+    private List removes;
 
     /** The indexes into the old collection of the elements that were removed. */
     private int[] removeIndexes;
@@ -56,27 +59,27 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * Add an added change set.
      */
     public void addAddedChangeSet(Object changeSet, int index) {
-        this.getAdds().addElement(changeSet);
-        this.setAddIndexes(this.addTo(index, this.getAddIndexes()));
+        getAdds().add(changeSet);
+        setAddIndexes(this.addTo(index, getAddIndexes()));
     }
 
     /**
      * Add an moved change set.
      */
     public void addMovedChangeSet(Object changeSet, int oldIndex, int newIndex) {
-        this.getMoves().addElement(changeSet);
+        getMoves().add(changeSet);
         int[] pair = new int[2];
         pair[0] = oldIndex;
         pair[1] = newIndex;
-        this.setMoveIndexPairs(this.addTo(pair, this.getMoveIndexPairs()));
+        setMoveIndexPairs(this.addTo(pair, getMoveIndexPairs()));
     }
 
     /**
      * Add an removed change set.
      */
     public void addRemovedChangeSet(Object changeSet, int index) {
-        this.getRemoves().addElement(changeSet);
-        this.setRemoveIndexes(this.addTo(index, this.getRemoveIndexes()));
+        getRemoves().add(changeSet);
+        setRemoveIndexes(this.addTo(index, getRemoveIndexes()));
     }
 
     /**
@@ -128,9 +131,9 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public Vector getAdds() {
+    public List getAdds() {
         if (adds == null) {
-            adds = new Vector(1);// keep it as small as possible
+            adds = new ArrayList(2);// keep it as small as possible
         }
         return adds;
     }
@@ -196,9 +199,9 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public Vector getMoves() {
+    public List getMoves() {
         if (moves == null) {
-            moves = new Vector(1);// keep it as small as possible
+            moves = new ArrayList(2);// keep it as small as possible
         }
         return moves;
     }
@@ -231,9 +234,9 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public Vector getNewCollection() {
-        int newSize = this.getNewCollectionSize();
-        Vector newCollection = new Vector(newSize);
+    public List getNewCollection() {
+        int newSize = getNewCollectionSize();
+        List newCollection = new ArrayList(newSize);
 
         int[] localAddIndexes = addIndexes;
         if (localAddIndexes == null) {
@@ -296,9 +299,9 @@ public class EISOrderedCollectionChangeRecord extends CollectionChangeRecord imp
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public Vector getRemoves() {
+    public List getRemoves() {
         if (removes == null) {
-            removes = new Vector(1);// keep it as small as possible
+            removes = new ArrayList(2);// keep it as small as possible
         }
         return removes;
     }

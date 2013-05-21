@@ -21,12 +21,13 @@ import java.lang.reflect.Method;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.serializers.AbstractSerializer;
 
 /**
  * Uses Kryo to serialize the object.
  * @author James Sutherland
  */
-public class KryoSerializer implements Serializer {
+public class KryoSerializer extends AbstractSerializer {
     /** Kryo is not thread safe, so need thread local. */
     ThreadLocal kryo;
     Constructor kryoConstructor;

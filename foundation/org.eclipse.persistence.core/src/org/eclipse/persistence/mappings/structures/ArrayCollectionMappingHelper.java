@@ -13,6 +13,7 @@
  package org.eclipse.persistence.mappings.structures;
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.eis.EISCollectionChangeRecord;
@@ -48,42 +49,42 @@ public class ArrayCollectionMappingHelper {
      * Convenience method.
      */
     private boolean mapKeyHasChanged(Object element, AbstractSession session) {
-        return this.getMapping().mapKeyHasChanged(element, session);
+        return this.mapping.mapKeyHasChanged(element, session);
     }
     
     /**
      * Convenience method.
      */
     private Object getRealCollectionAttributeValueFromObject(Object object, AbstractSession session) {
-        return this.getMapping().getRealCollectionAttributeValueFromObject(object, session);
+        return this.mapping.getRealCollectionAttributeValueFromObject(object, session);
     }
     
     /**
      * Convenience method.
      */
     private Object buildAddedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
-        return this.getMapping().buildAddedElementFromChangeSet(changeSet, mergeManager, targetSession);
+        return this.mapping.buildAddedElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
 
     /**
      * Convenience method.
      */
     private Object buildChangeSet(Object element, ObjectChangeSet owner, AbstractSession session) {
-        return this.getMapping().buildChangeSet(element, owner, session);
+        return this.mapping.buildChangeSet(element, owner, session);
     }
 
     /**
      * Convenience method.
      */
     private Object buildElementFromElement(Object element, MergeManager mergeManager, AbstractSession targetSession) {
-        return this.getMapping().buildElementFromElement(element, mergeManager, targetSession);
+        return this.mapping.buildElementFromElement(element, mergeManager, targetSession);
     }
 
     /**
      * Convenience method.
      */
     private Object buildRemovedElementFromChangeSet(Object changeSet, MergeManager mergeManager, AbstractSession targetSession) {
-        return this.getMapping().buildRemovedElementFromChangeSet(changeSet, mergeManager, targetSession);
+        return this.mapping.buildRemovedElementFromChangeSet(changeSet, mergeManager, targetSession);
     }
     
     /**
@@ -100,7 +101,7 @@ public class ArrayCollectionMappingHelper {
         if (element2 == XXX) {// if element2 was marked as cleared out, it is not a match
             return false;
         }
-        return this.getMapping().compareElements(element1, element2, session);
+        return this.mapping.compareElements(element1, element2, session);
     }
 
     /**
@@ -117,7 +118,7 @@ public class ArrayCollectionMappingHelper {
         if (element2 == XXX) {// if element2 was marked as cleared out, it is not a match
             return false;
         }
-        return this.getMapping().compareElementsForChange(element1, element2, session);
+        return this.mapping.compareElementsForChange(element1, element2, session);
     }
     
     /**
@@ -162,7 +163,7 @@ public class ArrayCollectionMappingHelper {
         Vector cloneVector = cp.vectorFor(cloneCollection, session);// convert it to a Vector so we can preserve the order and use indexes
         Vector backupVector = cp.vectorFor(backupCollection, session);// "clone" it so we can clear out the slots
 
-        EISOrderedCollectionChangeRecord changeRecord = new EISOrderedCollectionChangeRecord(owner, this.getAttributeName(), this.getDatabaseMapping());
+        EISOrderedCollectionChangeRecord changeRecord = new EISOrderedCollectionChangeRecord(owner, getAttributeName(), this.getDatabaseMapping());
 
         for (int i = 0; i < cloneVector.size(); i++) {
             Object cloneElement = cloneVector.elementAt(i);
@@ -208,7 +209,7 @@ public class ArrayCollectionMappingHelper {
 
         Vector backupVector = cp.vectorFor(backupCollection, session);// "clone" it so we can clear out the slots
 
-        EISCollectionChangeRecord changeRecord = new EISCollectionChangeRecord(owner, this.getAttributeName(), this.getDatabaseMapping());
+        EISCollectionChangeRecord changeRecord = new EISCollectionChangeRecord(owner, getAttributeName(), this.getDatabaseMapping());
         for (Object cloneIter = cp.iteratorFor(cloneCollection); cp.hasNext(cloneIter);) {
             Object cloneElement = cp.next(cloneIter, session);
 
@@ -345,14 +346,14 @@ public class ArrayCollectionMappingHelper {
      * Simply replace the entire target collection.
      */
     private void mergeChangesIntoObjectWithOrder(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        ContainerPolicy cp = this.getContainerPolicy();
+        ContainerPolicy cp = getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
 
-        Vector changes = ((EISOrderedCollectionChangeRecord)changeRecord).getNewCollection();
+        List changes = ((EISOrderedCollectionChangeRecord)changeRecord).getNewCollection();
         Object targetCollection = cp.containerInstance(changes.size());
 
-        for (Enumeration stream = changes.elements(); stream.hasMoreElements();) {
-            Object targetElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
+        for (Object changed : changes) {
+            Object targetElement = buildAddedElementFromChangeSet(changed, mergeManager, targetSession);
             cp.addInto(targetElement, targetCollection, session);
         }
 
@@ -366,28 +367,28 @@ public class ArrayCollectionMappingHelper {
      */
     private void mergeChangesIntoObjectWithoutOrder(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         EISCollectionChangeRecord sdkChangeRecord = (EISCollectionChangeRecord)changeRecord;
-        ContainerPolicy cp = this.getContainerPolicy();
+        ContainerPolicy cp = getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
 
         Object targetCollection = null;
         if (sdkChangeRecord.getOwner().isNew()) {
             targetCollection = cp.containerInstance(sdkChangeRecord.getAdds().size());
         } else {
-            targetCollection = this.getRealCollectionAttributeValueFromObject(target, session);
+            targetCollection = getRealCollectionAttributeValueFromObject(target, session);
         }
 
-        Vector removes = sdkChangeRecord.getRemoves();
-        Vector adds = sdkChangeRecord.getAdds();
-        Vector changedMapKeys = sdkChangeRecord.getChangedMapKeys();
+        List removes = sdkChangeRecord.getRemoves();
+        List adds = sdkChangeRecord.getAdds();
+        List changedMapKeys = sdkChangeRecord.getChangedMapKeys();
 
         synchronized (targetCollection) {
-            for (Enumeration stream = removes.elements(); stream.hasMoreElements();) {
-                Object removeElement = this.buildRemovedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
+            for (Object removed : removes) {
+                Object removeElement = buildRemovedElementFromChangeSet(removed, mergeManager, targetSession);
 
                 Object targetElement = null;
                 for (Object iter = cp.iteratorFor(targetCollection); cp.hasNext(iter);) {
                     targetElement = cp.next(iter, session);
-                    if (this.compareElements(targetElement, removeElement, session)) {
+                    if (compareElements(targetElement, removeElement, session)) {
                         break;// matching element found - skip the rest of them
                     }
                 }
@@ -397,13 +398,13 @@ public class ArrayCollectionMappingHelper {
                 }
             }
 
-            for (Enumeration stream = adds.elements(); stream.hasMoreElements();) {
-                Object addElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
+            for (Object added : adds) {
+                Object addElement = buildAddedElementFromChangeSet(added, mergeManager, targetSession);
                 cp.addInto(addElement, targetCollection, session);
             }
 
-            for (Enumeration stream = changedMapKeys.elements(); stream.hasMoreElements();) {
-                Object changedMapKeyElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
+            for (Object changed : changedMapKeys) {
+                Object changedMapKeyElement = buildAddedElementFromChangeSet(changed, mergeManager, targetSession);
                 Object originalElement = ((UnitOfWorkImpl)session).getOriginalVersionOfObject(changedMapKeyElement);
                 cp.removeFrom(originalElement, targetCollection, session);
                 cp.addInto(changedMapKeyElement, targetCollection, session);
@@ -411,7 +412,7 @@ public class ArrayCollectionMappingHelper {
         }
 
         // reset the attribute to allow for set method to re-morph changes if the collection is not being stored directly
-        this.setRealAttributeValueInObject(target, targetCollection);
+        setRealAttributeValueInObject(target, targetCollection);
     }
     
     /**
@@ -420,19 +421,19 @@ public class ArrayCollectionMappingHelper {
      * Simply replace the entire target collection.
      */
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
-        ContainerPolicy cp = this.getContainerPolicy();
+        ContainerPolicy cp = getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
 
-        Object sourceCollection = this.getRealCollectionAttributeValueFromObject(source, session);
+        Object sourceCollection = getRealCollectionAttributeValueFromObject(source, session);
         Object targetCollection = cp.containerInstance(cp.sizeFor(sourceCollection));
 
         for (Object iter = cp.iteratorFor(sourceCollection); cp.hasNext(iter);) {
-            Object targetElement = this.buildElementFromElement(cp.next(iter, session), mergeManager, targetSession);
+            Object targetElement = buildElementFromElement(cp.next(iter, session), mergeManager, targetSession);
             cp.addInto(targetElement, targetCollection, session);
         }
 
         // reset the attribute to allow for set method to re-morph changes if the collection is not being stored directly
-        this.setRealAttributeValueInObject(target, targetCollection);
+        setRealAttributeValueInObject(target, targetCollection);
     }
     
     /**
@@ -441,10 +442,10 @@ public class ArrayCollectionMappingHelper {
      * The referenceKey parameter should only be used for direct Maps.
      */
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
-        if (this.getContainerPolicy().hasOrder()) {
-            this.simpleAddToCollectionChangeRecordWithOrder(referenceKey, changeSetToAdd, changeSet, session);
+        if (getContainerPolicy().hasOrder()) {
+            simpleAddToCollectionChangeRecordWithOrder(referenceKey, changeSetToAdd, changeSet, session);
         } else {
-            this.simpleAddToCollectionChangeRecordWithoutOrder(referenceKey, changeSetToAdd, changeSet, session);
+            simpleAddToCollectionChangeRecordWithoutOrder(referenceKey, changeSetToAdd, changeSet, session);
         }
     }
 
@@ -454,7 +455,7 @@ public class ArrayCollectionMappingHelper {
     private void simpleAddToCollectionChangeRecordWithOrder(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
         EISOrderedCollectionChangeRecord changeRecord = (EISOrderedCollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (changeRecord == null) {
-            changeRecord = new EISOrderedCollectionChangeRecord(changeSet, this.getAttributeName(), this.getDatabaseMapping());
+            changeRecord = new EISOrderedCollectionChangeRecord(changeSet, getAttributeName(), getDatabaseMapping());
             changeSet.addChange(changeRecord);
         }
         changeRecord.simpleAddChangeSet(changeSetToAdd);
@@ -464,9 +465,9 @@ public class ArrayCollectionMappingHelper {
      * Add stuff to an unordered collection.
      */
     private void simpleAddToCollectionChangeRecordWithoutOrder(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
-        EISCollectionChangeRecord changeRecord = (EISCollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
+        EISCollectionChangeRecord changeRecord = (EISCollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (changeRecord == null) {
-            changeRecord = new EISCollectionChangeRecord(changeSet, this.getAttributeName(), this.getDatabaseMapping());
+            changeRecord = new EISCollectionChangeRecord(changeSet, getAttributeName(), getDatabaseMapping());
             changeSet.addChange(changeRecord);
         }
         changeRecord.simpleAddChangeSet(changeSetToAdd);
@@ -478,10 +479,10 @@ public class ArrayCollectionMappingHelper {
      * The referenceKey parameter should only be used for direct Maps.
      */
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
-        if (this.getContainerPolicy().hasOrder()) {
-            this.simpleRemoveFromCollectionChangeRecordWithOrder(referenceKey, changeSetToRemove, changeSet, session);
+        if (getContainerPolicy().hasOrder()) {
+            simpleRemoveFromCollectionChangeRecordWithOrder(referenceKey, changeSetToRemove, changeSet, session);
         } else {
-            this.simpleRemoveFromCollectionChangeRecordWithoutOrder(referenceKey, changeSetToRemove, changeSet, session);
+            simpleRemoveFromCollectionChangeRecordWithoutOrder(referenceKey, changeSetToRemove, changeSet, session);
         }
     }
 
@@ -489,9 +490,9 @@ public class ArrayCollectionMappingHelper {
      * Remove stuff from an ordered collection.
      */
     private void simpleRemoveFromCollectionChangeRecordWithOrder(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
-        EISOrderedCollectionChangeRecord changeRecord = (EISOrderedCollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
+        EISOrderedCollectionChangeRecord changeRecord = (EISOrderedCollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (changeRecord == null) {
-            changeRecord = new EISOrderedCollectionChangeRecord(changeSet, this.getAttributeName(), this.getDatabaseMapping());
+            changeRecord = new EISOrderedCollectionChangeRecord(changeSet, getAttributeName(), getDatabaseMapping());
             changeSet.addChange(changeRecord);
         }
         changeRecord.simpleRemoveChangeSet(changeSetToRemove);
@@ -501,9 +502,9 @@ public class ArrayCollectionMappingHelper {
      * Remove stuff from an unordered collection.
      */
     private void simpleRemoveFromCollectionChangeRecordWithoutOrder(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
-        EISCollectionChangeRecord changeRecord = (EISCollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
+        EISCollectionChangeRecord changeRecord = (EISCollectionChangeRecord)changeSet.getChangesForAttributeNamed(getAttributeName());
         if (changeRecord == null) {
-            changeRecord = new EISCollectionChangeRecord(changeSet, this.getAttributeName(), this.getDatabaseMapping());
+            changeRecord = new EISCollectionChangeRecord(changeSet, getAttributeName(), getDatabaseMapping());
             changeSet.addChange(changeRecord);
         }
         changeRecord.simpleRemoveChangeSet(changeSetToRemove);
@@ -514,21 +515,21 @@ public class ArrayCollectionMappingHelper {
      * Convenience method.
      */
     private void setRealAttributeValueInObject(Object object, Object attributeValue) {
-        this.getMapping().setRealAttributeValueInObject(object, attributeValue);
+        this.mapping.setRealAttributeValueInObject(object, attributeValue);
     }
     
     /**
      * Convenience method.
      */
     private String getAttributeName() {
-        return this.getMapping().getAttributeName();
+        return this.mapping.getAttributeName();
     }
 
     /**
      * Convenience method.
      */
     private ContainerPolicy getContainerPolicy() {
-        return this.getMapping().getContainerPolicy();
+        return this.mapping.getContainerPolicy();
     }
 
     /**
@@ -536,7 +537,7 @@ public class ArrayCollectionMappingHelper {
      * Return the mapping, casted a bit more generally.
      */
     public DatabaseMapping getDatabaseMapping() {
-        return (DatabaseMapping)this.getMapping();
+        return (DatabaseMapping)this.mapping;
     }
     
 

@@ -41,10 +41,6 @@ public class JSONSerializer extends XMLSerializer {
     
     public Object serialize(Object object, Session session) {
         try {
-            if (this.context == null) {
-                String packageName = object.getClass().getPackage().getName();
-                this.context = JAXBContext.newInstance(packageName, object.getClass().getClassLoader());
-            }
             Marshaller marshaller = this.context.createMarshaller();
             marshaller.setProperty("eclipselink.media-type", "application/json");
             StringWriter writer = new StringWriter();
@@ -57,10 +53,6 @@ public class JSONSerializer extends XMLSerializer {
     
     public Object deserialize(Object json, Session session) {
         try {
-            if (this.context == null) {
-                String packageName = session.getDescriptors().keySet().iterator().next().getPackage().getName();
-                this.context = JAXBContext.newInstance(packageName);
-            }
             Unmarshaller unmarshaller = this.context.createUnmarshaller();
             unmarshaller.setProperty("eclipselink.media-type", "application/json");
             StringReader reader = new StringReader((String)json);

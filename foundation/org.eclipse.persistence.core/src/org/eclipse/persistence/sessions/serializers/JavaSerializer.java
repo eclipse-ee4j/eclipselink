@@ -25,7 +25,7 @@ import org.eclipse.persistence.sessions.Session;
  * Plain old Java serialization.
  * @author James Sutherland
  */
-public class JavaSerializer implements Serializer {
+public class JavaSerializer extends AbstractSerializer {
     public Object serialize(Object object, Session session) {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         try {
@@ -45,7 +45,12 @@ public class JavaSerializer implements Serializer {
     public Object deserialize(Object bytes, Session session) {
         ByteArrayInputStream byteIn = new ByteArrayInputStream((byte[])bytes);
         try {
-            ObjectInputStream objectIn = new CustomObjectInputStream(byteIn, session);
+            ObjectInputStream objectIn = null;
+            if (session == null) {
+                objectIn = new ObjectInputStream(byteIn);
+            } else {
+                objectIn = new CustomObjectInputStream(byteIn, session);
+            }
             return objectIn.readObject();
         } catch (Exception exception) {
             throw new RuntimeException(exception);

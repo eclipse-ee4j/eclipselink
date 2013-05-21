@@ -51,6 +51,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -128,7 +129,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     protected boolean shouldValidateExistence;    
 
     /** Order updates by id to avoid potential deadlocks. Default is true. */
-    protected boolean shouldOrderUpdates = true;
+    protected CommitOrderType commitOrder = CommitOrderType.ID;
     
     protected boolean commitWithoutPersistRules;
 
@@ -408,7 +409,15 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         }
         String shouldOrderUpdates = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.ORDER_UPDATES, properties, this.session, true);
         if (shouldOrderUpdates != null) {
-            this.shouldOrderUpdates = "true".equalsIgnoreCase(shouldOrderUpdates);
+            if ("true".equalsIgnoreCase(shouldOrderUpdates)) {
+                this.commitOrder = CommitOrderType.ID;
+            } else {
+                this.commitOrder = CommitOrderType.NONE;
+            }
+        }
+        String commitOrder = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, properties, this.session, true);
+        if (commitOrder != null) {
+            this.commitOrder = CommitOrderType.valueOf(commitOrder.toUpperCase());
         }
         String flushClearCache = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.FLUSH_CLEAR_CACHE, properties, this.session, true);
         if (flushClearCache != null) {
@@ -715,19 +724,17 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     /**
-     * ADVANCED:
      * Return if updates should be ordered by primary key, to avoid potential database deadlocks.
      */
-    public boolean shouldOrderUpdates() {
-        return shouldOrderUpdates;
+    public CommitOrderType getCommitOrder() {
+        return commitOrder;
     }
 
     /**
-     * ADVANCED:
      * Set update ordering by primary key, to avoid potential database deadlocks.
      */
-    public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
-        this.shouldOrderUpdates = shouldOrderUpdates;
+    public void setCommitOrder(CommitOrderType commitOrder) {
+        this.commitOrder = commitOrder;
     }
     
     public void addNamedQuery(String name, Query query) {

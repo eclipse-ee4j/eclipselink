@@ -190,7 +190,8 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, "true"));
             addProp(new BooleanProp(PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.VALIDATE_EXISTENCE, "false"));
-            addProp(new BooleanProp(PersistenceUnitProperties.ORDER_UPDATES, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.ORDER_UPDATES, "true"));
+            addProp(new CommitOrderProp());
             addProp(new BooleanProp(PersistenceUnitProperties.JOIN_EXISTING_TRANSACTION, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.COMPOSITE_UNIT, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.COMPOSITE_UNIT_MEMBER, "false"));
@@ -489,6 +490,17 @@ public class PropertiesHandler {
             valueArray = new Object[] {
                 FlushModeType.AUTO.toString(),
                 FlushModeType.COMMIT.toString()
+            };
+        }
+    }
+    
+    protected static class CommitOrderProp extends Prop {
+        CommitOrderProp() {
+            super(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, CommitOrderType.None.toString());
+            valueArray = new Object[] {
+                    CommitOrderType.Id.toString(),
+                    CommitOrderType.Changes.toString(),
+                    CommitOrderType.None.toString()
             };
         }
     }

@@ -261,8 +261,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /** Determine if does-exist should be performed on persist. */
     protected boolean shouldValidateExistence;
     
-    /** Allow updates to be ordered by id to avoid possible deadlocks. */
-    protected boolean shouldOrderUpdates;
+    /** Allow updates and deletes to be ordered by id or changes to avoid possible deadlocks. */
+    protected CommitOrderType commitOrder;
 
     /** This stored the reference mode for this UOW.  If the reference mode is
      * weak then this unit of work will retain only weak references to non new, 
@@ -347,7 +347,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.shouldCheckWriteLock = parent.getDatasourceLogin().shouldSynchronizedReadOnWrite() || parent.getDatasourceLogin().shouldSynchronizeWrites();
         
         // Order updates by id
-        this.shouldOrderUpdates = true;
+        this.commitOrder = CommitOrderType.ID;
         
         // Copy down the table per tenant information.
         this.tablePerTenantDescriptors = parent.tablePerTenantDescriptors;
@@ -5956,7 +5956,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return if updates should be ordered by primary key to avoid possible database deadlocks.
      */
     public boolean shouldOrderUpdates() {
-        return shouldOrderUpdates;
+        return this.commitOrder != CommitOrderType.NONE;
     }
 
     /**
@@ -5964,7 +5964,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Set updates should be ordered by primary key to avoid possible database deadlocks.
      */
     public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
-        this.shouldOrderUpdates = shouldOrderUpdates;
+        if (shouldOrderUpdates) {
+            this.commitOrder = CommitOrderType.ID;
+        } else {
+            this.commitOrder = CommitOrderType.NONE;            
+        }
     }
 
     @Override
@@ -6016,6 +6020,22 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return null;
         }
         return this.deletionDependencies.get(deletedObject);
+    }
+    
+    /**
+     * ADVANCED:
+     * Return the commit order.
+     */
+    public CommitOrderType getCommitOrder() {
+        return commitOrder; 
+    }
+    
+    /**
+     * ADVANCED:
+     * Set the commit order.
+     */
+    public void setCommitOrder(CommitOrderType order) {
+        this.commitOrder = order;
     }
 
 }

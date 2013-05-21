@@ -12,7 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.changesets;
 
-import java.util.Vector;
+import java.util.List;
+
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 
 /**
  * <p>
@@ -31,5 +33,5 @@ public interface AggregateCollectionChangeRecord extends ChangeRecord {
      * Return the values representing the changed AggregateCollection.
      * @return java.util.Vector
      */
-    public Vector getChangedValues();
+    public List<ObjectChangeSet> getChangedValues();
 }

@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import java.net.InetAddress;
@@ -96,6 +97,9 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     /** Uniquely identifies ServerPlatform in the cluster */
     protected ServerPlatform serverPlatform;
     
+    /** Set the Serializer to use for serialization of commands. */
+    protected Serializer serializer;
+    
     //** Indicates whether RCM is active. In case there's discoveryManager it mirrors discoveryManager.isDiscoveryStopped()
     protected boolean isStopped = true;
 
@@ -111,6 +115,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         this.discoveryManager = this.transportManager.createDiscoveryManager();
         this.serviceId.setChannel(DEFAULT_CHANNEL);
         this.isAsynchronous = DEFAULT_ASYNCHRONOUS_MODE;
+        this.serializer = new JavaSerializer();
 
         // Set the command processor to point back to this command manager
         commandProcessor.setCommandManager(this);
@@ -148,6 +153,11 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
             this.discoveryManager.startDiscovery();
         } else {
             this.transportManager.createConnections();
+        }
+
+        Serializer serializer = getSerializer();
+        if (serializer != null) {
+            serializer.initialize(UnitOfWorkChangeSet.class, null, (AbstractSession)getCommandProcessor());
         }
     }
 
@@ -216,13 +226,12 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
             newCommand.setServiceId(getServiceId());
     
             // PERF: Support plugable serialization.
-            AbstractSession session = (AbstractSession)getCommandProcessor();
-            Serializer serializer = session.getSerializer();
+            Serializer serializer = getSerializer();
             byte[] commandBytes = null;
             if (serializer != null) {
                 this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordinationSerialize);
                 try {
-                    commandBytes = (byte[])serializer.serialize(command, session);
+                    commandBytes = (byte[])serializer.serialize(command, (AbstractSession)getCommandProcessor());
                 } finally {
                     this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);            
                 }
@@ -249,12 +258,11 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordinationSerialize);
         Command command = null;
         try {
-            AbstractSession session = (AbstractSession)getCommandProcessor();
-            Serializer serializer = session.getSerializer();
+            Serializer serializer = getSerializer();
             if (serializer == null) {
                 serializer = new JavaSerializer();
             }
-            command = (Command)serializer.deserialize(commandBytes, session);
+            command = (Command)serializer.deserialize(commandBytes, (AbstractSession)getCommandProcessor());
         } finally {
             this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);            
         }
@@ -558,5 +566,21 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      */
     public void setServerPlatform(ServerPlatform theServerPlatform) {
         this.serverPlatform = theServerPlatform;
+    }
+
+    /**
+     * PUBLIC:
+     * Return the Serializer to use for serialization of commands.
+     */
+    public Serializer getSerializer() {
+        return serializer;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the Serializer to use for serialization of commands.
+     */
+    public void setSerializer(Serializer serializer) {
+        this.serializer = serializer;
     }
 }

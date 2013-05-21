@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.changesets;
 
-import java.util.Vector;
+import java.util.List;
 
 /**
  * <p>
@@ -37,7 +37,7 @@ public interface EISOrderedCollectionChangeRecord extends ChangeRecord {
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    Vector getAdds();
+    List getAdds();
 
     /**
      * ADVANCED:
@@ -59,7 +59,7 @@ public interface EISOrderedCollectionChangeRecord extends ChangeRecord {
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    Vector getMoves();
+    List getMoves();
 
     /**
      * ADVANCED:
@@ -67,7 +67,7 @@ public interface EISOrderedCollectionChangeRecord extends ChangeRecord {
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    Vector getNewCollection();
+    List getNewCollection();
 
     /**
      * ADVANCED:
@@ -82,7 +82,7 @@ public interface EISOrderedCollectionChangeRecord extends ChangeRecord {
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    Vector getRemoves();
+    List getRemoves();
 
     /**
      * ADVANCED:

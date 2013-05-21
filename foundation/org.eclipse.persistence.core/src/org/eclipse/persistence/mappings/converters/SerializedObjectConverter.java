@@ -176,6 +176,10 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
                 directMapping.setFieldClassification(getSerializer().getType());
             }
         }
+        
+        if (this.serializer != null) {
+            this.serializer.initialize(mapping.getAttributeClassification(), this.serializerPackage, session);
+        }
     }
 
     /**

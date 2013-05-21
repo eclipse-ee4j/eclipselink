@@ -608,6 +608,22 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
 
     /**
      * INTERNAL:
+     * Sets the collection of ObjectChanges in the change Set.
+     */
+    public void setAllChangeSets(Map allChangeSets) {
+        this.allChangeSets = allChangeSets;
+    }
+
+    /**
+     * INTERNAL:
+     * Sets the collection of deleted objects.
+     */
+    public void setDeletedObjects(Map deletedObjects) {
+        this.deletedObjects = deletedObjects;
+    }
+
+    /**
+     * INTERNAL:
      * This method is used to insert a new collection into the UOWChangeSet.
      */
     public void setObjectChangeSetToUOWClone(Map<ObjectChangeSet, Object> objectChangeSetToUOWClone) {

@@ -26,7 +26,7 @@ import org.eclipse.persistence.sessions.Session;
  * Uses JAXB to convert an object to XML.
  * @author James Sutherland
  */
-public class XMLSerializer implements Serializer {
+public class XMLSerializer extends AbstractSerializer {
     JAXBContext context;
     
     public XMLSerializer() {
@@ -44,12 +44,22 @@ public class XMLSerializer implements Serializer {
         this.context = context;
     }
     
+    @Override
+    public void initialize(Class serializeClass, String serializePackage, Session session) {
+        if (this.context == null) {
+            if (serializePackage == null) {
+                serializePackage = serializeClass.getPackage().getName();
+            }
+            try {
+                this.context = JAXBContext.newInstance(serializePackage, serializeClass.getClassLoader());
+            } catch (JAXBException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+    }
+    
     public Object serialize(Object object, Session session) {
         try {
-            if (this.context == null) {
-                String packageName = object.getClass().getPackage().getName();
-                this.context = JAXBContext.newInstance(packageName, object.getClass().getClassLoader());
-            }
             Marshaller marshaller = this.context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             StringWriter writer = new StringWriter();
@@ -62,10 +72,6 @@ public class XMLSerializer implements Serializer {
     
     public Object deserialize(Object xml, Session session) {
         try {
-            if (this.context == null) {
-                String packageName = session.getDescriptors().keySet().iterator().next().getPackage().getName();
-                this.context = JAXBContext.newInstance(packageName);
-            }
             Unmarshaller unmarshaller = this.context.createUnmarshaller();
             StringReader reader = new StringReader((String)xml);
             return unmarshaller.unmarshal(reader);
@@ -73,11 +79,13 @@ public class XMLSerializer implements Serializer {
             throw new RuntimeException(exception);
         }
     }
-    
+
+    @Override
     public Class getType() {
         return String.class;
     }
-    
+
+    @Override
     public String toString() {
         return getClass().getSimpleName();
     }

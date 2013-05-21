@@ -2108,7 +2108,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     property = PersistenceUnitProperties.COORDINATION_SERIALIZER;
                     value = serializer;
                     Class transportClass = findClassForProperty(serializer, PersistenceUnitProperties.COORDINATION_SERIALIZER, loader);
-                    this.session.setSerializer((Serializer)transportClass.newInstance());
+                    rcm.setSerializer((Serializer)transportClass.newInstance());
                 }
                 
                 String naming = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_NAMING_SERVICE, m, this.session);

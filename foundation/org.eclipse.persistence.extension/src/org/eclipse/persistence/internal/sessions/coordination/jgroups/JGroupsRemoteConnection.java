@@ -122,10 +122,9 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
 
         Object object = null;
         try {
-            AbstractSession session = (AbstractSession)this.rcm.getCommandProcessor();
-            Serializer serializer = session.getSerializer();
+            Serializer serializer = this.rcm.getSerializer();
             if (serializer != null) {
-                object = serializer.deserialize(message.getBuffer(), session);
+                object = serializer.deserialize(message.getBuffer(), (AbstractSession)this.rcm.getCommandProcessor());
             } else {
                 object = message.getObject();            
             }

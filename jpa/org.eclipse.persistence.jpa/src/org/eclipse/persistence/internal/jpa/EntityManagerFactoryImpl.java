@@ -52,6 +52,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
@@ -607,19 +608,17 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     /**
-     * ADVANCED:
      * Return if updates should be ordered by primary key to avoid possible database deadlocks.
      */
-    public boolean shouldOrderUpdates() {
-        return delegate.shouldOrderUpdates();
+    public CommitOrderType getCommitOrder() {
+        return delegate.getCommitOrder();
     }
     
     /**
-     * ADVANCED:
      * Set updates should be ordered by primary key to avoid possible database deadlocks.
      */
-    public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
-        delegate.setShouldOrderUpdates(shouldOrderUpdates);
+    public void setCommitOrder(CommitOrderType commitOrder) {
+        delegate.setCommitOrder(commitOrder);
     }
     
     public void addNamedQuery(String name, Query query) {

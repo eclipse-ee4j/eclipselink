@@ -12,12 +12,17 @@
  ******************************************************************************/  
 package org.eclipse.persistence.eis.mappings;
 
-import java.util.*;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.internal.queries.*;
+import java.util.List;
+
 import org.eclipse.persistence.eis.EISCollectionChangeRecord;
 import org.eclipse.persistence.eis.EISOrderedCollectionChangeRecord;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * INTERNAL:
@@ -97,19 +102,19 @@ public class EISOneToManyMappingHelper {
     private ChangeRecord compareAttributeValuesForChangeWithOrder(Object cloneCollection, Object backupCollection, ObjectChangeSet owner, AbstractSession session) {
         ContainerPolicy cp = this.getContainerPolicy();
 
-        Vector cloneVector = cp.vectorFor(cloneCollection, session);// convert it to a Vector so we can preserve the order and use indexes
-        Vector backupVector = cp.vectorFor(backupCollection, session);// "clone" it so we can clear out the slots
+        List cloneVector = cp.vectorFor(cloneCollection, session);// convert it to a Vector so we can preserve the order and use indexes
+        List backupVector = cp.vectorFor(backupCollection, session);// "clone" it so we can clear out the slots
 
         EISOrderedCollectionChangeRecord changeRecord = new EISOrderedCollectionChangeRecord(owner, this.getAttributeName(), this.getDatabaseMapping());
 
         for (int i = 0; i < cloneVector.size(); i++) {
-            Object cloneElement = cloneVector.elementAt(i);
+            Object cloneElement = cloneVector.get(i);
             boolean found = false;
             for (int j = 0; j < backupVector.size(); j++) {
-                if (this.compareElementsForChange(cloneElement, backupVector.elementAt(j), session)) {
+                if (this.compareElementsForChange(cloneElement, backupVector.get(j), session)) {
                     // the clone element was found in the backup collection
                     found = true;
-                    backupVector.setElementAt(XXX, j);// clear out the matching backup element
+                    backupVector.set(j, XXX);// clear out the matching backup element
 
                     changeRecord.addMovedChangeSet(this.buildChangeSet(cloneElement, owner, session), j, i);
                     break;// matching backup element found - skip the rest of them
@@ -122,7 +127,7 @@ public class EISOneToManyMappingHelper {
         }
 
         for (int i = 0; i < backupVector.size(); i++) {
-            Object backupElement = backupVector.elementAt(i);
+            Object backupElement = backupVector.get(i);
             if (backupElement != XXX) {
                 // the backup element was not in the clone collection, so it must have been removed
                 changeRecord.addRemovedChangeSet(this.buildChangeSet(backupElement, owner, session), i);
@@ -144,7 +149,7 @@ public class EISOneToManyMappingHelper {
     private ChangeRecord compareAttributeValuesForChangeWithoutOrder(Object cloneCollection, Object backupCollection, ObjectChangeSet owner, AbstractSession session) {
         ContainerPolicy cp = this.getContainerPolicy();
 
-        Vector backupVector = cp.vectorFor(backupCollection, session);// "clone" it so we can clear out the slots
+        List backupVector = cp.vectorFor(backupCollection, session);// "clone" it so we can clear out the slots
 
         EISCollectionChangeRecord changeRecord = new EISCollectionChangeRecord(owner, this.getAttributeName(), this.getDatabaseMapping());
         for (Object cloneIter = cp.iteratorFor(cloneCollection); cp.hasNext(cloneIter);) {
@@ -152,10 +157,10 @@ public class EISOneToManyMappingHelper {
 
             boolean found = false;
             for (int i = 0; i < backupVector.size(); i++) {
-                if (this.compareElementsForChange(cloneElement, backupVector.elementAt(i), session)) {
+                if (this.compareElementsForChange(cloneElement, backupVector.get(i), session)) {
                     // the clone element was found in the backup collection
                     found = true;
-                    backupVector.setElementAt(XXX, i);// clear out the matching backup element
+                    backupVector.set(i, XXX);// clear out the matching backup element
                     if (this.mapKeyHasChanged(cloneElement, session)) {
                         changeRecord.addChangedMapKeyChangeSet(this.buildChangeSet(cloneElement, owner, session));
                     }
@@ -169,7 +174,7 @@ public class EISOneToManyMappingHelper {
         }
 
         for (int i = 0; i < backupVector.size(); i++) {
-            Object backupElement = backupVector.elementAt(i);
+            Object backupElement = backupVector.get(i);
             if (backupElement != XXX) {
                 // the backup element was not in the clone collection, so it must have been removed
                 changeRecord.addRemovedChangeSet(this.buildChangeSet(backupElement, owner, session));
@@ -208,16 +213,16 @@ public class EISOneToManyMappingHelper {
     private boolean compareAttributeValuesWithoutOrder(Object collection1, Object collection2, AbstractSession session) {
         ContainerPolicy cp = this.getContainerPolicy();
 
-        Vector vector2 = cp.vectorFor(collection2, session);// "clone" it so we can clear out the slots
+        List vector2 = cp.vectorFor(collection2, session);// "clone" it so we can clear out the slots
 
         for (Object iter1 = cp.iteratorFor(collection1); cp.hasNext(iter1);) {
             Object element1 = cp.next(iter1, session);
 
             boolean found = false;
             for (int i = 0; i < vector2.size(); i++) {
-                if (this.compareElements(element1, vector2.elementAt(i), session)) {
+                if (this.compareElements(element1, vector2.get(i), session)) {
                     found = true;
-                    vector2.setElementAt(XXX, i);// clear out the matching element
+                    vector2.set(i, XXX);// clear out the matching element
                     break;// matching element found - skip the rest of them
                 }
             }
@@ -227,8 +232,8 @@ public class EISOneToManyMappingHelper {
         }
 
         // look for elements that were not in collection1
-        for (Enumeration stream = vector2.elements(); stream.hasMoreElements();) {
-            if (stream.nextElement() != XXX) {
+        for (Object value : vector2) {
+            if (value != XXX) {
                 return false;
             }
         }
@@ -364,11 +369,11 @@ public class EISOneToManyMappingHelper {
         ContainerPolicy cp = this.getContainerPolicy();
         AbstractSession session = mergeManager.getSession();
 
-        Vector changes = ((EISOrderedCollectionChangeRecord)changeRecord).getNewCollection();
+        List changes = ((EISOrderedCollectionChangeRecord)changeRecord).getNewCollection();
         Object targetCollection = cp.containerInstance(changes.size());
 
-        for (Enumeration stream = changes.elements(); stream.hasMoreElements();) {
-            Object targetElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
+        for (Object changed : changes) {
+            Object targetElement = buildAddedElementFromChangeSet(changed, mergeManager, targetSession);
             cp.addInto(targetElement, targetCollection, session);
         }
 
@@ -392,13 +397,13 @@ public class EISOneToManyMappingHelper {
             targetCollection = this.getRealCollectionAttributeValueFromObject(target, session);
         }
 
-        Vector removes = sdkChangeRecord.getRemoves();
-        Vector adds = sdkChangeRecord.getAdds();
-        Vector changedMapKeys = sdkChangeRecord.getChangedMapKeys();
+        List removes = sdkChangeRecord.getRemoves();
+        List adds = sdkChangeRecord.getAdds();
+        List changedMapKeys = sdkChangeRecord.getChangedMapKeys();
 
         synchronized (targetCollection) {
-            for (Enumeration stream = removes.elements(); stream.hasMoreElements();) {
-                Object removeElement = this.buildRemovedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
+            for (Object removed : removes) {
+                Object removeElement = buildRemovedElementFromChangeSet(removed, mergeManager, targetSession);
 
                 Object targetElement = null;
                 for (Object iter = cp.iteratorFor(targetCollection); cp.hasNext(iter);) {
@@ -413,13 +418,13 @@ public class EISOneToManyMappingHelper {
                 }
             }
 
-            for (Enumeration stream = adds.elements(); stream.hasMoreElements();) {
-                Object addElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
+            for (Object added : adds) {
+                Object addElement = buildAddedElementFromChangeSet(added, mergeManager, targetSession);
                 cp.addInto(addElement, targetCollection, session);
             }
 
-            for (Enumeration stream = changedMapKeys.elements(); stream.hasMoreElements();) {
-                Object changedMapKeyElement = this.buildAddedElementFromChangeSet(stream.nextElement(), mergeManager, targetSession);
+            for (Object changed : changedMapKeys) {
+                Object changedMapKeyElement = buildAddedElementFromChangeSet(changed, mergeManager, targetSession);
                 Object originalElement = ((UnitOfWorkImpl)session).getOriginalVersionOfObject(changedMapKeyElement);
                 cp.removeFrom(originalElement, targetCollection, session);
                 cp.addInto(changedMapKeyElement, targetCollection, session);
@@ -427,7 +432,7 @@ public class EISOneToManyMappingHelper {
         }
 
         // reset the attribute to allow for set method to re-morph changes if the collection is not being stored directly
-        this.setRealAttributeValueInObject(target, targetCollection);
+        setRealAttributeValueInObject(target, targetCollection);
     }
 
     /**
@@ -448,14 +453,14 @@ public class EISOneToManyMappingHelper {
         }
 
         // reset the attribute to allow for set method to re-morph changes if the collection is not being stored directly
-        this.setRealAttributeValueInObject(target, targetCollection);
+        setRealAttributeValueInObject(target, targetCollection);
     }
 
     /**
      * Convenience method.
      */
     private void setRealAttributeValueInObject(Object object, Object attributeValue) {
-        this.getMapping().setRealAttributeValueInObject(object, attributeValue);
+        getMapping().setRealAttributeValueInObject(object, attributeValue);
     }
 
     /**

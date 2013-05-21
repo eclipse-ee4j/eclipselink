@@ -37,7 +37,40 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
  * <p>
  */
 public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet>, org.eclipse.persistence.sessions.changesets.ObjectChangeSet {
-
+    /** Allow change sets to be compared by changes for batching. */
+    public static class ObjectChangeSetComparator implements Comparator {
+        /**
+         * Determine if the receiver is greater or less than the change set.
+         */
+        public int compare(Object object1, Object object2) {
+            if (object1 == object2) {
+                return 0;
+            }
+            ObjectChangeSet left = (ObjectChangeSet)object1;
+            ObjectChangeSet right = (ObjectChangeSet)object2;
+            // Sort by changes to keep same SQL together for batching.
+            if ((left.changes != null) && right.changes != null) {
+                int size = left.changes.size();
+                List otherChanges = right.changes;
+                int otherSize = otherChanges.size();
+                if (size > otherSize) {
+                    return 1;
+                } else if (size < otherSize) {
+                    return -1;
+                }
+                for (int index = 0; index < size; index++) {
+                    ChangeRecord record = (ChangeRecord)left.changes.get(index);
+                    ChangeRecord otherRecord = (ChangeRecord)otherChanges.get(index);
+                    int compare = record.getAttribute().compareTo(otherRecord.getAttribute());
+                    if (compare != 0) {
+                        return compare;
+                    }
+                }
+            }
+            return left.compareTo(right);
+        }
+    }
+        
     /** This is the collection of changes */
     protected List<org.eclipse.persistence.sessions.changesets.ChangeRecord> changes;
     protected transient Map<String, ChangeRecord> attributesToChanges;
@@ -1046,6 +1079,18 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Helper method to readObject.  Completely write this ObjectChangeSet to the stream
      */
     public void writeCompleteChangeSet(java.io.ObjectOutputStream stream) throws java.io.IOException {
+        ensureChanges();
+        writeIdentityInformation(stream);
+        stream.writeObject(this.changes);
+        stream.writeObject(this.oldKey);
+        stream.writeObject(this.newKey);
+    }
+
+    /**
+     * INTERNAL:
+     * Ensure the change set is populated for cache coordination.
+     */
+    public void ensureChanges() {
         if (this.isNew && ((this.changes == null) || this.changes.isEmpty())) {
             AbstractSession unitOfWork = this.unitOfWorkChangeSet.getSession();
             // Full change set is only required for cache coordination, not remote.
@@ -1060,17 +1105,13 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                     int mappingsSize = mappings.size();
                     for (int index = 0; index < mappingsSize; index++) {
                         DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                        if(fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
+                        if (fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                             addChange(mapping.compareForChange(this.cloneObject, this.cloneObject, this, unitOfWork));
                         }
                     }
                 }
             }
         }
-        writeIdentityInformation(stream);
-        stream.writeObject(this.changes);
-        stream.writeObject(this.oldKey);
-        stream.writeObject(this.newKey);
     }
 
     /**
@@ -1259,6 +1300,26 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      */
     public void setShouldRecalculateAfterUpdateEvent(boolean shouldRecalculateAfterUpdateEvent) {
         this.shouldRecalculateAfterUpdateEvent = shouldRecalculateAfterUpdateEvent;
+    }
+
+    public boolean hasVersionChange() {
+        return hasVersionChange;
+    }
+
+    public void setHasVersionChange(boolean hasVersionChange) {
+        this.hasVersionChange = hasVersionChange;
+    }
+
+    public int getCacheSynchronizationType() {
+        return cacheSynchronizationType;
+    }
+
+    public void setCacheSynchronizationType(int cacheSynchronizationType) {
+        this.cacheSynchronizationType = cacheSynchronizationType;
+    }
+
+    public void setIsInvalid(boolean isInvalid) {
+        this.isInvalid = isInvalid;
     }
 
 }

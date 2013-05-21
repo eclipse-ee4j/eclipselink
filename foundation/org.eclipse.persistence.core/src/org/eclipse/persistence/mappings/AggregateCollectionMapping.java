@@ -164,6 +164,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isRelationalMapping() {
         return true;
     }
@@ -176,6 +177,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * aggregate collection case, this is not supported and currently silently
      * ignored and does nothing.
      */
+    @Override
     public void addOverrideManyToManyMapping(ManyToManyMapping mapping) {
         // Not supported at this time ...
     }
@@ -188,6 +190,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * an aggregate collection case, this is not supported and currently 
      * silently ignored and does nothing.
      */
+    @Override
     public void addOverrideUnidirectionalOneToManyMapping(UnidirectionalOneToManyMapping mapping) {
         // Not supported at this time ...
     }
@@ -195,6 +198,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * Add a converter to be applied to a mapping of the aggregate descriptor.
      */
+    @Override
     public void addConverter(Converter converter, String attributeName) {
         // Not supported at this time ...
     }
@@ -290,6 +294,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Used during building the backup shallow copy to copy the vector without re-registering the target objects.
      */
+    @Override
     public Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         ContainerPolicy containerPolicy = getContainerPolicy();
         if (attributeValue == null) {
@@ -383,6 +388,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Clone the aggregate collection, if necessary.
      */
+    @Override
     public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache) {
         // Do not clone for read-only.
         if (cloningSession.isUnitOfWork() && cloningSession.isClassReadOnly(element.getClass(), getReferenceDescriptor())) {
@@ -419,6 +425,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Cascade discover and persist new objects during commit.
      */
+    @Override
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         //aggregate objects are not registered but their mappings should be.
         Object cloneAttribute = null;
@@ -447,6 +454,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // Aggregate objects are not registered but their mappings should be.
         Object attributeValue = getAttributeValueFromObject(object);
@@ -477,6 +485,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
+    @Override
     public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects){
         //aggregate objects are not registered but their mappings should be.
         Object cloneAttribute = getAttributeValueFromObject(object);
@@ -514,6 +523,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Cascade perform removal of orphaned private owned objects from the UnitOfWorkChangeSet
      */
+    @Override
     public void cascadePerformRemovePrivateOwnedObjectFromChangeSetIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         // if the object is not instantiated, do not instantiate or cascade
         Object attributeValue = getAttributeValueFromObject(object);
@@ -535,6 +545,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * The mapping clones itself to create deep copy.
      */
+    @Override
     public Object clone() {
         AggregateCollectionMapping mappingObject = (AggregateCollectionMapping)super.clone();
         mappingObject.setTargetForeignKeyToSourceKeys(new HashMap(getTargetForeignKeyToSourceKeys()));
@@ -560,6 +571,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * This method is used to create a change record from comparing two aggregate collections
      * @return ChangeRecord
      */
+    @Override
     public ChangeRecord compareForChange(Object clone, Object backUp, ObjectChangeSet owner, AbstractSession session) {
         Object cloneAttribute = null;
         Object backUpAttribute = null;
@@ -645,14 +657,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Determine if an AggregateCollection that is contained as a map has changed by comparing the values in the
      * clone to the values in the backup.
-     * @param cloneObjectCollection
-     * @param backUpCollection
-     * @param session
-     * @return
      */
     protected boolean compareMapCollectionForChange(Map cloneObjectCollection, Map backUpCollection, AbstractSession session){
         HashMap originalKeyValues = new HashMap(10);
-        HashMap cloneKeyValues = new HashMap(10);
 
         Object backUpIter = containerPolicy.iteratorFor(backUpCollection);
         while (containerPolicy.hasNext(backUpIter)) {// Make a lookup of the objects
@@ -690,6 +697,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Old and new lists are compared and only the changes are written to the database.
      * Called only if listOrderField != null
      */
+    @Override
     protected void compareListsAndWrite(List previousList, List currentList, WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if(this.isListOrderFieldUpdatable) {
             compareListsAndWrite_UpdatableListOrderField(previousList, currentList, query);
@@ -1035,6 +1043,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Compare the attributes belonging to this mapping for the objects.
      */
+    @Override
     public boolean compareObjects(Object firstObject, Object secondObject, AbstractSession session) {
         Object firstCollection = getRealCollectionAttributeValueFromObject(firstObject, session);
         Object secondCollection = getRealCollectionAttributeValueFromObject(secondObject, session);
@@ -1175,6 +1184,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
+    @Override
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return valueFromRow(dbRow, null, query, parentCacheKey, query.getExecutionSession(), isTargetProtected, null);
     }
@@ -1334,6 +1344,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.  
      */
+    @Override
     protected ModifyQuery getDeleteAllQuery() {
         if (deleteAllQuery == null) {
             deleteAllQuery = new DeleteAllQuery();//this is casted to a DeleteAllQuery
@@ -1348,6 +1359,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * #getReferenceDescriptor(Object). This will ensure you get the right descriptor if the object's
      * descriptor is part of an inheritance tree.
      */
+    @Override
     public ClassDescriptor getReferenceDescriptor() {
         if (referenceDescriptor == null) {
             referenceDescriptor = remoteReferenceDescriptor;
@@ -1463,6 +1475,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * after that mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         if (session.hasBroker()) {
             if (getReferenceClass() == null) {
@@ -1525,6 +1538,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * Initialize and set the descriptor for the referenced class in this mapping.
      */
+    @Override
     protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
         super.initializeReferenceDescriptor(session);
         
@@ -1689,6 +1703,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Clone and prepare the JoinedAttributeManager nested JoinedAttributeManager.
      * This is used for nested joining as the JoinedAttributeManager passed to the joined build object.
      */
+    @Override
     public ObjectLevelReadQuery prepareNestedJoins(JoinedAttributeManager joinManager, ObjectBuildingQuery baseQuery, AbstractSession session) {
         ObjectLevelReadQuery nestedQuery = super.prepareNestedJoins(joinManager, baseQuery, session);
         nestedQuery.setShouldMaintainCache(false);
@@ -2015,6 +2030,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Iterate on the specified element.
      */
+    @Override
     public void iterateOnElement(DescriptorIterator iterator, Object element) {
         // CR#... Aggregate collections must iterate as aggregates, not regular mappings.
         // For some reason the element can be null, this makes absolutely no sense, but we have a test case for it...
@@ -2026,6 +2042,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isAggregateCollectionMapping() {
         return true;
     }
@@ -2042,6 +2059,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Return if this mapping support joining.
      */
+    @Override
     public boolean isJoiningSupported() {
         return true;
     }
@@ -2049,6 +2067,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isOwned(){
         return true;
     }
@@ -2066,6 +2085,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Because this is a collection mapping, values are added to or removed from the
      * collection based on the changeset
      */
+    @Override
     public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()){
             if (!this.isCacheable && !targetSession.isProtectedSession()){
@@ -2101,13 +2121,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
 
         // iterate over the changes and merge the collections
-        Vector aggregateObjects = ((AggregateCollectionChangeRecord)changeRecord).getChangedValues();
+        List<ObjectChangeSet> aggregateObjects = ((AggregateCollectionChangeRecord)changeRecord).getChangedValues();
         int size = aggregateObjects.size();
         valueOfTarget = containerPolicy.containerInstance(size);
         // Next iterate over the changes and add them to the container
         ObjectChangeSet objectChanges = null;
         for (int index = 0; index < size; ++index) {
-            objectChanges = (ObjectChangeSet)aggregateObjects.elementAt(index);
+            objectChanges = aggregateObjects.get(index);
             Class localClassType = objectChanges.getClassType(session);
             sourceAggregate = objectChanges.getUnitOfWorkClone();
 
@@ -2128,6 +2148,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
+    @Override
     public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
         if (this.descriptor.getCachePolicy().isProtectedIsolation()) {
             if (!this.isCacheable && !targetSession.isProtectedSession()){
@@ -2188,6 +2209,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * An object was added to the collection during an update, insert it if private.
      */
+    @Override
     protected void objectAddedDuringUpdate(ObjectLevelModifyQuery query, Object objectAdded, ObjectChangeSet changeSet, Map extraData) throws DatabaseException, OptimisticLockException {
         // Insert must not be done for uow or cascaded queries and we must cascade to cascade policy.
         InsertObjectQuery insertQuery = getAndPrepareModifyQueryForInsert(query, objectAdded);
@@ -2202,6 +2224,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * An object was removed to the collection during an update, delete it if private.
      */
+    @Override
     protected void objectRemovedDuringUpdate(ObjectLevelModifyQuery query, Object objectDeleted, Map extraData) throws DatabaseException, OptimisticLockException {
         // Delete must not be done for uow or cascaded queries and we must cascade to cascade policy.
         DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
@@ -2248,6 +2271,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * after that the aggregate mapping never uses it.
      * Some initialization is done in postInitialize to ensure the target descriptor's references are initialized.
      */
+    @Override
     public void postInitialize(AbstractSession session) throws DescriptorException {
         super.postInitialize(session);
 
@@ -2278,6 +2302,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Insert privately owned parts
      */
+    @Override
     public void postInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (isReadOnly()) {
             return;
@@ -2305,6 +2330,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Update the privately owned parts
      */
+    @Override
     public void postUpdate(WriteObjectQuery writeQuery) throws DatabaseException, OptimisticLockException {
         if (this.isReadOnly) {
             return;
@@ -2322,6 +2348,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Delete privately owned parts
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (isReadOnly()) {
             return;
@@ -2369,6 +2396,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * The message is passed to its reference class descriptor.
      */
+    @Override
     public void preInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (isReadOnly()) {
             return;
@@ -2505,6 +2533,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Set the referenceDescriptor. This is a descriptor which is associated with
      * the reference class.
      */
+    @Override
     protected void setReferenceDescriptor(ClassDescriptor aDescriptor) {
         this.referenceDescriptor = aDescriptor;
         this.remoteReferenceDescriptor = this.referenceDescriptor;
@@ -2562,6 +2591,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Returns true as any process leading to object modification should also affect its privately owned parts
      * Usually used by write, insert, update and delete.
      */
+    @Override
     protected boolean shouldObjectModifyCascadeToParts(ObjectLevelModifyQuery query) {
         if (isReadOnly()) {
             return false;
@@ -2576,6 +2606,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * The referenceKey parameter should only be used for direct Maps. PLEASE ENSURE that the changes
      * have been made in the object model first.
      */
+    @Override
     public void simpleAddToCollectionChangeRecord(Object referenceKey, Object changeSetToAdd, ObjectChangeSet changeSet, AbstractSession session) {
         AggregateCollectionChangeRecord collectionChangeRecord = (AggregateCollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
         if (collectionChangeRecord == null) {
@@ -2586,7 +2617,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, containerPolicy.containerInstance(), changeSet, session);
             changeSet.addChange(collectionChangeRecord);
         } else {
-            collectionChangeRecord.getChangedValues().add(changeSetToAdd);
+            collectionChangeRecord.getChangedValues().add((ObjectChangeSet)changeSetToAdd);
         }
     }
 
@@ -2596,6 +2627,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * The referenceKey parameter should only be used for direct Maps.  PLEASE ENSURE that the changes
      * have been made in the object model first.
      */
+    @Override
     public void simpleRemoveFromCollectionChangeRecord(Object referenceKey, Object changeSetToRemove, ObjectChangeSet changeSet, AbstractSession session) {
         AggregateCollectionChangeRecord collectionChangeRecord = (AggregateCollectionChangeRecord)changeSet.getChangesForAttributeNamed(this.getAttributeName());
 
@@ -2615,6 +2647,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Checks if object is deleted from the database or not.
      */
+    @Override
     public boolean verifyDelete(Object object, AbstractSession session) throws DatabaseException {
         // Row is built for translation
         if (isReadOnly()) {
@@ -2628,7 +2661,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     /**
-     *    Verifying deletes make sure that all the records privately owned by this mapping are
+     * Verifying deletes make sure that all the records privately owned by this mapping are
      * actually removed. If such records are found than those are all read and removed one
      * by one taking their privately owned parts into account.
      */
@@ -2647,6 +2680,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * AggregateCollection contents should not be considered for addition to the UnitOfWork
      * private owned objects list for removal.
      */
+    @Override
     public boolean isCandidateForPrivateOwnedRemoval() {
         return false;
     }
@@ -2655,6 +2689,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL
      * Return true if this mapping supports cascaded version optimistic locking.
      */
+    @Override
     public boolean isCascadedLockingSupported() {
         return true;
     }
@@ -2663,6 +2698,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Return if this mapping supports change tracking.
      */
+    @Override
     public boolean isChangeTrackingSupported(Project project) {
         return false;
     }
@@ -2673,6 +2709,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Usually the mappings are initialized and the serialized reference descriptors are replaced with local descriptors
      * if they already exist in the remote session.
      */
+    @Override
     public void remoteInitialization(DistributedSession session) {
         super.remoteInitialization(session);
         getReferenceDescriptor().remoteInitialization(session);

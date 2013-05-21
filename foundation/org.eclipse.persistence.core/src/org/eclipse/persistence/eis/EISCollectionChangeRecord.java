@@ -12,9 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.eis;
 
-import java.util.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.internal.sessions.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * INTERNAL:
@@ -24,13 +27,13 @@ import org.eclipse.persistence.internal.sessions.*;
 public class EISCollectionChangeRecord extends CollectionChangeRecord implements org.eclipse.persistence.sessions.changesets.EISCollectionChangeRecord {
 
     /** The added stuff. */
-    private Vector adds;
+    private List adds;
 
     /** The removed stuff. */
-    private Vector removes;
+    private List removes;
 
     /** The stuff whose Map keys have changed. */
-    private Vector changedMapKeys;
+    private List changedMapKeys;
 
     /**
      * Construct a ChangeRecord that can be used to represent the changes to
@@ -47,21 +50,21 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * Add an added change set.
      */
     public void addAddedChangeSet(Object changeSet) {
-        this.getAdds().addElement(changeSet);
+        getAdds().add(changeSet);
     }
 
     /**
      * Add an changed key change set.
      */
     public void addChangedMapKeyChangeSet(Object changeSet) {
-        this.getChangedMapKeys().addElement(changeSet);
+        getChangedMapKeys().add(changeSet);
     }
 
     /**
      * Add an removed change set.
      */
     public void addRemovedChangeSet(Object changeSet) {
-        this.getRemoves().addElement(changeSet);
+        getRemoves().add(changeSet);
     }
 
     /**
@@ -70,9 +73,9 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public Vector getAdds() {
+    public List getAdds() {
         if (adds == null) {
-            adds = new Vector(1);// keep it as small as possible
+            adds = new ArrayList(2);// keep it as small as possible
         }
         return adds;
     }
@@ -83,9 +86,9 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public Vector getChangedMapKeys() {
+    public List getChangedMapKeys() {
         if (changedMapKeys == null) {
-            changedMapKeys = new Vector(1);// keep it as small as possible
+            changedMapKeys = new ArrayList(2);// keep it as small as possible
         }
         return changedMapKeys;
     }
@@ -96,9 +99,9 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public Vector getRemoves() {
+    public List getRemoves() {
         if (removes == null) {
-            removes = new Vector(1);// keep it as small as possible
+            removes = new ArrayList(2);// keep it as small as possible
         }
         return removes;
     }
@@ -108,7 +111,7 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * Directly reference the instance variable, so as to not trigger the lazy instantiation.
      */
     private boolean hasAdds() {
-        return (adds != null) && (!adds.isEmpty());
+        return (this.adds != null) && (!this.adds.isEmpty());
     }
 
     /**
@@ -116,14 +119,14 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * Directly reference the instance variable, so as to not trigger the lazy instantiation.
      */
     private boolean hasChangedMapKeys() {
-        return (changedMapKeys != null) && (!changedMapKeys.isEmpty());
+        return (this.changedMapKeys != null) && (!this.changedMapKeys.isEmpty());
     }
 
     /**
      * Return whether any changes have been recorded with the change record.
      */
     public boolean hasChanges() {
-        return this.hasAdds() || this.hasRemoves() || this.hasChangedMapKeys() || this.getOwner().isNew();
+        return hasAdds() || hasRemoves() || hasChangedMapKeys() || getOwner().isNew();
     }
 
     /**
@@ -131,7 +134,7 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * Directly reference the instance variable, so as to not trigger the lazy instantiation.
      */
     private boolean hasRemoves() {
-        return (removes != null) && (!removes.isEmpty());
+        return (this.removes != null) && (!this.removes.isEmpty());
     }
 
     /**
@@ -139,10 +142,10 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * Return true if it was actually removed from the collection.
      */
     private boolean removeAddedChangeSet(Object changeSet) {
-        if (adds == null) {
+        if (this.adds == null) {
             return false;
         } else {
-            return adds.remove(changeSet);
+            return this.adds.remove(changeSet);
         }
     }
 
@@ -151,10 +154,10 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      * Return true if it was actually removed from the collection.
      */
     private boolean removeRemovedChangeSet(Object changeSet) {
-        if (removes == null) {
+        if (this.removes == null) {
             return false;
         } else {
-            return removes.remove(changeSet);
+            return this.removes.remove(changeSet);
         }
     }
 
@@ -163,8 +166,8 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      */
     public void simpleAddChangeSet(Object changeSet) {
         // check whether the change set was removed earlier
-        if (!this.removeRemovedChangeSet(changeSet)) {
-            this.addAddedChangeSet(changeSet);
+        if (!removeRemovedChangeSet(changeSet)) {
+            addAddedChangeSet(changeSet);
         }
     }
 
@@ -173,8 +176,8 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
      */
     public void simpleRemoveChangeSet(Object changeSet) {
         // check whether the change set was added earlier
-        if (!this.removeAddedChangeSet(changeSet)) {
-            this.addRemovedChangeSet(changeSet);
+        if (!removeAddedChangeSet(changeSet)) {
+            addRemovedChangeSet(changeSet);
         }
     }
 }

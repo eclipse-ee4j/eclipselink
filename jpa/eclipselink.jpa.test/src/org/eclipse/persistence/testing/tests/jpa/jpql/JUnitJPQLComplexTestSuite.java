@@ -290,6 +290,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testNestedArrays2");
         tests.add("testNoSelect");
         tests.add("testHierarchicalClause");
+        tests.add("testAsOfClause");
         tests.add("testDeleteWithUnqualifiedPathExpression");
         tests.add("testElementCollectionInLikeExpression");
 
@@ -4550,6 +4551,23 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("Select e from Employee e join e.manager m connect by m.manager where e.salary > 100");
         query.getResultList();
         query = em.createQuery("Select e from Employee e start with e.salary > 1000 connect by e.manager order siblings by e.firstName");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // Test As OF selects.
+    public void testAsOfClause() {
+        if (!getPlatform().isOracle()) {
+            warning("AS OF only supported on Oracle.");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        Number scn = (Number)em.createNativeQuery("select dbms_flashback.get_system_change_number from dual").getSingleResult();
+        Query query = em.createQuery("Select e from Employee e as of scn :scn");
+        query.setParameter("scn", scn);
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e as of :date");
+        query.setParameter("date", Calendar.getInstance());
         query.getResultList();
         closeEntityManager(em);
     }
