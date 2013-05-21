@@ -2017,7 +2017,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (isARefresh && fetchGroupManager != null) {
                 fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
             }
-            if (descriptor.getCachePolicy().isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()){
+            if (!unitOfWork.wasTransactionBegunPrematurely() && descriptor.getCachePolicy().isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()) {
                 // we are at this point because we have isolated protected entities to the UnitOfWork
                 // we should ensure that we populate the cache as well.
                 originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, unitOfWork.getParentIdentityMapSession(descriptor, false, true), primaryKey, preFetchedCacheKey, descriptor, joinManager);
