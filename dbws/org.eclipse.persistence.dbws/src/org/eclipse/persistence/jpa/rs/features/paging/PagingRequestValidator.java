@@ -22,19 +22,18 @@ import javax.ws.rs.core.UriInfo;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.SystemDefaults;
-import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidator;
-import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidatorUtil;
+import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidatorImpl;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
-public class PagingRequestValidator extends FeatureRequestValidatorUtil implements FeatureRequestValidator {
+public class PagingRequestValidator extends FeatureRequestValidatorImpl {
     private String offset = null;
     private String limit = null;
     public static String DB_QUERY = "dbQuery";
     public static String QUERY = "query";
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureRequestValidator#isRequestUriValid(javax.ws.rs.core.UriInfo)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureRequestValidatorImpl#isRequestValid(javax.ws.rs.core.UriInfo, java.util.Map)
      */
     @Override
     public boolean isRequestValid(UriInfo uri, Map<String, Object> additionalParams) {
@@ -107,7 +106,7 @@ public class PagingRequestValidator extends FeatureRequestValidatorUtil implemen
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureRequestValidator#isRequested(javax.ws.rs.core.UriInfo, java.util.Map)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureRequestValidatorImpl#isRequested(javax.ws.rs.core.UriInfo, java.util.Map)
      */
     @Override
     public boolean isRequested(UriInfo uri, Map<String, Object> additionalParams) {

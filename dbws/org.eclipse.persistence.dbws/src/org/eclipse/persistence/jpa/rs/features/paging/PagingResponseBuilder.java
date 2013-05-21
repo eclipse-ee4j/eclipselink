@@ -28,15 +28,14 @@ import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
-import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
-import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderUtil;
+import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.list.PagedCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 
-public class PagingResponseBuilder extends FeatureResponseBuilderUtil implements FeatureResponseBuilder {
+public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     private static String NO_PREVIOUS_CHUNK = "-1";
 
     /* (non-Javadoc)

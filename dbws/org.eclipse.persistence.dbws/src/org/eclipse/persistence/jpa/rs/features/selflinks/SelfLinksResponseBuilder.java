@@ -26,14 +26,13 @@ import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
-import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
-import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderUtil;
+import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 
-public class SelfLinksResponseBuilder extends FeatureResponseBuilderUtil implements FeatureResponseBuilder {
+public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
 
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)

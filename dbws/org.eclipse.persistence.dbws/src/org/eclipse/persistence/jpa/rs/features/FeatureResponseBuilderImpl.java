@@ -1,0 +1,94 @@
+package org.eclipse.persistence.jpa.rs.features;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
+import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+
+public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
+     */
+    @Override
+    public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
+        return items;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildReportQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, java.util.List, javax.ws.rs.core.UriInfo)
+     */
+    @Override
+    public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
+        if ((results != null) && (!results.isEmpty())) {
+            ReportQueryResultList list = populateReportQueryResultList(results, items);
+            return list;
+        } else {
+            return results;
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private ReportQueryResultList populateReportQueryResultList(List<Object[]> results, List<ReportItem> reportItems) {
+        ReportQueryResultList response = new ReportQueryResultList();
+        for (Object result : results) {
+            ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
+            List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems, result);
+            if (jaxbFields == null) {
+                return null;
+            }
+            queryResultListItem.setFields(jaxbFields);
+            response.addItem(queryResultListItem);
+        }
+        return response;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
+        List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
+        if ((reportItems != null) && (reportItems.size() > 0)) {
+            for (int index = 0; index < reportItems.size(); index++) {
+                ReportItem reportItem = reportItems.get(index);
+                Object reportItemValue = record;
+                if (record instanceof Object[]) {
+                    reportItemValue = ((Object[]) record)[index];
+                }
+                Class reportItemValueType = null;
+                if (reportItemValue != null) {
+                    reportItemValueType = reportItemValue.getClass();
+                }
+                if (reportItemValueType == null) {
+                    // try other paths to determine the type of the report item
+                    DatabaseMapping dbMapping = reportItem.getMapping();
+                    if (dbMapping != null) {
+                        reportItemValueType = dbMapping.getAttributeClassification();
+                    } else {
+                        ClassDescriptor desc = reportItem.getDescriptor();
+                        if (desc != null) {
+                            reportItemValueType = desc.getJavaClass();
+                        }
+                    }
+                }
+
+                // so, we couldn't determine the type of the report item, stop here...
+                if (reportItemValueType == null) {
+                    return null;
+                }
+
+                JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValueType, reportItemValue);
+                jaxbElements.add(reportItem.getResultIndex(), element);
+            }
+        }
+        return jaxbElements;
+    }
+}

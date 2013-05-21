@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features;
 
-import org.eclipse.persistence.jpa.rs.features.generic.GenericRequestValidator;
-import org.eclipse.persistence.jpa.rs.features.generic.GenericResponseBuilder;
 
 public class FeatureSetPreV2 implements FeatureSet {
 
@@ -40,7 +38,7 @@ public class FeatureSetPreV2 implements FeatureSet {
             case NO_PAGING:
             case PAGING:
             default:
-                return new GenericRequestValidator();
+                return new FeatureRequestValidatorImpl();
         }
     }
 
@@ -53,7 +51,7 @@ public class FeatureSetPreV2 implements FeatureSet {
             case NO_PAGING:
             case PAGING:
             default:
-                return new GenericResponseBuilder();
+                return new FeatureResponseBuilderImpl();
         }
     }
 }

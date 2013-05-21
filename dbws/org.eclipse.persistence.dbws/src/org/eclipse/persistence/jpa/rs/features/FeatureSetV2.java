@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features;
 
-import org.eclipse.persistence.jpa.rs.features.generic.GenericRequestValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PagingRequestValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PagingResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.selflinks.SelfLinksResponseBuilder;
@@ -42,7 +41,7 @@ public class FeatureSetV2 implements FeatureSet {
             case PAGING:
                 return new PagingRequestValidator();
             default:
-                return new GenericRequestValidator();
+                return new FeatureRequestValidatorImpl();
         }
     }
 
