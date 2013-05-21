@@ -24,9 +24,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
@@ -39,7 +38,9 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
  * @author Matt MacIvor
  * @since EclipseLink 2.5
  */
-public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implements Serializable, Cloneable {
+public class CoreAttributeGroup<
+    ATTRIBUTE_ITEM extends CoreAttributeItem,
+    DESCRIPTOR extends CoreDescriptor> implements Serializable, Cloneable {
     /**
      * Name of the group. This is used in subclasses where the groups are stored
      * and can be used within a query by name as with FetchGroup. For dynamic
@@ -205,7 +206,7 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
     }
     
     public CoreAttributeGroup clone() {
-       Map<CoreAttributeGroup<ATTRIBUTE_ITEM>, CoreAttributeGroup<ATTRIBUTE_ITEM>> cloneMap = new IdentityHashMap<CoreAttributeGroup<ATTRIBUTE_ITEM>, CoreAttributeGroup<ATTRIBUTE_ITEM>>();
+       Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap = new IdentityHashMap<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>>();
        return clone(cloneMap);
     }
     
@@ -215,7 +216,7 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
      * @param cloneMap
      * @return
      */    
-    public CoreAttributeGroup clone(Map<CoreAttributeGroup<ATTRIBUTE_ITEM>, CoreAttributeGroup<ATTRIBUTE_ITEM>> cloneMap){
+    public CoreAttributeGroup clone(Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap){
         CoreAttributeGroup clone = cloneMap.get(this);
         if (clone != null) {
             return clone;
@@ -248,7 +249,7 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
         // all attributes and nested groups should be cloned, too
         clone.items = null;
         if (hasItems()) {
-            clone.items = new HashMap<String, AttributeItem>();
+            clone.items = new HashMap<String, ATTRIBUTE_ITEM>();
             for (ATTRIBUTE_ITEM item : this.items.values()){
                 clone.items.put(item.getAttributeName(), item.clone(cloneMap, clone));
             }
@@ -357,7 +358,7 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
                 }
                 this.allsubclasses = allGroups;
                 for (CoreAttributeGroup subClass : allsubclasses.values()){
-                    if (AttributeItem.orderInheritance(subClass, allGroups)){
+                    if (CoreAttributeItem.orderInheritance(subClass, allGroups)){
                         this.insertSubClass(subClass);
                     }
                 }
@@ -407,14 +408,14 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
         }
     }
 
-    public CoreAttributeGroup findGroup(ClassDescriptor type){
+    public CoreAttributeGroup findGroup(DESCRIPTOR type){
         if (this.type == null || this.type.equals(type.getJavaClass())){
             return this;
         }
         if (this.hasInheritance()){
             CoreAttributeGroup result = getSubClassGroups().get(type.getJavaClass());
             while (result == null && type.getInheritancePolicy().getParentDescriptor() != null){
-                type = type.getInheritancePolicy().getParentDescriptor();
+                type = (DESCRIPTOR) type.getInheritancePolicy().getParentDescriptor();
                 result = getSubClassGroups().get(type.getJavaClass());
             }
             if (result != null){
@@ -484,7 +485,7 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
      */
     protected ATTRIBUTE_ITEM getItem(String[] attributePath, boolean create) {
         ATTRIBUTE_ITEM item = null;
-        CoreAttributeGroup<ATTRIBUTE_ITEM> currentGroup = (CoreAttributeGroup) this;
+        CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> currentGroup = (CoreAttributeGroup) this;
 
         for (int index = 0; index < attributePath.length; index++) {
             String attrName = attributePath[index];
@@ -626,7 +627,7 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
      * Return true if this AttributeGroup is a super-set of the passed in
      * AttributeGroup.
      */
-    public boolean isSupersetOf(CoreAttributeGroup<ATTRIBUTE_ITEM> anotherGroup) {
+    public boolean isSupersetOf(CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> anotherGroup) {
         // TODO: should handle the case when the current group has all
         // attributes - then its equivalent to null
         if (anotherGroup == null) {
@@ -643,8 +644,8 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
                         if (item == null) {
                             return false;
                         }
-                        CoreAttributeGroup<ATTRIBUTE_ITEM> group = item.getGroup();
-                        CoreAttributeGroup<ATTRIBUTE_ITEM> otherGroup = otherItemEntry.getValue().getGroup();
+                        CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> group = item.getGroup();
+                        CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> otherGroup = otherItemEntry.getValue().getGroup();
                         if (group != null) {
                             if (!group.isSupersetOf(otherGroup)) {
                                 return false;
@@ -670,8 +671,8 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
                                 return true;
                             }
                             for (Object next : item.getGroups().values()){
-                                CoreAttributeGroup<ATTRIBUTE_ITEM> element = (CoreAttributeGroup<ATTRIBUTE_ITEM>)next;
-                                CoreAttributeGroup<ATTRIBUTE_ITEM> otherElement = (CoreAttributeGroup<ATTRIBUTE_ITEM>)otherItemEntry.getValue().getGroups().get(element.getType());
+                                CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> element = (CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>)next;
+                                CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR> otherElement = (CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>)otherItemEntry.getValue().getGroups().get(element.getType());
                                 if (!element.isSupersetOf(otherElement)) {
                                     return false;
                                 }
@@ -718,7 +719,7 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
      * Subclass may create different types.
      */
     protected CoreAttributeGroup newGroup(String name, CoreAttributeGroup parent) {
-        return new CoreAttributeGroup<CoreAttributeItem>(name);
+        return new CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>(name);
     }
     
     /**

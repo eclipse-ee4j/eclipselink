@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
@@ -75,7 +75,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
                 type = keyGroup.getTypeName();
             }
             if (type == null){
-                type = ClassConstants.Object_Class;
+                type = CoreClassConstants.OBJECT;
                 if (this.keyGroups.containsKey(type)){
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("only_one_root_subgraph"));
                 }
@@ -107,7 +107,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
                 type = group.getTypeName();
             }
             if (type == null){
-                type = ClassConstants.Object_Class;
+                type = CoreClassConstants.OBJECT;
                 if (this.subGroups.containsKey(type)){
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("only_one_root_subgraph"));
                 }
@@ -263,7 +263,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             return null;
         }
         ATTRIBUTE_GROUP result = this.subGroups.get(type);
-        while(result == null && !type.equals(ClassConstants.Object_Class)){
+        while(result == null && !type.equals(CoreClassConstants.OBJECT)){
             type = type.getSuperclass();
             if (type == null){
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type, this.attributeName}));
@@ -281,7 +281,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         if (this.keyGroups == null){
             return null;
         }
-        return this.keyGroups.get(ClassConstants.Object_Class);
+        return this.keyGroups.get(CoreClassConstants.OBJECT);
     }
 
     public ATTRIBUTE_GROUP getKeyGroup(Class type) {
@@ -289,7 +289,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
             return null;
         }
         ATTRIBUTE_GROUP result = this.keyGroups.get(type);
-        while(result == null && !type.equals(ClassConstants.Object_Class)){
+        while(result == null && !type.equals(CoreClassConstants.OBJECT)){
             type = type.getSuperclass();
             if (type == null){
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type, this.attributeName}));
@@ -317,7 +317,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         Class type = group.getType();
         if (type != null){
             CoreAttributeGroup superClass = null;
-            while (!type.equals(ClassConstants.Object_Class) && superClass == null){
+            while (!type.equals(CoreClassConstants.OBJECT) && superClass == null){
                 type = type.getSuperclass();
                 superClass = subGroups.get(type);
             }

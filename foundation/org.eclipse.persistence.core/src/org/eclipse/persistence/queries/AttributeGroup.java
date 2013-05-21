@@ -48,7 +48,7 @@ import org.eclipse.persistence.sessions.CopyGroup;
  * @author ailitchev
  * @since EclipseLink 2.1
  */
-public class AttributeGroup extends CoreAttributeGroup<AttributeItem> implements Serializable, Cloneable {
+public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescriptor> implements Serializable, Cloneable {
 
     public AttributeGroup(String name) {
         this.name = name;
