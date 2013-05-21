@@ -19,9 +19,9 @@ import java.util.List;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlVariableNodeChildTestCases extends JAXBWithJSONTestCases{
-	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootchild.xml";
-	    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootchild.json";
-	    protected final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootchild.xsd";
+	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootChild.xml";
+	    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootChild.json";
+	    protected final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootChild.xsd";
 	public XmlVariableNodeChildTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
