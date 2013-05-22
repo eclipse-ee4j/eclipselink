@@ -19,8 +19,8 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
@@ -91,7 +91,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
 	        
 	    Marshaller marshaller = marshalRecord.getMarshaller();
 	    XPathFragment rootFragment;
-	    ObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
+	    ObjectBuilder objectBuilder = (ObjectBuilder)descriptor.getObjectBuilder();
 	    List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);
 	    //Change to get the value from the object
 	    String defaultRootElementString = descriptor.getDefaultRootElement();
@@ -155,7 +155,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
     	CoreAttributeAccessor variableAttributeAccessor = ((VariableXPathObjectMapping)this.getMapping()).getVariableAttributeAccessor();
     	if(!variableAttributeAccessor.isWriteOnly()){
     	Object value = null;
-    	 if(((VariableXPathObjectMapping)getMapping()).getVariableAttributeAccessor().getAttributeClass() == ClassConstants.QNAME){
+    	 if(((VariableXPathObjectMapping)getMapping()).getVariableAttributeAccessor().getAttributeClass() == CoreClassConstants.QNAME){
 	             if(uri != null && uri.length() > 0) {
 	            	 value =  new QName(uri, localName);
 	             }else{

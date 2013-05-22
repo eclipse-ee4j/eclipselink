@@ -52,6 +52,7 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
@@ -59,7 +60,6 @@ import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespace
 import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
@@ -1038,7 +1038,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
                         if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
                             Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
                             if(mapping.isAbstractDirectMapping()) {
-                                Object nullValue = ((AbstractDirectMapping)mapping).getNullValue();
+                                Object nullValue = ((DirectMapping)mapping).getNullValue();
                                 if(!(Constants.EMPTY_STRING.equals(nullValue))) {
                                     setAttributeValue(null, mapping);
                                     this.removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);

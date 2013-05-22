@@ -19,7 +19,6 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 public interface InverseReferenceMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
@@ -39,7 +38,7 @@ public interface InverseReferenceMapping<
     
     public String getReferenceClassName();
     
-    public void setContainerPolicy(ContainerPolicy containerPolicy);
+    public void setContainerPolicy(CONTAINER_POLICY containerPolicy);
 
     public void setInlineMapping(MAPPING inlineMapping);
     

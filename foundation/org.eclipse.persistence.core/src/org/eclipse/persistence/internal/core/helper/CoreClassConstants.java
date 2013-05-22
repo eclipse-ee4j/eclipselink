@@ -27,6 +27,7 @@ import java.util.Set;
 
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 
 import org.w3c.dom.Node;
 
@@ -62,6 +63,7 @@ public class CoreClassConstants {
     public static final Class PINT = int.class;
     public static final Class PLONG = long.class;
     public static final Class PSHORT = short.class;
+    public static final Class QNAME = QName.class;
     public static final Class Set_Class = Set.class;    
     public static final Class SHORT = Short.class;
     public static final Class SQLDATE = java.sql.Date.class;

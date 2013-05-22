@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -31,7 +30,7 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecordImpl {
         this.depth = 0;
         this.unmappedContentHandler = unmappedContentHandler;
         setParentRecord(parentRecord);
-        setUnmarshaller((XMLUnmarshaller) parentRecord.getUnmarshaller());
+        setUnmarshaller(parentRecord.getUnmarshaller());
         setXMLReader(parentRecord.getXMLReader());
         setUnmarshalNamespaceResolver(parentRecord.getUnmarshalNamespaceResolver());
         unmappedContentHandler.setUnmarshalRecord(new org.eclipse.persistence.oxm.record.UnmarshalRecord(this));
@@ -41,7 +40,7 @@ public class UnmappedContentHandlerWrapper extends UnmarshalRecordImpl {
         super(null);
         this.depth = 0;
         this.unmappedContentHandler = unmappedContentHandler;
-        setUnmarshaller((XMLUnmarshaller) saxUnmarshallerHandler.getUnmarshaller());
+        setUnmarshaller(saxUnmarshallerHandler.getUnmarshaller());
         setXMLReader(saxUnmarshallerHandler.getXMLReader());
         setUnmarshalNamespaceResolver(saxUnmarshallerHandler.getUnmarshalNamespaceResolver());
         unmappedContentHandler.setUnmarshalRecord(new org.eclipse.persistence.oxm.record.UnmarshalRecord(this));
