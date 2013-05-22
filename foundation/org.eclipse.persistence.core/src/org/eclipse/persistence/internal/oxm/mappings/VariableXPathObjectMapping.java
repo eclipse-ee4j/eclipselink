@@ -24,7 +24,6 @@ import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.mappings.AttributeAccessor;
 
 public interface VariableXPathObjectMapping<
 ABSTRACT_SESSION extends CoreAbstractSession,
@@ -39,7 +38,7 @@ UNMARSHALLER extends Unmarshaller,
 XML_RECORD extends XMLRecord> 
 extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 			
-	public AttributeAccessor getVariableAttributeAccessor(); 
+	public ATTRIBUTE_ACCESSOR getVariableAttributeAccessor(); 
 
 	public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware,char sep);
 	
@@ -53,7 +52,7 @@ extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPT
 	
 	public void setReferenceClassName(String aClassName);
 	
-	public void setVariableAttributeAccessor(AttributeAccessor variableAttributeAccessor);
+	public void setVariableAttributeAccessor(ATTRIBUTE_ACCESSOR variableAttributeAccessor);
 	
 	public void setVariableAttributeName(String variableAttributeName);
 	

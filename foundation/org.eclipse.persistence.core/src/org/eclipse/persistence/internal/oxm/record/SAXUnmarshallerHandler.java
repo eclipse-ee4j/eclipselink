@@ -20,8 +20,8 @@ import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.Root;
@@ -339,7 +339,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             
             Object attributeGroup = this.unmarshaller.getUnmarshalAttributeGroup();
             if(attributeGroup != null) {
-                if(attributeGroup.getClass() == ClassConstants.STRING) {
+                if(attributeGroup.getClass() == CoreClassConstants.STRING) {
                     CoreAttributeGroup group = descriptor.getAttributeGroup((String)attributeGroup);
                     if(group != null) {
                         unmarshalRecord.setUnmarshalAttributeGroup(group);
