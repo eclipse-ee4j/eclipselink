@@ -1349,15 +1349,15 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Force instantiation of the load group.
      */
     @Override
-    public void load(final Object object, AttributeItem item, final AbstractSession session) {
+    public void load(final Object object, AttributeItem item, final AbstractSession session, final boolean fromFetchGroup) {
         instantiateAttribute(object, session);
-        if (item.getGroup() != null) {
+        if (item.getGroup() != null && !fromFetchGroup) {
             Object value = getRealAttributeValueFromObject(object, session);
             ContainerPolicy cp = this.containerPolicy;
             for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
                 Object wrappedObject = cp.nextEntry(iterator, session);
                 Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
-                session.load(nestedObject, item.getGroup(nestedObject.getClass()));
+                session.load(nestedObject, item.getGroup(nestedObject.getClass()), getReferenceDescriptor(), fromFetchGroup);
             }
         }
     }

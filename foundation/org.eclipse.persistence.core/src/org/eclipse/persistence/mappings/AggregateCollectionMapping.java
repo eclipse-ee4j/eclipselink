@@ -54,6 +54,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -2078,6 +2079,25 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     protected boolean isSourceKeySpecified() {
         return !(getSourceKeyFields().isEmpty());
     }
+
+    /**
+     * Force instantiation of the load group.
+     */
+    @Override
+    public void load(final Object object, AttributeItem item, final AbstractSession session, final boolean fromFetchGroup) {
+        instantiateAttribute(object, session);
+        if (item.getGroup() != null && !fromFetchGroup) {
+            Object value = getRealAttributeValueFromObject(object, session);
+            
+            ContainerPolicy cp = this.containerPolicy;
+            for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
+                Object wrappedObject = cp.nextEntry(iterator, session);
+                Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
+                getReferenceDescriptor(nestedObject.getClass(), session).getObjectBuilder().load(nestedObject, item.getGroup(nestedObject.getClass()), session, fromFetchGroup);
+            }
+        }
+    }
+    
 
     /**
      * INTERNAL:

@@ -5073,12 +5073,39 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
        if (objectOrCollection instanceof Collection) {
            Iterator iterator = ((Collection)objectOrCollection).iterator();
            while (iterator.hasNext()) {
-               load(iterator.next(), group);
+               Object object = iterator.next();
+               load(object, group, getClassDescriptor(object.getClass()), false);
            }
        } else {
-           ClassDescriptor concreteDescriptor = getDescriptor(objectOrCollection);
+           ClassDescriptor concreteDescriptor =  getClassDescriptor(objectOrCollection.getClass());
+           load(objectOrCollection, group, concreteDescriptor, false);
+       }
+   }
+
+   /**
+    * This method will load the passed object or collection of objects using the passed AttributeGroup.
+    * In case of collection all members should be either objects of the same mapped type
+    * or have a common inheritance hierarchy mapped root class.
+    * The AttributeGroup should correspond to the object type. 
+    * 
+    * @param objectOrCollection
+    */
+   public void load(Object objectOrCollection, AttributeGroup group, ClassDescriptor referenceDescriptor, boolean fromFetchGroup) {
+       if (objectOrCollection == null || group == null) {
+           return;
+       }       
+       if (objectOrCollection instanceof Collection) {
+           Iterator iterator = ((Collection)objectOrCollection).iterator();
+           while (iterator.hasNext()) {
+               load(iterator.next(), group, referenceDescriptor, fromFetchGroup);
+           }
+       } else {
+           ClassDescriptor concreteDescriptor = referenceDescriptor;
+           if (concreteDescriptor.hasInheritance() && !objectOrCollection.getClass().equals(concreteDescriptor.getJavaClass())){
+               concreteDescriptor = concreteDescriptor.getInheritancePolicy().getDescriptor(objectOrCollection.getClass());
+           }
            AttributeGroup concreteGroup = group.findGroup(concreteDescriptor);
-           concreteDescriptor.getObjectBuilder().load(objectOrCollection, concreteGroup, this);
+           concreteDescriptor.getObjectBuilder().load(objectOrCollection, concreteGroup, this, fromFetchGroup);
        }
    }
 
@@ -5089,7 +5116,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
        // PERF: Only use deferred locking if required.
        // CR#3876308 If joining is used, deferred locks are still required.
        if (query.requiresDeferredLocks()) {
-           cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
+           cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete() || query.shouldRetrieveBypassCache());
 
            if (cacheKey.getActiveThread() != Thread.currentThread()) {
                int counter = 0;
@@ -5104,7 +5131,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                        Thread.sleep(10);
                    } catch (InterruptedException exception) {
                    }
-                   cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
+                   cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete() || query.shouldRetrieveBypassCache());
                    if (cacheKey.getActiveThread() == Thread.currentThread()) {
                        break;
                    }
@@ -5115,7 +5142,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                }
            }
        } else {
-           cacheKey = this.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
+           cacheKey = this.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete() || query.shouldRetrieveBypassCache());
        }
        return  cacheKey;
    }

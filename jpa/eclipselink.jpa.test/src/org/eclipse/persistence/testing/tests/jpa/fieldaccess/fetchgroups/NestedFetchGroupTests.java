@@ -948,7 +948,8 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
              group.addAttribute("address");
              group.addAttribute("phoneNumbers");
              group.addAttribute("manager.projects");
-             ((AbstractSession)((EntityManagerImpl)em.getDelegate()).getActiveSession()).load(employees, group);
+             AbstractSession session = (AbstractSession)((EntityManagerImpl)em.getDelegate()).getActiveSession();
+             session.load(employees, group, session.getClassDescriptor(Employee.class), false);
 
              int numSelectBefore = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
              

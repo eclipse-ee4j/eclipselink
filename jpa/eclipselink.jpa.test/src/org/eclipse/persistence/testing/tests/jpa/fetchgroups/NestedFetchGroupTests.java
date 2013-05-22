@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
 
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.LoadGroup;
@@ -38,6 +40,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Competency;
 
 import org.junit.Test;
 
@@ -66,6 +69,7 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
         suite.addTest(new NestedFetchGroupTests("dynamicFetchGroup_EmployeeAddressEmptyPhone"));
         suite.addTest(new NestedFetchGroupTests("dynamicFetchGroup_EmployeeAddressEmptyPhoneLoad"));
         suite.addTest(new NestedFetchGroupTests("dynamicHierarchicalFetchGroup"));
+        suite.addTest(new NestedFetchGroupTests("dynamicFetchGroup_ElementCollection"));
 //**temp        suite.addTest(new NestedFetchGroupTests("dynamicHierarchicalFetchGroup_JOIN_FETCH"));
         suite.addTest(new NestedFetchGroupTests("dynamicHierarchicalFetchGroup_JOIN_FETCH_Copy"));
 //**temp        suite.addTest(new NestedFetchGroupTests("managerDoubleNestedFetchGroupWithJoinFetch"));
@@ -315,6 +319,33 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
+        }
+    }
+    
+    @Test
+    public void dynamicFetchGroup_ElementCollection(){
+        EntityManager em = createEntityManager();
+        AttributeGroup compt = new AttributeGroup(null, Competency.class, true);
+        compt.addAttribute("description");
+        AttributeGroup fg = new AttributeGroup(null, org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department.class, true);
+        fg.addAttribute("competencies", compt);
+        clearCache();
+        Collection<org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department> results = em.createQuery("select d from Department d").setHint(QueryHints.FETCH_GROUP, fg.toFetchGroup()).getResultList();
+        for (org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department dept : results){
+            assertFalse("Collection fetched: scientists, fg ignored", ((FetchGroupTracker)dept)._persistence_isAttributeFetched("scientists"));
+            assertFalse("Collection fetched: offices, fg ignored", ((FetchGroupTracker)dept)._persistence_isAttributeFetched("offices"));
+            assertTrue("Collection not fetched: competencies, fg ignored", ((FetchGroupTracker)dept)._persistence_isAttributeFetched("competencies"));
+            for (Competency embeded: dept.getCompetencies()){
+                assertTrue("Element attribute not loaded: description, fg ignored", ((FetchGroupTracker)embeded)._persistence_isAttributeFetched("description"));
+            }
+            dept.getScientists().size();
+            assertTrue("Collection not fetched: scientists, fg ignored", ((FetchGroupTracker)dept)._persistence_isAttributeFetched("scientists"));
+            assertTrue("Collection not fetched: offices, fg ignored", ((FetchGroupTracker)dept)._persistence_isAttributeFetched("offices"));
+            assertTrue("Collection not fetched: competencies, fg ignored", ((FetchGroupTracker)dept)._persistence_isAttributeFetched("competencies"));
+            for (Competency embeded: dept.getCompetencies()){
+                embeded.getRating();
+                assertTrue("Element attribute not loaded: description, fg ignored", ((FetchGroupTracker)embeded)._persistence_isAttributeFetched("description"));
+            }
         }
     }
 
@@ -948,7 +979,8 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
              group.addAttribute("address");
              group.addAttribute("phoneNumbers");
              group.addAttribute("manager.projects");
-             ((AbstractSession)((EntityManagerImpl)em.getDelegate()).getActiveSession()).load(employees, group);
+             AbstractSession session = (AbstractSession)((EntityManagerImpl)em.getDelegate()).getActiveSession();
+             session.load(employees, group, session.getClassDescriptor(Employee.class), false);
 
              int numSelectBefore = getQuerySQLTracker(em).getTotalSQLSELECTCalls();
              

@@ -1161,7 +1161,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 if (this.shouldIncludeData) {
                     resultToLoad = ((ComplexQueryResult)result).getResult();
                 }
-                session.load(resultToLoad, getLoadGroup());
+                session.load(resultToLoad, getLoadGroup(), getDescriptor(), false);
             } else {
                 FetchGroup executionFetchGroup = getExecutionFetchGroup(); 
                 if (executionFetchGroup != null) {
@@ -1171,7 +1171,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                         if (this.shouldIncludeData) {
                             resultToLoad = ((ComplexQueryResult)result).getResult();
                         }
-                        session.load(resultToLoad, lg);
+                        session.load(resultToLoad, lg, getDescriptor(), true);
                     }
                 }
             }

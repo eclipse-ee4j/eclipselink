@@ -40,6 +40,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKPopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.QuerySQLTracker;
 
 import org.junit.Test;
@@ -218,6 +220,8 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
     public void testSetup() {
         ServerSession session = getServerSession();
         new AdvancedTableCreator().replaceTables(session);
+        //requires another package
+        new CompositePKTableCreator().replaceTables(session);
 
         // Force uppercase for Postgres.
         if (session.getPlatform().isPostgreSQL()) {
@@ -238,6 +242,10 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         EmployeePopulator employeePopulator = new EmployeePopulator();         
         employeePopulator.buildExamples();
         employeePopulator.persistExample(session);
+        
+        CompositePKPopulator compositePKPopulator = new CompositePKPopulator();
+        compositePKPopulator.buildExamples();
+        compositePKPopulator.persistExample(session);
         
         descriptor.setShouldBeReadOnly(shouldBeReadOnly);
 

@@ -1335,7 +1335,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * Force instantiation of the load group.
      */
-    public void load(final Object object, AttributeItem item, final AbstractSession session) {
+    public void load(final Object object, AttributeItem item, final AbstractSession session, final boolean fromFetchGroup) {
         // Do nothing by default.
     }
     
