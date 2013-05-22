@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.math.BigInteger;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -4566,8 +4567,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Query query = em.createQuery("Select e from Employee e as of scn :scn");
         query.setParameter("scn", scn);
         query.getResultList();
+        Timestamp timestamp = (Timestamp)em.createNativeQuery("Select sysdate from dual").getSingleResult();
         query = em.createQuery("Select e from Employee e as of :date");
-        query.setParameter("date", Calendar.getInstance());
+        query.setParameter("date", timestamp);
         query.getResultList();
         closeEntityManager(em);
     }
