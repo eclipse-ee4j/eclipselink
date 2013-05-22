@@ -108,6 +108,14 @@ public abstract class DatasourceAccessor implements Accessor {
     protected transient SequencingCallback sequencingCallback;
     
     /**
+     * This attribute is used to track failures on an accessor that may be communication based.
+     * If a failure is detected executing a call with a query timeout this flag is set.  If an error happens
+     * twice in a row on the same accessor then that accessor will be checked for a comm error.  If there is no
+     * query timeout then the flag is not set and the accessor will be checked immediately.
+     */
+    protected boolean possibleFailure;
+
+    /**
      *  Used only in externalConnectionPooling case. Indicates which session is currently using connection.
      *  Allows to rise appropriate session's event when connection is already/still alive.
      *  Events will be risen when ClientSession or DatabaseSession acquires connection in the beginning
@@ -212,6 +220,14 @@ public abstract class DatasourceAccessor implements Accessor {
         return this.isValid;
     }
     
+    public boolean isPossibleFailure() {
+        return possibleFailure;
+    }
+
+    public void setPossibleFailure(boolean possibleFailure) {
+        this.possibleFailure = possibleFailure;
+    }
+
     /**
      * Return true if some external connection pool is in use.
      */

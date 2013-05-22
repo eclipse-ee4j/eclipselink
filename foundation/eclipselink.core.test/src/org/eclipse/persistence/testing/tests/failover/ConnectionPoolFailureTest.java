@@ -12,9 +12,11 @@
  ******************************************************************************/
  package org.eclipse.persistence.testing.tests.failover;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
@@ -64,6 +66,14 @@ import org.eclipse.persistence.testing.tests.failover.emulateddriver.EmulatedDri
         sql = query.getSQLString();
         rows = getSession().executeSQL(sql);
         ((EmulatedConnection)session.getAccessor().getConnection()).putRows(sql, rows);
+        List<Accessor> connections = new ArrayList<Accessor>();
+        //prime connection pools.
+        for (int i = 0; i < 10; ++i){
+            connections.add(session.getConnectionPool("default").acquireConnection());
+        }
+        for (Accessor accessor: connections){
+            session.getConnectionPool("default").releaseConnection(accessor);
+        }
         List list = session.getReadConnectionPool().getConnectionsAvailable();
         for(int i = 0; i < list.size(); i++)
         {
@@ -72,18 +82,40 @@ import org.eclipse.persistence.testing.tests.failover.emulateddriver.EmulatedDri
 
     }
 
-    protected void test()
-    {
-        try
-        {
-            session.acquireClientSession().readObject(Address.class);
+    protected void test() {
+        for (int i = 0; i < 4; ++i) {
+            try {
+                session.acquireClientSession().readObject(Address.class);
+            } catch (DatabaseException ex) {
+                throw new TestErrorException("Should have reconnected an not thrown exception.");
+            }
         }
-        catch(DatabaseException ex)
-        {
-            throw new TestErrorException("Should have reconnected an not thrown exception.");
+        List<Accessor> connections = new ArrayList<Accessor>();
+        // prime connection pools.
+        for (int i = 0; i < 10; ++i) {
+            connections.add(session.getConnectionPool("default").acquireConnection());
+        }
+        for (Accessor accessor : connections) {
+            session.getConnectionPool("default").releaseConnection(accessor);
+        }
+        List list = session.getReadConnectionPool().getConnectionsAvailable();
+        for (int i = 0; i < list.size(); i++) {
+            ((EmulatedConnection) ((DatabaseAccessor) list.get(i)).getConnection()).causeCommError();
+        }
+
+        for (int i = 0; i < 4; ++i) {
+            try {
+                ReadObjectQuery query = new ReadObjectQuery(Address.class);
+                query.setQueryTimeout(10000);
+                session.acquireClientSession().executeQuery(query);
+            } catch (DatabaseException ex) {
+                if (i != 0) {
+                    throw new TestErrorException("Should have reconnected and not thrown exception.");
+                }
+            }
         }
     }
-    
+
     public void reset()
     {
         if(session != null) {
