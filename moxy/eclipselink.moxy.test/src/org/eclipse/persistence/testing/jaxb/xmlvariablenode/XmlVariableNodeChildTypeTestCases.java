@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlVariableNodeChildTypeTestCases extends JAXBWithJSONTestCases{
-	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootchildtype.xml";
-	    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootchildtype.json";
+	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootChildtype.xml";
+	    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvariablenode/rootChildtype.json";
 
 	public XmlVariableNodeChildTypeTestCases(String name) throws Exception {
 		super(name);
