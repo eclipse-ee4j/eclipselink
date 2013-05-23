@@ -87,7 +87,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {           
-            Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(),unmarshalRecord);
+            Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(),unmarshalRecord);
             
             // build a reference which will be resolved after unmarshalling is complete
             xmlObjectReferenceMapping.buildReference(unmarshalRecord, xmlField, realValue, unmarshalRecord.getSession());
@@ -111,12 +111,12 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         }
         Object value = unmarshalRecord.getCharacters().toString().trim();
         unmarshalRecord.resetStringBuffer();
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
+        ConversionManager conversionManager = (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
-            value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
+            value = conversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
-            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
+            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
         }
 
         // build a reference which will be resolved after unmarshalling is complete

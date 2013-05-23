@@ -46,7 +46,7 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * @see XMLField
  * @see XMLConstants
  */
-public class XMLUnionField extends XMLField implements UnionField<NamespaceResolver> {
+public class XMLUnionField extends XMLField implements UnionField<XMLConversionManager, NamespaceResolver> {
     private ArrayList schemaTypes;
 
     /**

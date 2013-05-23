@@ -78,7 +78,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if(textMapping.isAbstractDirectMapping()) {
             DirectMapping xmlDirectMapping = (DirectMapping) textMappingNodeValue.getMapping();
             Field xmlField = (Field) xmlDirectMapping.getField();
-            Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
+            Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
             Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, unmarshalRecord.getSession(), unmarshalRecord);
             xmlDirectMapping.setAttributeValueInObject(childObject, convertedValue);
         } else {
@@ -296,7 +296,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 UnmarshalKeepAsElementPolicy policy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
                 if (null != policy && ((xmlDescriptor == null && policy.isKeepUnknownAsElement()) || policy.isKeepAllAsElement())) {
                     if(unmarshalRecord.getTypeQName() != null){
-                        Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                        Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
                         if(theClass == null){
                             setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
                             return true;
@@ -367,7 +367,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() != 0) {
 
                 if(unmarshalRecord.getTypeQName() != null){
-                    Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                    Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
                     if(theClass != null){
                         //handle simple text
                         endElementProcessText(unmarshalRecord, xmlCompositeObjectMapping, xPathFragment, null);
@@ -430,7 +430,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
             if ((((keepAsElementPolicy.isKeepUnknownAsElement()) || (keepAsElementPolicy.isKeepAllAsElement())))&& (builder.getNodes().size() != 0) ) {
                 if(unmarshalRecord.getTypeQName() != null){
-                    Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                    Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
                     if(theClass != null){
                         //handle simple text
                         endElementProcessText(unmarshalRecord, xmlCompositeObjectMapping, null, null);
@@ -462,7 +462,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         QName qName = new QName(namespace, xsiType.substring(colonIndex + 1));
                         Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qName);
                         if (theClass != null) {
-                            value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(element.getTextContent(), theClass, qName);
+                            value = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(element.getTextContent(), theClass, qName);
                         }
                     }else{
                     	if(!unmarshalRecord.isNamespaceAware()){
@@ -470,7 +470,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
                     		Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qName);
                             if (theClass != null) {
-                                value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(element.getTextContent(), theClass, qName);
+                                value = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(element.getTextContent(), theClass, qName);
                             }
                     	}
                     }

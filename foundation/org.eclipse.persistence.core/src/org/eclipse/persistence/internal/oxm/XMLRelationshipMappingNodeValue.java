@@ -156,7 +156,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                     returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
                     if(returnDescriptor == null){
                         if(policy == null || (!policy.isKeepUnknownAsElement() && !policy.isKeepAllAsElement())){
-                            Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(qname);
+                            Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(qname);
                             if(theClass == null){
                                 throw XMLMarshalException.unknownXsiTypeValue(schemaType, mapping);
                             }
@@ -256,11 +256,11 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 }
             } else {
                 if(qname.equals(Constants.QNAME_QNAME)) {
-                    value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).buildQNameFromString((String)value, unmarshalRecord);
+                    value = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).buildQNameFromString((String)value, unmarshalRecord);
                 } else {
                 	Class theClass = getClassForQName(qname);
                     if (theClass != null) {
-                        value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, qname);
+                        value = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, qname);
                     }
                 }
             }

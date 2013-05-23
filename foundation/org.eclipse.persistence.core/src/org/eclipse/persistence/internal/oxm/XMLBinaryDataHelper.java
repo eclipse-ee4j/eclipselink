@@ -278,7 +278,7 @@ public class XMLBinaryDataHelper {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             source.writeTo(output);
-            return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(output.toByteArray(), String.class, schemaTypeQName);
+            return (String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(output.toByteArray(), String.class, schemaTypeQName);
         } catch (Exception ex) {
             throw ConversionException.couldNotBeConverted(source, CoreClassConstants.STRING, ex);
         }
@@ -305,7 +305,7 @@ public class XMLBinaryDataHelper {
                 throw XMLMarshalException.noEncoderForMimeType(mimeType);
             }
 
-            return ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).buildBase64StringFromBytes(outputStream.toByteArray());
+            return ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).buildBase64StringFromBytes(outputStream.toByteArray());
         } catch (Exception ex) {
             throw ConversionException.couldNotBeConverted(image, byte[].class, ex);
         }
@@ -335,7 +335,7 @@ public class XMLBinaryDataHelper {
         }
         if (sourceObject instanceof String) {
             //assume base64 String
-            byte[] bytes = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(sourceObject);
+            byte[] bytes = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(sourceObject);
             handler = new DataHandler(new ByteArrayDataSource(bytes, "application/octet-stream"));
         } else if (sourceObject instanceof Image) {
             handler = new DataHandler(sourceObject, "image/jpeg");

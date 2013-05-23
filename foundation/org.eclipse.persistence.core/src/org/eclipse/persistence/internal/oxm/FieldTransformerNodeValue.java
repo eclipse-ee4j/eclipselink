@@ -75,8 +75,8 @@ public class FieldTransformerNodeValue extends NodeValue {
     }
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();        
-        Object objectValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
+        ConversionManager conversionManager = (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();        
+        Object objectValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
         // PUT VALUE INTO A RECORD KEYED ON XMLFIELD
         if (null == unmarshalRecord.getTransformationRecord()) {
             unmarshalRecord.setTransformationRecord(new XMLTransformationRecord("ROOT", unmarshalRecord));
@@ -95,12 +95,12 @@ public class FieldTransformerNodeValue extends NodeValue {
             toWrite.setIsCDATA(isCDATA);
         }
         //xmlField.setIsCDATA(isCDATA);
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
+        ConversionManager conversionManager = (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
-            value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
+            value = conversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
-            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
+            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
         }
 
         // PUT VALUE INTO A RECORD KEYED ON XMLFIELD

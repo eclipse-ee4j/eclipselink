@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStre
 import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.CollectionGroupingElementNodeValue;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
@@ -43,7 +44,6 @@ import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
@@ -556,7 +556,7 @@ public class JSONReader extends XMLReaderAdapter {
      * @since 2.4
      */
     @Override
-    public Object convertValueBasedOnSchemaType(Field xmlField, Object value, XMLConversionManager xmlConversionManager, AbstractUnmarshalRecord record) {
+    public Object convertValueBasedOnSchemaType(Field xmlField, Object value, ConversionManager conversionManager, AbstractUnmarshalRecord record) {
         if (xmlField.getSchemaType() != null) { 
         	if(Constants.QNAME_QNAME.equals(xmlField.getSchemaType())){
         		String stringValue = (String)value;
@@ -580,7 +580,7 @@ public class JSONReader extends XMLReaderAdapter {
 	            if (fieldType == null) {
 	                fieldType = xmlField.getJavaClass(xmlField.getSchemaType());
 	            }            
-	            return xmlConversionManager.convertObject(value, fieldType, xmlField.getSchemaType());
+	            return conversionManager.convertObject(value, fieldType, xmlField.getSchemaType());
         	}
         }
         return value;

@@ -277,7 +277,7 @@ public class XPathEngine <
                     if(schemaType != null && schemaType.equals(Constants.QNAME_QNAME)){
                         nextConvertedItem = getStringForQName((QName)nextItem, getNamespaceResolverForField(xmlField));
                     }else{
-                    	nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, CoreClassConstants.STRING, schemaType);
+                    	nextConvertedItem = (String) ((ConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, CoreClassConstants.STRING, schemaType);
                     }
                     returnStringBuilder.append(nextConvertedItem);
                     if (i < (((List)value).size() - 1)) {
@@ -296,7 +296,7 @@ public class XPathEngine <
                             String nextConvertedItem = getStringForQName((QName)nextItem, getNamespaceResolverForField(xmlField));
                             items.add(nextConvertedItem);
                         }else{
-                            String nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, CoreClassConstants.STRING, schemaType);
+                            String nextConvertedItem = (String) ((ConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, CoreClassConstants.STRING, schemaType);
                             items.add(nextConvertedItem);
                         }
                     }
@@ -307,7 +307,7 @@ public class XPathEngine <
             if(schemaType != null && schemaType.equals(Constants.QNAME_QNAME)){
                 return getStringForQName((QName)value, getNamespaceResolverForField(xmlField));
             }
-            return ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
+            return ((ConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
         }
     }
 
@@ -327,7 +327,7 @@ public class XPathEngine <
             try {
                 if (nextQName != null) {
                     Class javaClass = xmlField.getJavaClass(nextQName);
-                    value = ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
+                    value = ((ConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }
@@ -337,7 +337,7 @@ public class XPathEngine <
                 }
             }
         }
-        return (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
+        return (String) ((ConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
     private Object getValueToWriteForUnion(UnionField xmlField, Object value, CoreAbstractSession session) {
@@ -894,7 +894,7 @@ public class XPathEngine <
                             addXsiNilToElement(parentElement, xmlField);
                             parentElement.removeChild(node);
                         } else {
-                            String stringValue = (String)((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING);
+                            String stringValue = (String)session.getDatasourcePlatform().getConversionManager().convertObject(value, CoreClassConstants.STRING);
                             Element parentElement = (Element)node.getParentNode();
                             if(parentElement == null && parent.getNodeType() == Node.ELEMENT_NODE) {
                                 parentElement = (Element)parent;
@@ -1007,7 +1007,7 @@ public class XPathEngine <
                     Node grandParentNode = parentNode.getParentNode();
                     grandParentNode.removeChild(parentNode);
                 } else {
-                    oldChild.setNodeValue((String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING));
+                    oldChild.setNodeValue((String) session.getDatasourcePlatform().getConversionManager().convertObject(value, CoreClassConstants.STRING));
                 }
             } else {
                 Element element = (Element)oldChild;

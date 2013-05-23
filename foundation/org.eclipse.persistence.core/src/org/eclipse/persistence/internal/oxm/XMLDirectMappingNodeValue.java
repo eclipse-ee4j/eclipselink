@@ -146,7 +146,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         unmarshalRecord.removeNullCapableValue(this);
         Field xmlField = (Field) xmlDirectMapping.getField();
         CoreAbstractSession session = unmarshalRecord.getSession();        
-        Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), unmarshalRecord);
+        Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (ConversionManager) session.getDatasourcePlatform().getConversionManager(), unmarshalRecord);
 
         // Perform operations on the object based on the null policy
         Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, session, unmarshalRecord);
@@ -173,13 +173,13 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         }
         unmarshalRecord.resetStringBuffer();
         CoreAbstractSession session = unmarshalRecord.getSession();
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
+        ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
         QName typeQName = unmarshalRecord.getTypeQName(); 
         if (typeQName != null) {
             Class typeClass = xmlField.getJavaClass(typeQName);
-            value = xmlConversionManager.convertObject(value, typeClass, typeQName);
+            value = conversionManager.convertObject(value, typeClass, typeQName);
         } else {
-            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
+            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
         }
 
         Object convertedValue = xmlDirectMapping.getAttributeValue(value, session, unmarshalRecord);

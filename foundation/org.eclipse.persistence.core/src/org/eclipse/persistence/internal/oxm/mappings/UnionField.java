@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.oxm.mappings;
 
 import java.util.List;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 
 /**
@@ -34,7 +36,8 @@ import org.eclipse.persistence.internal.oxm.NamespaceResolver;
  * @see Constants
  */
 public interface UnionField<
-    NAMESPACE_RESOLVER extends NamespaceResolver> extends Field<NAMESPACE_RESOLVER> {
+    CONVERSION_MANAGER extends ConversionManager,
+    NAMESPACE_RESOLVER extends NamespaceResolver> extends Field<CONVERSION_MANAGER, NAMESPACE_RESOLVER> {
 
     /**
      * Adds the new type value to the list of types

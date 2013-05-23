@@ -103,7 +103,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 objectValue = xmlCompositeDirectCollectionMapping.convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
                 schemaType = xmlField.getSchemaTypeForValue(objectValue, session);
 
-                newValue = marshalRecord.getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+                newValue = marshalRecord.getValueToWrite(schemaType, objectValue, (ConversionManager) session.getDatasourcePlatform().getConversionManager());
                 if (null != newValue) {
                     stringValueStringBuilder.append(newValue);
                     if (cp.hasNext(iterator)) {
@@ -238,12 +238,12 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
         Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
 
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
+        ConversionManager conversionManager = (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
-            value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
+            value = conversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
-            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
+            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
         }
 
         value = xmlCompositeDirectCollectionMapping.convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());

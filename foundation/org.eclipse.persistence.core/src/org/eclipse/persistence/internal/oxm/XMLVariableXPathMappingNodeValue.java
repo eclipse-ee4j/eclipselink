@@ -58,7 +58,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
 	        if(textMapping.isAbstractDirectMapping()) {
 	            DirectMapping xmlDirectMapping = (DirectMapping) textMappingNodeValue.getMapping();
 	            Field xmlField = (Field) xmlDirectMapping.getField();
-	            Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
+	            Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
 	            Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, unmarshalRecord.getSession(), unmarshalRecord);
 	            xmlDirectMapping.setAttributeValueInObject(childObject, convertedValue);
 	        } else {

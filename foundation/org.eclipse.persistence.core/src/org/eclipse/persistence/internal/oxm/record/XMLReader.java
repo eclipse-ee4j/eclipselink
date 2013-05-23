@@ -28,9 +28,9 @@ import org.xml.sax.ext.LexicalHandler;
 import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.MediaType;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
@@ -134,8 +134,8 @@ public class XMLReader implements org.xml.sax.XMLReader {
      * INTERNAL:
      * @since 2.4
      */
-    public Object convertValueBasedOnSchemaType(Field xmlField, Object value, XMLConversionManager xmlConversionManager, AbstractUnmarshalRecord record) {
-    	return xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, record);    	
+    public Object convertValueBasedOnSchemaType(Field xmlField, Object value, ConversionManager conversionManager, AbstractUnmarshalRecord record) {
+    	return xmlField.convertValueBasedOnSchemaType(value, conversionManager, record);    	
     }
 
     public DTDHandler getDTDHandler () {

@@ -81,7 +81,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {
-            Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
+            Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
             Object container = unmarshalRecord.getContainerInstance(this);		
             // build a reference which will be resolved after unmarshalling is complete
             xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, realValue, unmarshalRecord.getSession(), container);
@@ -107,12 +107,12 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         Object value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
 
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
+        ConversionManager conversionManager = (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
-            value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
+            value = conversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {            
-            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
+            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
         }
 
         Object container = unmarshalRecord.getContainerInstance(this);
@@ -202,7 +202,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                     }
                 }
                 schemaType = xmlField.getSchemaTypeForValue(fieldValue, session);
-                newValue = marshalRecord.getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
+                newValue = marshalRecord.getValueToWrite(schemaType, fieldValue, (ConversionManager) session.getDatasourcePlatform().getConversionManager());
                 if (newValue != null) {
                     stringValueStringBuilder.append(newValue);
                     if (cp.hasNext(iterator)) {

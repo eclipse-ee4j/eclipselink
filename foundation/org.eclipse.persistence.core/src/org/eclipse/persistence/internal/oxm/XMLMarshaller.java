@@ -36,8 +36,8 @@ import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
@@ -113,10 +113,10 @@ public abstract class XMLMarshaller<
             xmlEventWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(eventWriterRecordClass, new Class[]{eventWriterClass}, true);
             
             domToStreamWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_STREAM_WRITER_CLASS_NAME);
-            writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class[] {ClassConstants.NODE, ClassConstants.STRING, ClassConstants.STRING, streamWriterClass}, true);
+            writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class[] {CoreClassConstants.NODE, CoreClassConstants.STRING, CoreClassConstants.STRING, streamWriterClass}, true);
             
             domToEventWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_EVENT_WRITER_CLASS_NAME);
-            writeToEventWriterMethod = PrivilegedAccessHelper.getMethod(domToEventWriterClass, WRITE_TO_EVENT_WRITER_METHOD_NAME, new Class[] {ClassConstants.NODE, ClassConstants.STRING, ClassConstants.STRING, eventWriterClass}, true);
+            writeToEventWriterMethod = PrivilegedAccessHelper.getMethod(domToEventWriterClass, WRITE_TO_EVENT_WRITER_METHOD_NAME, new Class[] {CoreClassConstants.NODE, CoreClassConstants.STRING, CoreClassConstants.STRING, eventWriterClass}, true);
             
         } catch (Exception ex) {
             // Do nothing
@@ -471,7 +471,7 @@ public abstract class XMLMarshaller<
     protected boolean isSimpleXMLRoot(Root xmlRoot) {
         Class xmlRootObjectClass = xmlRoot.getObject().getClass();
 
-        if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null || ClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || ClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
+        if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null || CoreClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
             return true;
         } else if(xmlRoot.getObject() instanceof org.w3c.dom.Node) {
             return true;
@@ -608,7 +608,7 @@ public abstract class XMLMarshaller<
         }
 
         if(this.getMarshalAttributeGroup() != null) {
-            if(marshalAttributeGroup.getClass() == ClassConstants.STRING) {
+            if(marshalAttributeGroup.getClass() == CoreClassConstants.STRING) {
                 CoreAttributeGroup group = descriptor.getAttributeGroup((String)marshalAttributeGroup);
                 if(group != null) {
                     marshalRecord.pushAttributeGroup(group);

@@ -148,7 +148,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 UnmarshalKeepAsElementPolicy policy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();
                 if (policy != null && ((xmlDescriptor == null && policy.isKeepUnknownAsElement()) || policy.isKeepAllAsElement())) {
                     if(unmarshalRecord.getTypeQName() != null){
-                        Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                        Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
                         if(theClass == null){
                             setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
                             return true;
@@ -210,7 +210,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                               
                if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() > 1) {
                    if(unmarshalRecord.getTypeQName() != null){
-                       Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                       Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
                        if(theClass != null){
                            //handle simple text
                            endElementProcessText(unmarshalRecord, xmlCompositeCollectionMapping, xPathFragment, collection);

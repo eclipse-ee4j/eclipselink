@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Namespace;
@@ -381,7 +382,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }
     }
     
-    public String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager) {
+    @Override
+    public String getValueToWrite(QName schemaType, Object value, ConversionManager conversionManager) {
     	if(value == null){
     		return null;
     	}
@@ -390,7 +392,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }else if(value.getClass() == String.class){
         	return (String) value;
         }
-        return (String) xmlConversionManager.convertObject(value, ClassConstants.STRING, schemaType);
+        return (String) conversionManager.convertObject(value, ClassConstants.STRING, schemaType);
     }   
     
     protected String getStringForQName(QName qName){

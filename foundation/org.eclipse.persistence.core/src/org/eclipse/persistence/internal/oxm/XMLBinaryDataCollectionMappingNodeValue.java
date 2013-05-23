@@ -59,7 +59,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
     }
 
     protected String getValueToWrite(QName schemaType, Object value, CoreAbstractSession session) {
-        return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
+        return (String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
     public boolean isOwningNode(XPathFragment xPathFragment) {
@@ -135,7 +135,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                     }
                 } else {
                     //value should be base64 binary string
-                    fieldValue = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
+                    fieldValue = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
                     xmlBinaryDataCollectionMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataCollectionMapping.getAttributeClassification(),
                             unmarshalRecord.getSession()));
                 }

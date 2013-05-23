@@ -107,7 +107,7 @@ public class TypeNodeValue extends NodeValue {
             try {
                 if (nextQName != null) {
                     javaClass = xmlField.getJavaClass(nextQName);
-                    value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
+                    value = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }

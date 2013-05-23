@@ -19,10 +19,10 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.oxm.record.MarshalRecord.CycleDetectionStack;
@@ -98,7 +98,7 @@ public interface MarshalRecord<
     public XPathFragment getTextWrapperFragment();
 
     public String getValueToWrite(QName schemaType, Object fieldValue,
-            XMLConversionManager conversionManager);
+            ConversionManager conversionManager);
 
     public boolean hasCustomNamespaceMapper();
 

@@ -51,7 +51,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
  * @since    OracleAS TopLink 10<i>g</i>
  */
 
-public class XMLConversionManager extends ConversionManager implements TimeZoneHolder {
+public class XMLConversionManager extends ConversionManager implements org.eclipse.persistence.internal.oxm.ConversionManager, TimeZoneHolder {
     protected static final String GMT_ID = "GMT";
     protected static final String GMT_SUFFIX = "Z";
 
@@ -201,6 +201,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * @param schemaTypeQName - the XML schema that the object is being converted from
      * @return - the newly converted object
      */
+    @Override
     public Object convertObject(Object sourceObject, Class javaClass, QName schemaTypeQName) throws ConversionException {
         if (schemaTypeQName == null) {
             return convertObject(sourceObject, javaClass);
@@ -1799,6 +1800,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * INTERNAL:
      * Converts a String which is in Base64 format to a Byte[]
      */
+    @Override
     public byte[] convertSchemaBase64ToByteArray(Object sourceObject) throws ConversionException {
         if (sourceObject instanceof String) {
             //the base64 string may have contained embedded whitespaces. Try again after
@@ -1823,6 +1825,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return objectBytes;
     }
 
+    @Override
     public String buildBase64StringFromBytes(byte[] bytes) {
         byte[] convertedBytes = Base64.base64Encode(bytes);
         StringBuffer buffer = new StringBuffer();
@@ -2088,6 +2091,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return this.trimGMonth;
     }
 
+    @Override
     public QName buildQNameFromString(String stringValue, AbstractUnmarshalRecord record){     
         int index = stringValue.lastIndexOf(Constants.COLON);
         if(index > -1) {

@@ -16,18 +16,20 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 
-public interface Field<NAMESPACE_RESOLVER extends NamespaceResolver> extends CoreField{
+public interface Field<
+    CONVERSION_MANAGER extends ConversionManager,
+    NAMESPACE_RESOLVER extends NamespaceResolver> extends CoreField{
 	
     /**
      * INTERNAL:
      * Called from DOMRecord and XMLReader.  MappingNodeValues call XMLReader which calls this method so that other XMLReader subclasses can override.
      */
-     public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, AbstractUnmarshalRecord record);
+     public Object convertValueBasedOnSchemaType(Object value, CONVERSION_MANAGER xmlConversionManager, AbstractUnmarshalRecord record);
 	
     /**
     * Return the class for a given qualified XML Schema type

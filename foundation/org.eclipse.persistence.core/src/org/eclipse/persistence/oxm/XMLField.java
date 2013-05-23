@@ -290,7 +290,7 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * </table>
  * @see org.eclipse.persistence.oxm.XMLUnionField
  */
-public class XMLField extends DatabaseField implements Field<NamespaceResolver> {
+public class XMLField extends DatabaseField implements Field<XMLConversionManager, NamespaceResolver> {
     private NamespaceResolver namespaceResolver;
     private QName schemaType;
     private XPathFragment xPathFragment;
