@@ -124,6 +124,9 @@ public class FormattedWriterRecord extends WriterRecord {
             isStartElementOpen = true;
             writer.write('<');
             writer.write(getNameForFragment(xPathFragment));
+            if(xPathFragment.isGeneratedPrefix()){
+    		    namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+    	    }
             numberOfTabs++;
             isLastEventText = false;
         } catch (IOException e) {

@@ -212,8 +212,11 @@ public class NodeRecord extends MarshalRecord {
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
             super.openStartElement(xPathFragment, namespaceResolver);
-            Element element = document.createElementNS(xPathFragment.getNamespaceURI(), getNameForFragment(xPathFragment));
+            Element element = document.createElementNS(xPathFragment.getNamespaceURI(), getNameForFragment(xPathFragment));            
             node = node.appendChild(element);
+            if(xPathFragment.isGeneratedPrefix()){
+               namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+            }
         } catch (DOMException e) {
             throw XMLMarshalException.marshalException(e);
         }

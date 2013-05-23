@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLMarshaller;
@@ -129,6 +128,9 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
             isStartElementOpen = true;
             writer.write('<');
             writer.write(getNameForFragment(xPathFragment));
+            if(xPathFragment.isGeneratedPrefix()){
+    		    namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+    	    }
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

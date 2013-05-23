@@ -169,6 +169,9 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
         isStartElementOpen = true;
         outputStreamWrite(OPEN_START_ELEMENT);
         outputStreamWrite(getNameForFragmentBytes(xPathFragment));
+        if(xPathFragment.isGeneratedPrefix()){
+            namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+        }
     }
 
     /**

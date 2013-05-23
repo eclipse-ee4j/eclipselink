@@ -207,6 +207,11 @@ public class XMLEventWriterRecord extends MarshalRecord {
         this.xPathFragment = xPathFragment;
         this.attributes = null;
         this.namespaceDeclarations = null;
+
+        if(xPathFragment.isGeneratedPrefix()){
+        	namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+        }
+        
         writePrefixMappings();
     }
 

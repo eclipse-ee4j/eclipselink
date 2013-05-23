@@ -184,7 +184,11 @@ public class ContentHandlerRecord extends MarshalRecord {
             if(namespaceUri == null) {
                 namespaceUri = Constants.EMPTY_STRING;
             }
+            if(xPathFragment.isGeneratedPrefix()){
+            	this.namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+            }
             contentHandler.startElement(namespaceUri, xPathFragment.getLocalName(), getNameForFragment(xPathFragment), attributes);
+            
         } catch (SAXException e) {
             throw XMLMarshalException.marshalException(e);
         }
