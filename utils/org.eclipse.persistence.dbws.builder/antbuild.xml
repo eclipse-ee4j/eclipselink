@@ -36,12 +36,6 @@
     <!-- Test to make certain that build is run from component dir -->
     <available file="../${ant.project.name}" type="dir" property="dbwsbldr.is.local"/>
     <fail unless="dbwsbldr.is.local" message="Not running from '${ant.project.name}' directory"/>
-    <condition property="is.java.version.16">
-        <equals arg1="${ant.java.version}" arg2="1.6"/>
-    </condition>
-    <fail unless="is.java.version.16"
-        message="org.eclipse.persistence.dbws.builder requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
-    />
 
     <dirname  property="dbwsbldr.build.location_temp" file="${ant.file.org.eclipse.persistence.dbws.builder}"/>
     <pathconvert targetos="unix" property="dbwsbldr.build.location">
