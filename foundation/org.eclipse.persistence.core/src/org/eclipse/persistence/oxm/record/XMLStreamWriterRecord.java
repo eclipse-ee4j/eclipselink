@@ -165,6 +165,10 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                     prefix = Constants.EMPTY_STRING;
                 }
                 xmlStreamWriter.writeStartElement(prefix, xPathFragment.getLocalName(), namespaceURI);
+                if(xPathFragment.isGeneratedPrefix()){
+                	namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+                }
+                
             }
             writePrefixMappings();
         } catch(XMLStreamException e) {

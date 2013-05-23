@@ -1,0 +1,8 @@
+<employee name="John Doe">
+    <home-address>
+        <street>123 Fake Street</street>
+        <city>Ottawa</city>
+        <country>Canada</country>
+    </home-address>
+    <ns0:mytag xmlns:ns0="newUri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+</employee>

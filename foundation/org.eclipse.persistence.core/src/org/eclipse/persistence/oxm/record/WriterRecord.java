@@ -130,6 +130,9 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
             isStartElementOpen = true;
             writer.write('<');
             writer.write(getNameForFragment(xPathFragment));
+            if(xPathFragment.isGeneratedPrefix()){
+    		    namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+    	    }
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

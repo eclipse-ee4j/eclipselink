@@ -79,17 +79,20 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         boolean wasXMLRoot = false;
         XPathFragment xmlRootFragment = null;
         Object originalValue = objectValue;
-
         if (xmlAnyObjectMapping.usesXMLRoot() && (objectValue instanceof Root)) {
             xmlRootFragment = new XPathFragment();
             xmlRootFragment.setNamespaceAware(marshalRecord.isNamespaceAware());            
             wasXMLRoot = true;
-            objectValue = ((Root) objectValue).getObject();
+            objectValue = ((Root) objectValue).getObject();            
+            if(objectValue == null){            	       
+            	setupFragment(((Root) originalValue), xmlRootFragment, marshalRecord);
+                marshalRecord.nilComplex(xmlRootFragment, namespaceResolver);               
+                return true;
+            }
         }
 
         if (objectValue instanceof String) {
             marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, objectValue, session, namespaceResolver);
-
         } else {
             CoreSession childSession = null;
             try {
@@ -102,13 +105,9 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             ObjectBuilder objectBuilder = (ObjectBuilder) descriptor.getObjectBuilder();
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);
-            if (wasXMLRoot) {
-                Namespace generatedNamespace = setupFragment(((Root) originalValue), xmlRootFragment, marshalRecord);
-                if (generatedNamespace != null) {
-                    extraNamespaces.add(generatedNamespace);
-                }
+            if(wasXMLRoot){
+                setupFragment(((Root) originalValue), xmlRootFragment, marshalRecord);
             }
-
             /*
              * B5112171: 25 Apr 2006
              * During marshalling - XML AnyObject and AnyCollection
@@ -237,13 +236,15 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         Namespace generatedNamespace = null;
         String xpath = originalValue.getLocalName();
         if (originalValue.getNamespaceURI() != null) {
-            xmlRootFragment.setNamespaceURI((originalValue).getNamespaceURI());
+            xmlRootFragment.setNamespaceURI((originalValue).getNamespaceURI());            
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI((originalValue).getNamespaceURI());
             if (prefix == null || prefix.length() == 0) {
                 prefix = marshalRecord.getNamespaceResolver().generatePrefix("ns0");
                 generatedNamespace = new Namespace(prefix, xmlRootFragment.getNamespaceURI());
+                xmlRootFragment.setGeneratedPrefix(true);
             }
             xpath = prefix + Constants.COLON + xpath;
+           
         }
         xmlRootFragment.setXPath(xpath);
         return generatedNamespace;
@@ -252,12 +253,9 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
     	QName qname = null;
         if (xmlRootFragment != null) {
-            qname = ((Root) originalValue).getSchemaType();
-            Namespace generatedNamespace = setupFragment(((Root) originalValue), xmlRootFragment, marshalRecord);
-            getXPathNode().startElement(marshalRecord, xmlRootFragment, object, session, namespaceResolver, null, null);
-            if (generatedNamespace != null) {                
-                marshalRecord.namespaceDeclaration(generatedNamespace.getPrefix(),  generatedNamespace.getNamespaceURI());
-            }
+            qname = ((Root) originalValue).getSchemaType();    
+            setupFragment(((Root) originalValue), xmlRootFragment, marshalRecord);
+            getXPathNode().startElement(marshalRecord, xmlRootFragment, object, session, namespaceResolver, null, null);            
             updateNamespaces(qname, marshalRecord, null);
         }
         

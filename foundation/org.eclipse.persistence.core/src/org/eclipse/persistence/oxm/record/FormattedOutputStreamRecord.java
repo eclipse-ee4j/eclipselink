@@ -103,6 +103,9 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         isStartElementOpen = true;
         outputStreamWrite(OPEN_START_ELEMENT);
         outputStreamWrite(getNameForFragmentBytes(xPathFragment));
+        if(xPathFragment.isGeneratedPrefix()){
+            namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+        }
         numberOfTabs++;
         isLastEventText = false;
     }

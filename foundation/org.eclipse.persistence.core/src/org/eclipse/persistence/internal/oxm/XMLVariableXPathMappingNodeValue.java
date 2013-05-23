@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -89,22 +88,15 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
 	       	}
 	    }
 	        
-	    Marshaller marshaller = marshalRecord.getMarshaller();
-	    XPathFragment rootFragment;
+	    Marshaller marshaller = marshalRecord.getMarshaller();	    
 	    ObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
 	    List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);
 	    //Change to get the value from the object
 	    String defaultRootElementString = descriptor.getDefaultRootElement();
 	        
 	    marshalRecord.beforeContainmentMarshal(value);
-	    rootFragment = mapping.getXPathFragmentForValue(value, marshalRecord.getNamespaceResolver(), marshalRecord.isNamespaceAware(), marshalRecord.getNamespaceSeparator());
-	    
-	    if(rootFragment.isGeneratedPrefix()){
-	      	if(extraNamespaces == null){
-	       		extraNamespaces = new ArrayList();
-	       	}
-	       	extraNamespaces.add(new Namespace(rootFragment.getPrefix(),rootFragment.getNamespaceURI()));
-	    }     
+	    XPathFragment rootFragment = mapping.getXPathFragmentForValue(value, marshalRecord.getNamespaceResolver(), marshalRecord.isNamespaceAware(), marshalRecord.getNamespaceSeparator());
+	    	     
 	    XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
 	    if(mapping.isAttribute()){	    	
 	    	   ObjectBuilder tob = (ObjectBuilder) mapping.getReferenceDescriptor().getObjectBuilder();
