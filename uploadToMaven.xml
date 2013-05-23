@@ -202,23 +202,6 @@
                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
         />
 
-        <!-- Set JPA 2.1 publishing version to align with EclipseLink build.type:                    -->
-        <!--      Javax.persistence will use "upload-artifact" rather than "upload-release-artifact" -->
-        <!--      EclipseLink SNAPSHOTS would cause "2.1.0-SNAPSHOT" to be created                   -->
-        <!--      Milestoning EclipseLink would result in 2.1.0-(EclipseLink_Milestone)              -->
-        <!-- NOTE: This needs to be changed back just prior to javax.persistence 2.1 release         -->
-        <!-- NOTE2: This section needs to occur prior to the StripQualifier task to discover the     -->
-        <!--        jpaapi.mvn.version since its definition needs to supersede it.                   -->
-        <property name="jpaapi.mvn.version" value="2.1.0-${build.type}"/>
-        <!-- Below is a fail-safe to ensure EclipseLink cannot be released while javax.persistence   -->
-        <!-- retains the 2.0.10x OSGi versioning.                                                    -->
-        <condition property="jpaapi.prerelease.ok">
-                <not>
-                    <equals arg1="${jpaapi.mvn.version}" arg2="2.1.0-RELEASE"/>
-                </not>
-        </condition>
-        <fail message="Attempting to RELEASE a pre-release version '${jpaapi.version}' of javax.persistence. Aborting..." unless="jpaapi.prerelease.ok"/>
-
         <echo message="jpaapi.version     = ${jpaapi.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
@@ -277,6 +260,8 @@
         <!-- Public APIs we depend upon that can be found on Maven Central -->
         <!-- Add as nosql dependency -->
         <property name="dep.resource"      value="${dep.grp}javax.resource${dep.art}connector-api${dep.ver}1.5${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.servlet"       value="${dep.grp}javax.servlet${dep.art}servlet-api${dep.ver}2.4${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.wsdl"          value="${dep.grp}wsdl4j${dep.art}wsdl4j${dep.ver}1.6.3${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -291,6 +276,7 @@
         <property name="dep.jpa"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.moxy"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.moxy${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdo"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.sdo${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.oracleddl"     value="${dep.grp}org.eclipse.persistence${dep.art}${oracleddl.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.eclipselink"   value="${dep.grp}org.eclipse.persistence${dep.art}eclipselink${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 
         <!-- These define the dependency block for a given artifact -->
@@ -307,6 +293,7 @@
         <property name="ora.nosql.dependencies"   value="${deps.head}${dep.nosql}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
+        <property name="builder.dependencies"     value="${deps.head}${dep.core}${dep.dbws}${dep.moxy}${dep.jpa}${dep.nosql}${dep.oracle}${dep.servlet}${dep.wsdl}${dep.oracleddl}${deps.foot}"/>
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.antlr}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
@@ -314,7 +301,7 @@
     <target name="upload-static-built-jars" depends="discover-static-built-info">
         <!-- repo.dir and artifactId should be (bundle).mvn.version from (bundle).version -->
         <!-- (rather than the 4-part OSGi version, we use a stripped down 3-part version) -->
-        <!-- antcall target="upload-release-artifact">
+        <antcall target="upload-release-artifact">
             <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${jpaapi.prefix}/${jpaapi.mvn.version}"/>
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${jpaapi.prefix}"/>
@@ -323,7 +310,7 @@
             <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}.source_${jpaapi.version}.jar"/>
             <param name="artifactName"    value="${jpaapi.name}"/>
             <param name="dependencies"    value=""/>
-        </antcall -->
+        </antcall>
         <antcall target="upload-release-artifact">
             <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${sdoapi.prefix}/${sdoapi.mvn.version}"/>
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -339,7 +326,7 @@
     <target name="upload-eclipselink" depends="upload-maven-init,upload-static-built-jars">
         <!-- While JPA is pre-release use "upload-artifact" with fixed up 2.1.0-(EL ${build.type}) as version -->
         <!-- Change back for (and post) release                                                               -->
-        <antcall target="upload-artifact">
+        <!-- antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${jpaapi.prefix}"/>
             <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
@@ -347,7 +334,7 @@
             <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}.source_${jpaapi.version}.jar"/>
             <param name="artifactName"    value="${jpaapi.name}"/>
             <param name="dependencies"    value=""/>
-        </antcall>
+        </antcall -->
         <!-- call upload for each artifact we want to upload -->
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -487,6 +474,15 @@
             <param name="artifactSrc"     value="${maven.2.util.plugins.dir}/${oracleddl.prefix}.source_${oracleddl.version}.jar"/>
             <param name="artifactName"    value="${oracleddl.name}"/>
             <param name="dependencies"    value=""/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="org.eclipse.persistence.dbws.builder"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder_${version.string}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder.source_${version.string}.jar"/>
+            <param name="artifactName"    value="EclipseLink DBWS Builder"/>
+            <param name="dependencies"    value="${builder.dependencies}"/>
         </antcall>
     </target>
 
