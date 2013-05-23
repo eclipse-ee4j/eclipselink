@@ -267,6 +267,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             suite.addTest(new CacheableModelJunitTest("testMergeNonCachedWithRelationship"));
             suite.addTest(new CacheableModelJunitTest("testIndirectCollectionRefreshBehavior"));
             suite.addTest(new CacheableModelJunitTest("testDerivedIDProtectedRead"));
+
+            // Bug 408262
+            suite.addTest(new CacheableModelJunitTest("testRefreshProtectedEntityInEarlyTransaction"));
         }
         return suite;
     }
@@ -1618,7 +1621,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         EntityManager em = createDSEntityManager();
         beginTransaction(em);
         int cfeID = 0;
-        try{
+        try {
             CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
             ServerSession session = em.unwrap(ServerSession.class);
             CacheableProtectedEntity cfe = new CacheableProtectedEntity();
@@ -1626,26 +1629,36 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             cfeID = cfe.getId();
             cfe.setForcedProtected(cte);
             cte.getCacheableProtecteds().add(cfe);
-            em.flush();
-            //commitTransaction(em);
+            commitTransaction(em);
+            
             CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
+            assertNotNull("CacheableRelationshipsEntity from find should not be null", cre);
             CacheableRelationshipsEntity cachedCRE = (CacheableRelationshipsEntity) session.getIdentityMapAccessor().getFromIdentityMap(cre);
+            assertNotNull("CacheableRelationshipsEntity from cache should not be null", cachedCRE);
             assertTrue("A protected OneToMany relationship was merged into the shared cache", cachedCRE.getCacheableFalses() == null || cachedCRE.getCacheableFalses().isEmpty());
-            commitTransaction(em);
-
-            beginTransaction(em);
-            cte.getCacheableProtecteds().clear();
-            cfe.setForcedProtected(null);
-            cfe = em.find(CacheableProtectedEntity.class, cfeID);
-            em.remove(cfe);
-            commitTransaction(em);
-        }finally{
+        } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
+            }
+            try {
+                beginTransaction(em);
+                
+                CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
+                CacheableProtectedEntity cfe = em.find(CacheableProtectedEntity.class, cfeID);
+                cte.getCacheableProtecteds().clear();
+                cfe.setForcedProtected(null);
+                em.remove(cfe);
+                
+                commitTransaction(em);
+            } catch (Exception e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
             }
             closeEM(em);
         }
     }
+    
     /**
      * Convenience method. This will not update the entity in the shared cache.
      */
@@ -1835,6 +1848,58 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             commitTransaction(em);
         }
         
+    }
+    
+    //Bug 408262 - Refresh of Protected Entity in early transaction refreshes Entity in shared cache
+    public void testRefreshProtectedEntityInEarlyTransaction() {
+        CacheableForceProtectedEntity entity = null;
+        try {
+            EntityManager em = createDSEntityManager();
+            beginTransaction(em);
+               
+            entity = new CacheableForceProtectedEntity();
+            entity.setName("original");
+
+            em.persist(entity);
+            assertEquals("original", entity.getName());
+               
+            commitTransaction(em);
+            assertEquals("original", entity.getName());
+               
+            em = createDSEntityManager();
+            beginTransaction(em);
+               
+            entity = em.find(CacheableForceProtectedEntity.class, entity.getId());
+            entity.setName("modified");
+               
+            em.flush();
+
+            em.refresh(entity); // problem occurs in refresh
+            assertNotNull(entity);
+            assertEquals("modified", entity.getName());
+               
+            rollbackTransaction(em);
+               
+            em = createDSEntityManager();
+
+            entity = em.find(CacheableForceProtectedEntity.class, entity.getId());
+
+            closeEM(em);
+            
+            assertNotNull(entity);
+            assertEquals("Entity found should have an unmodified name post-rollback", "original", entity.getName());
+        } finally {
+            if (entity != null) {
+                EntityManager em = createDSEntityManager();
+                beginTransaction(em);
+                entity = em.find(CacheableForceProtectedEntity.class, entity.getId());
+                if (entity != null) {
+                    em.remove(entity);
+                }
+                commitTransaction(em);
+                closeEM(em);
+            }
+        }
     }
     
     /**
