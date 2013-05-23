@@ -1712,7 +1712,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (isARefresh && fetchGroupManager != null) {
                 fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(), unitOfWork);
             }
-            if (descriptor.isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()){
+            if (!unitOfWork.wasTransactionBegunPrematurely() && descriptor.isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()){
                 // we are at this point because we have isolated protected entities to the UnitOfWork
                 // we should ensure that we populate the cache as well.
                 originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, unitOfWork.getParentIdentityMapSession(descriptor, false, true), primaryKey, descriptor, joinManager);
