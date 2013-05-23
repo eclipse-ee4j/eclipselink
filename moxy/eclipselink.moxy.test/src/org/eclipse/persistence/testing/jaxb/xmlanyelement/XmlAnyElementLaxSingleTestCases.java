@@ -92,17 +92,6 @@ public class XmlAnyElementLaxSingleTestCases extends JAXBWithJSONTestCases {
         
         
     }
-    public void testRI() throws Exception{
-    	JAXBContext ctx = JAXBContext.newInstance(new Class[]{EmployeeSingle.class, Address.class});
-    	System.out.println(ctx.getClass());
-    	Marshaller m = ctx.createMarshaller();
-    	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    	m.marshal(getControlObject(), System.out);
-    	
-    	Unmarshaller u = ctx.createUnmarshaller();
-    	Object unmarshalled = u.unmarshal(getClass().getClassLoader().getResourceAsStream(XML_RESOURCE));
-    	System.out.println(unmarshalled.getClass());
-    	assertEquals(getReadControlObject(), unmarshalled);
-    }
+   
 
 }
