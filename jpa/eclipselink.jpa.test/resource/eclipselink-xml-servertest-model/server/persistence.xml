@@ -25,6 +25,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <mapping-file>META-INF/advanced-multitenant-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.xml.inheritance.FueledVehicle</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
@@ -43,6 +44,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <mapping-file>META-INF/advanced-multitenant-entity-mappings.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.xml.inheritance.FueledVehicle</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
