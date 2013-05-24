@@ -2281,7 +2281,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 jndiConnector = new JNDIConnector(mainDatasource);                                
             }
             login.setConnector(jndiConnector);
-            login.setUsesExternalConnectionPooling(true);
+            String useInternalConnectionPool = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE, m, this.session);
+            if (!"true".equalsIgnoreCase(useInternalConnectionPool)){
+                login.setUsesExternalConnectionPooling(true);
+            }
         }
 
         if (this.session.isServerSession()) {

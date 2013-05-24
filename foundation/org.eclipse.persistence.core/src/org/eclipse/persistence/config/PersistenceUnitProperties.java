@@ -472,6 +472,17 @@ public class PersistenceUnitProperties {
     public static final String CONNECTION_POOL_SEQUENCE = "eclipselink.connection-pool.sequence.";
     
     /**
+     * Tell EclipseLink to use it's internal connection pool to pool connections from a datasource.
+     * 
+     * This property is useful when using EclipseLink with Gemini JPA because it internally wraps local
+     * database information in a datasource.
+     * 
+     * Default: false
+     */
+    public static final String CONNECTION_POOL_INTERNALLY_POOL_DATASOURCE = "eclipselink.connection-pool.force-internal-pool";
+    
+    
+    /**
      * The <code>"eclipselink.jdbc.connections.wait-timeout"</code> property
      * which specifies the timeout time in milliseconds (ms) that will be waited
      * for an available connection before an exception is thrown. Ignored in
