@@ -174,27 +174,27 @@ public abstract class AbstractResource {
                 Class reportItemValueType = null;
                 if (reportItemValue != null) {
                     reportItemValueType = reportItemValue.getClass();
-                }
-                if (reportItemValueType == null) {
-                    // try other paths to determine the type of the report item 
-                    DatabaseMapping dbMapping = reportItem.getMapping();
-                    if (dbMapping != null) {
-                        reportItemValueType = dbMapping.getAttributeClassification();
-                    } else {
-                        ClassDescriptor desc = reportItem.getDescriptor();
-                        if (desc != null) {
-                            reportItemValueType = desc.getJavaClass();
+                    if (reportItemValueType == null) {
+                        // try other paths to determine the type of the report item 
+                        DatabaseMapping dbMapping = reportItem.getMapping();
+                        if (dbMapping != null) {
+                            reportItemValueType = dbMapping.getAttributeClassification();
+                        } else {
+                            ClassDescriptor desc = reportItem.getDescriptor();
+                            if (desc != null) {
+                                reportItemValueType = desc.getJavaClass();
+                            }
                         }
                     }
-                }
 
-                // so, we couldn't determine the type of the report item, stop here... 
-                if (reportItemValueType == null) {
-                    return null;
-                }
+                    // so, we couldn't determine the type of the report item, stop here... 
+                    if (reportItemValueType == null) {
+                        return null;
+                    }
 
-                JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValueType, reportItemValue);
-                jaxbElements.add(reportItem.getResultIndex(), element);
+                    JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValueType, reportItemValue);
+                    jaxbElements.add(reportItem.getResultIndex(), element);
+                }
             }
         }
         return jaxbElements;
@@ -284,8 +284,7 @@ public abstract class AbstractResource {
             return uri;
         }
     }
-    
-    
+
     @SuppressWarnings("unused")
     private static String getDecodedUri(String uri) {
         try {

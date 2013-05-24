@@ -54,7 +54,7 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
+    protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
         List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
         if ((reportItems != null) && (reportItems.size() > 0)) {
             for (int index = 0; index < reportItems.size(); index++) {
@@ -66,27 +66,27 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
                 Class reportItemValueType = null;
                 if (reportItemValue != null) {
                     reportItemValueType = reportItemValue.getClass();
-                }
-                if (reportItemValueType == null) {
-                    // try other paths to determine the type of the report item
-                    DatabaseMapping dbMapping = reportItem.getMapping();
-                    if (dbMapping != null) {
-                        reportItemValueType = dbMapping.getAttributeClassification();
-                    } else {
-                        ClassDescriptor desc = reportItem.getDescriptor();
-                        if (desc != null) {
-                            reportItemValueType = desc.getJavaClass();
+                    if (reportItemValueType == null) {
+                        // try other paths to determine the type of the report item
+                        DatabaseMapping dbMapping = reportItem.getMapping();
+                        if (dbMapping != null) {
+                            reportItemValueType = dbMapping.getAttributeClassification();
+                        } else {
+                            ClassDescriptor desc = reportItem.getDescriptor();
+                            if (desc != null) {
+                                reportItemValueType = desc.getJavaClass();
+                            }
                         }
                     }
-                }
 
-                // so, we couldn't determine the type of the report item, stop here...
-                if (reportItemValueType == null) {
-                    return null;
-                }
+                    // so, we couldn't determine the type of the report item, stop here...
+                    if (reportItemValueType == null) {
+                        return null;
+                    }
 
-                JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValueType, reportItemValue);
-                jaxbElements.add(reportItem.getResultIndex(), element);
+                    JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValueType, reportItemValue);
+                    jaxbElements.add(reportItem.getResultIndex(), element);
+                }
             }
         }
         return jaxbElements;
