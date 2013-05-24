@@ -81,6 +81,60 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitTes
     public void testWriteProjectCache(){
         new org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite().testFileBasedProjectCacheLoading(getMULTI_TENANT_PU_123());
     }
+    
+    /**
+     * Because single PU units are tested at one time on the server, the
+     * SE testcase cannot not be used as is since static variables (of other
+     * families) will not have been populated. This validation test must be
+     * paired down.
+     */
+    @Override
+    public void testValidateMafiaFamily123() {
+        EntityManager em = create123EntityManager();
+
+        try {
+            clearCache(getMULTI_TENANT_PU_123());
+            em.clear();
+            
+            MafiaFamily family =  em.find(MafiaFamily.class, family123);
+            assertNotNull("The Mafia Family with id: " + family123 + ", was not found", family);
+            assertTrue("The Mafia Family had an incorrect number of tags [" + family.getTags().size() + "], expected [1]", family.getTags().size() == 1);
+            assertFalse("No mafiosos part of 123 family", family.getMafiosos().isEmpty());
+            
+            // Try a native sql query. Should get an exception since the
+            // eclipselink.jdbc.allow-native-sql-queries property is set to 
+            // false for this PU.
+            boolean exceptionCaught = false;
+            List mafiaFamilies = null;
+            try {
+                mafiaFamilies = em.createNativeQuery("select * from JPA_MAFIA_FAMILY").getResultList();
+            } catch (Exception e) {
+                exceptionCaught = true;
+            }
+            
+            assertTrue("No exception was caught from issuing a native query.", exceptionCaught);
+            
+            exceptionCaught = false;
+            try {
+                mafiaFamilies = em.createNamedQuery("findSQLMafiaFamilies").getResultList();
+            } catch (Exception e) {
+                exceptionCaught = true;
+            }
+            
+            assertTrue("No exception was caught from issuing a named native query.", exceptionCaught);
+            
+            // Try a select named query
+            List families = em.createNamedQuery("findAllMafiaFamilies").getResultList();
+            assertTrue("Incorrect number of families were returned [" + families.size() + "], expected [1]",  families.size() == 1);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
 
     public void testComplexMultitenantQueries() {
         EntityManager em = createEntityManager(getMULTI_TENANT_PU_123());
