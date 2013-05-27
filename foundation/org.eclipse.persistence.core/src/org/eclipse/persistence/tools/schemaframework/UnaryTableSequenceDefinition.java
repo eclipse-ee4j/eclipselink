@@ -29,7 +29,7 @@ import org.eclipse.persistence.sequencing.UnaryTableSequence;
  * the name of the table is sequence name; its only field is named unarySequenceCounterFieldName
  * <p>
  */
-public class UnaryTableSequenceDefinition extends SequenceDefinition {
+public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
     /**
      * INTERNAL:
      * Should be a sequence defining unary table sequence in the db:
@@ -37,7 +37,11 @@ public class UnaryTableSequenceDefinition extends SequenceDefinition {
      * DefaultSequence (only if case platform.getDefaultSequence() is an UnaryTableSequence).
      */
     public UnaryTableSequenceDefinition(Sequence sequence) {
-        super(sequence);
+        this(sequence, false);
+    }
+    
+    public UnaryTableSequenceDefinition(Sequence sequence, boolean deleteSchema) {
+        super(sequence, deleteSchema);
     }
 
     /**
