@@ -67,12 +67,22 @@ public class EmployeeQueriesTestSuite {
 
     @AfterClass
     public static void tearDown() {
-        session.executeNonSelectingSQL("DROP TABLE D_SALARY");
-        session.executeNonSelectingSQL("DROP TABLE D_PROJ_EMP");
-        session.executeNonSelectingSQL("DROP TABLE D_PROJECT");
-        session.executeNonSelectingSQL("DROP TABLE D_PHONE");
-        session.executeNonSelectingSQL("DROP TABLE D_EMPLOYEE");
-        session.executeNonSelectingSQL("DROP TABLE D_ADDRESS");
+        session.executeNonSelectingSQL("DELETE FROM D_PROJ_EMP");
+        session.executeNonSelectingSQL("DELETE FROM D_PHONE");
+        session.executeNonSelectingSQL("DELETE FROM D_SALARY");
+        session.executeNonSelectingSQL("DELETE FROM D_PROJECT");
+        session.executeNonSelectingSQL("DELETE FROM D_EMPLOYEE");
+        session.executeNonSelectingSQL("DELETE FROM D_ADDRESS");
+        try{
+            session.executeNonSelectingSQL("DROP TABLE D_SALARY");
+            session.executeNonSelectingSQL("DROP TABLE D_PROJ_EMP");
+            session.executeNonSelectingSQL("DROP TABLE D_PROJECT");
+            session.executeNonSelectingSQL("DROP TABLE D_PHONE");
+            session.executeNonSelectingSQL("DROP TABLE D_EMPLOYEE");
+            session.executeNonSelectingSQL("DROP TABLE D_ADDRESS");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         session.logout();
         session = null;
         dynamicHelper = null;

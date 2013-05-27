@@ -492,7 +492,7 @@ public class SchemaManager {
             return new TableSequenceDefinition(sequence, createDatabaseSchemas);
         } else if (sequence instanceof UnaryTableSequence ||
                    (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof UnaryTableSequence)) {
-            return new UnaryTableSequenceDefinition(sequence);
+            return new UnaryTableSequenceDefinition(sequence, createDatabaseSchemas);
         } else if (sequence instanceof NativeSequence || 
                    (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof NativeSequence)) {
             NativeSequence nativeSequence = null;
