@@ -2086,7 +2086,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     @Override
     public void load(final Object object, AttributeItem item, final AbstractSession session, final boolean fromFetchGroup) {
         instantiateAttribute(object, session);
-        if (item.getGroup() != null && !fromFetchGroup) {
+        if (item.getGroup() != null && (!fromFetchGroup || session.isUnitOfWork())) {
+            //if UOW make sure the nested attributes are loaded as the clones will not be instantiated
             Object value = getRealAttributeValueFromObject(object, session);
             
             ContainerPolicy cp = this.containerPolicy;

@@ -1419,7 +1419,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public void load(final Object object, AttributeItem item, final AbstractSession session, final boolean fromFetchGroup) {
         instantiateAttribute(object, session);
-        if (item.getGroup() != null && !fromFetchGroup) { // if fromFetchGroup then the above instantiate already loaded the elements
+        if (item.getGroup() != null && (!fromFetchGroup || session.isUnitOfWork())) {
+            // if fromFetchGroup then the above instantiate already loaded the elements unless this is in UOW
+            // in which case the clones must be loaded as well.
             Object value = getRealAttributeValueFromObject(object, session);
             session.load(value, item.getGroup(), getReferenceDescriptor(), fromFetchGroup);
         }
