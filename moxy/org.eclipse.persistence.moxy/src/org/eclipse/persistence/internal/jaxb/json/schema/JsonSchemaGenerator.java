@@ -1,0 +1,295 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Matt MacIvor - 2.5.1 - Initial Implementation
+ ******************************************************************************/
+package org.eclipse.persistence.internal.jaxb.json.schema;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
+import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonType;
+import org.eclipse.persistence.internal.jaxb.json.schema.model.Property;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
+import org.eclipse.persistence.sessions.Project;
+
+/**
+ * INTERNAL:
+ * <p><b>Purpose:</b> This class generates an instance of JsonSchema based on an EclipseLink
+ * project and given a root class. The descriptor for the root class' mappings are traversed and
+ * the associated schema artifacts are created.
+ * 
+ */
+public class JsonSchemaGenerator {
+    Project project;
+    JsonSchema schema;
+    Map contextProperties;
+    String attributePrefix;
+    
+    private static HashMap<Class, JsonType> javaTypeToJsonType;
+    
+    public JsonSchemaGenerator(Project project, Map properties) {
+        this.project = project;
+        this.contextProperties = properties;
+        if(properties != null) {
+            attributePrefix = (String)properties.get(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX);
+        }
+        
+    }
+    
+    public JsonSchema generateSchema(Class rootClass) {
+        schema = new JsonSchema();
+        schema.setTitle(rootClass.getName());
+        XMLDescriptor descriptor = (XMLDescriptor)project.getDescriptor(rootClass);
+        schema.setType(JsonType.OBJECT);
+        Map<String, Property> properties = schema.getProperties();
+        if(contextProperties != null && Boolean.TRUE.equals(this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT))) {
+            XMLField field = descriptor.getDefaultRootElementField();
+            if(field != null) {
+                Property prop = new Property();
+                prop.setType(JsonType.OBJECT);
+                prop.setName(field.getXPathFragment().getLocalName());
+                properties.put(prop.getName(), prop);
+                properties = prop.getProperties();
+            }
+        }
+        populateProperties(properties, descriptor);
+        return schema;
+    }
+
+    private void populateProperties(Map<String, Property> properties, XMLDescriptor descriptor) {
+        
+        List<DatabaseMapping> mappings = descriptor.getMappings();
+        for(DatabaseMapping next:mappings) {
+            if(next instanceof ChoiceObjectMapping) {
+                ChoiceObjectMapping coMapping = (ChoiceObjectMapping)next;
+                for(Object nestedMapping:coMapping.getChoiceElementMappingsByClass().values()) {
+                    Property prop = generateProperty((XMLMapping)nestedMapping, descriptor, properties);
+                    if(!(properties.containsKey(prop.getName()))) {
+                        properties.put(prop.getName(), prop);
+                    }                    
+                }
+            }
+            else if(next instanceof ChoiceCollectionMapping) {
+                ChoiceCollectionMapping coMapping = (ChoiceCollectionMapping)next;
+                for(Object nestedMapping:coMapping.getChoiceElementMappingsByClass().values()) {
+                    Property prop = generateProperty((XMLMapping)nestedMapping, descriptor, properties);
+                    if(!(properties.containsKey(prop.getName()))) {
+                        properties.put(prop.getName(), prop);
+                    }                    
+                }
+            } else {
+           
+                Property prop = generateProperty((XMLMapping)next, descriptor, properties);
+                if(!(properties.containsKey(prop.getName()))) {
+                    properties.put(prop.getName(), prop);
+                }
+            }
+        }
+        
+    }
+
+    private Property generateProperty(XMLMapping next, XMLDescriptor descriptor, Map<String, Property> properties) {
+        Property prop = null;
+        if(((XMLMapping)next).isCollectionMapping()) {
+            if(next.isAbstractCompositeCollectionMapping()) {
+                CompositeCollectionMapping mapping = (CompositeCollectionMapping)next;
+                XMLField field = (XMLField)mapping.getField();
+                XPathFragment frag = field.getXPathFragment();
+                //for paths, there may already be an existing property
+                prop = properties.get(frag.getLocalName());
+                if(prop == null) {
+                    prop = new Property();
+                    prop.setName(frag.getLocalName());
+                }
+                Property nestedProperty = getNestedPropertyForFragment(frag, prop);
+                nestedProperty.setType(JsonType.ARRAY);
+                nestedProperty.setItem(new Property());
+                nestedProperty.getItem().setType(JsonType.OBJECT);
+                populateProperties(prop.getItem().getProperties(), (XMLDescriptor)mapping.getReferenceDescriptor());                    
+            } else if(next.isAbstractCompositeDirectCollectionMapping()) {
+                DirectCollectionMapping mapping = (DirectCollectionMapping)next;
+                XMLField field = (XMLField)mapping.getField();
+                XPathFragment frag = field.getXPathFragment();
+                List<String> enumeration = null;
+                if(mapping.getValueConverter() instanceof JAXBEnumTypeConverter) {
+                    JAXBEnumTypeConverter conv = (JAXBEnumTypeConverter)mapping.getValueConverter();
+                    enumeration = new ArrayList<String>();
+                    for(Object nextValue: conv.getAttributeToFieldValues().values()) {
+                        enumeration.add(nextValue.toString());
+                    }
+                }
+                String propertyName = frag.getLocalName();
+                if(frag.isAttribute() && this.attributePrefix != null) {
+                    propertyName = attributePrefix + propertyName;
+                }
+                prop = properties.get(propertyName);
+                if(prop == null) {
+                    prop = new Property();
+                    prop.setName(propertyName);
+                }
+                Property nestedProperty = getNestedPropertyForFragment(frag, prop);
+                nestedProperty.setType(JsonType.ARRAY);
+                nestedProperty.setItem(new Property());
+                if(enumeration != null) {
+                    nestedProperty.getItem().setEnumeration(enumeration);
+                } 
+                nestedProperty.getItem().setType(getJsonTypeForJavaType(mapping.getAttributeElementClass()));
+                return prop;
+            }
+        } else {
+            if(next.isAbstractDirectMapping()) {
+                //handle direct mapping
+                DirectMapping directMapping = (DirectMapping)next;
+                XMLField field = (XMLField)directMapping.getField();
+                XPathFragment frag = field.getXPathFragment();
+                List<String> enumeration = null;
+                if(directMapping.getConverter() instanceof JAXBEnumTypeConverter) {
+                    JAXBEnumTypeConverter conv = (JAXBEnumTypeConverter)directMapping.getConverter();
+                    enumeration = new ArrayList<String>();
+                    for(Object nextValue: conv.getAttributeToFieldValues().values()) {
+                        enumeration.add(nextValue.toString());
+                    }
+                }                
+                String propertyName = frag.getLocalName();
+                if(frag.isAttribute() && this.attributePrefix != null) {
+                    propertyName = attributePrefix + propertyName;
+                }
+                prop = properties.get(propertyName);
+                if(prop == null) {
+                    prop = new Property();
+                    prop.setName(propertyName);
+                }
+                Property nestedProperty = getNestedPropertyForFragment(frag, prop);
+                if(enumeration != null) {
+                    nestedProperty.setEnumeration(enumeration);
+                } 
+                nestedProperty.setType(getJsonTypeForJavaType(directMapping.getAttributeClassification()));
+                return prop;
+            } else if(next.isAbstractCompositeObjectMapping()) {
+                CompositeObjectMapping mapping = (CompositeObjectMapping)next;
+                XMLDescriptor nextDescriptor = (XMLDescriptor)mapping.getReferenceDescriptor();
+                XMLField field = (XMLField)mapping.getField();
+                XPathFragment firstFragment = field.getXPathFragment();
+                prop = properties.get(firstFragment.getLocalName());
+                if(prop == null) {
+                    prop = new Property();
+                    prop.setName(firstFragment.getLocalName());
+                }
+                prop.setType(JsonType.OBJECT);
+                prop.setName(firstFragment.getLocalName());
+                Property nestedProperty = getNestedPropertyForFragment(firstFragment, prop);
+                populateProperties(nestedProperty.getProperties(), nextDescriptor);
+            }
+        }
+        
+        return prop;
+    }
+
+    private JsonType getJsonTypeForJavaType(Class attributeClassification) {
+        HashMap<Class, JsonType> types = getJavaTypeToJsonType();
+        JsonType jsonType = types.get(attributeClassification);
+        if(jsonType == null) {
+            return JsonType.OBJECT;
+        }
+        return jsonType;
+    }
+    
+    private static HashMap<Class, JsonType> getJavaTypeToJsonType() {
+        if(javaTypeToJsonType == null) {
+            initJavaTypeToJsonType();
+        }
+        return javaTypeToJsonType;
+    }
+
+    private static void initJavaTypeToJsonType() {
+        javaTypeToJsonType = new HashMap<Class, JsonType>();
+        javaTypeToJsonType.put(CoreClassConstants.APBYTE, JsonType.ARRAY);
+        javaTypeToJsonType.put(CoreClassConstants.BIGDECIMAL, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.BIGINTEGER, JsonType.INTEGER);
+        javaTypeToJsonType.put(CoreClassConstants.PBOOLEAN, JsonType.BOOLEAN);
+        javaTypeToJsonType.put(CoreClassConstants.PBYTE, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.CALENDAR, JsonType.STRING);
+        javaTypeToJsonType.put(CoreClassConstants.PDOUBLE, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.PFLOAT, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.PINT, JsonType.INTEGER);
+        javaTypeToJsonType.put(CoreClassConstants.PLONG, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.PSHORT, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.STRING, JsonType.STRING);
+        javaTypeToJsonType.put(CoreClassConstants.CHAR, JsonType.STRING);       
+        // other pairs
+        javaTypeToJsonType.put(CoreClassConstants.ABYTE, JsonType.ARRAY);
+        javaTypeToJsonType.put(CoreClassConstants.BOOLEAN, JsonType.BOOLEAN);
+        javaTypeToJsonType.put(CoreClassConstants.BYTE, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.CLASS, JsonType.STRING);
+        javaTypeToJsonType.put(CoreClassConstants.GREGORIAN_CALENDAR, JsonType.STRING);
+        javaTypeToJsonType.put(CoreClassConstants.DOUBLE, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.FLOAT, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.INTEGER, JsonType.INTEGER);
+        javaTypeToJsonType.put(CoreClassConstants.LONG, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.OBJECT, JsonType.OBJECT);
+        javaTypeToJsonType.put(CoreClassConstants.SHORT, JsonType.NUMBER);
+        javaTypeToJsonType.put(CoreClassConstants.UTILDATE, JsonType.STRING);
+        javaTypeToJsonType.put(CoreClassConstants.SQLDATE, JsonType.STRING);
+        javaTypeToJsonType.put(CoreClassConstants.TIME, JsonType.STRING);
+        javaTypeToJsonType.put(CoreClassConstants.TIMESTAMP, JsonType.STRING);
+        javaTypeToJsonType.put(CoreClassConstants.DURATION, JsonType.STRING);
+       
+        
+    }
+
+    private Property getNestedPropertyForFragment(XPathFragment frag, Property prop) {
+        if(frag.getNextFragment() == null  || frag.getNextFragment().nameIsText() ) {
+            return prop;
+        }
+        Map<String, Property> currentProperties = prop.getProperties();
+        prop.setProperties(currentProperties);
+        prop.setType(JsonType.OBJECT);
+        frag = frag.getNextFragment();
+        String propertyName = frag.getLocalName();
+        if(frag.isAttribute() && this.attributePrefix != null) {
+            propertyName = this.attributePrefix + "propertyName";
+        }
+        while(frag != null && !frag.nameIsText()) {
+            Property nestedProperty = prop.getProperty(frag.getLocalName());
+            if(nestedProperty == null) {
+                nestedProperty = new Property();
+                nestedProperty.setName(propertyName);
+            }
+            currentProperties.put(nestedProperty.getName(), nestedProperty);
+            if(frag.getNextFragment().nameIsText() || frag.getNextFragment() == null) {
+                return nestedProperty;
+            } else {
+                nestedProperty.setType(JsonType.OBJECT);
+
+                currentProperties = nestedProperty.getProperties();
+            }
+            frag = frag.getNextFragment();
+        }
+        return null;
+    }
+
+}
