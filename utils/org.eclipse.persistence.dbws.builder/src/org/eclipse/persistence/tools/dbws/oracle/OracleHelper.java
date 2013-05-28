@@ -109,6 +109,7 @@ import org.eclipse.persistence.tools.oracleddl.util.DatabaseTypeBuilder;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 import static org.eclipse.persistence.internal.xr.Util.getJDBCTypeForTypeName;
+import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.COLON;
@@ -129,6 +130,7 @@ import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLCursorArg;
 import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
+import static org.eclipse.persistence.tools.dbws.Util.shouldSetJavaType;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
 import static org.eclipse.persistence.tools.dbws.Util.BUILDING_QUERYOP_FOR;
@@ -880,9 +882,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             // direct mapping
                             AbstractDirectMapping absDirectMapping = (AbstractDirectMapping) ordtDesc.addDirectMapping(lFieldName, fieldName);
                             try {
-                                absDirectMapping.setAttributeClassificationName(
-                                        org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType(fType.getTypeName(), dbwsBuilder.getDatabasePlatform()
-                                        ).getName());
+                                absDirectMapping.setAttributeClassificationName(getClassFromJDBCType(fType.getTypeName(), dbwsBuilder.getDatabasePlatform()).getName());
                             } catch (Exception x) {}
                         }
                     }
@@ -1272,8 +1272,17 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         // handle BLOBs
                         ((StoredFunctionCall) call).setResult(null, ClassConstants.BLOB);
                     } else {
-                        // default to OBJECT
-                        ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
+                        int resultType = Util.getJDBCTypeFromTypeName(javaTypeName);
+                        // need special handling for Date types
+                        if (resultType == Types.DATE || resultType == Types.TIME || resultType == Types.TIMESTAMP) {
+                            ((StoredFunctionCall) call).setResult(null, java.sql.Timestamp.class);
+                        } else if (returnArg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
+                            // special handling for XMLType types
+                            ((StoredFunctionCall) call).setResult(null, 2009);
+                        } else {
+                            // default to OBJECT
+                            ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
+                        }
                     }
                 }
             } else {
@@ -1371,7 +1380,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.STRUCT, argType.getTypeName(), wrapperClass);
                         }
                     } else {
-                        call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Util.getJDBCTypeFromTypeName(argType.getTypeName()));
+                        // need special handling for XMLType - we'll use 2009 (SQLXML)
+                        if (argType == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.SQLXML);
+                        } else if (argType == ScalarDatabaseTypeEnum.SYS_REFCURSOR_TYPE) {
+                            call.addNamedCursorOutputArgument(arg.getArgumentName());
+                        } else {
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Util.getJDBCTypeFromTypeName(argType.getTypeName()));
+                        }
                     }
                 }
             } else {  // INOUT
@@ -1398,7 +1414,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             call.addNamedInOutputArgument(arg.getArgumentName(), arg.getArgumentName(), arg.getArgumentName(), Types.STRUCT, argType.getTypeName());
                         }
                     } else {
-                        call.addNamedInOutputArgument(arg.getArgumentName());
+                        // for some reason setting "java.lang.String" as the java type causes problems at runtime
+                        Class javaType = getClassFromJDBCType(argType.getTypeName(), dbwsBuilder.getDatabasePlatform());
+                        if (shouldSetJavaType(javaType.getName())) {
+                            call.addNamedInOutputArgument(arg.getArgumentName(), arg.getArgumentName(), arg.getArgumentName(), Util.getJDBCTypeFromTypeName(argType.getTypeName()), argType.getTypeName(), javaType);
+                        } else {
+                            call.addNamedInOutputArgument(arg.getArgumentName()); 
+                        }
                     }
                 }
             }

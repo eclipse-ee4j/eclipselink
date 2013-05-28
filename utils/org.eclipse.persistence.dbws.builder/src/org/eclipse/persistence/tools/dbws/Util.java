@@ -927,4 +927,17 @@ public class Util {
         }
         return false;
     }
+    
+    /**
+     * Convenience method used to determine if the java class and/or java type name
+     * should be set on a given procedure argument.  This will typically be used
+     * when calling addNamedInOutputArgument on a stored procedure call.
+     * 
+     */
+    public static boolean shouldSetJavaType(String typeName) {
+        if (typeName.equals(ClassConstants.STRING.getName())) {
+            return false;
+        }
+        return true;
+    }
 }

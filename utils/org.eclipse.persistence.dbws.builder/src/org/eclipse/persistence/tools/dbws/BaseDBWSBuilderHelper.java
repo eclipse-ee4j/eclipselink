@@ -172,7 +172,6 @@ import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedWrapperClassName;
-import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
 import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs;
 import static org.eclipse.persistence.tools.dbws.Util.isNullStream;
 import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
@@ -454,13 +453,8 @@ public abstract class BaseDBWSBuilderHelper {
             if (opModel.isProcedureOperation()) {
                 ProcedureOperationModel procedureOperation = (ProcedureOperationModel)opModel;
                     for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
-                        // build list of arguments to process (i.e. build descriptors for)
-                        List<ArgumentType> args = getArgumentListForProcedureType(procType);
-                        boolean hasPLSQLArgs = hasPLSQLArgs(args);
-                        if (hasComplexArgs(args) || hasPLSQLArgs) {
-                            // build a query for this ProcedureType as it has one or more complex arguments
-                            buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation, hasPLSQLArgs);
-                        }
+                        buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation, 
+                                hasPLSQLArgs(getArgumentListForProcedureType(procType)));
                     }
             }
         }
@@ -983,16 +977,9 @@ public abstract class BaseDBWSBuilderHelper {
                 }
             }
         }
-        // TODO:  we will always have at least one operation, so this check may be unnecessary
         if ((writeORProject || !dbwsBuilder.xrServiceModel.getOperations().isEmpty()) && !isNullStream(dbwsOrStream)) {
             XMLContext context = new XMLContext(workbenchXMLProject);
             context.getSession(orProject).getEventManager().addListener(new MissingDescriptorListener());
-            
-            // TODO:  two issues - 1. need to write out JPA query metadata for all procs/funcs, not just the 
-            //        complex ones, and 2. need to write out JPA query metadata for CRUD ops
-            // TODO:  there is also a bug with prepended packages (PrependedPackageTestSuite) resulting
-            //        in two procedures being processed by the parser (one qualified with package name - correct - 
-            //        and one w/o package prepended - incorrect.
             
             XMLEntityMappings mappings = XmlEntityMappingsGenerator.generateXmlEntityMappings(orProject, complextypes, crudOps);
             if (mappings != null) {

@@ -609,7 +609,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
           "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
           "<simple-xml-format>" +
           "<simple-xml>" +
-          "<X>&lt;jb>&lt;data> jdev testing for 12.1.2 &lt;/data>&lt;/jb></X>" +
+          "<result>&lt;jb>&lt;data> jdev testing for 12.1.2 &lt;/data>&lt;/jb></result>" +
           "</simple-xml>" +
           "</simple-xml-format>";      
 }

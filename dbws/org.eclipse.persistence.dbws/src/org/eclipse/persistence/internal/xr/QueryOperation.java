@@ -401,11 +401,13 @@ public class QueryOperation extends Operation {
         if (value != null) {
         	// a recent change in core results in an empty vector being returned in cases
         	// where before we'd expect an int value (typically 1) - need to handle this
-        	if (value instanceof Vector && ((Vector) value).isEmpty()) {
-        		if (result != null && (result.getType() == INT_QNAME || result.getType().equals(SXF_QNAME))) {
-        			((Vector) value).add(1);
-        		}
-        	}
+            if (result != null && (result.getType() == INT_QNAME || result.getType().equals(SXF_QNAME))) {
+                if (value instanceof ArrayList && ((ArrayList) value).isEmpty()) {
+                    ((ArrayList) value).add(1);
+                } else  if (value instanceof Vector && ((Vector) value).isEmpty()) {
+                    ((Vector) value).add(1);
+                }
+            }
         	
             // JPA spec returns an ArrayList<Object[]> for stored procedure queries - will need to unwrap.
             // Note that for legacy deployment XML projects this is not the case.
@@ -549,12 +551,24 @@ public class QueryOperation extends Operation {
             for (Object obj : dsCall.getParameters()) {
                 if (obj instanceof OutputParameterForCallableStatement) {
                     paramFlds.add(((OutputParameterForCallableStatement) obj).getOutputField());
+                } else if (obj instanceof Object[]) {
+                    Object[] objArray = (Object[]) obj;
+                    for (int i = 0; i < objArray.length; i++) {
+                        Object o = objArray[i];
+                        if (o instanceof OutputParameterForCallableStatement) {
+                            paramFlds.add(((OutputParameterForCallableStatement) o).getOutputField());
+                        }
+                    }
                 }
             }
             // now create a record using DatabaseField/value pairs
             DatabaseRecord dr = new DatabaseRecord();
-            for (int i=0; i <  ((ArrayList) value).size(); i++) {
-                dr.add(paramFlds.get(i), ((ArrayList) value).get(i));
+            if (paramFlds.size() > 0) {
+                for (int i=0; i <  ((ArrayList) value).size(); i++) {
+                    dr.add(paramFlds.get(i), ((ArrayList) value).get(i));
+                }
+            } else {
+                dr.add(new DatabaseField(RESULT_STR), ((ArrayList) value).get(0));
             }
             records = new Vector<DatabaseRecord>();
             records.add(dr);
