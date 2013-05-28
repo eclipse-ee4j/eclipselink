@@ -10,7 +10,7 @@
  * Contributors:
  *      gonural - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.features.selflinks;
+package org.eclipse.persistence.jpa.rs.features.core.selflinks;
 
 import java.util.ArrayList;
 import java.util.Collection;

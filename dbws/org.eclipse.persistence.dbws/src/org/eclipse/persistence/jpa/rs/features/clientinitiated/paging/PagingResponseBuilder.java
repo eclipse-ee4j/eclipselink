@@ -10,7 +10,7 @@
  * Contributors:
  *      gonural - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.features.paging;
+package org.eclipse.persistence.jpa.rs.features.clientinitiated.paging;
 
 import java.util.ArrayList;
 import java.util.Collection;

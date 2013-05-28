@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features;
 
-
 public class FeatureSetPreV2 implements FeatureSet {
 
     /* (non-Javadoc)

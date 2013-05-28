@@ -13,9 +13,9 @@
 package org.eclipse.persistence.jpa.rs;
 
 public class SystemDefaults {
-    
+
     // Paging related default values
-    public static final int PAGING_DEFAULT_PAGE_LIMIT = 20;
-    public static final int PAGING_DEFAULT_PAGE_OFFSET = 0;
-    
+    public static final int JPARS_DEFAULT_PAGE_LIMIT = 20;
+    public static final int JPARS_DEFAULT_PAGE_OFFSET = 0;
+
 }

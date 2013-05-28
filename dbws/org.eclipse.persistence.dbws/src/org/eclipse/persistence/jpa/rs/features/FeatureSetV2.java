@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features;
 
-import org.eclipse.persistence.jpa.rs.features.paging.PagingRequestValidator;
-import org.eclipse.persistence.jpa.rs.features.paging.PagingResponseBuilder;
-import org.eclipse.persistence.jpa.rs.features.selflinks.SelfLinksResponseBuilder;
+import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
+import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingResponseBuilder;
+import org.eclipse.persistence.jpa.rs.features.core.selflinks.SelfLinksResponseBuilder;
 
 public class FeatureSetV2 implements FeatureSet {
 

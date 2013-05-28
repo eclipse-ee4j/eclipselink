@@ -30,7 +30,7 @@ import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidator;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
-import org.eclipse.persistence.jpa.rs.features.paging.PagingRequestValidator;
+import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.queries.DatabaseQuery;

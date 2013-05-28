@@ -33,7 +33,6 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
-
 /**
  * EclipseLink helper class used for converting composite key values passed into
  * JAX-RS calls as query or matrix parameters into a value that can be used in a
@@ -48,14 +47,14 @@ public class IdHelper {
 
     @SuppressWarnings("rawtypes")
     public static Object buildId(PersistenceContext app, String entityName, String idString) {
-        DatabaseSession session = app.getJpaSession();
+        DatabaseSession session = app.getServerSession();
         ClassDescriptor descriptor = app.getDescriptor(entityName);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
         List<SortableKey> pkIndices = new ArrayList<SortableKey>();
         int index = 0;
         int multitenantPKMappings = 0;
-        for (DatabaseMapping mapping: pkMappings){
-            if (mapping.isMultitenantPrimaryKeyMapping()){
+        for (DatabaseMapping mapping : pkMappings) {
+            if (mapping.isMultitenantPrimaryKeyMapping()) {
                 multitenantPKMappings++;
             } else {
                 pkIndices.add(new SortableKey(mapping, index));
@@ -68,12 +67,12 @@ public class IdHelper {
         Object[] keyElements = new Object[pkMappings.size() - multitenantPKMappings];
         StringTokenizer tokenizer = new StringTokenizer(idString, SEPARATOR_STRING);
         int tokens = tokenizer.countTokens();
-        if (tokens + multitenantPKMappings != pkMappings.size()){
+        if (tokens + multitenantPKMappings != pkMappings.size()) {
             throw new RuntimeException("Failed, incorrect number of keys values");
         }
         index = 0;
         Iterator<SortableKey> iterator = pkIndices.iterator();
-        while (tokenizer.hasMoreTokens()){
+        while (tokenizer.hasMoreTokens()) {
             SortableKey key = iterator.next();
             String token = tokenizer.nextToken();
             DatabaseMapping mapping = key.getMapping();
@@ -83,7 +82,7 @@ public class IdHelper {
                     attributeClasification = mapping.getFields().get(0).getType();
                 }
             }
-            
+
             Object idValue = session.getDatasourcePlatform().getConversionManager().convertObject(token, attributeClasification);
             keyElements[key.getIndex()] = idValue;
             index++;
@@ -91,7 +90,7 @@ public class IdHelper {
 
         if (descriptor.hasCMPPolicy()) {
             CMP3Policy policy = (CMP3Policy) descriptor.getCMPPolicy();
-            return policy.createPrimaryKeyInstanceFromPrimaryKeyValues((AbstractSession) session, new int[]{0}, keyElements);
+            return policy.createPrimaryKeyInstanceFromPrimaryKeyValues((AbstractSession) session, new int[] { 0 }, keyElements);
         }
 
         if (keyElements.length == 1) {
@@ -147,7 +146,7 @@ public class IdHelper {
                                                             if (sourceToTargetFields.containsKey(field)) {
                                                                 if ((fieldName != null) && (dbFieldName.equals(fieldName))) {
                                                                     Object value = descriptor.getObjectBuilder().getBaseValueForField(dbField, entity);
-                                                                    Object realAttributeValue = refMapping.getRealAttributeValueFromAttribute(refMapping.getAttributeValueFromObject(value), value, (AbstractSession) app.getJpaSession());
+                                                                    Object realAttributeValue = refMapping.getRealAttributeValueFromAttribute(refMapping.getAttributeValueFromObject(value), value, (AbstractSession) app.getServerSession());
                                                                     key.append(realAttributeValue);
                                                                 }
                                                             }
@@ -182,13 +181,13 @@ public class IdHelper {
      * @param id
      * @return
      */
-    public static Object buildObjectShell(PersistenceContext context,  String entityType, Object id) {
+    public static Object buildObjectShell(PersistenceContext context, String entityType, Object id) {
         ClassDescriptor descriptor = context.getDescriptor(entityType);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
         Object entity = null;
         if (descriptor.hasCMPPolicy()) {
             CMP3Policy policy = (CMP3Policy) descriptor.getCMPPolicy();
-            entity = policy.createBeanUsingKey(id, (AbstractSession) context.getJpaSession());
+            entity = policy.createBeanUsingKey(id, (AbstractSession) context.getServerSession());
         } else if (entity instanceof DynamicEntity) {
             DynamicEntityImpl dynamicEntity = (DynamicEntityImpl) context.newEntity(entityType);
             // if there is only one PK mapping, we assume the id object
@@ -226,26 +225,40 @@ public class IdHelper {
         return entity;
     }
 
+    public static Object getPrimaryKey(PersistenceContext context, String entityName) {
+        ClassDescriptor descriptor = context.getDescriptor(entityName);
+        List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
+        List<SortableKey> pkIndices = new ArrayList<SortableKey>();
+        int index = 0;
+        for (DatabaseMapping mapping : pkMappings) {
+            if (!mapping.isMultitenantPrimaryKeyMapping()) {
+                pkIndices.add(new SortableKey(mapping, index));
+                index++;
+            }
+        }
+        Collections.sort(pkIndices);
+        return pkIndices;
+    }
 
-    private static class SortableKey implements Comparable<SortableKey>{
+    private static class SortableKey implements Comparable<SortableKey> {
 
         private DatabaseMapping mapping;
         private int index;
 
-        public SortableKey(DatabaseMapping mapping, int index){
+        public SortableKey(DatabaseMapping mapping, int index) {
             this.mapping = mapping;
             this.index = index;
         }
 
-        public int compareTo(SortableKey o){
+        public int compareTo(SortableKey o) {
             return mapping.getAttributeName().compareTo(o.getMapping().getAttributeName());
         }
 
-        public DatabaseMapping getMapping(){
+        public DatabaseMapping getMapping() {
             return mapping;
         }
 
-        public int getIndex(){
+        public int getIndex() {
             return index;
         }
 

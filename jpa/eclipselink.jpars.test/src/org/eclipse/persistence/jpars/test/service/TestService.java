@@ -74,7 +74,7 @@ public class TestService {
 
     public static PersistenceContext getAuctionPersistenceContext(Map<String, Object> additionalProperties) throws URISyntaxException {
         Map<String, Object> properties = new HashMap<String, Object>();
-        if (additionalProperties != null){
+        if (additionalProperties != null) {
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
@@ -84,7 +84,7 @@ public class TestService {
 
     public static PersistenceContext getPhoneBookPersistenceContext(Map<String, Object> additionalProperties) throws URISyntaxException {
         Map<String, Object> properties = new HashMap<String, Object>();
-        if (additionalProperties != null){
+        if (additionalProperties != null) {
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
@@ -93,11 +93,11 @@ public class TestService {
     }
 
     @BeforeClass
-    public static void setup(){
+    public static void setup() {
         Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties); 
+        ExamplePropertiesLoader.loadProperties(properties);
         factory = null;
-        try{
+        try {
             factory = new PersistenceFactoryBase();
 
             properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
@@ -114,14 +114,15 @@ public class TestService {
             if (context == null) {
                 throw new Exception("Persistence context could not be created.");
             }
-            
+
             StaticModelDatabasePopulator.populateDB(emf);
-            
-        } catch (Exception e){
+
+        } catch (Exception e) {
             e.printStackTrace();
             fail(e.toString());
         }
     }
+
     @AfterClass
     public static void teardown() throws URISyntaxException {
         clearData();
@@ -148,17 +149,17 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = TestService.getAuctionPersistenceContext(null);
 
-        DynamicEntity entity = (DynamicEntity)context.newEntity("User");
+        DynamicEntity entity = (DynamicEntity) context.newEntity("User");
         entity.set("name", "Jim");
         context.create(null, entity);
 
         entity.set("name", "James");
 
-        DynamicEntity entity2 = (DynamicEntity)context.newEntity("User");
+        DynamicEntity entity2 = (DynamicEntity) context.newEntity("User");
         entity2.set("name", "Jill");
         context.create(null, entity2);
 
-        entity2.set("name", "Gillian");    
+        entity2.set("name", "Gillian");
 
         List<DynamicEntity> entities = new ArrayList<DynamicEntity>();
         entities.add(entity);
@@ -168,15 +169,15 @@ public class TestService {
                 TestService.serializeListToStream(entities, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try{
+        try {
             output.write(outputStream);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             fail(ex.toString());
         }
         InputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
-        try{
-            entities = (List<DynamicEntity>)context.unmarshalEntity("User", MediaType.APPLICATION_JSON_TYPE, stream);
-        } catch (JAXBException e){
+        try {
+            entities = (List<DynamicEntity>) context.unmarshalEntity("User", MediaType.APPLICATION_JSON_TYPE, stream);
+        } catch (JAXBException e) {
             fail("Exception unmarsalling: " + e);
         }
         assertNotNull("returned data was null", entities);
@@ -184,8 +185,8 @@ public class TestService {
         List<String> values = new ArrayList<String>();
         values.add("James");
         values.add("Gillian");
-        for (DynamicEntity value: entities){
-            ((FetchGroupTracker)value)._persistence_setSession(context.getJpaSession());
+        for (DynamicEntity value : entities) {
+            ((FetchGroupTracker) value)._persistence_setSession(context.getServerSession());
             assertTrue("Incorrect name returned", value.get("name").equals("James") || value.get("name").equals("Gillian"));
             values.remove(value.get("name"));
         }
@@ -201,7 +202,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getPhoneBookPersistenceContext(null);
 
-        DynamicEntity entity = (DynamicEntity)context.newEntity("Person");
+        DynamicEntity entity = (DynamicEntity) context.newEntity("Person");
         entity.set("firstName", "Jim");
         entity.set("lastName", "Jones");
         entity.set("phoneNumber", "1234567");
@@ -209,12 +210,12 @@ public class TestService {
 
         entity.set("firstName", "James");
 
-        DynamicEntity entity2 = (DynamicEntity)context.newEntity("Person");
+        DynamicEntity entity2 = (DynamicEntity) context.newEntity("Person");
         entity2.set("firstName", "Jill");
         entity2.set("lastName", "Jones");
         context.create(null, entity2);
 
-        entity2.set("firstName", "Gillian");    
+        entity2.set("firstName", "Gillian");
 
         List<DynamicEntity> entities = new ArrayList<DynamicEntity>();
         entities.add(entity);
@@ -224,25 +225,25 @@ public class TestService {
                 serializeListToStream(entities, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try{
+        try {
             output.write(outputStream);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             fail(ex.toString());
         }
         InputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
-        try{
-            entities = (List<DynamicEntity>)context.unmarshalEntity("Person", MediaType.APPLICATION_JSON_TYPE, stream);
-        } catch (JAXBException e){
+        try {
+            entities = (List<DynamicEntity>) context.unmarshalEntity("Person", MediaType.APPLICATION_JSON_TYPE, stream);
+        } catch (JAXBException e) {
             fail("Exception unmarsalling: " + e);
-        }        
+        }
         assertNotNull("returned data was null", entities);
         assertNotNull("returned data had null list", entities);
         assertTrue("returned data had wrong list size", entities.size() == 2);
         List<String> values = new ArrayList<String>();
         values.add("James");
         values.add("Gillian");
-        for (DynamicEntity value: entities){
-            ((FetchGroupTracker)value)._persistence_setSession(context.getJpaSession());
+        for (DynamicEntity value : entities) {
+            ((FetchGroupTracker) value)._persistence_setSession(context.getServerSession());
             assertTrue("Incorrect firstName returned", value.get("firstName").equals("James") || value.get("firstName").equals("Gillian"));
             values.remove(value.get("firstName"));
         }
@@ -251,20 +252,20 @@ public class TestService {
         clearData();
     }
 
-    @Test 
+    @Test
     public void testMarshallBid() throws URISyntaxException {
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
+        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
         entity1.set("name", "Computer");
 
-        DynamicEntity entity2 = (DynamicEntity)context.newEntity("User");
+        DynamicEntity entity2 = (DynamicEntity) context.newEntity("User");
         entity2.set("name", "Bob");
         context.create(null, entity2);
 
-        DynamicEntity entity3 = (DynamicEntity)context.newEntity("Bid");
+        DynamicEntity entity3 = (DynamicEntity) context.newEntity("Bid");
         entity3.set("amount", 200d);
         entity3.set("user", entity2);
         entity3.set("auction", entity1);
@@ -272,9 +273,9 @@ public class TestService {
 
         InputStream stream = serializeToStream(entity3, context, MediaType.APPLICATION_JSON_TYPE);
 
-        try{
-            entity3 = (DynamicEntity)context.unmarshalEntity("Bid", MediaType.APPLICATION_JSON_TYPE, stream);
-        } catch (JAXBException e){
+        try {
+            entity3 = (DynamicEntity) context.unmarshalEntity("Bid", MediaType.APPLICATION_JSON_TYPE, stream);
+        } catch (JAXBException e) {
             fail("Exception unmarsalling: " + e);
         }
         (new FetchGroupManager()).setObjectFetchGroup(entity3, null, null);
@@ -291,11 +292,11 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
+        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
         entity1.set("name", "Computer");
         context.create(null, entity1);
 
-        DynamicEntity entity2 = (DynamicEntity)context.newEntity("Auction");
+        DynamicEntity entity2 = (DynamicEntity) context.newEntity("Auction");
         entity2.set("name", "Word Processor");
         context.create(null, entity2);
 
@@ -307,9 +308,9 @@ public class TestService {
         StreamingOutput output = (StreamingOutput) resource.namedQuery("jpars_auction", "Auction.all", headers, ui).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try{
+        try {
             output.write(outputStream);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             fail(ex.toString());
         }
         String resultString = outputStream.toString();
@@ -325,11 +326,11 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
+        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
         entity1.set("name", "Computer");
         context.create(null, entity1);
 
-        DynamicEntity entity2 = (DynamicEntity)context.newEntity("Auction");
+        DynamicEntity entity2 = (DynamicEntity) context.newEntity("Auction");
         entity2.set("name", "Word Processor");
         context.create(null, entity2);
 
@@ -355,7 +356,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
+        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
         entity1.set("name", "Computer");
         context.create(null, entity1);
         entity1.set("name", "Laptop");
@@ -376,20 +377,20 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
+        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
         entity1.set("name", "Computer");
 
-        DynamicEntity entity2 = (DynamicEntity)context.newEntity("User");
+        DynamicEntity entity2 = (DynamicEntity) context.newEntity("User");
         entity2.set("name", "Bob");
         context.create(null, entity2);
 
-        DynamicEntity entity3 = (DynamicEntity)context.newEntity("Bid");
+        DynamicEntity entity3 = (DynamicEntity) context.newEntity("Bid");
         entity3.set("amount", 200d);
         entity3.set("user", entity2);
         entity3.set("auction", entity1);
         context.create(null, entity3);
 
-        entity3 = (DynamicEntity)context.find(null, "Bid", entity3.get("id"), null);
+        entity3 = (DynamicEntity) context.find(null, "Bid", entity3.get("id"), null);
 
         entity3.set("amount", 201d);
         entity1 = entity3.get("auction");
@@ -399,22 +400,22 @@ public class TestService {
 
         String resultString = stringifyResults(output);
 
-        assertTrue("amount was not in results.", resultString.replace(" ","").contains("\"amount\":201.0"));
+        assertTrue("amount was not in results.", resultString.replace(" ", "").contains("\"amount\":201.0"));
         String uri = RestUtils.getServerURI() + "jpars_auction/entity/Bid/";
         assertTrue("link was not in results.", resultString.replace(" ", "").contains(uri));
-        assertTrue("rel was not in results.", resultString.replace(" ","").contains("\"rel\":\"user\""));
-        assertTrue("Laptop was not a link in results.", !resultString.replace(" ","").contains("\"name\":\"Laptop\""));
+        assertTrue("rel was not in results.", resultString.replace(" ", "").contains("\"rel\":\"user\""));
+        assertTrue("Laptop was not a link in results.", !resultString.replace(" ", "").contains("\"name\":\"Laptop\""));
 
     }
 
     @Test
-    public void testMetadataQuery(){
+    public void testMetadataQuery() {
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
         StreamingOutput output = null;
-        try{
+        try {
             output = (StreamingOutput) resource.getContexts(generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo()).getEntity();
-        } catch (JAXBException e){
+        } catch (JAXBException e) {
             fail("Exception: " + e);
         }
         String result = stringifyResults(output);
@@ -441,14 +442,14 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
+        DynamicEntity entity1 = (DynamicEntity) context.newEntity("Auction");
         entity1.set("name", "Computer1");
         context.create(null, entity1);
 
         TestURIInfo ui = new TestURIInfo();
         resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), ui, generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON));
 
-        entity1 = (DynamicEntity)context.find("Auction", entity1.get("id"));
+        entity1 = (DynamicEntity) context.find("Auction", entity1.get("id"));
 
         assertTrue("Entity was not deleted.", entity1 == null);
 
@@ -460,7 +461,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
-        DynamicEntity entity = (DynamicEntity)context.newEntity("User");
+        DynamicEntity entity = (DynamicEntity) context.newEntity("User");
         entity.set("name", "Bob");
         context.create(null, entity);
 
@@ -470,19 +471,19 @@ public class TestService {
 
         resource.namedQueryUpdate("jpars_auction", "User.updateName", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
 
-        entity = (DynamicEntity)context.find("User", entity.get("id"));
+        entity = (DynamicEntity) context.find("User", entity.get("id"));
 
         assertTrue("Entity was not updated.", entity.get("name").equals("Robert"));
     }
 
-    @Test 
+    @Test
     public void testDynamicCompositeKey() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
-        DynamicEntity user = (DynamicEntity)context.newEntity("User");
+        DynamicEntity user = (DynamicEntity) context.newEntity("User");
         user.set("name", "Wes");
-        DynamicEntity address = (DynamicEntity)context.newEntity("Address");
+        DynamicEntity address = (DynamicEntity) context.newEntity("Address");
         address.set("city", "Ottawa");
         address.set("postalCode", "a1a1a1");
         address.set("street", "Main Street");
@@ -493,33 +494,33 @@ public class TestService {
         Response output = resource.find("jpars_auction", "Address", address.get("id") + "+" + address.get("type"), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
                 new TestURIInfo());
 
-        String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
+        String result = stringifyResults((StreamingOutputMarshaller) output.getEntity());
         assertTrue("Type was not in the result", result.contains("Home"));
         assertTrue("Id was not in the result", result.contains(address.get("id").toString()));
     }
 
-    @Test 
-    public void testStaticCompositeKey(){
+    @Test
+    public void testStaticCompositeKey() {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
 
         Response output = resource.find("jpars_auction-static-local", "StaticAddress", StaticModelDatabasePopulator.ADDRESS1_ID + "+" + StaticModelDatabasePopulator.address1().getType(),
                 generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
-        String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
+        String result = stringifyResults((StreamingOutputMarshaller) output.getEntity());
         assertTrue("home was not in the result", result.contains("home"));
         assertTrue("user was not in the result", result.contains("\"rel\":\"user\""));
     }
 
-    @Test 
-    public void testStaticRelationships(){
+    @Test
+    public void testStaticRelationships() {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
 
         Response output = resource.find("jpars_auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID),
                 generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
-        String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
+        String result = stringifyResults((StreamingOutputMarshaller) output.getEntity());
         assertTrue("Auction was not in the result", result.contains("\"rel\":\"auction\""));
         assertTrue("User link was not in the result", result.contains("\"rel\":\"user\""));
     }
@@ -532,17 +533,17 @@ public class TestService {
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), null, properties);
 
-        StaticUser initialUser = (StaticUser)((StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID)).getUser();
-        StaticUser user2 = (StaticUser)context.find("StaticUser", StaticModelDatabasePopulator.USER2_ID);
+        StaticUser initialUser = (StaticUser) ((StaticBid) context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID)).getUser();
+        StaticUser user2 = (StaticUser) context.find("StaticUser", StaticModelDatabasePopulator.USER2_ID);
 
-        try{
+        try {
             Response output = resource.setOrAddAttribute("jpars_auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user",
                     generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user2, context, MediaType.APPLICATION_JSON_TYPE));
 
-            stringifyResults((StreamingOutputMarshaller)output.getEntity());
-            context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            stringifyResults((StreamingOutputMarshaller) output.getEntity());
+            context.getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-            StaticBid bid = (StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
+            StaticBid bid = (StaticBid) context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
 
             assertTrue(bid.getUser().equals(user2));
         } finally {
@@ -568,9 +569,9 @@ public class TestService {
         StreamingOutput output = (StreamingOutput) resource.namedQuery("jpars_auction-static-local", "User.count", headers, ui).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try{
+        try {
             output.write(outputStream);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             fail(ex.toString());
         }
         String resultString = outputStream.toString();
@@ -587,15 +588,15 @@ public class TestService {
         LinkAdapter adapter = new LinkAdapter("http://localhost:9090/JPA-RS/", context);
         DynamicEntity entity1 = null;
         DynamicEntity entity2 = null;
-        try{
+        try {
             entity1 = (DynamicEntity) adapter.unmarshal("http://localhost:9090/JPA-RS/jpars_auction/entity/Auction/1");
-        } catch (Exception e){
+        } catch (Exception e) {
             fail(e.toString());
         }
         assertTrue("id for Auction was missing", entity1.get("id").equals(1));
-        try{
+        try {
             entity2 = (DynamicEntity) adapter.unmarshal("http://localhost:9090/JPA-RS/jpars_auction/entity/Address/1+Home");
-        } catch (Exception e){
+        } catch (Exception e) {
             fail(e.toString());
         }
         assertTrue("id for Address was missing", entity2.get("id").equals(1));
@@ -640,12 +641,12 @@ public class TestService {
 
         String result = stringifyResults(output);
 
-        account = (Account)context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
+        account = (Account) context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
 
         output = (StreamingOutput) resource.find("jpars_auction-static-local", "Account", String.valueOf(account.getId()),
                 generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui).getEntity();
         result = stringifyResults(output);
-        account = (Account)context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
+        account = (Account) context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
 
         assertTrue("account is null", account != null);
         TestURIInfo ui2 = new TestURIInfo();
@@ -656,21 +657,21 @@ public class TestService {
         assertTrue("output should be null", output == null);
     }
 
-    public static String stringifyResults(StreamingOutput output){
+    public static String stringifyResults(StreamingOutput output) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try{
+        try {
             output.write(outputStream);
-        } catch (IOException ex){
+        } catch (IOException ex) {
             fail(ex.toString());
         }
         return outputStream.toString();
     }
 
-    public static InputStream serializeToStream(Object object, PersistenceContext context, MediaType mediaType){
+    public static InputStream serializeToStream(Object object, PersistenceContext context, MediaType mediaType) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try{
+        try {
             context.marshallEntity(object, mediaType, os);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             fail(e.toString());
         }
@@ -678,11 +679,11 @@ public class TestService {
         return stream;
     }
 
-    public static InputStream serializeListToStream(List<DynamicEntity> object, PersistenceContext context, MediaType mediaType){
+    public static InputStream serializeListToStream(List<DynamicEntity> object, PersistenceContext context, MediaType mediaType) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try{
+        try {
             context.marshallEntity(object, mediaType, os);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             fail(e.toString());
         }
@@ -690,7 +691,7 @@ public class TestService {
         return stream;
     }
 
-    public static HttpHeaders generateHTTPHeader(MediaType acceptableMedia, String mediaTypeString){
+    public static HttpHeaders generateHTTPHeader(MediaType acceptableMedia, String mediaTypeString) {
         TestHttpHeaders headers = new TestHttpHeaders();
         headers.getAcceptableMediaTypes().add(acceptableMedia);
         List<String> mediaTypes = new ArrayList<String>();

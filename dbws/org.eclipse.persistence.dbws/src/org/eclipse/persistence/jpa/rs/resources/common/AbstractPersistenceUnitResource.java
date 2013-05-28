@@ -63,7 +63,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         } else {
-            ClassDescriptor descriptor = context.getJpaSession().getDescriptorForAlias(descriptorAlias);
+            ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(descriptorAlias);
             if (descriptor == null) {
                 JPARSLogger.fine("jpars_could_not_find_entity_type", new Object[] { descriptorAlias, persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
@@ -115,7 +115,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         } else {
             List<Query> returnQueries = new ArrayList<Query>();
-            Map<String, List<DatabaseQuery>> queries = context.getJpaSession().getQueries();
+            Map<String, List<DatabaseQuery>> queries = context.getServerSession().getQueries();
             if (queries.get(queryName) != null) {
                 for (DatabaseQuery query : queries.get(queryName)) {
                     returnQueries.add(getQuery(query, context));
@@ -148,7 +148,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         } else {
             PersistenceUnit pu = new PersistenceUnit();
             pu.setPersistenceUnitName(persistenceUnit);
-            Map<Class, ClassDescriptor> descriptors = context.getJpaSession().getDescriptors();
+            Map<Class, ClassDescriptor> descriptors = context.getServerSession().getDescriptors();
             String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
             Iterator<Class> contextIterator = descriptors.keySet().iterator();
             while (contextIterator.hasNext()) {
@@ -233,7 +233,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     protected void addQueries(List<Query> queryList, PersistenceContext context, String javaClassName) {
-        Map<String, List<DatabaseQuery>> queries = context.getJpaSession().getQueries();
+        Map<String, List<DatabaseQuery>> queries = context.getServerSession().getQueries();
         List<DatabaseQuery> returnQueries = new ArrayList<DatabaseQuery>();
         for (String key : queries.keySet()) {
             List<DatabaseQuery> keyQueries = queries.get(key);
@@ -299,7 +299,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             returnQuery = new Query(query.getName(), jpql, new LinkTemplate("execute", method, context.getBaseURI() + context.getName() + "/query/" + query.getName() + parameterString));
         }
         if (query.isReportQuery()) {
-            query.checkPrepare((AbstractSession) context.getJpaSession(), new DatabaseRecord());
+            query.checkPrepare((AbstractSession) context.getServerSession(), new DatabaseRecord());
             for (ReportItem item : ((ReportQuery) query).getItems()) {
                 if (item.getMapping() != null) {
                     if (item.getAttributeExpression() != null && item.getAttributeExpression().isMapEntryExpression()) {

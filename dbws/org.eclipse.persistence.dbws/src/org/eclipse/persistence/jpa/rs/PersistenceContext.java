@@ -69,6 +69,7 @@ import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
@@ -109,6 +110,7 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * A wrapper around the JPA and JAXB artifacts used to persist an application.
@@ -166,7 +168,7 @@ public class PersistenceContext {
         super();
         this.emf = emf;
         this.name = emfName;
-        if (getJpaSession().hasExternalTransactionController()) {
+        if (getServerSession().hasExternalTransactionController()) {
             transaction = new JTATransactionWrapper();
         } else {
             transaction = new ResourceLocalTransactionWrapper();
@@ -435,7 +437,7 @@ public class PersistenceContext {
         EntityManager em = getEmf().createEntityManager(tenantId);
 
         try {
-            ClassDescriptor descriptor = getJpaSession().getClassDescriptor(getClass(entityName));
+            ClassDescriptor descriptor = getServerSession().getClassDescriptor(getClass(entityName));
             DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
             Object object = null;
             if (mapping == null) {
@@ -493,7 +495,7 @@ public class PersistenceContext {
 
         try {
             Class<?> clazz = getClass(entityName);
-            ClassDescriptor descriptor = getJpaSession().getClassDescriptor(clazz);
+            ClassDescriptor descriptor = getServerSession().getClassDescriptor(clazz);
             DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
             if (mapping == null) {
                 return null;
@@ -587,7 +589,7 @@ public class PersistenceContext {
     @SuppressWarnings("rawtypes")
     protected void removeMappingValueFromObject(Object object, Object attributeValue, DatabaseMapping mapping, DatabaseMapping partner) {
         if (mapping.isObjectReferenceMapping()) {
-            Object currentValue = mapping.getRealAttributeValueFromObject(object, (AbstractSession) getJpaSession());
+            Object currentValue = mapping.getRealAttributeValueFromObject(object, (AbstractSession) getServerSession());
             if (currentValue.equals(attributeValue)) {
                 ((ObjectReferenceMapping) mapping).getIndirectionPolicy().setRealAttributeValueInObject(object, null, true);
                 if (partner != null) {
@@ -595,7 +597,7 @@ public class PersistenceContext {
                 }
             }
         } else if (mapping.isCollectionMapping()) {
-            boolean removed = ((Collection) mapping.getRealAttributeValueFromObject(object, (AbstractSession) getJpaSession())).remove(attributeValue);
+            boolean removed = ((Collection) mapping.getRealAttributeValueFromObject(object, (AbstractSession) getServerSession())).remove(attributeValue);
             if (removed && partner != null) {
                 removeMappingValueFromObject(attributeValue, object, partner, null);
             }
@@ -626,14 +628,25 @@ public class PersistenceContext {
     }
 
     /**
-     * Gets the jpa session.
+     * Gets the jpa server session.
      *
-     * @return the jpa session
+     * @return the jpa server session
      */
-    public DatabaseSession getJpaSession() {
+    public DatabaseSession getServerSession() {
         // Fix for bug 390786 - JPA-RS: ClassCastException retrieving metadata for Composite Persistence Unit
         DatabaseSession dbSession = JpaHelper.getDatabaseSession(emf);
         return dbSession;
+    }
+
+    /**
+     * Gets the client session.
+     *
+     * @param em the em
+     * @return the client session
+     */
+    public AbstractSession getClientSession(EntityManager em) {
+        UnitOfWork uow = ((JpaEntityManager) JpaHelper.getEntityManager(em)).getUnitOfWork();
+        return (AbstractSession) uow;
     }
 
     /**
@@ -645,7 +658,7 @@ public class PersistenceContext {
      * @return
      */
     public ClassDescriptor getDescriptor(String entityName) {
-        DatabaseSession session = getJpaSession();
+        DatabaseSession session = getServerSession();
         ClassDescriptor descriptor = session.getDescriptorForAlias(entityName);
         if (descriptor == null) {
             for (Object ajaxBSession : ((JAXBContext) getJAXBContext()).getXMLContext().getSessions()) {
@@ -666,7 +679,7 @@ public class PersistenceContext {
      */
     @SuppressWarnings("rawtypes")
     public ClassDescriptor getDescriptorForClass(Class clazz) {
-        DatabaseSession session = getJpaSession();
+        DatabaseSession session = getServerSession();
         ClassDescriptor descriptor = session.getDescriptor(clazz);
         if (descriptor == null) {
             return getJAXBDescriptorForClass(clazz);
@@ -1181,7 +1194,7 @@ public class PersistenceContext {
 
     private void setRelationshipInfo(Object entity) {
         if ((entity != null) && (entity instanceof PersistenceWeavedRest)) {
-            ClassDescriptor descriptor = getJpaSession().getClassDescriptor(entity.getClass());
+            ClassDescriptor descriptor = getServerSession().getClassDescriptor(entity.getClass());
             if (descriptor != null) {
                 ((PersistenceWeavedRest) entity)._persistence_setRelationships(new ArrayList<RelationshipInfo>());
                 for (DatabaseMapping mapping : descriptor.getMappings()) {
@@ -1191,7 +1204,7 @@ public class PersistenceContext {
                         info.setAttributeName(frMapping.getAttributeName());
                         info.setOwningEntity(entity);
                         info.setOwningEntityAlias(descriptor.getAlias());
-                        info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, (AbstractSession) getJpaSession()));
+                        info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, (AbstractSession) getServerSession()));
                         ((PersistenceWeavedRest) entity)._persistence_getRelationships().add(info);
                     } else if (mapping.isEISMapping()) {
                         if (mapping instanceof EISCompositeCollectionMapping) {
@@ -1200,7 +1213,7 @@ public class PersistenceContext {
                             info.setAttributeName(eisMapping.getAttributeName());
                             info.setOwningEntity(entity);
                             info.setOwningEntityAlias(descriptor.getAlias());
-                            info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, (AbstractSession) getJpaSession()));
+                            info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, (AbstractSession) getServerSession()));
                             ((PersistenceWeavedRest) entity)._persistence_getRelationships().add(info);
                         }
                     }
@@ -1231,12 +1244,12 @@ public class PersistenceContext {
         }
         adapters = new ArrayList<XmlAdapter>();
         try {
-            for (ClassDescriptor desc : this.getJpaSession().getDescriptors().values()) {
+            for (ClassDescriptor desc : this.getServerSession().getDescriptors().values()) {
                 // avoid embeddables
                 if (!desc.isAggregateCollectionDescriptor() && !desc.isAggregateDescriptor()) {
                     Class clz = desc.getJavaClass();
                     String referenceAdapterName = RestAdapterClassWriter.constructClassNameForReferenceAdapter(clz.getName());
-                    ClassLoader cl = getJpaSession().getDatasourcePlatform().getConversionManager().getLoader();
+                    ClassLoader cl = getServerSession().getDatasourcePlatform().getConversionManager().getLoader();
                     Class referenceAdaptorClass = Class.forName(referenceAdapterName, true, cl);
                     Class[] argTypes = { String.class, PersistenceContext.class };
                     Constructor referenceAdaptorConstructor = referenceAdaptorClass.getDeclaredConstructor(argTypes);

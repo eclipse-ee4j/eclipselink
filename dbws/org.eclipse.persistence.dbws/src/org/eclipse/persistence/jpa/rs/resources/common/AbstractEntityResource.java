@@ -39,7 +39,7 @@ import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidator;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
-import org.eclipse.persistence.jpa.rs.features.paging.PagingRequestValidator;
+import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -48,6 +48,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
  * @author gonural
@@ -69,11 +70,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
         EntityManager em = context.getEmf().createEntityManager(getMatrixParameters(uriInfo, persistenceUnit));
 
         Object entity = null;
-        Object result = null;
+
         try {
             entity = em.find(context.getClass(type), id, getQueryParameters(uriInfo));
 
-            ClassDescriptor descriptor = context.getJpaSession().getClassDescriptor(context.getClass(type));
+            DatabaseSession serverSession = context.getServerSession();
+
+            ClassDescriptor descriptor = serverSession.getClassDescriptor(context.getClass(type));
             if (descriptor == null) {
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
@@ -83,8 +86,10 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
+            Object result = null;
+
             if (!mapping.isCollectionMapping()) {
-                result = mapping.getRealAttributeValueFromAttribute(mapping.getAttributeValueFromObject(entity), entity, (AbstractSession) context.getJpaSession());
+                result = mapping.getRealAttributeValueFromAttribute(mapping.getAttributeValueFromObject(entity), entity, (AbstractSession) serverSession);
                 if (result == null) {
                     JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[] { attribute, type, key, persistenceUnit });
                     return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
@@ -92,14 +97,14 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
             }
 
-            ReadQuery query = (ReadQuery) ((ForeignReferenceMapping) mapping).getSelectionQuery().clone();
+            ReadQuery query = (ReadQuery) ((((ForeignReferenceMapping) mapping).getSelectionQuery()).clone());
 
             if (query == null) {
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
             FeatureSet featureSet = context.getSupportedFeatureSet();
-            AbstractSession session = (AbstractSession) context.getJpaSession();
+            AbstractSession clientSession = context.getClientSession(em);
 
             if (featureSet.isSupported(Feature.PAGING)) {
                 FeatureRequestValidator requestValidator = featureSet.getRequestValidator(Feature.PAGING);
@@ -109,16 +114,15 @@ public abstract class AbstractEntityResource extends AbstractResource {
                     if (!requestValidator.isRequestValid(uriInfo, map)) {
                         return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                     }
-                    result = session.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, session, WriteType.INSERT));
+                    result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
                     return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
                 }
             }
-            result = session.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, session, WriteType.INSERT));
+            result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
+            return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
         } finally {
-            //em.clear();
             em.close();
         }
-        return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
     }
 
     private Response response(PersistenceContext context, String attribute, Object queryResults, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {

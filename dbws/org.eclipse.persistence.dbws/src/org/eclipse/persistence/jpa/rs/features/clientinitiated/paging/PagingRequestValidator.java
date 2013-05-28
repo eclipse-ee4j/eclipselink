@@ -11,7 +11,7 @@
  *      gonural - initial implementation
  ******************************************************************************/
 
-package org.eclipse.persistence.jpa.rs.features.paging;
+package org.eclipse.persistence.jpa.rs.features.clientinitiated.paging;
 
 import java.util.List;
 import java.util.Map;
@@ -71,13 +71,13 @@ public class PagingRequestValidator extends FeatureRequestValidatorImpl {
         if (paramOffset != null) {
             offset = paramOffset;
         } else {
-            offset = Integer.toString(SystemDefaults.PAGING_DEFAULT_PAGE_OFFSET);
+            offset = Integer.toString(SystemDefaults.JPARS_DEFAULT_PAGE_OFFSET);
         }
 
         if (paramLimit != null) {
             limit = paramLimit;
         } else {
-            limit = Integer.toString(SystemDefaults.PAGING_DEFAULT_PAGE_LIMIT);
+            limit = Integer.toString(SystemDefaults.JPARS_DEFAULT_PAGE_LIMIT);
         }
 
         try {
