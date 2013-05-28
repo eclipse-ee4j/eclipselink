@@ -25,7 +25,9 @@ public class Address {
 			return false;
 		}
 		Address addr = (Address)obj;
-		return addr.street.equals(street) && addr.city.equals(city) && addr.country.equals(country);
+		return ((addr.street ==null && street==null) || ( addr.street.equals(street)))
+		  &&((addr.city ==null && city==null) || ( addr.city.equals(city)))
+		  &&((addr.country ==null && country==null) || ( addr.country.equals(country)));
 	}
 
 }
