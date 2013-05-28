@@ -77,7 +77,7 @@ public class EmployeeAmendments {
         XQueryInteraction projectsInteraction = new XQueryInteraction();
         projectsInteraction.setFunctionName("read-projects");
         projectsInteraction.setProperty("fileName", "PROJECT.xml");
-        projectsInteraction.setXQueryString("project[PROJ_ID='#PROJ_ID/text()']");
+        projectsInteraction.setXQueryString("PROJECT[PROJ_ID='#PROJ_ID/text()']");
         projectsInteraction.setOutputResultPath("result");
         projectsMapping.setSelectionCall(projectsInteraction);
     }

@@ -37,11 +37,9 @@ import org.eclipse.persistence.eis.interactions.QueryStringInteraction;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnection;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFactory;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.mongo.Buyer;
 import org.eclipse.persistence.testing.models.jpa.mongo.Customer;
@@ -75,6 +73,7 @@ public class MongoTestSuite extends JUnitTestCase {
         suite.addTest(new MongoTestSuite("testInsert"));
         suite.addTest(new MongoTestSuite("testFind"));
         suite.addTest(new MongoTestSuite("testUpdate"));
+        suite.addTest(new MongoTestSuite("testUpdateAdd"));
         suite.addTest(new MongoTestSuite("testMerge"));
         suite.addTest(new MongoTestSuite("testLockError"));
         suite.addTest(new MongoTestSuite("testRefresh"));
@@ -214,15 +213,8 @@ public class MongoTestSuite extends JUnitTestCase {
         } finally {
             closeEntityManagerAndTransaction(em);
         }
-        clearCache();
-        em = createEntityManager();
-        beginTransaction(em);
-        try {
-            Order fromDatabase = em.find(Order.class, order.id);
-            compareObjects(order, fromDatabase);
-        } finally {
-            closeEntityManagerAndTransaction(em);
-        }        
+        verifyObjectInCacheAndDatabase(order);
+        verifyObjectInEntityManager(order);
     }
     
     /**
@@ -324,16 +316,43 @@ public class MongoTestSuite extends JUnitTestCase {
             commitTransaction(em);
         } finally {
             closeEntityManagerAndTransaction(em);
-        }        
+        }
+        verifyObjectInCacheAndDatabase(order);
+        verifyObjectInEntityManager(order);
+    }
+
+    
+    /**
+     * Test updates.
+     */
+    public void testUpdateAdd() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Order order = new Order();
+        try {
+            order.orderedBy = "ACME";
+            order.address = new Address();
+            order.address.city = "Ottawa";
+            em.persist(order);
+            commitTransaction(em);
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
         clearCache();
         em = createEntityManager();
         beginTransaction(em);
         try {
-            Order fromDatabase = em.find(Order.class, order.id);
-            compareObjects(order, fromDatabase);
+            order = em.find(Order.class, order.id);
+            Customer customer = new Customer();
+            em.persist(customer);
+            order.customers.add(customer);
+            order.comments.add("foo");
+            commitTransaction(em);
         } finally {
             closeEntityManagerAndTransaction(em);
         }
+        verifyObjectInCacheAndDatabase(order);
+        verifyObjectInEntityManager(order);
     }
     
     /**

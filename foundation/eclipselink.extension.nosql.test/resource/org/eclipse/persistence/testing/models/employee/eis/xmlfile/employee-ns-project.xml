@@ -163,12 +163,12 @@
                <attribute-name>projects</attribute-name>
                <reference-class>org.eclipse.persistence.testing.models.employee.domain.Project</reference-class>
                <source-foreign-key-fields>
-                  <field name="text()" xsi:type="node"/>
+                  <field name="myns:PROJ_ID/text()" xsi:type="node"/>
                </source-foreign-key-fields>
                <target-foreign-key-fields>
                   <field name="myns:PROJ_ID/text()" xsi:type="node"/>
                </target-foreign-key-fields>
-               <foreign-key-grouping-element name="myns:PROJECTS/myns:PROJ_ID" xsi:type="node"/>
+               <foreign-key-grouping-element name="myns:PROJECTS" xsi:type="node"/>
                <container xsi:type="list-container-policy">
                   <collection-type>java.util.Vector</collection-type>
                </container>

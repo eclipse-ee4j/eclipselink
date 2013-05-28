@@ -12,6 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.eis.mappings;
 
+import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
@@ -169,4 +172,26 @@ public class EISCompositeObjectMapping extends AbstractCompositeObjectMapping im
             }
         }
     }
+
+    /**
+     * INTERNAL:
+     * Initialize the mapping.
+     */
+    @Override
+    public void postInitialize(AbstractSession session) throws DescriptorException {
+        super.postInitialize(session);
+
+        if (getReferenceDescriptor() != null) {
+            getReferenceDescriptor().getCachePolicy().setCacheIsolation(this.descriptor.getCachePolicy().getCacheIsolation());
+            // Changed as part of fix for bug#4410581 aggregate mapping can not be set to use change tracking if owning descriptor does not use it.
+            // Basically the policies should be the same, but we also allow deferred with attribute for CMP2 (courser grained).
+            if (getDescriptor().getObjectChangePolicy().getClass().equals(DeferredChangeDetectionPolicy.class)) {
+                getReferenceDescriptor().setObjectChangePolicy(new DeferredChangeDetectionPolicy());
+            } else if (getDescriptor().getObjectChangePolicy().getClass().equals(ObjectChangeTrackingPolicy.class)
+                    && getReferenceDescriptor().getObjectChangePolicy().getClass().equals(AttributeChangeTrackingPolicy.class)) {
+                getReferenceDescriptor().setObjectChangePolicy(new ObjectChangeTrackingPolicy());
+            }
+        }
+    }
+
 }

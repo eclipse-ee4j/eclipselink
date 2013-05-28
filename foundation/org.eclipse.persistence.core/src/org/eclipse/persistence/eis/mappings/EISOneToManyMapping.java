@@ -821,7 +821,33 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         }
         return super.compareObjects(object1, object2, session);
     }
-
+    
+    /**
+     * INTERNAL:
+     * If the mapping has a foreign key, it is order, so must use a different merge.
+     */
+    @Override
+    public void mergeChangesIntoObject(Object target, ChangeRecord chgRecord, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (isForeignKeyRelationship()) {
+            (new EISOneToManyMappingHelper(this)).mergeChangesIntoObject(target, chgRecord, source, mergeManager, targetSession);
+            return;
+        }
+        super.mergeChangesIntoObject(target, chgRecord, source, mergeManager, targetSession);
+    }
+    
+    /**
+     * INTERNAL:
+     * If the mapping has a foreign key, it is order, so must use a different merge.
+     */
+    @Override
+    public void mergeIntoObject(Object target, boolean isTargetUnInitialized, Object source, MergeManager mergeManager, AbstractSession targetSession) {
+        if (isForeignKeyRelationship()) {
+            (new EISOneToManyMappingHelper(this)).mergeIntoObject(target, isTargetUnInitialized, source, mergeManager, targetSession);
+            return;
+        }
+        super.mergeIntoObject(target, isTargetUnInitialized, source, mergeManager, targetSession);
+    }
+        
     /**
      * ADVANCED:
      * This method is used to have an object add to a collection once the changeSet is applied
