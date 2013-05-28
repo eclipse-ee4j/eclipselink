@@ -294,6 +294,7 @@ public class QueryHintsHandler {
             addHint(new BatchWriteHint());
             addHint(new ResultSetAccess());
             addHint(new SerializedObject());
+            addHint(new ReturnNameValuePairsHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -440,6 +441,37 @@ public class QueryHintsHandler {
         
         static Set<String> getSupportedHints(){
             return mainMap.keySet();
+        }
+    }
+    
+    /**
+     * This hint can be used to indicate whether or not a ResultSetMapping query should
+     * return populated DatabaseRecords vs. raw data.  This hint is particularly useful 
+     * when the structure of the returned data is not known.
+     */
+    protected static class ReturnNameValuePairsHint extends Hint {
+        ReturnNameValuePairsHint() {
+            super(QueryHints.RETURN_NAME_VALUE_PAIRS, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.TRUE, Boolean.TRUE},
+                {HintValues.FALSE, Boolean.FALSE}
+            };
+        }
+    
+        /**
+         * Applies the given hint value to the query if it is non-null.  The given query
+         * is expected to be a ResultSetMappingQuery instance.
+         * @throws IllegalArgumentException if 'query' is not a ResultSetMappingQuery instance
+         */
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isResultSetMappingQuery()) {
+                if (valueToApply != null) {
+                    ((ResultSetMappingQuery) query).setShouldReturnNameValuePairs(((Boolean) valueToApply));
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
         }
     }
 
