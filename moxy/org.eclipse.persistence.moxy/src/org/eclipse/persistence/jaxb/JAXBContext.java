@@ -16,6 +16,7 @@ import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaType
 
 import java.awt.Image;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
@@ -32,6 +33,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.ValidationEvent;
@@ -53,6 +55,8 @@ import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
+import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
@@ -76,6 +80,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLField;
@@ -163,6 +168,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
     private XMLInputFactory xmlInputFactory;
     private boolean initializedXMLInputFactory = false;
+
+    private JAXBMarshaller jsonSchemaMarshaller;
 
     protected JAXBContext() {
         super();
@@ -297,6 +304,27 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */
     public void generateSchema(SchemaOutputResolver outputResolver) {
         generateSchema(outputResolver, null);
+    }
+    
+    public void generateJsonSchema(SchemaOutputResolver outputResolver, Class rootClass) throws JAXBException, javax.xml.bind.JAXBException, IOException {
+        JsonSchemaGenerator generator = new JsonSchemaGenerator(this.contextState.getXMLContext().getSession(rootClass).getProject(), this.contextState.properties);
+        JsonSchema schema = generator.generateSchema(rootClass);
+        
+        Marshaller m = getJsonSchemaMarshaller();
+        m.marshal(schema, outputResolver.createOutput(null, rootClass.getName() + ".json"));
+    }
+
+    private Marshaller getJsonSchemaMarshaller() throws javax.xml.bind.JAXBException {
+        if(this.jsonSchemaMarshaller == null) {
+            JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[]{JsonSchema.class}, null);
+            this.jsonSchemaMarshaller = ctx.createMarshaller();
+            this.jsonSchemaMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+            this.jsonSchemaMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            this.jsonSchemaMarshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
+        }
+        
+        return this.jsonSchemaMarshaller;
+
     }
 
     /**

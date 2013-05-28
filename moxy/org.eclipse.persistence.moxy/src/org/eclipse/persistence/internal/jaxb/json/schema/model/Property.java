@@ -1,0 +1,99 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Matt MacIvor - 2.5.1 - Initial Implementation
+ ******************************************************************************/
+package org.eclipse.persistence.internal.jaxb.json.schema.model;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
+
+
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Property {
+
+    @XmlTransient
+    private String name;
+    
+    @XmlElement(name="type")
+    private JsonType type;
+    
+    @XmlVariableNode("name")
+    @XmlElementWrapper(name="properties")
+    private Map<String, Property> properties;
+    
+    @XmlElement(name="items")
+    private Property item;
+    
+    @XmlElement(name="enum")
+    private List<String> enumeration;
+    
+    public void setType(JsonType type) {
+        this.type = type;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+        
+    }
+
+    public void setProperties(Map<String, Property> properties) {
+        this.properties = properties;
+        
+    }
+
+    public Map<String, Property> getProperties() {
+        if(this.properties == null) {
+            this.properties = new LinkedHashMap<String, Property>();
+        }
+        return this.properties;
+    }
+
+    public Property getItem() {
+        return item;
+    }
+
+    public void setItem(Property item) {
+        this.item = item;
+    }
+
+    public List<String> getEnumeration() {
+        if(enumeration == null) {
+            enumeration = new ArrayList<String>();
+        }
+        return enumeration;
+    }
+
+    public void setEnumeration(List<String> enumeration) {
+        this.enumeration = enumeration;
+    }
+
+    public Property getProperty(String name) {
+        if(properties != null) {
+            return properties.get(name);
+        }
+        return null;
+    }
+}
