@@ -46,6 +46,7 @@ import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
+import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLEventWriterRecord;
@@ -240,7 +241,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     public Marshaller.Listener getListener() {
-        return ((JAXBMarshalListener) xmlMarshaller.getMarshalListener()).getListener();
+        XMLMarshalListener xmlMarshalListener = xmlMarshaller.getMarshalListener();
+        if(null != xmlMarshalListener) {
+            return ((JAXBMarshalListener) xmlMarshalListener).getListener();
+        }
+        return null;
     }
 
     public Node getNode(Object object) throws JAXBException {
@@ -320,12 +325,24 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new IllegalArgumentException();
         }
 
-        object = modifyObjectIfNeeded(object);
+        Listener listener = getListener();
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.beforeMarshal(object);
+            }
+        }
 
+        Object oxmObject = modifyObjectIfNeeded(object);
         try {
-            xmlMarshaller.marshal(object, contentHandler);
+            xmlMarshaller.marshal(oxmObject, contentHandler);
         } catch (Exception e) {
             throw new MarshalException(e);
+        }
+
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.afterMarshal(object);
+            }
         }
     }
 
@@ -344,14 +361,27 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || eventWriter == null) {
             throw new IllegalArgumentException();
         }
-        object = modifyObjectIfNeeded(object);
 
+        Listener listener = getListener();
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.beforeMarshal(object);
+            }
+        }
+
+        Object oxmObject = modifyObjectIfNeeded(object);
         try {
             XMLEventWriterRecord record = new XMLEventWriterRecord(eventWriter);
             record.setMarshaller(this.xmlMarshaller);
-            this.xmlMarshaller.marshal(object, record);
+            this.xmlMarshaller.marshal(oxmObject, record);
         } catch (Exception ex) {
             throw new MarshalException(ex);
+        }
+
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.afterMarshal(object);
+            }
         }
     }
 
@@ -385,12 +415,25 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || node == null) {
             throw new IllegalArgumentException();
         }
-        object = modifyObjectIfNeeded(object);
 
+        Listener listener = getListener();
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.beforeMarshal(object);
+            }
+        }
+
+        Object oxmObject = modifyObjectIfNeeded(object);
         try {
-            xmlMarshaller.marshal(object, node);
+            xmlMarshaller.marshal(oxmObject, node);
         } catch (Exception e) {
             throw new MarshalException(e);
+        }
+
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.afterMarshal(object);
+            }
         }
     }
 
@@ -398,12 +441,25 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || outputStream == null) {
             throw new IllegalArgumentException();
         }
-        object = modifyObjectIfNeeded(object);
 
+        Listener listener = getListener();
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.beforeMarshal(object);
+            }
+        }
+
+        Object oxmObject = modifyObjectIfNeeded(object);
         try {
-            xmlMarshaller.marshal(object, outputStream);
+            xmlMarshaller.marshal(oxmObject, outputStream);
         } catch (Exception e) {
             throw new MarshalException(e);
+        }
+
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.afterMarshal(object);
+            }
         }
     }
 
@@ -465,14 +521,27 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || streamWriter == null) {
             throw new IllegalArgumentException();
         }
-        object = modifyObjectIfNeeded(object);
-        
+
+        Listener listener = getListener();
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.beforeMarshal(object);
+            }
+        }
+
+        Object oxmObject = modifyObjectIfNeeded(object);
         try {
             XMLStreamWriterRecord record = new XMLStreamWriterRecord(streamWriter);
             record.setMarshaller(this.xmlMarshaller);
-            this.xmlMarshaller.marshal(object, record);
+            this.xmlMarshaller.marshal(oxmObject, record);
         } catch (Exception ex) {
             throw new MarshalException(ex);
+        }
+
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.afterMarshal(object);
+            }
         }
     }
     
@@ -601,12 +670,25 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || writer == null) {
             throw new IllegalArgumentException();
         }
-        object = modifyObjectIfNeeded(object);
 
+        Listener listener = getListener();
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.beforeMarshal(object);
+            }
+        }
+
+        Object oxmObject = modifyObjectIfNeeded(object);
         try {
-            xmlMarshaller.marshal(object, writer);
+            xmlMarshaller.marshal(oxmObject, writer);
         } catch (Exception e) {
             throw new MarshalException(e);
+        }
+
+        if(listener != null) {
+            if(object instanceof JAXBElement) {
+                listener.afterMarshal(object);
+            }
         }
     }
 

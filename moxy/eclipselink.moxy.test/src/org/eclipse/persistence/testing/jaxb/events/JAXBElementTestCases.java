@@ -14,6 +14,8 @@
 package org.eclipse.persistence.testing.jaxb.events;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -47,9 +49,9 @@ public class JAXBElementTestCases extends TestCase {
         JAXBContext context = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
         
         marshaller = context.createMarshaller();
-        marshaller.setListener(mListener);
+        marshaller.setListener(mListener);               
     }
-
+   
     private Object getControlObjectUnmapped() {
         return new JAXBElement<Integer>(new QName("year"), Integer.class, new Integer(1942));
     }
@@ -60,41 +62,72 @@ public class JAXBElementTestCases extends TestCase {
 
     public void testBeforeMarshalUnmapped() throws Exception {
         marshaller.marshal(getControlObjectUnmapped(), new ByteArrayOutputStream());
-
-        assertEquals(JAXBElement.class, mListener.beforeClass);
+        assertEquals(1, mListener.beforeClasses.size());
+        assertEquals(JAXBElement.class, mListener.beforeClasses.get(0));
     }
-
+         
     public void testAfterMarshalUnmapped() throws Exception {
         marshaller.marshal(getControlObjectUnmapped(), new ByteArrayOutputStream());
 
-        assertEquals(JAXBElement.class, mListener.afterClass);
+        assertEquals(1, mListener.afterClasses.size());
+        assertEquals(JAXBElement.class, mListener.afterClasses.get(0));
     }
 
     public void testBeforeMarshalMapped() throws Exception {
         marshaller.marshal(getControlObjectMapped(), new ByteArrayOutputStream());
 
-        assertEquals(Employee.class, mListener.beforeClass);
+        assertEquals(1, mListener.beforeClasses.size());
+        assertEquals(Employee.class, mListener.beforeClasses.get(0));
     }
-
+    
     public void testAfterMarshalMapped() throws Exception {
         marshaller.marshal(getControlObjectMapped(), new ByteArrayOutputStream());
-
-        assertEquals(Employee.class, mListener.afterClass);
+        assertEquals(1, mListener.afterClasses.size());
+        assertEquals(Employee.class, mListener.afterClasses.get(0));
     }
+    
+    public void testBeforeMarshalMappedJAXBElement() throws Exception {
+        Object obj = getControlObjectMapped();
+        JAXBElement elem = new JAXBElement(new QName("root"), obj.getClass(), obj);
+        marshaller.marshal(elem, new ByteArrayOutputStream());
+
+        assertEquals(2, mListener.beforeClasses.size());
+        assertEquals(JAXBElement.class, mListener.beforeClasses.get(0));
+        assertEquals(Employee.class, mListener.beforeClasses.get(1));
+    }
+    
+    public void testAfterMarshalMappedJAXBElement() throws Exception {
+        Object obj = getControlObjectMapped();
+        JAXBElement elem = new JAXBElement(new QName("root"), obj.getClass(), obj);
+     
+        marshaller.marshal(elem, new ByteArrayOutputStream());
+
+        assertEquals(2, mListener.afterClasses.size());
+        assertEquals(Employee.class, mListener.afterClasses.get(0));
+        assertEquals(JAXBElement.class, mListener.afterClasses.get(1));
+     }
+
+   
 
     // ========================================================================
     
     private class MarshalListenerImpl extends Marshaller.Listener {
-        public Class beforeClass, afterClass;
+        public List<Class> beforeClasses;
+        public List<Class> afterClasses;
+        
+        public MarshalListenerImpl(){
+            beforeClasses = new ArrayList<Class>();
+            afterClasses = new ArrayList<Class>();
+        }
         
         @Override
         public void beforeMarshal(Object source) {
-            beforeClass = source.getClass();
+            beforeClasses.add(source.getClass());
         }
 
         @Override
         public void afterMarshal(Object source) {
-            afterClass = source.getClass();
+            afterClasses.add(source.getClass());
         }       
     }
 
