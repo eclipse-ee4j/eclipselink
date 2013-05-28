@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jpa.rs.features.selflinks;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -50,13 +51,24 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         return populateNonPagedReportQueryResultListWithSelfLinks(results, items, uriInfo);
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildCollectionAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.String, java.lang.Object, javax.ws.rs.core.UriInfo)
+     */
+    @SuppressWarnings("unchecked")
+    public Object buildCollectionAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object item, UriInfo uriInfo) {
+        if (item instanceof Collection) {
+            return nonPagedResponseWithSelfLinks(context, (List<Object>) item, uriInfo);
+        }
+        return item;
+    }
+
     private Object nonPagedResponseWithSelfLinks(PersistenceContext context, List<Object> results, UriInfo uriInfo) {
         if ((results != null) && (!results.isEmpty())) {
             return populateNonPagedReadAllQueryResultListWithSelfLinks(context, results, uriInfo);
         }
         return results;
     }
-    
+
     @SuppressWarnings("rawtypes")
     private ReportQueryResultCollection populateNonPagedReportQueryResultListWithSelfLinks(List<Object[]> results, List<ReportItem> reportItems, UriInfo uriInfo) {
         ReportQueryResultCollection response = new ReportQueryResultCollection();
@@ -95,9 +107,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
         if ((item.getValue() instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
             PersistenceWeavedRest entity = (PersistenceWeavedRest) item.getValue();
-            if (entity._persistence_getLinks() == null) {
-                entity._persistence_setLinks(new ArrayList<Link>());
-            }
+            entity._persistence_setLinks(new ArrayList<Link>());
             String entityId = IdHelper.stringifyId(result, descriptor.getAlias(), context);
             String href = context.getBaseURI() + context.getVersion() + "/" + context.getName() + "/entity/" + descriptor.getAlias() + "/" + entityId;
             entity._persistence_getLinks().add(new Link(ReservedWords.JPARS_REL_SELF, null, href));

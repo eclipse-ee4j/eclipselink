@@ -1,6 +1,8 @@
 package org.eclipse.persistence.jpa.rs.features;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +12,11 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
+import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
@@ -36,6 +40,24 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         } else {
             return results;
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildCollectionAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.Object, javax.ws.rs.core.UriInfo)
+     */
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Object buildCollectionAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object result, UriInfo uriInfo) {
+        if (result instanceof Collection) {
+            if (containsDomainObjects(result)) {
+                // Classes derived from PersistenceWeavedRest class (domain objects) are already in the JAXB context
+                return result;
+            } else {
+                // We will need to deal with collection of classes that are not in the JAXB context, such as String, Integer...
+                return populateSimpleHomogeneousList((Collection) result, attribute);
+            }
+        }
+        return result;
     }
 
     @SuppressWarnings("rawtypes")
@@ -67,7 +89,7 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
                 if (reportItemValue != null) {
                     reportItemValueType = reportItemValue.getClass();
                     if (reportItemValueType == null) {
-                        // try other paths to determine the type of the report item
+                        // try other paths to determine the type of the report item 
                         DatabaseMapping dbMapping = reportItem.getMapping();
                         if (dbMapping != null) {
                             reportItemValueType = dbMapping.getAttributeClassification();
@@ -79,7 +101,7 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
                         }
                     }
 
-                    // so, we couldn't determine the type of the report item, stop here...
+                    // so, we couldn't determine the type of the report item, stop here... 
                     if (reportItemValueType == null) {
                         return null;
                     }
@@ -91,4 +113,33 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         }
         return jaxbElements;
     }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private SimpleHomogeneousList populateSimpleHomogeneousList(Collection collection, String attributeName) {
+        SimpleHomogeneousList simpleList = new SimpleHomogeneousList();
+        List<JAXBElement> items = new ArrayList<JAXBElement>();
+
+        for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
+            Object collectionItem = iterator.next();
+            if (!(PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass()))) {
+                JAXBElement jaxbElement = new JAXBElement(new QName(attributeName), collectionItem.getClass(), collectionItem);
+                items.add(jaxbElement);
+            }
+        }
+        simpleList.setItems(items);
+        return simpleList;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private boolean containsDomainObjects(Object object) {
+        Collection collection = (Collection) object;
+        for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
+            Object collectionItem = iterator.next();
+            if (PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

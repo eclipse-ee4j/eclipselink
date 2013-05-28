@@ -23,29 +23,29 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
  * @see ReportQueryResultCollection
  *
  */
-public interface PagedCollection {
-    
+public interface PageableCollection {
+
     /**
      * Sets the checks for more.
      *
      * @param hasMore the new checks for more
      */
     public void setHasMore(Boolean hasMore);
-    
+
     /**
      * Gets the total number of records in the current response.
      *
      * @return the count
      */
     public Integer getCount();
-    
+
     /**
      * Sets the count.
      *
      * @param count the new count
      */
     public void setCount(Integer count);
-    
+
     /**
      * Sets the limit.
      *
@@ -58,8 +58,8 @@ public interface PagedCollection {
      *
      * @param offset the new offset
      */
-    public void setOffset(Integer offset);     
-    
+    public void setOffset(Integer offset);
+
     /**
      * Sets the links.
      *

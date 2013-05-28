@@ -13,6 +13,8 @@
 package org.eclipse.persistence.jpa.rs.features.paging;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +32,7 @@ import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
-import org.eclipse.persistence.jpa.rs.util.list.PagedCollection;
+import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
@@ -39,7 +41,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     private static String NO_PREVIOUS_CHUNK = "-1";
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
      */
     @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
@@ -53,11 +55,44 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildReportQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, java.util.List, javax.ws.rs.core.UriInfo)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReportQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, java.util.List, javax.ws.rs.core.UriInfo)
      */
     @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
         return populatePagedReportQueryResultList(queryParams, results, items, uriInfo);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildCollectionAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.String, java.lang.Object, javax.ws.rs.core.UriInfo)
+     */
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Object buildCollectionAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
+        if (results instanceof Collection) {
+            if (containsDomainObjects(results)) {
+                Collection collection = (Collection) results;
+                ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
+                for (Object item : collection) {
+                    response.addItem(populatePagedReadAllQueryResultListItemLinks(context, item));
+                }
+
+                response.setCount(collection.size());
+                return (ReadAllQueryResultCollection) populatePagingLinks(queryParams, uriInfo, response);
+            }
+        }
+        return results;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private boolean containsDomainObjects(Object object) {
+        Collection collection = (Collection) object;
+        for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
+            Object collectionItem = iterator.next();
+            if (PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -67,9 +102,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
         if ((item.getValue() instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
             PersistenceWeavedRest entity = (PersistenceWeavedRest) item.getValue();
-            if (entity._persistence_getLinks() == null) {
-                entity._persistence_setLinks(new ArrayList<Link>());
-            }
+            entity._persistence_setLinks(new ArrayList<Link>());
             String entityId = IdHelper.stringifyId(result, descriptor.getAlias(), context);
             String href = context.getBaseURI() + context.getVersion() + "/" + context.getName() + "/entity/" + descriptor.getAlias() + "/" + entityId;
             entity._persistence_getLinks().add(new Link(ReservedWords.JPARS_REL_SELF, null, href));
@@ -77,7 +110,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         return item;
     }
 
-    private PagedCollection populatePagingLinks(Map<String, Object> queryParams, UriInfo uriInfo, PagedCollection resultCollection) {
+    private PageableCollection populatePagingLinks(Map<String, Object> queryParams, UriInfo uriInfo, PageableCollection resultCollection) {
         // populate links for entire response
         List<Link> links = new ArrayList<Link>();
         int limit = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_LIMIT));
@@ -146,4 +179,5 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         response.setCount(results.size());
         return (ReportQueryResultCollection) populatePagingLinks(queryParams, uriInfo, response);
     }
+
 }

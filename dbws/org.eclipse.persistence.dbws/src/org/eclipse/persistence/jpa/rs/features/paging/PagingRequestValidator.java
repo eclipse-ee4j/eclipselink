@@ -23,8 +23,9 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.SystemDefaults;
 import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidatorImpl;
+import org.eclipse.persistence.queries.DirectReadQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 
 public class PagingRequestValidator extends FeatureRequestValidatorImpl {
     private String offset = null;
@@ -37,65 +38,61 @@ public class PagingRequestValidator extends FeatureRequestValidatorImpl {
      */
     @Override
     public boolean isRequestValid(UriInfo uri, Map<String, Object> additionalParams) {
-        boolean hasOrderBy = false;
+        Object query = null;
+        Object dbQuery = null;
 
-        Object dbQuery = additionalParams.get(DB_QUERY);
-        if (dbQuery == null) {
-            return false;
-        }
+        if ((additionalParams != null) && (!additionalParams.isEmpty())) {
+            dbQuery = additionalParams.get(DB_QUERY);
+            query = additionalParams.get(QUERY);
 
-        Object query = additionalParams.get(QUERY);
-        if (query == null) {
-            return false;
-        }
+            if ((dbQuery != null) && ((dbQuery instanceof ObjectLevelReadQuery) || (dbQuery instanceof ReadAllQuery))) {
+                List<Expression> orderBy = null;
+                if (dbQuery instanceof ReadAllQuery) {
+                    orderBy = ((ReadAllQuery) dbQuery).getOrderByExpressions();
+                } else if (dbQuery instanceof ObjectLevelReadQuery) {
+                    orderBy = ((ObjectLevelReadQuery) dbQuery).getOrderByExpressions();
+                }
 
-        if (!(query instanceof Query)) {
-            return false;
-        }
-
-        if ((dbQuery instanceof ObjectLevelReadQuery) || (dbQuery instanceof ReportQuery)) {
-            List<Expression> orderBy = null;
-            if (dbQuery instanceof ReportQuery) {
-                orderBy = ((ReportQuery) dbQuery).getOrderByExpressions();
-            } else {
-                orderBy = ((ObjectLevelReadQuery) dbQuery).getOrderByExpressions();
+                if ((orderBy != null) && (!orderBy.isEmpty())) {
+                    return false;
+                }
             }
-
-            if ((orderBy != null) && (!orderBy.isEmpty())) {
-                hasOrderBy = true;
-            }
-        } else {
-            return false;
         }
 
         Map<String, Object> queryParameters = getQueryParameters(uri);
 
-        if (hasOrderBy) {
-            String paramLimit = (String) queryParameters.get(QueryParameters.JPARS_PAGING_LIMIT);
-            String paramOffset = (String) queryParameters.get(QueryParameters.JPARS_PAGING_OFFSET);
+        String paramLimit = (String) queryParameters.get(QueryParameters.JPARS_PAGING_LIMIT);
+        String paramOffset = (String) queryParameters.get(QueryParameters.JPARS_PAGING_OFFSET);
 
-            if ((paramLimit == null) && (paramOffset == null)) {
-                return false;
-            }
+        if ((paramLimit == null) && (paramOffset == null)) {
+            return false;
+        }
 
-            if (paramOffset != null) {
-                offset = paramOffset;
-            } else {
-                offset = Integer.toString(SystemDefaults.PAGING_DEFAULT_PAGE_OFFSET);
-            }
+        if (paramOffset != null) {
+            offset = paramOffset;
+        } else {
+            offset = Integer.toString(SystemDefaults.PAGING_DEFAULT_PAGE_OFFSET);
+        }
 
-            if (paramLimit != null) {
-                limit = paramLimit;
-            } else {
-                limit = Integer.toString(SystemDefaults.PAGING_DEFAULT_PAGE_LIMIT);
-            }
+        if (paramLimit != null) {
+            limit = paramLimit;
+        } else {
+            limit = Integer.toString(SystemDefaults.PAGING_DEFAULT_PAGE_LIMIT);
         }
 
         try {
             if ((offset != null) && (limit != null)) {
                 if ((Integer.parseInt(offset) >= 0) && (Integer.parseInt(limit) > 0)) {
-                    ((Query) query).setFirstResult((Integer.parseInt(offset)));
-                    ((Query) query).setMaxResults((Integer.parseInt(limit)));
+                    if (query != null) {
+                        ((Query) query).setFirstResult((Integer.parseInt(offset)));
+                        ((Query) query).setMaxResults((Integer.parseInt(limit)));
+                    } else if ((dbQuery != null) && (dbQuery instanceof ReadAllQuery)) {
+                        ((ReadAllQuery) dbQuery).setFirstResult((Integer.parseInt(offset)));
+                        ((ReadAllQuery) dbQuery).setMaxRows((Integer.parseInt(limit)));
+                    } else if ((dbQuery != null) && (dbQuery instanceof DirectReadQuery)) {
+                        ((DirectReadQuery) dbQuery).setFirstResult((Integer.parseInt(offset)));
+                        ((DirectReadQuery) dbQuery).setMaxRows((Integer.parseInt(limit)));
+                    }
                     return true;
                 }
             }

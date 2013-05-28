@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.rs.ReservedWords;
 @SuppressWarnings("rawtypes")
 @XmlRootElement(name = ReservedWords.JPARS_LIST_ITEMS_NAME)
 @XmlType(propOrder = { "items", "hasMore", "limit", "offset", "count", "links" })
-public class ReadAllQueryResultCollection implements PagedCollection {
+public class ReadAllQueryResultCollection implements PageableCollection {
     private List<JAXBElement> items;
     private Boolean hasMore = null;
     private Integer limit = null;

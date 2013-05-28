@@ -16,42 +16,44 @@ import static org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller.medi
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.indirection.ValueHolder;
-import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
+import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidator;
+import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
+import org.eclipse.persistence.jpa.rs.features.FeatureSet;
+import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
+import org.eclipse.persistence.jpa.rs.features.paging.PagingRequestValidator;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
-import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * @author gonural
  *
  */
 public abstract class AbstractEntityResource extends AbstractResource {
-
-    @SuppressWarnings({ "rawtypes" })
     protected Response findAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
         PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (context == null || context.getClass(type) == null) {
@@ -62,27 +64,75 @@ public abstract class AbstractEntityResource extends AbstractResource {
             }
             return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
-        Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
+
         Object id = IdHelper.buildId(context, type, key);
+        EntityManager em = context.getEmf().createEntityManager(getMatrixParameters(uriInfo, persistenceUnit));
 
-        Object entity = context.findAttribute(discriminators, type, id, getQueryParameters(uriInfo), attribute);
+        Object entity = null;
+        Object result = null;
+        try {
+            entity = em.find(context.getClass(type), id, getQueryParameters(uriInfo));
 
-        if (entity == null) {
-            JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            ClassDescriptor descriptor = context.getJpaSession().getClassDescriptor(context.getClass(type));
+            if (descriptor == null) {
+                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+
+            DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
+            if ((mapping == null) || (entity == null)) {
+                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+
+            if (!mapping.isCollectionMapping()) {
+                result = mapping.getRealAttributeValueFromAttribute(mapping.getAttributeValueFromObject(entity), entity, (AbstractSession) context.getJpaSession());
+                if (result == null) {
+                    JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[] { attribute, type, key, persistenceUnit });
+                    return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                }
+                return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+            }
+
+            ReadQuery query = (ReadQuery) ((ForeignReferenceMapping) mapping).getSelectionQuery().clone();
+
+            if (query == null) {
+                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+
+            FeatureSet featureSet = context.getSupportedFeatureSet();
+            AbstractSession session = (AbstractSession) context.getJpaSession();
+
+            if (featureSet.isSupported(Feature.PAGING)) {
+                FeatureRequestValidator requestValidator = featureSet.getRequestValidator(Feature.PAGING);
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put(PagingRequestValidator.DB_QUERY, query);
+                if (requestValidator.isRequested(uriInfo, null)) {
+                    if (!requestValidator.isRequestValid(uriInfo, map)) {
+                        return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                    }
+                    result = session.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, session, WriteType.INSERT));
+                    return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
+                }
+            }
+            result = session.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, session, WriteType.INSERT));
+        } finally {
+            //em.clear();
+            em.close();
         }
+        return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+    }
 
-        Boolean collectionContainsDomainObjects = collectionContainsDomainObjects(entity);
-        if (collectionContainsDomainObjects != null) {
-            if (collectionContainsDomainObjects.booleanValue()) {
-                return Response.ok(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes())).build();
+    private Response response(PersistenceContext context, String attribute, Object queryResults, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
+        Map<String, Object> queryParams = getQueryParameters(uriInfo);
+        if (queryResults != null) {
+            Object results = responseBuilder.buildCollectionAttributeResponse(context, queryParams, attribute, queryResults, uriInfo);
+            if (results != null) {
+                return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes())).build();
             } else {
-                // Classes derived from PersistenceWeavedRest class are already in the JAXB context and marshalled properly.
-                // Here, we will only need to deal with collection of classes that are not in the JAXB context, such as String, Integer...
-                return Response.ok(new StreamingOutputMarshaller(context, populateSimpleHomogeneousList((Collection) entity, attribute), headers.getAcceptableMediaTypes())).build();
+                // something is wrong with the descriptors
+                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
         }
-        return Response.ok(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes())).build();
+        return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();
     }
 
     protected Response find(String version, String persistenceUnit, String type, String key, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
@@ -308,36 +358,5 @@ public abstract class AbstractEntityResource extends AbstractResource {
         Object id = IdHelper.buildId(context, type, key);
         context.delete(discriminators, type, id);
         return Response.ok().build();
-    }
-
-    @SuppressWarnings("rawtypes")
-    private Boolean collectionContainsDomainObjects(Object object) {
-        if (!(object instanceof Collection)) {
-            return null;
-        }
-        Collection collection = (Collection) object;
-        for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-            Object collectionItem = iterator.next();
-            if (PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private SimpleHomogeneousList populateSimpleHomogeneousList(Collection collection, String attributeName) {
-        SimpleHomogeneousList simpleList = new SimpleHomogeneousList();
-        List<JAXBElement> items = new ArrayList<JAXBElement>();
-
-        for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-            Object collectionItem = iterator.next();
-            if (!(PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass()))) {
-                JAXBElement jaxbElement = new JAXBElement(new QName(attributeName), collectionItem.getClass(), collectionItem);
-                items.add(jaxbElement);
-            }
-        }
-        simpleList.setItems(items);
-        return simpleList;
     }
 }

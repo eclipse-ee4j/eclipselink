@@ -96,14 +96,16 @@ public abstract class AbstractQueryResource extends AbstractResource {
                     // some query parameters for paging are invalid or the named query doesn't have orderBy clause !
                     return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                 }
-                return response(context, dbQuery, query, headers, getQueryParameters(uriInfo), uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
+                return response(context, dbQuery, query, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
             }
         }
-        return response(context, dbQuery, query, headers, getQueryParameters(uriInfo), uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+        return response(context, dbQuery, query, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
     }
 
     @SuppressWarnings("unchecked")
-    private Response response(PersistenceContext context, DatabaseQuery dbQuery, Query query, HttpHeaders headers, Map<String, Object> queryParams, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
+    private Response response(PersistenceContext context, DatabaseQuery dbQuery, Query query, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
+        Map<String, Object> queryParams = getQueryParameters(uriInfo);
+
         if (dbQuery instanceof ReportQuery) {
             // simple types selected : select u.name, u.age from employee
             List<ReportItem> reportItems = ((ReportQuery) dbQuery).getItems();

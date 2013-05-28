@@ -12,19 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.model.employee;
 
+import static javax.persistence.TemporalType.TIMESTAMP;
+
 import java.util.Calendar;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Embeddable
 public class Certification {
     @Column(name = "NAME")
     private String name;
-    
-    @Temporal(TemporalType.DATE)
+
+    @Temporal(TIMESTAMP)
     @Column(name = "ISSUE_DATE")
     private Calendar issueDate;
 

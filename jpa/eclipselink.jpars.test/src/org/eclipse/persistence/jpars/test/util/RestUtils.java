@@ -62,7 +62,7 @@ public class RestUtils {
         String serverURIBase = System.getProperty(SERVER_URI_BASE, DEFAULT_SERVER_URI_BASE);
         String versionString = System.getProperty(JPA_RS_VERSION_STRING, "");
         String versionStringUrlFragment = versionString.equals("") ? versionString : versionString + "/";
-        
+
         return new URI(serverURIBase + APPLICATION_LOCATION + versionStringUrlFragment);
     }
 
@@ -233,7 +233,6 @@ public class RestUtils {
         return resultObject;
     }
 
-    
     /**
      * Rest update.
      *
@@ -260,11 +259,10 @@ public class RestUtils {
         Status status = response.getClientResponseStatus();
         if (status != Status.OK) {
             throw new RestCallFailedException(status);
-        } 
+        }
         return response.getEntity(String.class);
     }
 
-    
     /**
      * Rest create.
      *
@@ -323,7 +321,6 @@ public class RestUtils {
         return resultObject;
     }
 
-    
     /**
      * Rest create with sequence.
      *
@@ -334,7 +331,7 @@ public class RestUtils {
      * @param mediaType the media type
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static void restCreateWithSequence(String object, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException  {
+    public static void restCreateWithSequence(String object, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException {
         StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
         if (tenantId != null) {
@@ -368,7 +365,7 @@ public class RestUtils {
      * @throws URISyntaxException the uRI syntax exception
      */
     @SuppressWarnings("unchecked")
-    public static <T> T  restCreate(PersistenceContext context, String object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException  {
+    public static <T> T restCreate(PersistenceContext context, String object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException {
         StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
         if (tenantId != null) {
@@ -392,7 +389,7 @@ public class RestUtils {
         }
         return resultObject;
     }
-    
+
     /**
      * Rest delete.
      *
@@ -453,8 +450,6 @@ public class RestUtils {
         return (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
     }
 
-    
-    
     /**
      * Rest named multi result query.
      *
@@ -507,7 +502,6 @@ public class RestUtils {
         return response.getEntity(String.class);
     }
 
-    
     /**
      * Rest named single result query in byte array.
      *
@@ -553,8 +547,8 @@ public class RestUtils {
             }
         }
         return null;
-    }    
-    
+    }
+
     /**
      * Rest update query.
      *
@@ -701,8 +695,6 @@ public class RestUtils {
         return result;
     }
 
-
-
     /**
      * Gets the jSON message.
      *
@@ -727,7 +719,6 @@ public class RestUtils {
                 .getResourceAsStream(XML_REST_MESSAGE_FOLDER + inputFile);
         return convertStreamToString(is);
     }
-
 
     /**
      * Convert image to byte array.
@@ -777,7 +768,22 @@ public class RestUtils {
         return result;
     }
 
-    
+    public static String restPagedFindAttribute(Object id, String type, String attribute, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
+            throws RestCallFailedException, URISyntaxException {
+        StringBuilder resourceURL = new StringBuilder();
+        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/" + id + "/" + attribute);
+        appendParametersAndHints(resourceURL, parameters, hints);
+        WebResource webResource = client.resource(resourceURL.toString());
+
+        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK) {
+            throw new RestCallFailedException(status);
+        }
+        String result = response.getEntity(String.class);
+        return result;
+    }
+
     /**
      * Rest named paged multi result query.
      *
@@ -801,7 +807,7 @@ public class RestUtils {
         }
         return response.getEntity(String.class);
     }
-    
+
     /**
      * Test get contexts.
      *
@@ -815,14 +821,14 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(mediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
 
         String result = response.getEntity(String.class);
         return result;
     }
-    
+
     /**
      * Rest get types.
      *
@@ -837,7 +843,7 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(mediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
 
@@ -845,7 +851,6 @@ public class RestUtils {
         return result;
     }
 
-    
     private static String getExtension(File f) {
         String ext = null;
         String s = f.getName();

@@ -1,0 +1,36 @@
+{
+   "firstName": "James",
+   "gender": "Male",
+   "id": 2980,
+   "lastName": "Dean",
+   "responsibilities": [],
+   "salary": 0,
+   "managedEmployees": [],
+   "phoneNumbers": [
+      {
+         "id": 0,
+         "type": "cell1",
+         "areaCode": "613"
+      },
+      {
+         "id": 1,
+         "type": "cell2",
+         "areaCode": "416"
+      },
+      {
+         "id": 2,
+         "type": "work1",
+         "areaCode": "12345"
+      },
+      {
+         "id": 3,
+         "type": "work2",
+         "areaCode": "67890"
+      },
+      {
+         "id": 4,
+         "type": "cell3",
+         "areaCode": "901"
+      }
+   ]
+}
