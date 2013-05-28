@@ -58,9 +58,9 @@ public class MarshallerEncodingTestCases extends TestCase {
 
         String controlString;
         if("US-ASCII".equals(encoding) || "ISO-8859-1".equals(encoding)) {
-            controlString = controlHeader + Helper.cr() + XML_BODY_ONE_BYTE;
+            controlString = controlHeader + XML_BODY_ONE_BYTE;
         } else {
-            controlString = controlHeader + Helper.cr() + XML_BODY;
+            controlString = controlHeader + XML_BODY;
         }
 
         // suite.addTest(new MarshallerEncodingTest("testXMLHeader", encoding, controlString));

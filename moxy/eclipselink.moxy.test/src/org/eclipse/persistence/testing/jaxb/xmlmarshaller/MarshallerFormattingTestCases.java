@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 public class MarshallerFormattingTestCases extends OXTestCase {
     private final static int CONTROL_EMPLOYEE_ID = 123;
     private final static String CRLF = System.getProperty("line.separator");
-    private final static String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + CRLF;
+    private final static String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     private final static String XML_BODY = "<employee><id>123</id><name>Bob</name><phone>123456789</phone></employee>";
     private final static String XML_BODY_FORMATTED = "<employee>" + CRLF + "   <id>123</id>" + CRLF + "   <name>Bob</name>" + CRLF + "   <phone>123456789</phone>" + CRLF + "</employee>" + CRLF;
     private Marshaller marshaller;
@@ -64,7 +64,7 @@ public class MarshallerFormattingTestCases extends OXTestCase {
     }
 
     public void testFormattingTrue() throws Exception {
-        formatTest(true, XML_HEADER + XML_BODY_FORMATTED);
+        formatTest(true, XML_HEADER  + CRLF + XML_BODY_FORMATTED);
     }
 
     public void testInvalidFormatting() throws Exception {

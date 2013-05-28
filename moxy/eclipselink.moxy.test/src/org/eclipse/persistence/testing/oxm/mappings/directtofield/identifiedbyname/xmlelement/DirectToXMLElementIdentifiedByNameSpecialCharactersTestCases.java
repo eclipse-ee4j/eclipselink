@@ -23,7 +23,7 @@ public class DirectToXMLElementIdentifiedByNameSpecialCharactersTestCases extend
     private final static int CONTROL_ID = 123;
     private final static String CONTROL_FIRST_NAME = "A<\"B&C<";
     private final static String CONTROL_LAST_NAME = null;
-    private final static String CONTROL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Helper.cr() + "<employee><id>123</id><first-name>A&lt;&quot;B&amp;C&lt;</first-name></employee>";
+    private final static String CONTROL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<employee><id>123</id><first-name>A&lt;&quot;B&amp;C&lt;</first-name></employee>";
     private XMLMarshaller xmlMarshaller;
 
     public DirectToXMLElementIdentifiedByNameSpecialCharactersTestCases(String name) {

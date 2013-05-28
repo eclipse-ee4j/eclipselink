@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLMarshaller;
@@ -96,7 +95,6 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
                 writer.write('\"');
             }
             writer.write("?>");
-            writer.write(Helper.cr());
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

@@ -71,6 +71,16 @@ public class FormattedWriterRecord extends WriterRecord {
         return tab;
     }
 
+    
+    public void startDocument(String encoding, String version) {
+        super.startDocument(encoding, version);
+        try{
+            writer.write(Helper.cr());
+        } catch (IOException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+    
     /**
      * INTERNAL:
      */
