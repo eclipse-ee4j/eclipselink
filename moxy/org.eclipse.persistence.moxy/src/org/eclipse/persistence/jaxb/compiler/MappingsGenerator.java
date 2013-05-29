@@ -734,7 +734,7 @@ public class MappingsGenerator {
                     mapping = generateBinaryMapping(property, descriptor, namespaceInfo);
                     ((BinaryDataMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 } else {
-                    if (!property.isAttribute() && areEquals(valueType, Object.class)){
+                    if (!property.isAttribute() && areEquals(valueType, Object.class) || property.isTyped()){
                         mapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, null);
                         ((CompositeObjectMapping)mapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                         ((CompositeObjectMapping)mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
@@ -840,7 +840,7 @@ public class MappingsGenerator {
         if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
             return generateBinaryMapping(property, descriptor, namespaceInfo);
         }
-        if (referenceClass.getQualifiedName().equals(OBJECT_CLASS_NAME) && !property.isAttribute() ) {
+        if (referenceClass.getQualifiedName().equals(OBJECT_CLASS_NAME) && !property.isAttribute() || property.isTyped() ) {
             CompositeObjectMapping coMapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, null);
             coMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
             return coMapping;
@@ -1463,8 +1463,11 @@ public class MappingsGenerator {
     }
 
     private void setTypedTextField(Field field){
+    	
     	field.setIsTypedTextField(true);
-    	field.setSchemaType(Constants.ANY_TYPE_QNAME);
+    	if(field.getSchemaType() == null){
+    	    field.setSchemaType(Constants.ANY_TYPE_QNAME);
+    	}
      	((XMLField)field).addXMLConversion(Constants.DATE_TIME_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
     	((XMLField)field).addXMLConversion(Constants.DATE_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
     	((XMLField)field).addXMLConversion(Constants.TIME_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
@@ -1543,7 +1546,7 @@ public class MappingsGenerator {
         initializeXMLMapping((XMLMapping)mapping, property);
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        mapping.setXPath(getXPathForField(property, namespaceInfo, false, false).getXPath());
+        mapping.setField((XMLField)getXPathForField(property, namespaceInfo, false, false));
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));

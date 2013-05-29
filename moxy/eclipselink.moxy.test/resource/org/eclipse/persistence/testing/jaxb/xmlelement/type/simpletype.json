@@ -1,0 +1,6 @@
+{"foo":{
+   "field":{
+      "type":"integer",
+      "value":10
+      }
+}}

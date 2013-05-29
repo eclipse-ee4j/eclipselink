@@ -295,8 +295,13 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
                 UnmarshalKeepAsElementPolicy policy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
                 if (null != policy && ((xmlDescriptor == null && policy.isKeepUnknownAsElement()) || policy.isKeepAllAsElement())) {
-                    if(unmarshalRecord.getTypeQName() != null){
-                        Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                	QName schemaType = unmarshalRecord.getTypeQName();
+                	if(schemaType == null){                		
+                		schemaType = ((Field)xmlCompositeObjectMapping.getField()).getSchemaType();
+                		unmarshalRecord.setTypeQName(schemaType);
+                	}
+                    if(schemaType != null){
+                        Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);
                         if(theClass == null){
                             setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
                             return true;
