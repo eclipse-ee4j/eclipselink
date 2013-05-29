@@ -117,10 +117,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
                 synchronized(emSetupImpl) {
                     if (emSetupImpl.isUndeployed()) {
                         undeployed = true;
+                    } else {
+                        // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
+                        emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), properties);
                     }
-                
-                    // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
-                    emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), properties);
                 }
                 
                 if (undeployed) {
@@ -333,10 +333,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
                 synchronized(emSetupImpl) {
                     if(emSetupImpl.isUndeployed()) {
                         undeployed = true;
+                    } else {
+                        // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
+                        transformer = emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
                     }
-                    
-                    // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
-                    transformer = emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
                 }
                 if(undeployed) {
                     // after the emSetupImpl has been obtained from emSetupImpls
