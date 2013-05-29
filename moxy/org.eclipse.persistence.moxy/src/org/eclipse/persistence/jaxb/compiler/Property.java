@@ -150,6 +150,8 @@ public class Property implements Cloneable {
     private boolean isTransientType;
     private static final String MARSHAL_METHOD_NAME = "marshal";
     
+    private boolean isTyped;
+    
     
     public Property() {}
 
@@ -1361,5 +1363,14 @@ public class Property implements Cloneable {
     public void setVariableNodeAttribute(boolean variableNodeAttribute) {
          this.variableNodeAttribute = variableNodeAttribute;
     }
+
+    public boolean isTyped() {
+        return isTyped;
+    }
+
+    public void setTyped(boolean isTyped) {
+        this.isTyped = isTyped;
+    }
+
 
 }

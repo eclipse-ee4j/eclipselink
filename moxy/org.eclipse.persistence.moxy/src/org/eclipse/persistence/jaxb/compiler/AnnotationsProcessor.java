@@ -1675,7 +1675,13 @@ public class AnnotationsProcessor {
                 if (helper.isCollectionType(property.getType()) || property.getType().isArray()) {
                     property.setGenericType(helper.getJavaClass(element.type()));
                 } else {
-                    property.setType(helper.getJavaClass(element.type()));
+                	JavaClass originalType = property.getType();
+                	JavaClass newType =helper.getJavaClass(element.type());
+                	if(!originalType.getName().equals(newType.getName())){
+                		property.setTyped(true);
+                		property.setSchemaType((QName) helper.getXMLToJavaTypeMap().get(newType.getName()));
+                	}                		
+                    property.setType(newType);
                 }
                 property.setHasXmlElementType(true);
             }

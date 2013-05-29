@@ -1,0 +1,5 @@
+<foo>
+   <field xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="bar">
+       <thing>theThing</thing>
+    </field>
+</foo>

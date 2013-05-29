@@ -75,5 +75,11 @@ public interface CompositeObjectMapping<
     public void setReferenceClassName(String aClassName);
     
     public void setXPath(String string);
+    
+    /**
+     * ADVANCED:
+     * Set the field in the mapping.
+     */
+    public void setField(FIELD theField);
 
 }
