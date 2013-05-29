@@ -1267,6 +1267,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         call = new StoredFunctionCall(Types.STRUCT, returnArg.getTypeName(), javaTypeName);
                     }
                 } else {
+                	// scalar
                     call = new StoredFunctionCall();
                     if (returnArg.getEnclosedType().isBlobType()) {
                         // handle BLOBs
@@ -1275,13 +1276,15 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         int resultType = Util.getJDBCTypeFromTypeName(javaTypeName);
                         // need special handling for Date types
                         if (resultType == Types.DATE || resultType == Types.TIME || resultType == Types.TIMESTAMP) {
-                            ((StoredFunctionCall) call).setResult(null, java.sql.Timestamp.class);
+                            ((StoredFunctionCall) call).setResult(null, ClassConstants.TIMESTAMP);
                         } else if (returnArg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
                             // special handling for XMLType types
-                            ((StoredFunctionCall) call).setResult(null, 2009);
-                        } else {
-                            // default to OBJECT
+                            ((StoredFunctionCall) call).setResult(null, Types.SQLXML);
+                        } else if (resultType == Types.OTHER || resultType == Types.CLOB) {
+                            // default to OBJECT for OTHER, CLOB and LONG types
                             ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
+                    	} else {
+                    		((StoredFunctionCall) call).setResult(null, resultType);
                         }
                     }
                 }

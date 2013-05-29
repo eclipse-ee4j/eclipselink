@@ -985,8 +985,6 @@ public abstract class BaseDBWSBuilderHelper {
             if (mappings != null) {
                 XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
                 writer.write(mappings, dbwsOrStream);
-                
-                //writer.write(mappings, System.out);
             }
         }
         if (!isNullStream(dbwsOxStream)) {
