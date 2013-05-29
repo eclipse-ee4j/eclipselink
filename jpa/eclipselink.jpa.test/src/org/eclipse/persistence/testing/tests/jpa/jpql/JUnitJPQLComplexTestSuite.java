@@ -3071,9 +3071,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             return;
         }
         // Bug 407285
-        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isSybase())
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isSybase() || ((Session) JUnitTestCase.getServerSession()).getPlatform().isPostgreSQL())
         {
-            warning("The test 'caseTypeTest' is not supported on Sybase, "
+            warning("The test 'caseTypeTest' is not supported on Sybase or PostGres, "
                   + "because Sybase does not support implicit type conversion from Varchar to Integer.");
             closeEntityManager(em);
             return;
