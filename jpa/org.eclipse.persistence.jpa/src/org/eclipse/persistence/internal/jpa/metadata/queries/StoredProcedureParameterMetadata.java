@@ -423,7 +423,12 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                     call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, getJavaClass(m_type));
                 } else {
                     if (hasJdbcType() && hasJdbcTypeName()) {
-                        call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                        OracleArrayTypeMetadata aType = null;
+                        if (hasTypeName() && (aType = getArrayTypeMetadata(m_typeName)) != null) {
+                            call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type), buildNestedField(aType));
+                        } else {
+                        	call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                        }
                     } else {
                         call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, getJavaClass(m_type));
                     }

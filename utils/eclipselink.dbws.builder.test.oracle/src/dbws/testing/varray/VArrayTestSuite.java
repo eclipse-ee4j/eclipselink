@@ -59,6 +59,12 @@ public class VArrayTestSuite extends DBWSTestSuite {
             "\nU.EXTEND;" +
             "\nU(2) := CONCAT('entry2-', T);" +
         "\nEND GETVCARRAY;";
+    static final String CREATE_GETVCARRAY_PROC2 =
+         "CREATE OR REPLACE PROCEDURE GETVCARRAY_PROC2(T IN VARCHAR, U IN OUT VCARRAY) AS" +
+         "\nBEGIN" +
+             "\nU(1) := CONCAT('entry1-', T);" +
+             "\nU(2) := CONCAT('entry2-', T);" +
+         "\nEND GETVCARRAY_PROC2;";
     static final String CREATE_GETVCARRAY2_FUNC =
         "CREATE OR REPLACE FUNCTION GETVCARRAY2(T IN VARCHAR) RETURN VCARRAY AS" +
         "\nL_DATA VCARRAY := VCARRAY();" +
@@ -99,6 +105,8 @@ public class VArrayTestSuite extends DBWSTestSuite {
         "DROP TYPE VCARRAY";
     static final String DROP_GETVCARRAY_PROC =
         "DROP PROCEDURE GETVCARRAY";
+    static final String DROP_GETVCARRAY_PROC2 =
+        "DROP PROCEDURE GETVCARRAY_PROC2";
     static final String DROP_GETVCARRAY2_FUNC =
         "DROP FUNCTION GETVCARRAY2";
     static final String DROP_COPYVCARRAY_PROC =
@@ -139,6 +147,7 @@ public class VArrayTestSuite extends DBWSTestSuite {
         if (ddlCreate) {
             runDdl(conn, CREATE_VCARRAY_VARRAY, ddlDebug);
             runDdl(conn, CREATE_GETVCARRAY_PROC, ddlDebug);
+            runDdl(conn, CREATE_GETVCARRAY_PROC2, ddlDebug);
             runDdl(conn, CREATE_GETVCARRAY2_FUNC, ddlDebug);
             runDdl(conn, CREATE_COPYVCARRAY_PROC, ddlDebug);
             runDdl(conn, CREATE_COPYVCARRAY2_FUNC, ddlDebug);
@@ -167,6 +176,13 @@ public class VArrayTestSuite extends DBWSTestSuite {
                   "name=\"GetVCArrayTest\" " +
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"GETVCARRAY\" " +
+                  "isAdvancedJDBC=\"true\" " +
+                  "returnType=\"vcarrayType\" " +
+              "/>" +
+              "<procedure " +
+                  "name=\"GetVCArrayProcTest2\" " +
+                  "catalogPattern=\"TOPLEVEL\" " +
+                  "procedurePattern=\"GETVCARRAY_PROC2\" " +
                   "isAdvancedJDBC=\"true\" " +
                   "returnType=\"vcarrayType\" " +
               "/>" +
@@ -217,6 +233,7 @@ public class VArrayTestSuite extends DBWSTestSuite {
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
             runDdl(conn, DROP_GETVCARRAY_PROC, ddlDebug);
+            runDdl(conn, DROP_GETVCARRAY_PROC2, ddlDebug);
             runDdl(conn, DROP_GETVCARRAY2_FUNC, ddlDebug);
             runDdl(conn, DROP_COPYVCARRAY_PROC, ddlDebug);
             runDdl(conn, DROP_COPYVCARRAY2_FUNC, ddlDebug);
@@ -293,6 +310,23 @@ public class VArrayTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    @Test
+    public void getVCArrayProcTest2() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object input = unmarshaller.unmarshal(new StringReader(INPUT_XML));
+        Invocation invocation = new Invocation("GetVCArrayProcTest2");
+        invocation.setParameter("T", "xxx");
+        invocation.setParameter("U", input);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(VARRAY_RESULT));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }    
+    
     static String INPUT_XML =
         REGULAR_XML_HEADER +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
