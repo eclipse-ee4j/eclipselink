@@ -95,6 +95,13 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('J-ROC', 27, 'M', " +
                 "TO_DATE('1998-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
         "\nEND GET_PERSONTYPE_TABLE;";
+    static final String CREATE_GET_PERSONTYPE_TABLE_PROC2 =
+        "CREATE OR REPLACE PROCEDURE GET_PERSONTYPE_TABLE_PROC2(PTABLE IN OUT DBWS_PERSONTYPE_TABLE) AS" +
+        "\nBEGIN" +
+            "\nPTABLE.EXTEND;" +
+            "\nPTABLE(PTABLE.COUNT) := DBWS_PERSONTYPE('COREY', 20, 'M', " +
+                "TO_DATE('1997-12-09 00:00:00','YYYY-MM-DD HH24:MI:SS'));" +
+        "\nEND GET_PERSONTYPE_TABLE_PROC2;";
     static final String CREATE_GET_PERSONTYPE2_FUNC =
         "CREATE OR REPLACE FUNCTION GET_PERSONTYPE_TABLE2 RETURN DBWS_PERSONTYPE_TABLE AS" +
         "\nL_DATA DBWS_PERSONTYPE_TABLE;" +
@@ -132,6 +139,8 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
 
     static final String DROP_GET_PERSONTYPE_TABLE =
         "DROP PROCEDURE GET_PERSONTYPE_TABLE";
+    static final String DROP_GET_PERSONTYPE_TABLE_PROC2 =
+         "DROP PROCEDURE GET_PERSONTYPE_TABLE_PROC2";
     static final String DROP_GET_PERSONTYPE2_FUNC =
         "DROP FUNCTION GET_PERSONTYPE_TABLE2";
     static final String DROP_ADD_PERSONTYPE_TO_TABLE_PROC =
@@ -274,6 +283,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_GROUPTYPE, ddlDebug);
             runDdl(conn, CREATE_GROUPTYPE_PROC, ddlDebug);
             runDdl(conn, CREATE_GET_PERSONTYPE_PROC, ddlDebug);
+            runDdl(conn, CREATE_GET_PERSONTYPE_TABLE_PROC2, ddlDebug);
             runDdl(conn, CREATE_GET_PERSONTYPE2_FUNC, ddlDebug);
             runDdl(conn, CREATE_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
             runDdl(conn, CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC, ddlDebug);
@@ -318,6 +328,12 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
                   "catalogPattern=\"TOPLEVEL\" " +
                   "procedurePattern=\"GET_PERSONTYPE_TABLE\" " +
                   "isAdvancedJDBC=\"true\" " +
+                  "returnType=\"dbws_persontype_tableType\" " +
+              "/>" +
+              "<procedure " +
+                  "name=\"GetPersonTypeTableProc2\" " +
+                  "catalogPattern=\"TOPLEVEL\" " +
+                  "procedurePattern=\"GET_PERSONTYPE_TABLE_PROC2\" " +
                   "returnType=\"dbws_persontype_tableType\" " +
               "/>" +
               "<procedure " +
@@ -369,6 +385,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_ADD_PERSONTYPE_TO_TABLE2_FUNC, ddlDebug);
             runDdl(conn, DROP_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
             runDdl(conn, DROP_GET_PERSONTYPE2_FUNC, ddlDebug);
+            runDdl(conn, DROP_GET_PERSONTYPE_TABLE_PROC2, ddlDebug);
             runDdl(conn, DROP_GET_PERSONTYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_GROUPTYPE_PROC, ddlDebug);
             runDdl(conn, DROP_GROUPTYPE, ddlDebug);
@@ -399,6 +416,21 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    @Test
+    public void getPersonTypeTableProc2() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object tableType = unmarshaller.unmarshal(new StringReader(PTABLE_INPUT_XML));
+        Invocation invocation = new Invocation("GetPersonTypeTableProc2");
+        invocation.setParameter("PTABLE", tableType);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(NEW_PTABLE_OUTPUT_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
     @Test
     public void getPersonTypeTable2() {
         Invocation invocation = new Invocation("GetPersonTypeTable2");

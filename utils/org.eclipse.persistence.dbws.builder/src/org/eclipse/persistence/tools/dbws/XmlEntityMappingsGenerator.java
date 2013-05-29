@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
@@ -77,6 +78,10 @@ import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_INOUT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_OUT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_REF_CURSOR;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
 import static org.eclipse.persistence.tools.dbws.Util._TYPE_STR;
@@ -261,7 +266,7 @@ public class XmlEntityMappingsGenerator {
                             metadata.setReturnParameter(param);
                         } else {
                             param.setName(arg.getName());
-                            param.setDirection(getDirectionAsString((Integer)types.get(i)));
+                            param.setMode(getParameterModeAsString((Integer)types.get(i)));
                             params.add(param);
                         }
                     }
@@ -317,10 +322,15 @@ public class XmlEntityMappingsGenerator {
                     
                     DatabaseField arg;
                     StoredProcedureParameterMetadata param;
-                    List<DatabaseField> paramFields = call.getParameters();
-                    List types = call.getParameterTypes();
+                    List paramFields = call.getParameters();
+                    List<Integer> types = call.getParameterTypes();
                     for (int i = 0; i < paramFields.size(); i++) {
-                        arg = paramFields.get(i);
+                        if (types.get(i) == DatabaseCall.INOUT) {
+                            // for INOUT we get Object[IN, OUT]
+                            arg = (DatabaseField) ((Object[]) paramFields.get(i))[1];
+                        } else {
+                            arg = (DatabaseField) paramFields.get(i);
+                        }
                         param = new StoredProcedureParameterMetadata();
                         param.setName(arg.getName());
                         param.setTypeName(arg.getTypeName());
@@ -329,7 +339,7 @@ public class XmlEntityMappingsGenerator {
                             param.setJdbcTypeName(((ObjectRelationalDatabaseField) arg).getSqlTypeName());
                         }
 
-                        param.setDirection(getDirectionAsString((Integer) types.get(i)));
+                        param.setMode(getParameterModeAsString((Integer) types.get(i)));
                         params.add(param);
                     }
                     if (params.size() > 0) {
@@ -598,6 +608,38 @@ public class XmlEntityMappingsGenerator {
             return INOUT_STR;
         }
         return CURSOR_STR;
+    }
+    
+    /**
+     * Return a parameter mode as a String based on a given in value.
+     * 
+     * Expected 'direction' value is one of:
+     * <ul>
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INOUT
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT
+     * <li>org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR
+     * </ul>
+     * 
+     * Will return one of:
+     * <ul>
+     * <li>org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN
+     * <li>org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_INOUT
+     * <li>org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_OUT
+     * <li>org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_REF_CURSOR
+     * </ul>
+     */
+    public static String getParameterModeAsString(int direction) {
+        if (direction == IN) {
+            return JPA_PARAMETER_IN;
+        }
+        if (direction == OUT) {
+            return JPA_PARAMETER_OUT;
+        }
+        if (direction == INOUT) {
+            return JPA_PARAMETER_INOUT;
+        }
+        return JPA_PARAMETER_REF_CURSOR;
     }
     
     /**
