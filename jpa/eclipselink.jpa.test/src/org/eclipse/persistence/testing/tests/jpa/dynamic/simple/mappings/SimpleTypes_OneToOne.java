@@ -56,9 +56,6 @@ public class SimpleTypes_OneToOne {
     @BeforeClass
     public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
-        boolean isMySQL = JpaHelper.getServerSession(emf).getDatasourcePlatform().
-            getClass().getName().contains("MySQLPlatform");
-        assumeTrue(isMySQL);
         helper = new JPADynamicHelper(emf);
         DynamicClassLoader dcl = helper.getDynamicClassLoader();
         Class<?> simpleTypeB = dcl.createDynamicClass("model.SimpleB");

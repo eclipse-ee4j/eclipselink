@@ -59,9 +59,6 @@ public class EmployeeQueriesTestSuite {
     @BeforeClass
     public static void setUp() throws Exception {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
-        boolean isMySQL = JpaHelper.getServerSession(emf).getDatasourcePlatform().
-            getClass().getName().contains("MySQLPlatform");
-        assumeTrue(isMySQL);
         helper = new JPADynamicHelper(emf);
         deSystem = DynamicEmployeeSystem.buildProject(helper);
         serverSession = JpaHelper.getServerSession(emf);

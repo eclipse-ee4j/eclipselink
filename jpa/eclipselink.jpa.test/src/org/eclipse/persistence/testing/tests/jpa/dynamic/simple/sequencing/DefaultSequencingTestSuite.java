@@ -43,9 +43,6 @@ public class DefaultSequencingTestSuite extends BaseSequencingTestSuite {
     @BeforeClass
     public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
-        boolean isMySQL = JpaHelper.getServerSession(emf).getDatasourcePlatform().
-            getClass().getName().contains("MySQLPlatform");
-        assumeTrue(isMySQL);
         helper = new JPADynamicHelper(emf);
         DynamicClassLoader dcl = helper.getDynamicClassLoader();
         Class<?> javaType = dcl.createDynamicClass("model.sequencing." + ENTITY_TYPE);

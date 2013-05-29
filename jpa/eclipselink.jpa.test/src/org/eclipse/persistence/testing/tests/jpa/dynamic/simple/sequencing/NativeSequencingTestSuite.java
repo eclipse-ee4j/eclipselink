@@ -46,9 +46,7 @@ public class NativeSequencingTestSuite extends BaseSequencingTestSuite {
     @BeforeClass
     public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
-        boolean isMySQL = JpaHelper.getServerSession(emf).getDatasourcePlatform().
-            getClass().getName().contains("MySQLPlatform");
-        assumeTrue(isMySQL);
+        assumeTrue(JpaHelper.getServerSession(emf).getPlatform().isMySQL());
         helper = new JPADynamicHelper(emf);
         DynamicClassLoader dcl = helper.getDynamicClassLoader();
         Class<?> javaType = dcl.createDynamicClass("model.sequencing." + ENTITY_TYPE);
@@ -69,14 +67,17 @@ public class NativeSequencingTestSuite extends BaseSequencingTestSuite {
     public static void tearDown() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        em.createNativeQuery("DROP TABLE " + TABLE_NAME).executeUpdate();
-        em.getTransaction().commit();
+        try{
+            em.createNativeQuery("DROP TABLE " + TABLE_NAME).executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e){}
         em.close();
         emf.close();
     }
 
     @Before
     public void clearSimpleTypeInstances() {
+        assumeTrue(JpaHelper.getServerSession(emf).getPlatform().isMySQL());
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.createQuery("DELETE FROM " + ENTITY_TYPE).executeUpdate();

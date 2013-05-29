@@ -43,9 +43,6 @@ public class UnaryTableSequencingTestSuite extends BaseSequencingTestSuite {
     @BeforeClass
     public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
-        boolean isMySQL = JpaHelper.getServerSession(emf).getDatasourcePlatform().
-            getClass().getName().contains("MySQLPlatform");
-        assumeTrue(isMySQL);
         helper = new JPADynamicHelper(emf);
         DynamicClassLoader dcl = helper.getDynamicClassLoader();
         UnaryTableSequence sequence = new UnaryTableSequence(SEQ_TABLE_NAME);
