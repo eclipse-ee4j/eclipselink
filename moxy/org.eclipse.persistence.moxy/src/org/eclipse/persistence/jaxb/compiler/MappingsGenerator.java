@@ -664,7 +664,7 @@ public class MappingsGenerator {
             // if the value type is something we have a descriptor for, create
             // a composite mapping
             if(property.isChoice()) {
-                if(helper.isCollectionType(property.getType())) {
+                if(helper.isCollectionType(property.getType()) || property.getType().isArray()) {
                     mapping = generateChoiceCollectionMapping(property, descriptor, namespaceInfo);
                     ((ChoiceCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 } else {
@@ -769,7 +769,7 @@ public class MappingsGenerator {
             return generateTransformationMapping(property, descriptor, namespaceInfo);
         }
         if (property.isChoice()) {
-            if (helper.isCollectionType(property.getType())) {
+            if (helper.isCollectionType(property.getType()) || property.getType().isArray()) {
                 return generateChoiceCollectionMapping(property, descriptor, namespaceInfo);
             } 
             return generateChoiceMapping(property, descriptor, namespaceInfo);
@@ -1176,6 +1176,25 @@ public class MappingsGenerator {
         initializeXMLMapping((XMLChoiceCollectionMapping)mapping, property);
        
         JavaClass collectionType = property.getType();
+        if (collectionType.isArray()){
+            JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
+            JavaClass componentType = collectionType.getComponentType();
+            if(componentType.isArray()) {
+                JavaClass baseComponentType = getBaseComponentType(componentType);
+                if (baseComponentType.isPrimitive()){
+                    Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(baseComponentType.getRawName());
+                    accessor.setComponentClass(primitiveClass);
+                } else {
+                    accessor.setComponentClassName(baseComponentType.getQualifiedName());
+                }
+            } else {
+                accessor.setComponentClassName(componentType.getQualifiedName());
+            }
+         
+            mapping.setAttributeAccessor(accessor);
+        }
+        
+        
         collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
 
