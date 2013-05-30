@@ -796,6 +796,23 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             }
             primaryKey = policy.createPrimaryKeyFromId(id, session);
         }
+        
+        // If the LockModeType is PESSIMISTIC*, check the unitofwork cache and return the entity if it has previously been locked
+        // Must avoid using the new JPA 2.0 Enum values directly to allow JPA 1.0 jars to still work.
+        if (lockMode != null && (lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_READ) || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_WRITE)
+                || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_FORCE_INCREMENT))) {
+            // PERF: check if the UnitOfWork has pessimistically locked objects to avoid a cache query
+            if (session.isUnitOfWork() && ((UnitOfWorkImpl)session).hasPessimisticLockedObjects()) {
+                ReadObjectQuery query = new ReadObjectQuery();
+                query.setReferenceClass(descriptor.getJavaClass());
+                query.setSelectionId(primaryKey);
+                query.checkCacheOnly();
+                Object cachedEntity = session.executeQuery(query);
+                if (cachedEntity != null && ((UnitOfWorkImpl)session).isPessimisticLocked(cachedEntity)) {
+                    return cachedEntity;
+                }
+            }
+        }
 
         // Get the read object query and apply the properties to it.
         // PERF: use descriptor defined query to avoid extra query creation.
@@ -1849,6 +1866,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             // Must avoid using the new JPA 2.0 Enum values directly to allow JPA 1.0 jars to still work.
             if (lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_READ) || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_WRITE )
                     || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_FORCE_INCREMENT)) {
+                
+                // return if the entity has previously been pessimistically locked
+                if (((UnitOfWorkImpl)uow).isPessimisticLocked(entity)) {
+                    return;
+                }
+                
                 // Get the read object query and apply the properties to it.
                 ReadObjectQuery query = getReadObjectQuery(entity, properties);
 
