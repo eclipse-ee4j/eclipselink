@@ -497,7 +497,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
     public void setMediaType(MediaType mediaType) {
         super.setMediaType(mediaType);
     }
-    
+
     /**
      * Get the MediaType for this xmlMarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
@@ -508,6 +508,5 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
     public MediaType getMediaType(){
         return mediaType;
     }
-
 
 }
