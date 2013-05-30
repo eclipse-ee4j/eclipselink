@@ -30,6 +30,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.JoinedAttributeAdvance
 import org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticConcurrencyJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticLockForceIncrementTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockEntityRefreshTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockingExtendedScopeTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.QueryCastTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
@@ -127,6 +128,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(AdvancedFetchGroupJunitTest.suite());
         suite.addTest(AdvancedMultiTenantJunitTest.suite());
         suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
+        suite.addTest(PessimisticLockEntityRefreshTestSuite.suite());
         suite.addTest(UpdateAllQueryAdvancedJunitTest.suite());
         suite.addTest(ComplexAggregateTestSuite.suite());
         suite.addTest(MetadataCachingTestSuite.suite());

@@ -5665,6 +5665,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public boolean isPessimisticLocked(Object clone) {
         return (this.pessimisticLockedObjects != null )&& this.pessimisticLockedObjects.containsKey(clone);
     }
+    
+    /**
+     * INTERNAL:
+     * Return true if there are any pessimistic locked objects in this unit of work, false otherwise.
+     */
+    public boolean hasPessimisticLockedObjects() {
+        return (this.pessimisticLockedObjects != null) && (this.pessimisticLockedObjects.size() != 0);
+    }
 
     /**
      * @return the preDeleteComplete
