@@ -53,7 +53,7 @@ public class PagingRequestValidator extends FeatureRequestValidatorImpl {
                     orderBy = ((ObjectLevelReadQuery) dbQuery).getOrderByExpressions();
                 }
 
-                if ((orderBy != null) && (!orderBy.isEmpty())) {
+                if ((orderBy == null) || (orderBy.isEmpty())) {
                     return false;
                 }
             }
