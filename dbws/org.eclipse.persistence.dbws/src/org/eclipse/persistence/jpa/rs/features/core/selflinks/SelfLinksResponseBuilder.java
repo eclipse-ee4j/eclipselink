@@ -40,7 +40,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
      */
     @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
-        return nonPagedResponseWithSelfLinks(context, items, uriInfo);
+        return responseWithSelfLinks(context, items, uriInfo);
     }
 
     /* (non-Javadoc)
@@ -48,7 +48,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
      */
     @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
-        return populateNonPagedReportQueryResultListWithSelfLinks(results, items, uriInfo);
+        return populateReportQueryResultListWithSelfLinks(results, items, uriInfo);
     }
 
     /* (non-Javadoc)
@@ -57,20 +57,34 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
     @SuppressWarnings("unchecked")
     public Object buildCollectionAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object item, UriInfo uriInfo) {
         if (item instanceof Collection) {
-            return nonPagedResponseWithSelfLinks(context, (List<Object>) item, uriInfo);
+            return responseWithSelfLinks(context, (List<Object>) item, uriInfo);
         }
         return item;
     }
 
-    private Object nonPagedResponseWithSelfLinks(PersistenceContext context, List<Object> results, UriInfo uriInfo) {
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildSingleEntityResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.Object, javax.ws.rs.core.UriInfo)
+     */
+    @Override
+    public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
+        if (result instanceof PersistenceWeavedRest) {
+            PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
+            List<Link> links = new ArrayList<Link>();
+            links.add(new Link(ReservedWords.JPARS_REL_SELF, null, uriInfo.getRequestUri().toString()));
+            entity._persistence_setLinks(links);
+        }
+        return result;
+    }
+
+    private Object responseWithSelfLinks(PersistenceContext context, List<Object> results, UriInfo uriInfo) {
         if ((results != null) && (!results.isEmpty())) {
-            return populateNonPagedReadAllQueryResultListWithSelfLinks(context, results, uriInfo);
+            return populateReadAllQueryResultListWithSelfLinks(context, results, uriInfo);
         }
         return results;
     }
 
     @SuppressWarnings("rawtypes")
-    private ReportQueryResultCollection populateNonPagedReportQueryResultListWithSelfLinks(List<Object[]> results, List<ReportItem> reportItems, UriInfo uriInfo) {
+    private ReportQueryResultCollection populateReportQueryResultListWithSelfLinks(List<Object[]> results, List<ReportItem> reportItems, UriInfo uriInfo) {
         ReportQueryResultCollection response = new ReportQueryResultCollection();
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
@@ -90,10 +104,10 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         return response;
     }
 
-    private ReadAllQueryResultCollection populateNonPagedReadAllQueryResultListWithSelfLinks(PersistenceContext context, List<Object> items, UriInfo uriInfo) {
+    private ReadAllQueryResultCollection populateReadAllQueryResultListWithSelfLinks(PersistenceContext context, List<Object> items, UriInfo uriInfo) {
         ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
         for (Object item : items) {
-            response.addItem(populateNonPagedReadAllQueryResultListItemLinks(context, item));
+            response.addItem(populateReadAllQueryResultListItemLinks(context, item));
         }
 
         response.addLink(new Link(ReservedWords.JPARS_REL_SELF, null, uriInfo.getRequestUri().toString()));
@@ -101,7 +115,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private JAXBElement populateNonPagedReadAllQueryResultListItemLinks(PersistenceContext context, Object result) {
+    private JAXBElement populateReadAllQueryResultListItemLinks(PersistenceContext context, Object result) {
         // populate links for the entity
         JAXBElement item = new JAXBElement(new QName(ReservedWords.JPARS_LIST_ITEMS_NAME), result.getClass(), result);
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());

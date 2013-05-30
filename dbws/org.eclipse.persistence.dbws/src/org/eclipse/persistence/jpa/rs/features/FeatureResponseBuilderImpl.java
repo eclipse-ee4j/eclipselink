@@ -60,6 +60,14 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildSingleEntityResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.Object, javax.ws.rs.core.UriInfo)
+     */
+    @Override
+    public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
+        return result;
+    }
+
     @SuppressWarnings("rawtypes")
     private ReportQueryResultList populateReportQueryResultList(List<Object[]> results, List<ReportItem> reportItems) {
         ReportQueryResultList response = new ReportQueryResultList();
@@ -141,5 +149,4 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         }
         return false;
     }
-
 }

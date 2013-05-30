@@ -25,6 +25,9 @@ import javax.xml.bind.JAXBElement;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
+import org.eclipse.persistence.jpa.rs.features.FeatureSet;
+import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
@@ -83,8 +86,12 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
                 return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
         }
-        Object queryResults = query.getSingleResult();
-        return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();
+
+        Object queryResult = query.getSingleResult();
+
+        FeatureSet featureSet = context.getSupportedFeatureSet();
+        FeatureResponseBuilder responseBuilder = featureSet.getResponseBuilder(Feature.NO_PAGING);
+        return Response.ok(new StreamingOutputMarshaller(context, responseBuilder.buildSingleEntityResponse(context, getQueryParameters(uriInfo), queryResult, uriInfo), headers.getAcceptableMediaTypes())).build();
     }
 
     @SuppressWarnings({ "rawtypes" })

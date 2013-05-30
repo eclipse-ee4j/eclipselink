@@ -8,29 +8,34 @@
    "managedEmployees": [],
    "phoneNumbers": [
       {
+         "id": 3,
+         "type": "fire",
+         "areaCode": "416"
+      },
+      {
+         "id": 5,
+         "type": "absent",
+         "areaCode": "613"
+      },
+      {
          "id": 0,
+         "type": "elf",
+         "areaCode": "901"
+      },
+      {
+         "id": 4,
          "type": "cell1",
          "areaCode": "613"
       },
       {
-         "id": 1,
-         "type": "cell2",
-         "areaCode": "416"
-      },
-      {
          "id": 2,
-         "type": "work1",
+         "type": "daily",
          "areaCode": "12345"
       },
       {
-         "id": 3,
-         "type": "work2",
+         "id": 1,
+         "type": "bogus",
          "areaCode": "67890"
-      },
-      {
-         "id": 4,
-         "type": "cell3",
-         "areaCode": "901"
       }
    ]
 }

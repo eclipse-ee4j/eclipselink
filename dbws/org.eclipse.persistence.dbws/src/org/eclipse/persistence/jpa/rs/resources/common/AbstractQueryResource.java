@@ -96,10 +96,10 @@ public abstract class AbstractQueryResource extends AbstractResource {
                     // some query parameters for paging are invalid or the named query doesn't have orderBy clause !
                     return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                 }
-                return response(context, dbQuery, query, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
+                return response(context, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.PAGING));
             }
         }
-        return response(context, dbQuery, query, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+        return response(context, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.NO_PAGING));
     }
 
     @SuppressWarnings("unchecked")

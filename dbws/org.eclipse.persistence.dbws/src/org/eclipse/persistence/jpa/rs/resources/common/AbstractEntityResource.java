@@ -16,8 +16,10 @@ import static org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller.medi
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +33,10 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
@@ -41,12 +46,14 @@ import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
+import org.eclipse.persistence.jpa.rs.util.IdHelper.SortableKey;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
@@ -73,23 +80,21 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
         try {
             entity = em.find(context.getClass(type), id, getQueryParameters(uriInfo));
-
             DatabaseSession serverSession = context.getServerSession();
-
             ClassDescriptor descriptor = serverSession.getClassDescriptor(context.getClass(type));
             if (descriptor == null) {
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
-            DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
-            if ((mapping == null) || (entity == null)) {
+            DatabaseMapping attributeMapping = descriptor.getMappingForAttributeName(attribute);
+            if ((attributeMapping == null) || (entity == null)) {
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
             Object result = null;
 
-            if (!mapping.isCollectionMapping()) {
-                result = mapping.getRealAttributeValueFromAttribute(mapping.getAttributeValueFromObject(entity), entity, (AbstractSession) serverSession);
+            if (!attributeMapping.isCollectionMapping()) {
+                result = attributeMapping.getRealAttributeValueFromAttribute(attributeMapping.getAttributeValueFromObject(entity), entity, (AbstractSession) serverSession);
                 if (result == null) {
                     JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[] { attribute, type, key, persistenceUnit });
                     return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
@@ -97,15 +102,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
             }
 
-            ReadQuery query = (ReadQuery) ((((ForeignReferenceMapping) mapping).getSelectionQuery()).clone());
-
+            ReadQuery query = (ReadQuery) ((((ForeignReferenceMapping) attributeMapping).getSelectionQuery()).clone());
             if (query == null) {
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
             FeatureSet featureSet = context.getSupportedFeatureSet();
             AbstractSession clientSession = context.getClientSession(em);
-
             if (featureSet.isSupported(Feature.PAGING)) {
                 FeatureRequestValidator requestValidator = featureSet.getRequestValidator(Feature.PAGING);
                 Map<String, Object> map = new HashMap<String, Object>();
@@ -114,6 +117,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
                     if (!requestValidator.isRequestValid(uriInfo, map)) {
                         return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                     }
+                    // set orderBy, pagination requires an order by to work deterministically
+                    setOrderBy(context, query);
                     result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
                     return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
                 }
@@ -123,20 +128,6 @@ public abstract class AbstractEntityResource extends AbstractResource {
         } finally {
             em.close();
         }
-    }
-
-    private Response response(PersistenceContext context, String attribute, Object queryResults, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
-        Map<String, Object> queryParams = getQueryParameters(uriInfo);
-        if (queryResults != null) {
-            Object results = responseBuilder.buildCollectionAttributeResponse(context, queryParams, attribute, queryResults, uriInfo);
-            if (results != null) {
-                return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes())).build();
-            } else {
-                // something is wrong with the descriptors
-                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-            }
-        }
-        return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();
     }
 
     protected Response find(String version, String persistenceUnit, String type, String key, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
@@ -159,7 +150,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             JPARSLogger.fine("jpars_could_not_entity_for_key", new Object[] { type, key, persistenceUnit });
             return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         } else {
-            return Response.ok(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes())).build();
+            return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
         }
     }
 
@@ -237,8 +228,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
         // No sequencing in relationships, we can create the object now...
         context.create(getMatrixParameters(uriInfo, persistenceUnit), entity);
         ResponseBuilder rb = Response.status(Status.CREATED);
-        rb.entity(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes()));
-        return rb.build();
+        return rb.entity(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
     }
 
     protected Response update(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
@@ -260,7 +250,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
 
         entity = context.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
-        return Response.ok(new StreamingOutputMarshaller(context, entity, headers.getAcceptableMediaTypes())).build();
+        return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
     }
 
     protected Response setOrAddAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
@@ -296,9 +286,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
         if (result == null) {
             JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
             return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        } else {
-            return Response.ok(new StreamingOutputMarshaller(context, result, headers.getAcceptableMediaTypes())).build();
         }
+        return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
     }
 
     protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo) {
@@ -343,7 +332,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
             return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         } else {
-            return Response.ok(new StreamingOutputMarshaller(context, result, headers.getAcceptableMediaTypes())).build();
+            return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
         }
     }
 
@@ -362,5 +351,58 @@ public abstract class AbstractEntityResource extends AbstractResource {
         Object id = IdHelper.buildId(context, type, key);
         context.delete(discriminators, type, id);
         return Response.ok().build();
+    }
+
+    private Response response(PersistenceContext context, String attribute, Object queryResults, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
+        Map<String, Object> queryParams = getQueryParameters(uriInfo);
+        if (queryResults != null) {
+            Object results = responseBuilder.buildCollectionAttributeResponse(context, queryParams, attribute, queryResults, uriInfo);
+            if (results != null) {
+                return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes())).build();
+            } else {
+                // something is wrong with the descriptors
+                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+        }
+        return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();
+    }
+
+    private void setOrderBy(PersistenceContext context, ReadQuery query) {
+        List<Expression> orderBy = null;
+        if (query.isReadAllQuery()) {
+            ReadAllQuery readAllQuery = (ReadAllQuery) query;
+            orderBy = readAllQuery.getOrderByExpressions();
+            if ((orderBy == null) || (orderBy.isEmpty())) {
+                List<SortableKey> pkIndices = IdHelper.getPrimaryKey(context, query.getReferenceClass().getSimpleName());
+                if ((pkIndices != null) && (!pkIndices.isEmpty())) {
+                    Iterator<SortableKey> sortableKeys = pkIndices.iterator();
+                    orderBy = new ArrayList<Expression>(pkIndices.size());
+                    ExpressionBuilder builder = readAllQuery.getExpressionBuilder();
+                    while (sortableKeys.hasNext()) {
+                        DatabaseMapping dbMapping = sortableKeys.next().getMapping();
+                        if (dbMapping.isForeignReferenceMapping()) {
+                            ForeignReferenceMapping frMapping = (ForeignReferenceMapping) dbMapping;
+                            for (DatabaseField field : frMapping.getFields()) {
+                                orderBy.add(builder.getField(field));
+                            }
+                        } else if (dbMapping.isDirectToFieldMapping()) {
+                            orderBy.add(builder.get(dbMapping.getAttributeName()));
+                        }
+                    }
+                }
+            }
+            if ((orderBy != null) && (!orderBy.isEmpty())) {
+                readAllQuery.setOrderByExpressions(orderBy);
+                return;
+            }
+        }
+        JPARSLogger.fine("orderby_clause_required_for_paging", new Object[] { query.toString() });
+        throw new IllegalArgumentException();
+    }
+
+    private Object singleEntityResponse(PersistenceContext context, Object entity, UriInfo uriInfo) {
+        FeatureSet featureSet = context.getSupportedFeatureSet();
+        FeatureResponseBuilder responseBuilder = featureSet.getResponseBuilder(Feature.NO_PAGING);
+        return responseBuilder.buildSingleEntityResponse(context, getQueryParameters(uriInfo), entity, uriInfo);
     }
 }

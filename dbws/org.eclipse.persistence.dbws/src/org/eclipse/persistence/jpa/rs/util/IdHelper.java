@@ -225,7 +225,7 @@ public class IdHelper {
         return entity;
     }
 
-    public static Object getPrimaryKey(PersistenceContext context, String entityName) {
+    public static List<SortableKey> getPrimaryKey(PersistenceContext context, String entityName) {
         ClassDescriptor descriptor = context.getDescriptor(entityName);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
         List<SortableKey> pkIndices = new ArrayList<SortableKey>();
@@ -240,8 +240,7 @@ public class IdHelper {
         return pkIndices;
     }
 
-    private static class SortableKey implements Comparable<SortableKey> {
-
+    public static class SortableKey implements Comparable<SortableKey> {
         private DatabaseMapping mapping;
         private int index;
 
@@ -261,6 +260,5 @@ public class IdHelper {
         public int getIndex() {
             return index;
         }
-
     }
 }
