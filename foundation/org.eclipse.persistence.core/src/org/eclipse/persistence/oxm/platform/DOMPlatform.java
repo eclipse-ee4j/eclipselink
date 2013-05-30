@@ -31,11 +31,12 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
  *  @see org.eclipse.persistence.internal.oxm.record.DOMUnmarshaller
  *  @see org.eclipse.persistence.oxm.record.DOMRecord
  */
-public class DOMPlatform extends XMLPlatform {
+public class DOMPlatform extends XMLPlatform<XMLUnmarshaller> {
 
     /**
      * INTERNAL:
      */
+    @Override
     public PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
         return new DOMUnmarshaller(xmlUnmarshaller, null);
     }
@@ -43,6 +44,7 @@ public class DOMPlatform extends XMLPlatform {
     /**
      * INTERNAL:
      */
+    @Override
     public PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) {
         return new DOMUnmarshaller(xmlUnmarshaller, parserFeatures);
     }

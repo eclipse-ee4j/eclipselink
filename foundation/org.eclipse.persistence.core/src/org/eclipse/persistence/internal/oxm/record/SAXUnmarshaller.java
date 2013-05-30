@@ -196,7 +196,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     
     private XMLReader getNewXMLReader(Class clazz, MediaType mediaType) {
               	
-        	if(mediaType.isApplicationJSON()){        	
+        	if(null != mediaType && mediaType.isApplicationJSON()){        	
         	 	return new JSONReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);        	 	
         	}
             try {
@@ -910,7 +910,7 @@ if(clazz == CoreClassConstants.OBJECT) {
         try {
             Context xmlContext = xmlUnmarshaller.getContext();
 
-            if (xmlContext.hasDocumentPreservation() || (Node.class.isAssignableFrom(clazz) && xmlUnmarshaller.getMediaType().isApplicationXML())) {
+            if (xmlContext.hasDocumentPreservation() || (Node.class.isAssignableFrom(clazz) && xmlUnmarshaller.isApplicationXML())) {
                 SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
                 xmlReader.setContentHandler(saxDocumentBuilder);
                 xmlReader.parse(inputSource);

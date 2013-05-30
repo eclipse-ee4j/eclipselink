@@ -25,7 +25,6 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Marshaller;
-import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.ObjectBuilder;
@@ -172,7 +171,7 @@ public class AbstractMarshalRecordImpl<
                     classIndicatorUri = descriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(prefix);
                 }
                 if(leafType == null 
-                        || isRootElement && marshaller.getMediaType().isApplicationJSON() && !marshaller.isIncludeRoot() 
+                        || isRootElement && marshaller.isApplicationJSON() && !marshaller.isIncludeRoot() 
                         || !(leafType.getLocalPart().equals(classIndicatorLocal))
                         || (classIndicatorUri == null && (leafType.getNamespaceURI() != null && leafType.getNamespaceURI().length() >0))
                         || (classIndicatorUri != null && !classIndicatorUri.equals(leafType.getNamespaceURI()))
@@ -411,11 +410,10 @@ public class AbstractMarshalRecordImpl<
     public void setMarshaller(MARSHALLER marshaller) {
         this.marshaller = marshaller;
         if(marshaller != null){
-            MediaType mediaType = marshaller.getMediaType();
             if(marshaller.getNamespacePrefixMapper() != null){
                 namespaceAware = true;              
             }else{
-                namespaceAware = mediaType.isApplicationXML();
+                namespaceAware = marshaller.isApplicationXML();
             }
         }
     }

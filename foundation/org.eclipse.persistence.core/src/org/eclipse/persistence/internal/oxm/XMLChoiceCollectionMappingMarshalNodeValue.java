@@ -127,7 +127,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlChoiceCollectionMapping.getWrapperNullPolicy() != null);
         }
         
-        if(marshalRecord.getMarshaller().getMediaType().isApplicationJSON()){
+        if(marshalRecord.getMarshaller().isApplicationJSON()){
         	List<NodeValue> nodeValues = new ArrayList();
             List<List> values = new ArrayList<List>();
             

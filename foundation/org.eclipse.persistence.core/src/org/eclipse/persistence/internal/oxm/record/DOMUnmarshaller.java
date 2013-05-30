@@ -135,7 +135,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(File file) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -150,7 +150,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(File file, Class clazz) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -165,7 +165,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputStream inputStream) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -180,7 +180,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputStream inputStream, Class clazz) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -195,7 +195,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputSource inputSource) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -210,7 +210,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -225,7 +225,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(Node node) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         Element element = null;
@@ -245,7 +245,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(Node node, Class clazz) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         Element element = null;
@@ -265,7 +265,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(Reader reader) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -280,7 +280,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(Reader reader, Class clazz) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -295,7 +295,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(Source source) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -310,7 +310,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(Source source, Class clazz) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -325,7 +325,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(URL url) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -340,7 +340,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(URL url, Class clazz) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -355,7 +355,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {
@@ -373,7 +373,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz) {
-    	if(!xmlUnmarshaller.getMediaType().isApplicationXML()){
+    	if(!xmlUnmarshaller.isApplicationXML()){
     		throw XMLMarshalException.unsupportedMediaTypeForPlatform();
     	}
         try {

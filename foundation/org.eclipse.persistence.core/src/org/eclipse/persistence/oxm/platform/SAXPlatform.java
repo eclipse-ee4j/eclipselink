@@ -16,7 +16,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.oxm.record.SAXUnmarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.internal.oxm.XMLUnmarshaller;
 
 /**
  *  @version 1.0
@@ -25,11 +25,12 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
  *  This class is used to indicate that SAX parsing should be used to create an XML
  *  Record when appropriate.
  */
-public class SAXPlatform extends XMLPlatform {    
+public class SAXPlatform extends XMLPlatform<XMLUnmarshaller> {    
 
     /**
      * INTERNAL:
      */
+    @Override
     public PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
         return new SAXUnmarshaller(xmlUnmarshaller, null);
     }
@@ -37,6 +38,7 @@ public class SAXPlatform extends XMLPlatform {
     /**
      * INTERNAL:
      */
+    @Override
     public PlatformUnmarshaller newPlatformUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) {
         return new SAXUnmarshaller(xmlUnmarshaller, parserFeatures);
     }

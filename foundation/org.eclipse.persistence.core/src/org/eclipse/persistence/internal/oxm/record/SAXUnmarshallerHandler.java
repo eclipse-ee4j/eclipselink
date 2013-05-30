@@ -312,8 +312,11 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((CoreAbstractSession) session);
                 unmarshalRecord = wrapper.getUnmarshalRecord();
             } else {
-                org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((CoreAbstractSession) session);
-                unmarshalRecord = wrapper.getUnmarshalRecord();
+                unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
+                if(unmarshalRecord instanceof org.eclipse.persistence.oxm.record.UnmarshalRecord) {
+                    org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((CoreAbstractSession) session);
+                    unmarshalRecord = wrapper.getUnmarshalRecord();
+                }
                 unmarshalRecord.setXMLReader(this.getXMLReader());
             }
             this.descriptor = xmlDescriptor;

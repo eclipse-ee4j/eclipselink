@@ -1511,8 +1511,8 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
     }
 
     @Override
-    public AbstractSession getSession() {
-        return (AbstractSession) session;
+    public CoreAbstractSession getSession() {
+        return session;
     }
 
     @Override

@@ -486,4 +486,28 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
     public NamespacePrefixMapper getNamespacePrefixMapper() {
         return super.getNamespacePrefixMapper();
     }
+
+    /**
+     * Set the MediaType for this xmlMarshaller.
+     * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
+     * @param mediaType
+     * @since EclipseLink 2.4.0
+     */
+    @Override
+    public void setMediaType(MediaType mediaType) {
+        super.setMediaType(mediaType);
+    }
+    
+    /**
+     * Get the MediaType for this xmlMarshaller.
+     * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
+     * If not set the default is MediaType.APPLICATION_XML
+     * @return MediaType
+     * @since EclipseLink 2.4.0
+     */
+    public MediaType getMediaType(){
+        return mediaType;
+    }
+
+
 }

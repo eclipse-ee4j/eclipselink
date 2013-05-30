@@ -142,6 +142,20 @@ public abstract class Unmarshaller<
     public abstract String getValueWrapper();
 
     /**
+     * INTERNAL
+     * @return true if the media type is application/json, else false.
+     * @since EclipseLink 2.6.0
+     */
+    public abstract boolean isApplicationJSON();
+
+    /**
+     * INTERNAL
+     * @return true if the media type is application/xml, else false.
+     * @since EclipseLink 2.6.0
+     */
+    public abstract boolean isApplicationXML();
+
+    /**
      * Return if this Unmarshaller should try to automatically determine
      * the MediaType of the document (instead of using the MediaType set
      * by setMediaType)

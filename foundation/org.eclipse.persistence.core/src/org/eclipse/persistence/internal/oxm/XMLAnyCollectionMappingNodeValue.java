@@ -83,7 +83,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlAnyCollectionMapping.getWrapperNullPolicy() != null);
         }
         
-        if(marshalRecord.getMarshaller().getMediaType().isApplicationJSON()){
+        if(marshalRecord.getMarshaller().isApplicationJSON()){
             List<XPathFragment> frags = new ArrayList();
             List<List> values = new ArrayList<List>();
             List mixedValues = new ArrayList();

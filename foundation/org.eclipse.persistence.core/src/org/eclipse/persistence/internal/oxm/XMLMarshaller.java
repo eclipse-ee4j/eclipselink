@@ -159,7 +159,7 @@ public abstract class XMLMarshaller<
         fragment = xmlMarshaller.isFragment();
         includeRoot = xmlMarshaller.isIncludeRoot();
         marshalEmptyCollections = xmlMarshaller.isMarshalEmptyCollections();
-        mediaType = (MEDIA_TYPE) xmlMarshaller.getMediaType();
+        mediaType = (MEDIA_TYPE) xmlMarshaller.mediaType;
         namespaceSeparator = xmlMarshaller.getNamespaceSeparator();
         noNamespaceSchemaLocation = xmlMarshaller.getNoNamespaceSchemaLocation();
         reduceAnyArrays = xmlMarshaller.isReduceAnyArrays();
@@ -338,17 +338,6 @@ public abstract class XMLMarshaller<
           return descriptor;
       }
 
-     /**
-     * Get the MediaType for this xmlMarshaller.
-     * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
-     * If not set the default is MediaType.APPLICATION_XML
-     * @return MediaType
-     */
-    @Override
-    public MEDIA_TYPE getMediaType(){
-        return mediaType;
-    }
-
     protected Node getNode(Object object, Node parentNode, ABSTRACT_SESSION session, DESCRIPTOR descriptor, boolean isRoot) {
         if(isRoot) {
             object = ((Root) object).getObject();
@@ -414,12 +403,32 @@ public abstract class XMLMarshaller<
     }
 
     /**
+     * INTERNAL
+     * @return true if the media type is application/json, else false.
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public boolean isApplicationJSON() {
+        return null != mediaType && mediaType.isApplicationJSON();
+    }
+
+    /**
+     * INTERNAL
+     * @return true if the media type is application/xml, else false.
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public boolean isApplicationXML() {
+        return null == mediaType || mediaType.isApplicationXML();
+    }
+
+    /**
      * PUBLIC:
      * Returns if this should marshal to a fragment.  If true an XML header string is not written out.
      * @return if this should marshal to a fragment or not
      */
     public boolean isFragment() {
-        return mediaType.isApplicationXML() && fragment;
+        return isApplicationXML() && fragment;
     }
 
     /**
@@ -430,7 +439,7 @@ public abstract class XMLMarshaller<
      */
     @Override
     public boolean isIncludeRoot() {
-       if(mediaType.isApplicationJSON()){
+       if(isApplicationJSON()){
            return includeRoot;
        }
        return true;
@@ -498,7 +507,7 @@ public abstract class XMLMarshaller<
      * @throws XMLMarshalException if an error occurred during marshalling
      */
     public void marshal(Object object, ContentHandler contentHandler, LexicalHandler lexicalHandler) throws XMLMarshalException {
-        if(object instanceof JSONWithPadding && !mediaType.isApplicationJSON()){
+        if(object instanceof JSONWithPadding && !isApplicationJSON()){
             object = ((JSONWithPadding)object).getObject();
         }
 
@@ -541,7 +550,7 @@ public abstract class XMLMarshaller<
      * @param marshalRecord the marshalRecord to marshal the object to
      */
     public void marshal(Object object, MarshalRecord marshalRecord) {        
-        if(object instanceof JSONWithPadding && !mediaType.isApplicationJSON()){
+        if(object instanceof JSONWithPadding && !isApplicationJSON()){
             object = ((JSONWithPadding)object).getObject();
         }
         if ((object == null) || (marshalRecord == null)) {
@@ -795,7 +804,7 @@ public abstract class XMLMarshaller<
      * @throws XMLMarshalException if an error occurred during marshalling
      */
     public void marshal(Object object, Node node) throws XMLMarshalException {
-        if(object instanceof JSONWithPadding && !mediaType.isApplicationJSON()){
+        if(object instanceof JSONWithPadding && !isApplicationJSON()){
             object = ((JSONWithPadding)object).getObject();
         }
 
@@ -863,7 +872,7 @@ public abstract class XMLMarshaller<
     }
 
     private void marshal(Object object, OutputStream outputStream, ABSTRACT_SESSION session, DESCRIPTOR xmlDescriptor) throws XMLMarshalException {
-        if(object instanceof JSONWithPadding && !mediaType.isApplicationJSON()){               
+        if(object instanceof JSONWithPadding && !isApplicationJSON()){               
            object = ((JSONWithPadding)object).getObject();             
         }
         if ((object == null) || (outputStream == null)) {
@@ -879,7 +888,7 @@ public abstract class XMLMarshaller<
                version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
                encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
            }
-           if(mediaType.isApplicationJSON()) {
+           if(isApplicationJSON()) {
                marshal(object, new OutputStreamWriter(outputStream, encoding), session, xmlDescriptor);
                return;
            }
@@ -1068,14 +1077,14 @@ public abstract class XMLMarshaller<
         MarshalRecord writerRecord;
         writer = wrapWriter(writer);
         if (isFormattedOutput()) {
-            if(mediaType.isApplicationJSON()) {                          
+            if(isApplicationJSON()) {                          
                 writerRecord = new JSONFormattedWriterRecord(writer, callbackName);                
             } else {
                 writerRecord = new FormattedWriterRecord();
                 ((FormattedWriterRecord) writerRecord).setWriter(writer);
             }
         } else {
-            if(mediaType.isApplicationJSON()) {
+            if(isApplicationJSON()) {
                 writerRecord = new JSONWriterRecord(writer, callbackName);                
             } else {
                 writerRecord = new WriterRecord();

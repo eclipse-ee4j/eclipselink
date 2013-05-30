@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
@@ -256,7 +257,9 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
      */
     @Override
     public CoreAbstractRecord createRecord(CoreAbstractSession session) {
-        throw new UnsupportedOperationException();
+        UnmarshalRecordImpl record = new UnmarshalRecordImpl(this);
+        record.setSession(session);
+        return record;
     }
 
     @Override

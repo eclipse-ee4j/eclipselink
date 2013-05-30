@@ -114,11 +114,6 @@ public abstract class Marshaller<
     }
 
     /**
-     * Get the media type for this Marshaller.
-     */
-    public abstract MEDIA_TYPE getMediaType();
-
-    /**
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
      */
     public NAMESPACE_PREFIX_MAPPER getNamespacePrefixMapper() {
@@ -140,6 +135,20 @@ public abstract class Marshaller<
      * @return the transformer instance for this Marshaller
      */
     public abstract XMLTransformer getTransformer();
+
+    /**
+     * INTERNAL
+     * @return true if the media type is application/json, else false.
+     * @since EclipseLink 2.6.0
+     */
+    public abstract boolean isApplicationJSON();
+
+    /**
+     * INTERNAL
+     * @return true if the media type is application/xml, else false.
+     * @since EclipseLink 2.6.0
+     */
+    public abstract boolean isApplicationXML();
 
     /**
      * INTERNAL
