@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
- * SerializedObjectPolicy could be set on a non-aggregate descriptor. 
+ * SerializedObjectPolicy (SOP) could be set on a non-aggregate descriptor. 
  * 
  * If SerializedObjectPolicy is specified Eclipselink writes out the whole entity object with its
  * privately owned (and nested privately owned) entities and element collections into an additional 
@@ -51,19 +51,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @see org.eclipse.persistence.annotations.SerializedObject
  */
 public interface SerializedObjectPolicy extends Cloneable, Serializable {
-    /** Indicates whether the mapping should be included, excluded, or included for write but excluded for read into/from SOP. 
-     * The latter is used for primary key and version mappings. */
-    static final int INCLUDE = 0;
-    static final int EXCLUDE = 1;
-    static final int INCLUDE_WRITE_EXCLUDE_READ = 2;
-
     /** get owning descriptor */
     ClassDescriptor getDescriptor();    
     /** set owning descriptor */
     void setDescriptor(ClassDescriptor descriptor);
-    /** get the field that stores sopObject in the database */
+    /** get the field that stores sopObject in the database (sopField) */
     DatabaseField getField();    
-    /** set the field that stores sopObject in the database */
+    /** set the field that stores sopObject in the database (sopField) */
     void setField(DatabaseField field);
     
     SerializedObjectPolicy clone();
@@ -82,13 +76,13 @@ public interface SerializedObjectPolicy extends Cloneable, Serializable {
      * To allow recovery in case of null or invalid sopObject, then this method should return all the fields define by descriptor 
      * (descriptor.getFields()). 
      */
-    List<DatabaseField> getFieldsToSelect();
+    List<DatabaseField> getSelectionFields();
     /**
      * Lists the database fields that should be read by the query using the policy, in case all inherited objects are read using outer joining.
      * To allow recovery in case of null or invalid sopObject, then this method should return all the fields define by descriptor 
      * (descriptor.getAllFields()). 
      */
-    List<DatabaseField> getAllFieldsToSelect();
+    List<DatabaseField> getAllSelectionFields();
     
     /** Serialize the object and put the result into the row as a value corresponding to the policy field */
     void putObjectIntoRow(AbstractRecord databaseRow, Object object, AbstractSession session);

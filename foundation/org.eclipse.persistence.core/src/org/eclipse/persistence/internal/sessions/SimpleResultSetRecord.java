@@ -286,4 +286,16 @@ public class SimpleResultSetRecord extends ResultSetRecord {
     public boolean isPopulatingObject() {
         return this.isPopulatingObject;
     }    
+
+    @Override
+    protected String toStringAditional() {
+        return (this.shouldKeepValues ? " shouldKeepValues" : "") + (shouldUseOptimization ? " shouldUseOptimization" : "") + (isPopulatingObject ? " isPopulatingObject" : "");
+    }
+    
+    @Override 
+    public void setSopObject(Object sopObject) {
+        this.sopObject = sopObject;
+        // sopObject is set - the row is used to populate object
+        this.isPopulatingObject = true;
+    }
 }

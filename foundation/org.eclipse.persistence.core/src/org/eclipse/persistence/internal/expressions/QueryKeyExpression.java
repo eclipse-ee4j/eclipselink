@@ -369,6 +369,31 @@ public class QueryKeyExpression extends ObjectExpression {
 
     /**
      * INTERNAL:
+     */
+    @Override
+    public List<DatabaseField> getSelectionFields(ReadQuery query) {
+        if (isAttribute()) {
+            List<DatabaseField> result = new ArrayList<DatabaseField>(1);
+            DatabaseField field = getField();
+            if (field != null) {
+                result.add(field);
+            }
+            return result;
+        } else {
+            List<DatabaseField> result = new ArrayList<DatabaseField>();
+            result.addAll(super.getSelectionFields(query));
+            if ((this.mapping != null) && this.mapping.isCollectionMapping()){
+                List<DatabaseField> fields = this.mapping.getContainerPolicy().getAdditionalFieldsForJoin((CollectionMapping)this.mapping);
+                if (fields != null){
+                    result.addAll(fields);
+                }
+            }
+            return result;
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Transform the object-level value into a database-level value
      */
     @Override

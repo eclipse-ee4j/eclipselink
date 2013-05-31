@@ -749,7 +749,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         // Force a distinct to filter out m-1 duplicates.
         // Only set if really a m-1, not a 1-1
         if (!isOneToOneRelationship()) {
-            ((ObjectLevelReadQuery)batchQuery).useDistinct();
+            if (!((ObjectLevelReadQuery)batchQuery).isDistinctComputed() && (batchQuery.getSession().getPlatform().isLobCompatibleWithDistinct() || !Helper.hasLob(batchQuery.getDescriptor().getSelectionFields((ObjectLevelReadQuery)batchQuery)))) {
+                ((ObjectLevelReadQuery)batchQuery).useDistinct();
+            }
         }
         if (this.mechanism != null) {
             this.mechanism.postPrepareNestedBatchQuery(batchQuery, query);
@@ -955,8 +957,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Get all the fields for the map key
      */
     public List<DatabaseField> getAllFieldsForMapKey(){
-        List<DatabaseField> fields = new ArrayList(getReferenceDescriptor().getAllFields().size() + getForeignKeyFields().size());
-        fields.addAll(getReferenceDescriptor().getAllFields());
+        List<DatabaseField> fields = new ArrayList(getReferenceDescriptor().getAllSelectionFields().size() + getForeignKeyFields().size());
+        fields.addAll(getReferenceDescriptor().getAllSelectionFields());
         fields.addAll(getForeignKeyFields());
         return fields;
     }

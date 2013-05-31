@@ -314,6 +314,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                         // If the query require special SQL generation or execution do not use the static read object query.
                         // PERF: the read-object query should always be static to ensure no regeneration of SQL.
                         if ((!hasJoining() || !this.joinedAttributeManager.hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions()) && (redirector == null) && !doNotRedirect && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup())
+                                && (this.shouldUseSerializedObjectPolicy == shouldUseSerializedObjectPolicyDefault) 
                                 && this.wasDefaultLockMode && (shouldBindAllParameters == null) && (this.hintString == null)) {
                             if ((this.selectionId != null) || (this.selectionObject != null)) {// Must be primary key.
                                 this.isCustomQueryUsed = true;

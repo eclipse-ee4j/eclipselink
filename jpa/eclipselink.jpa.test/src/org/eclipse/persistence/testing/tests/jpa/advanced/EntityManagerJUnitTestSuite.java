@@ -1063,7 +1063,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 fail("Failed to flush to database");
             }
             em.refresh(emp);
-            assertTrue("Failed to flush to Database", emp.getSalary() == 100);
             em.remove(emp);
             commitTransaction(em);
         }catch(RuntimeException ex){
@@ -1072,6 +1071,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
             throw ex;
         }
+        assertTrue("Failed to flush to Database", emp.getSalary() == 100);
     }
     
     public void testAnnotationDefaultLockModeNONEOnUpdateQuery() {
@@ -5728,55 +5728,57 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         
-        Employee manager = new Employee();
-        manager.setFirstName("Marvin");
-        manager.setLastName("Malone");
-        PhoneNumber number = new PhoneNumber("cell", "613", "888-8888");
-        manager.addPhoneNumber(number);
-        number = new PhoneNumber("home", "613", "888-8880");
-        manager.addPhoneNumber(number);
-        em.persist(manager);
-        id1 = manager.getId();
-        
-        Employee emp = new Employee();
-        emp.setFirstName("Melvin");
-        emp.setLastName("Malone");
-        emp.setManager(manager);
-        manager.addManagedEmployee(emp);
-        number = new PhoneNumber("cell", "613", "888-9888");
-        emp.addPhoneNumber(number);
-        number = new PhoneNumber("home", "613", "888-0880");
-        emp.addPhoneNumber(number);
-        em.persist(emp);
-        
-        emp = new Employee();
-        emp.setFirstName("David");
-        emp.setLastName("Malone");
-        emp.setManager(manager);
-        manager.addManagedEmployee(emp);
-        number = new PhoneNumber("cell", "613", "888-9988");
-        emp.addPhoneNumber(number);
-        number = new PhoneNumber("home", "613", "888-0980");
-        emp.addPhoneNumber(number);
-        em.persist(emp);
-        
-        em.flush();
-        em.clear();
-
-        org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-        query.setHint(QueryHints.LEFT_FETCH, "e.manager");
-        ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
-        List expressions = raq.getJoinedAttributeExpressions();
-        assertTrue(expressions.size() == 1);
-        Expression exp = (Expression)expressions.get(0);
-        assertTrue(exp.getName().equals("manager"));       
-        query.setHint(QueryHints.FETCH, "e.manager.phoneNumbers");
-        assertTrue(expressions.size() == 2);
-
-        List resultList = query.getResultList();
-        emp = (Employee)resultList.get(0);
-
-        this.rollbackTransaction(em);
+        try {
+            Employee manager = new Employee();
+            manager.setFirstName("Marvin");
+            manager.setLastName("Malone");
+            PhoneNumber number = new PhoneNumber("cell", "613", "888-8888");
+            manager.addPhoneNumber(number);
+            number = new PhoneNumber("home", "613", "888-8880");
+            manager.addPhoneNumber(number);
+            em.persist(manager);
+            id1 = manager.getId();
+            
+            Employee emp = new Employee();
+            emp.setFirstName("Melvin");
+            emp.setLastName("Malone");
+            emp.setManager(manager);
+            manager.addManagedEmployee(emp);
+            number = new PhoneNumber("cell", "613", "888-9888");
+            emp.addPhoneNumber(number);
+            number = new PhoneNumber("home", "613", "888-0880");
+            emp.addPhoneNumber(number);
+            em.persist(emp);
+            
+            emp = new Employee();
+            emp.setFirstName("David");
+            emp.setLastName("Malone");
+            emp.setManager(manager);
+            manager.addManagedEmployee(emp);
+            number = new PhoneNumber("cell", "613", "888-9988");
+            emp.addPhoneNumber(number);
+            number = new PhoneNumber("home", "613", "888-0980");
+            emp.addPhoneNumber(number);
+            em.persist(emp);
+            
+            em.flush();
+            em.clear();
+    
+            org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
+            query.setHint(QueryHints.LEFT_FETCH, "e.manager");
+            ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
+            List expressions = raq.getJoinedAttributeExpressions();
+            assertTrue(expressions.size() == 1);
+            Expression exp = (Expression)expressions.get(0);
+            assertTrue(exp.getName().equals("manager"));       
+            query.setHint(QueryHints.FETCH, "e.manager.phoneNumbers");
+            assertTrue(expressions.size() == 2);
+    
+            List resultList = query.getResultList();
+            emp = (Employee)resultList.get(0);
+        } finally {
+            rollbackTransaction(em);
+        }
     }
     
     // Bug 366458 - Query hint eclipselink.join-fetch can cause wrongly populated data

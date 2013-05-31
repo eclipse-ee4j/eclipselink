@@ -269,7 +269,8 @@ public class ArrayRecord extends DatabaseRecord {
             if ((index >= 0) && (index < this.size)) {
                 DatabaseField field = this.fieldsArray[index];
                 if ((field == key) || field.equals(key)) {
-                    this.valuesArray[index] = value;;
+                    this.valuesArray[index] = value;
+                    return;
                 }
             }
             for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
@@ -280,6 +281,7 @@ public class ArrayRecord extends DatabaseRecord {
                         key.setIndex(fieldIndex);
                     }
                     this.valuesArray[fieldIndex] = value;
+                    return;
                 }
             }
         } else {
@@ -319,7 +321,7 @@ public class ArrayRecord extends DatabaseRecord {
             StringWriter writer = new StringWriter();
             writer.write(Helper.getShortClassName(getClass()));
             writer.write("(");
-    
+            writer.write(toStringAditional());
             for (int index = 0; index < this.fieldsArray.length; index++) {
                 writer.write(Helper.cr());
                 writer.write("\t");
@@ -338,5 +340,9 @@ public class ArrayRecord extends DatabaseRecord {
         } else {
             return super.toString();
         }
+    }
+    
+    protected String toStringAditional() {
+        return "";
     }
 }

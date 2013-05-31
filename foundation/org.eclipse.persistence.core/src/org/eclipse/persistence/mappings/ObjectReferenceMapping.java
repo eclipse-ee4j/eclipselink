@@ -353,6 +353,17 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     }
 
     /**
+     * Force instantiation of all indirections.
+     */
+    @Override
+    public void loadAll(Object object, AbstractSession session, IdentityHashSet loaded) {
+        Object value = getRealAttributeValueFromObject(object, session);
+        if (value != null) {
+            getReferenceDescriptor().getObjectBuilder().loadAll(value, session, loaded);
+        }
+    }
+    
+    /**
      * INTERNAL:
      * Merge changes from the source to the target object. Which is the original from the parent UnitOfWork
      */

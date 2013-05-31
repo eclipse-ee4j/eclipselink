@@ -242,4 +242,18 @@ public class ResultSetRecord extends ArrayRecord {
             return super.get(key);
         }
     }
+
+    @Override
+    protected String toStringAditional() {
+        return (this.resultSet != null ? " hasResultSet" : "");
+    }
+
+    @Override 
+    public void setSopObject(Object sopObject) {
+        super.setSopObject(sopObject);
+        // sopObject is set - the row is used to populate object
+        if (this.resultSet != null) {
+            loadAllValuesFromResultSet();
+        }
+    }
 }

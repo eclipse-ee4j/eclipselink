@@ -234,7 +234,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
                 return null;
             }
         }
-        if (shouldReadFromSopObject(row)) {
+        if (row.hasSopObject()) {
             return getAttributeValueFromObject(row.getSopObject());
         }
         Object fieldValue = row.get(this.field);

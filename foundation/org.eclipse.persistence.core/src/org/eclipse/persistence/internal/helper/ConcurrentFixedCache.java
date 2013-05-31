@@ -94,6 +94,13 @@ public class ConcurrentFixedCache implements Serializable {
     }
 
     /**
+     * Remove from cache.
+     */
+    public void remove(Object key) {
+        this.cache.remove(key);
+    }
+
+    /**
      * Return the cache.
      */
     public Map getCache() {

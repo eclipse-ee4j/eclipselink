@@ -965,6 +965,15 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
     
     /**
+     * INTERNAL:
+     * Indicates whether SELECT DISTINCT lob FROM ... (where lob is BLOB or CLOB) is allowed by the platform (Oracle doesn't allow this).
+     */
+    @Override
+    public boolean isLobCompatibleWithDistinct() {
+        return false;
+    }
+    
+    /**
      * Return true if the given exception occurred as a result of a lock
      * time out exception (WAIT clause).
      */

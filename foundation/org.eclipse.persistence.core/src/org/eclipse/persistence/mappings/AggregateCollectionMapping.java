@@ -145,6 +145,14 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     protected static final String bulk = "bulk";
 
     /**
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * references an entity.
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.
+     * Lazily initialized.  
+     */
+    protected Boolean hasNestedIdentityReference;
+    
+    /**
      * PUBLIC:
      * Default constructor.
      */
@@ -2760,4 +2768,18 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void setDefaultSourceTable(DatabaseTable table) {
         defaultSourceTable = table;
     }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * references an entity.
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.  
+     */
+    @Override
+    public boolean hasNestedIdentityReference() {
+        if (hasNestedIdentityReference == null) {
+            hasNestedIdentityReference = getReferenceDescriptor().hasNestedIdentityReference(true);
+        }
+        return hasNestedIdentityReference; 
+    }        
 }

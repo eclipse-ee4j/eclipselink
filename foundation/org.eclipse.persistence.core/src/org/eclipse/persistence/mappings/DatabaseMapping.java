@@ -28,7 +28,6 @@ import java.sql.SQLException;
 
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.SerializedObjectPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.indirection.*;
@@ -150,8 +149,18 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     //used by the object build/merge code to control building/merging into the 
     //shared cache.
     protected boolean isCacheable = true;
-    /** Indicates whether the mapping should be included or excluded in/from reading and writing from/into a row using SerializedObjectPolicy. */ 
-    protected int sopParticipation;
+
+    /** 
+     * Irrelevant (and not set) unless descriptor has SerializedObjectPolicy (SOP).
+     * If descriptor has SOP, then ObjectLevelReadQuery (with shouldUseSerializedObjectPolicy flag set to true)
+     * reads in row that contain both field/value pairs and sopObject.
+     * This flag indicates whether the data for this mapping is contained in the row's sopObject or in fields/values.
+     *   Boolean.TRUE - sopObject (in sopObject)
+     *   Boolean.FALSE - fields/values (out sopObject);
+     *   null -  both sopObject and fields/values (both in and out sopObject).
+     * While writing to the data base the mapping will be used for writing into sopObject unless this flag is set to Boolean.FALSE;
+     */ 
+    protected Boolean isInSopObject;
 
     /**
      * PUBLIC:
@@ -1340,6 +1349,13 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     }
     
     /**
+     * Force instantiation of all indirections.
+     */
+    public void loadAll(Object object, AbstractSession session, IdentityHashSet loaded) {
+        // Do nothing by default.
+    }
+    
+    /**
      * INTERNAL:
      * Merge changes from the source to the target object.
      */
@@ -1782,42 +1798,76 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     
     /**
      * INTERNAL:
-     * see SerializeObjectPolicy
+     * Indicates whether the mapping is in SerializedObjectPolicy's sopObject.
      */
-    public boolean shouldReadFromSopObject(AbstractRecord row) {
-        if (row.hasSopObject()) {
-            if (row.isEmpty()) {
-                return true;
-            } else {
-                return this.sopParticipation == SerializedObjectPolicy.INCLUDE;
-            }
-        } else {
-            return false;
-        }
+    public boolean isInSopObject() {
+        return this.isInSopObject == null || this.isInSopObject; 
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the mapping is in SerializedObjectPolicy's sopObject and not out of it.
+     */
+    public boolean isInOnlySopObject() {
+        return this.isInSopObject != null && this.isInSopObject; 
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the mapping is out of SerializedObjectPolicy's sopObject.
+     */
+    public boolean isOutSopObject() {
+        return this.isInSopObject == null || !this.isInSopObject; 
     }
     
     /**
      * INTERNAL:
-     * see SerializeObjectPolicy
+     * Indicates whether the mapping is out of SerializedObjectPolicy's sopObject and not in it.
      */
-    public boolean shouldWriteIntoSopObject() {
-        return this.sopParticipation == SerializedObjectPolicy.INCLUDE || this.sopParticipation == SerializedObjectPolicy.INCLUDE_WRITE_EXCLUDE_READ; 
+    public boolean isOutOnlySopObject() {
+        return this.isInSopObject != null && !this.isInSopObject; 
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether the mapping is both in and out of SerializedObjectPolicy's sopObject.
+     */
+    public boolean isInAndOutSopObject() {
+        return this.isInSopObject == null; 
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the mapping is in SerializedObjectPolicy's sopObject.
+     */
+    public void setIsInSopObject() {
+        this.isInSopObject = Boolean.TRUE;
     }
 
     /**
      * INTERNAL:
-     * see SerializeObjectPolicy
+     * Set the mapping is out of SerializedObjectPolicy's sopObject.
      */
-    public boolean shouldReadFromSopObject() {
-        return this.sopParticipation == SerializedObjectPolicy.INCLUDE; 
+    public void setIsOutSopObject() {
+        this.isInSopObject = Boolean.FALSE;
     }
 
     /**
      * INTERNAL:
-     * see SerializeObjectPolicy
+     * Set the mapping is both in and out of SerializedObjectPolicy's sopObject
      */
-    public void setSopParticipation(int sopParticipation) {
-        this.sopParticipation = sopParticipation; 
+    public void setIsInAndOutSopObject() {
+        this.isInSopObject = null;
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * references an entity.
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.  
+     */
+    public boolean hasNestedIdentityReference() {
+        return false; 
     }
     
     /**

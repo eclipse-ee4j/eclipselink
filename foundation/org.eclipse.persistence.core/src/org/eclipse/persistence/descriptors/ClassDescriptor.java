@@ -108,6 +108,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     protected transient Vector<DatabaseField> fields;
     protected transient Vector<DatabaseField> allFields;
+    protected transient List<DatabaseField> selectionFields;
+    protected transient List<DatabaseField> allSelectionFields;
     protected Vector<DatabaseMapping> mappings;
     
     //Used to track which other classes reference this class in cases where
@@ -1950,6 +1952,28 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     /**
+     * INTERNAL:
+     * Return all selection fields which include all child class fields. 
+     * By default it is initialized to selection fields for the current descriptor.
+     */
+    public List<DatabaseField> getAllSelectionFields() {
+        return allSelectionFields;
+    }
+
+    /**
+     * INTERNAL:
+     * Return all selection fields which include all child class fields. 
+     * By default it is initialized to selection fields for the current descriptor.
+     */
+    public List<DatabaseField> getAllSelectionFields(ObjectLevelReadQuery query) {
+        if (hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+            return this.serializedObjectPolicy.getAllSelectionFields();
+        } else {
+            return allSelectionFields;
+        }
+    }
+
+    /**
      * PUBLIC:
      * Return the amendment class.
      * The amendment method will be called on the class before initialization to allow for it to initialize the descriptor.
@@ -2242,6 +2266,26 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             fields = NonSynchronizedVector.newInstance();
         }
         return fields;
+    }
+
+    /**
+     * INTERNAL:
+     * Return all selection fields
+     */
+    public List<DatabaseField> getSelectionFields() {
+        return selectionFields;
+    }
+
+    /**
+     * INTERNAL:
+     * Return all selection fields
+     */
+    public List<DatabaseField> getSelectionFields(ObjectLevelReadQuery query) {
+        if (hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+            return this.serializedObjectPolicy.getSelectionFields();
+        } else {
+            return selectionFields;
+        }
     }
 
     /**
@@ -2875,6 +2919,29 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         return (getTables().size() > 1);
     }
 
+    /**
+     * INTERNAL:
+     * Calculates whether descriptor references an entity (directly or through a nested mapping).
+     */
+    public boolean hasNestedIdentityReference(boolean withChildren) {
+        if (withChildren && hasInheritance() && getInheritancePolicy().hasChildren()) {
+            for (ClassDescriptor childDescriptor : getInheritancePolicy().getAllChildDescriptors()) {
+                // leaf children have all the mappings
+                if (!childDescriptor.getInheritancePolicy().hasChildren()) {
+                    if (childDescriptor.hasNestedIdentityReference(false)) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            for (DatabaseMapping mapping : getMappings()) {
+                if (mapping.hasNestedIdentityReference()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }        
     
     /**
      * @return the hasNoncacheableMappings
@@ -3764,6 +3831,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
         if (hasSerializedObjectPolicy()) {
             getSerializedObjectPolicy().postInitialize(session);
+            this.selectionFields = (List<DatabaseField>)getFields().clone();
+            this.selectionFields.remove(getSerializedObjectPolicy().getField());
+            this.allSelectionFields = (List<DatabaseField>)getAllFields().clone();
+            this.allSelectionFields.remove(getSerializedObjectPolicy().getField());
+        } else {
+            this.selectionFields = getFields();
+            this.allSelectionFields = getAllFields();
         }
 
         // Index and classify fields and primary key.

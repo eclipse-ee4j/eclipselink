@@ -205,6 +205,21 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
     
     /**
+     * Copies settings from another manager. Should copy all the attributes that clone method clones.
+     */
+    public void copyFrom(JoinedAttributeManager otherJoinManager){
+        this.joinedAttributeExpressions = otherJoinManager.joinedAttributeExpressions;
+        this.joinedMappingExpressions = otherJoinManager.joinedMappingExpressions;
+        this.joinedAttributes = otherJoinManager.joinedAttributes;
+        this.joinedMappingIndexes = otherJoinManager.joinedMappingIndexes;
+        this.joinedMappingQueries = otherJoinManager.joinedMappingQueries;
+        this.orderByExpressions = otherJoinManager.orderByExpressions;
+        this.additionalFieldExpressions = otherJoinManager.additionalFieldExpressions;
+        this.joinedAttributeMappings = otherJoinManager.joinedAttributeMappings;
+        this.joinedAggregateMappings = otherJoinManager.joinedAggregateMappings;
+    }
+    
+    /**
      * Clear the joining state.  This is used to redefine a queries joins for nested joins.
      */
     public void clear(){
@@ -249,9 +264,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             fieldIndex = ((ObjectLevelReadQuery)getBaseQuery()).getFetchGroupNonNestedFieldsSet().size();
         } else {
             if (includeAllSubclassFields) {
-                fieldIndex = getDescriptor().getAllFields().size();
+                fieldIndex = getDescriptor().getAllSelectionFields((ObjectLevelReadQuery)getBaseQuery()).size();
             } else {
-                fieldIndex = getDescriptor().getFields().size();
+                fieldIndex = getDescriptor().getSelectionFields((ObjectLevelReadQuery)getBaseQuery()).size();
             }
         }
         fieldIndex += offset;
@@ -334,19 +349,18 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     numberOfFields = 1;
                 }
             } else {
-                ObjectLevelReadQuery nestedQuery = null;
+                ObjectLevelReadQuery nestedQuery = getNestedJoinedMappingQuery(objectExpression);
                 FetchGroup fetchGroup = null;
                 if(descriptor.hasFetchGroupManager()) {
-                    nestedQuery = getNestedJoinedMappingQuery(objectExpression);
                     fetchGroup = nestedQuery.getExecutionFetchGroup();
                 }
                 if(fetchGroup != null) {
                     numberOfFields = nestedQuery.getFetchGroupNonNestedFieldsSet(mapping).size();
                 } else {
                     if (objectExpression.isQueryKeyExpression() && objectExpression.isUsingOuterJoinForMultitableInheritance()) {
-                        numberOfFields = descriptor.getAllFields().size();
+                        numberOfFields = descriptor.getAllSelectionFields(nestedQuery).size();
                     } else {
-                        numberOfFields = descriptor.getFields().size();
+                        numberOfFields = descriptor.getSelectionFields(nestedQuery).size();
                     }
                 }
             }

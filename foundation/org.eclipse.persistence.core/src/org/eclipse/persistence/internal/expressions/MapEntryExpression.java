@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.expressions;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -28,6 +29,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.queries.ReadQuery;
 
 public class MapEntryExpression extends QueryKeyExpression {
 
@@ -187,6 +189,27 @@ public class MapEntryExpression extends QueryKeyExpression {
         // if this is a map entry get all the fields for both the key and the value
         if (returnMapEntry || !icp.isMappedKeyMapPolicy()){
             result.addAll(getBaseExpression().getFields());
+        } else if (isAttribute()) {
+            DatabaseField field = getField();
+            if (field != null) {
+                result.add(field);
+            }
+        } else {
+            result.addAll(getInterfaceContainerPolicy().getAdditionalFieldsForJoin(getMapping()));
+        }
+        return result;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public List<DatabaseField> getSelectionFields(ReadQuery query) {
+        ArrayList<DatabaseField> result = new ArrayList<DatabaseField>();
+        InterfaceContainerPolicy icp = getInterfaceContainerPolicy();
+        // if this is a map entry get all the fields for both the key and the value
+        if (returnMapEntry || !icp.isMappedKeyMapPolicy()){
+            result.addAll(getBaseExpression().getSelectionFields(query));
         } else if (isAttribute()) {
             DatabaseField field = getField();
             if (field != null) {

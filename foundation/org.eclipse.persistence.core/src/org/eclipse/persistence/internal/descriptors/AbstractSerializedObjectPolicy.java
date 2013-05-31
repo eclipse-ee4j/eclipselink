@@ -29,22 +29,27 @@ public abstract class AbstractSerializedObjectPolicy implements SerializedObject
     protected ClassDescriptor descriptor;
     protected DatabaseField field;
     
+    @Override
     public ClassDescriptor getDescriptor() {
         return this.descriptor;
     }
     
+    @Override
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
     }
     
+    @Override
     public DatabaseField getField() {
         return this.field;
     }
     
+    @Override
     public void setField(DatabaseField field) {
         this.field = field;
     }
     
+    @Override
     public void initializeField(AbstractSession session) {
         if (this.field == null) {
             session.getIntegrityChecker().handleError(DescriptorException.serializedObjectPolicyFieldNotSet(this.descriptor));
@@ -57,17 +62,9 @@ public abstract class AbstractSerializedObjectPolicy implements SerializedObject
         }
         this.field = this.descriptor.buildField(this.field);
         this.descriptor.getFields().add(this.field);
-        setFieldType();
     }
     
-    protected void setFieldType() {
-        if (this.field.getType() == null) {
-            this.field.setType(getFieldType());
-        }
-    }
-    
-    protected abstract Class getFieldType();
-    
+    @Override
     public AbstractSerializedObjectPolicy clone() {
        try {
             return (AbstractSerializedObjectPolicy) super.clone();

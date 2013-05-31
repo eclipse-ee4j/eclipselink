@@ -559,7 +559,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
                 return null;
             }
         }
-        if (shouldReadFromSopObject(row)) {
+        if (row.hasSopObject()) {
             return getAttributeValueFromObject(row.getSopObject());
         }
         ContainerPolicy cp = this.getContainerPolicy();

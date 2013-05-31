@@ -1748,6 +1748,16 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
+     */
+    public List<DatabaseField> getSelectionFields() {
+        return getSelectionFields(null);
+    }
+    public List<DatabaseField> getSelectionFields(ReadQuery query) {
+        return getFields();
+    }
+
+    /**
+     * INTERNAL:
      * Transform the object-level value into a database-level value
      */
     public Object getFieldValue(Object objectValue, AbstractSession session) {
@@ -4717,8 +4727,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * called from SQLSelectStatement.writeFieldsFromExpression(...)
      */
     public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
-        for (Enumeration fieldsEnum = getFields().elements(); fieldsEnum.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
+        for (DatabaseField field : getSelectionFields(statement.getQuery())) {
             newFields.add(field);
             writeField(printer, field, statement);
         }

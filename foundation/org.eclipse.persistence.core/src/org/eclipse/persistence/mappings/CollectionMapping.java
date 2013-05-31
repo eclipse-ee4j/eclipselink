@@ -1364,6 +1364,21 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
     
     /**
+     * Force instantiation of all indirections.
+     */
+    @Override
+    public void loadAll(Object object, AbstractSession session, IdentityHashSet loaded) {
+        instantiateAttribute(object, session);
+        Object value = getRealAttributeValueFromObject(object, session);
+        ContainerPolicy cp = this.containerPolicy;
+        for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
+            Object wrappedObject = cp.nextEntry(iterator, session);
+            Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
+            getDescriptor().getObjectBuilder().loadAll(nestedObject, session, loaded);
+        }
+    }
+    
+    /**
      * ADVANCED:
      * Return whether the reference objects must be deleted
      * one by one, as opposed to with a single DELETE statement.

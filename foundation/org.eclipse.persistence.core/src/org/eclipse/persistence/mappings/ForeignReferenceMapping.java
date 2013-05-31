@@ -347,7 +347,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }else{
             setAttributeValueInObject(clone, clonedAttributeValue);
         }
-        if((joinManager != null && joinManager.isAttributeJoined(this.descriptor, this)) || (isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) || shouldReadFromSopObject(databaseRow)) {
+        if((joinManager != null && joinManager.isAttributeJoined(this.descriptor, this)) || (isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) || databaseRow.hasSopObject()) {
             // need to instantiate to extended the lock beyond the source object table(s).
             this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
         }
@@ -697,7 +697,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public ObjectLevelReadQuery prepareNestedJoins(JoinedAttributeManager joinManager, ObjectBuildingQuery baseQuery, AbstractSession session) {
         // A nested query must be built to pass to the descriptor that looks like the real query execution would.
         ObjectLevelReadQuery nestedQuery = (ObjectLevelReadQuery)((ObjectLevelReadQuery)getSelectionQuery()).deepClone();
-        nestedQuery.setSession(session); 
+        nestedQuery.setSession(session);
+        nestedQuery.setShouldUseSerializedObjectPolicy(baseQuery.shouldUseSerializedObjectPolicy());
         // Must cascade for nested partial/join attributes, the expressions must be filter to only the nested ones.
         if (baseQuery.hasPartialAttributeExpressions()) {
             nestedQuery.setPartialAttributeExpressions(extractNestedExpressions(((ObjectLevelReadQuery)baseQuery).getPartialAttributeExpressions(), nestedQuery.getExpressionBuilder(), false));
@@ -804,6 +805,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         batchQuery.setName(getAttributeName());
         batchQuery.setDescriptor(getReferenceDescriptor());
         batchQuery.setSession(query.getSession());
+        batchQuery.setShouldUseSerializedObjectPolicy(query.shouldUseSerializedObjectPolicy());
 
         //bug 3965568 
         // we should not wrap the results as this is an internal query
@@ -1202,6 +1204,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * references an entity.
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.  
+     */
+    @Override
+    public boolean hasNestedIdentityReference() {
+        return true; 
+    }
+        
+    /**
+     * INTERNAL:
      * Initialize the state of mapping.
      */
     @Override
@@ -1464,7 +1477,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, refreshCascade, executionSession, false);
         }
-        if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult() || shouldReadFromSopObject(databaseRow)){
+        if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult() || databaseRow.hasSopObject()){
             // check whether the attribute is fully build before calling getAttributeValueFromObject because that
             // call may fully build the attribute
             boolean wasAttributeValueFullyBuilt = isAttributeValueFullyBuilt(targetObject);
@@ -2110,9 +2123,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
-        if (shouldReadFromSopObject(row)) {
-            // DirectCollection or AggregateCollection: no need to build members back into cache - just return the whole collection from sopObject.
-            if (getReferenceDescriptor() == null || getReferenceDescriptor().isDescriptorTypeAggregate()) {
+        if (row.hasSopObject()) {
+            // DirectCollection or AggregateCollection that doesn't reference entities: no need to build members back into cache - just return the whole collection from sopObject.
+            if (!hasNestedIdentityReference()) {
                 return getAttributeValueFromObject(row.getSopObject());
             } else {
                 return valueFromRowInternal(row, null, sourceQuery, executionSession, true);

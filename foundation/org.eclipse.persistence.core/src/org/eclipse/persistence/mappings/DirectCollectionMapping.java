@@ -1392,6 +1392,17 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
     /**
      * INTERNAL:
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * references an entity.
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.  
+     */
+    @Override
+    public boolean hasNestedIdentityReference() {
+        return false; 
+    }
+        
+    /**
+     * INTERNAL:
      * Initialize and validate the mapping properties.
      */
     @Override
@@ -3111,7 +3122,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
-        if (shouldReadFromSopObject(row)) {
+        if (row.hasSopObject()) {
             return getAttributeValueFromObject(row.getSopObject());
         }
         if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())

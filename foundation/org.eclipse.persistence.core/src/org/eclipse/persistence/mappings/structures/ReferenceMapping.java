@@ -284,7 +284,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
             }
         }
         AbstractRecord targetRow = null;
-        if (shouldReadFromSopObject(row)) {
+        if (row.hasSopObject()) {
             Object sopAttributeValue = getAttributeValueFromObject(row.getSopObject());
             if (sopAttributeValue == null) {
                 return this.indirectionPolicy.nullValueFromRow();

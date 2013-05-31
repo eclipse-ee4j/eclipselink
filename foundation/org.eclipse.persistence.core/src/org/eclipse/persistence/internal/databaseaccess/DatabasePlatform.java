@@ -1571,6 +1571,14 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
     
     /**
+     * INTERNAL:
+     * Indicates whether SELECT DISTINCT lob FROM ... (where lob is BLOB or CLOB) is allowed by the platform (Oracle doesn't allow this).
+     */
+    public boolean isLobCompatibleWithDistinct() {
+        return true;
+    }
+    
+    /**
      *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger & BigDecimal maximums are dependent upon their precision & Scale

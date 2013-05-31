@@ -323,7 +323,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Otherwise, simply create a new aggregate object and return it.
      */
     public Object buildAggregateFromRow(AbstractRecord databaseRow, Object targetObject, CacheKey cacheKey, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, boolean buildShallowOriginal, AbstractSession executionSession, boolean targetIsProtected) throws DatabaseException {
-        if (shouldReadFromSopObject(databaseRow)) {
+        if (databaseRow.hasSopObject()) {
             Object sopAggregate = getAttributeValueFromObject(databaseRow.getSopObject());
             if ((targetObject != null) && (targetObject != databaseRow.getSopObject())) {
                 setAttributeValueInObject(targetObject, sopAggregate);

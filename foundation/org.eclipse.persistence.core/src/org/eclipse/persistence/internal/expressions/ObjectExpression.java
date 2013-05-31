@@ -21,6 +21,8 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * Superclass for any object type expressions.
@@ -452,6 +454,35 @@ public abstract class ObjectExpression extends DataExpression {
             return descriptor.getAllFields();
         } else {
             return descriptor.getFields();
+        }
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public List<DatabaseField> getSelectionFields(ReadQuery query) {
+        if (getDescriptor() == null) {
+            DatabaseMapping mapping = getMapping();
+            if (mapping != null) {
+                return mapping.getSelectFields();
+            }
+            return new ArrayList<DatabaseField>(0);
+        }
+        if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().shouldReadSubclasses()
+                && (!descriptor.getInheritancePolicy().hasMultipleTableChild()) || shouldUseOuterJoinForMultitableInheritance()) {
+            // return all fields because we can.
+            if (query != null && query.isObjectLevelReadQuery()) {
+                return descriptor.getAllSelectionFields((ObjectLevelReadQuery)query);
+            } else {
+                return descriptor.getAllSelectionFields();
+            }
+        } else {
+            if (query != null && query.isObjectLevelReadQuery()) {
+                return descriptor.getSelectionFields((ObjectLevelReadQuery)query);
+            } else {
+                return descriptor.getSelectionFields();
+            }
         }
     }
 

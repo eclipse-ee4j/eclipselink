@@ -1806,14 +1806,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Return if the JDBC type is a binary type such as blob.
      */
-    private boolean isBlob(int type) {
+    public static boolean isBlob(int type) {
         return (type == Types.BLOB) || (type == Types.LONGVARBINARY);
     }
 
     /**
      * Return if the JDBC type is a large character type such as clob.
      */
-    private boolean isClob(int type) {
+    public static boolean isClob(int type) {
         return (type == Types.CLOB) || (type == Types.LONGVARCHAR) || (type == DatabasePlatform.Types_NCLOB) || (type == Types.LONGNVARCHAR);
     }
 

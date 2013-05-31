@@ -39,36 +39,40 @@ public class SerializedObjectPolicyWrapper extends AbstractSerializedObjectPolic
         return this.serializedObjectPolicyClassName;
     }
 
+    @Override
     public SerializedObjectPolicyWrapper clone() {
         throw new UnsupportedOperationException("clone");
     }
+    @Override
     public SerializedObjectPolicy instantiateChild() {
         throw new UnsupportedOperationException("instantiateChild");
     }
-
+    @Override
     public void initializeField(AbstractSession session) {
         throw new UnsupportedOperationException("initializeField");
     }
+    @Override
     public void initialize(AbstractSession session) {
         throw new UnsupportedOperationException("initialize");
     }
+    @Override
     public void postInitialize(AbstractSession session) {
         throw new UnsupportedOperationException("postInitialize");
     }
-
+    @Override
     public void putObjectIntoRow(AbstractRecord databaseRow, Object object, AbstractSession session) {
         throw new UnsupportedOperationException("putObjectIntoRow");
     }
+    @Override
     public Object getObjectFromRow(AbstractRecord databaseRow, AbstractSession session) {
         throw new UnsupportedOperationException("getObjectFromRow");
     }
-    public List<DatabaseField> getFieldsToSelect() {
-        throw new UnsupportedOperationException("getFieldsToSelect");
+    @Override
+    public List<DatabaseField> getSelectionFields() {
+        throw new UnsupportedOperationException("getSelectionFields");
     }
-    public List<DatabaseField> getAllFieldsToSelect() {
-        throw new UnsupportedOperationException("getAllFieldsToSelect");
-    }
-    protected Class getFieldType() {
-        throw new UnsupportedOperationException("getFieldType");
+    @Override
+    public List<DatabaseField> getAllSelectionFields() {
+        throw new UnsupportedOperationException("getAllSelectionFields");
     }
 }

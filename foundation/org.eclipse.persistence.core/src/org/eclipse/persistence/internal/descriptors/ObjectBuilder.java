@@ -441,7 +441,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
      */
     public void buildAttributesIntoObject(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, FetchGroup executionFetchGroup, boolean forRefresh, AbstractSession targetSession) throws DatabaseException {
-
+        if (this.descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+            if (buildAttributesIntoObjectSOP(domainObject, cacheKey, databaseRow, query, joinManager, executionFetchGroup, forRefresh, targetSession)) {
+                return;
+            }
+        }
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         List mappings = this.descriptor.getMappings();
 
@@ -458,25 +462,122 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
         // PERF: Avoid events if no listeners.
         if (this.descriptor.hasEventManager()) {
-            DescriptorEventManager descriptorEventManager = this.descriptor.getDescriptorEventManager();
-            if(descriptorEventManager.hasAnyEventListeners()) {
-                // Need to run post build or refresh selector, currently check with the query for this,
-                // I'm not sure which should be called it case of refresh building a new object, currently refresh is used...
-                org.eclipse.persistence.descriptors.DescriptorEvent event = new DescriptorEvent(domainObject);
-                event.setQuery(query);
-                event.setSession(query.getSession());
-                event.setRecord(databaseRow);
-                if (forRefresh) {
-                    //this method can be called from different places within TopLink.  We may be
-                    //executing refresh query but building the object not refreshing so we must
-                    //throw the appropriate event.
-                    //bug 3325315
-                    event.setEventCode(DescriptorEventManager.PostRefreshEvent);
-                } else {
-                    event.setEventCode(DescriptorEventManager.PostBuildEvent);
+            postBuildAttributesIntoObjectEvent(domainObject, databaseRow, query, forRefresh);
+        }
+    }
+    
+    /**
+     * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
+     * Should not be called unless (this.descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy())
+     * This method populates the object only in if some mappings potentially should be read using sopObject and other mappings - not using it.
+     * That happens when the row has been just read from the database and potentially has serialized object still in deserialized bits as a field value.
+     * Note that  domainObject == sopObject is the same case, but (because domainObject has to be set into cache beforehand) extraction of sopObject
+     * from bit was done right before this method is called.
+     * Alternative situation is processing an empty row that has been created by foreign reference mapping
+     * and holds nothing but sopObject (which is an attribute of the original sopObject) - this case falls through to buildAttributesIntoObject.
+     * If attempt to deserialize sopObject from bits has failed, but SOP was setup to allow recovery 
+     * (all mapped all fields/value mapped to the object were read, not just those excluded from SOP)
+     * then fall through to buildAttributesIntoObject. 
+     * Nothing should be done if sopObject is not null, but domainObject != sopObject:
+     * the only way to get into this case should be with original query not maintaining cache,
+     * through a back reference to the original object, which is already being built (or has been built).
+     * @return whether the object has been populated with attributes, if not then buildAttributesIntoObject should be called.  
+     */
+    protected boolean buildAttributesIntoObjectSOP(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, FetchGroup executionFetchGroup, boolean forRefresh, AbstractSession targetSession) throws DatabaseException {
+        Object sopObject = databaseRow.getSopObject();
+        if (domainObject == sopObject) {
+            // PERF: Cache if all mappings should be read.
+            boolean readAllMappings = query.shouldReadAllMappings();
+            boolean isTargetProtected = targetSession.isProtectedSession();
+            // domainObject is sopObject
+            for (DatabaseMapping mapping : this.descriptor.getMappings()) {
+                if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
+                    // to avoid re-setting the same attribute value to domainObject
+                    // only populate if either mapping (possibly nested) may reference entity or mapping does not use sopObject
+                    if (mapping.hasNestedIdentityReference() || mapping.isOutOnlySopObject()) {
+                        if (mapping.isOutSopObject()) {
+                            // the mapping should be processed as if there is no sopObject
+                            databaseRow.setSopObject(null);
+                            mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
+                        } else {
+                            databaseRow.setSopObject(sopObject);
+                            mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
+                        }
+                    }
                 }
-                descriptorEventManager.executeEvent(event);
             }
+            // PERF: Avoid events if no listeners.
+            if (this.descriptor.hasEventManager()) {
+                postBuildAttributesIntoObjectEvent(domainObject, databaseRow, query, forRefresh);
+            }
+            // sopObject has been processed by all relevant mappings, no longer required.
+            databaseRow.setSopObject(null);
+            return true;
+        } else {
+            if (sopObject == null) {
+                // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
+                // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
+                sopObject = this.descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, targetSession);
+                if (sopObject != null) {
+                    // PERF: Cache if all mappings should be read.
+                    boolean readAllMappings = query.shouldReadAllMappings();
+                    boolean isTargetProtected = targetSession.isProtectedSession();
+                    for (DatabaseMapping mapping : this.descriptor.getMappings()) {
+                        if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
+                            if (mapping.isOutSopObject()) {
+                                // the mapping should be processed as if there is no sopObject
+                                databaseRow.setSopObject(null);
+                                mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
+                            } else {
+                                databaseRow.setSopObject(sopObject);
+                                mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
+                            }
+                        }
+                    }
+                    // PERF: Avoid events if no listeners.
+                    if (this.descriptor.hasEventManager()) {
+                        postBuildAttributesIntoObjectEvent(domainObject, databaseRow, query, forRefresh);
+                    }
+                    // sopObject has been processed by all relevant mappings, no longer required.
+                    databaseRow.setSopObject(null);
+                    return true;
+                } else {
+                    // SOP.getObjectFromRow returned null means serialized bits for sopObject either missing or deserilaized sopObject is invalid.
+                    // If the method hasn't thrown exception then populating of the object is possible from the regular fields/values of the row
+                    // (that means all fields/value mapped to the object were read, not just those excluded from SOP).
+                    // return false and fall through to buildAttributesIntoObject
+                    return false;
+                }
+            } else {
+                // A mapping under SOP can't have another SOP on its reference descriptor,
+                // but that's what seem to be happening.
+                // The only way to get here should be with original query not maintaining cache,
+                // through a back reference to the original object, which is already being built (or has been built).
+                // Leave without building.
+                return true;
+            }
+        }
+    }
+    
+    protected void postBuildAttributesIntoObjectEvent(Object domainObject, AbstractRecord databaseRow, ObjectBuildingQuery query, boolean forRefresh) {
+        DescriptorEventManager descriptorEventManager = this.descriptor.getDescriptorEventManager();
+        if(descriptorEventManager.hasAnyEventListeners()) {
+            // Need to run post build or refresh selector, currently check with the query for this,
+            // I'm not sure which should be called it case of refresh building a new object, currently refresh is used...
+            org.eclipse.persistence.descriptors.DescriptorEvent event = new DescriptorEvent(domainObject);
+            event.setQuery(query);
+            event.setSession(query.getSession());
+            event.setRecord(databaseRow);
+            if (forRefresh) {
+                //this method can be called from different places within TopLink.  We may be
+                //executing refresh query but building the object not refreshing so we must
+                //throw the appropriate event.
+                //bug 3325315
+                event.setEventCode(DescriptorEventManager.PostRefreshEvent);
+            } else {
+                event.setEventCode(DescriptorEventManager.PostBuildEvent);
+            }
+            descriptorEventManager.executeEvent(event);
         }
     }
 
@@ -704,6 +805,22 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     }
     
     /**
+     * Force instantiation of all indirections.
+     */
+    public void loadAll(Object object, AbstractSession session) {
+        loadAll(object, session, new IdentityHashSet());
+    }
+    public void loadAll(Object object, AbstractSession session, IdentityHashSet loaded) {
+        if (loaded.contains(object)) {
+            return;
+        }
+        loaded.add(object);
+        for (DatabaseMapping mapping : this.descriptor.getMappings()) {
+            mapping.loadAll(object, session, loaded);
+        }
+    }
+    
+    /**
      * For executing all reads on the UnitOfWork, the session when building
      * objects from rows will now be the UnitOfWork.  Useful if the rows were
      * read via a dirty write connection and we want to avoid putting uncommitted
@@ -833,7 +950,6 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         // Keep track if we actually built/refresh the object.
         boolean cacheHit = true;
         boolean domainWasMissing = true;
-        boolean hasSetSopObjectIntoRow = false;
         boolean shouldMaintainCache = query.shouldMaintainCache();
         ObjectBuilder concreteObjectBuilder = concreteDescriptor.getObjectBuilder();
         try {
@@ -860,15 +976,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (domainObject == null || shouldStoreBypassCache) {
                     if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
                         domainObject = ((ReadObjectQuery)query).getSelectionObject();
-                        if (query.shouldUseSerializedObjectPolicy() && concreteDescriptor.hasSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
-                            hasSetSopObjectIntoRow = true;
-                            // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
-                            // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
-                            concreteDescriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, session);
-                        }
                     } else {
-                        if (query.shouldUseSerializedObjectPolicy() && concreteDescriptor.hasSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
-                            hasSetSopObjectIntoRow = true;
+                        if (concreteDescriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
                             // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
                             // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
                             domainObject = concreteDescriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, session);
@@ -958,9 +1067,6 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 } else {
                     cacheKey.release();
                 }
-            }
-            if (hasSetSopObjectIntoRow) {
-                databaseRow.setSopObject(null);
             }
         }
         if (!cacheHit) {
@@ -1859,6 +1965,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * populate the clone directly from the database row.
      */
     public void buildAttributesIntoWorkingCopyClone(Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, boolean forRefresh) throws DatabaseException, QueryException {
+        if (this.descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+            if (buildAttributesIntoWorkingCopyCloneSOP(clone, sharedCacheKey, query, joinManager, databaseRow, unitOfWork, forRefresh)) {
+                return;
+            }
+        }
         // PERF: Cache if all mappings should be read.
         boolean readAllMappings = query.shouldReadAllMappings();
         List mappings = this.descriptor.getMappings();
@@ -1873,34 +1984,126 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
         // PERF: Avoid events if no listeners.
         if (this.descriptor.getEventManager().hasAnyEventListeners()) {
-            // Need to run post build or refresh selector, currently check with the query for this,
-            // I'm not sure which should be called it case of refresh building a new object, currently refresh is used...
-            DescriptorEvent event = new DescriptorEvent(clone);
+            postBuildAttributesIntoWorkingCopyCloneEvent(clone, databaseRow, query, unitOfWork, forRefresh);
+        }
+    }
+
+    /**
+     * For reading through the write connection when in transaction,
+     * populate the clone directly from the database row.
+     * Should not be called unless (this.descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy())
+     * This method populates the object only in if some mappings potentially should be read using sopObject and other mappings - not using it.
+     * That happens when the row has been just read from the database and potentially has serialized object still in deserialized bits as a field value.
+     * Note that  clone == sopObject is the same case, but (because clone has to be set into cache beforehand) extraction of sopObject
+     * from bit was done right before this method is called.
+     * If attempt to deserialize sopObject from bits has failed, but SOP was setup to allow recovery 
+     * (all mapped all fields/value mapped to the object were read, not just those excluded from SOP)
+     * then fall through to buildAttributesIntoWorkingCopyClone. 
+     * Nothing should be done if sopObject is not null, but clone != sopObject:
+     * the only way to get into this case should be with original query not maintaining cache,
+     * through a back reference to the original object, which is already being built (or has been built).
+     * @return whether the object has been populated with attributes, if not then buildAttributesIntoWorkingCopyClone should be called.  
+     */
+    protected boolean buildAttributesIntoWorkingCopyCloneSOP(Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, boolean forRefresh) throws DatabaseException {
+        Object sopObject = databaseRow.getSopObject();
+        if (clone == sopObject) {
+            // clone is sopObject
+            // PERF: Cache if all mappings should be read.
+            boolean readAllMappings = query.shouldReadAllMappings();
+            FetchGroup executionFetchGroup = query.getExecutionFetchGroup(this.descriptor);
+            for (DatabaseMapping mapping : this.descriptor.getMappings()) {
+                if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
+                    // to avoid re-setting the same attribute value to domainObject
+                    // only populate if either mapping (possibly nested) may reference entity or mapping does not use sopObject
+                    if (mapping.hasNestedIdentityReference() || mapping.isOutOnlySopObject()) {
+                        if (mapping.isOutSopObject()) {
+                            // the mapping should be processed as if there is no sopObject
+                            databaseRow.setSopObject(null);
+                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                        } else {
+                            databaseRow.setSopObject(sopObject);
+                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                        }
+                    }
+                }
+            }
+            // PERF: Avoid events if no listeners.
+            if (this.descriptor.hasEventManager()) {
+                postBuildAttributesIntoWorkingCopyCloneEvent(clone, databaseRow, query, unitOfWork, forRefresh);
+            }
+            // sopObject has been processed by all relevant mappings, no longer required.
+            databaseRow.setSopObject(null);
+            return true;
+        } else {
+            if (sopObject == null) {
+                // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
+                // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
+                sopObject = this.descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, unitOfWork);
+                if (sopObject != null) {
+                    // PERF: Cache if all mappings should be read.
+                    boolean readAllMappings = query.shouldReadAllMappings();
+                    FetchGroup executionFetchGroup = query.getExecutionFetchGroup(this.descriptor);
+                    for (DatabaseMapping mapping : this.descriptor.getMappings()) {
+                        if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
+                            if (mapping.isOutSopObject()) {
+                                // the mapping should be processed as if there is no sopObject
+                                databaseRow.setSopObject(null);
+                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                            } else {
+                                databaseRow.setSopObject(sopObject);
+                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                            }
+                        }
+                    }
+                    // PERF: Avoid events if no listeners.
+                    if (this.descriptor.hasEventManager()) {
+                        postBuildAttributesIntoWorkingCopyCloneEvent(clone, databaseRow, query, unitOfWork, forRefresh);
+                    }
+                    // sopObject has been processed by all relevant mappings, no longer required.
+                    databaseRow.setSopObject(null);
+                    return true;
+                } else {
+                    // SOP failed to create sopObject, but exception hasn't been thrown.
+                    // That means recovery is possible - fall through to to buildAttributesIntoWorkingCopyClone
+                    return false;
+                }
+            } else {
+                // A mapping under SOP can't have another SOP on its reference descriptor,
+                // but that's what seem to be happening.
+                // The only way to get here should be with original query not maintaining cache,
+                // through a back reference to the original object, which is already being built (or has been built).
+                // Leave without building.
+                return true;
+            }
+        }
+    }
+    
+    protected void postBuildAttributesIntoWorkingCopyCloneEvent(Object clone, AbstractRecord databaseRow, ObjectBuildingQuery query, UnitOfWorkImpl unitOfWork, boolean forRefresh) {
+        // Need to run post build or refresh selector, currently check with the query for this,
+        // I'm not sure which should be called it case of refresh building a new object, currently refresh is used...
+        DescriptorEvent event = new DescriptorEvent(clone);
+        event.setQuery(query);
+        event.setSession(unitOfWork);
+        event.setDescriptor(this.descriptor);
+        event.setRecord(databaseRow);
+        if (forRefresh) {
+            event.setEventCode(DescriptorEventManager.PostRefreshEvent);
+        } else {
+            event.setEventCode(DescriptorEventManager.PostBuildEvent);
+            //fire a postBuildEvent then the postCloneEvent
+            unitOfWork.deferEvent(event);
+           
+            event = new DescriptorEvent(clone);
             event.setQuery(query);
             event.setSession(unitOfWork);
             event.setDescriptor(this.descriptor);
             event.setRecord(databaseRow);
-            if (forRefresh) {
-                event.setEventCode(DescriptorEventManager.PostRefreshEvent);
-            } else {
-                event.setEventCode(DescriptorEventManager.PostBuildEvent);
-                //fire a postBuildEvent then the postCloneEvent
-                unitOfWork.deferEvent(event);
-               
-                event = new DescriptorEvent(clone);
-                event.setQuery(query);
-                event.setSession(unitOfWork);
-                event.setDescriptor(this.descriptor);
-                event.setRecord(databaseRow);
-                //bug 259404: ensure postClone is called for objects built directly into the UnitOfWork
-                //in this case, the original is the clone
-                event.setOriginalObject(clone);
-                event.setEventCode(DescriptorEventManager.PostCloneEvent);
-            }
-            unitOfWork.deferEvent(event);
-            
-            
+            //bug 259404: ensure postClone is called for objects built directly into the UnitOfWork
+            //in this case, the original is the clone
+            event.setOriginalObject(clone);
+            event.setEventCode(DescriptorEventManager.PostCloneEvent);
         }
+        unitOfWork.deferEvent(event);
     }
 
     /**
@@ -1922,7 +2125,6 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         Object workingClone = unitOfWorkCacheKey.getObject();
         FetchGroup fetchGroup = query.getExecutionFetchGroup(descriptor);
         FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
-        boolean hasSetSopObjectIntoRow = false;
         try {
             // If there is a clone, and it is not a refresh then just return it.
             boolean wasAClone = workingClone != null;
@@ -1977,8 +2179,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     // intentionally put nothing in clones to originals, unless really was one.
                     unitOfWork.getCloneToOriginals().put(workingClone, original);
                 } else {
-                    if (query.shouldUseSerializedObjectPolicy() && descriptor.hasSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
-                        hasSetSopObjectIntoRow = true;
+                    if (descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
                         // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
                         // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
                         workingClone = descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, unitOfWork);
@@ -2050,9 +2251,6 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         } finally {
             unitOfWorkCacheKey.release();            
-            if (hasSetSopObjectIntoRow) {
-                databaseRow.setSopObject(null);
-            }
         }
         instantiateEagerMappings(workingClone, unitOfWork);
 
@@ -2912,6 +3110,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Return the row with primary keys and their values from the given expression.
      */
     public AbstractRecord extractPrimaryKeyRowFromExpression(Expression expression, AbstractRecord translationRow, AbstractSession session) {
+        if (translationRow != null && translationRow.hasSopObject()) {
+            return translationRow;
+        }
         AbstractRecord primaryKeyRow = createRecord(getPrimaryKeyMappings().size(), session);
 
         expression.getBuilder().setSession(session.getRootSession(null));
