@@ -568,7 +568,9 @@ public class JSONReader extends XMLReaderAdapter {
         		    uri = stringValue.substring(indexOpen+1, indexClose);
         		    localName = stringValue.substring(indexClose + 1);
         		}else{
-        			localName = stringValue;
+        			QName obj = (QName)xmlField.convertValueBasedOnSchemaType(stringValue, xmlConversionManager, record);
+        			localName = obj.getLocalPart();
+        			uri = obj.getNamespaceURI();
         		}
         		if(uri != null){
         			return new QName(uri, localName);
