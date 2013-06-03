@@ -1210,6 +1210,9 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
                 }
             }
         }
+        if (row.hasSopObject()) {
+            return getAttributeValueFromObject(row.getSopObject());
+        }
         // PERF: Direct variable access.
         Object fieldValue = row.get(getField());
         Object attributeValue = getObjectValue(fieldValue, executionSession);

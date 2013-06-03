@@ -292,6 +292,8 @@ public class QueryHintsHandler {
             addHint(new CompositeMemberHint());
             addHint(new AllowNativeSQLQueryHint());
             addHint(new BatchWriteHint());
+            addHint(new ResultSetAccess());
+            addHint(new SerializedObject());
         }
         
         Hint(String name, String defaultValue) {
@@ -1953,6 +1955,49 @@ public class QueryHintsHandler {
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setSessionName((String)valueToApply);
+            return query;
+        }
+    }
+
+    protected static class ResultSetAccess extends Hint {
+        ResultSetAccess() {
+            super(QueryHints.RESULT_SET_ACCESS, HintValues.PERSISTENCE_UNIT_DEFAULT);
+            valueArray = new Object[][] { 
+                {HintValues.PERSISTENCE_UNIT_DEFAULT, null},
+                {HintValues.TRUE, Boolean.TRUE},
+                {HintValues.FALSE, Boolean.FALSE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                if (valueToApply != null) {
+                    ((ObjectLevelReadQuery)query).setIsResultSetAccessOptimizedQuery((Boolean)valueToApply);
+                } else {
+                    ((ObjectLevelReadQuery)query).clearIsResultSetOptimizedQuery();
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    protected static class SerializedObject extends Hint {
+        SerializedObject() {
+            super(QueryHints.SERIALIZED_OBJECT, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                {HintValues.TRUE, Boolean.TRUE},
+                {HintValues.FALSE, Boolean.FALSE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)query).setShouldUseSerializedObjectPolicy((Boolean)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
             return query;
         }
     }

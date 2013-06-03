@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.sessions.SimpleResultSetRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
@@ -427,9 +428,13 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (this.descriptor.hasTablePerClassPolicy() && this.descriptor.isAbstract()) {
             result = this.containerPolicy.containerInstance();
         } else {
-            checkResultSetAccessOptimization();
+            Object sopObject = getTranslationRow().getSopObject();
+            boolean useOptimization = false;
+            if (sopObject == null) {
+                useOptimization = usesResultSetAccessOptimization(); 
+            }        
             
-            if (this.usesResultSetAccessOptimization) {
+            if (useOptimization) {
                 DatabaseCall call = ((DatasourceCallQueryMechanism)this.queryMechanism).selectResultSet();
                 this.executionTime = System.currentTimeMillis();
                 Statement statement = call.getStatement();
@@ -474,17 +479,31 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     }
                 }                
             } else {
-                List<AbstractRecord> rows = getQueryMechanism().selectAllRows();
-                this.executionTime = System.currentTimeMillis();
-                
-                // If using 1-m joins, must set all rows.
-                if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
-                    this.joinedAttributeManager.setDataResults(rows, this.session);
+                List<AbstractRecord> rows;
+                if (sopObject != null) {
+                    Object valuesIterator = this.containerPolicy.iteratorFor(getTranslationRow().getSopObject());
+                    int size = this.containerPolicy.sizeFor(sopObject);
+                    rows =  new ArrayList<AbstractRecord>(size);
+                    while (this.containerPolicy.hasNext(valuesIterator)) {
+                        Object memberSopObject = this.containerPolicy.next(valuesIterator, this.session);
+                        DatabaseRecord memberRow = new DatabaseRecord(0);
+                        memberRow.setSopObject(memberSopObject);
+                        rows.add(memberRow);                        
+                    }
+                    this.executionTime = System.currentTimeMillis();
+                } else {
+                    rows = getQueryMechanism().selectAllRows();
+                    this.executionTime = System.currentTimeMillis();
+                    
+                    // If using 1-m joins, must set all rows.
+                    if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
+                        this.joinedAttributeManager.setDataResults(rows, this.session);
+                    }
+                    // Batch fetching in IN requires access to the rows to build the id array.
+                    if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
+                        this.batchFetchPolicy.setDataResults(rows);
+                    }
                 }
-                // Batch fetching in IN requires access to the rows to build the id array.
-                if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
-                    this.batchFetchPolicy.setDataResults(rows);
-                }                        
         
                 if (this.session.isUnitOfWork()) {
                     result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
@@ -497,7 +516,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
                 }
         
-                if (this.shouldIncludeData) {
+                if (this.shouldIncludeData && (sopObject == null)) {
                     ComplexQueryResult complexResult = new ComplexQueryResult();
                     complexResult.setResult(result);
                     complexResult.setData(rows);
@@ -839,6 +858,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                 }
                 cp.addAll(clonesIn, clones, unitOfWork, rowsIn, this, null, true);
             } else {
+                boolean quickAdd = (clones instanceof Collection) && !this.descriptor.getObjectBuilder().hasWrapperPolicy();
                 if (this.descriptor.getCachePolicy().shouldPrefetchCacheKeys()
                         && shouldMaintainCache() 
                         && ! shouldRetrieveBypassCache()
@@ -853,7 +873,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     }
                     setPrefetchedCacheKeys(unitOfWork.getParentIdentityMapSession(this).getIdentityMapAccessorInstance().getAllCacheKeysFromIdentityMapWithEntityPK(pkList, descriptor));
                 }
-                boolean quickAdd = (clones instanceof Collection) && !this.descriptor.getObjectBuilder().hasWrapperPolicy();
                 for (int index = 0; index < size; index++) {
                     AbstractRecord row = rows.get(index);
 
@@ -925,33 +944,30 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             DatabaseAccessor dbAccessor = (DatabaseAccessor)getAccessor();
             boolean useSimple = this.descriptor.getObjectBuilder().isSimple();  
             AbstractSession executionSession = getExecutionSession();
+            DatabasePlatform platform = dbAccessor.getPlatform();
+            boolean optimizeData = platform.shouldOptimizeDataConversion();
             if (useSimple) {
                 // None of the fields are relational - the row could be reused, just clear all the values.
-                SimpleResultSetRecord row = new SimpleResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                SimpleResultSetRecord row = new SimpleResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession, platform, optimizeData);
                 if (this.descriptor.isDescriptorTypeAggregate()) {
                     // Aggregate Collection may have an unmapped primary key referencing the owner, the corresponding field will not be used when the object is populated and therefore may not be cleared.
                     row.setShouldKeepValues(true);
                 }
-                if (quickAdd) {
-                    while (hasNext) {
-                        Object clone = buildObject(row);
+                while (hasNext) {
+                    Object clone = buildObject(row);
+                    if (quickAdd) {
                         ((Collection)clones).add(clone);
-                        row.reset(); 
-                        hasNext = resultSet.next(); 
-                    }
-                } else {
-                    while (hasNext) {
-                        Object clone = buildObject(row);
+                    } else {
                         // TODO: investigate is it possible to support MappedKeyMapPolicy - this policy currently is not compatible with ResultSet optimization
-                        cp.addInto(clone, clones, unitOfWork);
-                        row.reset();                
-                        hasNext = resultSet.next(); 
+                        cp.addInto(clone, clones, unitOfWork);                            
                     }
+                    row.reset(); 
+                    hasNext = resultSet.next(); 
                 }
             } else {
                 boolean shouldKeepRow = this.descriptor.getObjectBuilder().shouldKeepRow();
                 while (hasNext) {
-                    ResultSetRecord row = new ResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                    ResultSetRecord row = new ResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession, platform, optimizeData);
                     Object clone = buildObject(row);
                     if (quickAdd) {
                         ((Collection)clones).add(clone);

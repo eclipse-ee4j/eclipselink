@@ -648,7 +648,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                         // Avoid this by telling the call if this is custom SQL with parameters.
                         // This must not be called for SDK calls.
                         if ((isReadQuery() || isDataModifyQuery()) && isCallQuery() && (getQueryMechanism() instanceof CallQueryMechanism) 
-                                && ((translationRow == null) || translationRow.isEmpty())) {
+                                && ((translationRow == null) || (translationRow.isEmpty() && !translationRow.hasSopObject()))) {
                             // Must check for read object queries as the row will be
                             // empty until the prepare.
                             if (isReadObjectQuery() || isUserDefined()) {

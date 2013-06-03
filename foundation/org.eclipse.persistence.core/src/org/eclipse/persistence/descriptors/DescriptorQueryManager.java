@@ -1794,4 +1794,14 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public void putCachedExpressionQuery(DatabaseQuery query) {
         getCachedExpressionQueries().put(query, query);
     }
+
+    /**
+     * INTERNAL:
+     * Remove the cached expression query.
+     * PERF: Allow caching of expression query SQL call to avoid regeneration.
+     */
+    public void removeCachedExpressionQuery(DatabaseQuery query) {
+        getCachedExpressionQueries().remove(query);
+    }
+
 }

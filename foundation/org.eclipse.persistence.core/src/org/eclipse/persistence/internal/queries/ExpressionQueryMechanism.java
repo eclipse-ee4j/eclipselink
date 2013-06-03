@@ -672,7 +672,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
             } else {
                 if (item.getDescriptor() != null) {
-                    itemOffset += item.getDescriptor().getAllFields().size();
+                    itemOffset += item.getDescriptor().getAllSelectionFields((ReportQuery)getQuery()).size();
                 } else {
                     if (item.getMapping() != null && item.getMapping().isAggregateObjectMapping()) {
                         itemOffset += item.getMapping().getFields().size(); // Aggregate object may consist out of 1..n fields
@@ -830,6 +830,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         // Perform a series of cache checks, in the following order...
         // 1: If selection key or selection object, lookup by primary key.
+        // 1.5: If row has sopObject, lookup by its primary key.
         // 2: If selection criteria null, take the first instance in cache.
         // 3: If exact primary key expression, lookup by primary key.
         // 4: If inexact primary key expression, lookup by primary key and see if it conforms.
@@ -856,100 +857,110 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
             }
         } else {
-            // 2: If selection criteria null, take any instance in cache.
+            // 1.5: If row has sopObject, lookup by its primary key.
             //
-            if (selectionCriteria == null) {
-                // In future would like to always return something from cache.
-                if (query.shouldConformResultsInUnitOfWork() || descriptor.shouldAlwaysConformResultsInUnitOfWork() || query.shouldCheckCacheOnly() || query.shouldCheckCacheThenDatabase()) {
-                    cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(null, query.getReferenceClass(), translationRow, policyToUse, conforming, false, descriptor);
+            if (translationRow != null && translationRow.hasSopObject()) {
+                if (query.requiresDeferredLocks()) {
+                    cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMapWithDeferredLock(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(translationRow.getSopObject(), session), query.getReferenceClass(), false, descriptor);
+                } else {
+                    cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(translationRow.getSopObject(), session), query.getReferenceClass(), false, descriptor);
                 }
             } else {
-                // 3: If can extract exact primary key expression, do lookup by primary key.
+                // 2: If selection criteria null, take any instance in cache.
                 //
-                selectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromExpression(true, selectionCriteria, translationRow, session);
-
-                // If an exact primary key was extracted or should check cache by exact
-                // primary key only this will become the final check.
-                if ((selectionKey != null) || query.shouldCheckCacheByExactPrimaryKey()) {
-                    if (selectionKey != null) {
-                        // Check if key is invalid (null), cannot exist.
-                        if (selectionKey == InvalidObject.instance) {
-                            return selectionKey;
-                        }
-                        if (query.requiresDeferredLocks()) {
-                            cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
-                        } else {
-                            cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
-                        }
-                        // Because it was exact primary key if the lookup failed then it is not there.                        
+                if (selectionCriteria == null) {
+                    // In future would like to always return something from cache.
+                    if (query.shouldConformResultsInUnitOfWork() || descriptor.shouldAlwaysConformResultsInUnitOfWork() || query.shouldCheckCacheOnly() || query.shouldCheckCacheThenDatabase()) {
+                        cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(null, query.getReferenceClass(), translationRow, policyToUse, conforming, false, descriptor);
                     }
                 } else {
-                    // 4: If can extract inexact primary key, find one object by primary key and
-                    // check if it conforms.  Failure of this object to conform however does not
-                    // rule out a cache hit.
-                    Object inexactSelectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromExpression(false, selectionCriteria, translationRow, session);// Check for any primary key in expression, may have other stuff.
-                    if (inexactSelectionKey != null) {
-                        // Check if key is invalid (null), cannot exist.
-                        if (selectionKey == InvalidObject.instance) {
-                            return selectionKey;
-                        }
-                        // PERF: Only use deferred lock when required.
-                        if (query.requiresDeferredLocks()) {
-                            cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMapWithDeferredLock(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
-                        } else {
-                            cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
+                    // 3: If can extract exact primary key expression, do lookup by primary key.
+                    //
+                    selectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromExpression(true, selectionCriteria, translationRow, session);
+        
+                    // If an exact primary key was extracted or should check cache by exact
+                    // primary key only this will become the final check.
+                    if ((selectionKey != null) || query.shouldCheckCacheByExactPrimaryKey()) {
+                        if (selectionKey != null) {
+                            // Check if key is invalid (null), cannot exist.
+                            if (selectionKey == InvalidObject.instance) {
+                                return selectionKey;
+                            }
+                            if (query.requiresDeferredLocks()) {
+                                cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
+                            } else {
+                                cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
+                            }
+                            // Because it was exact primary key if the lookup failed then it is not there.                        
                         }
                     } else {
-                        CacheKey cacheKey = descriptor.getCachePolicy().checkCacheByIndex(selectionCriteria, translationRow, descriptor, session);
-                        if (cacheKey != null) {
-                            if (query.requiresDeferredLocks()) {
-                                cacheKey.checkDeferredLock();
-                            } else {
-                                cacheKey.checkReadLock();                                
+                        // 4: If can extract inexact primary key, find one object by primary key and
+                        // check if it conforms.  Failure of this object to conform however does not
+                        // rule out a cache hit.
+                        Object inexactSelectionKey = descriptor.getObjectBuilder().extractPrimaryKeyFromExpression(false, selectionCriteria, translationRow, session);// Check for any primary key in expression, may have other stuff.
+                        if (inexactSelectionKey != null) {
+                            // Check if key is invalid (null), cannot exist.
+                            if (selectionKey == InvalidObject.instance) {
+                                return selectionKey;
                             }
-                            cachedObject = cacheKey.getObject();
-                        }                        
-                    }
-                    if (cachedObject != null) {
-                        // Must ensure that it matches the expression.
-                        try {
-                            // PERF: 3639015 - cloning the expression no longer required
-                            // when using the root session.
-                            ExpressionBuilder builder = selectionCriteria.getBuilder();
-                            builder.setSession(session.getRootSession(null));
-                            builder.setQueryClass(descriptor.getJavaClass());
-                            if (!selectionCriteria.doesConform(cachedObject, session, translationRow, policyToUse)) {
+                            // PERF: Only use deferred lock when required.
+                            if (query.requiresDeferredLocks()) {
+                                cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMapWithDeferredLock(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
+                            } else {
+                                cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
+                            }
+                        } else {
+                            CacheKey cacheKey = descriptor.getCachePolicy().checkCacheByIndex(selectionCriteria, translationRow, descriptor, session);
+                            if (cacheKey != null) {
+                                if (query.requiresDeferredLocks()) {
+                                    cacheKey.checkDeferredLock();
+                                } else {
+                                    cacheKey.checkReadLock();                                
+                                }
+                                cachedObject = cacheKey.getObject();
+                            }                        
+                        }
+                        if (cachedObject != null) {
+                            // Must ensure that it matches the expression.
+                            try {
+                                // PERF: 3639015 - cloning the expression no longer required
+                                // when using the root session.
+                                ExpressionBuilder builder = selectionCriteria.getBuilder();
+                                builder.setSession(session.getRootSession(null));
+                                builder.setQueryClass(descriptor.getJavaClass());
+                                if (!selectionCriteria.doesConform(cachedObject, session, translationRow, policyToUse)) {
+                                    cachedObject = null;
+                                }
+                            } catch (QueryException exception) {// Ignore if expression too complex.
+                                if (query.shouldCheckCacheOnly()) {// Throw on only cache.
+                                    throw exception;
+                                }
                                 cachedObject = null;
                             }
-                        } catch (QueryException exception) {// Ignore if expression too complex.
-                            if (query.shouldCheckCacheOnly()) {// Throw on only cache.
-                                throw exception;
+                        }
+        
+                        // 5: Perform a linear search of the cache, calling expression.doesConform on each element.
+                        // This is a last resort linear time search of the identity map.
+                        // This can be avoided by setting check cache by (inexact/exact) primary key on the query.
+                        // That flag becomes invalid in the conforming case (bug 2609611: SUPPORT CONFORM RESULT IN UOW IN CONJUNCTION WITH OTHER IN-MEMORY FEATURES)
+                        // so if conforming must always do this linear search, but at least only on 
+                        // objects registered in the UnitOfWork.
+                        //
+                        boolean conformingButOutsideUnitOfWork = ((query.shouldConformResultsInUnitOfWork() || descriptor.shouldAlwaysConformResultsInUnitOfWork()) && !session.isUnitOfWork());
+                        if ((cachedObject == null) && (conforming || (!query.shouldCheckCacheByPrimaryKey() && !conformingButOutsideUnitOfWork))) {
+                            // PERF: 3639015 - cloning the expression no longer required
+                            // when using the root session
+                            if (selectionCriteria != null) {
+                                ExpressionBuilder builder = selectionCriteria.getBuilder();
+                                builder.setSession(session.getRootSession(null));
+                                builder.setQueryClass(descriptor.getJavaClass());
                             }
-                            cachedObject = null;
-                        }
-                    }
-
-                    // 5: Perform a linear search of the cache, calling expression.doesConform on each element.
-                    // This is a last resort linear time search of the identity map.
-                    // This can be avoided by setting check cache by (inexact/exact) primary key on the query.
-                    // That flag becomes invalid in the conforming case (bug 2609611: SUPPORT CONFORM RESULT IN UOW IN CONJUNCTION WITH OTHER IN-MEMORY FEATURES)
-                    // so if conforming must always do this linear search, but at least only on 
-                    // objects registered in the UnitOfWork.
-                    //
-                    boolean conformingButOutsideUnitOfWork = ((query.shouldConformResultsInUnitOfWork() || descriptor.shouldAlwaysConformResultsInUnitOfWork()) && !session.isUnitOfWork());
-                    if ((cachedObject == null) && (conforming || (!query.shouldCheckCacheByPrimaryKey() && !conformingButOutsideUnitOfWork))) {
-                        // PERF: 3639015 - cloning the expression no longer required
-                        // when using the root session
-                        if (selectionCriteria != null) {
-                            ExpressionBuilder builder = selectionCriteria.getBuilder();
-                            builder.setSession(session.getRootSession(null));
-                            builder.setQueryClass(descriptor.getJavaClass());
-                        }
-                        try {
-                            cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionCriteria, query.getReferenceClass(), translationRow, policyToUse, conforming, false, descriptor);
-                        } catch (QueryException exception) {// Ignore if expression too complex.
-                            if (query.shouldCheckCacheOnly()) {// Throw on only cache.
-                                throw exception;
+                            try {
+                                cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMap(selectionCriteria, query.getReferenceClass(), translationRow, policyToUse, conforming, false, descriptor);
+                            } catch (QueryException exception) {// Ignore if expression too complex.
+                                if (query.shouldCheckCacheOnly()) {// Throw on only cache.
+                                    throw exception;
+                                }
                             }
                         }
                     }
@@ -1071,7 +1082,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             fields.addAll(owner.getFetchGroupSelectionFields());
         } else {
             if (includeAllSubclassFields) {
-                fields.addAll(getDescriptor().getAllFields());
+                fields.addAll(getDescriptor().getAllSelectionFields(owner));
             } else {
                 fields.add(statement.getExpressionBuilder());
             }
@@ -1823,6 +1834,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         ExpressionBuilder builder = ((UpdateAllQuery)getQuery()).getExpressionBuilder();        
         HashMap updateClauses = ((UpdateAllQuery)getQuery()).getUpdateClauses();
         
+        boolean updateClausesHasBeenCloned = false;
         // Add a statement to update the optimistic locking field if their is one.
         OptimisticLockingPolicy policy = getDescriptor().getOptimisticLockingPolicy();
         if (policy != null) {
@@ -1832,9 +1844,20 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 if (writeLockUpdateExpression != null) {
                     // clone it to keep user's original data intact
                     updateClauses = (HashMap)updateClauses.clone();
+                    updateClausesHasBeenCloned = true;
                     updateClauses.put(writeLock, writeLockUpdateExpression);
                 }
             }
+        }
+        
+        if (getDescriptor().hasSerializedObjectPolicy()) {
+            if (!updateClausesHasBeenCloned) {
+                // clone it to keep user's original data intact
+                updateClauses = (HashMap)updateClauses.clone();
+                updateClausesHasBeenCloned = true;
+            }
+            Expression sopFieldExpression = builder.getField(getDescriptor().getSerializedObjectPolicy().getField());
+            updateClauses.put(sopFieldExpression, new ConstantExpression(null, sopFieldExpression));
         }
         
         HashMap tables_databaseFieldsToValues =  new HashMap();

@@ -258,6 +258,37 @@ public class ArrayRecord extends DatabaseRecord {
         }
     }
 
+    /**
+     * INTERNAL:
+     * replaces the value at field with value
+     */
+    public void replaceAt(Object value, DatabaseField key) {
+        if (this.fieldsArray != null) {
+            // Optimize check.
+            int index = key.index;
+            if ((index >= 0) && (index < this.size)) {
+                DatabaseField field = this.fieldsArray[index];
+                if ((field == key) || field.equals(key)) {
+                    this.valuesArray[index] = value;
+                    return;
+                }
+            }
+            for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
+                DatabaseField field = this.fieldsArray[fieldIndex];
+                if ((field == key) || field.equals(key)) {
+                    // PERF: If the fields index was not set, then set it.
+                    if (index == -1) {
+                        key.setIndex(fieldIndex);
+                    }
+                    this.valuesArray[fieldIndex] = value;
+                    return;
+                }
+            }
+        } else {
+            super.replaceAt(value, key);
+        }
+    }
+
     protected void setFields(Vector fields) {
         checkValues();
         this.fieldsArray = null;
@@ -290,7 +321,7 @@ public class ArrayRecord extends DatabaseRecord {
             StringWriter writer = new StringWriter();
             writer.write(Helper.getShortClassName(getClass()));
             writer.write("(");
-    
+            writer.write(toStringAditional());
             for (int index = 0; index < this.fieldsArray.length; index++) {
                 writer.write(Helper.cr());
                 writer.write("\t");
@@ -298,11 +329,20 @@ public class ArrayRecord extends DatabaseRecord {
                 writer.write(" => ");
                 writer.write(String.valueOf(this.valuesArray[index]));
             }
+            if (this.sopObject != null) {
+                writer.write(Helper.cr());
+                writer.write(" sopObject = ");
+                writer.write(this.sopObject.toString());
+            }
             writer.write(")");
     
             return writer.toString();
         } else {
             return super.toString();
         }
+    }
+    
+    protected String toStringAditional() {
+        return "";
     }
 }

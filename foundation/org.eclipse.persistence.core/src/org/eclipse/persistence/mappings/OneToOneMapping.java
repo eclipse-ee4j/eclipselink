@@ -749,7 +749,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         // Force a distinct to filter out m-1 duplicates.
         // Only set if really a m-1, not a 1-1
         if (!isOneToOneRelationship()) {
-            ((ObjectLevelReadQuery)batchQuery).useDistinct();
+            if (!((ObjectLevelReadQuery)batchQuery).isDistinctComputed() && (batchQuery.getSession().getPlatform().isLobCompatibleWithDistinct() || !Helper.hasLob(batchQuery.getDescriptor().getSelectionFields((ObjectLevelReadQuery)batchQuery)))) {
+                ((ObjectLevelReadQuery)batchQuery).useDistinct();
+            }
         }
         if (this.mechanism != null) {
             this.mechanism.postPrepareNestedBatchQuery(batchQuery, query);
@@ -955,8 +957,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Get all the fields for the map key
      */
     public List<DatabaseField> getAllFieldsForMapKey(){
-        List<DatabaseField> fields = new ArrayList(getReferenceDescriptor().getAllFields().size() + getForeignKeyFields().size());
-        fields.addAll(getReferenceDescriptor().getAllFields());
+        List<DatabaseField> fields = new ArrayList(getReferenceDescriptor().getAllSelectionFields().size() + getForeignKeyFields().size());
+        fields.addAll(getReferenceDescriptor().getAllSelectionFields());
         fields.addAll(getForeignKeyFields());
         return fields;
     }
@@ -1775,20 +1777,22 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Check for batch + aggregation reading.
      */
     @Override
-    protected Object valueFromRowInternal(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+    protected Object valueFromRowInternal(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean shouldUseSopObject) throws DatabaseException {
         // If any field in the foreign key is null then it means there are no referenced objects
         // Skip for partial objects as fk may not be present.
-        int size = this.fields.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseField field = this.fields.get(index);
-            if (row.get(field) == null) {
-                return this.indirectionPolicy.nullValueFromRow();
+        if (!shouldUseSopObject) {
+            int size = this.fields.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseField field = this.fields.get(index);
+                if (row.get(field) == null) {
+                    return this.indirectionPolicy.nullValueFromRow();
+                }
             }
         }
 
         // Call the default which executes the selection query,
         // or wraps the query with a value holder.
-        return super.valueFromRowInternal(row, joinManager, sourceQuery, executionSession);
+        return super.valueFromRowInternal(row, joinManager, sourceQuery, executionSession, shouldUseSopObject);
     }
 
     /**

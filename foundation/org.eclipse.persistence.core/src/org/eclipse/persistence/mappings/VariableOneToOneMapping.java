@@ -745,6 +745,9 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
+        if (row.hasSopObject()) {
+            return getAttributeValueFromObject(row.getSopObject());
+        }
         // If any field in the foreign key is null then it means there are no referenced objects
         for (DatabaseField field : getFields()) {
             if (row.get(field) == null) {

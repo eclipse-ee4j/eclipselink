@@ -242,6 +242,7 @@ public class DescriptorException extends ValidationException {
     public final static int NULL_POINTER_WHILE_GETTING_VALUE_THRU_METHOD_ACCESSOR_IN_MODULE_ORDER_BREAKS_WEAVING = 218;
     public final static int ADDITIONAL_CRITERIA_NOT_SUPPORTED_WITH_INHERITANCE_VIEWS = 219;
     public final static int MISSING_PARTITION_POLICY = 220;
+    public final static int SERIALIZED_OBJECT_POLICY_FIELD_NOT_SET = 221;
 
     /**
      * INTERNAL:
@@ -2069,4 +2070,11 @@ public class DescriptorException extends ValidationException {
         return descriptorException;
     }
 
+    public static DescriptorException serializedObjectPolicyFieldNotSet(ClassDescriptor descriptor) {
+        Object[] args = { };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, SERIALIZED_OBJECT_POLICY_FIELD_NOT_SET, args), descriptor);
+        descriptorException.setErrorCode(SERIALIZED_OBJECT_POLICY_FIELD_NOT_SET);
+        return descriptorException;
+    }
 }

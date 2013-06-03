@@ -120,6 +120,7 @@ public class ReportQuery extends ReadAllQuery {
         // overwrite the lock mode to NO_LOCK, this prevents the report query to lock
         // when DEFAULT_LOCK_MODE and a pessimistic locking policy are used.
         setLockMode(ObjectBuildingQuery.NO_LOCK);
+        this.shouldUseSerializedObjectPolicy = false;
     }
 
     public ReportQuery(Class javaClass, Expression expression) {

@@ -43,13 +43,13 @@ public class ResultSetRecord extends ArrayRecord {
         super();
     }
     
-    public ResultSetRecord(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, DatabaseAccessor accessor, AbstractSession session) {
+    public ResultSetRecord(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, DatabaseAccessor accessor, AbstractSession session, DatabasePlatform platform, boolean optimizeData) {
         super(fields, fieldsArray, new Object[fieldsArray.length]);
         this.resultSet = resultSet;
         this.metaData = metaData;
         this.accessor = accessor;
-        this.platform = accessor.getPlatform();
-        this.optimizeData = this.platform.shouldOptimizeDataConversion();
+        this.platform = platform;
+        this.optimizeData = optimizeData;
         this.session = session;
     }
     
@@ -58,16 +58,21 @@ public class ResultSetRecord extends ArrayRecord {
      * resultSet must be non null.
      */
     public void loadAllValuesFromResultSet() {
-        for (int index = 0; index < this.valuesArray.length; index++) {
+        int size = this.valuesArray.length;
+        for (int index = 0; index < size; index++) {
             if (this.valuesArray[index] == null) {
-                DatabaseField field = fieldsArray[index];
+                DatabaseField field = this.fieldsArray[index];
                 // Field can be null for fetch groups.
                 if (field != null) {
-                    this.valuesArray[index] = getValueFromResultSet(index, field);
+                    this.valuesArray[index] = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
                 }
             }
         }
-        removeResultSet();
+        this.resultSet = null;
+        this.metaData = null;
+        this.accessor = null;
+        this.platform = null;
+        this.session = null;
     }
     
     /**
@@ -75,11 +80,12 @@ public class ResultSetRecord extends ArrayRecord {
      */
     public void removeNonIndirectionValues() {
         if (this.fieldsArray != null) {
-            for (int index = 0; index < this.fieldsArray.length; index++) {
+            int size = this.valuesArray.length;
+            for (int index = 0; index < size; index++) {
                 DatabaseField field = this.fieldsArray[index];
                 // Field can be null for fetch groups.
                 if (field != null) {
-                    if (!field.keepInRow()) {
+                    if (!field.keepInRow) {
                         this.valuesArray[index] = null;
                     }
                 }
@@ -89,7 +95,8 @@ public class ResultSetRecord extends ArrayRecord {
     
     public void removAllValue() {
         if (this.valuesArray != null) {
-            for (int index = 0; index < this.valuesArray.length; index++) {
+            int size = this.valuesArray.length;
+            for (int index = 0; index < size; index++) {
                 this.valuesArray[index] = null;
             }
         }
@@ -101,26 +108,6 @@ public class ResultSetRecord extends ArrayRecord {
      */
     public boolean hasResultSet() {
         return this.resultSet != null;
-    }
-
-    /**
-     * Obtains the value corresponding to the passed index from resultSet.
-     * resultSet must be non null.
-     */
-    protected Object getValue(int index, DatabaseField field) {
-        Object value = this.valuesArray[index]; 
-        if (value == null) {
-            value = getValueFromResultSet(index, field);
-            this.valuesArray[index] = value;
-        } else {
-            // field's value has been already extracted earlier - the row is used to populate object
-            loadAllValuesFromResultSet();
-        }
-        return value;
-    }
-    
-    protected Object getValueFromResultSet(int index, DatabaseField field) {
-        return accessor.getObject(resultSet, field, metaData, index + 1, platform, optimizeData, session);
     }
     
     public void removeResultSet() {
@@ -176,31 +163,36 @@ public class ResultSetRecord extends ArrayRecord {
         if (this.fieldsArray != null) {
             // Optimize check.
             int index = key.index;
-            if ((index >= 0) && (index < this.size)) {
-                DatabaseField field = this.fieldsArray[index];
-                if ((field == key) || field.equals(key)) {
-                    if (resultSet != null) {
-                        return getValue(index, field);
-                    } else {
-                        return this.valuesArray[index];
+            if ((index < 0) || (index > this.size)) {
+                index = 0;
+            }            
+            DatabaseField field = this.fieldsArray[index];
+            if ((field != key) && !field.equals(key)) {
+                for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
+                    field = this.fieldsArray[fieldIndex];
+                    if ((field == key) || field.equals(key)) {
+                        // PERF: If the fields index was not set, then set it.
+                        if (key.index == -1) {
+                            key.setIndex(fieldIndex);
+                        }
+                        index = fieldIndex;
+                        break;
                     }
-                }
+                }                
             }
-            for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
-                DatabaseField field = this.fieldsArray[fieldIndex];
-                if ((field == key) || field.equals(key)) {
-                    // PERF: If the fields index was not set, then set it.
-                    if (index == -1) {
-                        key.setIndex(fieldIndex);
-                    }
-                    if (resultSet != null) {
-                        return getValue(fieldIndex, field); 
-                    } else {
-                        return this.valuesArray[fieldIndex];
-                    }
+            if (this.resultSet != null) {
+                Object value = this.valuesArray[index]; 
+                if (value == null) {
+                    value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
+                    this.valuesArray[index] = value;
+                } else {
+                    // field's value has been already extracted earlier - the row is used to populate object
+                    loadAllValuesFromResultSet();
                 }
+                return value;
+            } else {
+                return this.valuesArray[index];
             }
-            return null;
         } else {
             return super.get(key);
         }
@@ -209,39 +201,59 @@ public class ResultSetRecord extends ArrayRecord {
     /**
      * INTERNAL:
      * Retrieve the value for the field. If missing DatabaseRow.noEntry is returned.
+     * PERF: This method is a clone of get() for performance.
      */
     @Override
     public Object getIndicatingNoEntry(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
             int index = key.index;
-            if ((index >= 0) && (index < this.size)) {
-                DatabaseField field = this.fieldsArray[index];
-                if ((field == key) || field.equals(key)) {
-                    if (resultSet != null) {
-                        return getValue(index, field);
-                    } else {
-                        return this.valuesArray[index];
+            if ((index < 0) || (index > this.size)) {
+                index = 0;
+            }            
+            DatabaseField field = this.fieldsArray[index];
+            if ((field != key) && !field.equals(key)) {
+                for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
+                    field = this.fieldsArray[fieldIndex];
+                    if ((field == key) || field.equals(key)) {
+                        // PERF: If the fields index was not set, then set it.
+                        if (key.index == -1) {
+                            key.setIndex(fieldIndex);
+                        }
+                        index = fieldIndex;
+                        break;
                     }
-                }
+                }                
             }
-            for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
-                DatabaseField field = this.fieldsArray[fieldIndex];
-                if ((field == key) || field.equals(key)) {
-                    // PERF: If the fields index was not set, then set it.
-                    if (index == -1) {
-                        key.setIndex(fieldIndex);
-                    }
-                    if (resultSet != null) {
-                        return getValue(fieldIndex, field); 
-                    } else {
-                        return this.valuesArray[fieldIndex];
-                    }
+            if (this.resultSet != null) {
+                Object value = this.valuesArray[index]; 
+                if (value == null) {
+                    value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
+                    this.valuesArray[index] = value;
+                } else {
+                    // field's value has been already extracted earlier - the row is used to populate object
+                    loadAllValuesFromResultSet();
                 }
+                return value;
+            } else {
+                return this.valuesArray[index];
             }
-            return AbstractRecord.noEntry;
         } else {
             return super.get(key);
+        }
+    }
+
+    @Override
+    protected String toStringAditional() {
+        return (this.resultSet != null ? " hasResultSet" : "");
+    }
+
+    @Override 
+    public void setSopObject(Object sopObject) {
+        super.setSopObject(sopObject);
+        // sopObject is set - the row is used to populate object
+        if (this.resultSet != null) {
+            loadAllValuesFromResultSet();
         }
     }
 }

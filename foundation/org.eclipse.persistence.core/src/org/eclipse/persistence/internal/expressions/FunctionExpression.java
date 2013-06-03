@@ -29,6 +29,7 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -284,8 +285,17 @@ public class FunctionExpression extends BaseExpression {
      * only applies to query keys representing an object or to expression builders.
      *
      */
+    @Override
     public Vector getFields() {
         return getBaseExpression().getFields();
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public List<DatabaseField> getSelectionFields(ReadQuery query) {
+        return getBaseExpression().getSelectionFields(query);
     }
 
     public ExpressionOperator getOperator() {

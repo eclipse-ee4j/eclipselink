@@ -111,6 +111,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Transfor
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.sop.SerializedObjectPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.additionalcriteria.AdditionalCriteriaMetadata;
 
@@ -301,6 +302,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildNamedEntityGraphDescriptor());
         addDescriptor(buildNamedAttributeNodeDescriptor());
         addDescriptor(buildNamedSubgraphDescriptor());
+        addDescriptor(buildSerializedObjectPolicyDescriptor());
         
         addDescriptor(buildNamedStoredProcedureQueryDescriptor());
         addDescriptor(buildNamedStoredFunctionQueryDescriptor());
@@ -1479,6 +1481,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCustomCopyPolicyMapping());
         descriptor.addMapping(getInstantiationCopyPolicyMapping());
         descriptor.addMapping(getCloneCopyPolicyMapping());
+        descriptor.addMapping(getSerializedObjectPolicyMapping());
         descriptor.addMapping(getSequenceGeneratorMapping());
         descriptor.addMapping(getTableGeneratorMapping());
         descriptor.addMapping(getUuidGeneratorMapping());
@@ -3219,6 +3222,23 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getInitialValueAttributeMapping());
         descriptor.addMapping(getAllocationSizeAttributeMapping());
         
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: SerializedObjectPolicy
+     */
+    protected ClassDescriptor buildSerializedObjectPolicyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(SerializedObjectPolicyMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getColumnMapping());
+        
+        // Attribute mappings.
+        descriptor.addMapping(getClassAttributeMapping());
+
         return descriptor;
     }
     
@@ -6040,6 +6060,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         sequenceGeneratorMapping.setReferenceClass(SequenceGeneratorMetadata.class);
         sequenceGeneratorMapping.setXPath("orm:sequence-generator");
         return sequenceGeneratorMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getSerializedObjectPolicyMapping() {
+        XMLCompositeObjectMapping serializedObjectPolicyMapping = new XMLCompositeObjectMapping();
+        serializedObjectPolicyMapping.setAttributeName("m_serializedObjectPolicy");
+        serializedObjectPolicyMapping.setGetMethodName("getSerializedObjectPolicy");
+        serializedObjectPolicyMapping.setSetMethodName("setSerializedObjectPolicy");
+        serializedObjectPolicyMapping.setReferenceClass(SerializedObjectPolicyMetadata.class);
+        serializedObjectPolicyMapping.setXPath("orm:serialized-object");
+        return serializedObjectPolicyMapping;
     }
     
     /**

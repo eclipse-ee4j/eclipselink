@@ -29,6 +29,7 @@ import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -57,6 +58,14 @@ public abstract class AggregateMapping extends DatabaseMapping {
     /** The descriptor of the reference class */
     protected ClassDescriptor referenceDescriptor;
 
+    /**
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * references an entity.
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.
+     * Lazily initialized.  
+     */
+    protected Boolean hasNestedIdentityReference;
+    
     /**
      * Default constructor.
      */
@@ -497,6 +506,20 @@ public abstract class AggregateMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * references an entity.
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.  
+     */
+    @Override
+    public boolean hasNestedIdentityReference() {
+        if (hasNestedIdentityReference == null) {
+            hasNestedIdentityReference = getReferenceDescriptor().hasNestedIdentityReference(true);
+        }
+        return hasNestedIdentityReference; 
+    }
+        
+    /**
+     * INTERNAL:
      * Initialize the reference descriptor.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
@@ -550,7 +573,20 @@ public abstract class AggregateMapping extends DatabaseMapping {
     public void load(final Object object, AttributeItem item, final AbstractSession session, final boolean fromFetchGroup) {
         if (item.getGroup() != null) {
             Object value = getAttributeValueFromObject(object);
-            getObjectBuilder(value, session).load(value, item.getGroup(), session, fromFetchGroup);
+            if (value != null) {
+                getObjectBuilder(value, session).load(value, item.getGroup(), session, fromFetchGroup);
+            }
+        }
+    }
+    
+    /**
+     * Force instantiation of all indirections.
+     */
+    @Override
+    public void loadAll(Object object, AbstractSession session, IdentityHashSet loaded) {
+        Object value = getAttributeValueFromObject(object);
+        if (value != null) {
+            getObjectBuilder(value, session).loadAll(value, session);
         }
     }
     

@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <p><b>Purpose:</b>
@@ -282,12 +283,27 @@ public class ReferenceMapping extends ObjectReferenceMapping {
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
+        AbstractRecord targetRow = null;
+        if (row.hasSopObject()) {
+            Object sopAttributeValue = getAttributeValueFromObject(row.getSopObject());
+            if (sopAttributeValue == null) {
+                return this.indirectionPolicy.nullValueFromRow();
+            }
+            // As part of SOP object the indirection should be already triggered
+            Object sopRealAttributeValue = getIndirectionPolicy().getRealAttributeValueFromObject(row.getSopObject(), sopAttributeValue);
+            if (sopRealAttributeValue == null) {
+                return sopAttributeValue; 
+            }
+            targetRow = new DatabaseRecord(0);
+            targetRow.setSopObject(sopRealAttributeValue);
+            // As part of SOP object the indirection should be already triggered and should be no references outside of sopObject (and its privately owned (possibly nested privately owned) objects)
+            return getReferenceDescriptor().getObjectBuilder().buildObject(query, targetRow, null);
+        }
         Ref ref = (Ref)row.get(getField());
         if (ref == null) {
             return null;
         }
         Struct struct;
-        AbstractRecord targetRow = null;
         try {
             ((DatabaseAccessor)executionSession.getAccessor()).incrementCallCount(executionSession); 
             java.sql.Connection connection = ((DatabaseAccessor)executionSession.getAccessor()).getConnection();

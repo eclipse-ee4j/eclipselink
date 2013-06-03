@@ -779,4 +779,12 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     public boolean usesResultSetAccessOptimization() {
         return false;
     }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the query should use SerializedObjectPolicy if descriptor has it.
+     */
+    public boolean shouldUseSerializedObjectPolicy() {
+        return false;
+    }
 }

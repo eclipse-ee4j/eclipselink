@@ -1395,6 +1395,7 @@ public class SQLSelectStatement extends SQLStatement {
         ExpressionNormalizer normalizer = new ExpressionNormalizer(this);
         normalizer.setSession(session);
         normalizer.setClonedExpressions(clonedExpressions);
+        boolean isDistinctComputed = isDistinctComputed();
 
         Expression newRoot = null;
 
@@ -1412,6 +1413,22 @@ public class SQLSelectStatement extends SQLStatement {
             Expression expression = (Expression)allExpressions.get(index);
             expression.getBuilder().setSession(session);
             expression.normalize(normalizer);
+        }
+        // distinct state has been set by normalization, see may be that should be reversed
+        if (shouldDistinctBeUsed() && !isDistinctComputed && !session.getPlatform().isLobCompatibleWithDistinct()) {
+            for (Object field : getFields()) {
+                if (field instanceof DatabaseField) {
+                    if (Helper.isLob((DatabaseField)field)) {
+                        dontUseDistinct();
+                        break;
+                    }
+                } else if (field instanceof Expression) {                        
+                    if (Helper.hasLob(((Expression)field).getSelectionFields(this.query))) {
+                        dontUseDistinct();
+                        break;
+                    }
+                }
+            }
         }
 
         // Sets the where clause and AND's it with the additional Expression

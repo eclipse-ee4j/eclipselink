@@ -108,6 +108,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     protected transient Vector<DatabaseField> fields;
     protected transient Vector<DatabaseField> allFields;
+    protected transient List<DatabaseField> selectionFields;
+    protected transient List<DatabaseField> allSelectionFields;
     protected Vector<DatabaseMapping> mappings;
     
     //Used to track which other classes reference this class in cases where
@@ -150,6 +152,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected CMPPolicy cmpPolicy;
     protected CachePolicy cachePolicy;
     protected MultitenantPolicy multitenantPolicy;
+    protected SerializedObjectPolicy serializedObjectPolicy;
 
     //manage fetch group behaviors and operations
     protected FetchGroupManager fetchGroupManager;
@@ -1298,6 +1301,10 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             clonedDescriptor.getInheritancePolicy().setDescriptor(clonedDescriptor);
         }
 
+        if (clonedDescriptor.hasSerializedObjectPolicy()) {
+            clonedDescriptor.setSerializedObjectPolicy((SerializedObjectPolicy)getSerializedObjectPolicy().clone());
+        }
+        
         // The returning policy
         if (clonedDescriptor.hasReturningPolicy()) {
             clonedDescriptor.setReturningPolicy((ReturningPolicy)getReturningPolicy().clone());
@@ -1441,6 +1448,37 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), e);   
             }
             setCopyPolicy(newCopyPolicy);
+        }
+        
+        if (this.serializedObjectPolicy != null && this.serializedObjectPolicy instanceof SerializedObjectPolicyWrapper) {
+            String serializedObjectPolicyClassName = ((SerializedObjectPolicyWrapper)this.serializedObjectPolicy).getSerializedObjectPolicyClassName();
+            Class serializedObjectPolicyClass = null;
+            SerializedObjectPolicy newSerializedObjectPolicy = null;
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        serializedObjectPolicyClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(serializedObjectPolicyClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, exception.getException());
+                    }
+                    try {
+                        newSerializedObjectPolicy = (SerializedObjectPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(serializedObjectPolicyClass));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, exception.getException());
+                    }
+                } else {
+                    serializedObjectPolicyClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(serializedObjectPolicyClassName, true, classLoader);
+                    newSerializedObjectPolicy = (SerializedObjectPolicy)org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(serializedObjectPolicyClass);
+                }
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, exc);
+            } catch (IllegalAccessException ex){
+                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, ex);
+            } catch (InstantiationException e){
+                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(serializedObjectPolicyClassName, e);   
+            }
+            newSerializedObjectPolicy.setField(this.serializedObjectPolicy.getField());
+            setSerializedObjectPolicy(newSerializedObjectPolicy);
         }
 
         //Create and set default QueryRedirector instances
@@ -1914,6 +1952,28 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     /**
+     * INTERNAL:
+     * Return all selection fields which include all child class fields. 
+     * By default it is initialized to selection fields for the current descriptor.
+     */
+    public List<DatabaseField> getAllSelectionFields() {
+        return allSelectionFields;
+    }
+
+    /**
+     * INTERNAL:
+     * Return all selection fields which include all child class fields. 
+     * By default it is initialized to selection fields for the current descriptor.
+     */
+    public List<DatabaseField> getAllSelectionFields(ObjectLevelReadQuery query) {
+        if (hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+            return this.serializedObjectPolicy.getAllSelectionFields();
+        } else {
+            return allSelectionFields;
+        }
+    }
+
+    /**
      * PUBLIC:
      * Return the amendment class.
      * The amendment method will be called on the class before initialization to allow for it to initialize the descriptor.
@@ -2206,6 +2266,26 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             fields = NonSynchronizedVector.newInstance();
         }
         return fields;
+    }
+
+    /**
+     * INTERNAL:
+     * Return all selection fields
+     */
+    public List<DatabaseField> getSelectionFields() {
+        return selectionFields;
+    }
+
+    /**
+     * INTERNAL:
+     * Return all selection fields
+     */
+    public List<DatabaseField> getSelectionFields(ObjectLevelReadQuery query) {
+        if (hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+            return this.serializedObjectPolicy.getSelectionFields();
+        } else {
+            return selectionFields;
+        }
     }
 
     /**
@@ -2839,6 +2919,29 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         return (getTables().size() > 1);
     }
 
+    /**
+     * INTERNAL:
+     * Calculates whether descriptor references an entity (directly or through a nested mapping).
+     */
+    public boolean hasNestedIdentityReference(boolean withChildren) {
+        if (withChildren && hasInheritance() && getInheritancePolicy().hasChildren()) {
+            for (ClassDescriptor childDescriptor : getInheritancePolicy().getAllChildDescriptors()) {
+                // leaf children have all the mappings
+                if (!childDescriptor.getInheritancePolicy().hasChildren()) {
+                    if (childDescriptor.hasNestedIdentityReference(false)) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            for (DatabaseMapping mapping : getMappings()) {
+                if (mapping.hasNestedIdentityReference()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }        
     
     /**
      * @return the hasNoncacheableMappings
@@ -2926,6 +3029,30 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
     /**
      * INTERNAL:
+     */
+    public boolean hasSerializedObjectPolicy() {
+        return this.serializedObjectPolicy != null;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public SerializedObjectPolicy getSerializedObjectPolicy() {
+        return this.serializedObjectPolicy;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setSerializedObjectPolicy(SerializedObjectPolicy serializedObjectPolicy) {
+        this.serializedObjectPolicy = serializedObjectPolicy;
+        if (serializedObjectPolicy != null) {
+            serializedObjectPolicy.setDescriptor(this);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Return if a wrapper policy is used.
      */
     public boolean hasWrapperPolicy() {
@@ -2947,14 +3074,21 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         
         // make sure that parent mappings are initialized?
         if (isChildDescriptor()) {
-            getInheritancePolicy().getParentDescriptor().initialize(session);
-            getCachePolicy().initializeFromParent(getInheritancePolicy().getParentDescriptor().getCachePolicy(), this,
-                    getInheritancePolicy().getParentDescriptor(), session);
+            ClassDescriptor parentDescriptor = getInheritancePolicy().getParentDescriptor(); 
+            parentDescriptor.initialize(session);
+            getCachePolicy().initializeFromParent(parentDescriptor.getCachePolicy(), this,
+                    parentDescriptor, session);
             // Setup this early before useOptimisticLocking is called so that subclass
             // versioned by superclass are also covered
             getInheritancePolicy().initializeOptimisticLocking();
             // EL bug 336486
             getInheritancePolicy().initializeCacheInvalidationPolicy();
+            if (parentDescriptor.hasSerializedObjectPolicy()) {
+                if (!hasSerializedObjectPolicy()) {
+                    // If SerializedObjectPolicy set on parent descriptor then should be set on children, too
+                    setSerializedObjectPolicy(parentDescriptor.getSerializedObjectPolicy().instantiateChild());
+                }
+            }
         }
 
         // Mappings must be sorted before field are collected in the order of the mapping for indexes to work.
@@ -3029,6 +3163,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 if (usesOptimisticLocking()) {
                     getOptimisticLockingPolicy().initializeProperties();
                 }
+            }
+            if (hasSerializedObjectPolicy()) {
+                getSerializedObjectPolicy().initializeField(session);
             }
         }
 
@@ -3129,6 +3266,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         if (hasReturningPolicy()) {
             getReturningPolicy().initialize(session);
+        }
+        if (hasSerializedObjectPolicy()) {
+            getSerializedObjectPolicy().initialize(session);
         }
         getQueryManager().initialize(session);
         getEventManager().initialize(session);
@@ -3687,6 +3827,17 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 getPrimaryKeyFields().set(index, primaryKeyField);
                 primaryKeyField.setPrimaryKey(true);
             }
+        }
+
+        if (hasSerializedObjectPolicy()) {
+            getSerializedObjectPolicy().postInitialize(session);
+            this.selectionFields = (List<DatabaseField>)getFields().clone();
+            this.selectionFields.remove(getSerializedObjectPolicy().getField());
+            this.allSelectionFields = (List<DatabaseField>)getAllFields().clone();
+            this.allSelectionFields.remove(getSerializedObjectPolicy().getField());
+        } else {
+            this.selectionFields = getFields();
+            this.allSelectionFields = getAllFields();
         }
 
         // Index and classify fields and primary key.

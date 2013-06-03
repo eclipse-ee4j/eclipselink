@@ -121,6 +121,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testSetup"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest2"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("executeSameCriteriaQueryWithJoinTwice"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("baseTestCase"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleABSTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleBetweenTest"));
@@ -423,6 +424,20 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         if (!comparer.compareObjects(result, expectedResult)) {
             this.fail("simpleJoinFetchTest Failed when not using cache, collections do not match: " + result + " expected: " + expectedResult);
         }
+    }
+
+    public void executeSameCriteriaQueryWithJoinTwice() {
+        //"SELECT e FROM Employee e LEFT JOIN FETCH e.phoneNumbers"
+
+        EntityManager em = createEntityManager();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> root = cq.from(Employee.class);
+        root.fetch("phoneNumbers", JoinType.LEFT);
+        List result = em.createQuery(cq).getResultList();
+        // This used to throw IndexOutOfBoundsException due to ObjectLevelReadQuery.prepareFromQuery not copying joinAttributes:
+        // in ObjectBuildingQuery.triggerJoinExpressions there were joinExpressionAttributes but not joinAttributes. 
+        result = em.createQuery(cq).getResultList();
     }
 
     //Test case for selecting ALL employees from the database

@@ -590,7 +590,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                     itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
                 } else {
                     if (item.getDescriptor() != null) {
-                        itemOffset += item.getDescriptor().getAllFields().size();
+                        itemOffset += item.getDescriptor().getAllSelectionFields(query).size();
                     } else {
                         ++itemOffset; //only a single attribute can be selected
                     }

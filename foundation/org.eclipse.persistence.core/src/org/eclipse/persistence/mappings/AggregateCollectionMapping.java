@@ -80,6 +80,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
@@ -143,6 +144,14 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     protected static final String pk = "pk";
     protected static final String bulk = "bulk";
 
+    /**
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * references an entity.
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.
+     * Lazily initialized.  
+     */
+    protected Boolean hasNestedIdentityReference;
+    
     /**
      * PUBLIC:
      * Default constructor.
@@ -1151,6 +1160,24 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         getContainerPolicy().compareCollectionsForChange(backupCollection, cloneCollection, changeRecord, session, remoteReferenceDescriptor);
         
         return changeRecord;
+    }
+
+    /**
+     * INTERNAL:
+     * Copies member's value
+     */
+    @Override
+    protected Object copyElement(Object original, CopyGroup group) {
+        if (original == null) {
+            return null;
+        }
+
+        ClassDescriptor descriptor = getReferenceDescriptor(original.getClass(), group.getSession());
+        if (descriptor == null) {
+            return original;
+        }
+
+        return descriptor.getObjectBuilder().copyObject(original, group);
     }
 
     /**
@@ -2704,4 +2731,18 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void setDefaultSourceTable(DatabaseTable table) {
         defaultSourceTable = table;
     }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the mapping (or at least one of its nested mappings, at any nested depth) 
+     * references an entity.
+     * To return true the mapping (or nested mapping) should be ForeignReferenceMapping with non-null and non-aggregate reference descriptor.  
+     */
+    @Override
+    public boolean hasNestedIdentityReference() {
+        if (hasNestedIdentityReference == null) {
+            hasNestedIdentityReference = getReferenceDescriptor().hasNestedIdentityReference(true);
+        }
+        return hasNestedIdentityReference; 
+    }        
 }

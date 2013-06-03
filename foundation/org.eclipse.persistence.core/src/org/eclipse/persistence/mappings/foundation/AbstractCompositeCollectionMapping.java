@@ -618,7 +618,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
                     }
                     Object attributeValue = this.getAttributeValueFromObject(cached);
                     Integer refreshCascade = null;
-                    if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)sourceQuery).shouldRefreshIdentityMapResult()){
+                    if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && sourceQuery.shouldRefreshIdentityMapResult()) {
                         refreshCascade = sourceQuery.getCascadePolicy();
                     }
                     return buildClonePart(cached, null, cacheKey, attributeValue, refreshCascade, executionSession);
@@ -628,6 +628,9 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             }else if (!this.isCacheable && !isTargetProtected && cacheKey != null){
                 return null;
             }
+        }
+        if (row.hasSopObject()) {
+            return getAttributeValueFromObject(row.getSopObject());
         }
         ContainerPolicy cp = this.getContainerPolicy();
 

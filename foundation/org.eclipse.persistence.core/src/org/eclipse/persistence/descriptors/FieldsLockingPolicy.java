@@ -75,8 +75,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      */
     protected List buildAllNonPrimaryKeyFields() {
         List fields = new ArrayList();
-        for (Enumeration enumtr = descriptor.getFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField dbField = (DatabaseField)enumtr.nextElement();
+        for (DatabaseField dbField : descriptor.getSelectionFields()) {
             if (!isPrimaryKey(dbField)) {
                 if (descriptor.hasInheritance()) {
                     DatabaseField classField = descriptor.getInheritancePolicy().getClassIndicatorField();

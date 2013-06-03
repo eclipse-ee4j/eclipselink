@@ -96,6 +96,7 @@ import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.Multitenant;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.ReadOnly;
+import org.eclipse.persistence.annotations.SerializedObject;
 import org.eclipse.persistence.annotations.UuidGenerator;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -130,6 +131,7 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMapping
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sop.SerializedObjectPolicyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredFunctionQueries;
@@ -209,6 +211,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private SequenceGeneratorMetadata m_sequenceGenerator;
     private TableGeneratorMetadata m_tableGenerator;
     private UuidGeneratorMetadata m_uuidGenerator;
+    private SerializedObjectPolicyMetadata m_serializedObjectPolicy;
     
     private String m_existenceChecking;
     private String m_idClassName;
@@ -520,6 +523,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public List<SQLResultSetMappingMetadata> getSqlResultSetMappings() {
         return m_sqlResultSetMappings;
     }
+        
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public SerializedObjectPolicyMetadata getSerializedObjectPolicy() {
+        return m_serializedObjectPolicy;
+    }
     
     /**
      * INTERNAL:
@@ -623,6 +634,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         initXMLObject(m_primaryKey, accessibleObject);
         initXMLObject(m_queryRedirectors, accessibleObject);
         initXMLObject(m_sequenceGenerator, accessibleObject);
+        initXMLObject(m_serializedObjectPolicy, accessibleObject);        
         initXMLObject(m_tableGenerator, accessibleObject);
         initXMLObject(m_uuidGenerator, accessibleObject);
         initXMLObject(m_multitenant, accessibleObject);
@@ -692,6 +704,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_primaryKey = (PrimaryKeyMetadata) mergeORObjects(m_primaryKey, accessor.getPrimaryKey());
         m_queryRedirectors = (QueryRedirectorsMetadata) mergeORObjects(m_queryRedirectors, accessor.getQueryRedirectors());
         m_sequenceGenerator = (SequenceGeneratorMetadata) mergeORObjects(m_sequenceGenerator, accessor.getSequenceGenerator());
+        m_serializedObjectPolicy = (SerializedObjectPolicyMetadata) mergeORObjects(m_serializedObjectPolicy, accessor.getSerializedObjectPolicy());
         m_tableGenerator = (TableGeneratorMetadata) mergeORObjects(m_tableGenerator, accessor.getTableGenerator());
         m_uuidGenerator = (UuidGeneratorMetadata) mergeORObjects(m_uuidGenerator, accessor.getUuidGenerator());
         m_multitenant = (MultitenantMetadata) mergeORObjects(m_multitenant, accessor.getMultitenant());
@@ -767,7 +780,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             
         // Process the sequence generator metadata.
         processSequenceGenerator();
-                    
+                            
+        // Process serialized object policy metadata
+        processSerializedObjectPolicy();
+        
         // Process the id class metadata.
         processIdClass();
         
@@ -1513,6 +1529,24 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     
     /**
      * INTERNAL:
+     * Process a SerializedObjectPolicyMetadata. 
+     */
+    protected void processSerializedObjectPolicy() {
+        if (m_serializedObjectPolicy == null) {
+            if (isAnnotationPresent(SerializedObject.class)) {
+                new SerializedObjectPolicyMetadata(getAnnotation(SerializedObject.class), this).process(getDescriptor());
+            }
+        } else {
+            if (isAnnotationPresent(SerializedObject.class)) {
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(SerializedObject.class), getJavaClassName(), getLocation());
+            }
+            
+            m_serializedObjectPolicy.process(getDescriptor());
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Process the sql result set mappings for the given class which could be 
      * an entity or a mapped superclass.
      */
@@ -1803,6 +1837,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator) {
         m_sequenceGenerator = sequenceGenerator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setSerializedObjectPolicy(SerializedObjectPolicyMetadata serializedObjectPolicy) {
+        m_serializedObjectPolicy = serializedObjectPolicy;
     }
     
     /**

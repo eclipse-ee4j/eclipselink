@@ -192,8 +192,9 @@ public class ReportQueryResult implements Serializable, Map {
                 }
             } else if (descriptor != null) {
                 // Item is for an object result.
-                if ((itemIndex + descriptor.getAllFields().size()) > rowSize) {
-                    throw QueryException.reportQueryResultSizeMismatch(itemIndex + descriptor.getAllFields().size(), rowSize);
+                int size = descriptor.getAllSelectionFields(query).size();
+                if (itemIndex + size > rowSize) {
+                    throw QueryException.reportQueryResultSizeMismatch(itemIndex + size, rowSize);
                 }
                 AbstractRecord subRow = row;
                 // Check if at the start of the row, then avoid building a subRow.

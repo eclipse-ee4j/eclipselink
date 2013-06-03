@@ -465,6 +465,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 writeQuery.setPrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, session));
             }
             addWriteLockFieldForInsert();
+            if (descriptor.hasSerializedObjectPolicy()) {
+                descriptor.getSerializedObjectPolicy().putObjectIntoRow(modifyRow, object, session);
+            }
 
             // CR#3237
             // Store the size of the modify row so we can determine if the user has added to the row in the insert.
@@ -923,6 +926,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                     ((VersionLockingPolicy)policy).writeLockValueIntoRow(writeQuery, object);
                 }
             }
+            if (descriptor.hasSerializedObjectPolicy()) {
+                descriptor.getSerializedObjectPolicy().putObjectIntoRow(getModifyRow(), object, session);
+            }
 
             // PERF: Avoid events if no listeners.
             if (eventManager.hasAnyEventListeners()) {
@@ -1042,6 +1048,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                     // Add the existing write lock value to the for a "read" lock (requires something to update).
                     ((VersionLockingPolicy)lockingPolicy).writeLockValueIntoRow(writeQuery, object);
                 }
+            }
+            if (descriptor.hasSerializedObjectPolicy()) {
+                descriptor.getSerializedObjectPolicy().putObjectIntoRow(getModifyRow(), object, session);
             }
 
             // PERF: Avoid events if no listeners.
