@@ -206,7 +206,8 @@ public class DOMReader extends XMLReaderAdapter {
             if(attrPrefix != null && attrPrefix.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                 contentHandler.startPrefixMapping(next.getLocalName(), next.getValue());
                 // Handle XMLNS prefixed attributes
-                handleXMLNSPrefixedAttribute(elem, next);
+                handleNewNamespaceDeclaration(elem, next.getLocalName(), next.getValue());
+
             } else if(attrPrefix == null) {
                 String name = next.getLocalName();
                 if(name == null) {
@@ -214,6 +215,7 @@ public class DOMReader extends XMLReaderAdapter {
                 }
                 if(name != null && name.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                     contentHandler.startPrefixMapping(Constants.EMPTY_STRING, next.getValue());
+                    handleNewNamespaceDeclaration(elem, Constants.EMPTY_STRING, next.getValue());
                 }
             }
             if(next.getNamespaceURI() != null && next.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI) && next.getLocalName().equals("type")) {
@@ -254,17 +256,10 @@ public class DOMReader extends XMLReaderAdapter {
         }
     }
 
-    /**
-     * Handle XMLNS prefixed attribute.
-     * 
-     * @param prefix
-     * @param localName
-     * @param value
-     */
-    protected void handleXMLNSPrefixedAttribute(Element elem, Attr attr) {
+    protected void handleNewNamespaceDeclaration(Element elem, String emptyString, String value) {
         // DO NOTHING
     }
-    
+
     protected void handleXsiTypeAttribute(Attr attr) throws SAXException {
         
     }

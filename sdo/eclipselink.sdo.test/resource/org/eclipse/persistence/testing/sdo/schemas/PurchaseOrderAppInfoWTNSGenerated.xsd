@@ -6,13 +6,13 @@
          <xsd:element name="item" type="Item" minOccurs="0" maxOccurs="unbounded">
             <xsd:annotation>
                <xsd:appinfo source="itemTest">
-                  <someTag>blah blah itemTest</someTag>
+                  <someTag xmlns="theTNS">blah blah itemTest</someTag>
                </xsd:appinfo>
                <xsd:appinfo source="itemTest2">
-                  <someTag>blah blah itemTest2</someTag>
+                  <someTag xmlns="theTNS">blah blah itemTest2</someTag>
                </xsd:appinfo>
                <xsd:appinfo source="itemTest">
-                  <anotherTag>blah blah itemTest</anotherTag>
+                  <anotherTag xmlns="theTNS">blah blah itemTest</anotherTag>
                </xsd:appinfo>
             </xsd:annotation>
          </xsd:element>
@@ -31,13 +31,13 @@
       <xsd:attribute name="street" type="xsd:string">
          <xsd:annotation>
             <xsd:appinfo source="streetTest">
-               <someTag>blah blah streetTest</someTag>
+               <someTag xmlns="theTNS">blah blah streetTest</someTag>
             </xsd:appinfo>
             <xsd:appinfo source="streetTest2">
-               <someTag>blah blah streetTest2</someTag>
+               <someTag xmlns="theTNS">blah blah streetTest2</someTag>
             </xsd:appinfo>
             <xsd:appinfo source="streetTest">
-               <anotherTag>blah blah streetTest</anotherTag>
+               <anotherTag xmlns="theTNS">blah blah streetTest</anotherTag>
             </xsd:appinfo>
          </xsd:annotation>
       </xsd:attribute>
@@ -46,13 +46,13 @@
       <xsd:attribute name="zip" type="xsd:decimal">
          <xsd:annotation>
             <xsd:appinfo>
-               <someTag>zipTest no source</someTag>
+               <someTag xmlns="theTNS">zipTest no source</someTag>
             </xsd:appinfo>
             <xsd:appinfo source="zipSource">
-               <someTag>zipTest with source</someTag>
+               <someTag xmlns="theTNS">zipTest with source</someTag>
             </xsd:appinfo>
             <xsd:appinfo>
-               <someTag>zipTest no source2</someTag>
+               <someTag xmlns="theTNS">zipTest no source2</someTag>
             </xsd:appinfo>
          </xsd:annotation>
       </xsd:attribute>
