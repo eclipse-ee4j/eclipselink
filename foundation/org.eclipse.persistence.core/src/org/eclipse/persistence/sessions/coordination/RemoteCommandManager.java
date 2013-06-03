@@ -17,11 +17,14 @@ import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.RCMCommand;
 import org.eclipse.persistence.internal.sessions.coordination.CommandPropagator;
 import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.internal.sessions.coordination.*;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import java.net.InetAddress;
@@ -94,6 +97,9 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     /** Uniquely identifies ServerPlatform in the cluster */
     protected ServerPlatform serverPlatform;
     
+    /** Set the Serializer to use for serialization of commands. */
+    protected Serializer serializer;
+    
     //** Indicates whether RCM is active. In case there's discoveryManager it mirrors discoveryManager.isDiscoveryStopped()
     protected boolean isStopped = true;
 
@@ -109,6 +115,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         this.discoveryManager = this.transportManager.createDiscoveryManager();
         this.serviceId.setChannel(DEFAULT_CHANNEL);
         this.isAsynchronous = DEFAULT_ASYNCHRONOUS_MODE;
+        this.serializer = new JavaSerializer();
 
         // Set the command processor to point back to this command manager
         commandProcessor.setCommandManager(this);
@@ -146,6 +153,11 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
             this.discoveryManager.startDiscovery();
         } else {
             this.transportManager.createConnections();
+        }
+
+        Serializer serializer = getSerializer();
+        if (serializer != null) {
+            serializer.initialize(UnitOfWorkChangeSet.class, null, (AbstractSession)getCommandProcessor());
         }
     }
 
@@ -192,36 +204,69 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         Command newCommand;
         CommandPropagator propagator;
 
-        if (commandConverter != null) {
-            // Use the converter if we have one
-            Object[] args = { command };
-            logDebug("converting_to_toplink_command", args);
-            //for dms profiling
-            if (isCommandProcessorASession()) {
-                getCommandProcessor().processCommand(new ProfileMessageSentCommand());
+        this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordination);
+        try {
+            if (this.commandConverter != null) {
+                // Use the converter if we have one
+                Object[] args = { command };
+                logDebug("converting_to_toplink_command", args);
+                this.commandProcessor.incrementProfile(SessionProfiler.RcmSent);
+                newCommand = this.commandConverter.convertToEclipseLinkCommand(command);
+            } else if (command instanceof Command) {
+                // If converter is not set then maybe it just doesn't need converting
+                newCommand = (Command)command;
+            } else {
+                // We can't convert the thing - we may as well chuck it!
+                Object[] args = { command };
+                logWarning("missing_converter", args);
+                return;
             }
-            newCommand = commandConverter.convertToEclipseLinkCommand(command);
-        } else if (command instanceof Command) {
-            // If converter is not set then maybe it just doesn't need converting
-            newCommand = (Command)command;
-        } else {
-            // We can't convert the thing - we may as well chuck it!
-            Object[] args = { command };
-            logWarning("missing_converter", args);
-            return;
+    
+            // Set our service id on the command to indicate that it came from us
+            newCommand.setServiceId(getServiceId());
+    
+            // PERF: Support plugable serialization.
+            Serializer serializer = getSerializer();
+            byte[] commandBytes = null;
+            if (serializer != null) {
+                this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordinationSerialize);
+                try {
+                    commandBytes = (byte[])serializer.serialize(command, (AbstractSession)getCommandProcessor());
+                } finally {
+                    this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);            
+                }
+            }
+    
+            // Propagate the command (synchronously or asynchronously)
+            propagator = new CommandPropagator(this, newCommand, commandBytes);
+    
+            if (shouldPropagateAsynchronously()) {
+                propagator.asynchronousPropagateCommand();
+            } else {
+                propagator.synchronousPropagateCommand();
+            }
+        } finally {
+            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordination);            
         }
+    }
 
-        // Set our service id on the command to indicate that it came from us
-        newCommand.setServiceId(getServiceId());
-
-        // Propagate the command (synchronously or asynchronously)
-        propagator = new CommandPropagator(this, newCommand);
-
-        if (shouldPropagateAsynchronously()) {
-            propagator.asynchronousPropagateCommand();
-        } else {
-            propagator.synchronousPropagateCommand();
+    /**
+     * INTERNAL:
+     * Deserialize the command and execute it.
+     */
+    public void processCommandFromRemoteConnection(byte[] commandBytes) {
+        this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordinationSerialize);
+        Command command = null;
+        try {
+            Serializer serializer = getSerializer();
+            if (serializer == null) {
+                serializer = new JavaSerializer();
+            }
+            command = (Command)serializer.deserialize(commandBytes, (AbstractSession)getCommandProcessor());
+        } finally {
+            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);            
         }
+        processCommandFromRemoteConnection(command);
     }
 
     /**
@@ -231,31 +276,31 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     public void processCommandFromRemoteConnection(Command command) {
         Object[] args = { command.getClass().getName(), command.getServiceId() };
         logDebug("received_remote_command", args);
-        //for dms profiling
-        if (isCommandProcessorASession()) {
-            getCommandProcessor().processCommand(new ProfileMessageReceiveCommand());
+        
+        this.commandProcessor.incrementProfile(SessionProfiler.RcmReceived);
+        this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordination);
+        try {
+            // If the command is internal then execute it on this RCM
+            if (command.isInternalCommand() || command instanceof RCMCommand) {
+                logDebug("processing_internal_command", args);
+                ((RCMCommand)command).executeWithRCM(this);
+                return;
+            }
+    
+            // Convert command if neccessary
+            Object newCommand = command;
+            if (commandConverter != null) {
+                logDebug("converting_to_user_command", args);
+                newCommand = commandConverter.convertToUserCommand(command);
+            }
+    
+            // process command with command processor
+            logDebug("processing_remote_command", args);
+            this.commandProcessor.processCommand(newCommand);
+        } finally {
+            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordination);            
         }
-
-        // If the command is internal then execute it on this RCM
-        if (command.isInternalCommand() || command instanceof RCMCommand) {
-            logDebug("processing_internal_command", args);
-            ((RCMCommand)command).executeWithRCM(this);
-            return;
-        }
-
-        // Convert command if neccessary
-        Object newCommand = command;
-        if (commandConverter != null) {
-            logDebug("converting_to_user_command", args);
-            newCommand = commandConverter.convertToUserCommand(command);
-        }
-
-        // process command with command processor
-        logDebug("processing_remote_command", args);
-        commandProcessor.processCommand(newCommand);
-        if (isCommandProcessorASession()) {
-            getCommandProcessor().processCommand(new ProfileRemoteChangeSetCommand());
-        }
+        this.commandProcessor.incrementProfile(SessionProfiler.RemoteChangeSet);
     }
 
     public CommandProcessor getCommandProcessor() {
@@ -275,6 +320,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
 
     public void setTransportManager(TransportManager newTransportManager) {
         transportManager = newTransportManager;
+        newTransportManager.setRemoteCommandManager(this);
         discoveryManager = transportManager.createDiscoveryManager();
     }
 
@@ -520,5 +566,21 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
      */
     public void setServerPlatform(ServerPlatform theServerPlatform) {
         this.serverPlatform = theServerPlatform;
+    }
+
+    /**
+     * PUBLIC:
+     * Return the Serializer to use for serialization of commands.
+     */
+    public Serializer getSerializer() {
+        return serializer;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the Serializer to use for serialization of commands.
+     */
+    public void setSerializer(Serializer serializer) {
+        this.serializer = serializer;
     }
 }

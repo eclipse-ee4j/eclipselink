@@ -21,13 +21,16 @@ import java.lang.reflect.Method;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.serializers.AbstractSerializer;
 
 /**
  * Uses Kryo to serialize the object.
  * @author James Sutherland
  */
-public class KryoSerializer implements Serializer {
-    Object kryo;
+public class KryoSerializer extends AbstractSerializer {
+    /** Kryo is not thread safe, so need thread local. */
+    ThreadLocal kryo;
+    Constructor kryoConstructor;
     Constructor outputConstructor;
     Constructor inputConstructor;
     Method writeMethod;
@@ -38,7 +41,7 @@ public class KryoSerializer implements Serializer {
     public KryoSerializer() {
         try {
             Class kryoClass = Class.forName("com.esotericsoftware.kryo.Kryo");
-            this.kryo = kryoClass.newInstance();
+            this.kryoConstructor = kryoClass.getConstructor();
             Class inputClass = Class.forName("com.esotericsoftware.kryo.io.Input");
             this.inputConstructor = inputClass.getConstructor(InputStream.class);
             Class outputClass = Class.forName("com.esotericsoftware.kryo.io.Output");
@@ -47,16 +50,34 @@ public class KryoSerializer implements Serializer {
             this.readMethod = kryoClass.getMethod("readClassAndObject", inputClass);
             this.inputCloseMethod = inputClass.getMethod("close");
             this.outputCloseMethod = outputClass.getMethod("close");
+            this.kryo = new ThreadLocal();
         } catch (Exception exception) {
             throw ValidationException.reflectiveExceptionWhileCreatingClassInstance("com.esotericsoftware.kryo.Kryo", exception);
         }
     }
     
-    public byte[] serialize(Object object, Session session) {
+    public Class getType() {
+        return byte[].class;
+    }
+    
+    public Object getKryo() {
+        Object value = this.kryo.get();
+        if (value == null) {
+            try {
+                value = this.kryoConstructor.newInstance();
+                this.kryo.set(value);
+            } catch (Exception exception) {
+                throw ValidationException.reflectiveExceptionWhileCreatingClassInstance("com.esotericsoftware.kryo.Kryo", exception);
+            }
+        }
+        return value;
+    }
+    
+    public Object serialize(Object object, Session session) {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             Object output = this.outputConstructor.newInstance(stream);
-            this.writeMethod.invoke(this.kryo, output, object);
+            this.writeMethod.invoke(getKryo(), output, object);
             this.outputCloseMethod.invoke(output);
             return stream.toByteArray();
         } catch (Exception exception) {
@@ -64,11 +85,11 @@ public class KryoSerializer implements Serializer {
         }
     }
     
-    public Object deserialize(byte[] bytes, Session session) {
+    public Object deserialize(Object bytes, Session session) {
         try {
-            ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
+            ByteArrayInputStream stream = new ByteArrayInputStream((byte[])bytes);
             Object input = this.inputConstructor.newInstance(stream);
-            Object result = this.readMethod.invoke(this.kryo, input);
+            Object result = this.readMethod.invoke(getKryo(), input);
             this.inputCloseMethod.invoke(input);
             return result;
         } catch (Exception exception) {

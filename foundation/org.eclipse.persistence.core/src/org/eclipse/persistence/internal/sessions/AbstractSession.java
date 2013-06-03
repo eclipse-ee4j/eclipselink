@@ -350,9 +350,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * Return the Serializer to use by default for serialization.
      */
     public Serializer getSerializer() {
-        if ((this.serializer == null) && (getParent() != null)) {
-            return getParent().getSerializer();
-        }
         return serializer;
     }
 

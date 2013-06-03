@@ -13,8 +13,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.coordination.jms;
 
-import java.util.Hashtable;
+import java.util.Map;
+
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.jms.JMSTopicRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 
@@ -60,8 +62,8 @@ public class JMSTopicTransportManager extends JMSPublishingTransportManager {
      * attempts to create local connection in a separate thread.
      * Returns clone of the original map.
      */
-    public Hashtable getConnectionsToExternalServicesForCommandPropagation() {
-        if(this.localConnection == null && !this.rcm.isStopped()) {
+    public Map<String, RemoteConnection> getConnectionsToExternalServicesForCommandPropagation() {
+        if (this.localConnection == null && !this.rcm.isStopped()) {
             // It's a good time to create localConnection,
             // in a new thread - to return externalConnections promptly.
             this.rcm.getServerPlatform().launchContainerRunnable(new Runnable() {

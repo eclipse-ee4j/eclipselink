@@ -63,8 +63,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /** Contains optimisticReadLockObject corresponding to the clone, non-null indicates forced changes **/
     protected Boolean shouldModifyVersionField;
     /** For CMP only: indicates that the object should be force updated (whether it has OptimisticLocking or not): getCmpPolicy().getForcedUpdate()==true**/
-    protected boolean hasCmpPolicyForcedUpdate;
-    protected boolean hasChangesFromCascadeLocking;
+    protected transient boolean hasCmpPolicyForcedUpdate;
+    protected transient boolean hasChangesFromCascadeLocking;
     
     /**
      * This is used during attribute level change tracking when a particular
@@ -86,7 +86,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     protected transient ClassDescriptor descriptor;
     
     /** return whether this change set should be recalculated after an event changes the object */
-    protected boolean shouldRecalculateAfterUpdateEvent = true;
+    protected transient boolean shouldRecalculateAfterUpdateEvent = true;
     
     //This controls how long the thread can wait for other thread to put Entity instance in cache
     //This is not final to allow a way for the value to be changed without supporting API
@@ -1046,6 +1046,18 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Helper method to readObject.  Completely write this ObjectChangeSet to the stream
      */
     public void writeCompleteChangeSet(java.io.ObjectOutputStream stream) throws java.io.IOException {
+        ensureChanges();
+        writeIdentityInformation(stream);
+        stream.writeObject(this.changes);
+        stream.writeObject(this.oldKey);
+        stream.writeObject(this.newKey);
+    }
+
+    /**
+     * INTERNAL:
+     * Ensure the change set is populated for cache coordination.
+     */
+    public void ensureChanges() {
         if (this.isNew && ((this.changes == null) || this.changes.isEmpty())) {
             AbstractSession unitOfWork = this.unitOfWorkChangeSet.getSession();
             // Full change set is only required for cache coordination, not remote.
@@ -1060,17 +1072,13 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                     int mappingsSize = mappings.size();
                     for (int index = 0; index < mappingsSize; index++) {
                         DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                        if(fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
+                        if (fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                             addChange(mapping.compareForChange(this.cloneObject, this.cloneObject, this, unitOfWork));
                         }
                     }
                 }
             }
         }
-        writeIdentityInformation(stream);
-        stream.writeObject(this.changes);
-        stream.writeObject(this.oldKey);
-        stream.writeObject(this.newKey);
     }
 
     /**
@@ -1259,6 +1267,26 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      */
     public void setShouldRecalculateAfterUpdateEvent(boolean shouldRecalculateAfterUpdateEvent) {
         this.shouldRecalculateAfterUpdateEvent = shouldRecalculateAfterUpdateEvent;
+    }
+
+    public boolean hasVersionChange() {
+        return hasVersionChange;
+    }
+
+    public void setHasVersionChange(boolean hasVersionChange) {
+        this.hasVersionChange = hasVersionChange;
+    }
+
+    public int getCacheSynchronizationType() {
+        return cacheSynchronizationType;
+    }
+
+    public void setCacheSynchronizationType(int cacheSynchronizationType) {
+        this.cacheSynchronizationType = cacheSynchronizationType;
+    }
+
+    public void setIsInvalid(boolean isInvalid) {
+        this.isInvalid = isInvalid;
     }
 
 }

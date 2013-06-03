@@ -323,6 +323,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.exceptionHandler = parent.exceptionHandler;
         this.pessimisticLockTimeoutDefault = parent.pessimisticLockTimeoutDefault;
         this.queryTimeoutDefault = parent.queryTimeoutDefault;
+        this.serializer = parent.serializer;
         this.isConcurrent = parent.isConcurrent();
         // Initialize the readOnlyClasses variable.
         this.setReadOnlyClasses(parent.copyReadOnlyClasses());
@@ -3321,16 +3322,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     if (hasObjectsDeletedDuringCommit()) {
                         uowChangeSet.addDeletedObjects(getObjectsDeletedDuringCommit(), this);
                     }
-                    boolean hasData = false;
                     if (uowChangeSet.hasChanges()) {
+                        UnitOfWorkChangeSet remoteChangeSet = uowChangeSet.buildCacheCoordinationMergeChangeSet(this);
+                        if (remoteChangeSet != null) {
                             MergeChangeSetCommand command = new MergeChangeSetCommand();
-                        command.setChangeSet(uowChangeSet);
-                        try {
-                            hasData = command.convertChangeSetToByteArray(this);
-                        } catch (java.io.IOException exception) {
-                            throw CommunicationException.unableToPropagateChanges("", exception);
-                        }
-                        if (hasData) {
+                            command.setChangeSet(remoteChangeSet);
                             this.parent.getCommandManager().propagateCommand(command);
                         }
                     }

@@ -22,6 +22,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -1009,4 +1010,14 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
      */
     public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy);
+    
+    /**
+     * Return the Serializer to use by default for serialization.
+     */
+    public Serializer getSerializer();
+
+    /**
+     * Set the Serializer to use by default for serialization.
+     */
+    public void setSerializer(Serializer serializer);
 }

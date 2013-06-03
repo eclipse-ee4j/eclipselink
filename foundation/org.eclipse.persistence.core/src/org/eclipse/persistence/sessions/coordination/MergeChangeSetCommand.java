@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.coordination;
 
-import org.eclipse.persistence.exceptions.CommunicationException;
 import org.eclipse.persistence.internal.sessions.*;
 
 /**
@@ -30,23 +29,13 @@ import org.eclipse.persistence.internal.sessions.*;
 public class MergeChangeSetCommand extends Command {
 
     /** The changes to be applied remotely */
-    protected transient UnitOfWorkChangeSet changeSet;
-    protected byte[] changeSetBytes;
+    protected UnitOfWorkChangeSet changeSet;
 
     /**
      * INTERNAL:
      * Return the changes to be applied
      */
     public UnitOfWorkChangeSet getChangeSet(AbstractSession session) {
-        if ((changeSet == null) && (changeSetBytes != null)) {
-            try {
-                changeSet = new UnitOfWorkChangeSet(changeSetBytes, session);
-            } catch (java.io.IOException exception) {
-                throw CommunicationException.unableToPropagateChanges(getServiceId().toString(), exception);
-            } catch (ClassNotFoundException exception) {
-                throw CommunicationException.unableToPropagateChanges(getServiceId().toString(), exception);
-            }
-        }
         return changeSet;
     }
 
@@ -56,16 +45,6 @@ public class MergeChangeSetCommand extends Command {
      */
     public void setChangeSet(UnitOfWorkChangeSet newChangeSet) {
         changeSet = newChangeSet;
-    }
-
-    /**
-     * INTERNAL:
-     * Custom serialize this change set by converting it to a byte array.
-     * @return false if converted byte array is null.  Otherwise, return true.
-     */
-    public boolean convertChangeSetToByteArray(AbstractSession session) throws java.io.IOException {
-        changeSetBytes = changeSet.getByteArrayRepresentation(session);
-        return changeSetBytes != null;
     }
 
     /**

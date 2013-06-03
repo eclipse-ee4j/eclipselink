@@ -64,6 +64,8 @@ public interface SessionProfiler {
     public static final String DistributedMerge = "Timer:DistributedMerge";
     public static final String AssignSequence = "Timer:Sequencing";
     public static final String Caching = "Timer:Caching";
+    public static final String CacheCoordinationSerialize = "Timer:CacheCoordinationSerialize";
+    public static final String CacheCoordination = "Timer:CacheCoordination";
     public static final String ConnectionManagement = "Timer:ConnectionManagement";
     public static final String Logging = "Timer:Logging";
     public static final String JtsBeforeCompletion = "Timer:TXBeforeCompletion";

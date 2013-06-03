@@ -65,7 +65,7 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
      * This method is used only by external (publishing) connection.
      */
     public Object executeCommand(Command command) throws CommunicationException {
-        if(isActive()) {
+        if (isActive()) {
             try {
                 return executeCommandInternal(command);
             } catch (Exception exception) {
@@ -84,13 +84,39 @@ public abstract class BroadcastRemoteConnection extends RemoteConnection {
             return null;
         }
     }
+
+    /**
+     * INTERNAL:
+     * Publish the remote command. The result of execution is returned.
+     * This method is used only by external (publishing) connection.
+     */
+    public Object executeCommand(byte[] command) throws CommunicationException {
+        if (isActive()) {
+            try {
+                return executeCommandInternal(command);
+            } catch (Exception exception) {
+                // Note that there is no need to removeConnection here - it's removed by the calling method:
+                // org.eclipse.persistence.internal.sessions.coordination.CommandPropagator.propagateCommand.
+                // This method catches CommunicationException and processes it in handleCommunicationException method.
+                // The latter method, in case shouldRemoveConnectionOnError==true, removes the connection;
+                // otherwise it wraps the CommunicationException into RemoteCommandManagerException
+                // (with errorCode RemoteCommandManagerException.ERROR_PROPAGATING_COMMAND)
+                // and gives the use a chance to handle it - this is an opportunity for the user to
+                // stop remote command processing.
+                throw CommunicationException.errorSendingMessage(getServiceId().getId(), exception);
+            }
+        } else {
+            rcm.logWarning("broadcast_ignored_command_while_closing_connection", getInfo());
+            return null;
+        }
+    }    
     
     /**
      * INTERNAL:
      * Publish the remote command. The result of execution is returned.
      * This method is used only by external (publishing) connection.
      */
-    protected abstract Object executeCommandInternal(Command command) throws Exception;
+    protected abstract Object executeCommandInternal(Object command) throws Exception;
     
     /**
      * INTERNAL:

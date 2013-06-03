@@ -166,6 +166,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
@@ -219,6 +220,7 @@ import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.sessions.remote.rmi.RMIConnection;
 import org.eclipse.persistence.sessions.remote.rmi.RMIServerSessionManager;
 import org.eclipse.persistence.sessions.remote.rmi.RMIServerSessionManagerDispatcher;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ExternalConnectionPool;
@@ -675,6 +677,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         } else {
                             try {
                                 updateTunerDeploy(deployProperties, classLoaderToUse);
+                                updateFreeMemory(deployProperties);
                                 if (this.isSessionLoadedFromSessionsXML) {
                                     getDatabaseSession().login();
                                 } else {
@@ -2089,6 +2092,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     Class transportClass = findClassForProperty(protocol, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
                     rcm.setTransportManager((TransportManager)transportClass.newInstance());
                 }
+                String serializer = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_SERIALIZER, m, this.session);
+                if (serializer != null) {
+                    property = PersistenceUnitProperties.COORDINATION_SERIALIZER;
+                    value = serializer;
+                    Class transportClass = findClassForProperty(serializer, PersistenceUnitProperties.COORDINATION_SERIALIZER, loader);
+                    rcm.setSerializer((Serializer)transportClass.newInstance());
+                }
+                
                 String naming = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_NAMING_SERVICE, m, this.session);
                 if (naming != null) {
                     if (naming.equalsIgnoreCase("jndi")) {
@@ -2995,6 +3006,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected void updateTunerPostDeploy(Map m, ClassLoader loader) {
         if (getDatabaseSession().getTuner() != null) {
             getDatabaseSession().getTuner().tunePostDeploy(getDatabaseSession());
+        }
+    }
+
+    /**
+     * Allow the deployment metadata to be freed post-deploy to conserve memory.
+     */
+    protected void updateFreeMemory(Map m) {
+        String freeMemory = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.FREE_METADATA, m, session);
+        if (freeMemory != null) {
+           if (freeMemory.equalsIgnoreCase("true")) {
+               XMLEntityMappingsReader.clear();
+           } else if (freeMemory.equalsIgnoreCase("false")) {
+               // default.
+           } else {
+               session.handleException(ValidationException.invalidBooleanValueForProperty(freeMemory, PersistenceUnitProperties.FREE_METADATA));
+           }
         }
     }
 

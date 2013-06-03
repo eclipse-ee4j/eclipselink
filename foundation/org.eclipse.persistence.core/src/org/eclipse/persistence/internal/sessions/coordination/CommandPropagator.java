@@ -12,10 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.coordination;
 
+import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.*;
 import org.eclipse.persistence.exceptions.*;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,6 +37,9 @@ public class CommandPropagator implements Runnable {
 
     /** The command to send */
     protected Command command;
+    
+    /** The command to send */
+    protected byte[] commandBytes;
 
     /** Connection to send to */
     protected RemoteConnection connection;
@@ -43,17 +47,18 @@ public class CommandPropagator implements Runnable {
     /**
      * Constructor used to create the main propagator
      */
-    public CommandPropagator(RemoteCommandManager rcm, Command command) {
+    public CommandPropagator(RemoteCommandManager rcm, Command command, byte[] commandBytes) {
         super();
         this.rcm = rcm;
         this.command = command;
+        this.commandBytes = commandBytes;
     }
 
     /**
      * Constructor used to create the async propagator threads
      */
-    public CommandPropagator(RemoteCommandManager rcm, Command command, RemoteConnection connection) {
-        this(rcm, command);
+    public CommandPropagator(RemoteCommandManager rcm, Command command, byte[] commandBytes, RemoteConnection connection) {
+        this(rcm, command, commandBytes);
         this.connection = connection;
     }
 
@@ -79,10 +84,10 @@ public class CommandPropagator implements Runnable {
      */
     public void synchronousPropagateCommand() {
         rcm.logDebug("sync_propagation", (Object[])null);
-        Enumeration connections = rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation().elements();
+        Iterator connections = rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation().values().iterator();
 
-        while (connections.hasMoreElements()) {
-            connection = (RemoteConnection)connections.nextElement();
+        while (connections.hasNext()) {
+            connection = (RemoteConnection)connections.next();
             this.propagateCommand(connection);
         }
     }
@@ -101,20 +106,26 @@ public class CommandPropagator implements Runnable {
      * INTERNAL:
      * Propagate the command to the specified connection.
      */
-    public void propagateCommand(RemoteConnection conn) {
-        Object[] arguments = { command.getClass().getName(), conn.getServiceId() };
+    public void propagateCommand(RemoteConnection connection) {
+        Object[] arguments = { command.getClass().getName(), connection.getServiceId() };
         rcm.logDebug("propagate_command_to", arguments);
 
         try {
             // The result will be null on success, and an exception string on failure
-            Object result = conn.executeCommand(command);
+            Object result = null;
+            // PERF: Support plugable serialization.
+            if (this.commandBytes != null) {
+                result = connection.executeCommand(this.commandBytes);
+            } else {
+                result = connection.executeCommand(this.command);
+            }
             if (result != null) {
                 // An error occurred executing the remote command
-                handleExceptionFromRemoteExecution(conn, (String)result);
+                handleExceptionFromRemoteExecution(connection, (String)result);
             }
         } catch (CommunicationException comEx) {
             // We got a comms exception.
-            this.handleCommunicationException(conn, comEx);
+            this.handleCommunicationException(connection, comEx);
         }
     }
 
@@ -174,22 +185,27 @@ public class CommandPropagator implements Runnable {
      */
     public void run() {
         // If the connection is set then we are an async connection thread
-        if (connection != null) {
-            propagateCommand(connection);
+        if (this.connection != null) {
+            this.rcm.getCommandProcessor().startOperationProfile(SessionProfiler.CacheCoordination);
+            try {
+                propagateCommand(this.connection);
+            } finally {
+                this.rcm.getCommandProcessor().endOperationProfile(SessionProfiler.CacheCoordination);                
+            }
         } else {
-            Hashtable mapConnections = rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation();
-            Enumeration enumConnections = mapConnections.elements();
-            if(mapConnections.size() == 1) {
+            Map mapConnections = this.rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation();
+            Iterator iterator = mapConnections.values().iterator();
+            if (mapConnections.size() == 1) {
                 // There is only one connection - no need for yet another thread.
                 // Set the connection into the current one
                 // so that it's recognized as async propagation in handleCommunicationException method.
-                this.connection = (RemoteConnection)enumConnections.nextElement();
-                propagateCommand(connection);
+                this.connection = (RemoteConnection)iterator.next();
+                propagateCommand(this.connection);
             } else {
                 // This is the top level thread. We need to spawn off a bunch of async connection threads
-                while (enumConnections.hasMoreElements()) {
-                    RemoteConnection conn = (RemoteConnection)enumConnections.nextElement();
-                    CommandPropagator propagator = new CommandPropagator(rcm, command, conn);
+                while (iterator.hasNext()) {
+                    RemoteConnection remoteConnection = (RemoteConnection)iterator.next();
+                    CommandPropagator propagator = new CommandPropagator(this.rcm, this.command, this.commandBytes, remoteConnection);
                     this.rcm.getServerPlatform().launchContainerRunnable(propagator);
                 }
             }

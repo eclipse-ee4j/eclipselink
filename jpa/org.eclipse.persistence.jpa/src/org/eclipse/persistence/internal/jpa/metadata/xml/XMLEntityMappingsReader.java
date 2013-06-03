@@ -231,6 +231,22 @@ public class XMLEntityMappingsReader {
     }
     
     /**
+     * Free the project and schema objects to avoid holding onto the memory.
+     * This can be done post-deployment to conserve memory.
+     */
+    public static void clear() {
+        m_orm1_0Project = null;
+        m_orm2_0Project = null;
+        m_orm2_1Project = null;
+        m_eclipseLinkOrmProject = null;
+        
+        m_orm1_0Schema = null;
+        m_orm2_0Schema = null;
+        m_orm2_1Schema = null;
+        m_eclipseLinkOrmSchema = null;
+    }
+    
+    /**
      * INTERNAL:
      * Return whether the schema validation flag in the Persistence Unit 
      * eclipselink.orm.validate.schema is set to true or false.<br>

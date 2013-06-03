@@ -786,11 +786,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
                 changeSet.getAllChangeSets().put(objectChangeSet, objectChangeSet);
                 MergeChangeSetCommand command = new MergeChangeSetCommand();
                 command.setChangeSet(changeSet);
-                try {
-                    command.convertChangeSetToByteArray(getSession());
-                } catch (java.io.IOException exception) {
-                    throw CommunicationException.unableToPropagateChanges(command.getServiceId().getId(), exception);
-                }
                 rcm.propagateCommand(command);
             }
         }

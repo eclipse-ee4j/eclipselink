@@ -59,6 +59,7 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 import org.eclipse.persistence.tools.tuning.SafeModeTuner;
@@ -2396,6 +2397,20 @@ public class PersistenceUnitProperties {
     public static final String TUNING = "eclipselink.tuning";
 
     /**
+     * The <code>"eclipselink.memory.free-metadata"</code>property configures the JPA
+     * internal deployment metadata to be released after deployment.
+     * This conserves memory, as the metadata is no longer required, but make
+     * future deployments of any other application take longer, as the metadata must be re-allocated.
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"true"
+     * <li>"false" (DEFAULT)
+     * </ul>
+     */
+    public static final String FREE_METADATA = "eclipselink.memory.free-metadata";
+    
+    /**
      * The <code>"eclipselink.transaction.join-existing"</code> property Set to
      * "true" this property forces persistence context to read through
      * JTA-managed ("write") connection in case there is an active
@@ -2781,10 +2796,24 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_THREAD_POOL_SIZE = "eclipselink.cache.coordination.thread.pool.size";
     
     /**
+     * the <code>"eclipselink.cache.coordination.serializer"</code> property
+     * configures how cache coordination serializes message sent between nodes.
+     * By default Java serialization is used.  Other serializer can be used for improved performance
+     * or integration with other systems.
+     * The full class name of the serializer class should be provided.
+     * 
+     * @see #COORDINATION_PROTOCOL
+     * @see Serializer
+     * @see org.eclipse.persistence.sessions.Session#setSerializer(Serializer)
+     */
+    public static final String COORDINATION_SERIALIZER = "eclipselink.cache.coordination.serializer";
+    
+    /**
      * the <code>"eclipselink.cache.coordination.channel"</code> property
-     * configures cache coordination for a clustered environment. Set if the
+     * configures cache coordination for a clustered environment. Set the
      * channel for this cluster. All server's in the same channel will be
      * coordinated.  The default channel name is "EclipseLinkCommandChannel".
+     * If multiple EclipseLink deployment reside on the same network, they should use different channels.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setChannel(String)

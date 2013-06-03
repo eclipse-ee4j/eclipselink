@@ -76,4 +76,33 @@ public class CORBARemoteCommandConnection extends RemoteConnection {
         // Success - return null 
         return null;
     }
+
+    /**
+     * INTERNAL:
+     * This method invokes the remote object with the Command argument, and causes
+     * it to execute the command in the remote VM. The result is currently assumed
+     * to be either null if successful, or an exception string if an exception was
+     * thrown during execution.
+     *
+     * If a SystemException occurred then a communication problem occurred. In this
+     * case the exception will be wrapped in a CommunicationException and re-thrown.
+     */
+    public Object executeCommand(byte[] command) throws CommunicationException {
+        try {
+            byte[] result = wrappedConnection.executeCommand(command);
+
+            // Error executed command
+            if (result != null) {
+                // return the exeception String
+                return new String(result);
+            }
+        } catch (SystemException exception) {
+            //SystemException indicates that some thing goes wrong when trying to invoke the remote method 
+            // before the method is executed.  i.e. communication problem.
+            throw CommunicationException.errorInInvocation(exception);
+        }
+
+        // Success - return null 
+        return null;
+    }
 }

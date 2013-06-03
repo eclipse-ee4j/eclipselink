@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.CustomObjectInputStream;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 
 /**
@@ -49,7 +48,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * Flag set when calling commitToDatabaseWithPreBuiltChangeSet 
      * so we are aware the UOW does not contain the changes from this change set.
      */
-    protected boolean isChangeSetFromOutsideUOW = false;
+    protected boolean isChangeSetFromOutsideUOW;
 
     /** Stores unit of work before it is serialized. */
     protected transient AbstractSession session;
@@ -59,8 +58,6 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * Create a ChangeSet
      */
     public UnitOfWorkChangeSet() {
-        super();
-        this.setHasChanges(false);
     }
     
     /**
@@ -86,23 +83,6 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public void setSession(AbstractSession session) {
         this.session = session;
-    }
-    
-    /**
-     * INTERNAL:
-     * Recreate a UnitOfWorkChangeSet that has been converted to a byte array with the
-     * getByteArrayRepresentation() method.
-     * The passed session ensures that the correct class loader is used for deserialization.
-     * That allows to deserialize instances of user-defined classes such as enums.
-     * See Bug 280129: WLS JMS CacheCoordination fails if enum changed with ClassNotFoundException.
-     */
-    public UnitOfWorkChangeSet(byte[] bytes, AbstractSession session) throws java.io.IOException, ClassNotFoundException {
-        java.io.ByteArrayInputStream byteIn = new java.io.ByteArrayInputStream(bytes);
-        ObjectInputStream objectIn;
-        objectIn = new CustomObjectInputStream(byteIn, session);
-        // bug 4416412: allChangeSets set directly instead of using setInternalAllChangeSets
-        allChangeSets = (Map)objectIn.readObject();
-        deletedObjects = (Map)objectIn.readObject();
     }
 
     /**
@@ -319,19 +299,13 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
 
     /**
      * INTERNAL:
-     * Get a byte array that can be converted back into the UnitOfWorkChangeSet. This
-     * byte array is used by Cache Synchronization for more efficient serialization.
+     * Return a new UnitOfWorkChangeSet that only includes data require for the remote merge,
+     * for cache coordination.
      */
-    public byte[] getByteArrayRepresentation(AbstractSession session) throws java.io.IOException {
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
+    public UnitOfWorkChangeSet buildCacheCoordinationMergeChangeSet(AbstractSession session) {
         //bug 4416412: Map sent instead of Vector
         Map writableChangeSets = new IdentityHashMap();
-
-        Iterator iterator = getAllChangeSets().values().iterator();
-        while (iterator.hasNext()) {
-            ObjectChangeSet changeSet = (ObjectChangeSet)iterator.next();
-
+        for (ObjectChangeSet changeSet : getAllChangeSets().values()) {
             // navigate through the related change sets here and set their cache synchronization type as well
             ClassDescriptor descriptor = changeSet.getDescriptor();
             int syncType = descriptor.getCachePolicy().getCacheSynchronizationType();
@@ -345,10 +319,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             }
         }
         Map sendableDeletedObjects = new IdentityHashMap();
-        iterator = getDeletedObjects().keySet().iterator();
-        while (iterator.hasNext()) {
-            ObjectChangeSet changeSet = (ObjectChangeSet)iterator.next();
-
+        for (ObjectChangeSet changeSet : getDeletedObjects().keySet()) {
             // navigate through the related change sets here and set their cache synchronization type as well
             ClassDescriptor descriptor = changeSet.getDescriptor();
             int syncType = descriptor.getCacheSynchronizationType();
@@ -365,9 +336,14 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         if (writableChangeSets.isEmpty() && sendableDeletedObjects.isEmpty()) {
             return null;
         }
-        objectOut.writeObject(writableChangeSets);
-        objectOut.writeObject(sendableDeletedObjects);
-        return byteOut.toByteArray();
+        UnitOfWorkChangeSet remoteChangeSet = new UnitOfWorkChangeSet();
+        if (!writableChangeSets.isEmpty()) {
+            remoteChangeSet.allChangeSets = writableChangeSets;
+        }
+        if (!sendableDeletedObjects.isEmpty()) {
+            remoteChangeSet.deletedObjects = sendableDeletedObjects;
+        }
+        return remoteChangeSet;
     }
 
     /**
@@ -628,6 +604,22 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     protected void setObjectChanges(Map objectChanges) {
         this.objectChanges = objectChanges;
+    }
+
+    /**
+     * INTERNAL:
+     * Sets the collection of ObjectChanges in the change Set.
+     */
+    public void setAllChangeSets(Map allChangeSets) {
+        this.allChangeSets = allChangeSets;
+    }
+
+    /**
+     * INTERNAL:
+     * Sets the collection of deleted objects.
+     */
+    public void setDeletedObjects(Map deletedObjects) {
+        this.deletedObjects = deletedObjects;
     }
 
     /**

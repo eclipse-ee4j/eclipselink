@@ -43,7 +43,7 @@ public class ServiceId implements Serializable {
     private String url;
 
     /* Cached display string to prevent rebuilding */
-    private String displayString;
+    private transient String displayString;
 
     /** This $HOST token indicate that the host ip of the URL should be replaced at runtime by user input */
     public final static String HOST_TOKEN = "$HOST";

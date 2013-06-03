@@ -8,8 +8,8 @@
  *     cdelahun - Bug 214534: added JMS Cache Coordination for publishing only
  ******************************************************************************/    
 package org.eclipse.persistence.sessions.coordination.jms;
- 
-import java.util.Hashtable;
+
+import java.util.Map;
 
 import javax.jms.Topic;
 import javax.jms.TopicConnectionFactory;
@@ -18,6 +18,7 @@ import javax.naming.NamingException;
 
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.jms.JMSTopicRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
@@ -93,6 +94,7 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
      * JMSTopicTransportManager doesn't use DiscoveryManager, therefore
      * this method is called during RCM initialization to create all the necessary connections.
      */
+    @Override
     public void createConnections() {
         createExternalConnection();
         createLocalConnection();
@@ -127,6 +129,7 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
      * when processing incoming JMS messages.  The stored local connection on JMSPublishingTransportManager
      * does not connect to topicConnection, and instead must be used from an MDB when a message is received
      */
+    @Override
     public void createLocalConnection() {
         if(localConnection == null) {
             localConnection = new JMSTopicRemoteConnection(rcm);
@@ -139,7 +142,8 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
      * In case there's no external connection attempts to create one.
      * Returns clone of the original map.
      */
-    public Hashtable getConnectionsToExternalServicesForCommandPropagation() {
+    @Override
+    public Map<String, RemoteConnection> getConnectionsToExternalServicesForCommandPropagation() {
         if(this.getConnectionsToExternalServices().isEmpty() && !this.rcm.isStopped()) {
             this.createExternalConnection();
         }
@@ -208,6 +212,7 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
      * INTERNAL:
      * Initialize default properties.
      */
+    @Override
     public void initialize() {
         super.initialize();
         topicName = DEFAULT_TOPIC;
@@ -219,12 +224,14 @@ public class JMSPublishingTransportManager extends BroadcastTransportManager {
      * No-op, as the local connection does not need to be removed from JMSPublishingTransportManager.
      * An application must close the connection directly if it is using the local connection as a listener.
      */
+    @Override
     public void removeLocalConnection() {}
 
     /**
      * ADVANCED:
      * This function is not supported for naming service other than JNDI or TransportManager.JNDI_NAMING_SERVICE.
      */
+    @Override
     public void setNamingServiceType(int serviceType) {
         if (serviceType != TransportManager.JNDI_NAMING_SERVICE) {
             throw ValidationException.operationNotSupported("setNamingServiceType");
