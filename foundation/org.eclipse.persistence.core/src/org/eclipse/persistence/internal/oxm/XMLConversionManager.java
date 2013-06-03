@@ -2093,13 +2093,18 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
     @Override
     public QName buildQNameFromString(String stringValue, AbstractUnmarshalRecord record){     
+    	stringValue = stringValue.trim();
         int index = stringValue.lastIndexOf(Constants.COLON);
         if(index > -1) {
             String prefix =  stringValue.substring(0, index);
             String localName = stringValue.substring(index + 1);
             
-            String namespaceURI = record.resolveNamespacePrefix(prefix);            
-            return new QName(namespaceURI, localName, prefix);
+            if(record.isNamespaceAware()){
+                String namespaceURI = record.resolveNamespacePrefix(prefix);            
+                return new QName(namespaceURI, localName, prefix);
+            }else{
+            	return new QName(null, localName, prefix);
+            }
         } else {
             String namespaceURI = record.resolveNamespacePrefix(Constants.EMPTY_STRING);
             if(namespaceURI == null){

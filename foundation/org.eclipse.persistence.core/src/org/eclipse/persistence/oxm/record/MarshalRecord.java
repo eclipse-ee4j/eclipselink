@@ -416,7 +416,11 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             }
             String prefix = namespaceResolver.resolveNamespaceURI(namespaceURI);
             if(null == prefix) {
-                prefix = namespaceResolver.generatePrefix();                
+            	if(namespaceURI.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)){
+            	   prefix = namespaceResolver.generatePrefix(Constants.SCHEMA_PREFIX);	
+            	}else{
+                   prefix = namespaceResolver.generatePrefix();
+            	}
                 namespaceDeclaration(prefix, namespaceURI);
             }
             if(Constants.EMPTY_STRING.equals(prefix)){
