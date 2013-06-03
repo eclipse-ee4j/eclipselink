@@ -40,7 +40,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
      */
     @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
-        return responseWithSelfLinks(context, items, uriInfo);
+        return response(context, items, uriInfo);
     }
 
     /* (non-Javadoc)
@@ -48,7 +48,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
      */
     @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
-        return populateReportQueryResultListWithSelfLinks(results, items, uriInfo);
+        return populateReportQueryResultList(results, items, uriInfo);
     }
 
     /* (non-Javadoc)
@@ -57,7 +57,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
     @SuppressWarnings("unchecked")
     public Object buildCollectionAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object item, UriInfo uriInfo) {
         if (item instanceof Collection) {
-            return responseWithSelfLinks(context, (List<Object>) item, uriInfo);
+            return response(context, (List<Object>) item, uriInfo);
         }
         return item;
     }
@@ -68,23 +68,24 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
     @Override
     public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
         if (result instanceof PersistenceWeavedRest) {
+            ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
             PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
-            List<Link> links = new ArrayList<Link>();
-            links.add(new Link(ReservedWords.JPARS_REL_SELF, null, uriInfo.getRequestUri().toString()));
-            entity._persistence_setLinks(links);
+            entity._persistence_setLinks(new ArrayList<Link>());
+            String href = context.getBaseURI() + context.getVersion() + "/" + context.getName() + "/entity/" + descriptor.getAlias() + "/" + IdHelper.stringifyId(result, descriptor.getAlias(), context);
+            entity._persistence_getLinks().add(new Link(ReservedWords.JPARS_REL_SELF, null, href));
         }
         return result;
     }
 
-    private Object responseWithSelfLinks(PersistenceContext context, List<Object> results, UriInfo uriInfo) {
+    private Object response(PersistenceContext context, List<Object> results, UriInfo uriInfo) {
         if ((results != null) && (!results.isEmpty())) {
-            return populateReadAllQueryResultListWithSelfLinks(context, results, uriInfo);
+            return populateReadAllQueryResultList(context, results, uriInfo);
         }
         return results;
     }
 
     @SuppressWarnings("rawtypes")
-    private ReportQueryResultCollection populateReportQueryResultListWithSelfLinks(List<Object[]> results, List<ReportItem> reportItems, UriInfo uriInfo) {
+    private ReportQueryResultCollection populateReportQueryResultList(List<Object[]> results, List<ReportItem> reportItems, UriInfo uriInfo) {
         ReportQueryResultCollection response = new ReportQueryResultCollection();
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
@@ -97,14 +98,11 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
             queryResultListItem.setFields(jaxbFields);
             response.addItem(queryResultListItem);
         }
-
-        List<Link> links = new ArrayList<Link>();
-        links.add(new Link(ReservedWords.JPARS_REL_SELF, null, uriInfo.getRequestUri().toString()));
         response.addLink(new Link(ReservedWords.JPARS_REL_SELF, null, uriInfo.getRequestUri().toString()));
         return response;
     }
 
-    private ReadAllQueryResultCollection populateReadAllQueryResultListWithSelfLinks(PersistenceContext context, List<Object> items, UriInfo uriInfo) {
+    private ReadAllQueryResultCollection populateReadAllQueryResultList(PersistenceContext context, List<Object> items, UriInfo uriInfo) {
         ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
         for (Object item : items) {
             response.addItem(populateReadAllQueryResultListItemLinks(context, item));
