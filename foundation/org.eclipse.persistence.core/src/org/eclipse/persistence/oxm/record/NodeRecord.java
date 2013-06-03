@@ -16,25 +16,25 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.xml.XMLConstants;
-
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.MarshalRecordContentHandler;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
+import org.w3c.dom.Comment;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is a Node.</p>
@@ -202,7 +202,15 @@ public class NodeRecord extends MarshalRecord {
         } else if (node.getNodeType() == Node.TEXT_NODE) {
             characters(node.getNodeValue());
         } else {
-            transformChildren(node, this.document, this.node, uri, name);
+            NodeRecordContentHandler mrcHdlr = new NodeRecordContentHandler(this, namespaceResolver);
+            XMLFragmentReader xfRdr = new XMLFragmentReader(namespaceResolver);
+            xfRdr.setContentHandler(mrcHdlr);
+            xfRdr.setLexicalHandler(mrcHdlr);
+            try {
+                xfRdr.parse(node, uri, name);
+            } catch (SAXException sex) {
+                // Do nothing.
+            }
         }
     }
 
@@ -317,7 +325,7 @@ public class NodeRecord extends MarshalRecord {
      *
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      */
-    protected class NodeRecordContentHandler extends MarshalRecordContentHandler {
+    protected class NodeRecordContentHandler extends MarshalRecordContentHandler implements LexicalHandler {
         Map<String, String> prefixMappings;
 
         public NodeRecordContentHandler(NodeRecord nRec, NamespaceResolver resolver) {
@@ -365,118 +373,44 @@ public class NodeRecord extends MarshalRecord {
                 prefixMappings.put(prefix, uri);
             }
         }
-    }
 
-    private void transformChildren(Node sourceNode, Document targetDoc, Node targetNode,  String namespace, String name){
-        if(null == targetNode) {
-            targetNode = targetDoc;
-        }
-        Element sourceElement = null;
-        String xmlRootQualifiedName = name;
-        if(sourceNode.getNodeType() == Node.DOCUMENT_NODE){
-            sourceElement = ((Document)sourceNode).getDocumentElement();
-        }else if(sourceNode.getNodeType() == Node.ELEMENT_NODE){
-            sourceElement = (Element)sourceNode;
-        }
-        
-        NamespaceResolver sourceNR = new NamespaceResolver();
-        sourceNR.setDOM(sourceElement);
-        
-        NamespaceResolver targetNR = new NamespaceResolver();
-        targetNR.setDOM(targetNode);
-               
-        String prefix = getPrefix(namespace, sourceNR, sourceElement);
-        if(prefix != null && prefix.length() >0){
-            xmlRootQualifiedName = prefix + ':' + name;            
-        }
-        
-        if(null == xmlRootQualifiedName && null != sourceElement) {
-            namespace = sourceElement.getNamespaceURI();
-            xmlRootQualifiedName = sourceElement.getNodeName();
-        }
-        if(xmlRootQualifiedName != null) {
-            Element newElement = null;
-            if(null == namespace) {
-                newElement = targetDoc.createElement(xmlRootQualifiedName);
-                if(null != targetNR.getDefaultNamespaceURI()) {
-                    newElement.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, XMLConstants.XMLNS_ATTRIBUTE, Constants.EMPTY_STRING);
-                }
-            } else {
-                newElement = targetDoc.createElementNS(namespace, xmlRootQualifiedName);
-                if(null == prefix) {
-                    prefix = newElement.getPrefix();
-                }
-            }
-            if(prefix != null && prefix.length() >0 && targetNR.resolveNamespaceURI(namespace) == null){
-                newElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ':' + prefix, namespace);
-            }
-            targetNode.appendChild(newElement);
-    
-            copyAttributes(sourceElement.getAttributes(),sourceElement, newElement, sourceNR, targetNR);
-            sourceNode = sourceElement;
-            targetNode = newElement;
+        @Override
+        public void startDTD(String name, String publicId, String systemId)
+                throws SAXException {
         }
 
-        NodeList children = sourceNode.getChildNodes();
-        if(children != null){
-            int childrenSize= children.getLength();
-            for(int i =0; i<childrenSize; i++){
-                Node nextChild = children.item(i);                
-                Node imported = targetDoc.importNode(nextChild, true);
-                targetNode.appendChild(imported);
-            }
+        @Override
+        public void endDTD() throws SAXException {
         }
-    }
 
-    private void copyAttributes(NamedNodeMap attrs, Element sourceElement, Element newElement, NamespaceResolver sourceNR, NamespaceResolver targetNR){
-        for (int i=0; i<attrs.getLength(); i++) {
-            Attr nextAttr = (Attr) attrs.item(i);
-            String name = nextAttr.getLocalName();
-            if(name == null) {
-                name = nextAttr.getName();
-            }
-            String uri = nextAttr.getNamespaceURI();
-            if(!javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(name)){
-                String prefix = getPrefix(uri, sourceNR, sourceElement);               
-                if(prefix != null && prefix.length() > 0){
-                    name = prefix + ':' +name;
-                    //if this is a newly generated prefix it needs to be written out
-                    if(targetNR.resolveNamespaceURI(uri) == null){                       
-                        newElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ':' + prefix, uri);
-                    }
-                }
-                
-            }
-            if(null == uri) {
-                newElement.setAttribute(name, nextAttr.getValue());
-            } else {
-                newElement.setAttributeNS(uri, name, nextAttr.getValue());
-            }
+        @Override
+        public void startEntity(String name) throws SAXException {
+            EntityReference entityReference = document.createEntityReference(name);
+            node = node.appendChild(entityReference);
         }
-    }
-    
-    private String getPrefix(String namespace, NamespaceResolver sourceNR, Element sourceElement){
-        if(namespace == null){
-            return null;
-        }
-        String prefix = sourceNR.resolveNamespaceURI(namespace);
-        if(prefix == null){     
-            String defaultNamespace = sourceElement.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
-            if(defaultNamespace == null){
-                prefix = sourceNR.generatePrefix();    
-            }else if(defaultNamespace != namespace){
-                if(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(namespace)) {
-                    prefix = sourceNR.generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
-                } else {
-                    prefix = sourceNR.generatePrefix();
-                }
-            }else{
-                prefix = Constants.EMPTY_STRING;
-            }
-            
-        }
-        return prefix;
-    }
 
+        @Override
+        public void endEntity(String name) throws SAXException {
+            node = node.getParentNode();
+        }
+
+        @Override
+        public void startCDATA() throws SAXException {
+            CDATASection cdata = document.createCDATASection(null);
+            node = node.appendChild(cdata);
+        }
+
+        @Override
+        public void endCDATA() throws SAXException {
+            node = node.getParentNode();
+        }
+
+        @Override
+        public void comment(char[] ch, int start, int length)
+                throws SAXException {
+            Comment comment = document.createComment(new String(ch, start, length));
+            node.appendChild(comment);
+        }
+    }
 
 }

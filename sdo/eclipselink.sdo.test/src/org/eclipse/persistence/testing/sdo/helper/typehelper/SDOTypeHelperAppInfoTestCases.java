@@ -105,9 +105,9 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         //     <attribute>Typeno</attribute>
         //   </key>
         // </xsd:appinfo>
-        Element attElement = doc.createElement(ATT);
+        Element attElement = doc.createElementNS(TYPE_APP_INFO, ATT);
         attElement.appendChild(doc.createTextNode(TYPENO));
-        Element keyElement = doc.createElement(KEY);
+        Element keyElement = doc.createElementNS(TYPE_APP_INFO, KEY);
         keyElement.setAttribute(XMLNS, TYPE_APP_INFO);
         keyElement.appendChild(attElement);
         aiElement = doc.createElementNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, APP_INFO);
@@ -120,9 +120,9 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         //     <attribute>Propno</attribute>
         //   </key>
         // </xsd:appinfo>
-        Element attElementProp = doc.createElement(ATT);
+        Element attElementProp = doc.createElementNS(PROPERTY_APP_INFO, ATT);
         attElementProp.appendChild(doc.createTextNode(PROPNO));
-        Element keyElementProp = doc.createElement(KEY);
+        Element keyElementProp = doc.createElementNS(PROPERTY_APP_INFO, KEY);
         keyElementProp.setAttribute(XMLNS, PROPERTY_APP_INFO);
         keyElementProp.appendChild(attElementProp);
         aiElementProp = doc.createElementNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, APP_INFO);

@@ -13,10 +13,12 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.xml.XMLConstants;
 
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -24,7 +26,9 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
@@ -77,19 +81,12 @@ public class XMLFragmentReader extends DOMReader {
         // NOT APPLICABLE FOR FRAGMENTS - DO NOTHING
     }
     
-    /**
-     * Handle XMLNS prefixed attribute such that they are not written out
-     * during the content handler's attribute event.
-     * 
-     * @param prefix
-     * @param localName
-     * @param value
-     */
-    protected void handleXMLNSPrefixedAttribute(Element elem, Attr attr) {
-        String uri = resolveNamespacePrefix(elem.getPrefix());
-        if (uri == null || !uri.equals(attr.getLocalName())) {
+    @Override
+    protected void handleNewNamespaceDeclaration(Element elem, String prefix, String namespaceURI) {
+        String uri = resolveNamespacePrefix(prefix);
+        if (uri == null || !uri.equals(namespaceURI)) {
             NamespaceResolver tmpresolver = getTempResolver(elem);
-            tmpresolver.put(attr.getLocalName(), attr.getValue());
+            tmpresolver.put(prefix, namespaceURI);
             if (!nsresolverList.contains(tmpresolver)) {
                 nsresolverList.add(tmpresolver);
             }
@@ -101,6 +98,7 @@ public class XMLFragmentReader extends DOMReader {
      * URI locally.
      * 
      */
+    @Override
     protected void handlePrefixedAttribute(Element elem) throws SAXException {
         // Need to determine if the URI for the prefix needs to be 
         // declared locally:
@@ -112,16 +110,40 @@ public class XMLFragmentReader extends DOMReader {
            prefix = Constants.EMPTY_STRING;
         }
         String uri = resolveNamespacePrefix(prefix);
-        if(prefix == Constants.EMPTY_STRING && uri == null) {
-            return;
-        }
-        if (uri == null || !uri.equals(elem.getNamespaceURI())) {
+        if((uri == null && elem.getNamespaceURI() != null) || (uri != null && !uri.equals(elem.getNamespaceURI()))) {
             NamespaceResolver tmpresolver = getTempResolver(elem);
             tmpresolver.put(prefix, elem.getNamespaceURI());
             if (!nsresolverList.contains(tmpresolver)) {
                 nsresolverList.add(tmpresolver);
             }
-            getContentHandler().startPrefixMapping(prefix, elem.getNamespaceURI());
+            String namespaceURI = elem.getNamespaceURI();
+            if(null == namespaceURI) {
+                namespaceURI = Constants.EMPTY_STRING;
+            }
+            getContentHandler().startPrefixMapping(prefix, namespaceURI);
+        }
+        NamedNodeMap attributes = elem.getAttributes();
+        if(attributes != null) {
+            for(int x=0; x < attributes.getLength(); x++) {
+               Node attribute = attributes.item(x);
+               if(XMLConstants.XMLNS_ATTRIBUTE.equals(attribute.getPrefix())) {
+                   NamespaceResolver tmpresolver = getTempResolver(elem);
+                   tmpresolver.put(attribute.getLocalName(), attribute.getNodeValue());
+                   if (!nsresolverList.contains(tmpresolver)) {
+                       nsresolverList.add(tmpresolver);
+                   }
+               } else if(XMLConstants.XMLNS_ATTRIBUTE.equals(attribute.getNodeName())) {
+                   NamespaceResolver tmpresolver = getTempResolver(elem);
+                   String namespace = attribute.getNodeValue();
+                   if(null == namespace) {
+                       namespace = Constants.EMPTY_STRING;
+                   }
+                   tmpresolver.put(Constants.EMPTY_STRING, namespace);
+                   if (!nsresolverList.contains(tmpresolver)) {
+                       nsresolverList.add(tmpresolver);
+                   }
+               }
+            }
         }
     }
     
@@ -133,9 +155,15 @@ public class XMLFragmentReader extends DOMReader {
     protected void endPrefixMappings(Element elem) throws SAXException {
         NamespaceResolver tmpresolver = getTempResolver(elem);
         if (tmpresolver != null) {
-            Enumeration<String> prefixes = tmpresolver.getPrefixes();  
-            while (prefixes.hasMoreElements()) {
-                getContentHandler().endPrefixMapping(prefixes.nextElement());
+            ContentHandler contentHandler = getContentHandler();
+            String defaultNamespace = tmpresolver.getDefaultNamespaceURI();
+            if(null != defaultNamespace) {
+                contentHandler.endPrefixMapping(Constants.EMPTY_STRING);
+            }
+            if(tmpresolver.hasPrefixesToNamespaces()) {
+                for(Entry<String, String> entry : tmpresolver.getPrefixesToNamespaces().entrySet()) {
+                    contentHandler.endPrefixMapping(entry.getKey());
+                }
             }
         }
     }
@@ -181,7 +209,7 @@ public class XMLFragmentReader extends DOMReader {
      */
     protected String resolveNamespacePrefix(String prefix) {
         String uri = null;
-        if (null == prefix) {
+        if (null == prefix || prefix.length() == 0) {
             for (int i = nsresolverList.size() - 1; i >= 0; i--) {
                 NamespaceResolver next = nsresolverList.get(i);
                 uri = next.getDefaultNamespaceURI();
@@ -227,5 +255,6 @@ public class XMLFragmentReader extends DOMReader {
                 
             }
         }
-    }    
+    }
+
 }
