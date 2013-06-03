@@ -984,7 +984,7 @@ public abstract class BaseDBWSBuilderHelper {
             XMLEntityMappings mappings = XmlEntityMappingsGenerator.generateXmlEntityMappings(orProject, complextypes, crudOps);
             if (mappings != null) {
                 XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
-                writer.write(mappings, dbwsOrStream);
+                writer.write(mappings, dbwsOrStream);                
             }
         }
         if (!isNullStream(dbwsOxStream)) {
@@ -1361,11 +1361,7 @@ public abstract class BaseDBWSBuilderHelper {
                 dType = ((ArgumentType)dType).getEnclosedType();
             }
             PLSQLCursorType pType = (PLSQLCursorType)dType;
-            String typeName = pType.getCursorName();
-            if (catalog != null) {
-                typeName = (catalog + DOT).concat(typeName);
-            }
-            return new PLSQLCursor(typeName);
+            return new PLSQLCursor(pType.getParentType().getPackageName() + DOT + pType.getCursorName());
         } 
         
         if (dType.isArgumentType()) {

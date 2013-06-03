@@ -65,7 +65,7 @@ public class SimplePLSQLServiceTestSuite extends DBWSTestSuite {
           "<srvc:result>" +
             "<simple-xml-format>" +
               "<simple-xml>" +
-                "<result>blah</result>" +
+                "<ARG2>blah</ARG2>" +
               "</simple-xml>" +
             "</simple-xml-format>" +
           "</srvc:result>" +

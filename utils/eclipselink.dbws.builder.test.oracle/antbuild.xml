@@ -396,12 +396,9 @@
           <test
             name="dbws.testing.plsqlrecord.PLSQLRecordTestSuite"
           />
-            
-            <!-- re-enable the following test when Bug#404305 is fixed
 		  <test
             name="dbws.testing.prependedpackage.PrependedPackageTestSuite"
           />
-             -->
 		  <test
             name="dbws.testing.prependedschema.PrependedSchemaTestSuite"
           />
