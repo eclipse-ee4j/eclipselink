@@ -140,6 +140,9 @@ public class UnmarshalXPathEngine <
     }
 
     public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy) throws XMLMarshalException {
+        return selectNodes(contextNode, xmlField, xmlNamespaceResolver, nullPolicy, false);
+    }
+    public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy, boolean omitText) throws XMLMarshalException {
         try {
             if (contextNode == null) {
                 return null;
@@ -151,7 +154,7 @@ public class UnmarshalXPathEngine <
             if (xPathFragment.shouldExecuteSelectNodes()) {
                 return xmlPlatform.selectNodesAdvanced(contextNode, xmlField.getXPath(), xmlNamespaceResolver);
             }
-            return selectNodes(contextNode, xPathFragment, xmlNamespaceResolver, nullPolicy);
+            return selectNodes(contextNode, xPathFragment, xmlNamespaceResolver, nullPolicy, omitText);
         } catch (Exception x) {
             throw XMLMarshalException.invalidXPathString(xmlField.getXPath(), x);
         }
@@ -210,16 +213,16 @@ public class UnmarshalXPathEngine <
         entries.add(entry);
     }
 
-    private NodeList selectNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy) {
+    private NodeList selectNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy, boolean omitText) {
         NodeList resultNodes = getNodes(contextNode, xPathFragment, xmlNamespaceResolver, nullPolicy);
 
-        if (xPathFragment.getNextFragment() != null) {
+        if (xPathFragment.getNextFragment() != null && !(omitText && xPathFragment.getNextFragment().nameIsText())) {
             Node resultNode;
             XMLNodeList result = new XMLNodeList();
             int numberOfResultNodes = resultNodes.getLength();
             for (int x = 0; x < numberOfResultNodes; x++) {
                 resultNode = resultNodes.item(x);
-                result.addAll(selectNodes(resultNode, xPathFragment.getNextFragment(), xmlNamespaceResolver, nullPolicy));
+                result.addAll(selectNodes(resultNode, xPathFragment.getNextFragment(), xmlNamespaceResolver, nullPolicy, omitText));
             }
             return result;
         }

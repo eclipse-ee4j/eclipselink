@@ -875,6 +875,17 @@ public class XPathEngine <
     public NodeList replaceValue(Field xmlField, Node parent, Object value, CoreAbstractSession session) throws XMLMarshalException {
         NodeList nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, getNamespaceResolverForField(xmlField));
         int numberOfNodes = nodes.getLength();
+        if(numberOfNodes == 0 && xmlField.getLastXPathFragment().nameIsText()) {
+            nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, getNamespaceResolverForField(xmlField), null, true);
+            XMLNodeList textNodes = new XMLNodeList();
+            for(int i = 0; i < nodes.getLength(); i++) {
+                Element nextNode = (Element)nodes.item(i);
+                Text text = nextNode.getOwnerDocument().createTextNode("");
+                nextNode.appendChild(text);
+                textNodes.add(text);
+            }
+            numberOfNodes = textNodes.getLength();
+        }
         XMLNodeList createdElements = new XMLNodeList();
         for (int i = 0; i < numberOfNodes; i++) {
             Node node = nodes.item(i);
