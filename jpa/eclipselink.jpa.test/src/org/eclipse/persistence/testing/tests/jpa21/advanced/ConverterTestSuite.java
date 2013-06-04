@@ -22,6 +22,9 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     02/28/2013-2.5 Chris Delahunt
  *       - 402029: Application exceptions need to be wrapped in PersistenceException
+ *     06/03/2013-2.5.1 Guy Pelletier    
+ *       - 402380: 3 jpa21/advanced tests failed on server with 
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -34,7 +37,7 @@ import junit.framework.TestSuite;
 import junit.framework.Test;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterClass;
+import org.eclipse.persistence.mappings.converters.ConverterClass;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;

@@ -14,8 +14,11 @@
  *       accessor.attributeField is null in the absence of a MapKey annotation
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     06/03/2013-2.5.1 Guy Pelletier    
+ *       - 402380: 3 jpa21/advanced tests failed on server with 
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.foundation;
 
@@ -34,8 +37,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
-import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
@@ -132,15 +133,8 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
             field.convertClassNamesToClasses(classLoader);
         }
         
-        if (converter != null) {
-            if (converter instanceof TypeConversionConverter) {
-                ((TypeConversionConverter)converter).convertClassNamesToClasses(classLoader);
-            } else if (converter instanceof ObjectTypeConverter) {
-                // To avoid 1.5 dependencies with the EnumTypeConverter check
-                // against ObjectTypeConverter.
-                ((ObjectTypeConverter) converter).convertClassNamesToClasses(classLoader);
-            }
-        } 
+        // Convert and any Converter class names.
+        convertConverterClassNamesToClasses(converter, classLoader); 
         
         // Instantiate any custom converter class
         if (converterClassName != null) {

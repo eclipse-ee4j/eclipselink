@@ -16,14 +16,16 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     06/03/2013-2.5.1 Guy Pelletier    
+ *       - 402380: 3 jpa21/advanced tests failed on server with 
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
  ******************************************************************************/  
-package org.eclipse.persistence.internal.jpa.metadata.converters;
+package org.eclipse.persistence.mappings.converters;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -68,6 +70,50 @@ public class ConverterClass implements Converter {
     
     /**
      * INTERNAL:
+     * Convert all the class-name-based settings in this converter to actual 
+     * class-based settings. This method is used when converting a project 
+     * that has been built with class names to a project with classes.
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader){
+        Class attributeConverterClass = null;
+    
+        try {        
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
+                    attributeConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, classLoader));
+                    attributeConverter = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeConverterClass));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
+                }
+            } else {
+                attributeConverterClass = PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, classLoader);
+                attributeConverter = (AttributeConverter) PrivilegedAccessHelper.newInstanceFromClass(attributeConverterClass);   
+            }
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
+        } catch (IllegalAccessException exception) {
+            throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
+        } catch (InstantiationException exception) {
+            throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
+        } 
+        
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    fieldClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationName, true, classLoader));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationName, exception.getException());
+                }
+            } else {
+                fieldClassification = PrivilegedAccessHelper.getClassForName(fieldClassificationName, true, classLoader);   
+            }
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
@@ -97,49 +143,7 @@ public class ConverterClass implements Converter {
      */
     @Override
     public void initialize(DatabaseMapping mapping, Session session) {
-        Converter converter;
-        ClassLoader loader = ConversionManager.getDefaultManager().getLoader();
-        
-        if (disableConversion) {
-            converter = null;
-        } else {
-            converter = this;
-            Class attributeConverterClass = null;
-    
-            try {        
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                        attributeConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, loader));
-                        attributeConverter = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeConverterClass));
-                    } catch (PrivilegedActionException exception) {
-                        throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
-                    }
-                } else {
-                    attributeConverterClass = PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, loader);
-                    attributeConverter = (AttributeConverter) PrivilegedAccessHelper.newInstanceFromClass(attributeConverterClass);   
-                }
-            } catch (ClassNotFoundException exception) {
-                throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
-            } catch (IllegalAccessException exception) {
-                throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
-            } catch (InstantiationException exception) {
-                throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
-            } 
-        }
-        
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    fieldClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationName, true, loader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationName, exception.getException());
-                }
-            } else {
-                fieldClassification = PrivilegedAccessHelper.getClassForName(fieldClassificationName, true, loader);   
-            }
-        } catch (ClassNotFoundException exception) {
-            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
-        }
+        Converter converter = (disableConversion) ? null : this;
         
         // Ensure the mapping has the correct field classification set.
         if (mapping.isDirectToFieldMapping()) {

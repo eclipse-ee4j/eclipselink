@@ -15,10 +15,13 @@
  *       - 374377: OrderBy with ElementCollection doesn't work
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
  *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching 
+ *       - 371950: Metadata caching
+ *     06/03/2013-2.5.1 Guy Pelletier    
+ *       - 402380: 3 jpa21/advanced tests failed on server with 
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"  
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -121,12 +124,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * */
     protected transient Class attributeClassification;
     protected String attributeClassificationName;    
-    /** 
-     * @since Java Persistence API 2.0
-     * Referenced by MapAttributeImpl to pick up the BasicMap value parameter type 
-     * PERF: Also store object class of attribute in case of primitive. 
-     * */
-    protected transient Class attributeObjectClassification;
 
     /**
      * PUBLIC:
@@ -882,18 +879,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         
         // Tell the direct field to convert any class names (type name).
         directField.convertClassNamesToClasses(classLoader);
-
-        if (valueConverter != null) {
-            if (valueConverter instanceof TypeConversionConverter){
-                ((TypeConversionConverter)valueConverter).convertClassNamesToClasses(classLoader);
-                // Set the attribute classification from the type converter (ignoring any attribute classification name).
-                attributeClassification = ((TypeConversionConverter) valueConverter).getObjectClass();
-            } else if (valueConverter instanceof ObjectTypeConverter) {
-                // To avoid 1.5 dependencies with the EnumTypeConverter check
-                // against ObjectTypeConverter.
-                ((ObjectTypeConverter) valueConverter).convertClassNamesToClasses(classLoader);
-            }
-        }
+        
+        // Convert and any Converter class names.
+        convertConverterClassNamesToClasses(valueConverter, classLoader);
         
         // Instantiate any custom converter class
         if (valueConverterClassName != null) {
@@ -948,11 +936,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 // Still nothing, default to the type from the direct field.
                 attributeClassification = getDirectField().getType();
             }
-        }
-        
-        // This mirror attribute object classification is bizarre to me ...
-        if (attributeClassification != null) {
-            attributeObjectClassification = Helper.getObjectClass(attributeClassification);
         }
     }
 
