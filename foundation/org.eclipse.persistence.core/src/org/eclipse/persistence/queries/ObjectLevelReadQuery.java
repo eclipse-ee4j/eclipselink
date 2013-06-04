@@ -1994,6 +1994,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.lockModeType = readQuery.lockModeType;
             this.defaultBuilder = readQuery.defaultBuilder;
             this.distinctState = readQuery.distinctState;
+            this.shouldUseSerializedObjectPolicy = readQuery.shouldUseSerializedObjectPolicy;
         }
     }
     
