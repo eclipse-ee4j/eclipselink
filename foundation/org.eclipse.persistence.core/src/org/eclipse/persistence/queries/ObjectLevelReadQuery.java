@@ -1994,6 +1994,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.lockModeType = readQuery.lockModeType;
             this.defaultBuilder = readQuery.defaultBuilder;
             this.distinctState = readQuery.distinctState;
+            this.shouldUseSerializedObjectPolicy = readQuery.shouldUseSerializedObjectPolicy;
         }
     }
     
@@ -2759,6 +2760,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Otherwise - if the session demand optimization and it is possible - optimizes (returns true),
      * otherwise false.
      */
+    @Override
     public boolean usesResultSetAccessOptimization() {
         return this.usesResultSetAccessOptimization != null && this.usesResultSetAccessOptimization;
     }
