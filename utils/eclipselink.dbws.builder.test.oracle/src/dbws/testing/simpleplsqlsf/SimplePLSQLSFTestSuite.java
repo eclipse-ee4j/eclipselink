@@ -247,7 +247,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
           "<simple-xml>" +
-            "<result>5000</result>" +
+            "<RESULT>5000</RESULT>" +
           "</simple-xml>" +
         "</simple-xml-format>";
 
@@ -268,7 +268,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<max-sal-for-dept xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">" +
           "<simple-xml>" +
-            "<result>2850</result>" +
+            "<RESULT>2850</RESULT>" +
           "</simple-xml>" +
         "</max-sal-for-dept>";
 
@@ -290,7 +290,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
            "<simple-xml>" +
-              "<result>666</result>" +
+              "<RESULT>666</RESULT>" +
               "<P2>69</P2>" +
               "<P3>70</P3>" +
            "</simple-xml>" +

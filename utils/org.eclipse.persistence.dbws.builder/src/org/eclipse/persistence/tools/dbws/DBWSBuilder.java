@@ -433,9 +433,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         if (builderHelper.hasTables() || hasBuildSqlOperations()) {
             useProjectXML = true;
         }
-        else if (builderHelper.hasComplexProcedureArgs()) {
-            useProjectXML = true;
-        }
         if (!useProjectXML) {
             // check for any named queries - SimpleXMLFormatProject's sometimes need them
             if (orProject.getQueries().size() > 0) {
@@ -469,9 +466,6 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         ProjectConfig oxProjectConfig = null;
         boolean useProjectXML = false;
         if (builderHelper.hasTables() || hasBuildSqlOperations()) {
-            useProjectXML = true;
-        }
-        else if (builderHelper.hasComplexProcedureArgs()) {
             useProjectXML = true;
         }
         if (!useProjectXML) {

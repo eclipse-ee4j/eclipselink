@@ -56,7 +56,4 @@ public interface DBWSBuilderHelper {
     public void writeOROXProjects(OutputStream dbwsOrStream, OutputStream dbwsOxStream);
 
     public boolean hasTables();
-    
-    public boolean hasComplexProcedureArgs();
-
 }

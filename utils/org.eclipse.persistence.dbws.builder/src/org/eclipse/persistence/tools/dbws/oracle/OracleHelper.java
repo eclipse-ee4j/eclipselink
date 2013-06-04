@@ -150,7 +150,6 @@ import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirec
 public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelper {
 
     protected DatabaseTypeBuilder dtBuilder = new DatabaseTypeBuilder();
-    protected boolean hasComplexProcedureArgs = false;
     public static final String NO_PKG_MSG = "No packages were found matching the following: ";
 
     public OracleHelper(DBWSBuilder dbwsBuilder) {
@@ -163,10 +162,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      */
     public boolean hasTables() {
         return dbTables.size() == 0 ? false : true;
-    }
-
-    public boolean hasComplexProcedureArgs() {
-        return hasComplexProcedureArgs;
     }
 
     @Override
@@ -209,7 +204,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      */
     public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel) {
         for (ProcedureType storedProcedure : procedureOperationModel.getDbStoredProcedures()) {
-            boolean hasComplexArgs = Util.hasComplexArgs(storedProcedure);
+            boolean hasComplexArgs = hasComplexArgs(storedProcedure);
             QueryOperation qo = new QueryOperation();
             qo.setName(getNameForQueryOperation(procedureOperationModel, storedProcedure));
 
@@ -311,13 +306,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     } else {
                         // handle PL/SQL records and collections
                         if (arg.getEnclosedType().isPLSQLType()) {
-                            hasComplexProcedureArgs = true;
                             String packageName = ((PLSQLType) arg.getEnclosedType()).getParentType().getPackageName();
                             String typeString = (packageName != null && packageName.length() > 0) ? packageName + UNDERSCORE + arg.getTypeName() : arg.getTypeName();
                             xmlType = buildCustomQName(typeString, dbwsBuilder);
                         } else if (arg.getEnclosedType().isVArrayType() || arg.getEnclosedType().isObjectType() || arg.getEnclosedType().isObjectTableType()) {
                             // handle advanced JDBC types
-                            hasComplexProcedureArgs = true;
                             String typeString = arg.getTypeName().toLowerCase().concat(TYPE_STR);
                             xmlType = buildCustomQName(typeString, dbwsBuilder);
                         } else {
@@ -1225,7 +1218,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
         // check for PL/SQL cursor arg
         boolean hasCursor = hasPLSQLCursorArg(getArgumentListForProcedureType(procType));
-        hasPLSQLArgs = hasPLSQLArgs || hasCursor || (hasComplexArgs(getArgumentListForProcedureType(procType)) && opModel.isPLSQLProcedureOperation());
+        hasPLSQLArgs = hasPLSQLArgs || hasCursor || opModel.isPLSQLProcedureOperation();
         
         if (hasPLSQLArgs) {
             if (procType.isFunctionType()) {

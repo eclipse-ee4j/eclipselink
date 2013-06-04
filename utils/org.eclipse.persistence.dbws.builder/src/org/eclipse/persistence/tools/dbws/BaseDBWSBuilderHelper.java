@@ -273,8 +273,6 @@ public abstract class BaseDBWSBuilderHelper {
     //abstract methods - platform-specific behavior in JDBCHelper, OracleHelper
     public abstract boolean hasTables();
 
-    public abstract boolean hasComplexProcedureArgs();
-
     protected abstract List<TableType> loadTables(List<String> catalogPatterns, List<String> schemaPatterns, List<String> tableNamePatterns);
 
     protected abstract List<ProcedureType> loadProcedures(List<String> catalogPatterns, List<String> schemaPatterns, List<String> procedureNamePatterns);
@@ -958,8 +956,6 @@ public abstract class BaseDBWSBuilderHelper {
         boolean writeORProject = false;
         if (hasTables() || dbwsBuilder.hasBuildSqlOperations()) {
             writeORProject = true;
-        } else if (hasComplexProcedureArgs()) {
-            writeORProject = true;
         }
         if (!writeORProject) {
             // check for any named queries - SimpleXMLFormatProject sometimes need them
@@ -984,14 +980,12 @@ public abstract class BaseDBWSBuilderHelper {
             XMLEntityMappings mappings = XmlEntityMappingsGenerator.generateXmlEntityMappings(orProject, complextypes, crudOps);
             if (mappings != null) {
                 XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
-                writer.write(mappings, dbwsOrStream);                
+                writer.write(mappings, dbwsOrStream);        
             }
         }
         if (!isNullStream(dbwsOxStream)) {
             boolean writeOXProject = false;
             if (hasTables() || dbwsBuilder.hasBuildSqlOperations()) {
-                writeOXProject = true;
-            } else if (hasComplexProcedureArgs()) {
                 writeOXProject = true;
             }
             if (!writeOXProject) {
