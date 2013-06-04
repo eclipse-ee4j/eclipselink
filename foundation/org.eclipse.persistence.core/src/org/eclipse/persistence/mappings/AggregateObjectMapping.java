@@ -19,6 +19,9 @@
  *       - 397772: JPA 2.1 Entity Graph Support
  *     02/11/2013-2.5 Guy Pelletier 
  *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
+ *     06/03/2013-2.5.1 Guy Pelletier    
+ *       - 402380: 3 jpa21/advanced tests failed on server with 
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -943,6 +946,23 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
     }
 
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this mapping to actual 
+     * class-based settings. This method is used when converting a project that 
+     * has been built with class names to a project with classes.
+     * @param classLoader 
+     */
+    @Override
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        super.convertClassNamesToClasses(classLoader);
+        
+        for (Converter converter : converters.values()) {
+            // Convert and any Converter class names.
+            convertConverterClassNamesToClasses(converter, classLoader); 
+        }
+    }
+    
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.

@@ -14,8 +14,11 @@
  *       accessor.attributeField is null in the absence of a MapKey annotation
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     06/03/2013-2.5.1 Guy Pelletier    
+ *       - 402380: 3 jpa21/advanced tests failed on server with 
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.foundation;
 
@@ -131,11 +134,8 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
             field.convertClassNamesToClasses(classLoader);
         }
         
-        if (converter != null) {
-            if (converter instanceof ClassNameConversionRequired) {
-                ((ClassNameConversionRequired)converter).convertClassNamesToClasses(classLoader);
-            }
-        } 
+        // Convert and any Converter class names.
+        convertConverterClassNamesToClasses(converter, classLoader); 
         
         // Instantiate any custom converter class
         if (converterClassName != null) {

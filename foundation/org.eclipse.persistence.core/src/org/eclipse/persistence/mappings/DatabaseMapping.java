@@ -11,8 +11,11 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     06/03/2013-2.5.1 Guy Pelletier    
+ *       - 402380: 3 jpa21/advanced tests failed on server with 
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -43,6 +46,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
@@ -415,6 +419,16 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
                 getProperties().put(propertyName, ConversionManager.getDefaultManager().convertObject(value, valueType));
             }
         }
+    }
+    
+    /**
+     * Convenience method to ensure converters have an opportunity to convert
+     * any class names to classes during project setup.
+     */
+    protected void convertConverterClassNamesToClasses(Converter converter, ClassLoader classLoader) {
+        if (converter != null && converter instanceof ClassNameConversionRequired) {
+            ((ClassNameConversionRequired)converter).convertClassNamesToClasses(classLoader);
+        } 
     }
 
     /**
