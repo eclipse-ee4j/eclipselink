@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -157,11 +157,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
       * and the default event handling only terminates the  operation after 
       * encountering a fatal error. 
       */
-     protected static final ValidationEventHandler DEFAULT_VALIDATION_EVENT_HANDER = new ValidationEventHandler() {
-         public boolean handleEvent(ValidationEvent event) {
-             return event.getSeverity() < ValidationEvent.FATAL_ERROR;
-         }
-     };
+    protected static final ValidationEventHandler DEFAULT_VALIDATION_EVENT_HANDER = new ValidationEventHandler() {
+        public boolean handleEvent(ValidationEvent event) {
+            return event.getSeverity() < ValidationEvent.FATAL_ERROR;
+        }
+    };
 
     protected JAXBContextInput contextInput;
     protected volatile JAXBContextState contextState;
@@ -176,7 +176,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         contextState = new JAXBContextState();
     }
 
-    protected JAXBContext (JAXBContextInput contextInput) throws javax.xml.bind.JAXBException {
+    protected JAXBContext(JAXBContextInput contextInput) throws javax.xml.bind.JAXBException {
         this.contextInput = contextInput;
         this.contextState = contextInput.createContextState();
     }
@@ -209,7 +209,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         if (!initializedXMLInputFactory) {
             try {
                 xmlInputFactory = XMLInputFactory.newInstance();
-            } catch(FactoryConfigurationError e) {
+            } catch (FactoryConfigurationError e) {
             } finally {
                 initializedXMLInputFactory = true;
             }
@@ -258,7 +258,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         if (null == contextInput) {
             return null;
         }
-        synchronized(this) {
+        synchronized (this) {
             JAXBContextState newState = contextInput.createContextState();
             XMLContext xmlContext = getXMLContext();
             xmlContext.setXMLContextState(newState.getXMLContext().getXMLContextState());
@@ -305,24 +305,24 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public void generateSchema(SchemaOutputResolver outputResolver) {
         generateSchema(outputResolver, null);
     }
-    
+
     public void generateJsonSchema(SchemaOutputResolver outputResolver, Class rootClass) throws JAXBException, javax.xml.bind.JAXBException, IOException {
         JsonSchemaGenerator generator = new JsonSchemaGenerator(this.contextState.getXMLContext().getSession(rootClass).getProject(), this.contextState.properties);
         JsonSchema schema = generator.generateSchema(rootClass);
-        
+
         Marshaller m = getJsonSchemaMarshaller();
         m.marshal(schema, outputResolver.createOutput(null, rootClass.getName() + ".json"));
     }
 
     private Marshaller getJsonSchemaMarshaller() throws javax.xml.bind.JAXBException {
-        if(this.jsonSchemaMarshaller == null) {
-            JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[]{JsonSchema.class}, null);
+        if (this.jsonSchemaMarshaller == null) {
+            JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { JsonSchema.class }, null);
             this.jsonSchemaMarshaller = ctx.createMarshaller();
             this.jsonSchemaMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             this.jsonSchemaMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             this.jsonSchemaMarshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
         }
-        
+
         return this.jsonSchemaMarshaller;
 
     }
@@ -351,7 +351,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
             List<Session> sessions = xmlContext.getSessions();
             for (Session session : sessions) {
-                List<Descriptor> descriptors = (List<Descriptor>)(List)session.getProject().getOrderedDescriptors();
+                List<Descriptor> descriptors = (List<Descriptor>) (List) session.getProject().getOrderedDescriptors();
                 for (Descriptor xDesc : descriptors) {
                     descriptorsToProcess.add(xDesc);
                 }
@@ -367,17 +367,18 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Create a JAXBMarshaller.  The JAXBMarshaller is used to convert Java objects
      * to XML.
      */
-    public JAXBMarshaller createMarshaller() throws javax.xml.bind.JAXBException{    	
-        return contextState.createMarshaller(this);                
+    public JAXBMarshaller createMarshaller() throws javax.xml.bind.JAXBException {
+        return contextState.createMarshaller(this);
     }
 
     /**
      * Create a JAXBUnmarshaller.  The JAXBUnmarshaller is used to convert XML into
      * Java objects.
      */
-    public JAXBUnmarshaller createUnmarshaller() throws javax.xml.bind.JAXBException{    	         
-		return contextState.createUnmarshaller(this);		               
+    public JAXBUnmarshaller createUnmarshaller() throws javax.xml.bind.JAXBException {
+        return contextState.createUnmarshaller(this);
     }
+
     /**
      * Create a JAXBValidator.  The JAXBValidator is used to validate Java objects against
      * an XSD.
@@ -442,14 +443,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * ADVANCED:
      * Adjust the OXM metadata to take into account ORM mapping metadata
      */
-     public void applyORMMetadata(AbstractSession ormSession) {
+    public void applyORMMetadata(AbstractSession ormSession) {
         getXMLContext().applyORMMetadata(ormSession);
-     }
+    }
 
-     /**
-      * INTERNAL:
-      * Get the map of which QName corresponds to which declared class.
-      */
+    /**
+     * INTERNAL:
+     * Get the map of which QName corresponds to which declared class.
+     */
     public HashMap<QName, Class> getQNamesToDeclaredClasses() {
         return contextState.getQNamesToDeclaredClasses();
     }
@@ -458,9 +459,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map of which QName corresponds to which generated class.
      */
-   Map<QName, Class> getQNameToGeneratedClasses() {
-       return contextState.getQNameToGeneratedClasses();
-   }
+    Map<QName, Class> getQNameToGeneratedClasses() {
+        return contextState.getQNameToGeneratedClasses();
+    }
 
     /**
      *  INTERNAL:
@@ -648,22 +649,22 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
         return getXMLContext().createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
-    
+
     public ObjectGraph createObjectGraph(Class type) {
         CoreAttributeGroup group = new CoreAttributeGroup(null, type, true);
         return new ObjectGraphImpl(group);
     }
-    
+
     public ObjectGraph createObjectGraph(String typeName) {
         ClassLoader loader = this.contextInput.classLoader;
         try {
             Class cls = PrivilegedAccessHelper.getClassForName(typeName, true, loader);
             return createObjectGraph(cls);
-        } catch(Exception ex) {
-           throw ConversionException.couldNotBeConvertedToClass(typeName, Class.class, ex);
+        } catch (Exception ex) {
+            throw ConversionException.couldNotBeConvertedToClass(typeName, Class.class, ex);
         }
     }
-    
+
     protected JAXBElement createJAXBElementFromXMLRoot(Root xmlRoot, Class declaredType) {
         Object value = xmlRoot.getObject();
 
@@ -714,7 +715,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         return new JAXBElement(qname, theClass, value);
     }
-    
+
     /**
      * Returns true if any Object in this context contains a property annotated with an XmlAttachmentRef
      * annotation.
@@ -740,7 +741,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          */
         public JAXBContextInput(Map properties, ClassLoader classLoader) {
             this.properties = properties;
-            if(null == classLoader) {
+            if (null == classLoader) {
                 this.classLoader = Thread.currentThread().getContextClassLoader();
             } else {
                 this.classLoader = classLoader;
@@ -750,17 +751,26 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         protected abstract JAXBContextState createContextState() throws javax.xml.bind.JAXBException;
 
         protected Collection<SessionEventListener> sessionEventListeners() {
-            SessionEventListener eventListenerFromProperties = null;
-            if(this.properties != null) {
-                eventListenerFromProperties = (SessionEventListener) properties.get(JAXBContextProperties.SESSION_EVENT_LISTENER);
+            Object eventListenerFromProperties = null;
+            if (this.properties != null) {
+                eventListenerFromProperties = properties.get(JAXBContextProperties.SESSION_EVENT_LISTENER);
             }
-            List<SessionEventListener> eventListeners;
-            if(null == eventListenerFromProperties) {
+
+            List<SessionEventListener> eventListeners = null;
+
+            if (null == eventListenerFromProperties) {
                 eventListeners = new ArrayList<SessionEventListener>(1);
             } else {
-                eventListeners = new ArrayList<SessionEventListener>(2);
-                eventListeners.add(eventListenerFromProperties);
+                if (eventListenerFromProperties instanceof SessionEventListener) {
+                    eventListeners = new ArrayList<SessionEventListener>(2);
+                    eventListeners.add((SessionEventListener) eventListenerFromProperties);
+                } else if (eventListenerFromProperties instanceof Collection) {
+                    List<SessionEventListener> listeners = (List<SessionEventListener>) eventListenerFromProperties;
+                    eventListeners = new ArrayList<SessionEventListener>(listeners.size() + 1);
+                    eventListeners.addAll(listeners);
+                }
             }
+
             // disable instantiation policy validation during descriptor initialization
             org.eclipse.persistence.internal.jaxb.SessionEventListener eventListener = new org.eclipse.persistence.internal.jaxb.SessionEventListener();
             eventListener.setShouldValidateInstantiationPolicy(false);
@@ -865,13 +875,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             AnnotationHelper annotationHelper = null;
             boolean enableXmlAccessorFactory = false;
             if (properties != null) {
-                if ((defaultTargetNamespace = (String)properties.get(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE)) == null) {
+                if ((defaultTargetNamespace = (String) properties.get(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE)) == null) {
                     // try looking up the 'old' key
-                    defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
+                    defaultTargetNamespace = (String) properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
                 }
-                if ((annotationHelper = (AnnotationHelper)properties.get(JAXBContextProperties.ANNOTATION_HELPER)) == null) {
+                if ((annotationHelper = (AnnotationHelper) properties.get(JAXBContextProperties.ANNOTATION_HELPER)) == null) {
                     // try looking up the 'old' key
-                    annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+                    annotationHelper = (AnnotationHelper) properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
                 }
                 Boolean xmlAccessorFactorySupport = (Boolean) properties.get(JAXBContextProperties.XML_ACCESSOR_FACTORY_SUPPORT);
                 Boolean xmlAccessorFactorySupportRI = (Boolean) properties.get(RI_XML_ACCESSOR_FACTORY_SUPPORT);
@@ -881,7 +891,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
 
             JavaModelImpl jModel;
-            if(annotationHelper != null) {
+            if (annotationHelper != null) {
                 jModel = new JavaModelImpl(loader, annotationHelper);
             } else {
                 jModel = new JavaModelImpl(loader);
@@ -926,12 +936,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 }
             }
 
-
             XMLPlatform platform = new SAXPlatform();
             platform.getConversionManager().setLoader(loader);
-            XMLContext xmlContext = new XMLContext((Project)proj, loader, sessionEventListeners());
+            XMLContext xmlContext = new XMLContext((Project) proj, loader, sessionEventListeners());
 
-            ((XMLLogin)xmlContext.getSession().getDatasourceLogin()).setEqualNamespaceResolvers(true);
+            ((XMLLogin) xmlContext.getSession().getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
             return new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
         }
@@ -1001,13 +1010,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             AnnotationHelper annotationHelper = null;
             boolean enableXmlAccessorFactory = false;
             if (properties != null) {
-                if ((defaultTargetNamespace = (String)properties.get(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE)) == null) {
+                if ((defaultTargetNamespace = (String) properties.get(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE)) == null) {
                     // try looking up the 'old' key
-                    defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
+                    defaultTargetNamespace = (String) properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
                 }
-                if ((annotationHelper = (AnnotationHelper)properties.get(JAXBContextProperties.ANNOTATION_HELPER)) == null) {
+                if ((annotationHelper = (AnnotationHelper) properties.get(JAXBContextProperties.ANNOTATION_HELPER)) == null) {
                     // try looking up the 'old' key
-                    annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+                    annotationHelper = (AnnotationHelper) properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
                 }
                 Boolean xmlAccessorFactorySupport = (Boolean) properties.get(JAXBContextProperties.XML_ACCESSOR_FACTORY_SUPPORT);
                 Boolean xmlAccessorFactorySupportRI = (Boolean) properties.get(RI_XML_ACCESSOR_FACTORY_SUPPORT);
@@ -1023,7 +1032,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             JaxbClassLoader loader = new JaxbClassLoader(classLoader, typesToBeBound);
 
             JavaModelImpl jModel;
-            if(annotationHelper != null) {
+            if (annotationHelper != null) {
                 jModel = new JavaModelImpl(loader, annotationHelper);
             } else {
                 jModel = new JavaModelImpl(loader);
@@ -1043,7 +1052,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
             try {
                 Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace, enableXmlAccessorFactory);
-                JAXBContextState contextState = createContextState(generator, loader, typesToBeBound, properties);                
+                JAXBContextState contextState = createContextState(generator, loader, typesToBeBound, properties);
                 return contextState;
             } catch (Exception ex) {
                 throw new javax.xml.bind.JAXBException(ex.getMessage(), ex);
@@ -1051,7 +1060,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         private JAXBContextState createContextState(Generator generator, JaxbClassLoader loader, TypeMappingInfo[] typesToBeBound, Map properties) throws Exception {
-        	CoreProject proj = generator.generateProject();
+            CoreProject proj = generator.generateProject();
             ConversionManager conversionManager = null;
             if (classLoader != null) {
                 conversionManager = new ConversionManager();
@@ -1071,27 +1080,26 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             XMLPlatform platform = new SAXPlatform();
             platform.getConversionManager().setLoader(loader);
-            XMLContext xmlContext = new XMLContext((Project)proj, loader, sessionEventListeners());
+            XMLContext xmlContext = new XMLContext((Project) proj, loader, sessionEventListeners());
 
-            ((XMLLogin)xmlContext.getSession().getDatasourceLogin()).setEqualNamespaceResolvers(true);
+            ((XMLLogin) xmlContext.getSession().getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
-           
             JAXBContextState contextState = new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
-            
-            for(TypeMappingInfo typeMappingInfo : typesToBeBound) {
+
+            for (TypeMappingInfo typeMappingInfo : typesToBeBound) {
                 Type classToLookup = typeMappingInfo.getType();
-                if(contextState.getTypeMappingInfoToGeneratedType()!= null && contextState.getTypeMappingInfoToGeneratedType().size() >0){
+                if (contextState.getTypeMappingInfoToGeneratedType() != null && contextState.getTypeMappingInfoToGeneratedType().size() > 0) {
                     Class generatedClass = contextState.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
-                    if(generatedClass != null){
+                    if (generatedClass != null) {
                         classToLookup = generatedClass;
                     }
-                }                 
-                if(classToLookup != null && classToLookup.getClass() == Class.class){
+                }
+                if (classToLookup != null && classToLookup.getClass() == Class.class) {
                     Descriptor xmlDescriptor = (Descriptor) proj.getDescriptor((Class) classToLookup);
                     typeMappingInfo.setXmlDescriptor(xmlDescriptor);
                 }
             }
-            
+
             return contextState;
         }
 
@@ -1103,24 +1111,24 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
-                 for (TypeMappingInfo typeMappingInfo : existingTypes) {
-                    Type type  = typeMappingInfo.getType();
-                    if(type == null){
+                for (TypeMappingInfo typeMappingInfo : existingTypes) {
+                    Type type = typeMappingInfo.getType();
+                    if (type == null) {
                         throw org.eclipse.persistence.exceptions.JAXBException.nullTypeOnTypeMappingInfo(typeMappingInfo.getXmlTagName());
                     }
-                     // ignore ParameterizedTypes
-                     if (type instanceof Class) {
-                         Class cls = (Class) type;
-                         existingClasses.add(cls);
-                     }
-                 }
+                    // ignore ParameterizedTypes
+                    if (type instanceof Class) {
+                        Class cls = (Class) type;
+                        existingClasses.add(cls);
+                    }
+                }
 
-                 List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<TypeMappingInfo>(jTypes.getJavaType().size());
+                List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<TypeMappingInfo>(jTypes.getJavaType().size());
 
-                 for (JavaType javaType : jTypes.getJavaType()) {
+                for (JavaType javaType : jTypes.getJavaType()) {
                     try {
                         Class nextClass = classLoader.loadClass(getQualifiedJavaTypeName(javaType.getName(), xmlBindings.getPackageName()));
-                        if(!(existingClasses.contains(nextClass))){
+                        if (!(existingClasses.contains(nextClass))) {
                             TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
                             typeMappingInfo.setType(nextClass);
                             additionalTypeMappingInfos.add(typeMappingInfo);
@@ -1154,7 +1162,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
         private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToJavaTypeAdapters;
         private Map properties;
-        
+
         protected JAXBContextState() {
         }
 
@@ -1170,13 +1178,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
             this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
             this.boundTypes = new TypeMappingInfo[boundTypes.length];
-            for(int i =0; i< boundTypes.length; i++){
+            for (int i = 0; i < boundTypes.length; i++) {
                 TypeMappingInfo newTypeInfo = new TypeMappingInfo();
                 newTypeInfo.setType(boundTypes[i]);
                 this.boundTypes[i] = newTypeInfo;
             }
-            if(properties != null){
-               this.properties = new HashMap(properties);
+            if (properties != null) {
+                this.properties = new HashMap(properties);
             }
         }
 
@@ -1189,23 +1197,24 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             this.typeMappingInfoToGeneratedType = generator.getAnnotationsProcessor().getTypeMappingInfoToGeneratedClasses();
             this.setTypeMappingInfoToJavaTypeAdapaters(createAdaptersForAdapterClasses(generator.getAnnotationsProcessor().getTypeMappingInfoToAdapterClasses()));
             this.boundTypes = boundTypes;
-            if(properties != null){
+            if (properties != null) {
                 this.properties = new HashMap(properties);
-             }
+            }
         }
 
         private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> createAdaptersForAdapterClasses(Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses) {
             Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters = new HashMap<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter>();
-            for(Entry<TypeMappingInfo, Class> entry : typeMappingInfoToAdapterClasses.entrySet()) {
+            for (Entry<TypeMappingInfo, Class> entry : typeMappingInfoToAdapterClasses.entrySet()) {
                 Class adapterClass = entry.getValue();
-                if(adapterClass != null) {
+                if (adapterClass != null) {
                     try {
-                        XmlAdapter adapter = (XmlAdapter)adapterClass.newInstance();
+                        XmlAdapter adapter = (XmlAdapter) adapterClass.newInstance();
                         Class boundType = getBoundTypeForXmlAdapterClass(adapterClass);
                         RootLevelXmlAdapter rootLevelXmlAdapter = new RootLevelXmlAdapter(adapter, boundType);
 
                         typeMappingInfoToAdapters.put(entry.getKey(), rootLevelXmlAdapter);
-                    } catch(Exception ex) {}
+                    } catch (Exception ex) {
+                    }
                 }
             }
             return typeMappingInfoToAdapters;
@@ -1214,10 +1223,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         private Class getBoundTypeForXmlAdapterClass(Class adapterClass) {
             Class boundType = Object.class;
 
-            for (Method method:PrivilegedAccessHelper.getDeclaredMethods(adapterClass)) {
+            for (Method method : PrivilegedAccessHelper.getDeclaredMethods(adapterClass)) {
                 if (method.getName().equals("marshal")) {
                     Class returnType = PrivilegedAccessHelper.getMethodReturnType(method);
-                    if(!returnType.getName().equals(boundType.getName())) {
+                    if (!returnType.getName().equals(boundType.getName())) {
                         boundType = returnType;
                         break;
                     }
@@ -1226,22 +1235,22 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             return boundType;
         }
 
-        private void updateNamespaces(){
-        	
-        	Collection descriptors = xmlContext.getSession().getDescriptors().values();
-        	Iterator iter = descriptors.iterator();
-        	
-        	while(iter.hasNext()){
-        	   Descriptor desc = (Descriptor)iter.next();
-        	   processXMLDescriptor(new  ArrayList<Descriptor>(), desc, desc.getNonNullNamespaceResolver());
-        	}
-    	
+        private void updateNamespaces() {
+
+            Collection descriptors = xmlContext.getSession().getDescriptors().values();
+            Iterator iter = descriptors.iterator();
+
+            while (iter.hasNext()) {
+                Descriptor desc = (Descriptor) iter.next();
+                processXMLDescriptor(new ArrayList<Descriptor>(), desc, desc.getNonNullNamespaceResolver());
+            }
+
         }
-           
-        private void processRefClasses(List processed, Set refClasses, org.eclipse.persistence.internal.oxm.NamespaceResolver nr){
-            if(refClasses != null){
+
+        private void processRefClasses(List processed, Set refClasses, org.eclipse.persistence.internal.oxm.NamespaceResolver nr) {
+            if (refClasses != null) {
                 Iterator iter = refClasses.iterator();
-                while(iter.hasNext()){
+                while (iter.hasNext()) {
                     Class nextClass = (Class) iter.next();
                     Descriptor desc = (Descriptor) xmlContext.getSession().getProject().getDescriptor(nextClass);
                     processXMLDescriptor(processed, desc, nr);
@@ -1249,34 +1258,34 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
         }
 
-        private void processXMLDescriptor(List<Descriptor> processed, Descriptor desc, org.eclipse.persistence.internal.oxm.NamespaceResolver nr){
-            if(desc == null || processed.contains(desc)){
+        private void processXMLDescriptor(List<Descriptor> processed, Descriptor desc, org.eclipse.persistence.internal.oxm.NamespaceResolver nr) {
+            if (desc == null || processed.contains(desc)) {
                 return;
             }
             processed.add(desc);
-        		
+
             Vector mappings = desc.getMappings();
-    		
-            for(int i =0; i<mappings.size(); i++){
+
+            for (int i = 0; i < mappings.size(); i++) {
                 DatabaseMapping nextMapping = (DatabaseMapping) mappings.get(i);
                 Vector fields = nextMapping.getFields();
                 updateResolverForFields(fields, nr);
-                Descriptor refDesc = (Descriptor) ((DatabaseMapping)nextMapping).getReferenceDescriptor();
-                if(refDesc != null && !processed.contains(refDesc)){    				
-                    processXMLDescriptor(processed, refDesc, nr); 
-	            }    
-    			
-                if(nextMapping instanceof ChoiceObjectMapping){    				    			
-                    Set refClasses = ((ChoiceObjectMapping)nextMapping).getClassToFieldMappings().keySet();
-                    processRefClasses(processed, refClasses, nr);    				
-                } else if(nextMapping instanceof ChoiceCollectionMapping){    				    			
-                    Set refClasses = ((ChoiceCollectionMapping)nextMapping).getClassToFieldMappings().keySet();
+                Descriptor refDesc = (Descriptor) ((DatabaseMapping) nextMapping).getReferenceDescriptor();
+                if (refDesc != null && !processed.contains(refDesc)) {
+                    processXMLDescriptor(processed, refDesc, nr);
+                }
+
+                if (nextMapping instanceof ChoiceObjectMapping) {
+                    Set refClasses = ((ChoiceObjectMapping) nextMapping).getClassToFieldMappings().keySet();
                     processRefClasses(processed, refClasses, nr);
-                }    			
-            }    		
+                } else if (nextMapping instanceof ChoiceCollectionMapping) {
+                    Set refClasses = ((ChoiceCollectionMapping) nextMapping).getClassToFieldMappings().keySet();
+                    processRefClasses(processed, refClasses, nr);
+                }
+            }
         }
 
-        private void updateResolverForFields(Collection fields, org.eclipse.persistence.internal.oxm.NamespaceResolver nr){
+        private void updateResolverForFields(Collection fields, org.eclipse.persistence.internal.oxm.NamespaceResolver nr) {
             Iterator fieldIter = fields.iterator();
             while (fieldIter.hasNext()) {
                 Field field = (XMLField) fieldIter.next();
@@ -1296,7 +1305,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
         }
 
-
         private HashMap<String, Class> getClassToGeneratedClasses() {
             return classToGeneratedClasses;
         }
@@ -1310,7 +1318,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         private HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
-            if(typeToSchemaType == null){
+            if (typeToSchemaType == null) {
                 initTypeToSchemaType();
             }
             return typeToSchemaType;
@@ -1329,7 +1337,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         private Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
-            if(typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() >0){
+            if (typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() > 0) {
                 return new HashMap<TypeMappingInfo, QName>();
             }
             return generator.getAnnotationsProcessor().getTypeMappingInfoToSchemaType();
@@ -1350,18 +1358,18 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             QName name = null;
             //Check for annotation overrides
             if (type instanceof Class) {
-                name = generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class)type).getName());
+                name = generator.getAnnotationsProcessor().getUserDefinedSchemaTypes().get(((Class) type).getName());
                 if (name == null) {
-                    Class theClass = (Class)type;
+                    Class theClass = (Class) type;
                     //Change default for byte[] to Base64 (JAXB 2.0 default)
-                    if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler") ) {
+                    if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler")) {
                         name = Constants.BASE_64_BINARY_QNAME;
-                    } else if(type == CoreClassConstants.OBJECT){
+                    } else if (type == CoreClassConstants.OBJECT) {
                         name = Constants.ANY_TYPE_QNAME;
-                    } else if(type == CoreClassConstants.XML_GREGORIAN_CALENDAR) {
+                    } else if (type == CoreClassConstants.XML_GREGORIAN_CALENDAR) {
                         name = Constants.ANY_SIMPLE_TYPE_QNAME;
                     } else {
-                        name = (QName)XMLConversionManager.getDefaultJavaTypes().get(type);
+                        name = (QName) XMLConversionManager.getDefaultJavaTypes().get(type);
                     }
                 }
             }
@@ -1375,7 +1383,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         private void initTypeToSchemaType() {
             this.typeToSchemaType = new HashMap<Type, QName>();
 
-            if(typeToTypeMappingInfo == null || typeToTypeMappingInfo.size() == 0){
+            if (typeToTypeMappingInfo == null || typeToTypeMappingInfo.size() == 0) {
                 return;
             }
 
@@ -1383,10 +1391,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             //Add schema types generated for mapped domain classes
             while (descriptors.hasNext()) {
-                Descriptor next = (Descriptor)descriptors.next();
+                Descriptor next = (Descriptor) descriptors.next();
                 Class javaClass = next.getJavaClass();
 
-                if (next.getSchemaReference() != null){
+                if (next.getSchemaReference() != null) {
                     QName schemaType = next.getSchemaReference().getSchemaContextAsQName(next.getNamespaceResolver());
                     Type type = null;
                     if (generator != null) {
@@ -1394,19 +1402,20 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                         type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
 
                         if (type == null) {
-                            JavaClass arrayClass = (JavaClass)generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
+                            JavaClass arrayClass = (JavaClass) generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
                             if (arrayClass != null) {
                                 String arrayClassName = arrayClass.getName();
                                 try {
                                     type = PrivilegedAccessHelper.getClassForName(arrayClassName);
-                                } catch (Exception ex) {}
+                                } catch (Exception ex) {
+                                }
                             }
 
-                            if(type == null && getTypeMappingInfoToGeneratedType() != null){
+                            if (type == null && getTypeMappingInfoToGeneratedType() != null) {
                                 Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
-                                while(iter.hasNext()){
+                                while (iter.hasNext()) {
                                     Map.Entry<TypeMappingInfo, Class> entry = iter.next();
-                                    if(entry.getValue().equals(javaClass)){
+                                    if (entry.getValue().equals(javaClass)) {
                                         type = entry.getKey().getType();
                                         break;
                                     }
@@ -1426,7 +1435,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             //Add any types that we didn't generate descriptors for (built in types)
             if (boundTypes != null) {
-                for (TypeMappingInfo next:this.boundTypes) {
+                for (TypeMappingInfo next : this.boundTypes) {
                     if (this.typeToSchemaType.get(next) == null) {
                         Type nextType = next.getType();
                         QName name = getSchemaTypeForTypeMappingInfo(nextType);
@@ -1471,63 +1480,64 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             marshaller.setJaxbContext(jaxbContext);
             if (generator != null && generator.hasMarshalCallbacks()) {
                 // initialize each callback in the map
-                for (Iterator callIt = generator.getMarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {
+                for (Iterator callIt = generator.getMarshalCallbacks().keySet().iterator(); callIt.hasNext();) {
                     MarshalCallback cb = (MarshalCallback) generator.getMarshalCallbacks().get(callIt.next());
                     cb.initialize(generator.getClass().getClassLoader());
                 }
                 marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
             }
-            if(properties != null){
-            	setPropertyOnMarshaller(JAXBContextProperties.MEDIA_TYPE, marshaller);
-            	setPropertyOnMarshaller(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, marshaller);
-            	setPropertyOnMarshaller(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, marshaller);
-            	setPropertyOnMarshaller(JAXBContextProperties.JSON_INCLUDE_ROOT, marshaller);
-            	setPropertyOnMarshaller(JAXBContextProperties.JSON_VALUE_WRAPPER, marshaller);
-            	setPropertyOnMarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, marshaller);
-            	setPropertyOnMarshaller(JAXBContextProperties.OBJECT_GRAPH, marshaller);
-            	setPropertyOnMarshaller(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, marshaller);
+            if (properties != null) {
+                setPropertyOnMarshaller(JAXBContextProperties.MEDIA_TYPE, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.JSON_INCLUDE_ROOT, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.JSON_VALUE_WRAPPER, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.OBJECT_GRAPH, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, marshaller);
             }
-        
+
             return marshaller;
         }
-        
+
         public JAXBUnmarshaller createUnmarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
 
-             JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
-             if (generator != null && generator.hasUnmarshalCallbacks()) {
-                 // initialize each callback in the map
-                 for (Iterator callIt = generator.getUnmarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {
-                     UnmarshalCallback cb = (UnmarshalCallback) generator.getUnmarshalCallbacks().get(callIt.next());
-                     cb.initialize(generator.getClass().getClassLoader());
-                 }
-                 unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
-             }
-             unmarshaller.setJaxbContext(jaxbContext);
-             if(properties != null){
-                 setPropertyOnUnmarshaller(JAXBContextProperties.MEDIA_TYPE, unmarshaller);
-                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, unmarshaller);
-                 setPropertyOnUnmarshaller(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, unmarshaller);
-                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_INCLUDE_ROOT, unmarshaller);
-                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_VALUE_WRAPPER, unmarshaller);
-                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, unmarshaller);
-                 setPropertyOnUnmarshaller(JAXBContextProperties.OBJECT_GRAPH, unmarshaller);
-                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, unmarshaller);
-             }
-             return unmarshaller;
+            JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
+            if (generator != null && generator.hasUnmarshalCallbacks()) {
+                // initialize each callback in the map
+                for (Iterator callIt = generator.getUnmarshalCallbacks().keySet().iterator(); callIt.hasNext();) {
+                    UnmarshalCallback cb = (UnmarshalCallback) generator.getUnmarshalCallbacks().get(callIt.next());
+                    cb.initialize(generator.getClass().getClassLoader());
+                }
+                unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
+            }
+            unmarshaller.setJaxbContext(jaxbContext);
+            if (properties != null) {
+                setPropertyOnUnmarshaller(JAXBContextProperties.MEDIA_TYPE, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.JSON_INCLUDE_ROOT, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.JSON_VALUE_WRAPPER, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.OBJECT_GRAPH, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, unmarshaller);
+            }
+            return unmarshaller;
         }
-        private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException{
+
+        private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException {
             Object propertyValue = properties.get(propertyName);
-            if(propertyValue != null){          
+            if (propertyValue != null) {
                 marshaller.setProperty(propertyName, propertyValue);
             }
-         }
-        
-        private void setPropertyOnUnmarshaller(String propertyName, JAXBUnmarshaller unmarshaller) throws PropertyException{
-        	Object propertyValue = properties.get(propertyName);
-            if(propertyValue != null){        
+        }
+
+        private void setPropertyOnUnmarshaller(String propertyName, JAXBUnmarshaller unmarshaller) throws PropertyException {
+            Object propertyValue = properties.get(propertyName);
+            if (propertyValue != null) {
                 unmarshaller.setProperty(propertyName, propertyValue);
             }
-         }
-     
+        }
+
     }
 }

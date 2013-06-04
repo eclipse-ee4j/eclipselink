@@ -33,7 +33,7 @@ public class JAXBContextProperties {
      * @since 2.4
      * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_ATTRIBUTE_PREFIX
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX
-     */ 
+     */
     public static final String JSON_ATTRIBUTE_PREFIX = "eclipselink.json.attribute-prefix";
 
     /**
@@ -59,7 +59,7 @@ public class JAXBContextProperties {
      * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
      */
-    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
+    public static final String JSON_NAMESPACE_SEPARATOR = "eclipselink.json.namespace-separator";
 
     /**
      * The name of the property used to specify the key that will correspond to
@@ -105,7 +105,9 @@ public class JAXBContextProperties {
     /**
      * The name of the property used to specify a SessionEventListener that can
      * be used to customize the metadata before or after it has been 
-     * initialized.
+     * initialized. Value is either an implementation of org.eclipse.persistence.sessions.SessionEventListener 
+     * or a List<org.eclipse.persistence.sessions.SessionEventListener>.
+     * 
      * @see org.eclipse.persistence.sessions.SessionEventListener
      * @since 2.4
      */
@@ -146,7 +148,7 @@ public class JAXBContextProperties {
      * @since 2.4, replaces JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY
      */
     public static final String DEFAULT_TARGET_NAMESPACE = "eclipselink.default-target-namespace";
-    
+
     /**
      * The name of the property used to specify an AnnotationHelper instance.  
      * An AnnotationHelper is responsible for returning Annotations from 
@@ -167,7 +169,7 @@ public class JAXBContextProperties {
      * @since 2.4.2
      */
     public static final String XML_ACCESSOR_FACTORY_SUPPORT = "eclipselink.xml-accessor-factory.support";
-    
+
     /**
      * The name of the property used to specify an ObjectGraph instance or name of an 
      * ObjectGraph to be used on Unmarshallers and Marshallers created by the context. 

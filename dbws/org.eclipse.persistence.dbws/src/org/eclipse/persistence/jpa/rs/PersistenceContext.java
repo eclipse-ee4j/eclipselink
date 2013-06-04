@@ -334,7 +334,7 @@ public class PersistenceContext {
 
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataLocations);
 
-        properties.put("eclipselink.session-event-listener", new PreLoginMappingAdapter((AbstractSession) session));
+        properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, new PreLoginMappingAdapter((AbstractSession) session));
         return properties;
     }
 
