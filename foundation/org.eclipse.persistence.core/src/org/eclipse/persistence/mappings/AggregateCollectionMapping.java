@@ -51,6 +51,7 @@ import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -2088,7 +2089,21 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
     }
     
-
+    /**
+     * Force instantiation of all indirections.
+     */
+    @Override
+    public void loadAll(Object object, AbstractSession session, IdentityHashSet loaded) {
+        instantiateAttribute(object, session);
+        Object value = getRealAttributeValueFromObject(object, session);
+        ContainerPolicy cp = this.containerPolicy;
+        for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
+            Object wrappedObject = cp.nextEntry(iterator, session);
+            Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
+            getReferenceDescriptor(nestedObject.getClass(), session).getObjectBuilder().loadAll(nestedObject, session, loaded);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Merge changes from the source to the target object.

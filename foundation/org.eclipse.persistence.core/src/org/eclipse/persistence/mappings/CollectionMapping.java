@@ -1369,12 +1369,21 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public void loadAll(Object object, AbstractSession session, IdentityHashSet loaded) {
         instantiateAttribute(object, session);
-        Object value = getRealAttributeValueFromObject(object, session);
-        ContainerPolicy cp = this.containerPolicy;
-        for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
-            Object wrappedObject = cp.nextEntry(iterator, session);
-            Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
-            getDescriptor().getObjectBuilder().loadAll(nestedObject, session, loaded);
+        ClassDescriptor referenceDescriptor = getReferenceDescriptor();
+        if (referenceDescriptor != null) {
+        	boolean hasInheritance = referenceDescriptor.hasInheritance();
+	        Object value = getRealAttributeValueFromObject(object, session);
+	        ContainerPolicy cp = this.containerPolicy;
+	        for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
+	            Object wrappedObject = cp.nextEntry(iterator, session);
+	            Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
+	            if (hasInheritance && !nestedObject.getClass().equals(referenceDescriptor.getJavaClass())){
+	                ClassDescriptor concreteReferenceDescriptor = referenceDescriptor.getInheritancePolicy().getDescriptor(nestedObject.getClass());
+	                concreteReferenceDescriptor.getObjectBuilder().loadAll(nestedObject, session, loaded);
+	            } else {
+	            	referenceDescriptor.getObjectBuilder().loadAll(nestedObject, session, loaded);
+	            }
+	        }
         }
     }
     
