@@ -167,7 +167,7 @@ public class JMSSetupHelper extends BroadcastSetupHelper {
         java.sql.Connection conn = java.sql.DriverManager.getConnection(connectionString, user, password);
         try {
             java.sql.Statement stmt = conn.createStatement();
-            String createTable = "BEGIN DBMS_AQADM.CREATE_QUEUE_TABLE (queue_table => '" + queueTableName + "', multiple_consumers => true, queue_payload_type => 'SYS.AQ$_JMS_OBJECT_MESSAGE'); END;";
+            String createTable = "BEGIN DBMS_AQADM.CREATE_QUEUE_TABLE (queue_table => '" + queueTableName + "', multiple_consumers => true, queue_payload_type => 'SYS.AQ$_JMS_BYTES_MESSAGE'); END;";
             stmt.executeUpdate(createTable);
             String createQueue = "BEGIN DBMS_AQADM.CREATE_QUEUE (queue_name => '" + queueName + "', queue_table => '" + queueTableName + "'); END;";
             stmt.executeUpdate(createQueue);
