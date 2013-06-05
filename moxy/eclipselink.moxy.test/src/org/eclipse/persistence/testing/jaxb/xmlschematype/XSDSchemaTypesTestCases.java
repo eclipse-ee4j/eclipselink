@@ -84,6 +84,8 @@ public class XSDSchemaTypesTestCases extends JAXBWithJSONTestCases{
 		    String s = "this is a test";
 		    holder.things.add(s);
 		    
+		    holder.things.add("abc".getBytes());
+		    
 		    return holder;
 		} catch (DatatypeConfigurationException e) {
 			// TODO Auto-generated catch block

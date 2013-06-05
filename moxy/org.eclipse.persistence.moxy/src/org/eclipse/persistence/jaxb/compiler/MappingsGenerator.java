@@ -1490,6 +1490,8 @@ public class MappingsGenerator {
      	((XMLField)field).addXMLConversion(Constants.DATE_TIME_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
     	((XMLField)field).addXMLConversion(Constants.DATE_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
     	((XMLField)field).addXMLConversion(Constants.TIME_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
+    	((XMLField)field).addJavaConversion(CoreClassConstants.APBYTE, Constants.BASE_64_BINARY_QNAME);
+    	((XMLField)field).addJavaConversion(CoreClassConstants.ABYTE, Constants.BASE_64_BINARY_QNAME);
        	
     }
     
