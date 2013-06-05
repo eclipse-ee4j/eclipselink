@@ -124,6 +124,12 @@ public class DDLTestSuite extends JUnitTestCase {
             properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, new FileReader(new File(dropSource)));
             
             em = createEntityManager(properties);
+            
+            // If on the server, need to trigger the DDL through Persistence 
+            // API, createEntityManager call above will not do it.
+            if (isOnServer()) {
+                Persistence.generateSchema(this.getPersistenceUnitName(), properties);
+            }
     
             beginTransaction(em);
                     
