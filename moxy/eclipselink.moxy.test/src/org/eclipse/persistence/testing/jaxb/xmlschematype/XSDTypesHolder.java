@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlschematype;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,7 +24,19 @@ public class XSDTypesHolder {
 	
 	public boolean equals(Object obj){
 		if(obj instanceof XSDTypesHolder){
-			return things.equals(((XSDTypesHolder)obj).things);
+			for(int i=0;i<things.size(); i++){
+				Object next = things.get(i);
+				Object nextCompare = ((XSDTypesHolder)obj).things.get(i);
+				if(next instanceof byte[] && nextCompare instanceof byte[]){
+					if(!(Arrays.equals((byte[] )next, (byte[] )nextCompare))){
+						return false;
+					}
+				}else if(!next.equals(nextCompare)){
+					return false;
+				}
+			}
+			return true;
+
 		}
 		return false;
 	}
