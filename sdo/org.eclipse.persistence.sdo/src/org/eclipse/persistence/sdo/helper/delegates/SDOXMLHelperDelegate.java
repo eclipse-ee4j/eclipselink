@@ -807,9 +807,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     }
 
     public XMLConversionManager getXmlConversionManager() {
-        XMLConversionManager xcm = (XMLConversionManager) getXmlContext().getSession().getDatasourceLogin().getDatasourcePlatform().getConversionManager();
-        xcm.setTrimGMonth(true);
-        return xcm;
+        return (XMLConversionManager) getXmlContext().getSession().getDatasourceLogin().getDatasourcePlatform().getConversionManager();
     }
 
 }
