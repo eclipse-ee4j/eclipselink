@@ -866,6 +866,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 }
             }
         };
+        dbCall.returnCursor();
         session.getServerPlatform().launchContainerRunnable(runnable);
 
         return results;
