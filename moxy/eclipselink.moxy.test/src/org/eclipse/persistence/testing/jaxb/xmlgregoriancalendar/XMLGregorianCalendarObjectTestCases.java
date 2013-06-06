@@ -49,12 +49,17 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
 		    XMLGregorianCalendar cal2 = factory.newXMLGregorianCalendarDate(1982, 5, 30, DatatypeConstants.FIELD_UNDEFINED);
 		    XMLGregorianCalendar cal3 = factory.newXMLGregorianCalendarTime(9, 30, 05, DatatypeConstants.FIELD_UNDEFINED);
 		    XMLGregorianCalendar cal4 = factory.newXMLGregorianCalendar(1985, 9, 23, 10, 33, 05, 1, DatatypeConstants.FIELD_UNDEFINED);
+		    XMLGregorianCalendar cal5 = factory.newXMLGregorianCalendar(1977, 02, 13, 8, 30, 2, 0, DatatypeConstants.FIELD_UNDEFINED);
+		    XMLGregorianCalendar cal6 = factory.newXMLGregorianCalendar(1977, 02, 13, 8, 30, 2, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED);
+		    
 		    holder.thing = cal;
 		    holder.things = new ArrayList();
 		    holder.things.add(cal);
 		    holder.things.add(cal2);
 		    holder.things.add(cal3);
 		    holder.things.add(cal4);
+		    holder.things.add(cal5);
+		    holder.things.add(cal6);
 		    
 		    calendar.set(Calendar.MONTH, Calendar.FEBRUARY);
 		    calendar.set(Calendar.DAY_OF_MONTH, 20);
@@ -76,7 +81,7 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
 	@Override
 	public Object getReadControlObject() {
 		XMLGregorianCalendarHolder holder = (XMLGregorianCalendarHolder)getControlObject();
-		Date removed = (Date)holder.things.remove(4);
+		Date removed = (Date)holder.things.remove(6);
 		DatatypeFactory factory;		
 		try {		 
 			factory = DatatypeFactory.newInstance();					
