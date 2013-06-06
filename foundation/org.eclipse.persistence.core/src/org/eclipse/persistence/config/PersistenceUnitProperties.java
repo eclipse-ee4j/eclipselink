@@ -1439,6 +1439,8 @@ public class PersistenceUnitProperties {
      * <p>The values for this property are <code>"none"</code>, <code>"create"</code>, 
      * <code>"drop-and-create"</code>, <code>"drop"</code>.</p> 
      * 
+     * EclipseLink also supports the <code>"create-or-extend-tables"</code> option.
+     * 
      * <p>If the <code>"javax.persistence.schema-generation.database.action"</code> 
      * property is not specified, no schema generation actions must be taken on 
      * the database.</p>

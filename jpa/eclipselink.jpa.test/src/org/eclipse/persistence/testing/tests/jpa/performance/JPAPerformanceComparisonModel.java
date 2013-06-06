@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriv
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;
@@ -421,7 +422,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 
                 PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
                     public void test() {
-                        testQuery("findAllEmployeesBatch");
+                        testFetchQuery("findAllEmployeesBatch");
                     }
                 };
                 test.setName("BatchFetchTest");
@@ -429,7 +430,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 
                 test = new PerformanceComparisonTestCase() {
                     public void test() {
-                        testQuery("findAllEmployeesBatchEXISTS");
+                        testFetchQuery("findAllEmployeesBatchEXISTS");
                     }
                 };
                 test.setName("EXISTSBatchFetchTest");
@@ -437,7 +438,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 
                 test = new PerformanceComparisonTestCase() {
                     public void test() {
-                        testQuery("findAllEmployeesBatchIN");
+                        testFetchQuery("findAllEmployeesBatchIN");
                     }
                 };
                 test.setName("INBatchFetchTest");
@@ -445,7 +446,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 
                 test = new PerformanceComparisonTestCase() {
                     public void test() {
-                        testQuery("findAllEmployeesJoin");
+                        testFetchQuery("findAllEmployeesJoin");
                     }
                 };
                 test.setName("JoinFetchTest");
@@ -453,7 +454,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
             }
             
             public void test() throws Exception {
-                testQuery("findAllEmployees");
+                testFetchQuery("findAllEmployees");
             }
             
             public void reset() {
@@ -474,6 +475,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
      */
     public TestCase buildLoadTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void setup() {
                 
                 if (!getTests().isEmpty()) {
@@ -488,8 +490,55 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 };
                 test.setName("LoadTest");
                 addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    @Override
+                    public void startTest() {
+                        AbstractSession session = getExecutor().getEntityManagerFactory().createEntityManager().unwrap(AbstractSession.class);
+                        ((ReadAllQuery)session.getQuery("findAllEmployeesLoad")).getLoadGroup().setIsConcurrent(true);
+                        session.setIsConcurrent(true);
+                    }
+                    
+                    @Override
+                    public void endTest() {
+                        AbstractSession session = getExecutor().getEntityManagerFactory().createEntityManager().unwrap(AbstractSession.class);
+                        ((ReadAllQuery)session.getQuery("findAllEmployeesLoad")).getLoadGroup().setIsConcurrent(false);
+                        session.setIsConcurrent(false);
+                    }
+
+                    @Override
+                    public void test() {
+                        testQuery("findAllEmployeesLoad");
+                        ((JpaCache)getExecutor().getEntityManagerFactory().getCache()).clear();
+                    }
+                };
+                test.setName("ConcurrentLoadTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    @Override
+                    public void startTest() {
+                        AbstractSession session = getExecutor().getEntityManagerFactory().createEntityManager().unwrap(AbstractSession.class);
+                        session.setIsConcurrent(true);
+                    }
+                    
+                    @Override
+                    public void endTest() {
+                        AbstractSession session = getExecutor().getEntityManagerFactory().createEntityManager().unwrap(AbstractSession.class);
+                        session.setIsConcurrent(false);
+                    }
+
+                    @Override
+                    public void test() {
+                        testQuery("findAllEmployees");
+                        ((JpaCache)getExecutor().getEntityManagerFactory().getCache()).clear();
+                    }
+                };
+                test.setName("ConcurrentReadTest");
+                addTest(test);
             }
-            
+
+            @Override
             public void test() throws Exception {
                 testQuery("findAllEmployees");
                 ((JpaCache)getExecutor().getEntityManagerFactory().getCache()).clear();
@@ -510,48 +559,21 @@ public class JPAPerformanceComparisonModel extends TestModel {
         EntityManager em = getExecutor().createEntityManager();
         List<Employee> employees = em.createNamedQuery(query).getResultList();
         for (Employee employee : employees) {
-            employee.getAddress().toString();
+            employee.toString();
         }
         em.close();
     }
     
     /**
-     * Add a test to compare various batch fetching options.
+     * Execute the named query and traverse the results.
      */
-    public TestCase buildThreadCursorTest() {
-        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
-            public void setup() {
-                
-                if (!getTests().isEmpty()) {
-                    return;
-                }
-                
-                PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
-                    public void test() {
-                        testJPQL("Select a from Address a");
-                    }
-                };
-                test.setName("ReadAllTest");
-                addTest(test);
-                
-                test = new PerformanceComparisonTestCase() {
-                    public void startTest() {
-                    }
-                    public void test() {
-                        testJPQL("Select a from Address a");
-                    }
-                };
-                test.setName("ThreadCursorReadAllTest");
-                addTest(test);                
-            }
-            
-            public void test() throws Exception {
-                testQuery("findAllEmployees");
-            }
-
-        };
-        test.setName("ThreadCursorTest");
-        return test;
+    protected void testFetchQuery(String query) {
+        EntityManager em = getExecutor().createEntityManager();
+        List<Employee> employees = em.createNamedQuery(query).getResultList();
+        for (Employee employee : employees) {
+            employee.getAddress().toString();
+        }
+        em.close();
     }
     
     /**
