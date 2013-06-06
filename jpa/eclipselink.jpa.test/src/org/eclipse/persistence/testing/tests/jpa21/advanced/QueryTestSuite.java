@@ -275,6 +275,10 @@ public class QueryTestSuite extends JUnitTestCase {
      *   getMaxResults()
      */
     public void testQueryExceptionOnClosedEM() {
+        // closeEntityManager(em) does not close the entity manager when running on a server
+        if (isOnServer()){
+            return;
+        }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e");
         closeEntityManager(em);
