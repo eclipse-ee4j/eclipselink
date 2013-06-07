@@ -279,7 +279,6 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a NamedStoredProcedureQuery annotation using a result-set mapping. 
      */
     public void testQueryWithNamedColumnResult() {
-        // TODO: investigate if this test should work on Oracle as written.
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             
@@ -319,7 +318,6 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a NamedStoredProcedureQuery using a result-set mapping. 
      */
     public void testQueryWithNamedFieldResult() {
-        // TODO: investigate if this test should work on Oracle as written.
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             
