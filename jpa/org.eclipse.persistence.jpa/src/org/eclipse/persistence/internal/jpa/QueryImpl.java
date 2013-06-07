@@ -78,7 +78,7 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class QueryImpl {
     
-    private static final int UNDEFINED = -1;
+    public static final int UNDEFINED = -1;
 
     /**
      * Wrapped native query. The query may be {@link #isShared}
@@ -345,6 +345,7 @@ public class QueryImpl {
                 }
                 if (this.databaseQuery.isReadQuery()){
                     this.maxResults = ((ReadQuery)this.databaseQuery).getInternalMax();
+                    this.firstResultIndex = ((ReadQuery)this.databaseQuery).getFirstResult();
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] { this.queryName }));

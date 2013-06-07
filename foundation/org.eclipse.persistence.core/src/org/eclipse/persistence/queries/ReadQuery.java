@@ -58,7 +58,7 @@ public abstract class ReadQuery extends DatabaseQuery {
     protected transient Object temporaryCachedQueryResults = null;
     
     /** Stores the JPA maxResult settings for a NamedQuery */
-    protected int maxResults;
+    protected int maxResults = -1;
 
     /**
      * PUBLIC:

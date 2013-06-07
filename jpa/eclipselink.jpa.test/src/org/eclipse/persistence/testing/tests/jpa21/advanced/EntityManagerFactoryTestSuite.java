@@ -115,6 +115,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         }
         query = em.createQuery("Select e from Employee e where e.lastName = :p1 order by e.id");
         query.setMaxResults(1);
+        query.setFirstResult(1);
         query.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);
         factory.addNamedQuery("Select_Employee_by_first_name", query);
         closeEntityManager(em);
@@ -123,6 +124,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
         assertTrue("LockMode not retained", namedQuery.getLockMode().equals(LockModeType.OPTIMISTIC_FORCE_INCREMENT));
         assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
+        assertTrue("FirstResult not retained", namedQuery.getFirstResult() == 1);
         namedQuery.setParameter("p1", names.get(names.size()-1)[0]);
         beginTransaction(em);
         assertTrue("MaxResults not applied", namedQuery.getResultList().size() == 1);

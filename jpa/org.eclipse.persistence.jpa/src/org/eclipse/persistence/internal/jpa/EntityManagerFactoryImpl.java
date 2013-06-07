@@ -629,6 +629,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         }
         if (unwrapped.isReadQuery()){
             ((ReadQuery)unwrapped).setInternalMax((queryImpl.getMaxResultsInternal()));
+            ((ReadQuery)unwrapped).setFirstResult((queryImpl.getFirstResult()));
         }
         this.getServerSession().addQuery(name, unwrapped, true);
     }
