@@ -44,6 +44,7 @@ public class XmlElementsCollectionTestCases extends JAXBWithJSONTestCases {
         addr.street = "123 Fake Street";
         choices.add(addr);
         choices.add(new Integer(5));
+        choices.add("");
         employee.choice = choices;
         return employee;
     }
@@ -55,6 +56,7 @@ public class XmlElementsCollectionTestCases extends JAXBWithJSONTestCases {
           choices.add(new Integer(12));
           choices.add(new Integer(5));
           choices.add("String Value");
+          choices.add("");
           Address addr = new Address();
           addr.city = "Ottawa";
           addr.street = "123 Fake Street";
