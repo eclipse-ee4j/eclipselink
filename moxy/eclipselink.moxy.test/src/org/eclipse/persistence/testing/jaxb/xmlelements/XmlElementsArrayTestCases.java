@@ -36,7 +36,7 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
     protected Object getControlObject() {
     	EmployeeArray employee = new EmployeeArray();
         employee.id = CONTROL_ID;
-        Object[] choices =new Object[4]; 
+        Object[] choices =new Object[5]; 
         choices[0]= new Integer(12);
         choices[1]="String Value";
         Address addr = new Address();
@@ -44,7 +44,7 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
         addr.street = "123 Fake Street";
         choices[2]=addr;
         choices[3]=new Integer(5);
-        
+        choices[4] = "";
         employee.choice = choices;
         return employee;
     }
@@ -52,16 +52,16 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
     protected Object getJSONReadControlObject() {
     	EmployeeArray employee = new EmployeeArray();
           employee.id = CONTROL_ID;
-          Object[] choices =new Object[4];
+          Object[] choices =new Object[5];
           choices[0]= new Integer(12);
           choices[1]=new Integer(5);
           choices[2]="String Value";
-          
+          choices[3] = "";
           Address addr = new Address();
           addr.city = "Ottawa";
           addr.street = "123 Fake Street";
           employee.choice = choices;
-          choices[3]=addr;
+          choices[4]=addr;
           return employee;
     }
 }

@@ -1282,6 +1282,8 @@ public class MappingsGenerator {
                     	 ((DirectCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByXsiNil(true);
                     	 ((DirectCollectionMapping)nestedMapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
                      }
+                	 ((DirectCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByEmptyNode(false);
+                	 
                      if (type.isEnum()) {
                          ((DirectCollectionMapping)nestedMapping).setValueConverter(buildJAXBEnumTypeConverter(nestedMapping, (EnumTypeInfo)info));
                      }
