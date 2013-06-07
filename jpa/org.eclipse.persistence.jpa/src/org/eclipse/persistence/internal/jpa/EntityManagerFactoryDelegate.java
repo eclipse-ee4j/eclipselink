@@ -737,6 +737,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         }
         if (unwrapped.isReadQuery()){
             ((ReadQuery)unwrapped).setInternalMax((((QueryImpl)query).getMaxResultsInternal()));
+            if (query.getFirstResult() != QueryImpl.UNDEFINED){
+                ((ReadQuery)unwrapped).setFirstResult(query.getFirstResult());
+            }
         }
         this.getServerSession().addQuery(name, unwrapped, true);
     }
