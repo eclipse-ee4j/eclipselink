@@ -19,12 +19,12 @@ import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
 
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
      */
-    @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
         return items;
     }
@@ -32,7 +32,6 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildReportQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, java.util.List, javax.ws.rs.core.UriInfo)
      */
-    @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
         if ((results != null) && (!results.isEmpty())) {
             ReportQueryResultList list = populateReportQueryResultList(results, items);
@@ -43,11 +42,9 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildCollectionAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.Object, javax.ws.rs.core.UriInfo)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.String, java.lang.Object, javax.ws.rs.core.UriInfo)
      */
-    @SuppressWarnings("rawtypes")
-    @Override
-    public Object buildCollectionAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object result, UriInfo uriInfo) {
+    public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object result, UriInfo uriInfo) {
         if (result instanceof Collection) {
             if (containsDomainObjects(result)) {
                 // Classes derived from PersistenceWeavedRest class (domain objects) are already in the JAXB context
@@ -63,12 +60,10 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildSingleEntityResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.Object, javax.ws.rs.core.UriInfo)
      */
-    @Override
     public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
         return result;
     }
 
-    @SuppressWarnings("rawtypes")
     private ReportQueryResultList populateReportQueryResultList(List<Object[]> results, List<ReportItem> reportItems) {
         ReportQueryResultList response = new ReportQueryResultList();
         for (Object result : results) {
@@ -83,7 +78,13 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         return response;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    /**
+     * Creates the shell jaxb element list.
+     *
+     * @param reportItems the report items
+     * @param record the record
+     * @return the list
+     */
     protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
         List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
         if ((reportItems != null) && (reportItems.size() > 0)) {
@@ -122,7 +123,6 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         return jaxbElements;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private SimpleHomogeneousList populateSimpleHomogeneousList(Collection collection, String attributeName) {
         SimpleHomogeneousList simpleList = new SimpleHomogeneousList();
         List<JAXBElement> items = new ArrayList<JAXBElement>();
@@ -138,7 +138,6 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         return simpleList;
     }
 
-    @SuppressWarnings("rawtypes")
     private boolean containsDomainObjects(Object object) {
         Collection collection = (Collection) object;
         for (Iterator iterator = collection.iterator(); iterator.hasNext();) {

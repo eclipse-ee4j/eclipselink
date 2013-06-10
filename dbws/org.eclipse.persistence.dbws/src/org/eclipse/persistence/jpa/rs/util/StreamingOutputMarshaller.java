@@ -46,7 +46,6 @@ import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
  * @since EclipseLink 2.4.0
  */
 public class StreamingOutputMarshaller implements StreamingOutput {
-    public static final String NO_ROUTE_JAXB_ELEMENT_LABEL = "result";
     private PersistenceContext context;
     private Object result;
     private MediaType mediaType;
@@ -64,16 +63,16 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     @Override
     public void write(OutputStream output) throws IOException, WebApplicationException {
         if (result instanceof byte[] && this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
-            output.write((byte[])result);
+            output.write((byte[]) result);
             output.flush();
             output.close();
-        } else if (result instanceof String){
+        } else if (result instanceof String) {
             OutputStreamWriter writer = new OutputStreamWriter(output);
-            writer.write((String)result);
+            writer.write((String) result);
             writer.flush();
             writer.close();
         } else {
-            if ((this.context != null && this.context.getJAXBContext() != null && this.result != null) && 
+            if ((this.context != null && this.context.getJAXBContext() != null && this.result != null) &&
                     (this.mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || this.mediaType.equals(MediaType.APPLICATION_XML_TYPE))) {
                 try {
                     if (result instanceof ReportQueryResultList) {
@@ -88,12 +87,12 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                     }
                     return;
                 } catch (Exception e) {
-                    JPARSLogger.exception("jpars_caught_exception", new Object[]{}, e);
+                    JPARSLogger.exception("jpars_caught_exception", new Object[] {}, e);
                     throw new WebApplicationException();
                 }
-            } 
+            }
 
-            if (this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)){
+            if (this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
                 // could not marshall, try serializing
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -102,12 +101,11 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 oos.close();
                 output.write(baos.toByteArray());
             } else {
-                JPARSLogger.fine("jpars_could_marshal_requested_result_to_requested_type", new Object[]{result});
+                JPARSLogger.fine("jpars_could_marshal_requested_result_to_requested_type", new Object[] { result });
                 throw new WebApplicationException();
             }
         }
     }
-
 
     /**
      * Identify the preferred {@link MediaType} from the list provided. This
@@ -140,26 +138,26 @@ public class StreamingOutputMarshaller implements StreamingOutput {
         throw new UnsupportedMediaTypeException((aMediaType != null) ? aMediaType.toString() : "unknown");
     }
 
-    public static Marshaller createMarshaller(PersistenceContext context, MediaType mediaType) throws JAXBException{
+    public static Marshaller createMarshaller(PersistenceContext context, MediaType mediaType) throws JAXBException {
         Marshaller marshaller = context.getJAXBContext().createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
         marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         marshaller.setAdapter(new LinkAdapter(context.getBaseURI().toString(), context));
         marshaller.setListener(new Marshaller.Listener() {
             @Override
-            public void beforeMarshal(Object source) {   
-                if (source instanceof DynamicEntity){
-                    DynamicEntityImpl sourceImpl = (DynamicEntityImpl)source;
+            public void beforeMarshal(Object source) {
+                if (source instanceof DynamicEntity) {
+                    DynamicEntityImpl sourceImpl = (DynamicEntityImpl) source;
                     PropertyChangeListener listener = sourceImpl._persistence_getPropertyChangeListener();
                     sourceImpl._persistence_setPropertyChangeListener(null);
-                    ((DynamicEntity)source).set("self", source);
+                    ((DynamicEntity) source).set("self", source);
                     sourceImpl._persistence_setPropertyChangeListener(listener);
                 }
             }
         });
         return marshaller;
     }
-    
+
     public static MediaType getResponseMediaType(HttpHeaders headers) {
         MediaType mediaType = MediaType.TEXT_PLAIN_TYPE;
         if (headers != null) {

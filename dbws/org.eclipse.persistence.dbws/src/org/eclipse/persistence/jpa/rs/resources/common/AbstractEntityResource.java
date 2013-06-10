@@ -356,7 +356,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     private Response response(PersistenceContext context, String attribute, Object queryResults, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
         Map<String, Object> queryParams = getQueryParameters(uriInfo);
         if (queryResults != null) {
-            Object results = responseBuilder.buildCollectionAttributeResponse(context, queryParams, attribute, queryResults, uriInfo);
+            Object results = responseBuilder.buildAttributeResponse(context, queryParams, attribute, queryResults, uriInfo);
             if (results != null) {
                 return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes())).build();
             } else {

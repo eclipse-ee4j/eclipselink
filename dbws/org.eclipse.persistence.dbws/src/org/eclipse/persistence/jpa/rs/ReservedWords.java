@@ -15,9 +15,13 @@ package org.eclipse.persistence.jpa.rs;
 public class ReservedWords {
     // Note: list grouping names need to be configurable (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=396430)
     // For backwards compatibility default is "List", but user will be able to change it once the bug mentioned above is fixed.
+    @Deprecated
     public static final String JPARS_LIST_GROUPING_NAME = "List";
+
     public static final String JPARS_LIST_ITEM_NAME = "item";
     public static final String JPARS_LIST_ITEMS_NAME = "items";
+
+    public static final String JPARS_LINK_NAME = "link";
     public static final String JPARS_LINKS_NAME = "links";
 
     // Link relationships 
@@ -25,5 +29,6 @@ public class ReservedWords {
     public static final String JPARS_REL_PREV = "prev";
     public static final String JPARS_REL_SELF = "self";
 
+    public static final String NO_ROUTE_JAXB_ELEMENT_LABEL = "result";
     // 
 }

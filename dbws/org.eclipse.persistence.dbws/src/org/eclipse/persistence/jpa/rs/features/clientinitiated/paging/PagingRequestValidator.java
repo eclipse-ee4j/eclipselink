@@ -23,9 +23,9 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.SystemDefaults;
 import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidatorImpl;
-import org.eclipse.persistence.queries.DirectReadQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 
 public class PagingRequestValidator extends FeatureRequestValidatorImpl {
     private String offset = null;
@@ -38,14 +38,14 @@ public class PagingRequestValidator extends FeatureRequestValidatorImpl {
      */
     @Override
     public boolean isRequestValid(UriInfo uri, Map<String, Object> additionalParams) {
-        Object query = null;
-        Object dbQuery = null;
+        Query query = null;
+        ReadQuery dbQuery = null;
 
         if ((additionalParams != null) && (!additionalParams.isEmpty())) {
-            dbQuery = additionalParams.get(DB_QUERY);
-            query = additionalParams.get(QUERY);
+            dbQuery = (ReadQuery) additionalParams.get(DB_QUERY);
+            query = (Query) additionalParams.get(QUERY);
 
-            if ((dbQuery != null) && ((dbQuery instanceof ObjectLevelReadQuery) || (dbQuery instanceof ReadAllQuery))) {
+            if ((dbQuery != null) && (query != null) && ((dbQuery instanceof ObjectLevelReadQuery) || (dbQuery instanceof ReadAllQuery))) {
                 List<Expression> orderBy = null;
                 if (dbQuery instanceof ReadAllQuery) {
                     orderBy = ((ReadAllQuery) dbQuery).getOrderByExpressions();
@@ -82,19 +82,20 @@ public class PagingRequestValidator extends FeatureRequestValidatorImpl {
 
         try {
             if ((offset != null) && (limit != null)) {
-                if ((Integer.parseInt(offset) >= 0) && (Integer.parseInt(limit) > 0)) {
+                int intOffset = Integer.parseInt(offset);
+                int intLimit = Integer.parseInt(limit);
+                if ((intOffset >= 0) && (intLimit > 0)) {
                     if (query != null) {
-                        ((Query) query).setFirstResult((Integer.parseInt(offset)));
-                        ((Query) query).setMaxResults((Integer.parseInt(limit)));
-                    } else if ((dbQuery != null) && (dbQuery instanceof ReadAllQuery)) {
-                        ((ReadAllQuery) dbQuery).setFirstResult((Integer.parseInt(offset)));
-                        ((ReadAllQuery) dbQuery).setMaxRows((Integer.parseInt(limit)));
-                    } else if ((dbQuery != null) && (dbQuery instanceof DirectReadQuery)) {
-                        ((DirectReadQuery) dbQuery).setFirstResult((Integer.parseInt(offset)));
-                        ((DirectReadQuery) dbQuery).setMaxRows((Integer.parseInt(limit)));
+                        setOfsetAndLimit(query, intOffset, intLimit);
+                        return true;
                     }
-                    return true;
+
+                    if (dbQuery != null) {
+                        setOfsetAndLimit(dbQuery, intOffset, intLimit);
+                        return true;
+                    }
                 }
+                return false;
             }
         } catch (NumberFormatException ex) {
             //TODO: Log it!
@@ -115,5 +116,16 @@ public class PagingRequestValidator extends FeatureRequestValidatorImpl {
             return true;
         }
         return false;
+    }
+
+    private void setOfsetAndLimit(Query query, int offset, int limit) {
+        query.setFirstResult(offset);
+        query.setMaxResults(limit);
+    }
+
+    private void setOfsetAndLimit(ReadQuery query, int offset, int limit) {
+        query.setFirstResult(offset);
+        int maxRows = limit + ((offset >= 0) ? offset : 0);
+        query.setMaxRows(maxRows);
     }
 }

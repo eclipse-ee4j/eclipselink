@@ -84,15 +84,18 @@ import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
 import org.eclipse.persistence.jpa.rs.util.ResourceLocalTransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
+import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.DynamicXMLMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.ItemLinksMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaLangMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaMathMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaUtilMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.LinkMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.LinkV2MetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.ReadAllQueryResultCollectionMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.ReportQueryResultCollectionMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.ReportQueryResultListItemMetadataSource;
@@ -141,7 +144,7 @@ public class PersistenceContext {
     protected EntityManagerFactory emf;
 
     /** The JAXBConext used to produce JSON or XML **/
-    protected JAXBContext context = null;
+    protected JAXBContext jaxbContext = null;
 
     /** The URI of the Persistence context.  This is used to build Links in JSON and XML **/
     protected URI baseURI = null;
@@ -174,7 +177,7 @@ public class PersistenceContext {
             transaction = new ResourceLocalTransactionWrapper();
         }
         try {
-            this.context = createDynamicJAXBContext(emf.getDatabaseSession());
+            this.jaxbContext = createDynamicJAXBContext(emf.getDatabaseSession());
         } catch (JAXBException jaxbe) {
             JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, jaxbe.toString() }, jaxbe);
             emf.close();
@@ -331,10 +334,15 @@ public class PersistenceContext {
         metadataLocations.add(new JavaLangMetadataSource());
         metadataLocations.add(new JavaMathMetadataSource());
         metadataLocations.add(new JavaUtilMetadataSource());
+        metadataLocations.add(new LinkV2MetadataSource());
+        metadataLocations.add(new ItemLinksMetadataSource());
 
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataLocations);
-
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, new PreLoginMappingAdapter((AbstractSession) session));
+
+        // Bug 410095 - JSON_WRAPPER_AS_ARRAY_NAME property doesn't work when jaxb context is created using DynamicJAXBContextFactory
+        //properties.put(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+
         return properties;
     }
 
@@ -376,7 +384,7 @@ public class PersistenceContext {
     public void finalize() {
         this.emf.close();
         this.emf = null;
-        this.context = null;
+        this.jaxbContext = null;
     }
 
     /**
@@ -721,7 +729,7 @@ public class PersistenceContext {
      * @return the jAXB context
      */
     public JAXBContext getJAXBContext() {
-        return context;
+        return jaxbContext;
     }
 
     /**
@@ -930,7 +938,7 @@ public class PersistenceContext {
             emf.close();
         }
         this.emf = null;
-        this.context = null;
+        this.jaxbContext = null;
     }
 
     /**
@@ -1090,6 +1098,8 @@ public class PersistenceContext {
         marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         marshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
 
+        marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+
         marshaller.setAdapter(new LinkAdapter(getBaseURI().toString(), this));
         marshaller.setAdapter(new RelationshipLinkAdapter(getBaseURI().toString(), this));
 
@@ -1175,17 +1185,21 @@ public class PersistenceContext {
             }
         } else if (entity instanceof ReadAllQueryResultCollection) {
             ReadAllQueryResultCollection list = (ReadAllQueryResultCollection) entity;
-            List<JAXBElement> items = list.getItems();
-            for (int i = 0; i < items.size(); i++) {
-                JAXBElement item = items.get(i);
-                setRelationshipInfo(item.getValue());
+            List<ReadAllQueryResultListItem> items = list.getItems();
+            if ((items != null) && (!items.isEmpty())) {
+                for (int i = 0; i < items.size(); i++) {
+                    ReadAllQueryResultListItem item = items.get(i);
+                    setRelationshipInfo(item);
+                }
             }
         } else if (entity instanceof ReportQueryResultCollection) {
             ReportQueryResultCollection list = (ReportQueryResultCollection) entity;
             List<ReportQueryResultListItem> items = list.getItems();
-            for (int i = 0; i < items.size(); i++) {
-                ReportQueryResultListItem item = items.get(i);
-                setRelationshipInfo(item);
+            if ((items != null) && (!items.isEmpty())) {
+                for (int i = 0; i < items.size(); i++) {
+                    ReportQueryResultListItem item = items.get(i);
+                    setRelationshipInfo(item);
+                }
             }
         } else {
             setRelationshipInfo(entity);

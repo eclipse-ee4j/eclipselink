@@ -17,7 +17,22 @@ import java.util.Map;
 import javax.ws.rs.core.UriInfo;
 
 public interface FeatureRequestValidator {
+
+    /**
+     * Checks if feature is requested.
+     *
+     * @param uri the uri
+     * @param additionalParams the additional params
+     * @return true, if is requested
+     */
     boolean isRequested(UriInfo uri, Map<String, Object> additionalParams);
 
+    /**
+     * Checks if request parameters are valid.
+     *
+     * @param uri the uri
+     * @param additionalParams the additional params
+     * @return true, if is request valid
+     */
     boolean isRequestValid(UriInfo uri, Map<String, Object> additionalParams);
 }

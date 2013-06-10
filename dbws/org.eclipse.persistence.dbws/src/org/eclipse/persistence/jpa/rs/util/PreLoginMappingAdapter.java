@@ -24,12 +24,12 @@ import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
 import org.eclipse.persistence.internal.jaxb.SessionEventListener;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
-import org.eclipse.persistence.jpa.rs.ReservedWords;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -98,17 +98,14 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 hrefMapping.setXPath(".");
                 descriptor.addMapping(hrefMapping);
 
-                XMLCompositeCollectionMapping linksMapping = new XMLCompositeCollectionMapping();
-                linksMapping.setAttributeName("_persistence_links");
-                linksMapping.setGetMethodName("_persistence_getLinks");
-                linksMapping.setSetMethodName("_persistence_setLinks");
-                linksMapping.setDescriptor(descriptor);
-                containerPolicy = new CollectionContainerPolicy(ArrayList.class);
-                linksMapping.setContainerPolicy(containerPolicy);
-                linksMapping.setField(new XMLField(ReservedWords.JPARS_LINKS_NAME));
-                linksMapping.setReferenceClass(Link.class);
-                linksMapping.setDefaultEmptyContainer(false);
-                descriptor.addMapping(linksMapping);
+                XMLCompositeObjectMapping itemLinksMapping = new XMLCompositeObjectMapping();
+                itemLinksMapping.setAttributeName("_persistence_links");
+                itemLinksMapping.setGetMethodName("_persistence_getLinks");
+                itemLinksMapping.setSetMethodName("_persistence_setLinks");
+                itemLinksMapping.setDescriptor(descriptor);
+                itemLinksMapping.setReferenceClass(ItemLinks.class);
+                itemLinksMapping.setXPath(".");
+                descriptor.addMapping(itemLinksMapping);
             }
 
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());

@@ -81,8 +81,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     // REST
     public static final String WEAVED_REST_LAZY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeavedRest";
     public static final String LIST_RELATIONSHIP_INFO_SIGNATURE = "Ljava/util/List;";
-    public static final String LIST_LINKS_SIGNATURE = "Ljava/util/List;";
- 
+
     // Cloneable
     public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
 
@@ -97,15 +96,16 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     // a copy is in the foundation project under internal.Helper
     public static final String PERSISTENCE_FIELDNAME_PREFIX = "_persistence_";
     public static final String PERSISTENCE_FIELDNAME_POSTFIX = "_vh";
-    
+
     public static final String VIRTUAL_GETTER_SIGNATURE = "(" + ClassWeaver.STRING_SIGNATURE + ")" + ClassWeaver.OBJECT_SIGNATURE;
     public static final String VIRTUAL_SETTER_SIGNATURE = "(" + ClassWeaver.STRING_SIGNATURE + ClassWeaver.OBJECT_SIGNATURE + ")" + ClassWeaver.OBJECT_SIGNATURE;
-    
+
     /** Store if JAXB is no the classpath. */
     protected static Boolean isJAXBOnPath;
- 
+
     public static final String LINK_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/Link;";
-    
+    public static final String ITEM_LINKS_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/ItemLinks;";
+
     /**
      * Stores information on the class gathered from the temp class loader and
      * descriptor.
@@ -120,29 +120,29 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     public boolean weavedChangeTracker = false;
     public boolean weavedFetchGroups = false;
     public boolean weavedRest = false;
-    
+
     /**
      * Used for primitive conversion. Returns the name of the class that wraps a
      * given type.
      */
     public static String wrapperFor(int sort) {
         switch (sort) {
-        case Type.BOOLEAN:
-            return "java/lang/Boolean";
-        case Type.BYTE:
-            return "java/lang/Byte";
-        case Type.CHAR:
-            return "java/lang/Character";
-        case Type.SHORT:
-            return "java/lang/Short";
-        case Type.INT:
-            return "java/lang/Integer";
-        case Type.FLOAT:
-            return "java/lang/Float";
-        case Type.LONG:
-            return "java/lang/Long";
-        case Type.DOUBLE:
-            return "java/lang/Double";
+            case Type.BOOLEAN:
+                return "java/lang/Boolean";
+            case Type.BYTE:
+                return "java/lang/Byte";
+            case Type.CHAR:
+                return "java/lang/Character";
+            case Type.SHORT:
+                return "java/lang/Short";
+            case Type.INT:
+                return "java/lang/Integer";
+            case Type.FLOAT:
+                return "java/lang/Float";
+            case Type.LONG:
+                return "java/lang/Long";
+            case Type.DOUBLE:
+                return "java/lang/Double";
         }
         return null;
     }
@@ -154,30 +154,30 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     public static void unwrapPrimitive(AttributeDetails attribute, MethodVisitor visitor) {
         String wrapper = wrapperFor(attribute.getReferenceClassType().getSort());
         switch (attribute.getReferenceClassType().getSort()) {
-        case Type.BOOLEAN:
-            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "booleanValue", "()Z");
-            return;
-        case Type.BYTE:
-            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "byteValue", "()B");
-            return;
-        case Type.CHAR:
-            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "charValue", "()C");
-            return;
-        case Type.SHORT:
-            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "shortValue", "()S");
-            return;
-        case Type.INT:
-            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "intValue", "()I");
-            return;
-        case Type.FLOAT:
-            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "floatValue", "()F");
-            return;
-        case Type.LONG:
-            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "longValue", "()J");
-            return;
-        case Type.DOUBLE:
-            visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "doubleValue", "()D");
-            return;
+            case Type.BOOLEAN:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "booleanValue", "()Z");
+                return;
+            case Type.BYTE:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "byteValue", "()B");
+                return;
+            case Type.CHAR:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "charValue", "()C");
+                return;
+            case Type.SHORT:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "shortValue", "()S");
+                return;
+            case Type.INT:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "intValue", "()I");
+                return;
+            case Type.FLOAT:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "floatValue", "()F");
+                return;
+            case Type.LONG:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "longValue", "()J");
+                return;
+            case Type.DOUBLE:
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "doubleValue", "()D");
+                return;
         }
     }
 
@@ -526,7 +526,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             cv_set_value.visitLabel(l2);
             cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
         }
-        
+
         cv_set_value.visitInsn(RETURN);
         cv_set_value.visitMaxs(0, 0);
     }
@@ -807,43 +807,41 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
         cv_setPKVector.visitInsn(RETURN);
         cv_setPKVector.visitMaxs(0, 0);
-        
 
         MethodVisitor cv_getHref = cv.visitMethod(ACC_PUBLIC, "_persistence_getHref", "()" + LINK_SIGNATURE, null, null);
         cv_getHref.visitVarInsn(ALOAD, 0);
         cv_getHref.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_href", LINK_SIGNATURE);
         cv_getHref.visitInsn(ARETURN);
         cv_getHref.visitMaxs(0, 0);
-        
+
         MethodVisitor cv_setHref = cv.visitMethod(ACC_PUBLIC, "_persistence_setHref", "(" + LINK_SIGNATURE + ")V", null, null);
         cv_setHref.visitVarInsn(ALOAD, 0);
         cv_setHref.visitVarInsn(ALOAD, 1);
         cv_setHref.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_href", LINK_SIGNATURE);
         cv_setHref.visitInsn(RETURN);
         cv_setHref.visitMaxs(0, 0);
-        
-        
-        MethodVisitor cv_getLinks = cv.visitMethod(ACC_PUBLIC, "_persistence_getLinks", "()" + LIST_LINKS_SIGNATURE, null, null);
+
+        MethodVisitor cv_getLinks = cv.visitMethod(ACC_PUBLIC, "_persistence_getLinks", "()" + ITEM_LINKS_SIGNATURE, null, null);
         cv_getLinks.visitVarInsn(ALOAD, 0);
-        cv_getLinks.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_links", LIST_LINKS_SIGNATURE);
+        cv_getLinks.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_links", ITEM_LINKS_SIGNATURE);
         cv_getLinks.visitInsn(ARETURN);
         cv_getLinks.visitMaxs(0, 0);
 
-        MethodVisitor cv_setLinks = cv.visitMethod(ACC_PUBLIC, "_persistence_setLinks", "(" + LIST_LINKS_SIGNATURE + ")V", null, null);
+        MethodVisitor cv_setLinks = cv.visitMethod(ACC_PUBLIC, "_persistence_setLinks", "(" + ITEM_LINKS_SIGNATURE + ")V", null, null);
         cv_setLinks.visitVarInsn(ALOAD, 0);
         cv_setLinks.visitVarInsn(ALOAD, 1);
-        cv_setLinks.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_links", LIST_LINKS_SIGNATURE);
+        cv_setLinks.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_links", ITEM_LINKS_SIGNATURE);
         cv_setLinks.visitInsn(RETURN);
         cv_setLinks.visitMaxs(0, 0);
 
     }
-    
+
     public void addPersistenceRestVariables() {
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, null, null);
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_href", LINK_SIGNATURE, null, null);
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_links", LIST_LINKS_SIGNATURE, null, null);
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_links", ITEM_LINKS_SIGNATURE, null, null);
     }
-    
+
     /**
      * Add an internal shallow clone method. This can be used to optimize uow
      * cloning.
@@ -1271,7 +1269,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             persistenceWeavedLazyIndex = newInterfacesLength;
             newInterfacesLength++;
         }
-        
+
         // ChangeTracker
         boolean changeTracker = !classDetails.doesSuperclassWeaveChangeTracking() && classDetails.shouldWeaveChangeTracking();
         int persistenceWeavedChangeTrackingIndex = 0;
@@ -1284,14 +1282,14 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             persistenceWeavedChangeTrackingIndex = newInterfacesLength;
             newInterfacesLength++;
         }
-        
+
         int persistenceWeavedRestIndex = 0;
         boolean weaveRest = classDetails.shouldWeaveREST() && classDetails.getSuperClassDetails() == null;
         if (weaveRest) {
             persistenceWeavedRestIndex = newInterfacesLength;
             newInterfacesLength++;
         }
-        
+
         String[] newInterfaces = new String[newInterfacesLength];
         System.arraycopy(interfaces, 0, newInterfaces, 0, interfaces.length);
         // Add 'marker'
@@ -1331,25 +1329,25 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         if (classDetails.shouldWeaveChangeTracking()) {
             newInterfaces[persistenceWeavedChangeTrackingIndex] = TW_CT_SHORT_SIGNATURE;
         }
-        
-        if (weaveRest){
+
+        if (weaveRest) {
             newInterfaces[persistenceWeavedRestIndex] = WEAVED_REST_LAZY_SHORT_SIGNATURE;
         }
-        
+
         String newSignature = null;
         // fix the signature to include any new methods we weave
-        if (signature != null){
+        if (signature != null) {
             StringBuffer newSignatureBuf = new StringBuffer();
             newSignatureBuf.append(signature);
-            
-            for (int i = interfaces.length;i<newInterfaces.length;i++){
+
+            for (int i = interfaces.length; i < newInterfaces.length; i++) {
                 newSignatureBuf.append("L" + newInterfaces[i] + ";");
             }
             newSignature = newSignatureBuf.toString();
         }
-        
+
         cv.visit(version, access, name, newSignature, superName, newInterfaces);
-    } 
+    }
 
     /**
      * Construct a MethodWeaver and allow it to process the method.

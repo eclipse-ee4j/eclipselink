@@ -24,7 +24,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
@@ -34,6 +35,7 @@ import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
+import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 
@@ -43,41 +45,39 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
      */
-    @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
         ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
         for (Object item : items) {
-            response.addItem(populatePagedReadAllQueryResultListItemLinks(context, item));
+            response.addItem(populatePagedReadAllQueryItemLinks(context, item));
         }
 
         response.setCount(items.size());
-        return (ReadAllQueryResultCollection) populatePagingLinks(queryParams, uriInfo, response);
+        return populatePagedCollectionLinks(queryParams, uriInfo, response);
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReportQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, java.util.List, javax.ws.rs.core.UriInfo)
      */
-    @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
-        return populatePagedReportQueryResultList(queryParams, results, items, uriInfo);
+        return populatePagedReportQueryCollectionLinks(queryParams, results, items, uriInfo);
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildCollectionAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.String, java.lang.Object, javax.ws.rs.core.UriInfo)
+     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.String, java.lang.Object, javax.ws.rs.core.UriInfo)
      */
-    @SuppressWarnings("rawtypes")
-    @Override
-    public Object buildCollectionAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
+    public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
         if (results instanceof Collection) {
             if (containsDomainObjects(results)) {
-                Collection collection = (Collection) results;
-                ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
-                for (Object item : collection) {
-                    response.addItem(populatePagedReadAllQueryResultListItemLinks(context, item));
+                ReadAllQueryResultCollection collection = (ReadAllQueryResultCollection) results;
+                if (collection != null) {
+                    List<ReadAllQueryResultListItem> items = collection.getItems();
+                    if ((items != null) && (!items.isEmpty())) {
+                        ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
+                        response.setItems(items);
+                        response.setCount(collection.getItems().size());
+                        return populatePagedCollectionLinks(queryParams, uriInfo, response);
+                    }
                 }
-
-                response.setCount(collection.size());
-                return (ReadAllQueryResultCollection) populatePagingLinks(queryParams, uriInfo, response);
             }
         }
         return results;
@@ -96,23 +96,27 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private JAXBElement populatePagedReadAllQueryResultListItemLinks(PersistenceContext context, Object result) {
+    private ReadAllQueryResultListItem populatePagedReadAllQueryItemLinks(PersistenceContext context, Object result) {
         // populate links for the entity
-        JAXBElement item = new JAXBElement(new QName(ReservedWords.JPARS_LIST_ITEMS_NAME), result.getClass(), result);
+        JAXBElement element = new JAXBElement(new QName(ReservedWords.JPARS_LIST_ITEM_NAME), result.getClass(), result);
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
-        if ((item.getValue() instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
-            PersistenceWeavedRest entity = (PersistenceWeavedRest) item.getValue();
-            entity._persistence_setLinks(new ArrayList<Link>());
+        if ((element.getValue() instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
+            ItemLinks itemLinks = new ItemLinks();
+            PersistenceWeavedRest entity = (PersistenceWeavedRest) element.getValue();
             String entityId = IdHelper.stringifyId(result, descriptor.getAlias(), context);
             String href = context.getBaseURI() + context.getVersion() + "/" + context.getName() + "/entity/" + descriptor.getAlias() + "/" + entityId;
-            entity._persistence_getLinks().add(new Link(ReservedWords.JPARS_REL_SELF, null, href));
+            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
+            entity._persistence_setLinks(itemLinks);
         }
+
+        ReadAllQueryResultListItem item = new ReadAllQueryResultListItem();
+        item.addRecord(element);
         return item;
     }
 
-    private PageableCollection populatePagingLinks(Map<String, Object> queryParams, UriInfo uriInfo, PageableCollection resultCollection) {
+    private PageableCollection populatePagedCollectionLinks(Map<String, Object> queryParams, UriInfo uriInfo, PageableCollection resultCollection) {
         // populate links for entire response
-        List<Link> links = new ArrayList<Link>();
+        List<LinkV2> links = new ArrayList<LinkV2>();
         int limit = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_LIMIT));
         int offset = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_OFFSET));
         String nextOffset = null;
@@ -138,7 +142,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
                 // for next and prev links and leave the rest untouched
                 uriBuilder = UriBuilder.fromUri(uriInfo.getRequestUri());
                 uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, nextOffset);
-                links.add(new Link(ReservedWords.JPARS_REL_NEXT, null, uriBuilder.build().toString()));
+                links.add(new LinkV2(ReservedWords.JPARS_REL_NEXT, uriBuilder.build().toString()));
                 resultCollection.setHasMore(true);
             } else {
                 resultCollection.setHasMore(false);
@@ -149,10 +153,10 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
             // prev link
             uriBuilder = UriBuilder.fromUri(uriInfo.getRequestUri());
             uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, prevOffset);
-            links.add(new Link(ReservedWords.JPARS_REL_PREV, null, uriBuilder.build().toString()));
+            links.add(new LinkV2(ReservedWords.JPARS_REL_PREV, uriBuilder.build().toString()));
         }
 
-        links.add(new Link(ReservedWords.JPARS_REL_SELF, null, uriInfo.getRequestUri().toString()));
+        links.add(new LinkV2(ReservedWords.JPARS_REL_SELF, uriInfo.getRequestUri().toString()));
 
         resultCollection.setLinks(links);
         resultCollection.setOffset(offset);
@@ -161,8 +165,17 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         return resultCollection;
     }
 
+    /**
+     * Populate paged report query collection links.
+     *
+     * @param queryParams the query params
+     * @param results the results
+     * @param reportItems the report items
+     * @param uriInfo the uri info
+     * @return the pageable collection
+     */
     @SuppressWarnings({ "rawtypes" })
-    private Object populatePagedReportQueryResultList(Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> reportItems, UriInfo uriInfo) {
+    private PageableCollection populatePagedReportQueryCollectionLinks(Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> reportItems, UriInfo uriInfo) {
         ReportQueryResultCollection response = new ReportQueryResultCollection();
         for (Object result : results) {
             ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
@@ -177,7 +190,6 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         }
 
         response.setCount(results.size());
-        return (ReportQueryResultCollection) populatePagingLinks(queryParams, uriInfo, response);
+        return populatePagedCollectionLinks(queryParams, uriInfo, response);
     }
-
 }

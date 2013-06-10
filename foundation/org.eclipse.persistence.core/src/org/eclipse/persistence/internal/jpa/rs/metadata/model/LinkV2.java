@@ -8,27 +8,23 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     tware - initial implementation
+ *     gonural - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.rs.metadata.model;
 
-import org.eclipse.persistence.oxm.annotations.XmlPath;
 
-public class Link {
+public class LinkV2 {
     private String rel;
-    private String method;
     private String href;
 
-    public Link() {
+    public LinkV2() {
     }
 
-    public Link(String rel, String method, String href) {
+    public LinkV2(String rel, String href) {
         this.rel = rel;
-        this.method = method;
         this.href = href;
     }
 
-    @XmlPath("_link/@rel")
     public String getRel() {
         return rel;
     }
@@ -37,16 +33,6 @@ public class Link {
         this.rel = rel;
     }
 
-    @XmlPath("_link/@method")
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    @XmlPath("_link/@href")
     public String getHref() {
         return href;
     }

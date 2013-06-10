@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.weaving;
 
 import java.util.List;
 
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 
 /**
@@ -23,10 +24,14 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
  */
 public interface PersistenceWeavedRest {
     public List<RelationshipInfo> _persistence_getRelationships();
+
     public void _persistence_setRelationships(List<RelationshipInfo> relationships);
+
     Link _persistence_getHref();
+
     void _persistence_setHref(Link href);
-    
-    public List<Link> _persistence_getLinks();
-    public void _persistence_setLinks(List<Link> links);
+
+    public ItemLinks _persistence_getLinks();
+
+    public void _persistence_setLinks(ItemLinks links);
 }

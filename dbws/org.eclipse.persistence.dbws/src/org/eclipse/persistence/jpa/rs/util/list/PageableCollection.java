@@ -14,7 +14,7 @@ package org.eclipse.persistence.jpa.rs.util.list;
 
 import java.util.List;
 
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
 
 /**
  * Marker interface for queries returning paged results
@@ -26,11 +26,18 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 public interface PageableCollection {
 
     /**
-     * Sets the checks for more.
+     * Sets hasMore 
      *
      * @param hasMore the new checks for more
      */
     public void setHasMore(Boolean hasMore);
+
+    /**
+     * Returns true if collection has more 
+     *
+     * @return the checks for more
+     */
+    public Boolean getHasMore();
 
     /**
      * Gets the total number of records in the current response.
@@ -47,6 +54,13 @@ public interface PageableCollection {
     public void setCount(Integer count);
 
     /**
+     * Gets the limit.
+     *
+     * @return the limit
+     */
+    public Integer getLimit();
+
+    /**
      * Sets the limit.
      *
      * @param limit the new limit
@@ -61,9 +75,30 @@ public interface PageableCollection {
     public void setOffset(Integer offset);
 
     /**
+     * Gets the offset.
+     *
+     * @return the offset
+     */
+    public Integer getOffset();
+
+    /**
+     * Gets the links.
+     *
+     * @return the links
+     */
+    public List<LinkV2> getLinks();
+
+    /**
      * Sets the links.
      *
      * @param links the new links
      */
-    public void setLinks(List<Link> links);
+    public void setLinks(List<LinkV2> links);
+
+    /**
+     * Adds the link.
+     *
+     * @param link the link
+     */
+    public void addLink(LinkV2 link);
 }

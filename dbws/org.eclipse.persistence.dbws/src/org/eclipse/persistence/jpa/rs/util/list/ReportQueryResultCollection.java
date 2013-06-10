@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
 
 /**
@@ -29,7 +30,7 @@ import org.eclipse.persistence.jpa.rs.ReservedWords;
  * @author gonural
  *
  */
-@XmlRootElement(name = ReservedWords.JPARS_LIST_ITEMS_NAME)
+@XmlRootElement(name = ReservedWords.NO_ROUTE_JAXB_ELEMENT_LABEL)
 @XmlType(propOrder = { "items", "hasMore", "limit", "offset", "count", "links" })
 public class ReportQueryResultCollection implements PageableCollection {
     private List<ReportQueryResultListItem> items;
@@ -37,7 +38,7 @@ public class ReportQueryResultCollection implements PageableCollection {
     private Integer limit = null;
     private Integer offset = null;
     private Integer count = null;
-    private List<Link> links;
+    private List<LinkV2> links;
 
     /**
      * Instantiates a new report query result collection.
@@ -50,7 +51,8 @@ public class ReportQueryResultCollection implements PageableCollection {
      *
      * @return the items
      */
-    @XmlElement(name = ReservedWords.JPARS_LIST_ITEMS_NAME)
+    @XmlElementWrapper(name = ReservedWords.JPARS_LIST_ITEMS_NAME)
+    @XmlElement(name = ReservedWords.JPARS_LIST_ITEM_NAME)
     public List<ReportQueryResultListItem> getItems() {
         return items;
     }
@@ -76,99 +78,85 @@ public class ReportQueryResultCollection implements PageableCollection {
         items.add(item);
     }
 
-    /**
-     * Adds the link.
-     *
-     * @param link the link
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#getLinks()
      */
-    public void addLink(Link link) {
-        if (links == null) {
-            links = new ArrayList<Link>();
-        }
-        links.add(link);
-    }
-
-    /**
-     * Gets the links.
-     *
-     * @return the links
-     */
-    public List<Link> getLinks() {
+    @XmlElementWrapper(name = ReservedWords.JPARS_LINKS_NAME)
+    @XmlElement(name = ReservedWords.JPARS_LINK_NAME)
+    public List<LinkV2> getLinks() {
         return links;
     }
 
-    /**
-     * Gets the limit.
-     *
-     * @return the limit
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#setLinks(java.util.List)
      */
-    public Integer getLimit() {
-        return limit;
+    public void setLinks(List<LinkV2> links) {
+        this.links = links;
     }
 
-    /**
-     * Gets the offset.
-     *
-     * @return the offset
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#getOffset()
      */
     public Integer getOffset() {
         return offset;
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.util.list.PagedCollection#getCount()
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#setOffset(java.lang.Integer)
      */
-    @Override
-    public Integer getCount() {
-        return count;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.util.list.PagedCollection#setLinks(java.util.List)
-     */
-    @Override
-    public void setLinks(List<Link> links) {
-        this.links = links;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.util.list.PagedCollection#setCount(java.lang.Integer)
-     */
-    @Override
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.util.list.PagedCollection#setOffset(java.lang.Integer)
-     */
-    @Override
     public void setOffset(Integer offset) {
         this.offset = offset;
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.util.list.PagedCollection#setLimit(java.lang.Integer)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#getLimit()
      */
-    @Override
+    public Integer getLimit() {
+        return limit;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#setLimit(java.lang.Integer)
+     */
     public void setLimit(Integer limit) {
         this.limit = limit;
     }
 
-    /**
-     * Gets the checks for more.
-     *
-     * @return the checks for more
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#getCount()
+     */
+    public Integer getCount() {
+        return count;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#setCount(java.lang.Integer)
+     */
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#setHasMore(java.lang.Boolean)
+     */
+    public void setHasMore(Boolean hasMore) {
+        this.hasMore = hasMore;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#getHasMore()
      */
     public Boolean getHasMore() {
         return hasMore;
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.util.list.PagedCollection#setHasMore(java.lang.Boolean)
+     * @see org.eclipse.persistence.jpa.rs.util.list.PageableCollection#addLink(org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2)
      */
-    @Override
-    public void setHasMore(Boolean hasMore) {
-        this.hasMore = hasMore;
+    public void addLink(LinkV2 link) {
+        if (links == null) {
+            links = new ArrayList<LinkV2>();
+        }
+        links.add(link);
     }
 }
