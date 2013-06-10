@@ -135,10 +135,13 @@ public class OneToManyAccessor extends CollectionAccessor {
     public void process() {
         super.process();
         
-        if (hasMappedBy()) {
+        if (getDescriptor().getClassDescriptor().isEISDescriptor()) {
+            // EIS 1-m is always a m-m relation.
+            processManyToManyMapping();
+        } else if (hasMappedBy()) {
             // Process a 1-M using the mapped by mapping values.
             processOneToManyMapping();
-        } else if (getJoinColumns().isEmpty() || getDescriptor().getClassDescriptor().isEISDescriptor()) {
+        } else if (getJoinColumns().isEmpty()) {
             // No join columns and no mapped by value, default to
             // unidirectional 1-M using a M-M mapping and a join table.
             processManyToManyMapping();

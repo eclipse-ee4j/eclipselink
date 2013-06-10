@@ -675,6 +675,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
+        this.containerPolicy.convertClassNamesToClasses(classLoader);
         
         if (valueConverter != null) {
             if (valueConverter instanceof TypeConversionConverter) {

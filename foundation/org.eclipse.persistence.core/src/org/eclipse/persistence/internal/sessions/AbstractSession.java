@@ -2246,7 +2246,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public void processJPAQueries() {
         for (DatabaseQuery jpaQuery : getJPAQueries()) {
-            jpaQuery.checkPrepare(this, null);
+        // This is a hack, to allow the core Session to initialize JPA queries, without have a dependency on JPA.
+        // They need to be initialized after login, as the database platform must be known.
+        jpaQuery.prepareInternal(this);
             DatabaseQuery databaseQuery = (DatabaseQuery)jpaQuery.getProperty("databasequery");
             addQuery(databaseQuery.getName(), databaseQuery);
         }

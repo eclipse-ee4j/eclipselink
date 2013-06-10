@@ -27,7 +27,6 @@ import org.w3c.dom.Document;
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
@@ -189,7 +188,6 @@ public class DynamicTypeBuilder {
             }
 
         }
-        descriptor.setObjectChangePolicy(new AttributeChangeTrackingPolicy());
 
         for (int index = 0; index < descriptor.getMappings().size(); index++) {
             addMapping(descriptor.getMappings().get(index));
@@ -221,7 +219,7 @@ public class DynamicTypeBuilder {
             ForeignReferenceMapping frMapping = (ForeignReferenceMapping) mapping;
             return frMapping.usesIndirection() || frMapping.isCollectionMapping();
         }
-        if (mapping.isAggregateMapping() && !mapping.isXMLMapping()) {
+        if (mapping.isAggregateObjectMapping() && !mapping.isXMLMapping()) {
             return !((AggregateObjectMapping) mapping).isNullAllowed();
         }
         return false;
