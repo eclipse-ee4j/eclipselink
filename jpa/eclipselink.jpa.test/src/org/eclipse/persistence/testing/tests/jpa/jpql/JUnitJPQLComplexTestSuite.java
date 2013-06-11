@@ -292,7 +292,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testHierarchicalClause");
         tests.add("testDeleteWithUnqualifiedPathExpression");
         tests.add("testElementCollectionInLikeExpression");
-
+        tests.add("converterOnElementCollectionTest");
         Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new JUnitJPQLComplexTestSuite(test));
@@ -4567,5 +4567,24 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
    	 Query query = em.createQuery("SELECT b FROM Buyer b WHERE b.creditLines LIKE '%e%'");
    	 query.getResultList();
    	 closeEntityManager(em);
+    }
+    
+    public void converterOnElementCollectionTest()
+    {
+        EntityManager em = createEntityManager();
+
+        beginTransaction(em);
+
+        Buyer buyer = new Buyer();
+        buyer.setName("RBCL buyer");
+        buyer.setDescription("RBCL buyer");
+        buyer.addRoyalBankCreditLine(10);
+        em.persist(buyer);
+        em.flush();
+
+        String ejbqlString = "SELECT b.creditLines FROM Buyer b where b.id = :id";
+        Object result = em.createQuery(ejbqlString).setParameter("id", buyer.getId()).getSingleResult();
+        assertTrue("Converter not applied to element collection in jpql", (result instanceof Long));
+        rollbackTransaction(em);
     }
 }
