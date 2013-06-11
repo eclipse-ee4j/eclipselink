@@ -417,7 +417,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
             }
         }
         Object attributeValue = convertDataValueToObjectValue(fieldValue, executionSession, unmarshaller);
-        attributeValue = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(attributeValue, getAttributeClassification(), executionSession);
+        attributeValue = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(attributeValue, getAttributeClassification(), executionSession, null);
 
         return attributeValue;
     }

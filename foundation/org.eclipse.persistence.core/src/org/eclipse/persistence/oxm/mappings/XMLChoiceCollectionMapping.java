@@ -730,7 +730,6 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                  xmlMapping.setAttributeAccessor(temporaryAccessor);
                  Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
                  xmlMapping.setAttributeElementClass(theClass);
-                 this.fieldsToConverters.put(xmlField, xmlMapping.getValueConverter());
                  this.choiceElementMappings.put(xmlField, xmlMapping);
                  this.choiceElementMappingsByClassName.put(className, xmlMapping);
              } else {

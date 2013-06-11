@@ -138,7 +138,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             } else {
                 if ((dataValue != null) && !(dataValue.getClass() == this.valueType)) {
                     if (this.mapping instanceof BinaryDataMapping) {
-                        toConvert = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(dataValue, valueType, (AbstractSession) session);
+                        toConvert = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(dataValue, valueType, (AbstractSession) session, this.mapping.getContainerPolicy());
                     } else {
                         if (getSchemaType() != null) {
                             toConvert = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(dataValue, valueType, getSchemaType());

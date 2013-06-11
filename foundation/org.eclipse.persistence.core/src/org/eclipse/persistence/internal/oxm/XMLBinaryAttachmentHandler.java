@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.oxm;
 import javax.activation.DataHandler;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
@@ -109,7 +110,11 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
                 } else {
                     data = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
                 }
-                data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession());
+                CoreContainerPolicy cp = null;
+                if(isCollection){
+                	cp = mapping.getContainerPolicy();
+                }
+                data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession(), cp);
                 data = converter.convertDataValueToObjectValue(data, record.getSession(), unmarshaller);
                 //check for collection case
                 if (isCollection) {
@@ -144,7 +149,11 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
     }
 
     public Object getObjectValueFromDataHandler(DataHandler handler, Class cls) {
-        return XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(handler, cls, record.getSession());
+    	CoreContainerPolicy cp = null;
+        if(isCollection){
+        	cp = mapping.getContainerPolicy();
+        }
+        return XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(handler, cls, record.getSession(), cp);
     }
 
 }
