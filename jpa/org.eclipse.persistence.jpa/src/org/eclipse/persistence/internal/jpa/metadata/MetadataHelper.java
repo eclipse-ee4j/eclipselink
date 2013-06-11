@@ -22,12 +22,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX_DEFAULT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CANONICAL_MODEL_SUB_PACKAGE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CANONICAL_MODEL_SUB_PACKAGE_DEFAULT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CANONICAL_MODEL_PREFIX;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CANONICAL_MODEL_PREFIX_DEFAULT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CANONICAL_MODEL_SUFFIX;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CANONICAL_MODEL_SUFFIX_DEFAULT;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
