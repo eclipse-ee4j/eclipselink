@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
@@ -172,7 +173,7 @@ public class ReportQueryResult implements Serializable, Map {
             if (descriptor == null && mapping != null){
                 descriptor = mapping.getReferenceDescriptor();
             }
-            if (mapping != null && mapping.isAbstractColumnMapping()) {
+            if (mapping != null && (mapping.isAbstractColumnMapping() || mapping.isDirectCollectionMapping())) {
                 
                 if (itemIndex >= rowSize) {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + 1, rowSize);
@@ -184,8 +185,15 @@ public class ReportQueryResult implements Serializable, Map {
                 } else {
                     value = row.get(mapping.getField());                    
                 }
-                value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
-                // GF_ISSUE_395
+                if (mapping.isAbstractColumnMapping()){
+                    value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
+                } else {
+                    Converter converter = ((DirectCollectionMapping)mapping).getValueConverter();
+                    if (converter != null){
+                        value = converter.convertDataValueToObjectValue(value, query.getSession());
+                    }
+                }
+                // GF_ISSUE_395+
                 if (this.key != null) {
                     this.key.append(value);
                     this.key.append("_");
