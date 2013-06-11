@@ -16,4 +16,19 @@
         <relativePath>../../buildsystem/org.eclipse.persistence.parent/pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <componentId>extension</componentId>
+        <release.version>2.6.0</release.version>
+        <testId>eclipselink.${componentId}.test</testId>
+    </properties>
+
+    <dependencies>
+      <dependency>
+        <groupId>org.jgroups</groupId>
+        <artifactId>jgroups</artifactId>
+        <version>3.2.8.Final</version>
+        <scope>compile</scope>
+      </dependency>
+    </dependencies>
+
 </project>

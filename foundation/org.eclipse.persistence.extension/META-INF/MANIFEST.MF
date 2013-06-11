@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Export-Package: 
  org.eclipse.persistence.internal.sessions.coordination.jgroups;version="2.6.0",
  org.eclipse.persistence.sessions.coordination.jgroups;version="2.6.0",
+ org.eclipse.persistence.sessions.serializers.kryo;version="2.6.0"
 Bundle-Name: EclipseLink Extensions
 Created-By: 1.6.0_26 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

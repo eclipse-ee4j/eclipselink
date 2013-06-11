@@ -22,7 +22,7 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>0.17.0</tycho.version>
+        <tycho.version>0.18.0</tycho.version>
         <junit4-version>4.8.1</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
@@ -33,9 +33,8 @@
         <svn.revision>NA</svn.revision>
         <src>./src</src>
         <!-- BUILD Properties -->
-        <!-- orbit.drop>R20120119162704</orbit.drop -->
-        <orbit.drop>R20120526062928</orbit.drop>
-        <eclipse.drop>juno</eclipse.drop>
+        <orbit.drop>R20130517111416</orbit.drop>
+        <eclipse.drop>kepler</eclipse.drop>
     </properties>
 
     <!-- Default modules set and added to by all profiles -->
@@ -101,6 +100,7 @@
             </activation>
             <modules>
                 <module>../../foundation/org.eclipse.persistence.nosql</module>
+                <module>../../foundation/org.eclipse.persistence.extension</module>
                 <module>../../jpa/org.eclipse.persistence.jpa</module>
                 <module>../../jpa/org.eclipse.persistence.jpars</module>
                 <module>../../moxy/org.eclipse.persistence.moxy</module>
@@ -220,6 +220,7 @@
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+                    <pomDependencies>consider</pomDependencies>
                     <resolver>p2</resolver>
                     <environments>
                         <environment>
@@ -324,7 +325,7 @@
         <finalName>${project.artifactId}_${release.version}.${build.qualifier}</finalName>
     </build>
 
-    <pluginRepositories>
+    <!-- pluginRepositories>
         <pluginRepository>
             <id>tycho-0.16.0-staged</id>
             <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-207/</url>
@@ -337,6 +338,6 @@
             <id>maven-eclipse</id>
             <url>http://repo1.maven.org</url>
         </pluginRepository>
-    </pluginRepositories>
+    </pluginRepositories -->
 
 </project>
