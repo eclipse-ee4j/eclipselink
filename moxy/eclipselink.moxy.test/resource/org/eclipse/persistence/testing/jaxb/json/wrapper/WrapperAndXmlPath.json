@@ -1,0 +1,15 @@
+{
+    "wrapperAndXmlPathRoot" : {
+        "personal-info" : {
+            "name" : "FOO"
+        },
+        "foos" : [
+            {
+                "foos" : []
+            },
+            {
+                "foos" : []
+            }
+        ]
+    }
+}
