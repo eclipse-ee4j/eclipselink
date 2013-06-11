@@ -28,6 +28,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.eclipse.persistence.sessions.Session;
@@ -47,7 +48,7 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class DomHandlerConverter implements XMLConverter {
 	private DomHandler domHandler;
-	private XMLTransformer xmlTransformer;
+	private XMLPlatform xmlPlatform;
 	private String domHandlerClassName;
 	private Class elementClass;
 	private Class resultType;
@@ -69,8 +70,7 @@ public class DomHandlerConverter implements XMLConverter {
 			Method getElementMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "getElement", new Class[]{resultType});
 			elementClass = PrivilegedAccessHelper.getMethodReturnType(getElementMethod);
 
-			xmlTransformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
-			xmlTransformer.setFormattedOutput(true);
+			xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
 		} catch(Exception ex) {
 		    throw JAXBException.couldNotInitializeDomHandlerConverter(ex, domHandlerClassName, mapping.getAttributeName());
 		}
@@ -85,9 +85,8 @@ public class DomHandlerConverter implements XMLConverter {
 			} else {
 				result = domHandler.createUnmarshaller(null);
 			}
-			xmlTransformer.transform((org.w3c.dom.Element)dataValue, result);
-			Object value = domHandler.getElement(result);
-			return value;
+            xmlPlatform.newXMLTransformer().transform((org.w3c.dom.Element)dataValue, result);
+            return domHandler.getElement(result);
 		}
 		return dataValue;
 	}
@@ -96,6 +95,8 @@ public class DomHandlerConverter implements XMLConverter {
 		if (objectValue != null && elementClass.isAssignableFrom(objectValue.getClass())) {
 			Source source = domHandler.marshal(objectValue, null);
 			DOMResult result = new DOMResult();
+            XMLTransformer xmlTransformer = xmlPlatform.newXMLTransformer();
+            xmlTransformer.setFormattedOutput(marshaller.isFormattedOutput());
 			xmlTransformer.transform(source, result);
 			return result.getNode();
 		}
