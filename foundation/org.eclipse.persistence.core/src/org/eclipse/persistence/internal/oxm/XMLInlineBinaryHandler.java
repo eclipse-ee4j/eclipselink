@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import org.xml.sax.SAXException;
 
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
@@ -69,11 +70,13 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
        Class attributeClassification = null;
        AbstractNullPolicy nullPolicy;
        boolean isSwaRef = false;
+       CoreContainerPolicy cp = null;
        if(isCollection) {
            isSwaRef = ((BinaryDataCollectionMapping)mapping).isSwaRef();
            field = (Field)((BinaryDataCollectionMapping)mapping).getField();
            attributeClassification =((BinaryDataCollectionMapping)mapping).getAttributeElementClass();
            nullPolicy =((BinaryDataCollectionMapping)mapping).getNullPolicy();
+           cp = ((BinaryDataCollectionMapping)mapping).getContainerPolicy();
        } else {
            isSwaRef = ((BinaryDataMapping)mapping).isSwaRef();
            field = (Field)((BinaryDataMapping)mapping).getField();
@@ -103,10 +106,14 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
                    if(valueString.length() == 0 && nullPolicy.isNullRepresentedByEmptyNode()){
                        value = null;                   
                    }else{
-                       value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(valueString);
+                	   if(field.usesSingleNode()){
+                		   value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ListToByteArrayList(valueString, cp, parent.getSession());   
+                	   }else{
+                               value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(valueString);
+                	   }
                    }
                } 
-               value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
+               value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession(), cp);
            }
        }
         value = converter.convertDataValueToObjectValue(value, parent.getSession(), parent.getUnmarshaller());

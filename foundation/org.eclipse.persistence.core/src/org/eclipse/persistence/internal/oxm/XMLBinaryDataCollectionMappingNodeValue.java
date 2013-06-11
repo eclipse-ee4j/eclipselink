@@ -131,13 +131,13 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                             fieldValue = unmarshalRecord.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray(value);
                         }
                         xmlBinaryDataCollectionMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataCollectionMapping.getAttributeClassification(),
-                                unmarshalRecord.getSession()));
+                                unmarshalRecord.getSession(), xmlBinaryDataCollectionMapping.getContainerPolicy()));
                     }
                 } else {
                     //value should be base64 binary string
                     fieldValue = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(value);
                     xmlBinaryDataCollectionMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(fieldValue, xmlBinaryDataCollectionMapping.getAttributeClassification(),
-                            unmarshalRecord.getSession()));
+                            unmarshalRecord.getSession(),xmlBinaryDataCollectionMapping.getContainerPolicy()));
                 }
             }
             return true;

@@ -1422,6 +1422,9 @@ public class MappingsGenerator {
                     }
                 }else if(nestedMapping instanceof BinaryDataCollectionMapping){
                     nullPolicy =  ((BinaryDataCollectionMapping)nestedMapping).getNullPolicy();
+                    if(element.isList()){
+                    	((XMLField)((BinaryDataCollectionMapping)nestedMapping).getField()).setUsesSingleNode(true);
+                    }
                 }
 
               
