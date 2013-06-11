@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.util.List;
 import java.util.Stack;
 
 import javax.xml.namespace.QName;
@@ -454,8 +455,14 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
          Level position = levels.peek();
          position.setNeedToOpenComplex(false);
          if(mimeType != null) {
+        	 if(value instanceof List){
+         		value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesListForBinaryValues(//
+                         (List)value, marshaller, mimeType);
+         	}else{
+
              value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                      value, marshaller, mimeType).getData();
+         	}
          }         
          if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
              String convertedValue = getStringForQName((QName)value);

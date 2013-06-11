@@ -37,6 +37,8 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLConversionException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.TimeZoneHolder;
@@ -154,7 +156,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return sourceObject;
         } else if (javaClass == CoreClassConstants.STRING) {
            if(sourceObject instanceof List){
-        	   return convertListToString(sourceObject);
+        	   return convertListToString(sourceObject, null);
            }else{           
                return convertObjectToString(sourceObject);
            }
@@ -225,7 +227,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         } else if ((javaClass == CoreClassConstants.List_Class) && (sourceObject instanceof String)) {
             return convertStringToList(sourceObject);
         } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof List)) {
-            return convertListToString(sourceObject);
+            return convertListToString(sourceObject, schemaTypeQName);
         } else if (sourceObject instanceof byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return buildBase64StringFromBytes((byte[]) sourceObject);
@@ -1779,7 +1781,21 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         return convertObjectToByteArray(sourceObject);
     }
-
+    public Object convertSchemaBase64ListToByteArrayList(Object sourceObject, CoreContainerPolicy containerPolicy, CoreAbstractSession session) throws ConversionException {
+    	if (sourceObject instanceof String) { 
+    		StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
+    		Object container = containerPolicy.containerInstance();
+            while (tokenizer.hasMoreElements()) {
+                String token = tokenizer.nextToken();
+                byte[] bytes = Base64.base64Decode(token.getBytes());
+                containerPolicy.addInto(bytes, container, session);
+            }
+            return container;
+    	}    	
+    	throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.ABYTE);
+    }
+    
+    
     protected Byte[] convertSchemaBase64ToByteObjectArray(Object sourceObject) throws ConversionException {
         byte[] bytes = convertSchemaBase64ToByteArray(sourceObject);
         Byte[] objectBytes = new Byte[bytes.length];
@@ -1834,21 +1850,21 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * @param elementType - the type of the elements contained in the list
      * @return - the newly converted object
      */
-    public Object convertStringToList(Object sourceObject, Class elementType, ContainerPolicy containerPolicy) throws ConversionException {
+    public Object convertStringToList(Object sourceObject, Class elementType, ContainerPolicy containerPolicy, QName schemaType) throws ConversionException {
         Collection collection = (Collection) containerPolicy.containerInstance();
 
         if (sourceObject instanceof String) {
             StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
             while (tokenizer.hasMoreElements()) {
                 String token = tokenizer.nextToken();
-                collection.add(convertObject(token, elementType));
+                collection.add(convertObject(token, elementType,schemaType ));
             }
         }
 
         return collection;
     }
 
-    public String convertListToString(Object sourceObject) throws ConversionException {
+    public String convertListToString(Object sourceObject, QName schemaType) throws ConversionException {
         StringBuilder returnStringBuilder = new StringBuilder();
         if (sourceObject instanceof List) {
             List list = (List) sourceObject;
@@ -1857,7 +1873,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                     if (i > 0) {
                         returnStringBuilder.append(' ');
                     }
-                    returnStringBuilder.append(convertObjectToString(next));
+                    returnStringBuilder.append((String)convertObject(next, String.class, schemaType));
             }
         }
         return returnStringBuilder.toString();

@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Stack;
 
@@ -365,8 +366,13 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      */    
     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){  
         if(mimeType != null) {
+        	if(value instanceof List){
+        		value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesListForBinaryValues(//
+                        (List)value, marshaller, mimeType);
+        	}else{
             value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                     value, marshaller, mimeType).getData();
+        	}
         }
         if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
             String convertedValue = getStringForQName((QName)value);

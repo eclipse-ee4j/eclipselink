@@ -104,6 +104,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.collections.ChoiceCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.collections.ChoiceCollectionNullTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.EmployeeCollectionTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.ByteArrayCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.EmployeeSingleTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.XMLElementRefConverterTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.attachment.XMLElementRefAttachmentTestCases.class);
