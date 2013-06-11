@@ -220,7 +220,7 @@
         <property name="persistence.prefix" value="javax.persistence"/>
         <property name="persistence.criteria" value="[2.0.100,2.2.0)"/>
         <property name="resource.prefix" value="javax.resource"/>
-        <property name="resource.criteria" value="[1.4.0,1.6.0)"/>
+        <property name="resource.criteria" value="[1.4.0,2.0.0)"/>
         <property name="servlet.prefix" value="javax.servlet"/>
         <property name="servlet.criteria" value="[2.4.0,2.5.0)"/>
         <property name="wsdl.prefix" value="javax.wsdl"/>
