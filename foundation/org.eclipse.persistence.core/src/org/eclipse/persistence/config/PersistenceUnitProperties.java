@@ -1006,6 +1006,61 @@ public class PersistenceUnitProperties {
      */
     public static final String CACHE_TYPE_DEFAULT = CACHE_TYPE_ + DEFAULT;
 
+    /** 
+     * NOTE: The Canonical Model properties should be kept in sync with those
+     * in org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties. 
+     */
+    
+    /**
+     * This optional property specifies the prefix that will be added to the 
+     * start of the class name of any canonical model class generated. 
+     * By default the prefix is not used.
+     */    
+    public static final String CANONICAL_MODEL_PREFIX = "eclipselink.canonicalmodel.prefix";
+    public static String CANONICAL_MODEL_PREFIX_DEFAULT = "";
+    
+    /**
+     * This optional property specifies the suffix that will be added to the 
+     * end of the class name of any canonical model class generated. The suffix
+     * defaults to "_" unless a prefix is specified. If this property is
+     * specified, the value must be a non-empty string that contains valid
+     * characters for use in a Java class name.
+     */
+    public static final String CANONICAL_MODEL_SUFFIX = "eclipselink.canonicalmodel.suffix";
+    public static String CANONICAL_MODEL_SUFFIX_DEFAULT = "_";
+    
+    /**
+     * This optional property specifies a sub-package name that can be used to 
+     * have the canonical model generator generate its classes in a sub-package 
+     * of the package where the corresponding entity class is located. By 
+     * default the canonical model classes are generated into the same package 
+     * as the entity classes. 
+     */
+    public static final String CANONICAL_MODEL_SUB_PACKAGE = "eclipselink.canonicalmodel.subpackage";
+    public static String CANONICAL_MODEL_SUB_PACKAGE_DEFAULT = "";
+    
+    /**
+     * This optional property can be used a performance enhancement between
+     * compile rounds. It is used to avoid reloading XML metadata on each
+     * compile which may only contain a single class etc. The default value
+     * is true and should be left as such for the initial generation to capture
+     * the XML metadata. Afterwards users may choose to set this flag if no
+     * changes to XML are expected thereafter.
+     */
+    public static final String CANONICAL_MODEL_LOAD_XML = "eclipselink.canonicalmodel.load_xml";
+    public static final String CANONICAL_MODEL_LOAD_XML_DEFAULT = "true";
+    
+    /**
+     * This optional property can be used a performance enhancement between
+     * compile rounds within an IDE. It is used to avoid using a static metadata 
+     * factory between 'cache' metadata from incremental builds. Turning this 
+     * off in some use cases (IDE) could result in a loss of functionality. 
+     * The default value is true and should be left as such for full feature 
+     * support.
+     */
+    public static final String CANONICAL_MODEL_USE_STATIC_FACTORY = "eclipselink.canonicalmodel.use_static_factory";
+    public static final String CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT = "true";
+    
     /**
      * Default caching properties - apply to all entities. May be overridden by
      * individual entity property with the same prefix. If you do not wish to
