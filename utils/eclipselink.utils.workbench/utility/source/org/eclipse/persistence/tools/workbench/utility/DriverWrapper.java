@@ -18,7 +18,9 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * This implementation of the JDBC Driver interface delegates all calls
@@ -101,6 +103,13 @@ public class DriverWrapper implements Driver {
 		return this.driver.acceptsURL(url);
 	}
 
+	/**
+	 * @see java.sql.Driver#getParentLogger()
+	 */
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		return this.driver.getParentLogger();
+	}
+	
 	/**
 	 * @see java.sql.Driver#getPropertyInfo(String, java.util.Properties)
 	 */
