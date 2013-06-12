@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <employee>
     <name>DEFAULT_NAME</name>
-	<ints></ints>
+	<ints>123</ints>
 	<ints>123</ints>
 	<ints>10</ints>
 	<ints xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>

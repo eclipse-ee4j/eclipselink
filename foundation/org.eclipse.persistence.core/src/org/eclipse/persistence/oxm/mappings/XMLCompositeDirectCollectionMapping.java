@@ -241,6 +241,9 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     private boolean isCollapsingStringValues;
     private boolean isNormalizingStringValues;
     private AbstractNullPolicy wrapperNullPolicy;
+    
+    /** Support specification of the value to use for null. */
+    protected transient Object nullValue;
 
     public XMLCompositeDirectCollectionMapping() {
         super();
@@ -570,6 +573,28 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
             }
         }
         return value;
+    }
+    
+    /**
+     * PUBLIC:
+     * Allow for the value used for null to be specified.
+     * This can be used to convert database null values to application specific values, when null values
+     * are not allowed by the application (such as in primitives).
+     * Note: the default value for NULL is used on reads, writes, and query SQL generation
+     */
+    public Object getNullValue() {
+        return nullValue;
+    }
+    
+    /**
+     * PUBLIC:
+     * Allow for the value used for null to be specified.
+     * This can be used to convert database null values to application specific values, when null values
+     * are not allowed by the application (such as in primitives).
+     * Note: the default value for NULL is used on reads
+     */
+    public void setNullValue(Object nullValue) {
+        this.nullValue = nullValue;
     }
 
 }

@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelement;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "employee")
@@ -21,6 +23,9 @@ public class EmployeeDefaultValue {
 
     @XmlElement(defaultValue = DEFAULT_NAME)
     public String name;
+    
+    @XmlElement(defaultValue = "123", nillable = true)
+    public List<Integer> ints;
 
     public String toString() {
         return "EMPLOYEE: " + this.name;
@@ -28,7 +33,7 @@ public class EmployeeDefaultValue {
 
     public boolean equals(Object object) {
         EmployeeDefaultValue emp = ((EmployeeDefaultValue) object);
-        return emp.name.equals(this.name);
+        return emp.name.equals(this.name) && ints.equals(emp.ints);
     }
 
 }

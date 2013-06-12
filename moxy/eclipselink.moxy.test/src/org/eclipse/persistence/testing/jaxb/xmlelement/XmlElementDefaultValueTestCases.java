@@ -21,10 +21,15 @@ public class XmlElementDefaultValueTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/employee_defaultvalue.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/employee_defaultvalue.json";
 
+    private final static String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmlelement/employee_defaultvalue_w.xml";
+    private final static String JSON_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmlelement/employee_defaultvalue_w.json";
+
     public XmlElementDefaultValueTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
+        setWriteControlDocument(XML_RESOURCE_WRITE);
+        setWriteControlJSON(JSON_RESOURCE_WRITE);
         Class[] classes = new Class[1];
         classes[0] = EmployeeDefaultValue.class;
         setClasses(classes);
@@ -33,6 +38,12 @@ public class XmlElementDefaultValueTestCases extends JAXBWithJSONTestCases {
     protected Object getControlObject() {
         EmployeeDefaultValue employee = new EmployeeDefaultValue();
         employee.name = EmployeeDefaultValue.DEFAULT_NAME;
+        
+        employee.ints = new ArrayList<Integer>();
+        employee.ints.add(123);
+        employee.ints.add(123);
+        employee.ints.add(10);
+        employee.ints.add(null);
         return employee;
     }
 
