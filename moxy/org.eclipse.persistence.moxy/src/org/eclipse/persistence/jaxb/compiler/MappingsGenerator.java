@@ -2195,6 +2195,10 @@ public class MappingsGenerator {
         collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
 
+        if (property.getDefaultValue() != null) {
+            mapping.setNullValue(property.getDefaultValue());
+        }
+        
         // if the XPath is set (via xml-path) use it; otherwise figure it out
         Field xmlField = getXPathForField(property, namespaceInfo, true, false);
         mapping.setField(xmlField);

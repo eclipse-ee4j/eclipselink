@@ -182,18 +182,23 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
     	Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
+
+    	Object value = unmarshalRecord.getCharacters().toString();
+    	if(((String)value).length() == 0 && !xmlField.usesSingleNode()){
+    		if( xmlCompositeDirectCollectionMapping.getNullValue() != null){
+    			value = xmlCompositeDirectCollectionMapping.getNullValue();	
+    		}            
+    	}
+        unmarshalRecord.resetStringBuffer();
         XPathFragment lastXPathFragment = xmlField.getLastXPathFragment();
         if (!lastXPathFragment.nameIsText()) {
             return;
         }
 
-        String value = unmarshalRecord.getCharacters().toString();
-
-        unmarshalRecord.resetStringBuffer();
-
-        if (xmlField.usesSingleNode()) {
-            StringTokenizer stringTokenizer = new StringTokenizer(value);
+        if (xmlField.usesSingleNode() ) {
+        	
             Object collection = unmarshalRecord.getContainerInstance(this);
+            StringTokenizer stringTokenizer = new StringTokenizer((String)value);	            
             while (stringTokenizer.hasMoreTokens()) {
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
             }
@@ -208,12 +213,18 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
-        String value = unmarshalRecord.getCharacters().toString();
+        Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
+    	
+    	Object value = unmarshalRecord.getCharacters().toString();
+    	if(((String)value).length() == 0 && !xmlField.usesSingleNode()){
+    		if( xmlCompositeDirectCollectionMapping.getNullValue() != null){
+    			value = xmlCompositeDirectCollectionMapping.getNullValue();	
+    		}            
+        }
         unmarshalRecord.resetStringBuffer();
 
-        Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
-        if (xmlField.usesSingleNode()) {
-            StringTokenizer stringTokenizer = new StringTokenizer(value);
+        if (xmlField.usesSingleNode() && value instanceof String) {        		        	
+	        StringTokenizer stringTokenizer = new StringTokenizer((String)value);
             while (stringTokenizer.hasMoreTokens()) {
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
             }

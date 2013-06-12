@@ -1,5 +1,5 @@
 {"employee":{
    "name":"DEFAULT_NAME",
-   "ints":["", 123, 10, null]
+   "ints":[123, 123, 10, null]
    }
 }

@@ -131,5 +131,9 @@ public interface DirectCollectionMapping<
      * @returns True if the items in the collection are in a single node or false if each of the items in the collection is in its own node.
      */
     public boolean usesSingleNode();
+    
+    public void setNullValue(Object nullValue);
+    
+    public Object getNullValue();
 
 }
