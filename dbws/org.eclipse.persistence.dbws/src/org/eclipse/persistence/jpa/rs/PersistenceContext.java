@@ -84,7 +84,6 @@ import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
 import org.eclipse.persistence.jpa.rs.util.ResourceLocalTransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
-import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
@@ -1185,10 +1184,10 @@ public class PersistenceContext {
             }
         } else if (entity instanceof ReadAllQueryResultCollection) {
             ReadAllQueryResultCollection list = (ReadAllQueryResultCollection) entity;
-            List<ReadAllQueryResultListItem> items = list.getItems();
+            List<Object> items = list.getItems();
             if ((items != null) && (!items.isEmpty())) {
                 for (int i = 0; i < items.size(); i++) {
-                    ReadAllQueryResultListItem item = items.get(i);
+                    Object item = items.get(i);
                     setRelationshipInfo(item);
                 }
             }

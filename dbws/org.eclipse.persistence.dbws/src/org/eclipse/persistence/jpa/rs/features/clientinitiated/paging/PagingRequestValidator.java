@@ -23,6 +23,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.SystemDefaults;
 import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidatorImpl;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -54,7 +55,7 @@ public class PagingRequestValidator extends FeatureRequestValidatorImpl {
                 }
 
                 if ((orderBy == null) || (orderBy.isEmpty())) {
-                    return false;
+                    JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { query.toString() });
                 }
             }
         }

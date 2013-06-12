@@ -47,7 +47,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
             { "jpars_requested_type", "You are requesting types [{0}] from JPA RS." },
             { "object_referred_by_link_does_not_exist", "Entity referred by link does not exist, entity type:[{0}], id:[{1}]." },
             { "unsupported_service_version_in_the_request", "JPARS version [{0}] is not supported." },
-            { "orderby_clause_required_for_paging", "JPARS could not find or construct an orderBy clause for query:[{0}]. An orderBy clause is required for paging to work deterministically." }
+            { "no_orderby_clause_for_paging", "No OrderBy clause is defined for query:[{0}]. As a result, no guarantee exists that paging will work deterministically." }
     };
 
     @Override

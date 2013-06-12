@@ -16,10 +16,8 @@ import static org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller.medi
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -34,9 +32,7 @@ import javax.xml.bind.JAXBException;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.ValueHolder;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
@@ -46,7 +42,6 @@ import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
-import org.eclipse.persistence.jpa.rs.util.IdHelper.SortableKey;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -117,8 +112,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
                     if (!requestValidator.isRequestValid(uriInfo, map)) {
                         return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                     }
-                    // set orderBy, pagination requires an order by to work deterministically
-                    setOrderBy(context, query);
+                    // check orderBy, and generate a warning if there is none 
+                    checkOrderBy(query);
                     result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
                     return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
                 }
@@ -367,37 +362,15 @@ public abstract class AbstractEntityResource extends AbstractResource {
         return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();
     }
 
-    private void setOrderBy(PersistenceContext context, ReadQuery query) {
+    private void checkOrderBy(ReadQuery query) {
         List<Expression> orderBy = null;
         if (query.isReadAllQuery()) {
             ReadAllQuery readAllQuery = (ReadAllQuery) query;
             orderBy = readAllQuery.getOrderByExpressions();
             if ((orderBy == null) || (orderBy.isEmpty())) {
-                List<SortableKey> pkIndices = IdHelper.getPrimaryKey(context, query.getReferenceClass().getSimpleName());
-                if ((pkIndices != null) && (!pkIndices.isEmpty())) {
-                    Iterator<SortableKey> sortableKeys = pkIndices.iterator();
-                    orderBy = new ArrayList<Expression>(pkIndices.size());
-                    ExpressionBuilder builder = readAllQuery.getExpressionBuilder();
-                    while (sortableKeys.hasNext()) {
-                        DatabaseMapping dbMapping = sortableKeys.next().getMapping();
-                        if (dbMapping.isForeignReferenceMapping()) {
-                            ForeignReferenceMapping frMapping = (ForeignReferenceMapping) dbMapping;
-                            for (DatabaseField field : frMapping.getFields()) {
-                                orderBy.add(builder.getField(field));
-                            }
-                        } else if (dbMapping.isDirectToFieldMapping()) {
-                            orderBy.add(builder.get(dbMapping.getAttributeName()));
-                        }
-                    }
-                }
-            }
-            if ((orderBy != null) && (!orderBy.isEmpty())) {
-                readAllQuery.setOrderByExpressions(orderBy);
-                return;
+                JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { query.toString() });
             }
         }
-        JPARSLogger.fine("orderby_clause_required_for_paging", new Object[] { query.toString() });
-        throw new IllegalArgumentException();
     }
 
     private Object singleEntityResponse(PersistenceContext context, Object entity, UriInfo uriInfo) {

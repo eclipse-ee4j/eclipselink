@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.rs.ReservedWords;
 @XmlRootElement(name = ReservedWords.NO_ROUTE_JAXB_ELEMENT_LABEL)
 @XmlType(propOrder = { "items", "hasMore", "limit", "offset", "count", "links" })
 public class ReadAllQueryResultCollection implements PageableCollection {
-    private List<ReadAllQueryResultListItem> items;
+    private List<Object> items;
     private Boolean hasMore = null;
     private Integer limit = null;
     private Integer offset = null;
@@ -47,7 +47,7 @@ public class ReadAllQueryResultCollection implements PageableCollection {
      */
     @XmlElementWrapper(name = ReservedWords.JPARS_LIST_ITEMS_NAME)
     @XmlElement(name = ReservedWords.JPARS_LIST_ITEM_NAME)
-    public List<ReadAllQueryResultListItem> getItems() {
+    public List<Object> getItems() {
         return items;
     }
 
@@ -56,7 +56,7 @@ public class ReadAllQueryResultCollection implements PageableCollection {
      *
      * @param items the new items
      */
-    public void setItems(List<ReadAllQueryResultListItem> items) {
+    public void setItems(List<Object> items) {
         this.items = items;
     }
 
@@ -152,9 +152,9 @@ public class ReadAllQueryResultCollection implements PageableCollection {
      *
      * @param item the item
      */
-    public void addItem(ReadAllQueryResultListItem item) {
+    public void addItem(Object item) {
         if (this.items == null) {
-            this.items = new ArrayList<ReadAllQueryResultListItem>();
+            this.items = new ArrayList<Object>();
         }
         this.items.add(item);
     }

@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
@@ -35,7 +34,6 @@ import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
-import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 
@@ -70,7 +68,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
             if (containsDomainObjects(results)) {
                 ReadAllQueryResultCollection collection = (ReadAllQueryResultCollection) results;
                 if (collection != null) {
-                    List<ReadAllQueryResultListItem> items = collection.getItems();
+                    List<Object> items = collection.getItems();
                     if ((items != null) && (!items.isEmpty())) {
                         ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
                         response.setItems(items);
@@ -95,23 +93,19 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         return false;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private ReadAllQueryResultListItem populatePagedReadAllQueryItemLinks(PersistenceContext context, Object result) {
+    private Object populatePagedReadAllQueryItemLinks(PersistenceContext context, Object result) {
         // populate links for the entity
-        JAXBElement element = new JAXBElement(new QName(ReservedWords.JPARS_LIST_ITEM_NAME), result.getClass(), result);
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
-        if ((element.getValue() instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
+        if ((result instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
             ItemLinks itemLinks = new ItemLinks();
-            PersistenceWeavedRest entity = (PersistenceWeavedRest) element.getValue();
+            PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
             String entityId = IdHelper.stringifyId(result, descriptor.getAlias(), context);
             String href = context.getBaseURI() + context.getVersion() + "/" + context.getName() + "/entity/" + descriptor.getAlias() + "/" + entityId;
             itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
             entity._persistence_setLinks(itemLinks);
+            return entity;
         }
-
-        ReadAllQueryResultListItem item = new ReadAllQueryResultListItem();
-        item.addRecord(element);
-        return item;
+        return result;
     }
 
     private PageableCollection populatePagedCollectionLinks(Map<String, Object> queryParams, UriInfo uriInfo, PageableCollection resultCollection) {
