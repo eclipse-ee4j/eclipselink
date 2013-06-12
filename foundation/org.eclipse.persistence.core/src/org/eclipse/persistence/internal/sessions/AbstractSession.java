@@ -1190,7 +1190,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public void updateTablePerTenantDescriptors(String property, Object value) {
         // When all the table per tenant descriptors are set, we should initialize them.
-        boolean shouldInitializeDescriptors = true;
+        boolean shouldInitializeDescriptors = hasTablePerTenantDescriptors();
         
         for (ClassDescriptor descriptor : getTablePerTenantDescriptors()) {
             TablePerMultitenantPolicy policy = (TablePerMultitenantPolicy) descriptor.getMultitenantPolicy();
