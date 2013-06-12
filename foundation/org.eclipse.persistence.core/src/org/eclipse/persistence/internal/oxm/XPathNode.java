@@ -341,7 +341,7 @@ public class XPathNode {
             if(marshalRecord.isWrapperAsCollectionName() && null != nonAttributeChildren && nonAttributeChildren.size() == 1) {
                 XPathNode childXPathNode = nonAttributeChildren.get(0);
                 NodeValue childXPathNodeUnmarshalNodeValue = childXPathNode.getUnmarshalNodeValue();
-                if(childXPathNode != null && childXPathNodeUnmarshalNodeValue.isContainerValue()) {
+                if(childXPathNodeUnmarshalNodeValue != null && childXPathNodeUnmarshalNodeValue.isContainerValue()) {
                     ContainerValue containerValue = (ContainerValue) childXPathNodeUnmarshalNodeValue;
                     if(containerValue.isWrapperAllowedAsCollectionName()) {
                         XPathNode wrapperXPathNode = new XPathNode();
