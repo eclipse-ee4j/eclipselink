@@ -1240,7 +1240,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * called.
      */
     public AbstractSession getActiveSessionIfExists() {
-        if (hasActivePersistenceContext()) {
+        // When requesting an active session, if there isn't one but we have
+        // table per tenant descriptors, make sure we return one. The 'scrap'
+        // session will not be initialized for table per tenant multitenancy.
+        if (hasActivePersistenceContext() || getAbstractSession().hasTablePerTenantDescriptors()) {
             return (AbstractSession) getActiveSession();
         } else {
             return getAbstractSession();
