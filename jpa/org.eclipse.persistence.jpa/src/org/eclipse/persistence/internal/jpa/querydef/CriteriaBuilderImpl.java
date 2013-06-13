@@ -2460,10 +2460,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     public <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type) {
         JoinImpl parentJoin = (JoinImpl)join;
-        Join joinImpl = new JoinImpl<X, V>(parentJoin, this.metamodel.managedType(type), this.metamodel, 
+        JoinImpl joinImpl = new JoinImpl<X, V>(parentJoin, this.metamodel.managedType(type), this.metamodel, 
                 type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
         parentJoin.joins.add(joinImpl);
-        ((FromImpl)joinImpl).isJoin = parentJoin.isJoin;
+        joinImpl.isJoin = parentJoin.isJoin;
         parentJoin.isJoin = false;
         return joinImpl;
     }
@@ -2539,6 +2539,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         newPath.currentNode = newPath.currentNode.treat(type);
         newPath.pathParent = parentPath;
         newPath.javaType = type;
+        newPath.modelArtifact = this.metamodel.managedType(type);
         return newPath;
     }
 

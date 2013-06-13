@@ -94,18 +94,17 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         suite.addTest(new CriteriaQueryCastTestSuite("testDowncastRelationshipTraversal"));
         suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastOneToOne"));
         suite.addTest(new CriteriaQueryCastTestSuite("testSelectCast"));
-        //treat use cases not yet supported:
-        //suite.addTest(new CriteriaQueryCastTestSuite("testCastInSubselect"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testDowncastWithFetchJoin"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRoot"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRootSTI"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFrom"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFromSTI"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhere"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhereSTI"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOr"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOrSTI"));
-        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingJoinOverDowncastRelationship"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testCastInSubselect"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastWithFetchJoin"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRoot"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRootSTI"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFrom"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFromSTI"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhere"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhereSTI"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOr"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOrSTI"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingJoinOverDowncastRelationship"));
         return suite;
     }
     
@@ -126,7 +125,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-
             Company company = new Company();
             company.setName("Acme");
             em.persist(company);
@@ -909,8 +907,8 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
-    //last spec example, known not to work.
+
+    //last spec example
     public void testDoubleTreatOnRoot(){
         EntityManager em = createEntityManager();
 
@@ -955,7 +953,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         }
     }
     
-  //last spec example, known not to work.
+  //last spec example
     public void testDoubleTreatOnRootSTI(){
         EntityManager em = createEntityManager();
 
@@ -994,10 +992,8 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
-    //new tests:
-    
-  //first Spec example, works due to joining
+
+  //first Spec example
     public void testTreatInFrom(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -1048,7 +1044,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         }
     }
     
-    //expected to fail.  "AS" doesn't add typecast to filter results
     public void testTreatInFromSTI(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -1146,7 +1141,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         }
     }
     
-    //expected to fail.  "AS" doesn't add typecast to filter results
     public void testTreatInWhereSTI(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -1257,7 +1251,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         }
     }
     
-    //expected to fail.  "AS" doesn't add typecast to filter results
     public void testTreatUsingAndOrSTI(){
         EntityManager em = createEntityManager();
         beginTransaction(em);

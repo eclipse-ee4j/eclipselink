@@ -232,24 +232,24 @@ public class QueryKeyExpression extends ObjectExpression {
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
      * 
-     * downcast does not guarantee the results of the downcast will be of the specified class and should be used in conjunction
-     * with a Expression.type()
+     * downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
      * <pre><blockquote>
-     *     TopLink: employee.get("project").as(LargeProject.class).get("budget").equal(1000)
+     *     EclipseLink: employee.get("project").treat(LargeProject.class).get("budget").equal(1000)
      *     Java: ((LargeProject)employee.getProjects().get(0)).getBudget() == 1000
-     *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000
+     *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000 AND PROJ.TYPE = "L"
      * </blockquote></pre>
      */
     @Override
     public Expression treat(Class castClass){
-        QueryKeyExpression clonedExpression = new QueryKeyExpression(getName(), this.baseExpression);
+        //to be used in 'where treat(t as PerformanceTireInfo).speedRating > 100'
+        QueryKeyExpression clonedExpression = new TreatAsExpression(castClass, this);
         clonedExpression.shouldQueryToManyRelationship = this.shouldQueryToManyRelationship;
-        clonedExpression.shouldUseOuterJoin = this.shouldUseOuterJoin;
+        //using shouldUseOuterJoin to indicate the join to use between the t and PerformanceTireInfo subclass.  
         clonedExpression.hasQueryKey = this.hasQueryKey;
         clonedExpression.hasMapping = this.hasMapping;
 
-        clonedExpression.setCastClass(castClass);
+        this.addDerivedExpression(clonedExpression);
         return clonedExpression;
     }
     
@@ -766,7 +766,7 @@ public class QueryKeyExpression extends ObjectExpression {
         }
 
         ReadQuery query = normalizer.getStatement().getQuery();
-        // Record any class used in a join to invlaidate query results cache.
+        // Record any class used in a join to invalidate query results cache.
         if ((query != null) && query.shouldCacheQueryResults()) {
             if ((mapping != null) && (mapping.getReferenceDescriptor().getJavaClass() != null)) {
                 query.getQueryResultsCachePolicy().getInvalidationClasses().add(mapping.getReferenceDescriptor().getJavaClass());
@@ -811,16 +811,12 @@ public class QueryKeyExpression extends ObjectExpression {
             // If the join was an outer join we must not add the join criteria to the where clause,
             // if the platform prints the join in the from clause.
             if (shouldUseOuterJoin() && (getSession().getPlatform().isInformixOuterJoin())) {
-                statement.getOuterJoinExpressions().add(this);
-                statement.getOuterJoinedMappingCriteria().add(mappingExpression);
+                setOuterJoinExpIndex(statement.addOuterJoinExpressionsHolders(this, mappingExpression, null, null));
                 normalizer.addAdditionalExpression(mappingExpression.and(additionalExpressionCriteria()));
                 return this;
             } else if ((shouldUseOuterJoin() && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause()))
                     || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause())) {
-                statement.getOuterJoinExpressions().add(this);
-                statement.getOuterJoinedMappingCriteria().add(mappingExpression);
-                statement.getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
-                statement.getDescriptorsForMultitableInheritanceOnly().add(null);
+                setOuterJoinExpIndex(statement.addOuterJoinExpressionsHolders(this, mappingExpression, additionalExpressionCriteriaMap(), null));
                 if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
                     Expression historyOnClause = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this, 0); 
                     if (getOnClause() != null) {
@@ -831,10 +827,7 @@ public class QueryKeyExpression extends ObjectExpression {
                 }
                 return this;
             } else if (isUsingOuterJoinForMultitableInheritance() && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause())) {
-                statement.getOuterJoinExpressions().add(null);
-                statement.getOuterJoinedMappingCriteria().add(null);
-                statement.getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
-                statement.getDescriptorsForMultitableInheritanceOnly().add(mapping.getReferenceDescriptor());
+                setOuterJoinExpIndex(statement.addOuterJoinExpressionsHolders(null, null, additionalExpressionCriteriaMap(), mapping.getReferenceDescriptor()));
                 // fall through to the main case
             }
             
@@ -909,9 +902,6 @@ public class QueryKeyExpression extends ObjectExpression {
             }
         }
         printer.printString("\"" + getName() + "\")");
-        if (castClass != null){
-            printer.printString(".cast(" + castClass.getName() + ".class)");
-        }
     }
 
     /**
