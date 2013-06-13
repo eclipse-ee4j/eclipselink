@@ -17,7 +17,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -26,9 +29,12 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MyStreamSchemaOutputResolver;
 import org.xml.sax.InputSource;
 
 public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
@@ -229,7 +235,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         getJSONMarshaller().marshal(getWriteControlObject(), os);
-        compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+        compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
         os.close();
     }
 
@@ -239,7 +245,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         getJSONMarshaller().marshal(getWriteControlObject(), os);
-        compareStrings("testJSONMarshalToOutputStream_FORMATTED", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
+        compareStringToControlFile("testJSONMarshalToOutputStream_FORMATTED", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
         os.close();
     }
 
@@ -249,7 +255,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         StringWriter sw = new StringWriter();
         getJSONMarshaller().marshal(getWriteControlObject(), sw);
         log(sw.toString());
-        compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
+        compareStringToControlFile("**testJSONMarshalToStringWriter**", sw.toString());
     }
 
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
@@ -259,18 +265,23 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         StringWriter sw = new StringWriter();
         getJSONMarshaller().marshal(getWriteControlObject(), sw);
         log(sw.toString());
-        compareStrings("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted(),shouldRemoveWhitespaceFromControlDocJSON());
+        compareStringToControlFile("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted(),shouldRemoveWhitespaceFromControlDocJSON());
     }
 
-    protected void compareStrings(String test, String testString) {
-    	compareStrings(test, testString, getWriteControlJSON());
+    protected void compareStringToControlFile(String test, String testString) {
+    	compareStringToControlFile(test, testString, getWriteControlJSON());
     }
     
-    protected void compareStrings(String test, String testString, String controlFileLocation) {
-    	compareStrings(test, testString, controlFileLocation, shouldRemoveEmptyTextNodesFromControlDoc());
+    protected void compareStringToControlFile(String test, String testString, String controlFileLocation) {
+    	compareStringToControlFile(test, testString, controlFileLocation, shouldRemoveEmptyTextNodesFromControlDoc());
     }
     
-    protected void compareStrings(String test, String testString, String controlFileLocation, boolean removeWhitespace) {
+    protected void compareStringToControlFile(String test, String testString, String controlFileLocation, boolean removeWhitespace) {
+        String expectedString = loadFileToString(controlFileLocation);
+        compareStrings(testString, testString, expectedString, removeWhitespace);
+    }
+    
+    protected void compareStrings(String test, String testString, String expectedString, boolean removeWhitespace) {
         log(test);
         if(removeWhitespace){
             log("Expected (With All Whitespace Removed):");
@@ -278,7 +289,6 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         	log("Expected");
         }
         
-        String expectedString = loadFileToString(controlFileLocation);
         if(removeWhitespace){
         	expectedString = expectedString.replaceAll("[ \b\t\n\r]", "");
         }
@@ -306,5 +316,36 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
     	return true;
+    }
+    
+    public void generateJSONSchema(InputStream controlSchema) throws Exception {
+    	List<InputStream> controlSchemas = new ArrayList<InputStream>();
+    	controlSchemas.add(controlSchema);
+    	generateJSONSchema(controlSchemas);
+    }
+    
+    
+    public void generateJSONSchema(List<InputStream> controlSchemas) throws Exception {
+        MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
+
+        Class theClass = getWriteControlObject().getClass();
+        if(theClass == JAXBElement.class){
+        	 theClass = ((JAXBElement) getWriteControlObject()).getValue().getClass();
+        }
+        
+        ((JAXBContext)getJAXBContext()).generateJsonSchema(outputResolver, theClass);
+    	        
+        List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
+        
+        
+        assertEquals("Wrong Number of Schemas Generated", controlSchemas.size(), generatedSchemas.size());
+        
+        for(int i=0; i<controlSchemas.size(); i++){
+        	InputStream controlInputstream = controlSchemas.get(i);
+        	Writer generated = generatedSchemas.get(i);
+            log(generated.toString());            
+            String controlString =  loadInputStreamToString(controlInputstream);            
+            compareStrings("generateJSONSchema", generated.toString(), controlString, true);
+        }
     }
 }

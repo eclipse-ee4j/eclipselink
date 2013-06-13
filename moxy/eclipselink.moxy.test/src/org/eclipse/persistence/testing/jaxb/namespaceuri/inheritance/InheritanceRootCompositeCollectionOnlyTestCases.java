@@ -96,7 +96,7 @@ public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBWithJSO
 		StringWriter sw = new StringWriter();
 		
 		m.marshal(getWriteControlObject(), sw);
-        compareStrings("**testJSONMarshalToStringWriter-NoNamespacesSet**", sw.toString(), JSON_RESOURCE_NO_NS);
+        compareStringToControlFile("**testJSONMarshalToStringWriter-NoNamespacesSet**", sw.toString(), JSON_RESOURCE_NO_NS);
 
         StringReader sr = new StringReader(sw.toString());
         Object o = u.unmarshal(sr);
