@@ -134,15 +134,19 @@ public abstract class JSONTestCases extends OXTestCase{
     }
 	    
 	   
-	protected void compareStrings(String test, String testString) {
+	protected void compareStringToControlFile(String test, String testString) {
     
-	    compareStrings(test, testString,getWriteControlJSON(), true);
+	    compareStringToFile(test, testString,getWriteControlJSON(), true);
 	}
 	
-	protected void compareStrings(String test, String testString, String writeControlJSON, boolean removeWhitespace) {
+	protected void compareStringToFile(String test, String testString, String writeControlJSON, boolean removeWhitespace) {
+		String expectedString = loadFileToString(writeControlJSON);
+		compareStrings(test, testString, expectedString, removeWhitespace);		
+	}
+	
+	protected void compareStrings(String test, String testString, String expectedString, boolean removeWhitespace) {
 	    log(test);
 	    log("Expected (With All Whitespace Removed):");
-	    String expectedString = loadFileToString(writeControlJSON);
 	    if(removeWhitespace){
 	       expectedString = expectedString.replaceAll("[ \b\t\n\r ]", "");
 	    }
@@ -159,13 +163,13 @@ public abstract class JSONTestCases extends OXTestCase{
 	public void testObjectToJSONStringWriter() throws Exception {    	
 	    StringWriter sw = new StringWriter();
 		jsonMarshaller.marshal(getWriteControlObject(), sw);
-		compareStrings("**testObjectToJSONStringWriter**", sw.toString());		       
+		compareStringToControlFile("**testObjectToJSONStringWriter**", sw.toString());		       
     }
 	
 	 public void testJSONMarshalToOutputStream() throws Exception{
 	        ByteArrayOutputStream os = new ByteArrayOutputStream();
 	        jsonMarshaller.marshal(getWriteControlObject(), os);
-	        compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+	        compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
 	        os.close();
 	    }
 
@@ -173,21 +177,21 @@ public abstract class JSONTestCases extends OXTestCase{
 	    jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 	    ByteArrayOutputStream os = new ByteArrayOutputStream();
 		jsonMarshaller.marshal(getWriteControlObject(), os);
-		compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
+		compareStringToFile("testJSONMarshalToOutputStream", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
 		os.close();
 	}
 
 	public void testJSONMarshalToStringWriter() throws Exception{
 		StringWriter sw = new StringWriter();
 		jsonMarshaller.marshal(getWriteControlObject(), sw);
-		compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
+		compareStringToControlFile("**testJSONMarshalToStringWriter**", sw.toString());
 	}
 
 	public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
 	    jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		StringWriter sw = new StringWriter();
 		jsonMarshaller.marshal(getWriteControlObject(), sw);		
-	    compareStrings("**testJSONMarshalToStringWriter**", sw.toString(), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
+	    compareStringToFile("**testJSONMarshalToStringWriter**", sw.toString(), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
 	}
 
 	protected String getWriteControlJSONFormatted(){

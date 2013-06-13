@@ -15,10 +15,16 @@ package org.eclipse.persistence.testing.jaxb.json;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MyStreamSchemaOutputResolver;
 import org.xml.sax.InputSource;
 
 public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
@@ -31,15 +37,9 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
     	return null;
     }
 	
-	protected void compareStrings(String testName, String testString) {
-	    log(testName);
-		log("Expected (With All Whitespace Removed):");
-		String expectedString = loadFileToString(getWriteControlJSON()).replaceAll("[ \b\t\n\r ]", "");
-		log(expectedString);
-		log("\nActual (With All Whitespace Removed):");
-		testString = testString.replaceAll("[ \b\t\n\r]", "");
-		log(testString);
-		assertEquals(expectedString, testString);
+	protected void compareStringToControlFile(String testName, String testString) {
+		String expectedString = loadFileToString(getWriteControlJSON());
+		compareStrings(testName, testString, expectedString, true);
 	}
 		 	
 	public void testJSONUnmarshalFromInputStream() throws Exception {
@@ -95,4 +95,31 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
 	protected URL getJSONURL() {	    	
 	    return Thread.currentThread().getContextClassLoader().getResource(controlJSONLocation);
 	}
+    public void generateJSONSchema(InputStream controlSchema) throws Exception {
+    	List<InputStream> controlSchemas = new ArrayList<InputStream>();
+    	controlSchemas.add(controlSchema);
+    	generateJSONSchema(controlSchemas);
+    }
+	
+	public void generateJSONSchema(List<InputStream> controlSchemas) throws Exception {
+        MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
+
+        Class theClass = getWriteControlObject().getClass();
+        if(theClass == JAXBElement.class){
+        	 theClass = ((JAXBElement) getWriteControlObject()).getValue().getClass();
+        }
+        
+        ((JAXBContext)jaxbContext).generateJsonSchema(outputResolver, theClass);    	
+        List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
+                
+        assertEquals("Wrong Number of Schemas Generated", controlSchemas.size(), generatedSchemas.size());
+        
+        for(int i=0; i<controlSchemas.size(); i++){
+        	InputStream controlInputstream = controlSchemas.get(i);
+        	Writer generated = generatedSchemas.get(i);
+            log(generated.toString());            
+            String controlString =  loadInputStreamToString(controlInputstream);            
+            compareStrings("generateJSONSchema", generated.toString(), controlString, true);
+        }
+    }
 }

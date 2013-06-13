@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
@@ -24,10 +25,12 @@ import org.eclipse.persistence.internal.jaxb.json.schema.model.Property;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -48,8 +51,12 @@ public class JsonSchemaGenerator {
     JsonSchema schema;
     Map contextProperties;
     String attributePrefix;
+    Class rootClass;
+
+    private static String DEFINITION_PATH="#/definitions";
     
     private static HashMap<Class, JsonType> javaTypeToJsonType;
+    
     
     public JsonSchemaGenerator(Project project, Map properties) {
         this.project = project;
@@ -61,6 +68,7 @@ public class JsonSchemaGenerator {
     }
     
     public JsonSchema generateSchema(Class rootClass) {
+        this.rootClass = rootClass;
         schema = new JsonSchema();
         schema.setTitle(rootClass.getName());
         XMLDescriptor descriptor = (XMLDescriptor)project.getDescriptor(rootClass);
@@ -101,10 +109,11 @@ public class JsonSchemaGenerator {
                         properties.put(prop.getName(), prop);
                     }                    
                 }
-            } else {
+            }
+            else {
            
                 Property prop = generateProperty((XMLMapping)next, descriptor, properties);
-                if(!(properties.containsKey(prop.getName()))) {
+                if(prop != null && !(properties.containsKey(prop.getName()))) {
                     properties.put(prop.getName(), prop);
                 }
             }
@@ -115,7 +124,30 @@ public class JsonSchemaGenerator {
     private Property generateProperty(XMLMapping next, XMLDescriptor descriptor, Map<String, Property> properties) {
         Property prop = null;
         if(((XMLMapping)next).isCollectionMapping()) {
-            if(next.isAbstractCompositeCollectionMapping()) {
+            if(next instanceof CollectionReferenceMapping) {
+                CollectionReferenceMapping mapping = (CollectionReferenceMapping)next;
+                Set<XMLField> sourceFields = mapping.getSourceToTargetKeyFieldAssociations().keySet();
+                XMLDescriptor reference = (XMLDescriptor) mapping.getReferenceDescriptor();
+                for(XMLField nextField: sourceFields) {
+                    XPathFragment frag = nextField.getXPathFragment();
+                    XMLField targetField = (XMLField) mapping.getSourceToTargetKeyFieldAssociations().get(nextField);
+                    Class type = getTypeForTargetField(targetField, reference);
+                    
+                    prop = properties.get(frag.getLocalName());
+                    if(prop == null) {
+                        prop = new Property();
+                        prop.setName(frag.getLocalName());
+                    }
+                    Property nestedProperty = getNestedPropertyForFragment(frag, prop);
+                    nestedProperty.setType(JsonType.ARRAY);
+                    nestedProperty.setItem(new Property());
+                    nestedProperty.getItem().setType(getJsonTypeForJavaType(type));
+                    if(!properties.containsKey(prop.getName())) {
+                        properties.put(prop.getName(), prop);                    
+                    }
+                }
+                return null;                
+            } else if(next.isAbstractCompositeCollectionMapping()) {
                 CompositeCollectionMapping mapping = (CompositeCollectionMapping)next;
                 XMLField field = (XMLField)mapping.getField();
                 XPathFragment frag = field.getXPathFragment();
@@ -128,8 +160,8 @@ public class JsonSchemaGenerator {
                 Property nestedProperty = getNestedPropertyForFragment(frag, prop);
                 nestedProperty.setType(JsonType.ARRAY);
                 nestedProperty.setItem(new Property());
-                nestedProperty.getItem().setType(JsonType.OBJECT);
-                populateProperties(prop.getItem().getProperties(), (XMLDescriptor)mapping.getReferenceDescriptor());                    
+                nestedProperty.getItem().setRef(getReferenceForDescriptor((XMLDescriptor)mapping.getReferenceDescriptor()));
+                //populateProperties(nestedProperty.getItem().getProperties(), (XMLDescriptor)mapping.getReferenceDescriptor());                    
             } else if(next.isAbstractCompositeDirectCollectionMapping()) {
                 DirectCollectionMapping mapping = (DirectCollectionMapping)next;
                 XMLField field = (XMLField)mapping.getField();
@@ -189,6 +221,29 @@ public class JsonSchemaGenerator {
                 } 
                 nestedProperty.setType(getJsonTypeForJavaType(directMapping.getAttributeClassification()));
                 return prop;
+            } else if(next instanceof ObjectReferenceMapping) {
+                ObjectReferenceMapping mapping = (ObjectReferenceMapping)next;
+                Set<XMLField> sourceFields = mapping.getSourceToTargetKeyFieldAssociations().keySet();
+                XMLDescriptor reference = (XMLDescriptor) mapping.getReferenceDescriptor();
+                for(XMLField nextField: sourceFields) {
+                    XPathFragment frag = nextField.getXPathFragment();
+                    XMLField targetField = (XMLField) mapping.getSourceToTargetKeyFieldAssociations().get(nextField);
+                    Class type = getTypeForTargetField(targetField, reference);
+                    
+                    prop = properties.get(frag.getLocalName());
+                    if(prop == null) {
+                        prop = new Property();
+                        prop.setName(frag.getLocalName());
+                    }
+                    Property nestedProperty = getNestedPropertyForFragment(frag, prop);
+                    //nestedProperty.setType(JsonType.ARRAY);
+                    //nestedProperty.setItem(new Property());
+                    nestedProperty.setType(getJsonTypeForJavaType(type));
+                    if(!properties.containsKey(prop.getName())) {
+                        properties.put(prop.getName(), prop);                    
+                    }
+                }
+                return null;                
             } else if(next.isAbstractCompositeObjectMapping()) {
                 CompositeObjectMapping mapping = (CompositeObjectMapping)next;
                 XMLDescriptor nextDescriptor = (XMLDescriptor)mapping.getReferenceDescriptor();
@@ -199,14 +254,45 @@ public class JsonSchemaGenerator {
                     prop = new Property();
                     prop.setName(firstFragment.getLocalName());
                 }
-                prop.setType(JsonType.OBJECT);
+                //prop.setType(JsonType.OBJECT);
                 prop.setName(firstFragment.getLocalName());
                 Property nestedProperty = getNestedPropertyForFragment(firstFragment, prop);
-                populateProperties(nestedProperty.getProperties(), nextDescriptor);
+                nestedProperty.setRef(getReferenceForDescriptor(nextDescriptor));
+                //populateProperties(nestedProperty.getProperties(), nextDescriptor);
             }
         }
         
         return prop;
+    }
+
+    private String getReferenceForDescriptor(XMLDescriptor referenceDescriptor) {
+        String className = referenceDescriptor.getJavaClass().getSimpleName();
+        String referenceName = DEFINITION_PATH + "/" + className;
+        
+        if(referenceDescriptor.getJavaClass() == this.rootClass) {
+            return "#";
+        }
+        if(!this.schema.getDefinitions().containsKey(className)) {
+            Property definition = new Property();
+            definition.setName(className);
+            definition.setType(JsonType.OBJECT);
+            this.schema.getDefinitions().put(definition.getName(), definition);
+            populateProperties(definition.getProperties(), referenceDescriptor);
+        }
+        // TODO Auto-generated method stub
+        return referenceName;
+    }
+
+    private Class getTypeForTargetField(XMLField targetField, XMLDescriptor reference) {
+        for(DatabaseMapping next: reference.getMappings()) {
+            if(next.isDirectToFieldMapping()) {
+                DirectMapping directMapping = (DirectMapping)next;
+                if(directMapping.getField().equals(targetField)) {
+                    return directMapping.getAttributeClassification();
+                }
+            }
+        }
+        return null;
     }
 
     private JsonType getJsonTypeForJavaType(Class attributeClassification) {

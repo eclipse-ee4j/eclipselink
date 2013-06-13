@@ -48,6 +48,10 @@ public class JsonSchema {
     @XmlElementWrapper(name="properties")
     private Map<String, Property> properties;
     
+    @XmlVariableNode("name")
+    @XmlElementWrapper(name="definitions")
+    private Map<String, Property> definitions;
+    
     @XmlElement(name="item")
     private JsonSchema item;
     
@@ -72,6 +76,13 @@ public class JsonSchema {
             properties = new LinkedHashMap<String, Property>();
         }
         return properties;
+    }
+    
+    public Map<String, Property> getDefinitions() {
+        if(definitions == null) {
+            definitions = new LinkedHashMap<String, Property>();
+        }
+        return definitions;
     }
     
     

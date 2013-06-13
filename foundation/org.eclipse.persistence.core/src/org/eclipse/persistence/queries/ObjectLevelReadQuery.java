@@ -2189,7 +2189,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         if (!shouldOuterJoinSubclasses()) {
             setShouldOuterJoinSubclasses(getMaxRows()>0 || getFirstResult()>0 || (this.descriptor != null && 
-                    this.descriptor.hasInheritance() && this.descriptor.getInheritancePolicy().shouldOuterJoinSubclasses()) );
+                    this.descriptor.hasInheritance() && (this.descriptor.getInheritancePolicy().shouldOuterJoinSubclasses()|| this.getExpressionBuilder().isTreatUsed()) ));
         }
 
         // Ensure the subclass call cache is initialized if a multiple table inheritance descriptor.
