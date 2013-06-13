@@ -36,7 +36,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  */
 public class ClassTypeExpression extends DataExpression {
 
-    //transient public ClassDescriptor descriptor;
     /** Cache the aliased field. Only applies to attributes. */
     protected DatabaseField field;
     /** Cache the aliased field. Only applies to attributes. */
@@ -313,5 +312,15 @@ public class ClassTypeExpression extends DataExpression {
             result.addElement(field);
         }
         return result;
+    }
+
+    @Override
+    public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
+        if (oldBase == null || this.baseExpression == oldBase) {
+            Expression twistedBase = this.baseExpression.twistedForBaseAndContext(newBase, context, oldBase);
+            return twistedBase.type();
+        }
+        
+        return this;
     }
 }

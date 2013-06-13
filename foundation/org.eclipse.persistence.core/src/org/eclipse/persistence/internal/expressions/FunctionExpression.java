@@ -428,14 +428,12 @@ public class FunctionExpression extends BaseExpression {
             if (base.isQueryKeyExpression()) {
                 mapping = base.getMapping();
             }
-            ClassDescriptor descriptor = null;
             List<DatabaseField> sourceFields = null;
             List<DatabaseField> targetFields = null;
             if ((mapping != null) && mapping.isOneToOneMapping()
                     && (!((OneToOneMapping)mapping).hasRelationTableMechanism())
                     && (!((OneToOneMapping)mapping).hasCustomSelectionQuery())) {
                 base = (ObjectExpression)base.getBaseExpression();
-                descriptor = mapping.getReferenceDescriptor();
                 Map<DatabaseField, DatabaseField> targetToSourceKeyFields = ((OneToOneMapping)mapping).getTargetToSourceKeyFields();
                 sourceFields = new ArrayList(targetToSourceKeyFields.size());
                 targetFields = new ArrayList(targetToSourceKeyFields.size());
@@ -445,8 +443,7 @@ public class FunctionExpression extends BaseExpression {
                 }
             } else {
                 mapping = null;
-                descriptor = base.getDescriptor();
-                sourceFields = descriptor.getPrimaryKeyFields();
+                sourceFields = base.getDescriptor().getPrimaryKeyFields();
                 targetFields = sourceFields;
             }
             if (sourceFields.size() != 1) {
