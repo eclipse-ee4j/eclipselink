@@ -38,7 +38,7 @@ public enum IdentifierRole {
 	 * Indicates the identifier is used to complement an expression, it is not required for creating
 	 * an expression. Examples are <b>AS</b> or <b>OUTER</b>.
 	 */
-	COMPLETEMENT,
+	COMPLEMENT,
 
 	/**
 	 * Indicates the identifier is a kind of function, it does not return a value but it is used to

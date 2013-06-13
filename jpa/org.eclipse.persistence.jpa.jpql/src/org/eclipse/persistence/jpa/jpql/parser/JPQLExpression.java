@@ -316,7 +316,7 @@ public final class JPQLExpression extends AbstractExpression {
 			}
 			// The JPQL query or fragment is invalid
 			else if (queryStatement.isUnknown()) {
-				unknownEndingStatement = new UnknownExpression(this, queryStatement.toParsedText());
+				unknownEndingStatement = buildUnknownExpression(queryStatement.toParsedText());
 				queryStatement = null;
 			}
 		}

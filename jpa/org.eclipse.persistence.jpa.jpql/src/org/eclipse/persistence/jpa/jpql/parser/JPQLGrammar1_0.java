@@ -511,12 +511,12 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole(ALL,                   IdentifierRole.FUNCTION);           // ALL(x)
 		registerIdentifierRole(AND,                   IdentifierRole.AGGREGATE);          // x AND y
 		registerIdentifierRole(ANY,                   IdentifierRole.FUNCTION);           // ANY(x)
-		registerIdentifierRole(AS,                    IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(ASC,                   IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(AS,                    IdentifierRole.COMPLEMENT);
+		registerIdentifierRole(ASC,                   IdentifierRole.COMPLEMENT);
 		registerIdentifierRole(AVG,                   IdentifierRole.FUNCTION);           // AVG(x)
 		registerIdentifierRole(BETWEEN,               IdentifierRole.COMPOUND_FUNCTION);  // x BETWEEN y AND z
 		registerIdentifierRole(BIT_LENGTH,            IdentifierRole.UNUSED);
-		registerIdentifierRole(BOTH,                  IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(BOTH,                  IdentifierRole.COMPLEMENT);
 		registerIdentifierRole(CHAR_LENGTH,           IdentifierRole.UNUSED);
 		registerIdentifierRole(CHARACTER_LENGTH,      IdentifierRole.UNUSED);
 		registerIdentifierRole(CLASS,                 IdentifierRole.UNUSED);
@@ -527,10 +527,10 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole(CURRENT_TIMESTAMP,     IdentifierRole.FUNCTION);
 		registerIdentifierRole(DELETE,                IdentifierRole.CLAUSE);
 		registerIdentifierRole(DELETE_FROM,           IdentifierRole.CLAUSE);
-		registerIdentifierRole(DESC,                  IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(DISTINCT,              IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(DESC,                  IdentifierRole.COMPLEMENT);
+		registerIdentifierRole(DISTINCT,              IdentifierRole.COMPLEMENT);
 		registerIdentifierRole(EMPTY,                 IdentifierRole.COMPOUND_FUNCTION);  // x IS EMPTY
-		registerIdentifierRole(ESCAPE,                IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(ESCAPE,                IdentifierRole.COMPLEMENT);
 		registerIdentifierRole(EXISTS,                IdentifierRole.FUNCTION);           // EXISTS(x)
 		registerIdentifierRole(FALSE,                 IdentifierRole.FUNCTION);
 		registerIdentifierRole(FETCH,                 IdentifierRole.COMPOUND_FUNCTION);
@@ -540,8 +540,8 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole(INNER,                 IdentifierRole.COMPOUND_FUNCTION);  // Part of JOIN
 		registerIdentifierRole(IS,                    IdentifierRole.COMPOUND_FUNCTION);
 		registerIdentifierRole(JOIN,                  IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(LEADING,               IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(LEFT,                  IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(LEADING,               IdentifierRole.COMPLEMENT);
+		registerIdentifierRole(LEFT,                  IdentifierRole.COMPLEMENT);
 		registerIdentifierRole(LENGTH,                IdentifierRole.FUNCTION);           // LENGTH(x)
 		registerIdentifierRole(LIKE,                  IdentifierRole.COMPOUND_FUNCTION);  // x LIKE y [ESCAPE z]
 		registerIdentifierRole(LOCATE,                IdentifierRole.FUNCTION);           // LOCATE(x, y [, z]))
@@ -551,12 +551,12 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole(MIN,                   IdentifierRole.FUNCTION);           // MIN(x)
 		registerIdentifierRole(MOD,                   IdentifierRole.FUNCTION);           // MOD(x, y)
 		registerIdentifierRole(NEW,                   IdentifierRole.FUNCTION);           // NEW x (y {, z}*)
-		registerIdentifierRole(NOT,                   IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(NOT,                   IdentifierRole.COMPLEMENT);
 		registerIdentifierRole(NULL,                  IdentifierRole.FUNCTION);
 		registerIdentifierRole(OBJECT,                IdentifierRole.FUNCTION);           // OBJECT(x)
 		registerIdentifierRole(OF,                    IdentifierRole.COMPOUND_FUNCTION);  // Part of MEMBER [OF]
 		registerIdentifierRole(OR,                    IdentifierRole.AGGREGATE);          // x OR y
-		registerIdentifierRole(OUTER,                 IdentifierRole.COMPLETEMENT);       // Part of JOIN
+		registerIdentifierRole(OUTER,                 IdentifierRole.COMPLEMENT);       // Part of JOIN
 		registerIdentifierRole(POSITION,              IdentifierRole.UNUSED);
 		registerIdentifierRole(SELECT,                IdentifierRole.CLAUSE);
 		registerIdentifierRole(SET,                   IdentifierRole.CLAUSE);
@@ -565,7 +565,7 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole(SQRT,                  IdentifierRole.FUNCTION);           // SQRT(x)
 		registerIdentifierRole(SUBSTRING,             IdentifierRole.FUNCTION);           // SUBSTRING(x, y {, z})
 		registerIdentifierRole(SUM,                   IdentifierRole.FUNCTION);
-		registerIdentifierRole(TRAILING,              IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(TRAILING,              IdentifierRole.COMPLEMENT);
 		registerIdentifierRole(TRIM,                  IdentifierRole.FUNCTION);           // TRIM([[x [c] FROM] y)
 		registerIdentifierRole(TRUE,                  IdentifierRole.FUNCTION);
 		registerIdentifierRole(UNKNOWN,               IdentifierRole.UNUSED);

@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.JPAVersion;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
@@ -218,6 +219,62 @@ public final class ResultVariableTest extends JPQLParserTest {
 			select(path("e.name"), resultVariableAs(avg("e.age"), "age")),
 			from("Employee", "e"),
 			orderBy(orderByItem(variable("age")))
+		);
+
+		testQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_JPQLQuery_16() {
+
+		String jpqlQuery = "SELECT e.name, e.dept, e.UUID, e.salary AS salary, AVG(e.age) AS age FROM Employee e ORDER BY age, salary ASC";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				path("e.name"),
+				path("e.dept"),
+				path("e.UUID"),
+				resultVariableAs(path("e.salary"), "salary"),
+				resultVariableAs(avg("e.age"), "age")
+			),
+			from("Employee", "e"),
+			orderBy(
+				orderByItem(variable("age")),
+				orderByItemAsc(variable("salary"))
+			)
+		);
+
+		testQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_JPQLQuery_17() {
+
+		if (getGrammar().getJPAVersion().isOlderThan(JPAVersion.VERSION_2_1)) {
+			return;
+		}
+
+		String jpqlQuery = "SELECT e.name, " +
+		                   "       UPPER(e.dept) dept, " +
+		                   "       e.UUID, " +
+		                   "       e.salary AS salary, " +
+		                   "       AVG(e.age) + e.age AS age " +
+		                   "FROM Employee e " +
+		                   "ORDER BY age, salary ASC";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				path("e.name"),
+				resultVariable(upper(path("e.dept")), "dept"),
+				path("e.UUID"),
+				resultVariableAs(path("e.salary"), "salary"),
+				resultVariableAs(avg("e.age").add(path("e.age")), "age")
+			),
+			from("Employee", "e"),
+			orderBy(
+				orderByItem(variable("age")),
+				orderByItemAsc(variable("salary"))
+			)
 		);
 
 		testQuery(jpqlQuery, selectStatement);

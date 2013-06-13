@@ -180,10 +180,10 @@ public final class EclipseLinkJPQLGrammar2_5 extends AbstractJPQLGrammar {
 
 		registerIdentifierRole(AS_OF,                IdentifierRole.CLAUSE);
 		registerIdentifierRole(CONNECT_BY,           IdentifierRole.CLAUSE);
-		registerIdentifierRole(SCN,                  IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(SCN,                  IdentifierRole.COMPLEMENT);
 		registerIdentifierRole(START_WITH,           IdentifierRole.CLAUSE);
 		registerIdentifierRole(ORDER_SIBLINGS_BY,    IdentifierRole.CLAUSE);
-		registerIdentifierRole(TIMESTAMP,            IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(TIMESTAMP,            IdentifierRole.COMPLEMENT);
 
 		registerIdentifierVersion(CONNECT_BY,        JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(ORDER_SIBLINGS_BY, JPAVersion.VERSION_2_1);

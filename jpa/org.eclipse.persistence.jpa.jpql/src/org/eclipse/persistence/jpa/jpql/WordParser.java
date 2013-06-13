@@ -275,6 +275,18 @@ public final class WordParser {
 	}
 
 	/**
+	 * Moves forward the position of the cursor by the given amount.
+	 *
+	 * @param position The amount to add to the current position
+	 * @return The actual portion of the text that was skipped
+	 */
+	public String moveForward(int position) {
+		String word = substring(cursor, cursor + position);
+		cursor += position;
+		return word;
+	}
+
+	/**
 	 * Moves the position of the cursor by the length of the given word and ignore any different in
 	 * whitespace count. If the text has more than one whitespace and the given word usually has one,
 	 * then only one will be part of the returned substring.
@@ -313,18 +325,6 @@ public final class WordParser {
 		}
 
 		return sb.toString();
-	}
-
-	/**
-	 * Moves forward the position of the cursor by the given amount.
-	 *
-	 * @param position The amount to add to the current position
-	 * @return The actual portion of the text that was skipped
-	 */
-	public String moveForward(int position) {
-		String word = substring(cursor, cursor + position);
-		cursor += position;
-		return word;
 	}
 
 	/**
@@ -757,8 +757,8 @@ public final class WordParser {
 	/**
 	 * Determines whether the text at the current position start with the following identifier.
 	 *
-	 * @param position The position to start matching the characters
 	 * @param identifier The JPQL identifier to match with the text at the current position
+	 * @param position The position to start matching the characters
 	 * @return <code>true</code> if the text starts with the given text (case is ignored) and the
 	 * cursor is at the end of the text or is following by a word separator character; <code>false</code>
 	 * otherwise
@@ -827,12 +827,7 @@ public final class WordParser {
 
 		// Check to see if the next character is a word separator
 		char character = text.charAt(to);
-
-		if (isWordSeparator(character)) {
-			return true;
-		}
-
-		return false;
+		return isWordSeparator(character);
 	}
 
 	/**

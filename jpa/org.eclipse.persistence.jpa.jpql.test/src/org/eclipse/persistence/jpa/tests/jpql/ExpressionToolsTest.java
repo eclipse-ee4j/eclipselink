@@ -859,4 +859,108 @@ public final class ExpressionToolsTest {
 
 		assertEquals(10, position[0]);
 	}
+
+	@Test
+	public void test_unquote_01() {
+
+		String text = null;
+		String result = ExpressionTools.unquote(text);
+		assertNull(result);
+	}
+
+	@Test
+	public void test_unquote_02() {
+
+		String text = ExpressionTools.EMPTY_STRING;
+		String result = ExpressionTools.unquote(text);
+		assertEquals(text, result);
+	}
+
+	@Test
+	public void test_unquote_03() {
+
+		String text = " ";
+		String result = ExpressionTools.unquote(text);
+		assertEquals(text, result);
+	}
+
+	@Test
+	public void test_unquote_04() {
+
+		String text = " a ";
+		String result = ExpressionTools.unquote(text);
+		assertEquals(text, result);
+	}
+
+	@Test
+	public void test_unquote_05() {
+
+		String text = "' JPQL";
+		String result = ExpressionTools.unquote(text);
+		assertEquals(" JPQL", result);
+	}
+
+	@Test
+	public void test_unquote_06() {
+
+		String text = "'Pascal'";
+		String result = ExpressionTools.unquote(text);
+		assertEquals("Pascal", result);
+	}
+
+	@Test
+	public void test_unquote_07() {
+
+		String text = "'JPQL";
+		String result = ExpressionTools.unquote(text);
+		assertEquals("JPQL", result);
+	}
+
+	@Test
+	public void test_unquote_08() {
+
+		String text = "'";
+		String result = ExpressionTools.unquote(text);
+		assertEquals(ExpressionTools.EMPTY_STRING, result);
+	}
+
+	@Test
+	public void test_unquote_09() {
+
+		String text = "''";
+		String result = ExpressionTools.unquote(text);
+		assertEquals(ExpressionTools.EMPTY_STRING, result);
+	}
+
+	@Test
+	public void test_unquote_10() {
+
+		String text = "''''";
+		String result = ExpressionTools.unquote(text);
+		assertEquals("'", result);
+	}
+
+	@Test
+	public void test_unquote_11() {
+
+		String text = "'JPQL''s version'";
+		String result = ExpressionTools.unquote(text);
+		assertEquals("JPQL's version", result);
+	}
+
+	@Test
+	public void test_unquote_12() {
+
+		String text = "'''s version'";
+		String result = ExpressionTools.unquote(text);
+		assertEquals("'s version", result);
+	}
+
+	@Test
+	public void test_unquote_13() {
+
+		String text = "'''s version''";
+		String result = ExpressionTools.unquote(text);
+		assertEquals("'s version'", result);
+	}
 }

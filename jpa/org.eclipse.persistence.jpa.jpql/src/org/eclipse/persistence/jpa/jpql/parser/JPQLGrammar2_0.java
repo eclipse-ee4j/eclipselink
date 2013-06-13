@@ -493,7 +493,7 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole(CASE,        IdentifierRole.FUNCTION);           // CASE {o} {WHEN x THEN y}* ELSE z END
 		registerIdentifierRole(COALESCE,    IdentifierRole.FUNCTION);           // COALLESCE(x {, y}+)
 		registerIdentifierRole(ELSE,        IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
-		registerIdentifierRole(END,         IdentifierRole.COMPLETEMENT);       // Part of CASE WHEN ELSE END
+		registerIdentifierRole(END,         IdentifierRole.COMPLEMENT);       // Part of CASE WHEN ELSE END
 		registerIdentifierRole(ENTRY,       IdentifierRole.FUNCTION);           // ENTRY(x)
 		registerIdentifierRole(INDEX,       IdentifierRole.FUNCTION);           // INDEX(x)
 		registerIdentifierRole(KEY,         IdentifierRole.FUNCTION);           // KEY(x)

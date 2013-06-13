@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql;
 /**
  * This class provides a list of queries that are written against the JPQL 2.0 grammar.
  *
- * @version 2.4
+ * @version 2.6
  * @since 2.4
  * @author Pascal Filion
  */
@@ -138,5 +138,12 @@ public final class JPQLQueries2_0 {
 		return "SELECT p " +
 		       "FROM Employee e JOIN e.projects p " +
 		       "WHERE e.id = :id AND INDEX(p) = 1";
+	}
+
+	public static String query_017() {
+		return "SELECT e.dept, e.empId, e.roomNumber, e.salary, UPPER(e.name) AS name_order " +
+		       "FROM employee:Employee e " +
+		       "WHERE e.name LIKE 'myArtifactWith%' " +
+		       "ORDER BY name_order ASC";
 	}
 }

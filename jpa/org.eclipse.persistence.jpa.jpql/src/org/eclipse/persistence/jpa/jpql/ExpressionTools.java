@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.5
+ * @version 2.6
  * @since 2.3
  * @author Pascal Filion
  */
@@ -552,7 +552,7 @@ public final class ExpressionTools {
 	public static String unquote(String text) {
 
 		// Nothing to unquote
-		if (stringIsEmpty(text)) {
+		if ((text == null) || (text.length() == 0)) {
 			return text;
 		}
 
@@ -565,7 +565,7 @@ public final class ExpressionTools {
 		}
 
 		// Skip the trailing single quote
-		if ((endIndex - 1 > startIndex) && isQuote(text.charAt(endIndex - 1))) {
+		if ((endIndex - 1 >= startIndex) && isQuote(text.charAt(endIndex - 1))) {
 			endIndex--;
 		}
 
