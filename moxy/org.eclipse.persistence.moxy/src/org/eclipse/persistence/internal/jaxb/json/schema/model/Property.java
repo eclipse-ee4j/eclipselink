@@ -45,6 +45,9 @@ public class Property {
     @XmlElement(name="enum")
     private List<String> enumeration;
     
+    @XmlElement(name="$ref")
+    private String ref;
+    
     public void setType(JsonType type) {
         this.type = type;
     }
@@ -95,5 +98,15 @@ public class Property {
             return properties.get(name);
         }
         return null;
+    }
+
+
+    public String getRef() {
+        return ref;
+    }
+
+
+    public void setRef(String ref) {
+        this.ref = ref;
     }
 }
