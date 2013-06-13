@@ -20,6 +20,7 @@ import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
 public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTestCases{
     protected final static String JSON_RESOURCE_TYPE = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressWithType.json";
+    protected final static String JSON_SCHEMA = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressWithTypeSchema.json";
 
 	public IncludeRootFalseWithXMLRootElementTestCases(String name) throws Exception {
 		super(name);
@@ -52,5 +53,10 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
 		QName name = new QName("");		
 		JAXBElement jbe = new JAXBElement<AddressWithRootElement>(name, AddressWithRootElement.class, (AddressWithRootElement)getControlObject());
 		return jbe;
+	}
+	
+
+	public void testJSONSchemaGeneration() throws Exception{
+		generateJSONSchema(getClass().getClassLoader().getResourceAsStream(JSON_SCHEMA));
 	}
 }

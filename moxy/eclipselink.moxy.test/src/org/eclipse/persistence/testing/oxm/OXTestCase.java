@@ -391,13 +391,16 @@ public abstract class OXTestCase extends XMLTestCase {
     		super.compareValues(controlValue, testValue);
     	}
     }
+    protected String loadFileToString(String fileName){             
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);        
+        return loadInputStreamToString(inputStream);
+    }
 
-    protected String loadFileToString(String fileName){
+    protected String loadInputStreamToString(InputStream inputStream){
         StringBuffer sb = new StringBuffer();
         String lineSep = System.getProperty("line.separator");
 
         try {            
-            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String str;

@@ -54,7 +54,7 @@ public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
     	StringWriter sw = new StringWriter();
     	jaxbMarshaller.marshal(getControlObject(), sw);
     	
-    	compareStrings("**testJSONMarshalToStringWriter**", sw.toString(), JSON_RESOURCE_DEFAULT);
+    	compareStringToControlFile("**testJSONMarshalToStringWriter**", sw.toString(), JSON_RESOURCE_DEFAULT);
     	    	
     }
 }

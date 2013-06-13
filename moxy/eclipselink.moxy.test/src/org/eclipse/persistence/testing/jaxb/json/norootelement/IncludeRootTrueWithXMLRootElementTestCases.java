@@ -43,4 +43,8 @@ public class IncludeRootTrueWithXMLRootElementTestCases extends IncludeRootFalse
 		JAXBElement jbe = new JAXBElement<AddressWithRootElement>(name, AddressWithRootElement.class, (AddressWithRootElement)getControlObject());
 		return jbe;
 	}
+	
+	public void testJSONSchemaGeneration() throws Exception{
+	  //not yet supported
+	}
 }
