@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 public class NoRootElementTestCases extends JSONMarshalUnmarshalTestCases{
     protected final static String JSON_RESOURCE_WITH_ROOT = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressWithRoot.json";
     protected final static String JSON_RESOURCE_NO_ROOT = "org/eclipse/persistence/testing/jaxb/json/norootelement/address.json";
+    protected final static String JSON_SCHEMA = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressSchema.json";
     
 	public NoRootElementTestCases(String name) throws Exception {
 	    super(name);
@@ -46,6 +47,10 @@ public class NoRootElementTestCases extends JSONMarshalUnmarshalTestCases{
 		QName name = new QName("addressWithRootElement");
 		JAXBElement jbe = new JAXBElement<Address>(name, Address.class, (Address)getControlObject());
 		return jbe;
+	}
+	
+	public void testJSONSchemaGeneration() throws Exception{
+		generateJSONSchema(getClass().getClassLoader().getResourceAsStream(JSON_SCHEMA));
 	}
 }
 
