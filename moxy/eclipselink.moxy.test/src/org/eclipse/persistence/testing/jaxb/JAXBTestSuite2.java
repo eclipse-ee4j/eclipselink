@@ -96,6 +96,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlValueAnnotationWithEnumTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumChoiceObjectTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumChoiceCollectionTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.SpaceTestCases.class);
         suite.addTestSuite(XmlEnumXmlValueTestCases.class);
         suite.addTestSuite(TextNodeTestCases.class);
         suite.addTestSuite(ElementTestCases.class);

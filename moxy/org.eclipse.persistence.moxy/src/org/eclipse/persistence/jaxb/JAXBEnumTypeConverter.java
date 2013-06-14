@@ -18,6 +18,7 @@ import java.util.*;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -105,4 +106,20 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
 	public boolean usesOrdinalValues() {
 		return m_usesOrdinalValues;   
     }
+
+    @Override
+    public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
+        try {
+            return super.convertDataValueToObjectValue(fieldValue, session);
+        } catch (DescriptorException e) {
+            if(DescriptorException.NO_FIELD_VALUE_CONVERSION_TO_ATTRIBUTE_VALUE_PROVIDED == e.getErrorCode()) {
+                if(fieldValue instanceof String) {
+                    fieldValue = ((String) fieldValue).trim();
+                    return super.convertDataValueToObjectValue(fieldValue, session);
+                }
+            } 
+            throw e;
+        }
+    }
+
 }
