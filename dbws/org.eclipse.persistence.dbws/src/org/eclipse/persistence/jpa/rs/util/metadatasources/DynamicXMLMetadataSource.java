@@ -38,7 +38,6 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 
-
 /**
  * {@link MetadataSource} used in the creation of dynamic JAXB contexts for applications.
  * 
@@ -58,15 +57,15 @@ public class DynamicXMLMetadataSource implements MetadataSource {
 
         for (ClassDescriptor ormDescriptor : session.getProject().getOrderedDescriptors()) {
             String descriptorPackageName = "";
-            if (ormDescriptor.getJavaClassName().lastIndexOf('.') > 0){
+            if (ormDescriptor.getJavaClassName().lastIndexOf('.') > 0) {
                 descriptorPackageName = ormDescriptor.getJavaClassName().substring(0, ormDescriptor.getJavaClassName().lastIndexOf('.'));
             }
-            if (descriptorPackageName.equals(packageName)){
+            if (descriptorPackageName.equals(packageName)) {
                 javaTypes.getJavaType().add(createJAXBType(ormDescriptor, objectFactory));
             }
         }
-     }
-    
+    }
+
     /**
      * Create a javaType to be used by JAXB to map a particular class.
      * For static classes, JAXB annotations, xml and defaults will be used to map the class.
@@ -79,7 +78,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
     private JavaType createJAXBType(ClassDescriptor classDescriptor, ObjectFactory objectFactory) {
         JavaType javaType = new JavaType();
         String alias = classDescriptor.getAlias();
-        if (alias == null || alias.isEmpty()){
+        if (alias == null || alias.isEmpty()) {
             alias = classDescriptor.getJavaClass().getSimpleName();
         }
         javaType.setName(alias);
@@ -87,12 +86,11 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         boolean isDynamic = DynamicEntity.class.isAssignableFrom(classDescriptor.getJavaClass());
         for (DatabaseMapping ormMapping : classDescriptor.getMappings()) {
             JAXBElement<XmlElement> element = createJAXBProperty(ormMapping, objectFactory, javaType, isDynamic);
-            if (element != null){
+            if (element != null) {
                 javaType.getJavaAttributes().getJavaAttribute().add(element);
             }
         }
-        // Make them all root elements for now
-        javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
+
         // Embeddables don't need Rest adapters, return if the classDescriptor is an aggregate descriptor.
         if (classDescriptor.isAggregateDescriptor()) {
             return javaType;
@@ -106,10 +104,10 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         adapter.setValueType(classDescriptor.getJavaClassName());
         adapter.setType(classDescriptor.getJavaClassName());
         javaType.setXmlJavaTypeAdapter(adapter);
-        
+
         return javaType;
     }
-    
+
     /**
      * Create a JAXB property for a particular mapping.
      * This will only create JAXBProperties for mappings that are virtual - either because their
@@ -121,14 +119,14 @@ public class DynamicXMLMetadataSource implements MetadataSource {
      * @return
      */
     private JAXBElement<XmlElement> createJAXBProperty(DatabaseMapping mapping, ObjectFactory objectFactory, JavaType owningType, boolean isDynamic) {
-        if (!mapping.getAttributeAccessor().isVirtualAttributeAccessor() && 
+        if (!mapping.getAttributeAccessor().isVirtualAttributeAccessor() &&
                 !isDynamic) {
             return null;
         }
         XmlElement xmlElement = new XmlElement();
         xmlElement.setJavaAttribute(mapping.getAttributeName());
-        if (mapping.isObjectReferenceMapping()){
-            xmlElement.setType(((ObjectReferenceMapping)mapping).getReferenceClassName());
+        if (mapping.isObjectReferenceMapping()) {
+            xmlElement.setType(((ObjectReferenceMapping) mapping).getReferenceClassName());
         } else if (mapping.isCollectionMapping()) {
             if (mapping.isEISMapping()) {
                 // No way to find out the type of the collection from EIS mappings, currently, so just set the container policy here...
@@ -146,14 +144,14 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         } else {
             xmlElement.setType(mapping.getAttributeClassification().getName());
         }
-        if (mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
-            VirtualAttributeAccessor jpaAccessor = (VirtualAttributeAccessor)mapping.getAttributeAccessor();
-            if (owningType.getXmlVirtualAccessMethods() == null){
+        if (mapping.getAttributeAccessor().isVirtualAttributeAccessor()) {
+            VirtualAttributeAccessor jpaAccessor = (VirtualAttributeAccessor) mapping.getAttributeAccessor();
+            if (owningType.getXmlVirtualAccessMethods() == null) {
                 XmlVirtualAccessMethods virtualAccessMethods = new XmlVirtualAccessMethods();
                 virtualAccessMethods.setGetMethod(jpaAccessor.getGetMethodName());
                 virtualAccessMethods.setSetMethod(jpaAccessor.getSetMethodName());
                 owningType.setXmlVirtualAccessMethods(virtualAccessMethods);
-            } else if (!owningType.getXmlVirtualAccessMethods().getGetMethod().equals(jpaAccessor.getGetMethodName())){
+            } else if (!owningType.getXmlVirtualAccessMethods().getGetMethod().equals(jpaAccessor.getGetMethodName())) {
                 XmlAccessMethods accessMethods = new XmlAccessMethods();
                 accessMethods.setGetMethod(jpaAccessor.getGetMethodName());
                 accessMethods.setSetMethod(jpaAccessor.getSetMethodName());
@@ -162,9 +160,9 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         }
         return objectFactory.createXmlElement(xmlElement);
     }
-    
+
     public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {
         return this.xmlBindings;
     }
-    
+
 }

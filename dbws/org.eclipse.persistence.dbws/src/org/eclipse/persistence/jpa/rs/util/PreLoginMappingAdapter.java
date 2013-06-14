@@ -30,10 +30,12 @@ import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
+import org.eclipse.persistence.jaxb.DefaultXMLNameTransformer;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
@@ -70,45 +72,61 @@ public class PreLoginMappingAdapter extends SessionEventListener {
     public void preLogin(SessionEvent event) {
         Project project = event.getSession().getProject();
         ClassLoader cl = jpaSession.getDatasourcePlatform().getConversionManager().getLoader();
+        DefaultXMLNameTransformer xmlNameTransformer = new DefaultXMLNameTransformer();
         for (Object descriptorAlias : project.getAliasDescriptors().keySet()) {
             ClassDescriptor descriptor = (ClassDescriptor) project.getAliasDescriptors().get(descriptorAlias);
-            Class<?> descriptorClass = descriptor.getJavaClass();
-            if (PersistenceWeavedRest.class.isAssignableFrom(descriptorClass)) {
-                XMLCompositeCollectionMapping relationshipMapping = new XMLCompositeCollectionMapping();
-                relationshipMapping.setAttributeName("_persistence_relationshipInfo");
-                relationshipMapping.setGetMethodName("_persistence_getRelationships");
-                relationshipMapping.setSetMethodName("_persistence_setRelationships");
-                relationshipMapping.setDescriptor(descriptor);
-                CollectionContainerPolicy containerPolicy = new CollectionContainerPolicy(ArrayList.class);
-                relationshipMapping.setContainerPolicy(containerPolicy);
-                relationshipMapping.setField(new XMLField("_relationships"));
-                relationshipMapping.setReferenceClass(Link.class);
-                XMLJavaTypeConverter converter = new XMLJavaTypeConverter(RelationshipLinkAdapter.class);
-                converter.initialize(relationshipMapping, event.getSession());
-                relationshipMapping.setConverter(converter);
-                descriptor.addMapping(relationshipMapping);
 
-                XMLCompositeObjectMapping hrefMapping = new XMLCompositeObjectMapping();
-                hrefMapping.setAttributeName("_persistence_href");
-                hrefMapping.setGetMethodName("_persistence_getHref");
-                hrefMapping.setSetMethodName("_persistence_setHref");
-                hrefMapping.setDescriptor(descriptor);
-                hrefMapping.setField(new XMLField("_link"));
-                hrefMapping.setReferenceClass(Link.class);
-                hrefMapping.setXPath(".");
-                descriptor.addMapping(hrefMapping);
-
-                XMLCompositeObjectMapping itemLinksMapping = new XMLCompositeObjectMapping();
-                itemLinksMapping.setAttributeName("_persistence_links");
-                itemLinksMapping.setGetMethodName("_persistence_getLinks");
-                itemLinksMapping.setSetMethodName("_persistence_setLinks");
-                itemLinksMapping.setDescriptor(descriptor);
-                itemLinksMapping.setReferenceClass(ItemLinks.class);
-                itemLinksMapping.setXPath(".");
-                descriptor.addMapping(itemLinksMapping);
+            if (!PersistenceWeavedRest.class.isAssignableFrom(descriptor.getJavaClass())) {
+                continue;
             }
 
+            if (descriptor.isXMLDescriptor()) {
+                XMLDescriptor xmlDescriptor = (XMLDescriptor) project.getAliasDescriptors().get(descriptorAlias);
+                if (null != xmlDescriptor) {
+                    if (null == xmlDescriptor.getDefaultRootElement()) {
+                        // set root element 
+                        xmlDescriptor.setDefaultRootElement(xmlNameTransformer.transformRootElementName(xmlDescriptor.getJavaClass().getName()));
+                        // set resultAlwaysXMLRoot to false, so that the elements are not wrapped in JAXBElements when unmarshalling.
+                        xmlDescriptor.setResultAlwaysXMLRoot(false);
+                    }
+                }
+            }
+
+            XMLCompositeCollectionMapping relationshipMapping = new XMLCompositeCollectionMapping();
+            relationshipMapping.setAttributeName("_persistence_relationshipInfo");
+            relationshipMapping.setGetMethodName("_persistence_getRelationships");
+            relationshipMapping.setSetMethodName("_persistence_setRelationships");
+            relationshipMapping.setDescriptor(descriptor);
+            CollectionContainerPolicy containerPolicy = new CollectionContainerPolicy(ArrayList.class);
+            relationshipMapping.setContainerPolicy(containerPolicy);
+            relationshipMapping.setField(new XMLField("_relationships"));
+            relationshipMapping.setReferenceClass(Link.class);
+            XMLJavaTypeConverter converter = new XMLJavaTypeConverter(RelationshipLinkAdapter.class);
+            converter.initialize(relationshipMapping, event.getSession());
+            relationshipMapping.setConverter(converter);
+            descriptor.addMapping(relationshipMapping);
+
+            XMLCompositeObjectMapping hrefMapping = new XMLCompositeObjectMapping();
+            hrefMapping.setAttributeName("_persistence_href");
+            hrefMapping.setGetMethodName("_persistence_getHref");
+            hrefMapping.setSetMethodName("_persistence_setHref");
+            hrefMapping.setDescriptor(descriptor);
+            hrefMapping.setField(new XMLField("_link"));
+            hrefMapping.setReferenceClass(Link.class);
+            hrefMapping.setXPath(".");
+            descriptor.addMapping(hrefMapping);
+
+            XMLCompositeObjectMapping itemLinksMapping = new XMLCompositeObjectMapping();
+            itemLinksMapping.setAttributeName("_persistence_links");
+            itemLinksMapping.setGetMethodName("_persistence_getLinks");
+            itemLinksMapping.setSetMethodName("_persistence_setLinks");
+            itemLinksMapping.setDescriptor(descriptor);
+            itemLinksMapping.setReferenceClass(ItemLinks.class);
+            itemLinksMapping.setXPath(".");
+            descriptor.addMapping(itemLinksMapping);
+
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
+
             Vector<DatabaseMapping> descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
             for (DatabaseMapping mapping : descriptorMappings) {
                 if (mapping.isXMLMapping()) {
