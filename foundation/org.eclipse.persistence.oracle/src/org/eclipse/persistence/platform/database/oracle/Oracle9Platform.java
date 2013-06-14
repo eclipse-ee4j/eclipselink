@@ -44,6 +44,7 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.internal.helper.*;
@@ -301,6 +302,17 @@ public class Oracle9Platform extends Oracle8Platform {
         return fieldTypes;
     }
 
+    /**
+     * Build the hint string used for first rows.
+     * 
+     * Allows it to be overridden
+     * @param max
+     * @return
+     */
+    protected String buildFirstRowsHint(int max){
+        return HINT_START + '(' + max + ')'+ HINT_END;
+    }
+    
     /**
      * INTERNAL:
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
