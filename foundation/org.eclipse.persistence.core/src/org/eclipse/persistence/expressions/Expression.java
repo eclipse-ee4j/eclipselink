@@ -398,17 +398,16 @@ public abstract class Expression implements Serializable, Cloneable {
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
      * 
-     * as does not guarantee the results of the downcast will be of the specified class and should be used in conjunction
-     * with a Expression.type()
+     *  downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
      * <pre><blockquote>
-     *     EclipseLink: employee.get("project").as(LargeProject.class).get("budget").equal(1000)
+     *     EclipseLink: employee.get("project").treat(LargeProject.class).get("budget").equal(1000)
      *     Java: ((LargeProject)employee.getProjects().get(0)).getBudget() == 1000
-     *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000
+     *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000 AND PROJ.TYPE = "L"
      * </blockquote></pre>
      */
     public Expression treat(Class castClass) {
-        return treat(castClass);
+        return this;
     }
     
     /**
@@ -2650,7 +2649,14 @@ public abstract class Expression implements Serializable, Cloneable {
     public boolean isTableExpression() {
         return false;
     }
-    
+
+    /**
+     * INTERNAL:
+     */
+    public boolean isTreatExpression() {
+        return false;
+    }
+
     /**
      * INTERNAL:
      */

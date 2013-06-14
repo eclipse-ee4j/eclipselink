@@ -24,7 +24,6 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.history.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.platform.database.DB2MainframePlatform;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
@@ -76,12 +75,7 @@ public class SQLSelectStatement extends SQLStatement {
     protected boolean isAggregateSelect;
 
     /** Used for DB2 style from clause outer joins. */
-    protected List<Expression> outerJoinedExpressions;
-    protected List<Expression> outerJoinedMappingCriteria;
-    protected List<Map<DatabaseTable, Expression>> outerJoinedAdditionalJoinCriteria;
-    // used in case no corresponding outerJoinExpression is provided - 
-    // only multi-table inheritance should be outer joined
-    protected List descriptorsForMultitableInheritanceOnly;
+    protected List<OuterJoinExpressionHolder> outerJoinExpressionHolders;
 
     /** Used for Oracle Hierarchical Queries */
     protected Expression startWithExpression;
@@ -172,9 +166,9 @@ public class SQLSelectStatement extends SQLStatement {
         // Print outer joins
         boolean firstTable = true;
 
-        for (int index = 0; index < getOuterJoinExpressions().size(); index++) {
-            QueryKeyExpression outerExpression = (QueryKeyExpression)getOuterJoinExpressions().get(index);
-            CompoundExpression relationExpression = (CompoundExpression)getOuterJoinedMappingCriteria().get(index);// get expression for multiple table case
+        for (OuterJoinExpressionHolder holder : getOuterJoinExpressionsHolders()) {
+            QueryKeyExpression outerExpression = (QueryKeyExpression)holder.joinExpression;
+            CompoundExpression relationExpression = (CompoundExpression)holder.outerJoinedMappingCriteria;// get expression for multiple table case
 
             // CR#3083929 direct collection/map mappings do not have reference descriptor.
             DatabaseTable targetTable = null;
@@ -256,20 +250,18 @@ public class SQLSelectStatement extends SQLStatement {
 
         boolean usesHistory = (getBuilder() != null) && getBuilder().hasAsOfClause();
         
-        int nSize = getOuterJoinExpressions().size();
-        List<OuterJoinExpressionHolder> outerJoinExpressionHolders = new ArrayList(nSize);
-        for (int index = 0; index < nSize; index++) {
-            outerJoinExpressionHolders.add(new OuterJoinExpressionHolder(index, usesHistory));
+        int nSize = getOuterJoinExpressionsHolders().size();
+        for (OuterJoinExpressionHolder holder : getOuterJoinExpressionsHolders()) {
+            holder.process(usesHistory);
         }
         
         if(nSize > 1) {
-            sortOuterJoinExpressionHolders(outerJoinExpressionHolders);
+            sortOuterJoinExpressionHolders(getOuterJoinExpressionsHolders());
         }
         
         for (OuterJoinExpressionHolder holder : outerJoinExpressionHolders) {
             ObjectExpression outerExpression = holder.joinExpression;
             boolean isOuterJoin = (outerExpression ==  null) || outerExpression.shouldUseOuterJoin();
-            int index = holder.index;
             DatabaseTable targetTable = holder.targetTable;
             DatabaseTable sourceTable = holder.sourceTable;
             DatabaseTable sourceAlias = holder.sourceAlias;
@@ -310,7 +302,7 @@ public class SQLSelectStatement extends SQLStatement {
                         if (outerExpression.isDirectCollection()) {
                             // Append the join clause,
                             // If this is a direct collection, join to direct table.
-                            Expression onExpression = getOuterJoinedMappingCriteria().get(index);
+                            Expression onExpression = holder.outerJoinedMappingCriteria;
         
                             DatabaseTable newAlias = onExpression.aliasForTable(targetTable);
                             if (isOuterJoin) {
@@ -353,7 +345,7 @@ public class SQLSelectStatement extends SQLStatement {
                                 holder.printAdditionalJoins(printer, outerJoinedAliases, aliasesOfTablesToBeLocked, shouldPrintUpdateClauseForAllTables);
                                 writer.write(")");
                             }
-                            Expression sourceToTargetJoin = getOuterJoinedMappingCriteria().get(index);
+                            Expression sourceToTargetJoin = holder.outerJoinedMappingCriteria;
                             if (additionalOnExpression != null) {
                                 if (sourceToTargetJoin == null) {
                                     sourceToTargetJoin = additionalOnExpression;
@@ -373,7 +365,7 @@ public class SQLSelectStatement extends SQLStatement {
                         // the rest of the tables are joined with the additional join criteria.
                         // For example: EMPLOYEE t1 LEFT OUTER JOIN (PROJ_EMP t3 LEFT OUTER JOIN PROJECT t0 ON (t0.PROJ_ID = t3.PROJ_ID)) ON (t3.EMP_ID = t1.EMP_ID)
                         // Now OneToOneMapping also may have relation table.
-                        DatabaseTable relationAlias = (getOuterJoinedMappingCriteria().get(index)).aliasForTable(relationTable);
+                        DatabaseTable relationAlias = holder.outerJoinedMappingCriteria.aliasForTable(relationTable);
                         DatabaseTable mapKeyAlias = null;
                         DatabaseTable mapKeyTable = null;
                         List<DatabaseTable> tablesInOrder = new ArrayList();
@@ -390,7 +382,7 @@ public class SQLSelectStatement extends SQLStatement {
                             tablesInOrder.add(mapKeyAlias);
                         }
                         TreeMap indexToExpressionMap = new TreeMap();
-                        mapTableIndexToExpression(getOuterJoinedMappingCriteria().get(index), indexToExpressionMap, tablesInOrder);
+                        mapTableIndexToExpression(holder.outerJoinedMappingCriteria, indexToExpressionMap, tablesInOrder);
                         Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(1));
                         Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(Integer.valueOf(2));
                         Expression relationToKeyJoin = null;
@@ -879,7 +871,7 @@ public class SQLSelectStatement extends SQLStatement {
         if (getWhereClause() != null) {
             iterator.iterateOn(getWhereClause());
         } else if (hasOuterJoinExpressions()) {
-            Expression outerJoinCriteria = getOuterJoinedMappingCriteria().get(0);
+            Expression outerJoinCriteria = getOuterJoinExpressionsHolders().get(0).joinExpression;
             if (outerJoinCriteria != null){
                 iterator.iterateOn(outerJoinCriteria);
             }
@@ -1111,38 +1103,89 @@ public class SQLSelectStatement extends SQLStatement {
 
     /**
      * INTERNAL:
-     * Each Vector's element is a map of tables join expressions keyed by the tables
+     * returns outerJoinExpressionHolders representing outerjoin expressions.
+     * @return
      */
-    public List<Map<DatabaseTable, Expression>> getOuterJoinedAdditionalJoinCriteria() {
-        if (outerJoinedAdditionalJoinCriteria == null) {
-            outerJoinedAdditionalJoinCriteria = new ArrayList(4);
+    public List<OuterJoinExpressionHolder> getOuterJoinExpressionsHolders() {
+        if (outerJoinExpressionHolders == null) {
+            outerJoinExpressionHolders = new ArrayList(4);
         }
 
-        return outerJoinedAdditionalJoinCriteria;
+        return outerJoinExpressionHolders;
     }
 
-    public List<Expression> getOuterJoinedMappingCriteria() {
-        if (outerJoinedMappingCriteria == null) {
-            outerJoinedMappingCriteria = new ArrayList(4);
-        }
+    /**
+     * INTERNAL:
+     * Used by ExpressionBuilder and QueryKeyExpression normalization to create a standard outerjoin.  
+     * @param joinExpression - expression resulting in the outerjoin. Null if it is for inheritance reading of subclasses
+     * @param outerJoinedMappingCriteria - used for querykey mapping expressions
+     * @param outerJoinedAdditionalJoinCriteria - additional tables/expressions to join.  Usually for multitableInheritance join expressions
+     * @param descriptor - descriptor to use if this is for reading in subclasses in one query.
+     * @return
+     */
+    public Integer addOuterJoinExpressionsHolders(ObjectExpression joinExpression, Expression outerJoinedMappingCriteria,
+            Map<DatabaseTable, Expression> outerJoinedAdditionalJoinCriteria, ClassDescriptor descriptor) {
 
-        return outerJoinedMappingCriteria;
+        int index = getOuterJoinExpressionsHolders().size();
+        OuterJoinExpressionHolder holder = new OuterJoinExpressionHolder(this, joinExpression, outerJoinedMappingCriteria,
+                outerJoinedAdditionalJoinCriteria, descriptor);
+
+        getOuterJoinExpressionsHolders().add(holder);
+        return index;
     }
 
-    public List<Expression> getOuterJoinExpressions() {
-        if (outerJoinedExpressions == null) {
-            outerJoinedExpressions = new ArrayList(4);
-        }
+    /**
+     * INTERNAL:
+     * used by TREAT to add in a join from the parent table to the child tables when 
+     * the parent expression did not add an outer join of its own
+     */
+    public Integer addOuterJoinExpressionsHolders(Map<DatabaseTable, Expression> outerJoinedAdditionalJoinCriteria, ClassDescriptor descriptor) {
 
-        return outerJoinedExpressions;
-    }
+        List<OuterJoinExpressionHolder> outerJoinExpressionHolders = getOuterJoinExpressionsHolders();
+        int index = outerJoinExpressionHolders.size();
+        OuterJoinExpressionHolder holder = new OuterJoinExpressionHolder(this, null, null,
+                outerJoinedAdditionalJoinCriteria, descriptor) {
+            protected void process(boolean usesHistory, boolean isMapKeyHolder) {
+                sourceTable = descriptor.getTables().get(0);
+                int count = 0;
+                for (Map.Entry<DatabaseTable, Expression> entry: outerJoinedAdditionalJoinCriteria.entrySet()) {
+                    DatabaseTable table = entry.getKey();
+                    Expression onExpression = entry.getValue();
+                    if (count==0) {
+                        targetTable = table;
+                        sourceAlias = onExpression.aliasForTable(sourceTable);
+                        targetAlias = onExpression.aliasForTable(targetTable);
+                    }
 
-    public List getDescriptorsForMultitableInheritanceOnly() {
-        if (descriptorsForMultitableInheritanceOnly == null) {
-            descriptorsForMultitableInheritanceOnly = new ArrayList(4);
-        }
+                    if (onExpression != null) {
+                        DatabaseTable alias = onExpression.aliasForTable(table);
+                        if (usesHistory) {
+                            table = getTableAliases().get(alias);
+                        }
+                        if (this.additionalTargetAliases == null) {
+                            this.additionalTargetAliases = new ArrayList();
+                            this.additionalTargetTables = new ArrayList();
+                            this.additionalJoinOnExpression = new ArrayList();
+                            this.additionalTargetIsDescriptorTable = new ArrayList();
+                        }
+                        this.additionalTargetAliases.add(alias);
+                        this.additionalTargetTables.add(table);
+                        this.additionalJoinOnExpression.add(onExpression);
+                        // if it's descriptor's own table - true; otherwise (it's child's table) - false.
+                        this.additionalTargetIsDescriptorTable.add(false);
+                    }
+                    count++;
+                }
 
-        return descriptorsForMultitableInheritanceOnly;
+                if(usesHistory) {
+                    sourceTable = getTableAliases().get(sourceAlias);
+                    targetTable = getTableAliases().get(targetAlias);
+                }
+            }
+        };
+
+        outerJoinExpressionHolders.add(holder);
+        return index;
     }
 
     /**
@@ -1222,12 +1265,8 @@ public class SQLSelectStatement extends SQLStatement {
         return (nonSelectFields != null) && (!nonSelectFields.isEmpty());
     }
 
-    public boolean hasOuterJoinedAdditionalJoinCriteria() {
-        return (outerJoinedAdditionalJoinCriteria != null) && (!outerJoinedAdditionalJoinCriteria.isEmpty());
-    }
-
     public boolean hasOuterJoinExpressions() {
-        return (outerJoinedExpressions != null) && (!outerJoinedExpressions.isEmpty());
+        return (outerJoinExpressionHolders != null) && (!outerJoinExpressionHolders.isEmpty());
     }
 
     /**
@@ -1366,10 +1405,17 @@ public class SQLSelectStatement extends SQLStatement {
 
         // Process outer join by expressions.
         if (hasOuterJoinExpressions()) {
-            rebuildAndAddExpressions(getOuterJoinedMappingCriteria(), allExpressions, builder, clonedExpressions);
-            for (Iterator criterias = getOuterJoinedAdditionalJoinCriteria().iterator();
-                     criterias.hasNext();) {
-                rebuildAndAddExpressions((Map)criterias.next(), allExpressions, builder, clonedExpressions);
+            for (OuterJoinExpressionHolder holder : this.getOuterJoinExpressionsHolders()) {
+                if (holder.outerJoinedMappingCriteria != null) {
+                    Expression expression = rebuildExpression(holder.outerJoinedMappingCriteria, builder, clonedExpressions);
+                    if (holder.outerJoinedMappingCriteria != expression) {
+                        holder.outerJoinedMappingCriteria = expression;
+                    }
+                    allExpressions.add(expression);
+                }
+                if (holder.outerJoinedAdditionalJoinCriteria != null) {
+                    rebuildAndAddExpressions(holder.outerJoinedAdditionalJoinCriteria, allExpressions, builder, clonedExpressions);
+                }
             }
         }
 
@@ -1452,22 +1498,17 @@ public class SQLSelectStatement extends SQLStatement {
         // Must also assign aliases to outer joined mapping criterias.
         if (hasOuterJoinExpressions()) {
             // Check for null on criterias.
-            for (Iterator criterias = getOuterJoinedMappingCriteria().iterator();
-                     criterias.hasNext();) {
-                Expression criteria = (Expression)criterias.next();
+            for (OuterJoinExpressionHolder holder : this.outerJoinExpressionHolders) {
+                Expression criteria = holder.outerJoinedMappingCriteria;//
                 if (criteria != null) {
                     allExpressions.add(criteria);
                 }
-            }
 
-            // Check for null on criterias.
-            for (Iterator criterias = getOuterJoinedAdditionalJoinCriteria().iterator();
-                     criterias.hasNext();) {
-                Map map = (Map)criterias.next();
+                Map map = (Map)holder.outerJoinedAdditionalJoinCriteria;
                 if (map != null) {
                     Iterator it = map.values().iterator();
                     while(it.hasNext()) {
-                        Expression criteria = (Expression)it.next();
+                        criteria = (Expression)it.next();
                         if(criteria != null) {
                             allExpressions.add(criteria);
                         }
@@ -1888,18 +1929,6 @@ public class SQLSelectStatement extends SQLStatement {
         this.orderByExpressions = orderByExpressions;
     }
 
-    public void setOuterJoinedAdditionalJoinCriteria(List<Map<DatabaseTable, Expression>> outerJoinedAdditionalJoinCriteria) {
-        this.outerJoinedAdditionalJoinCriteria = outerJoinedAdditionalJoinCriteria;
-    }
-
-    public void setOuterJoinedMappingCriteria(List<Expression> outerJoinedMappingCriteria) {
-        this.outerJoinedMappingCriteria = outerJoinedMappingCriteria;
-    }
-
-    public void setOuterJoinExpressions(List<Expression> outerJoinedExpressions) {
-        this.outerJoinedExpressions = outerJoinedExpressions;
-    }
-
     /**
      * Set the parent statement if using subselects.
      * This is used to normalize correctly with subselects.
@@ -2202,232 +2231,5 @@ public class SQLSelectStatement extends SQLStatement {
             holder.createIndexList(targetAliasToHolders, aliasToIndexes);
         }
         Collections.sort(holders);
-    }
-    
-    /**
-     * Holder class storing a QueryKeyExpression representing an outer join
-     * plus some data calculated by method appendFromClauseForOuterJoin.
-     */
-    class OuterJoinExpressionHolder implements Comparable 
-    {
-        final ObjectExpression joinExpression;
-        final int index;
-        DatabaseTable targetTable;
-        DatabaseTable sourceTable;
-        final DatabaseTable targetAlias;
-        final DatabaseTable sourceAlias;
-        List<DatabaseTable> additionalTargetTables;
-        List<DatabaseTable> additionalTargetAliases;
-        List<Expression> additionalJoinOnExpression;
-        List<Boolean> additionalTargetIsDescriptorTable;
-        Boolean hasInheritance;
-        List<Integer> indexList;
-        // if it's a map then an additional holder created for the key.
-        // mapKeyHolder is not used in sorting because there can be no outer joins out of it,
-        // the main reason for it to exist is its printAdditionalJoins method.
-        OuterJoinExpressionHolder mapKeyHolder;
-        // indicates whether it's a mapKeyHolder
-        boolean isMapKeyHolder;
-        
-        public OuterJoinExpressionHolder(int index, boolean usesHistory) {
-            this(index, usesHistory, false);
-        }
-        protected OuterJoinExpressionHolder(int index, boolean usesHistory, boolean isMapKeyHolder) {
-            this.joinExpression = (ObjectExpression)getOuterJoinExpressions().get(index);
-            this.index = index;
-            this.isMapKeyHolder = isMapKeyHolder;
-            ClassDescriptor descriptor = null;
-            if (this.joinExpression instanceof QueryKeyExpression) {
-                QueryKeyExpression expression = (QueryKeyExpression)this.joinExpression;
-                if (isMapKeyHolder) {
-                    descriptor = expression.getMapKeyDescriptor();
-                    this.targetTable = descriptor.getTables().get(0);
-                    this.targetAlias = getOuterJoinedMappingCriteria().get(index).aliasForTable(this.targetTable);                        
-                } else {
-                    // this is a map - create a holder for the key
-                    if(expression.isMapKeyObjectRelationship()) {
-                        this.mapKeyHolder = new OuterJoinExpressionHolder(index, usesHistory, true);
-                    }
-                    // in DirectCollection case descriptor is null
-                    descriptor = expression.getDescriptor();
-                    // TODO: This does not seem to work if the mapping joins with a secondary table of the descriptor.
-                    this.targetTable = expression.getReferenceTable();
-                    this.targetAlias = expression.aliasForTable(this.targetTable);
-                }
-                this.sourceTable = expression.getSourceTable();
-                this.sourceAlias = expression.getBaseExpression().aliasForTable(this.sourceTable);
-            } else if (this.joinExpression != null) {
-                this.sourceTable = ((ObjectExpression)this.joinExpression.getJoinSource()).getDescriptor().getTables().get(0);
-                this.sourceAlias = this.joinExpression.getJoinSource().aliasForTable(this.sourceTable);
-                this.targetTable = this.joinExpression.getDescriptor().getTables().get(0);
-                this.targetAlias = this.joinExpression.aliasForTable(this.targetTable);                
-            } else {
-                // absence of join expression means that this holder used for multitable inheritance:
-                //   ReadAllQuery query = new ReadAllQuery(Project.class);
-                //   query.setShouldOuterJoinSubclasses(true);
-                // will produce: 
-                //   SELECT ... FROM PROJECT t0 LEFT OUTER JOIN LPROJECT t1 ON (t1.PROJ_ID = t0.PROJ_ID)
-                descriptor = (ClassDescriptor)getDescriptorsForMultitableInheritanceOnly().get(index); 
-                sourceTable = descriptor.getTables().get(0);
-                targetTable = descriptor.getInheritancePolicy().getChildrenTables().get(0);
-                Expression exp = (Expression)((Map)getOuterJoinedAdditionalJoinCriteria().get(index)).get(targetTable);
-                sourceAlias = exp.aliasForTable(sourceTable);
-                targetAlias = exp.aliasForTable(targetTable);
-            }
-            if(usesHistory) {
-                sourceTable = getTableAliases().get(sourceAlias);
-                targetTable = getTableAliases().get(targetAlias);
-            }
-            
-            Map<DatabaseTable, Expression> tablesJoinExpression = getOuterJoinedAdditionalJoinCriteria().get(index);
-            if(tablesJoinExpression != null && !tablesJoinExpression.isEmpty()) {
-                if(descriptor == null) {
-                    descriptor = joinExpression.getDescriptor();
-                }
-                List targetTables = descriptor.getTables();
-                int nDescriptorTables = targetTables.size();
-                hasInheritance = descriptor.hasInheritance(); 
-                if(hasInheritance) {
-                    targetTables = descriptor.getInheritancePolicy().getAllTables();
-                }
-                int tablesSize = targetTables.size();
-                // skip main table - start with i=1
-                for(int i=1; i < tablesSize; i++) {
-                    DatabaseTable table = (DatabaseTable)targetTables.get(i);
-                    Expression onExpression = tablesJoinExpression.get(table);
-                    if (onExpression != null) {
-                        DatabaseTable alias = onExpression.aliasForTable(table);
-                        if (usesHistory) {
-                            table = getTableAliases().get(alias);
-                        }
-                        if (this.additionalTargetAliases == null) {
-                            this.additionalTargetAliases = new ArrayList();
-                            this.additionalTargetTables = new ArrayList();
-                            this.additionalJoinOnExpression = new ArrayList();
-                            this.additionalTargetIsDescriptorTable = new ArrayList();
-                        }
-                        this.additionalTargetAliases.add(alias);
-                        this.additionalTargetTables.add(table);
-                        this.additionalJoinOnExpression.add(onExpression);
-                        // if it's descriptor's own table - true; otherwise (it's child's table) - false.
-                        this.additionalTargetIsDescriptorTable.add(i < nDescriptorTables);
-                    }
-                }
-            }
-        }
-
-        public boolean hasAdditionalJoinExpressions() {
-            return this.additionalTargetTables != null;
-        }
-        
-        public boolean hasMapKeyHolder() {
-            return this.mapKeyHolder != null;
-        }
-        
-        public void createIndexList(Map<DatabaseTable, OuterJoinExpressionHolder> targetAliasToHolders, Map<DatabaseTable, Integer> aliasToIndexes) {
-            if(this.indexList != null) {
-                // indexList has been already created
-                return;
-            }
-            
-            this.indexList = new ArrayList();
-            OuterJoinExpressionHolder baseHolder = targetAliasToHolders.get(this.sourceAlias);
-            if(baseHolder != null) {
-                baseHolder.createIndexList(targetAliasToHolders, aliasToIndexes);
-                this.indexList.addAll(baseHolder.indexList);
-            } else {
-                this.indexList.add(aliasToIndexes.get(this.sourceAlias));
-            }
-            this.indexList.add(aliasToIndexes.get(this.targetAlias));
-        }
-        
-        /*
-         * The method should be called only on instances of OuterJoinExpressionHolder
-         * and only after the indexList has been created.
-         * Loop through both lists comparing the members corresponding to the same index
-         * until not equal members are found.
-         * If all the members are the same, but one of the lists is shorter then it's less.
-         * Examples:
-         * {2, 1} < {2, 2}; {2, 1} < {3}; {2, 1} > {2}
-         */
-        public int compareTo(Object other) {
-            if(other == this) {
-                return 0;
-            }
-            List<Integer> otherIndexList = ((OuterJoinExpressionHolder)other).indexList;
-            int nMinSize = this.indexList.size();
-            int nCompare = -1;
-            int nOtherSize = otherIndexList.size();
-            if(nMinSize > nOtherSize) {
-                nMinSize = nOtherSize;
-                nCompare = 1;
-            } else if(nMinSize == nOtherSize) {
-                nCompare = 0;
-            }
-            for(int i=0; i < nMinSize; i++) {
-                int index = indexList.get(i);
-                int otherIndex = otherIndexList.get(i);
-                if(index < otherIndex) {
-                    return -1;
-                } else if(index > otherIndex) {
-                    return 1;
-                }
-            }
-            return nCompare;
-        }
-
-        void printAdditionalJoins(ExpressionSQLPrinter printer, List<DatabaseTable> outerJoinedAliases, Collection aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables)  throws IOException {
-            Writer writer = printer.getWriter();
-            AbstractSession session = printer.getSession();
-
-            int size = this.additionalTargetAliases.size();
-            for(int i=0; i < size; i++) {
-                DatabaseTable table = this.additionalTargetTables.get(i);
-                if(this.additionalTargetIsDescriptorTable.get(i)) {
-                    // it's descriptor's own table
-                    if (!session.getPlatform().supportsANSIInnerJoinSyntax()) {
-                        // if the DB does not support 'JOIN', do a:
-                        if (this.hasInheritance) {
-                            // right outer join instead. This will give the same
-                            // result because the right table has no rows that
-                            // are not in the left table (left table maps to the
-                            // main class, right table to a subclass in an
-                            // inheritance mapping with a joined subclass
-                            // strategy).
-                            writer.write(" RIGHT OUTER");
-                        } else {
-                            // left outer join instead. This will give the same
-                            // result because the left table has no rows that
-                            // are not in the right table (left table is either
-                            // a join table or it is joining secondary tables to
-                            // a primary table).
-                            writer.write(" LEFT OUTER");
-                        }
-                    }
-                    writer.write(" JOIN ");
-                } else {
-                    // it's child's table
-                    writer.write(" LEFT OUTER JOIN ");
-                }
-                DatabaseTable alias = this.additionalTargetAliases.get(i);
-                table.printSQL(printer);
-                writer.write(" ");
-                if (alias.isDecorated()) {
-                    ((DecoratedDatabaseTable)alias).getAsOfClause().printSQL(printer);
-                    writer.write(" ");
-                }
-                outerJoinedAliases.add(alias);
-                alias.printSQL(printer);
-                if (shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(alias))) {
-                    getForUpdateClause().printSQL(printer, SQLSelectStatement.this);
-                }
-                writer.write(" ON ");
-                if (session.getPlatform() instanceof DB2MainframePlatform) {
-                    ((RelationExpression)this.additionalJoinOnExpression.get(i)).printSQLNoParens(printer);
-                } else {
-                    this.additionalJoinOnExpression.get(i).printSQL(printer);
-                }
-            }
-        }
     }
 }

@@ -35,6 +35,15 @@ public class ExpressionNormalizer {
     
     /** Used to maintain identity of cloned expressions. */
     protected Map<Expression, Expression> clonedExpressions;
+    
+    /**
+     * Used to trigger adding additional join operations etc to the expression being processed instead of at the end of the where clause.
+     * Useful for dealing with Treat within an Or clause, as the type expression needs to be appended within the OR condition rather AND'd
+     *  to the entire thing.
+     */
+    protected boolean addAdditionalExpressionsWithinCurrrentExpressionContext = false;
+    /** Local expression from joins being added to the original expression. */
+    protected Expression additionalLocalExpression;
 
     public ExpressionNormalizer(SQLSelectStatement statement) {
         this.statement = statement;
@@ -116,5 +125,54 @@ public class ExpressionNormalizer {
 
     public void setStatement(SQLSelectStatement statement) {
         this.statement = statement;
+    }
+
+    /**
+     * Similar to addAdditionalExpression, this keeps a running expression used for joins so that they can be added locally within 'OR' 
+     * predicates rather than to the entire where clause.  If addAdditionalExpressionsWithinCurrrentExpressionContext is false, it will work 
+     * the same as addAdditionalExpression
+     * @param theExpression
+     */
+    public void addAdditionalLocalExpression(Expression theExpression) {
+        // This change puts a null check into every call, but is printing additional
+        // expressions in a meaningful order worth it?
+        if (addAdditionalExpressionsWithinCurrrentExpressionContext) {
+            additionalLocalExpression = (additionalLocalExpression == null) ? theExpression : additionalLocalExpression.and(theExpression);
+        } else {
+            additionalExpression = (additionalExpression == null) ? theExpression : additionalExpression.and(theExpression);
+        }
+    }
+
+    /**
+     * INTERNAL
+     * This will return the localExpression if isLogicalExpression is false, otherwise it will check the addAdditionalExpressionsWithinCurrrentExpressionContext
+     * flag and clear additionalLocalExpression once adding it to the localExpression.  
+     * @param localExpression
+     * @param isLogicalExpression
+     * @return 
+     */
+    public Expression processAdditionalLocalExpressions(Expression localExpression, boolean isLogicalExpression) {
+        if (!isLogicalExpression || !addAdditionalExpressionsWithinCurrrentExpressionContext) {
+            return localExpression;
+        }
+        Expression expToReturn = localExpression.and(additionalLocalExpression);
+        additionalLocalExpression = null;
+
+        return expToReturn;
+    }
+
+    public boolean isAddAdditionalExpressionsWithinCurrrentExpressionContext() {
+        return addAdditionalExpressionsWithinCurrrentExpressionContext;
+    }
+
+    /**
+     * INTERNAL:
+     * Allows keeping track when the normalizer is within a logical OR statement, where additionalExpressions might need to be added to the local 
+     * expression instead of at the end of the where clause.
+     * @param addAdditionalExpressionsWithinCurrrentExpressionContext
+     */
+    public void setAddAdditionalExpressionsWithinCurrrentExpressionContext(
+            boolean addAdditionalExpressionsWithinCurrrentExpressionContext) {
+        this.addAdditionalExpressionsWithinCurrrentExpressionContext = addAdditionalExpressionsWithinCurrrentExpressionContext;
     }
 }
