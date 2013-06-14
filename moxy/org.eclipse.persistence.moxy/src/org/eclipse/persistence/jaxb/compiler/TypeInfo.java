@@ -65,7 +65,6 @@ public class TypeInfo {
     private Descriptor descriptor;
     private String javaClassName;
     private ComplexType complexType;
-    private boolean hasRootElement;
     private String elementRefsPropertyName;
     private Schema schema;
     private SimpleType simpleType;
@@ -448,11 +447,7 @@ public class TypeInfo {
     }
 
     public boolean hasRootElement() {
-        return hasRootElement;
-    }
-
-    public void setHasRootElement(boolean hasRoot) {
-        hasRootElement = hasRoot;
+        return xmlRootElement != null;
     }
 
     /**

@@ -2275,13 +2275,16 @@ public class SchemaGenerator {
                 }
                 if (typeName == null) {
                     // need to add complex-type locally, or reference global element
-                    if (!info.hasRootElement()) {
-                        if (isElement && info.isComplexType()) {
-                            ((Element)sc).setComplexType(info.getComplexType());
-                        } else {
+                	if(isElement && info.hasRootElement() && info.getXmlRootElement().getName().equals(sc.getName())){
+                		String refName = info.getXmlRootElement().getName();
+                		((Element)sc).setRef(refName);
+                	}else{
+                            if (isElement && info.isComplexType()) {
+                                ((Element)sc).setComplexType(info.getComplexType());
+                            } else {
                         	sc.setSimpleType(info.getSimpleType());
-                        }
-                    }
+                            }
+                	}
                 } else {
                     // check to see if we need to add an import
                     if (addImportIfRequired(schema, info.getSchema(), info.getClassNamespace())) {

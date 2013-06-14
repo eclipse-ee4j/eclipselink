@@ -1,0 +1,8 @@
+{"root":{
+   "theName":"aName",
+   "root":[{
+       "theName":"childName"
+   }],
+   "string":["someString"]
+}
+}
