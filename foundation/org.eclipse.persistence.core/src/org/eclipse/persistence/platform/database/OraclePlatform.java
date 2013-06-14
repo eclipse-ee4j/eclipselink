@@ -211,6 +211,17 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
+     * Build the hint string used for first rows.
+     * 
+     * Allows it to be overridden
+     * @param max
+     * @return
+     */
+    protected String buildFirstRowsHint(int max){
+        return HINT_START + HINT_END;
+    }
+    
+    /**
      * INTERNAL:
      * Returns null unless the platform supports call with returning
      */
@@ -894,7 +905,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     
     //Oracle Rownum support
     protected String SELECT = "SELECT * FROM (SELECT ";
-    protected String HINT = "/*+ FIRST_ROWS */ ";
+    protected String HINT_START = "/*+ FIRST_ROWS";
+    protected String HINT_END = " */ ";
     protected String FROM = "a.*, ROWNUM rnum  FROM (";
     protected String END_FROM = ") a ";
     protected String MAX_ROW = "WHERE ROWNUM <= ";
@@ -922,7 +934,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         } else if ( max > 0 ){
             statement.setUseUniqueFieldAliases(true);
             printer.printString(SELECT);
-            printer.printString(HINT);
+            printer.printString(buildFirstRowsHint(max));
             printer.printString(FROM);
             
             call.setFields(statement.printSQL(printer));

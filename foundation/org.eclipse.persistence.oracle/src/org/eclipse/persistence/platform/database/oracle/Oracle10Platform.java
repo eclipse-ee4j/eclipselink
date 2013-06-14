@@ -31,10 +31,20 @@ public class Oracle10Platform extends Oracle9Platform  {
     
     public Oracle10Platform(){
         super();
-        //bug 374136: override setting the FIRST_ROWS hint as this is not needed on Oracle10g
-        HINT = "";
     }
 
+    /**
+     * Build the hint string used for first rows.
+     * 
+     * Allows it to be overridden
+     * @param max
+     * @return
+     */
+    protected String buildFirstRowsHint(int max){
+        //bug 374136: override setting the FIRST_ROWS hint as this is not needed on Oracle10g
+        return "";
+    }
+    
     /**
      * Internal: This gets called on each batch statement execution
      * Needs to be implemented so that it returns the number of rows successfully modified
