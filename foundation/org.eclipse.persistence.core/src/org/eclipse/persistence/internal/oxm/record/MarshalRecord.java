@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,6 @@ import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.oxm.record.MarshalRecord.CycleDetectionStack;
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.w3c.dom.Node;
 
@@ -141,5 +141,81 @@ public interface MarshalRecord<
     public void startCollection();
     
     public void startPrefixMapping(String prefix, String uri);
+
+    /**
+     * A Stack-like List, used to detect object cycles during marshal operations.
+     */
+    public static class CycleDetectionStack<E> extends AbstractList<Object> {
+
+        private static final Object[] EMPTY_CYCLE_DATA = new Object[8];
+        
+        private Object[] data = EMPTY_CYCLE_DATA;
+        
+        int currentIndex = 0;
+
+        public void push(E item) {
+            if (currentIndex == data.length) {
+                growArray();
+            }
+            data[currentIndex] = item;
+            currentIndex++;
+        }
+
+        private void growArray() {
+            Object[] newArray = new Object[data.length * 2];
+            System.arraycopy(data, 0, newArray, 0, data.length);
+            data = newArray;
+        }
+        
+        public Object pop() {
+            Object o = data[currentIndex - 1];
+            data[currentIndex - 1] = null;
+            currentIndex--;
+            return o;
+        }
+
+        public boolean contains(Object item, boolean equalsUsingIdentity) {
+            if (equalsUsingIdentity) {
+                for (int i = 0; i < currentIndex; i++) {
+                    if (data[i] == item) {
+                        return true;
+                    }
+                }
+            } else {
+                for (int i = 0; i < currentIndex; i++) {
+                    if (data[i] != null && data[i].equals(item)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public String getCycleString() {
+            StringBuilder sb = new StringBuilder();
+            int i = size() - 1;
+            Object obj = get(i);
+            sb.append(obj);
+            Object x;
+            do {
+                sb.append(" -> ");
+                x = get(--i);
+                sb.append(x);
+            } while (obj != x);
+
+            return sb.toString();
+        }
+
+        @Override
+        public Object get(int index) {
+            return data[index];
+        }
+
+        @Override
+        public int size() {
+            return currentIndex;
+        }
+
+    }
 
 }

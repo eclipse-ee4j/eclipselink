@@ -24,4 +24,9 @@ public abstract class CoreConversionManager {
      */
     public abstract Object convertObject(Object sourceObject, Class javaClass);
 
+    /**
+     * INTERNAL
+     */
+    public abstract ClassLoader getLoader();
+
 }

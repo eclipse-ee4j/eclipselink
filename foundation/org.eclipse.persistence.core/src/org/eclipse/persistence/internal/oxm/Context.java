@@ -38,7 +38,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 public abstract class Context<
     ABSTRACT_SESSION extends CoreAbstractSession,
-    DESCRIPTOR extends Descriptor<?, ?, ?, ?, ?, NAMESPACE_RESOLVER, ?, ?, ?>,
+    DESCRIPTOR extends Descriptor<?, ?, ?, ?, ?, NAMESPACE_RESOLVER, ?, ?, ?, ?>,
     FIELD extends Field,
     NAMESPACE_RESOLVER extends NamespaceResolver,
     PROJECT extends CoreProject,

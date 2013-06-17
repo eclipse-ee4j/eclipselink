@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.core.helper.CoreTable;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
@@ -39,7 +40,7 @@ import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
  *    </ul>
  *@see DatabaseField
  */
-public class DatabaseTable implements Cloneable, Serializable {
+public class DatabaseTable implements CoreTable, Cloneable, Serializable {
     protected String name;
     protected String tableQualifier;
     protected String qualifiedName;

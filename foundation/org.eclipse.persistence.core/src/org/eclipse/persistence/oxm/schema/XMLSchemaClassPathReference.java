@@ -15,7 +15,7 @@ package org.eclipse.persistence.oxm.schema;
 import java.net.URL;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
 /**
  * A schema reference for accessing an XML Schema from the class path.
@@ -31,7 +31,8 @@ public class XMLSchemaClassPathReference extends XMLSchemaReference {
         super(resource);
     }
 
-    public void initialize(AbstractSession session) {
+    @Override
+    public void initialize(CoreAbstractSession session) {
         loader = session.getDatasourcePlatform().getConversionManager().getLoader();
     }
     

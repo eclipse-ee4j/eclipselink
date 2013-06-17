@@ -20,9 +20,9 @@ import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import javax.xml.namespace.QName;
 
@@ -189,6 +189,6 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
      * 
      * @param session
      */
-    public void initialize(AbstractSession session) {
+    public void initialize(CoreAbstractSession session) {
     }
 }
