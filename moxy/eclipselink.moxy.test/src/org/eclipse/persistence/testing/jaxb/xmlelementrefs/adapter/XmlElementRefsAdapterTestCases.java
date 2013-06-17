@@ -14,17 +14,22 @@ package org.eclipse.persistence.testing.jaxb.xmlelementrefs.adapter;
 
 import java.util.ArrayList;
 
+import javax.xml.bind.Binder;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
+import org.w3c.dom.Document;
 
 public class XmlElementRefsAdapterTestCases extends JAXBWithJSONTestCases{
 
 	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementrefs/foo.xml";
+	private static final String XML_BINDER_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementrefs/fooBinder.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementrefs/foo.json";
 
     public XmlElementRefsAdapterTestCases(String name) throws Exception {
@@ -67,5 +72,22 @@ public class XmlElementRefsAdapterTestCases extends JAXBWithJSONTestCases{
 		f.e1OrE2.add(jb2);
 		f.e1OrE2.add(jb2);
 		return f;
+    }
+    
+    public void testBinder() throws Exception{
+    	Binder binder = jaxbContext.createBinder();    	
+    	Document doc = parser.parse(ClassLoader.getSystemResourceAsStream(XML_RESOURCE));
+    	Foo unmarshalled =  (Foo)binder.unmarshal(doc);
+		byte[] bytes = (byte[]) XMLConversionManager.getDefaultXMLManager().convertObject("001122", byte[].class);
+    	JAXBElement jbe= new JAXBElement(new QName("e1"), byte[].class, bytes);
+    	unmarshalled.e1OrE2.add(jbe);
+    	binder.updateXML(unmarshalled);    	
+        
+    	JAXBXMLComparer xmlComparer = new JAXBXMLComparer();
+    	
+    	Document binderDoc = parser.parse(ClassLoader.getSystemResourceAsStream(XML_BINDER_RESOURCE));
+        removeEmptyTextNodes(doc);
+        removeEmptyTextNodes(binderDoc);        
+        assertTrue(xmlComparer.isNodeEqual(doc, binderDoc));
     }
 }
