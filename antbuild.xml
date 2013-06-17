@@ -600,6 +600,7 @@
                 <exclude name="*builder*.jar"/>
                 <exclude name="*jpars*.jar"/>
                 <exclude name="*nosql*.jar"/>
+                <exclude name="*extension*.jar"/>
             </zipgroupfileset>
             <!-- Include hermes runtime Only -->
             <fileset dir="${build.dir}/hermes/${classes.dir}">
