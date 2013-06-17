@@ -85,7 +85,7 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
      * @param record the record
      * @return the list
      */
-    protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
+    public List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
         List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
         if ((reportItems != null) && (reportItems.size() > 0)) {
             for (int index = 0; index < reportItems.size(); index++) {

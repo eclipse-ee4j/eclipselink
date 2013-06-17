@@ -16,7 +16,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,19 +24,15 @@ import java.util.ServiceLoader;
 
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Attribute;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Descriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkTemplate;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Query;
-import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
@@ -49,7 +44,6 @@ import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.list.LinkList;
 import org.eclipse.persistence.jpa.rs.util.list.QueryList;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * @author gonural
@@ -153,51 +147,6 @@ public abstract class AbstractResource {
             queryParameters.put(key, info.getQueryParameters().getFirst(key));
         }
         return queryParameters;
-    }
-
-    /**
-     * Creates the shell jaxb element list.
-     *
-     * @param reportItems the report items
-     * @return the list
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
-        List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
-        if ((reportItems != null) && (reportItems.size() > 0)) {
-            for (int index = 0; index < reportItems.size(); index++) {
-                ReportItem reportItem = reportItems.get(index);
-                Object reportItemValue = record;
-                if (record instanceof Object[]) {
-                    reportItemValue = ((Object[]) record)[index];
-                }
-                Class reportItemValueType = null;
-                if (reportItemValue != null) {
-                    reportItemValueType = reportItemValue.getClass();
-                    if (reportItemValueType == null) {
-                        // try other paths to determine the type of the report item 
-                        DatabaseMapping dbMapping = reportItem.getMapping();
-                        if (dbMapping != null) {
-                            reportItemValueType = dbMapping.getAttributeClassification();
-                        } else {
-                            ClassDescriptor desc = reportItem.getDescriptor();
-                            if (desc != null) {
-                                reportItemValueType = desc.getJavaClass();
-                            }
-                        }
-                    }
-
-                    // so, we couldn't determine the type of the report item, stop here... 
-                    if (reportItemValueType == null) {
-                        return null;
-                    }
-
-                    JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValueType, reportItemValue);
-                    jaxbElements.add(reportItem.getResultIndex(), element);
-                }
-            }
-        }
-        return jaxbElements;
     }
 
     /**

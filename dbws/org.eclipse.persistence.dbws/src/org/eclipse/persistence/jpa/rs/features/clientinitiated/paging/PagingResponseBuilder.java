@@ -43,6 +43,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
      */
+    @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
         ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
         for (Object item : items) {
@@ -56,6 +57,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReportQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, java.util.List, javax.ws.rs.core.UriInfo)
      */
+    @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
         return populatePagedReportQueryCollectionLinks(queryParams, results, items, uriInfo);
     }
@@ -63,6 +65,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.String, java.lang.Object, javax.ws.rs.core.UriInfo)
      */
+    @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
         if (results instanceof Collection) {
             if (containsDomainObjects(results)) {
