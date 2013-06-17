@@ -60,7 +60,7 @@ public class ServerTravelerTest {
      *
      * @throws Exception the exception
      */
-    //@Test
+    @Test
     public void testUpdateTravelReservationJSON() throws Exception {
         updateTravelReservation(MediaType.APPLICATION_JSON_TYPE);
     }
