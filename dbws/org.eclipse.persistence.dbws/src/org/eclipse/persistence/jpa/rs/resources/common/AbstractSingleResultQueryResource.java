@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
+import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
@@ -97,7 +98,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
     @SuppressWarnings({ "rawtypes" })
     private SingleResultQueryList populateReportQueryResponse(Object result, List<ReportItem> reportItems) {
         SingleResultQueryList response = new SingleResultQueryList();
-        List<JAXBElement> fields = createShellJAXBElementList(reportItems, result);
+        List<JAXBElement> fields = new FeatureResponseBuilderImpl().createShellJAXBElementList(reportItems, result);
         if (fields == null) {
             return null;
         }
