@@ -91,8 +91,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
                 javaType.getJavaAttributes().getJavaAttribute().add(element);
             }
         }
-        // Make them all root elements for now
-        javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
+
         // Embeddables don't need Rest adapters, return if the classDescriptor is an aggregate descriptor.
         if (classDescriptor.isAggregateDescriptor()) {
             return javaType;

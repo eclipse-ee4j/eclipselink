@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<traveler>
-   <firstName>Adrian</firstName>
-   <lastName>Clinton</lastName>
-   <reservation>
-       <city>Ottawa</city>
-       <country>Canada</country>
-   </reservation>
-</traveler>
+<ns0:traveler xmlns:ns0="http://example.org" xmlns:ns2="http://example.org/fname" xmlns:ns1="http://www.example.org/traveler">
+   <ns2:firstName>Adrian</ns2:firstName>
+   <ns1:lastName>Clinton</ns1:lastName>
+   <ns1:reservation>
+      <ns1:city>Ottawa</ns1:city>
+      <ns1:country>Canada</ns1:country>
+   </ns1:reservation>
+</ns0:traveler>
+ 

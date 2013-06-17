@@ -1039,30 +1039,33 @@ public class PersistenceContext {
      * @param entity
      * @return
      */
-    protected Object wrap(Object entity){
-        if (!doesExist(null, entity)){
-            return entity;
-        }
-        ClassDescriptor descriptor = getJAXBDescriptorForClass(entity.getClass());
-        if (entity instanceof FetchGroupTracker){
-            FetchGroup fetchGroup = new FetchGroup();
-            for (DatabaseMapping mapping: descriptor.getMappings()){
-                if (!(mapping instanceof XMLInverseReferenceMapping)){
-                    fetchGroup.addAttribute(mapping.getAttributeName());
-                }
+    protected Object wrap(Object entity) {
+        if ((entity != null) && (PersistenceWeavedRest.class.isAssignableFrom(entity.getClass()))) {
+            if (!doesExist(null, entity)) {
+                return entity;
             }
-            (new FetchGroupManager()).setObjectFetchGroup(entity, fetchGroup, null);
-            ((FetchGroupTracker) entity)._persistence_setSession(JpaHelper.getDatabaseSession(getEmf()));
-        } else if (descriptor.hasRelationships()){
-            for (DatabaseMapping mapping: descriptor.getMappings()){
-                if (mapping instanceof XMLInverseReferenceMapping){
-                    // we require Fetch groups to handle relationships
-                    throw new JPARSConfigurationException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[]{}));
+            ClassDescriptor descriptor = getJAXBDescriptorForClass(entity.getClass());
+            if (entity instanceof FetchGroupTracker) {
+                FetchGroup fetchGroup = new FetchGroup();
+                for (DatabaseMapping mapping : descriptor.getMappings()) {
+                    if (!(mapping instanceof XMLInverseReferenceMapping)) {
+                        fetchGroup.addAttribute(mapping.getAttributeName());
+                    }
+                }
+                (new FetchGroupManager()).setObjectFetchGroup(entity, fetchGroup, null);
+                ((FetchGroupTracker) entity)._persistence_setSession(JpaHelper.getDatabaseSession(getEmf()));
+            } else if (descriptor.hasRelationships()) {
+                for (DatabaseMapping mapping : descriptor.getMappings()) {
+                    if (mapping instanceof XMLInverseReferenceMapping) {
+                        // we require Fetch groups to handle relationships
+                        throw new JPARSConfigurationException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[] {}));
+                    }
                 }
             }
         }
         return entity;
     }
+
 
     /**
      * Marshall an entity to either JSON or XML

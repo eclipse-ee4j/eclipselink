@@ -23,8 +23,7 @@ import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.FetchGroup;
 
-
-@FetchGroup(name="1", attributes={})
+@FetchGroup(name = "1", attributes = {})
 @Entity
 @Table(name = "JPARS_RESERVATION")
 public class Reservation {
