@@ -748,7 +748,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         super.postPrepareNestedBatchQuery(batchQuery, query);
         // Force a distinct to filter out m-1 duplicates.
         // Only set if really a m-1, not a 1-1
-        if (!isOneToOneRelationship()) {
+        if (!this.isOneToOneRelationship && ((ObjectLevelReadQuery)batchQuery).getBatchFetchPolicy().isJOIN()) {
             if (!((ObjectLevelReadQuery)batchQuery).isDistinctComputed() && (batchQuery.getSession().getPlatform().isLobCompatibleWithDistinct() || !Helper.hasLob(batchQuery.getDescriptor().getSelectionFields((ObjectLevelReadQuery)batchQuery)))) {
                 ((ObjectLevelReadQuery)batchQuery).useDistinct();
             }

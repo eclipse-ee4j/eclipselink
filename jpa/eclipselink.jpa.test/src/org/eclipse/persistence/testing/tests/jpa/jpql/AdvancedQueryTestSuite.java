@@ -248,7 +248,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setParameter("postalcode", "K2H8C2");
             query.getResultList();
 
-            if (((String)counter.getSqlStatements().get(0)).indexOf("/*") == -1) {
+            if ((counter.getSqlStatements().get(0)).indexOf("/*") == -1) {
                 fail("SQL hint was not used: " + counter.getSqlStatements());
             }
         } finally {
@@ -1730,6 +1730,13 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
                 fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
+            }
+            if (type != BatchFetchType.JOIN) {
+                for (String sql : counter.getSqlStatements()) {
+                    if ((sql.indexOf("DISTINCT") != -1) && (sql.indexOf("PROJ_TYPE") == -1)) {
+                        fail("SQL should not contain DISTINCT: " + sql);
+                    }
+                }
             }
             clearCache();
             for (Employee employee : results) {

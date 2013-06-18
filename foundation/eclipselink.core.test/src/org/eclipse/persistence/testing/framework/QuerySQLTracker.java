@@ -95,7 +95,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
      * Logs that are categorized as FINE and below will not be tracked.
      * 
      * */
-    public List getSqlStatements() {
+    public List<String> getSqlStatements() {
         return sqlStatements;
     }
 
