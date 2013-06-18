@@ -63,9 +63,9 @@ public class EntityManagerTestSuite extends JUnitTestCase {
     public void testGetLockModeForObject(){
         EntityManager em = createEntityManager();
         try {
+            beginTransaction(em);
             Query query = em.createQuery("select e from Employee e where e.firstName = 'Sarah' and e.lastName = 'Way'");
             query.setLockMode(LockModeType.OPTIMISTIC);
-            beginTransaction(em);
             Employee emp = (Employee)query.getSingleResult();
             commitTransaction(em);
             try{
