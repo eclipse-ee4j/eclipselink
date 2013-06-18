@@ -362,21 +362,6 @@ public class JSONReader extends XMLReaderAdapter {
             	}
             }
             startCollection();
-            
-            if(size == 1){
-				CommonTree ct = (CommonTree) tree.getChild(0);
-				if(ct != null && ct.getType() == JSONLexer.NULL){
-					contentHandler.setNil(true);
-				}
-				if(!isTextValue){
-		         	   contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setTree(ct, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
-		         	   }
-		               parse(ct);
-		               if(!isTextValue){
-		                  contentHandler.endElement(uri, parentLocalName, parentLocalName);
-		               }
-			}else{
-            
 			XPathFragment groupingXPathFragment = null;
 			XPathFragment itemXPathFragment = null;
             if(contentHandler instanceof UnmarshalRecord) {
@@ -432,7 +417,6 @@ public class JSONReader extends XMLReaderAdapter {
             }
             if(null != groupingXPathFragment) {
                 contentHandler.endElement(uri, groupingXPathFragment.getLocalName(), groupingXPathFragment.getLocalName());
-            }
             }
             endCollection();
 
