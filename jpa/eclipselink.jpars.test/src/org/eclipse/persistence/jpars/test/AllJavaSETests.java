@@ -17,10 +17,9 @@ import org.eclipse.persistence.jpars.test.service.EmployeeTest;
 import org.eclipse.persistence.jpars.test.service.MarshalUnmarshalTest;
 import org.eclipse.persistence.jpars.test.service.TestService;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-@RunWith(Suite.class)
+@RunWith(VersionedTestSuite.class)
 @SuiteClasses({ TestService.class, StaticCrudTests.class, MarshalUnmarshalTest.class, EmployeeTest.class })
 public class AllJavaSETests {
 
