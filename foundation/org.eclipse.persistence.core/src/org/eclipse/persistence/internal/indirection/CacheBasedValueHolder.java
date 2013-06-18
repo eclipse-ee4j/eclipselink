@@ -13,9 +13,14 @@
 
 package org.eclipse.persistence.internal.indirection;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
+
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
@@ -49,6 +54,25 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
         return this.references;
     }
     
+
+    /**
+     * Process against the UOW and attempt to load a local copy before going to the shared cache
+     * If null is returned then the calling UOW will instantiate as normal.
+     */
+    @Override
+    public Object getValue(UnitOfWorkImpl uow) {
+        if (this.references != null && this.references.length != 0){
+            Collection result = uow.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(this.references, this.mapping.getReferenceDescriptor()).values();
+            if (result.size() == references.length){
+                if (mapping.isCollectionMapping()){
+                    return new Vector(result);
+                }else{
+                    return result.iterator().next();
+                }
+            }
+        }
+        return null;
+    }
 
     protected Object instantiate() throws DatabaseException {
         return instantiate(this.session);
