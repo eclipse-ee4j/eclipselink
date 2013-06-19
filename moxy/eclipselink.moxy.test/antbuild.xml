@@ -90,6 +90,7 @@
     <path id="jaxb.compile.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
@@ -108,6 +109,7 @@
     <path id="jaxb.run.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
@@ -155,6 +157,7 @@
         <path refid="xml.parser.path"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
@@ -172,6 +175,7 @@
         <path refid="xml.parser.path"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${json.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>

@@ -21,4 +21,12 @@
         <testId>eclipselink.${componentId}.test</testId>
     </properties>
 
+    <dependencies>
+      <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javax.json</artifactId>
+        <version>1.0</version>
+      </dependency>
+    </dependencies>
+
 </project>
