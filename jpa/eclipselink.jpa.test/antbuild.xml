@@ -163,7 +163,7 @@
         <contains string="${server.name}" substring="jboss"/>
     </condition>
 
-    <!-- This checks if the Apllication Server is WebSphere -->
+    <!-- This checks if the Application Server is WebSphere -->
     <condition property="is.websphere">
         <contains string="${server.name}" substring="websphere"/>
     </condition>
@@ -2701,10 +2701,20 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}/../eclipselink.jpars.test"  target="create-jpars-war-file"/>
         <copy overwrite="true" file="./resource/${MODEL_NAME}/server/application.xml" todir="${build.dir}/META-INF"/>
         <copy file="${eclipselink.jpa.test}/../eclipselink.jpars.test/eclipselink.jpars.test.war" todir="${eclipselink.jpa.test}/${build.dir}"/>
+        <antcall target="replace-jpars-jar-with-toplink-dataservices-web-jar"/>
         <ear destfile="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}" includes ="*.war"/>
         </ear>
         <copy file="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" todir="."/>
+    </target>
+    <!-- replace org.eclipse.persistence.jpars*.jar with toplink-dataservices-web.jar in generated eclipselink.jpars.test.war -->
+    <target name="replace-jpars-jar-with-toplink-dataservices-web-jar" if="test.jpars.on.toplink.dataservices">
+        <unzip src="${eclipselink.jpa.test}/${build.dir}/eclipselink.jpars.test.war" dest="${eclipselink.jpa.test}/${build.dir}"/>
+        <delete dir="${eclipselink.jpa.test}/${build.dir}/WEB-INF/lib"/>
+        <mkdir dir="${eclipselink.jpa.test}/${build.dir}/WEB-INF/lib"/>
+        <copy file="/ade_autofs/ade_generic/TOPLINK_12.1.2.0.0_GENERIC.rdd/LATEST/tldev/jlib/tl/toplink-dataservices-web.jar" todir="${eclipselink.jpa.test}/${build.dir}/WEB-INF/lib"/>
+        <zip destfile="${eclipselink.jpa.test}/${build.dir}/eclipselink.jpars.test.war" basedir="${eclipselink.jpa.test}/${build.dir}"
+        includes="META-INF/MANIFEST.MF, WEB-INF/**"/>
     </target>
     <!-- Build server test ear. -->
     <target name="server-build-ear" unless="is.jaxrs.or.jpars.testing">
@@ -3304,9 +3314,18 @@
     </target>
 
     <target name="server-test-jpars" depends="clean-test, set-server-properties" if="is.glassfish.or.weblogic">
+        <antcall target="server-test-jpars-core" inheritRefs="true"/>
+    </target>
+
+    <target name="server-test-jpars-on-toplink-dataservices" depends="clean-test, set-server-properties" if="is.glassfish.or.weblogic">
+        <property name="test.jpars.on.toplink.dataservices" value="true"/>
+        <antcall target="server-test-jpars-core" inheritRefs="true"/>
+    </target>
+
+    <target name="server-test-jpars-core">
         <echo message="jpars url is ${jpars.url}"/>
         <copy file="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml" tofile="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml.original" overwrite="true"/>
-        <replace file="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml" token='SunAS9' value="${server.platform}"/>
+        <replace file="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml" token='Glassfish' value="${server.platform}"/>
         <property name="MODEL_NAME" value="eclipselink-jpars-model"/>
         <property name="EAR_NAME" value="${MODEL_NAME}"/>
         <antcall target="server-build-ear-jpars" inheritRefs="true"/>
@@ -3316,6 +3335,7 @@
         </antcall>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}/../eclipselink.jpars.test"  target="test" inheritAll="false">
             <property name="SERVER_URL" value="${jpars.url}"/>
+            <property name="JPARS_VERSION" value="v1.0"/>
         </ant>
         <antcall target="server-undeploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
