@@ -1020,6 +1020,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("test functions on multiple platforms");
         test.addUnsupportedPlatform(DB2Platform.class);
         test.addUnsupportedPlatform(TimesTenPlatform.class);
+        test.addUnsupportedPlatform(SybasePlatform.class);
         addTest(test);
     }
     
@@ -1043,6 +1044,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setName("MultiPlatformTest2");
         test.setDescription("test simple Case function on multiple platforms");
         test.addUnsupportedPlatform(DerbyPlatform.class);
+        test.addUnsupportedPlatform(SybasePlatform.class);
         addTest(test);
     }
     
@@ -1069,6 +1071,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setName("MultiPlatformTest3");
         test.setDescription("test Case function with more complex expressions on multiple platforms");
         /*TODO: add in any unsupported platform checks*/
+        test.addUnsupportedPlatform(SybasePlatform.class);
         addTest(test);
     }
     
