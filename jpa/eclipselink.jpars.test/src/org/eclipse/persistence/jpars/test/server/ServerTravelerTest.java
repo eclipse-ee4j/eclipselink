@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpars.test.server;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.model.traveler.Traveler;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -52,6 +54,14 @@ public class ServerTravelerTest {
         context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), null, true);
         if (context == null) {
             throw new Exception("Persistence context could not be created.");
+        }
+    }
+
+    @After
+    public void cleanup() {
+        try {
+            RestUtils.restUpdateQuery("Traveler.deleteAll", "Traveler", DEFAULT_PU, null, null);
+        } catch (URISyntaxException e) {
         }
     }
 

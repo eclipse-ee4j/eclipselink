@@ -20,12 +20,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+@NamedQueries({
+        @NamedQuery(
+                name = "Traveler.deleteAll",
+                query = "DELETE FROM Traveler t")
+})
 @Entity
 @Table(name = "JPARS_TRAVELER")
 @XmlRootElement(namespace = "http://example.org")

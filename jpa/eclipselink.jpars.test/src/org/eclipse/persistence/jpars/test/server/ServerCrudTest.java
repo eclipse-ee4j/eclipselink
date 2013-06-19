@@ -64,7 +64,7 @@ public class ServerCrudTest {
     @BeforeClass
     public static void setup() throws URISyntaxException {
         Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties); 
+        ExamplePropertiesLoader.loadProperties(properties);
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
@@ -408,7 +408,7 @@ public class ServerCrudTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testNamedQuery() throws URISyntaxException {
-        List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, null);
+        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, null);
         assertTrue("Incorrect Number of users found.", users.size() == 3);
     }
 
@@ -422,7 +422,7 @@ public class ServerCrudTest {
     public void testNamedQueryParameter() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
-        List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.byId", "StaticUser", parameters, null);
+        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.byId", "StaticUser", parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 1);
         assertTrue("Wrong user returned", users.get(0).getId() == StaticModelDatabasePopulator.USER1_ID);
     }
@@ -438,7 +438,7 @@ public class ServerCrudTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "user2");
-        List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.byNameOrId", "StaticUser", parameters, null);
+        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.byNameOrId", "StaticUser", parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 2);
     }
 
@@ -476,7 +476,7 @@ public class ServerCrudTest {
     public void testNamedQueryNoResults() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", 0);
-        List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.byId", "StaticUser", parameters, null);
+        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.byId", "StaticUser", parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 0);
     }
 
@@ -515,25 +515,25 @@ public class ServerCrudTest {
         // load the cache
         Map<String, String> hints = new HashMap<String, String>();
         hints.put(QueryHints.REFRESH, "true");
-        List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, hints);
+        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, hints);
         assertTrue("Incorrect Number of users found.", users.size() == 3);
         StaticUser user1 = users.get(0);
         String oldName = user1.getName();
         user1.setName("Changed");
         dbUpdate(user1);
-        users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, hints);
-        for (StaticUser user: users){
-            if (user.getId() == user1.getId()){
+        users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, hints);
+        for (StaticUser user : users) {
+            if (user.getId() == user1.getId()) {
                 assertTrue("User was not refreshed", user.getName().equals(user1.getName()));
             }
         }
         user1 = dbRead(user1.getId(), StaticUser.class);
         user1.setName(oldName);
-        dbUpdate(user1);        
+        dbUpdate(user1);
         // refresh cache
         hints = new HashMap<String, String>();
         hints.put(QueryHints.REFRESH, "true");
-        users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, hints);
+        users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, hints);
     }
 
     /**
@@ -547,7 +547,7 @@ public class ServerCrudTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         // load the cache
-        List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.byId", "StaticUser", parameters, null);
+        List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.byId", "StaticUser", parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 1);
         assertTrue("Wrong user returned", users.get(0).getId() == StaticModelDatabasePopulator.USER1_ID);
         StaticUser user1 = users.get(0);
@@ -556,16 +556,16 @@ public class ServerCrudTest {
         dbUpdate(user1);
         Map<String, String> hints = new HashMap<String, String>();
         hints.put(QueryHints.REFRESH, "true");
-        users = (List<StaticUser>)restNamedQuery("User.byId", "StaticUser", parameters, hints);
+        users = (List<StaticUser>) restNamedQuery("User.byId", "StaticUser", parameters, hints);
         assertTrue("User was not refreshed", users.get(0).getName().equals(user1.getName()));
         user1 = dbRead(user1.getId(), StaticUser.class);
         user1.setName(oldName);
-        dbUpdate(user1);  
+        dbUpdate(user1);
 
         // refresh cache
         hints = new HashMap<String, String>();
         hints.put(QueryHints.REFRESH, "true");
-        users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, hints);
+        users = (List<StaticUser>) restNamedQuery("User.all", "StaticUser", null, hints);
     }
 
     /**
@@ -577,7 +577,7 @@ public class ServerCrudTest {
     public void testNamedQuerySingleResult() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
-        StaticUser user = (StaticUser)restNamedSingleResultQuery("User.byId", "StaticUser", DEFAULT_PU, parameters, null, MediaType.APPLICATION_JSON_TYPE);
+        StaticUser user = (StaticUser) restNamedSingleResultQuery("User.byId", "StaticUser", DEFAULT_PU, parameters, null, MediaType.APPLICATION_JSON_TYPE);
         assertTrue("user was not returned", user != null);
         assertTrue("incorrect user returned", user.getName().equals("user1"));
     }
@@ -591,7 +591,7 @@ public class ServerCrudTest {
     public void testNamedQuerySingleResultNoResult() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", 0);
-        StaticUser user = (StaticUser)restNamedSingleResultQuery("User.byId", "StaticUser", DEFAULT_PU, parameters, null, MediaType.APPLICATION_JSON_TYPE);
+        StaticUser user = (StaticUser) restNamedSingleResultQuery("User.byId", "StaticUser", DEFAULT_PU, parameters, null, MediaType.APPLICATION_JSON_TYPE);
         assertTrue("user should not have been returned", user == null);
     }
 
@@ -605,7 +605,7 @@ public class ServerCrudTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "newName");
-        String result = restUpdateQuery("User.updateName", "StaticUser", DEFAULT_PU, parameters, null);
+        String result = RestUtils.restUpdateQuery("User.updateName", "StaticUser", DEFAULT_PU, parameters, null);
         assertTrue(result.contains("{\"value\":1}"));
         StaticUser user1 = dbRead(StaticModelDatabasePopulator.USER1_ID, StaticUser.class);
         assertTrue(user1.getName().equals("newName"));
@@ -637,13 +637,12 @@ public class ServerCrudTest {
 
         Map<String, String> tenantId2 = new HashMap<String, String>();
         tenantId2.put("tenant.id", "AcctHolder2");
-        try{
+        try {
             restRead(account.getId(), "Account", Account.class, DEFAULT_PU, tenantId2, MediaType.APPLICATION_JSON_TYPE);
         } finally {
             restDelete(account.getId(), "Account", Account.class, DEFAULT_PU, tenantId);
         }
     }
-
 
     /**
      * Test create object graph put.
@@ -724,7 +723,6 @@ public class ServerCrudTest {
         dbDelete(auction);
     }
 
-
     /**
      * Test create object graph post.
      *
@@ -780,7 +778,7 @@ public class ServerCrudTest {
         dbDelete(bid);
         dbDelete(user);
         dbDelete(auction);
-    } 
+    }
 
     /**
      * Test read composite pk.
@@ -828,14 +826,14 @@ public class ServerCrudTest {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
 
         String result = response.getEntity(String.class);
 
         assertTrue(result != null);
-        
+
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction/metadata"));
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction-static-local/metadata"));
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction-static/metadata"));
@@ -843,7 +841,6 @@ public class ServerCrudTest {
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_phonebook/metadata"));
     }
 
-    
     /**
      * Test get contexts json.
      *
@@ -856,7 +853,7 @@ public class ServerCrudTest {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
 
@@ -870,7 +867,6 @@ public class ServerCrudTest {
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_phonebook/metadata"));
     }
 
-    
     /**
      * Test get types xml.
      *
@@ -883,7 +879,7 @@ public class ServerCrudTest {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
 
@@ -916,7 +912,7 @@ public class ServerCrudTest {
         }
 
         String result = response.getEntity(String.class);
-        
+
         assertTrue(result != null);
         assertTrue(result.contains("{\"persistenceUnitName\":\"jpars_auction-static\",\"types\":[{\"_link\":{\"href\":\""));
         assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticAddress\",\"method\":\"application/json\",\"rel\":\"StaticAddress\""));
@@ -926,7 +922,6 @@ public class ServerCrudTest {
         assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticAuction\",\"method\":\"application/json\",\"rel\":\"StaticAuction\""));
     }
 
-    
     /**
      * Test remove relationship non collection.
      *
@@ -965,7 +960,7 @@ public class ServerCrudTest {
         // So, create operation on auction with bid list should fail.
         RestUtils.restCreateWithSequence(auction, StaticAuction.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
-    
+
     private static void dbCreate(Object object) {
         EntityManager em = context.getEmf().createEntityManager();
         em.getTransaction().begin();
@@ -973,20 +968,20 @@ public class ServerCrudTest {
         em.getTransaction().commit();
     }
 
-    private static <T> T dbRead(Object id, Class<T> resultClass){
+    private static <T> T dbRead(Object id, Class<T> resultClass) {
         context.getEmf().getCache().evictAll();
         EntityManager em = context.getEmf().createEntityManager();
         return em.find(resultClass, id);
     }
 
-    private static void dbUpdate(Object object){
+    private static void dbUpdate(Object object) {
         EntityManager em = context.getEmf().createEntityManager();
         em.getTransaction().begin();
         em.merge(object);
         em.getTransaction().commit();
     }
 
-    private static void dbDelete(Object object){
+    private static void dbDelete(Object object) {
         EntityManager em = context.getEmf().createEntityManager();
         em.getTransaction().begin();
         Object merged = em.merge(object);
@@ -1008,13 +1003,12 @@ public class ServerCrudTest {
         return restCreate(os, type, resultClass, persistenceUnit, null, inputMediaType, outputMediaType);
     }
 
-
     @SuppressWarnings("unchecked")
     private static <T> T restCreate(OutputStream os, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         StringBuffer uri = new StringBuffer();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
-        if (tenantId != null){
-            for (String key: tenantId.keySet()){
+        if (tenantId != null) {
+            for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
             }
         }
@@ -1022,14 +1016,14 @@ public class ServerCrudTest {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.type(inputMediaType).accept(outputMediaType).put(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
-        if (status != Status.CREATED){
+        if (status != Status.CREATED) {
             throw new RestCallFailedException(status);
         }
         String result = response.getEntity(String.class);
         T resultObject = null;
         try {
-            resultObject = (T)context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e){
+            resultObject = (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+        } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
         return resultObject;
@@ -1042,16 +1036,16 @@ public class ServerCrudTest {
     private static <T> void restDelete(Object id, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId) throws RestCallFailedException, URISyntaxException {
         StringBuffer uri = new StringBuffer();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
-        if (tenantId != null){
-            for (String key: tenantId.keySet()){
+        if (tenantId != null) {
+            for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
             }
         }
         uri.append("/entity/" + type + "/" + id);
-        WebResource webResource = client.resource(uri.toString());;
+        WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
     }
@@ -1067,13 +1061,13 @@ public class ServerCrudTest {
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
         String result = response.getEntity(String.class);
         try {
             return context.unmarshalEntity(returnType, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e){
+        } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
         return null;
@@ -1087,44 +1081,30 @@ public class ServerCrudTest {
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
         String result = response.getEntity(String.class);
         try {
             return context.unmarshalEntity(returnType, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e){
+        } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
         return null;
     }
 
-    private static String restUpdateQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
-        StringBuffer resourceURL = new StringBuffer();
-        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
-        appendParametersAndHints(resourceURL, parameters, hints);
-
-        WebResource webResource = client.resource(resourceURL.toString());
-        ClientResponse response = webResource.post(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
-            throw new RestCallFailedException(status);
-        }
-        return response.getEntity(String.class);
-    }
-
-    private static void appendParametersAndHints(StringBuffer resourceURL, Map<String, Object> parameters, Map<String, String> hints){
-        if (parameters != null && !parameters.isEmpty()){
-            for (String key: parameters.keySet()){
+    private static void appendParametersAndHints(StringBuffer resourceURL, Map<String, Object> parameters, Map<String, String> hints) {
+        if (parameters != null && !parameters.isEmpty()) {
+            for (String key : parameters.keySet()) {
                 resourceURL.append(";" + key + "=" + parameters.get(key));
             }
         }
-        if (hints != null && !hints.isEmpty()){
+        if (hints != null && !hints.isEmpty()) {
             boolean firstElement = true;
 
-            for (String key: hints.keySet()){
-                if (firstElement){
-                    resourceURL.append("?"); 
+            for (String key : hints.keySet()) {
+                if (firstElement) {
+                    resourceURL.append("?");
                 } else {
                     resourceURL.append("&");
                 }
@@ -1141,8 +1121,8 @@ public class ServerCrudTest {
     private static <T> T restRead(Object id, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         StringBuffer uri = new StringBuffer();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
-        if (tenantId != null){
-            for (String key: tenantId.keySet()){
+        if (tenantId != null) {
+            for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
             }
         }
@@ -1150,19 +1130,18 @@ public class ServerCrudTest {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
         String result = response.getEntity(String.class);
         T resultObject = null;
         try {
-            resultObject = (T)context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e){
+            resultObject = (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+        } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
         return resultObject;
     }
-
 
     private static <T> T restUpdate(Object object, String type, Class<T> resultClass, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
         return restUpdate(object, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, sendLinks);
@@ -1170,25 +1149,24 @@ public class ServerCrudTest {
 
     private static <T> T restUpdate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try{
+        try {
             if (sendLinks) {
                 context.marshallEntity(object, inputMediaType, os);
             } else {
                 context.marshallEntity(object, inputMediaType, os, false);
             }
-        } catch (JAXBException e){
+        } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
         return restUpdate(os, type, resultClass, persistenceUnit, tenantId, inputMediaType, outputMediaType, sendLinks);
     }
 
-
     @SuppressWarnings("unchecked")
     private static <T> T restUpdate(OutputStream os, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
         StringBuffer uri = new StringBuffer();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
-        if (tenantId != null){
-            for (String key: tenantId.keySet()){
+        if (tenantId != null) {
+            for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
             }
         }
@@ -1196,15 +1174,15 @@ public class ServerCrudTest {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.type(inputMediaType).accept(outputMediaType).post(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
         String result = response.getEntity(String.class);
 
         T resultObject = null;
         try {
-            resultObject = (T)context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e){
+            resultObject = (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+        } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
         return resultObject;
@@ -1214,23 +1192,23 @@ public class ServerCrudTest {
     private static <T> T restUpdateRelationship(String objectId, String type, String relationshipName, Object newValue, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         WebResource webResource = client.resource(RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/" + objectId + "/" + relationshipName);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try{
+        try {
             context.marshallEntity(newValue, inputMediaType, os);
 
-        } catch (JAXBException e){
+        } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
         ClientResponse response = webResource.type(inputMediaType).accept(outputMediaType).post(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK){
+        if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
         String result = response.getEntity(String.class);
 
         T resultObject = null;
         try {
-            resultObject = (T)context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e){
+            resultObject = (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+        } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
         return resultObject;
@@ -1274,4 +1252,3 @@ public class ServerCrudTest {
         return response.getEntity(String.class);
     }
 }
-

@@ -491,7 +491,7 @@ public class RestUtils {
             throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/singleResultQuery/" + queryName);
-        RestUtils.appendParametersAndHints(resourceURL, parameters, hints);
+        appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
@@ -517,7 +517,7 @@ public class RestUtils {
             throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/singleResultQuery/" + queryName);
-        RestUtils.appendParametersAndHints(resourceURL, parameters, hints);
+        appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
@@ -563,7 +563,7 @@ public class RestUtils {
     public static String restUpdateQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType mediaType) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
-        RestUtils.appendParametersAndHints(resourceURL, parameters, hints);
+        appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.accept(mediaType).post(ClientResponse.class);
         Status status = response.getClientResponseStatus();
@@ -849,6 +849,20 @@ public class RestUtils {
 
         String result = response.getEntity(String.class);
         return result;
+    }
+
+    public static String restUpdateQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
+        StringBuilder resourceURL = new StringBuilder();
+        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
+        appendParametersAndHints(resourceURL, parameters, hints);
+
+        WebResource webResource = client.resource(resourceURL.toString());
+        ClientResponse response = webResource.post(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK) {
+            throw new RestCallFailedException(status);
+        }
+        return response.getEntity(String.class);
     }
 
     private static String getExtension(File f) {
