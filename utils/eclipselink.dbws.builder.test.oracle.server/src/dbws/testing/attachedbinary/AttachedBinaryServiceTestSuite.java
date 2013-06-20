@@ -48,7 +48,7 @@ public class AttachedBinaryServiceTestSuite extends DBWSTestSuite {
 		"<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
 		"<env:Header />" +
 			"<env:Body>" + 
-				"<findAll_attachedbinaryType xmlns=\"urn:attachedbinaryService\" />" +
+				"<findAll_AttachedbinaryType xmlns=\"urn:attachedbinaryService\" />" +
 			"</env:Body>" +
 		"</env:Envelope>";
     public static final String GET_BLOB_BY_ID =

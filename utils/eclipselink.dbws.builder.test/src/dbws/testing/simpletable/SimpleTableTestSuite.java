@@ -33,6 +33,8 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+import org.eclipse.persistence.tools.dbws.DefaultNamingConventionTransformer;
 
 //testing imports
 import dbws.testing.DBWSTestSuite;
@@ -131,7 +133,7 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
 
     @Test
     public void findByPrimaryKeyTest() {
-        Invocation invocation = new Invocation("findByPrimaryKey_simpletableType");
+        Invocation invocation = new Invocation("findByPrimaryKey_SimpletableType");
         invocation.setParameter("id", 1);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -150,4 +152,56 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
           "<name>mike</name>" +
           "<since>2001-12-25</since>" +
         "</simpletableType>";
+    
+    @Test
+    public void testNamingConventionTransformer() throws WSDLException {
+        builder = new DBWSBuilder();
+        builder.setTopNamingConventionTransformer(new DBWSNamingConventionTransformer());
+        DBWSTestSuite.setUp(".");
+        
+        Invocation invocation = new Invocation("findByPrimaryKey_SimpletableType");
+        invocation.setParameter("id", 3);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ANOTHER_PERSON_XML));
+        assertTrue("Control document not same as instance document.  Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    
+    public static final String ANOTHER_PERSON_XML =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simpletablexType xmlns=\"urn:simpletable\" id=\"3\">" +
+          "<name>rick</name>" +
+        "</simpletablexType>";
+    
+    /**
+     * Inner class used for testing NamingConventionTransformer
+     *
+     */
+    static class DBWSNamingConventionTransformer extends DefaultNamingConventionTransformer {
+        
+        @Override
+        public String generateSchemaAlias(String tableName) {
+            return super.generateSchemaAlias(tableName +"xType");
+        }
+        
+        @Override
+        public String generateElementAlias(String originalElementName) {
+            return super.generateElementAlias(originalElementName.toLowerCase());
+        }
+        
+        @Override
+        public ElementStyle styleForElement(String elementName) {
+            if ("id".equalsIgnoreCase(elementName)) {
+                return ElementStyle.ATTRIBUTE;
+            }
+            if ("since".equalsIgnoreCase(elementName)) {
+                return ElementStyle.NONE;
+            }
+            return ElementStyle.ELEMENT;
+        }
+    }
 }

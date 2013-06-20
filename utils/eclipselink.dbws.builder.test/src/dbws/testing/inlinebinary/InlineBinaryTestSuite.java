@@ -133,7 +133,7 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
     @SuppressWarnings({"rawtypes"})
     @Test
     public void findAll() {
-        Invocation invocation = new Invocation("findAll_inlinebinaryType");
+        Invocation invocation = new Invocation("findAll_InlinebinaryType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);

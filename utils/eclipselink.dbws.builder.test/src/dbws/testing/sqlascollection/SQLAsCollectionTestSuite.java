@@ -155,7 +155,7 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
     static final String DROP_SQLCOLLECTION_TABLE =
         "DROP TABLE sqlascollection";
 
-	static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SQLCOLLECTION + "Test";
+    static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SQLCOLLECTION + "Test";
 
     // JUnit test fixtures
     static Connection conn = null;
@@ -356,7 +356,7 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
          ((XMLLogin)oxProject.getDatasourceLogin()).setPlatformClassName(DOM_PLATFORM_CLASSNAME);
          ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
 
-         alignDescriptorAliases(oxProject, orProject, xrdecl);                
+         prepareDescriptors(oxProject, orProject, xrdecl);
          ProjectHelper.fixOROXAccessors(orProject, oxProject);
          xrService.setORSession(databaseSession);
          xrService.setXMLContext(new XMLContext(oxProject));
@@ -456,42 +456,4 @@ public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider
                 "</srvc:"+SQLCOLLECTION_SERVICE+"Response>\n" +
             "</SOAP-ENV:Body>\n" +
         "</SOAP-ENV:Envelope>";
-    
-    @SuppressWarnings("unchecked")
-    protected static void alignDescriptorAliases(Project oxProject, Project orProject, XRDynamicClassLoader xrdcl) {
-        // may need to alter descriptor alias
-        if (oxProject.getAliasDescriptors() != null) {
-            Map<String, XMLDescriptor> oxAliases = new HashMap<String, XMLDescriptor>();
-            for (Object key : oxProject.getAliasDescriptors().keySet()) {
-                String alias = key.toString();
-
-                XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
-                ClassDescriptor odesc = null;
-
-                if ((odesc = (ClassDescriptor) orProject.getAliasDescriptors().get(alias)) == null) {
-                    // for some reason we occasionally see an upper case first char in the OX alias
-                    alias = Character.toLowerCase(alias.charAt(0)) + (alias.length() > 1 ? alias.substring(1) : "");
-                }
-
-                String defaultRootElement = xdesc.getDefaultRootElement();
-                String proposedAlias = defaultRootElement;
-                if (defaultRootElement.endsWith(TYPE_STR)) {
-                    proposedAlias = defaultRootElement.substring(0, defaultRootElement.lastIndexOf(TYPE_STR));
-                }
-                proposedAlias = proposedAlias.toLowerCase();
-                xdesc.setAlias(proposedAlias);
-
-                oxAliases.put(proposedAlias, xdesc);
-
-                if (odesc != null) {
-                    orProject.getAliasDescriptors().remove(alias);
-                    odesc.setAlias(proposedAlias);
-                    odesc.convertClassNamesToClasses(xrdcl);
-                    orProject.getAliasDescriptors().put(proposedAlias, odesc);
-                    // what about updating ordered descriptors here...
-                }
-            }
-            oxProject.setAliasDescriptors(oxAliases);
-        }
-    }
 }

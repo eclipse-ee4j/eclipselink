@@ -161,7 +161,7 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
     @SuppressWarnings({"rawtypes"})
     @Test
     public void findAll() throws IOException {
-        Invocation invocation = new Invocation("findAll_attachedbinaryType");
+        Invocation invocation = new Invocation("findAll_AttachedbinaryType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -254,34 +254,34 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     	"<wsdl:definitions name=\"attachedbinaryService\" targetNamespace=\"urn:attachedbinaryService\" xmlns:ns1=\"urn:attachedbinary\" xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:tns=\"urn:attachedbinaryService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\">" +
     	"<wsdl:types>" +
-    		"<xsd:schema elementFormDefault=\"qualified\" targetNamespace=\"urn:attachedbinaryService\" xmlns:ref=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:tns=\"urn:attachedbinaryService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:import namespace=\"urn:attachedbinary\" schemaLocation=\"eclipselink-dbws-schema.xsd\"/><xsd:import namespace=\"http://ws-i.org/profiles/basic/1.1/xsd\" schemaLocation=\"swaref.xsd\"/><xsd:complexType name=\"findAll_attachedbinaryTypeResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"findByPrimaryKey_attachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"id\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"getBLOBByIdResponseType\"><xsd:sequence><xsd:element name=\"result\" type=\"ref:swaRef\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"findByPrimaryKey_attachedbinaryTypeResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"update_attachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"theInstance\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"getBLOBByIdRequestType\"><xsd:sequence><xsd:element name=\"pk\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"create_attachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"theInstance\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"findAll_attachedbinaryTypeRequestType\"/><xsd:complexType name=\"delete_attachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"id\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:element name=\"findByPrimaryKey_attachedbinaryTypeResponse\" type=\"tns:findByPrimaryKey_attachedbinaryTypeResponseType\"/><xsd:element name=\"findByPrimaryKey_attachedbinaryType\" type=\"tns:findByPrimaryKey_attachedbinaryTypeRequestType\"/><xsd:element name=\"create_attachedbinaryType\" type=\"tns:create_attachedbinaryTypeRequestType\"/><xsd:element name=\"findAll_attachedbinaryTypeResponse\" type=\"tns:findAll_attachedbinaryTypeResponseType\"/><xsd:element name=\"findAll_attachedbinaryType\" type=\"tns:findAll_attachedbinaryTypeRequestType\"/><xsd:element name=\"delete_attachedbinaryType\" type=\"tns:delete_attachedbinaryTypeRequestType\"/><xsd:element name=\"FaultType\"><xsd:complexType><xsd:sequence><xsd:element name=\"faultCode\" type=\"xsd:string\"/><xsd:element name=\"faultString\" type=\"xsd:string\"/></xsd:sequence></xsd:complexType></xsd:element><xsd:element name=\"getBLOBById\" type=\"tns:getBLOBByIdRequestType\"/><xsd:element name=\"EmptyResponse\"><xsd:complexType/></xsd:element><xsd:element name=\"update_attachedbinaryType\" type=\"tns:update_attachedbinaryTypeRequestType\"/><xsd:element name=\"getBLOBByIdResponse\" type=\"tns:getBLOBByIdResponseType\"/></xsd:schema>" +
+		"<xsd:schema elementFormDefault=\"qualified\" targetNamespace=\"urn:attachedbinaryService\" xmlns:ref=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:tns=\"urn:attachedbinaryService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><xsd:import namespace=\"urn:attachedbinary\" schemaLocation=\"eclipselink-dbws-schema.xsd\"/><xsd:import namespace=\"http://ws-i.org/profiles/basic/1.1/xsd\" schemaLocation=\"swaref.xsd\"/><xsd:complexType name=\"findAll_AttachedbinaryTypeResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element maxOccurs=\"unbounded\" minOccurs=\"0\" ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"findByPrimaryKey_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"id\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"getBLOBByIdResponseType\"><xsd:sequence><xsd:element name=\"result\" type=\"ref:swaRef\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"findByPrimaryKey_AttachedbinaryTypeResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"update_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"theInstance\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"getBLOBByIdRequestType\"><xsd:sequence><xsd:element name=\"pk\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"create_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"theInstance\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:attachedbinaryType\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"findAll_AttachedbinaryTypeRequestType\"/><xsd:complexType name=\"delete_AttachedbinaryTypeRequestType\"><xsd:sequence><xsd:element name=\"id\" type=\"xsd:decimal\"/></xsd:sequence></xsd:complexType><xsd:element name=\"findByPrimaryKey_AttachedbinaryTypeResponse\" type=\"tns:findByPrimaryKey_AttachedbinaryTypeResponseType\"/><xsd:element name=\"findByPrimaryKey_AttachedbinaryType\" type=\"tns:findByPrimaryKey_AttachedbinaryTypeRequestType\"/><xsd:element name=\"create_AttachedbinaryType\" type=\"tns:create_AttachedbinaryTypeRequestType\"/><xsd:element name=\"findAll_AttachedbinaryTypeResponse\" type=\"tns:findAll_AttachedbinaryTypeResponseType\"/><xsd:element name=\"findAll_AttachedbinaryType\" type=\"tns:findAll_AttachedbinaryTypeRequestType\"/><xsd:element name=\"delete_AttachedbinaryType\" type=\"tns:delete_AttachedbinaryTypeRequestType\"/><xsd:element name=\"FaultType\"><xsd:complexType><xsd:sequence><xsd:element name=\"faultCode\" type=\"xsd:string\"/><xsd:element name=\"faultString\" type=\"xsd:string\"/></xsd:sequence></xsd:complexType></xsd:element><xsd:element name=\"getBLOBById\" type=\"tns:getBLOBByIdRequestType\"/><xsd:element name=\"EmptyResponse\"><xsd:complexType/></xsd:element><xsd:element name=\"update_AttachedbinaryType\" type=\"tns:update_AttachedbinaryTypeRequestType\"/><xsd:element name=\"getBLOBByIdResponse\" type=\"tns:getBLOBByIdResponseType\"/></xsd:schema>" +
     	"</wsdl:types>" +
-    	"<wsdl:message name=\"create_attachedbinaryTypeRequest\">" +
-    		"<wsdl:part name=\"create_attachedbinaryTypeRequest\" element=\"tns:create_attachedbinaryType\">" +
+	"<wsdl:message name=\"create_AttachedbinaryTypeRequest\">" +
+		"<wsdl:part name=\"create_AttachedbinaryTypeRequest\" element=\"tns:create_AttachedbinaryType\">" +
     		"</wsdl:part>" +
         "</wsdl:message>" +
       "<wsdl:message name=\"getBLOBByIdRequest\">" +
         "<wsdl:part name=\"getBLOBByIdRequest\" element=\"tns:getBLOBById\">" +
         "</wsdl:part>" +
       "</wsdl:message>" +
-      "<wsdl:message name=\"findByPrimaryKey_attachedbinaryTypeResponse\">" +
-        "<wsdl:part name=\"findByPrimaryKey_attachedbinaryTypeResponse\" element=\"tns:findByPrimaryKey_attachedbinaryTypeResponse\">" +
+      "<wsdl:message name=\"findByPrimaryKey_AttachedbinaryTypeResponse\">" +
+        "<wsdl:part name=\"findByPrimaryKey_AttachedbinaryTypeResponse\" element=\"tns:findByPrimaryKey_AttachedbinaryTypeResponse\">" +
         "</wsdl:part>" +
       "</wsdl:message>" +
-      "<wsdl:message name=\"delete_attachedbinaryTypeRequest\">" +
-        "<wsdl:part name=\"delete_attachedbinaryTypeRequest\" element=\"tns:delete_attachedbinaryType\">" +
+      "<wsdl:message name=\"delete_AttachedbinaryTypeRequest\">" +
+        "<wsdl:part name=\"delete_AttachedbinaryTypeRequest\" element=\"tns:delete_AttachedbinaryType\">" +
         "</wsdl:part>" +
       "</wsdl:message>" +
       "<wsdl:message name=\"getBLOBByIdResponse\">" +
         "<wsdl:part name=\"getBLOBByIdResponse\" element=\"tns:getBLOBByIdResponse\">" +
         "</wsdl:part>" +
       "</wsdl:message>" +
-      "<wsdl:message name=\"update_attachedbinaryTypeRequest\">" +
-        "<wsdl:part name=\"update_attachedbinaryTypeRequest\" element=\"tns:update_attachedbinaryType\">" +
+      "<wsdl:message name=\"update_AttachedbinaryTypeRequest\">" +
+        "<wsdl:part name=\"update_AttachedbinaryTypeRequest\" element=\"tns:update_AttachedbinaryType\">" +
         "</wsdl:part>" +
       "</wsdl:message>" +
-      "<wsdl:message name=\"findAll_attachedbinaryTypeRequest\">" +
-        "<wsdl:part name=\"findAll_attachedbinaryTypeRequest\" element=\"tns:findAll_attachedbinaryType\">" +
+      "<wsdl:message name=\"findAll_AttachedbinaryTypeRequest\">" +
+        "<wsdl:part name=\"findAll_AttachedbinaryTypeRequest\" element=\"tns:findAll_AttachedbinaryType\">" +
         "</wsdl:part>" +
       "</wsdl:message>" +
       "<wsdl:message name=\"EmptyResponse\">" +
@@ -292,41 +292,41 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
         "<wsdl:part name=\"fault\" element=\"tns:FaultType\">" +
         "</wsdl:part>" +
       "</wsdl:message>" +
-      "<wsdl:message name=\"findByPrimaryKey_attachedbinaryTypeRequest\">" +
-        "<wsdl:part name=\"findByPrimaryKey_attachedbinaryTypeRequest\" element=\"tns:findByPrimaryKey_attachedbinaryType\">" +
+      "<wsdl:message name=\"findByPrimaryKey_AttachedbinaryTypeRequest\">" +
+        "<wsdl:part name=\"findByPrimaryKey_AttachedbinaryTypeRequest\" element=\"tns:findByPrimaryKey_AttachedbinaryType\">" +
         "</wsdl:part>" +
       "</wsdl:message>" +
-      "<wsdl:message name=\"findAll_attachedbinaryTypeResponse\">" +
-        "<wsdl:part name=\"findAll_attachedbinaryTypeResponse\" element=\"tns:findAll_attachedbinaryTypeResponse\">" +
+      "<wsdl:message name=\"findAll_AttachedbinaryTypeResponse\">" +
+        "<wsdl:part name=\"findAll_AttachedbinaryTypeResponse\" element=\"tns:findAll_AttachedbinaryTypeResponse\">" +
         "</wsdl:part>" +
       "</wsdl:message>" +
       "<wsdl:portType name=\"attachedbinaryService_Interface\">" +
-        "<wsdl:operation name=\"findByPrimaryKey_attachedbinaryType\">" +
-          "<wsdl:input message=\"tns:findByPrimaryKey_attachedbinaryTypeRequest\">" +
+        "<wsdl:operation name=\"findByPrimaryKey_AttachedbinaryType\">" +
+          "<wsdl:input message=\"tns:findByPrimaryKey_AttachedbinaryTypeRequest\">" +
         "</wsdl:input>" +
-          "<wsdl:output message=\"tns:findByPrimaryKey_attachedbinaryTypeResponse\">" +
+          "<wsdl:output message=\"tns:findByPrimaryKey_AttachedbinaryTypeResponse\">" +
         "</wsdl:output>" +
         "</wsdl:operation>" +
-        "<wsdl:operation name=\"create_attachedbinaryType\">" +
-          "<wsdl:input message=\"tns:create_attachedbinaryTypeRequest\">" +
+        "<wsdl:operation name=\"create_AttachedbinaryType\">" +
+          "<wsdl:input message=\"tns:create_AttachedbinaryTypeRequest\">" +
         "</wsdl:input>" +
-          "<wsdl:output name=\"create_attachedbinaryTypeEmptyResponse\" message=\"tns:EmptyResponse\">" +
-        "</wsdl:output>" +
-          "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">" +
-        "</wsdl:fault>" +
-        "</wsdl:operation>" +
-        "<wsdl:operation name=\"delete_attachedbinaryType\">" +
-          "<wsdl:input message=\"tns:delete_attachedbinaryTypeRequest\">" +
-        "</wsdl:input>" +
-          "<wsdl:output name=\"delete_attachedbinaryTypeEmptyResponse\" message=\"tns:EmptyResponse\">" +
+          "<wsdl:output name=\"create_AttachedbinaryTypeEmptyResponse\" message=\"tns:EmptyResponse\">" +
         "</wsdl:output>" +
           "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">" +
         "</wsdl:fault>" +
         "</wsdl:operation>" +
-        "<wsdl:operation name=\"findAll_attachedbinaryType\">" +
-          "<wsdl:input message=\"tns:findAll_attachedbinaryTypeRequest\">" +
+        "<wsdl:operation name=\"delete_AttachedbinaryType\">" +
+          "<wsdl:input message=\"tns:delete_AttachedbinaryTypeRequest\">" +
         "</wsdl:input>" +
-          "<wsdl:output message=\"tns:findAll_attachedbinaryTypeResponse\">" +
+          "<wsdl:output name=\"delete_AttachedbinaryTypeEmptyResponse\" message=\"tns:EmptyResponse\">" +
+        "</wsdl:output>" +
+          "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">" +
+        "</wsdl:fault>" +
+        "</wsdl:operation>" +
+        "<wsdl:operation name=\"findAll_AttachedbinaryType\">" +
+          "<wsdl:input message=\"tns:findAll_AttachedbinaryTypeRequest\">" +
+        "</wsdl:input>" +
+          "<wsdl:output message=\"tns:findAll_AttachedbinaryTypeResponse\">" +
         "</wsdl:output>" +
         "</wsdl:operation>" +
         "<wsdl:operation name=\"getBLOBById\">" +
@@ -335,10 +335,10 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
           "<wsdl:output message=\"tns:getBLOBByIdResponse\">" +
         "</wsdl:output>" +
         "</wsdl:operation>" +
-        "<wsdl:operation name=\"update_attachedbinaryType\">" +
-          "<wsdl:input message=\"tns:update_attachedbinaryTypeRequest\">" +
+        "<wsdl:operation name=\"update_AttachedbinaryType\">" +
+          "<wsdl:input message=\"tns:update_AttachedbinaryTypeRequest\">" +
         "</wsdl:input>" +
-          "<wsdl:output name=\"update_attachedbinaryTypeEmptyResponse\" message=\"tns:EmptyResponse\">" +
+          "<wsdl:output name=\"update_AttachedbinaryTypeEmptyResponse\" message=\"tns:EmptyResponse\">" +
         "</wsdl:output>" +
           "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">" +
         "</wsdl:fault>" +
@@ -346,8 +346,8 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
       "</wsdl:portType>" +
       "<wsdl:binding name=\"attachedbinaryService_SOAP_HTTP\" type=\"tns:attachedbinaryService_Interface\">" +
         "<soap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/>" +
-        "<wsdl:operation name=\"findByPrimaryKey_attachedbinaryType\">" +
-          "<soap:operation soapAction=\"urn:attachedbinaryService:findByPrimaryKey_attachedbinaryType\"/>" +
+        "<wsdl:operation name=\"findByPrimaryKey_AttachedbinaryType\">" +
+          "<soap:operation soapAction=\"urn:attachedbinaryService:findByPrimaryKey_AttachedbinaryType\"/>" +
           "<wsdl:input>" +
             "<soap:body use=\"literal\"/>" +
           "</wsdl:input>" +
@@ -355,20 +355,8 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             "<soap:body use=\"literal\"/>" +
           "</wsdl:output>" +
         "</wsdl:operation>" +
-        "<wsdl:operation name=\"create_attachedbinaryType\">" +
-          "<soap:operation soapAction=\"urn:attachedbinaryService:create_attachedbinaryType\"/>" +
-          "<wsdl:input>" +
-            "<soap:body use=\"literal\"/>" +
-          "</wsdl:input>" +
-          "<wsdl:output>" +
-            "<soap:body use=\"literal\"/>" +
-          "</wsdl:output>" +
-          "<wsdl:fault name=\"FaultException\">" +
-            "<soap:fault name=\"FaultException\" use=\"literal\"/>" +
-          "</wsdl:fault>" +
-        "</wsdl:operation>" +
-        "<wsdl:operation name=\"delete_attachedbinaryType\">" +
-          "<soap:operation soapAction=\"urn:attachedbinaryService:delete_attachedbinaryType\"/>" +
+        "<wsdl:operation name=\"create_AttachedbinaryType\">" +
+          "<soap:operation soapAction=\"urn:attachedbinaryService:create_AttachedbinaryType\"/>" +
           "<wsdl:input>" +
             "<soap:body use=\"literal\"/>" +
           "</wsdl:input>" +
@@ -379,8 +367,20 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             "<soap:fault name=\"FaultException\" use=\"literal\"/>" +
           "</wsdl:fault>" +
         "</wsdl:operation>" +
-        "<wsdl:operation name=\"findAll_attachedbinaryType\">" +
-          "<soap:operation soapAction=\"urn:attachedbinaryService:findAll_attachedbinaryType\"/>" +
+        "<wsdl:operation name=\"delete_AttachedbinaryType\">" +
+          "<soap:operation soapAction=\"urn:attachedbinaryService:delete_AttachedbinaryType\"/>" +
+          "<wsdl:input>" +
+            "<soap:body use=\"literal\"/>" +
+          "</wsdl:input>" +
+          "<wsdl:output>" +
+            "<soap:body use=\"literal\"/>" +
+          "</wsdl:output>" +
+          "<wsdl:fault name=\"FaultException\">" +
+            "<soap:fault name=\"FaultException\" use=\"literal\"/>" +
+          "</wsdl:fault>" +
+        "</wsdl:operation>" +
+        "<wsdl:operation name=\"findAll_AttachedbinaryType\">" +
+          "<soap:operation soapAction=\"urn:attachedbinaryService:findAll_AttachedbinaryType\"/>" +
           "<wsdl:input>" +
             "<soap:body use=\"literal\"/>" +
           "</wsdl:input>" +
@@ -397,8 +397,8 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             "<soap:body use=\"literal\"/>" +
           "</wsdl:output>" +
         "</wsdl:operation>" +
-        "<wsdl:operation name=\"update_attachedbinaryType\">" +
-          "<soap:operation soapAction=\"urn:attachedbinaryService:update_attachedbinaryType\"/>" +
+        "<wsdl:operation name=\"update_AttachedbinaryType\">" +
+          "<soap:operation soapAction=\"urn:attachedbinaryService:update_AttachedbinaryType\"/>" +
           "<wsdl:input>" +
             "<soap:body use=\"literal\"/>" +
           "</wsdl:input>" +

@@ -150,7 +150,7 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
     static final String SOAP_UPDATE_REQUEST =
         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
            "<SOAP-ENV:Body>" +
-              "<srvc:update_rootcause_tableType xmlns:srvc=\"" + ROOTCAUSE_SERVICE_NAMESPACE + "\" xmlns=\"" + ROOTCAUSE_NAMESPACE + "\">" +
+              "<srvc:update_Rootcause_tableType xmlns:srvc=\"" + ROOTCAUSE_SERVICE_NAMESPACE + "\" xmlns=\"" + ROOTCAUSE_NAMESPACE + "\">" +
                  "<srvc:theInstance>" +
                     // rootcause_tableType built wrong
                     "<barf>" +
@@ -158,7 +158,7 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
                        "<name />" +
                     "</barf>" +
                  "</srvc:theInstance>" +
-              "</srvc:update_rootcause_tableType>" +
+              "</srvc:update_Rootcause_tableType>" +
            "</SOAP-ENV:Body>" +
         "</SOAP-ENV:Envelope>";
 
@@ -364,7 +364,7 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         ((XMLLogin)oxProject.getDatasourceLogin()).setPlatformClassName(DOM_PLATFORM_CLASSNAME);
         ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
 
-        alignDescriptorAliases(oxProject, orProject, xrdecl);                
+        prepareDescriptors(oxProject, orProject, xrdecl);
         ProjectHelper.fixOROXAccessors(orProject, oxProject);
         xrService.setORSession(databaseSession);
         xrService.setXMLContext(new XMLContext(oxProject));
@@ -395,43 +395,6 @@ public class RootCauseTestSuite extends ProviderHelper implements Provider<SOAPM
         // just for debugging, keep 'response' variable alive after try-catch
         if (response != null) {
             response.hashCode();
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected static void alignDescriptorAliases(Project oxProject, Project orProject, XRDynamicClassLoader xrdcl) {
-        // may need to alter descriptor alias
-        if (oxProject.getAliasDescriptors() != null) {
-            Map<String, XMLDescriptor> oxAliases = new HashMap<String, XMLDescriptor>();
-            for (Object key : oxProject.getAliasDescriptors().keySet()) {
-                String alias = key.toString();
-
-                XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
-                ClassDescriptor odesc = null;
-
-                if ((odesc = (ClassDescriptor) orProject.getAliasDescriptors().get(alias)) == null) {
-                    // for some reason we occasionally see an upper case first char in the OX alias
-                    alias = Character.toLowerCase(alias.charAt(0)) + (alias.length() > 1 ? alias.substring(1) : "");
-                }
-                
-                String defaultRootElement = xdesc.getDefaultRootElement();
-                String proposedAlias = defaultRootElement;
-                if (defaultRootElement.endsWith(TYPE_STR)) {
-                    proposedAlias = defaultRootElement.substring(0, defaultRootElement.lastIndexOf(TYPE_STR));
-                }
-                proposedAlias = proposedAlias.toLowerCase();
-                xdesc.setAlias(proposedAlias);
-
-                oxAliases.put(proposedAlias, xdesc);
-
-                if (odesc != null) {
-                    orProject.getAliasDescriptors().remove(alias);
-                    odesc.setAlias(proposedAlias);
-                    odesc.convertClassNamesToClasses(xrdcl);
-                    orProject.getAliasDescriptors().put(proposedAlias, odesc);
-                }
-            }
-            oxProject.setAliasDescriptors(oxAliases);
         }
     }
 }

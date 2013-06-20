@@ -154,7 +154,7 @@ public class IOTTypeTestSuite extends DBWSTestSuite {
 
     @Test
     public void findByPrimaryKeyTest() {
-        Invocation invocation = new Invocation("findByPrimaryKey_indexedtabletypeType");
+        Invocation invocation = new Invocation("findByPrimaryKey_IndexedtabletypeType");
         invocation.setParameter("id", 1);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -169,7 +169,7 @@ public class IOTTypeTestSuite extends DBWSTestSuite {
     @SuppressWarnings("rawtypes")
     @Test
     public void findAllTest() {
-        Invocation invocation = new Invocation("findAll_indexedtabletypeType");
+        Invocation invocation = new Invocation("findAll_IndexedtabletypeType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);

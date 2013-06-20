@@ -49,21 +49,21 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
     static final String SOAP_FINDBYPK_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<findByPrimaryKey_simpletableType xmlns=\"urn:simpletableService\">" +
+            "<findByPrimaryKey_SimpletableType xmlns=\"urn:simpletableService\">" +
               "<id>1</id>" +
-            "</findByPrimaryKey_simpletableType>" +
+            "</findByPrimaryKey_SimpletableType>" +
           "</env:Body>" +
         "</env:Envelope>";
     static final String SOAP_FINDALL_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<findAll_simpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\"/>" +
+            "<findAll_SimpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\"/>" +
           "</env:Body>" +
         "</env:Envelope>";
     static final String SOAP_UPDATE_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<update_simpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\">" +
+            "<update_SimpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\">" +
               "<theInstance>" +
                 "<urn:simpletableType>" +
                   "<urn:id>1</urn:id>" +
@@ -71,13 +71,13 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
                   "<urn:since>2001-12-25</urn:since>" +
                 "</urn:simpletableType>" +
               "</theInstance>" +
-            "</update_simpletableType>" +
+            "</update_SimpletableType>" +
           "</env:Body>" +
         "</env:Envelope>";
     static final String SOAP_CREATE_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<create_simpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\">" +
+            "<create_SimpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\">" +
               "<theInstance>" +
                 "<urn:simpletableType>" +
                   "<urn:id>4</urn:id>" +
@@ -85,21 +85,21 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
                   "<urn:since>2009-03-27</urn:since>" +
                 "</urn:simpletableType>" +
               "</theInstance>" +
-            "</create_simpletableType>" +
+            "</create_SimpletableType>" +
           "</env:Body>" +
         "</env:Envelope>";
     static final String SOAP_DELETE_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<delete_simpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\">" +
+            "<delete_SimpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\">" +
               "<id>4</id>" +
-            "</delete_simpletableType>" +
+            "</delete_SimpletableType>" +
           "</env:Body>" +
         "</env:Envelope>";
     static final String SOAP_UPDATE2_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<update_simpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\">" +
+            "<update_SimpletableType xmlns=\"urn:simpletableService\" xmlns:urn=\"urn:simpletable\">" +
               "<theInstance>" +
                 "<urn:simpletableType>" +
                   "<urn:id>1</urn:id>" +
@@ -107,13 +107,13 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
                   "<urn:since>2001-12-25</urn:since>" +
                 "</urn:simpletableType>" +
               "</theInstance>" +
-            "</update_simpletableType>" +
+            "</update_SimpletableType>" +
           "</env:Body>" +
         "</env:Envelope>";
 
 	static final String SOAP_FINDBYPK_RESPONSE = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        "<srvc:findByPrimaryKey_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">" +
+        "<srvc:findByPrimaryKey_SimpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">" +
             "<srvc:result>" +
                 "<simpletableType>" +
                     "<id>1</id>" +
@@ -121,10 +121,10 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
                     "<since>2001-12-25</since>" +
                 "</simpletableType>" +
             "</srvc:result>" +
-        "</srvc:findByPrimaryKey_simpletableTypeResponse>";
+        "</srvc:findByPrimaryKey_SimpletableTypeResponse>";
     static final String SOAP_FINDALL_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        "<srvc:findAll_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">" +
+        "<srvc:findAll_SimpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">" +
             "<srvc:result>" +
                 "<simpletableType>" +
                     "<id>1</id>" +
@@ -142,12 +142,12 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
                     "<since>2001-12-25</since>" +
                  "</simpletableType>" +
              "</srvc:result>" +
-        "</srvc:findAll_simpletableTypeResponse>";
+        "</srvc:findAll_SimpletableTypeResponse>";
     static final String SOAP_UPDATE_RESPONSE_ELEMENTNAME =
-        "update_simpletableTypeResponse";
+        "update_SimpletableTypeResponse";
     static final String SOAP_FINDBYPK_AFTERUPDATE_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        "<srvc:findByPrimaryKey_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">" +
+        "<srvc:findByPrimaryKey_SimpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">" +
             "<srvc:result>" +
                 "<simpletableType>" +
                     "<id>1</id>" +
@@ -155,11 +155,11 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
                     "<since>2001-12-25</since>" +
                 "</simpletableType>" +
             "</srvc:result>" +
-        "</srvc:findByPrimaryKey_simpletableTypeResponse>";
+        "</srvc:findByPrimaryKey_SimpletableTypeResponse>";
     static final String SOAP_CREATE_RESPONSE_ELEMENTNAME =
-        "create_simpletableTypeResponse";
+        "create_SimpletableTypeResponse";
     static final String SOAP_DELETE_RESPONSE_ELEMENTNAME =
-        "delete_simpletableTypeResponse";
+        "delete_SimpletableTypeResponse";
     
     @BeforeClass
     public static void setUp() {
@@ -198,10 +198,9 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
 	        Service service = Service.create(new QName("urn:simpletable", "simpletableService"));
 	        service.addPort(qname, SOAPBinding.SOAP11HTTP_BINDING, "http://" + host + ":" + port + "/simpletable/simpletable");
 	        Dispatch<SOAPMessage> sourceDispatch = service.createDispatch(qname, SOAPMessage.class, Service.Mode.MESSAGE);
-	        
 	        SOAPMessage request = createSOAPMessage(SOAP_FINDBYPK_REQUEST);
 	        SOAPMessage response = sourceDispatch.invoke(request);
-	        assertNotNull("findByPrimaryKey_simpletableType failed:  response is null.", response);
+	        assertNotNull("findByPrimaryKey_SimpletableType failed:  response is null.", response);
             SOAPBody responseBody = response.getSOAPPart().getEnvelope().getBody();
             Document resultDoc = responseBody.extractContentAsDocument();
             Document controlDoc = xmlParser.parse(new StringReader(SOAP_FINDBYPK_RESPONSE));
@@ -214,11 +213,11 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
             elts = controlDoc.getDocumentElement().getElementsByTagNameNS("urn:simpletableService", "result");
             Node ctrlNode = elts.item(0);
             
-            assertTrue("findByPrimaryKey_simpletableType document comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
+            assertTrue("findByPrimaryKey_SimpletableType document comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
 
 	        request = createSOAPMessage(SOAP_FINDALL_REQUEST);
 	        response = sourceDispatch.invoke(request);
-	        assertNotNull("findAll_simpletableType failed:  response is null.", response);
+	        assertNotNull("findAll_SimpletableType failed:  response is null.", response);
             responseBody = response.getSOAPPart().getEnvelope().getBody();
             resultDoc = responseBody.extractContentAsDocument();
             controlDoc = xmlParser.parse(new StringReader(SOAP_FINDALL_RESPONSE));
@@ -231,16 +230,16 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
             elts = controlDoc.getDocumentElement().getElementsByTagNameNS("urn:simpletableService", "result");
             ctrlNode = elts.item(0);
             
-            assertTrue("findAll_simpletableType document comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
+            assertTrue("findAll_SimpletableType document comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
 
 	        request = createSOAPMessage(SOAP_UPDATE_REQUEST);
 	        response = sourceDispatch.invoke(request);
-	        assertNotNull("update_simpletableType failed:  response is null.", response);
+	        assertNotNull("update_SimpletableType failed:  response is null.", response);
             assertTrue(SOAP_UPDATE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_UPDATE_RESPONSE_ELEMENTNAME.equals(response.getSOAPBody().getFirstChild().getLocalName()));
 
 	        request = createSOAPMessage(SOAP_FINDBYPK_REQUEST);
 	        response = sourceDispatch.invoke(request);
-	        assertNotNull("findByPrimaryKey_simpletableType failed:  response is null.", response);
+	        assertNotNull("findByPrimaryKey_SimpletableType failed:  response is null.", response);
 	        responseBody = response.getSOAPPart().getEnvelope().getBody();
             resultDoc = responseBody.extractContentAsDocument();
             controlDoc = xmlParser.parse(new StringReader(SOAP_FINDBYPK_AFTERUPDATE_RESPONSE));
@@ -252,21 +251,21 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
             elts = controlDoc.getDocumentElement().getElementsByTagNameNS("urn:simpletableService", "result");
             ctrlNode = elts.item(0);
             
-            assertTrue("findByPrimaryKey_simpletableType (after update) document comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
+            assertTrue("findByPrimaryKey_SimpletableType (after update) document comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
 
 	        request = createSOAPMessage(SOAP_CREATE_REQUEST);
 	        response = sourceDispatch.invoke(request);
-	        assertNotNull("create_simpletableType failed:  response is null.", response);
+	        assertNotNull("create_SimpletableType failed:  response is null.", response);
             assertTrue(SOAP_CREATE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_CREATE_RESPONSE_ELEMENTNAME.equals(response.getSOAPBody().getFirstChild().getLocalName()));
 
 	        request = createSOAPMessage(SOAP_DELETE_REQUEST);
 	        response = sourceDispatch.invoke(request);
-	        assertNotNull("delete_simpletableType failed:  response is null.", response);
+	        assertNotNull("delete_SimpletableType failed:  response is null.", response);
 	        assertTrue(SOAP_DELETE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_DELETE_RESPONSE_ELEMENTNAME.equals(response.getSOAPBody().getFirstChild().getLocalName()));
 
 	        request = createSOAPMessage(SOAP_UPDATE2_REQUEST);
 	        response = sourceDispatch.invoke(request);
-	        assertNotNull("update_simpletableType (2) failed:  response is null.", response);
+	        assertNotNull("update_SimpletableType (2) failed:  response is null.", response);
             assertTrue(SOAP_UPDATE_RESPONSE_ELEMENTNAME + " incorrect", SOAP_UPDATE_RESPONSE_ELEMENTNAME.equals(response.getSOAPBody().getFirstChild().getLocalName()));
     	} catch (Exception x) {
     		fail("Service test failed: " + x.getMessage());

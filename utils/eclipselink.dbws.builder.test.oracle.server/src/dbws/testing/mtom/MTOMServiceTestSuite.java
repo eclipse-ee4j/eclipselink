@@ -48,15 +48,15 @@ public class MTOMServiceTestSuite extends DBWSTestSuite {
     static final String SOAP_FINDBYPK_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<findByPrimaryKey_mtomType xmlns=\"urn:mtomService\" xmlns:urn=\"urn:mtom\">" +
+            "<findByPrimaryKey_MtomType xmlns=\"urn:mtomService\" xmlns:urn=\"urn:mtom\">" +
               "<id>3</id>" +
-            "</findByPrimaryKey_mtomType>" +
+            "</findByPrimaryKey_MtomType>" +
           "</env:Body>" +
         "</env:Envelope>";
     static final String SOAP_FINDALL_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<findAll_mtomType xmlns=\"urn:mtomService\" xmlns:urn=\"urn:mtom\"/>" +
+            "<findAll_MtomType xmlns=\"urn:mtomService\" xmlns:urn=\"urn:mtom\"/>" +
           "</env:Body>" +
         "</env:Envelope>";
 

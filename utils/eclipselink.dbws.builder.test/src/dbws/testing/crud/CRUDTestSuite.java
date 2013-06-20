@@ -145,7 +145,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
     @Test
     public void testCRUDLifecycle() {
         // test findByPK
-        Invocation invocation = new Invocation("findByPrimaryKey_crud_tableType");
+        Invocation invocation = new Invocation("findByPrimaryKey_Crud_tableType");
         invocation.setParameter("id", 1);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -157,7 +157,7 @@ public class CRUDTestSuite extends DBWSTestSuite {
         assertTrue("findByPK failed:  control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
         // test findAll
-        invocation = new Invocation("findAll_crud_tableType");
+        invocation = new Invocation("findAll_Crud_tableType");
         op = xrService.getOperation(invocation.getName());
         result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -192,16 +192,16 @@ public class CRUDTestSuite extends DBWSTestSuite {
         InputSource inputSource = new InputSource(reader);
         XRDynamicEntity firstEmp = (XRDynamicEntity)unMarshaller.unmarshal(inputSource);
         firstEmp.set("name", "some other name");
-        invocation = new Invocation("update_crud_tableType");
+        invocation = new Invocation("update_Crud_tableType");
         invocation.setParameter("theInstance", firstEmp);
         op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
         // test delete
-        invocation = new Invocation("findAll_crud_tableType");
+        invocation = new Invocation("findAll_Crud_tableType");
         op = xrService.getOperation(invocation.getName());
         Vector<XRDynamicEntity> result1 = (Vector<XRDynamicEntity>)op.invoke(xrService, invocation);
         firstEmp = result1.firstElement();
-        Invocation invocation2 = new Invocation("delete_crud_tableType");
+        Invocation invocation2 = new Invocation("delete_Crud_tableType");
         invocation2.setParameter("id", firstEmp.get("id"));
         Operation op2 = xrService.getOperation(invocation2.getName());
         op2.invoke(xrService, invocation2);
@@ -212,11 +212,11 @@ public class CRUDTestSuite extends DBWSTestSuite {
         reader = new StringReader(CRUD1_CONTROL_DOC);
         inputSource = new InputSource(reader);
         XRDynamicEntity anotherEmployee = (XRDynamicEntity)unMarshaller.unmarshal(inputSource);
-        invocation = new Invocation("create_crud_tableType");
+        invocation = new Invocation("create_Crud_tableType");
         invocation.setParameter("theInstance", anotherEmployee);
         op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
-        invocation2 = new Invocation("findAll_crud_tableType");
+        invocation2 = new Invocation("findAll_Crud_tableType");
         op2 = xrService.getOperation(invocation2.getName());
         Vector<XRDynamicEntity> result3 = (Vector<XRDynamicEntity>)op2.invoke(xrService, invocation2);
         assertTrue("Create failed:  wrong number of employees", result3.size() == 3);
