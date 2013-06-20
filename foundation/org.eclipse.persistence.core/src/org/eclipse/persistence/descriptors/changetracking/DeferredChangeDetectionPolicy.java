@@ -117,10 +117,12 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         }
         if (!changes.hasForcedChangesFromCascadeLocking() && unitOfWork.hasOptimisticReadLockObjects()) {
             Boolean modifyVersionField = (Boolean)unitOfWork.getOptimisticReadLockObjects().get(clone);
-            if (unitOfWork instanceof RepeatableWriteUnitOfWork && ((RepeatableWriteUnitOfWork) unitOfWork).getCumulativeUOWChangeSet() != null) {
+            if ((modifyVersionField != null) && (unitOfWork instanceof RepeatableWriteUnitOfWork) && (((RepeatableWriteUnitOfWork)unitOfWork).getCumulativeUOWChangeSet() != null)) {
                 // modify the version field if the UOW cumulative change set does not contain a changeset for this clone 
-                modifyVersionField = ((RepeatableWriteUnitOfWork)unitOfWork).getCumulativeUOWChangeSet().getObjectChangeSetForClone(clone) == null;
-            }            
+                if (((RepeatableWriteUnitOfWork)unitOfWork).getCumulativeUOWChangeSet().getObjectChangeSetForClone(clone) == null) {
+                    modifyVersionField = Boolean.TRUE;
+                }
+            }
             changes.setShouldModifyVersionField(modifyVersionField);
         }
         if (changes.hasChanges() || changes.hasForcedChanges()) {
