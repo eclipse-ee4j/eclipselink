@@ -363,7 +363,6 @@ public class QueryOperation extends Operation {
      *
      * @see  {@link Operation}
      */
-    @SuppressWarnings("rawtypes")
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
         DatabaseQuery query = queryHandler.getDatabaseQuery();
@@ -523,7 +522,6 @@ public class QueryOperation extends Operation {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     public Object createSimpleXMLFormat(XRServiceAdapter xrService, Object value) {
         XMLRoot xmlRoot = new XMLRoot();
         SimpleXMLFormat simpleXMLFormat = result.getSimpleXMLFormat();

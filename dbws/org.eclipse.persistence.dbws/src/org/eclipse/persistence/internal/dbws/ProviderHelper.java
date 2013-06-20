@@ -300,7 +300,6 @@ public class ProviderHelper extends XRServiceFactory {
             public Object getAttributeValueFromObject(Object object) {
               return ((Invocation)object).getParameters();
             }
-            @SuppressWarnings("rawtypes")
             @Override
             public void setAttributeValueInObject(Object object, Object value) {
                 Invocation invocation = (Invocation)object;
@@ -431,7 +430,7 @@ public class ProviderHelper extends XRServiceFactory {
         responseWriter.initialize();
     }
 
-    @SuppressWarnings({"unchecked"/*, "rawtypes"*/, "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public SOAPMessage invoke(SOAPMessage request) {
         Map<String,DataHandler> attachments = null;
         if (mtomEnabled) {
