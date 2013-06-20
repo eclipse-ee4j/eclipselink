@@ -34,6 +34,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -1039,14 +1040,25 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             // Update the write lock field if required.
             if (lockingPolicy != null) {
                 lockingPolicy.addLockValuesToTranslationRow(writeQuery);
-                // update the row and object if shouldModifyVersionField is non null and has a value of true (a forced update),
-                // or if there is no forced update and modifyRow has modifications
-                if ((shouldModifyVersionField != null && shouldModifyVersionField) || (shouldModifyVersionField == null && !getModifyRow().isEmpty())) {
-                    // Update the row with newer lock value.
-                    lockingPolicy.updateRowAndObjectForUpdate(writeQuery, object);
-                } else if (!shouldModifyVersionField && (lockingPolicy instanceof VersionLockingPolicy)) {
-                    // Add the existing write lock value to the for a "read" lock (requires something to update).
-                    ((VersionLockingPolicy)lockingPolicy).writeLockValueIntoRow(writeQuery, object);
+                // Do not lock an object that has previously been optimistically locked within the RWUoW
+                boolean existingOptimisticLock = false;
+                if (session instanceof RepeatableWriteUnitOfWork) {
+                    RepeatableWriteUnitOfWork uow = (RepeatableWriteUnitOfWork)session;
+                    if (uow.getOptimisticReadLockObjects().get(object) != null && uow.getCumulativeUOWChangeSet() != null 
+                            && uow.getCumulativeUOWChangeSet().getObjectChangeSetForClone(object) != null) {
+                        existingOptimisticLock = true;
+                    }
+                }
+                if (!existingOptimisticLock) {
+                    // update the row and object if shouldModifyVersionField is non null and has a value of true (a forced update),
+                    // or if there is no forced update and modifyRow has modifications
+                    if ((shouldModifyVersionField != null && shouldModifyVersionField) || !getModifyRow().isEmpty()) {
+                        // Update the row with newer lock value.
+                        lockingPolicy.updateRowAndObjectForUpdate(writeQuery, object);
+                    } else if (!shouldModifyVersionField && (lockingPolicy instanceof VersionLockingPolicy)) {
+                        // Add the existing write lock value to the for a "read" lock (requires something to update).
+                        ((VersionLockingPolicy)lockingPolicy).writeLockValueIntoRow(writeQuery, object);
+                    }
                 }
             }
             if (descriptor.hasSerializedObjectPolicy()) {
