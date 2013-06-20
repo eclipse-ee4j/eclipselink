@@ -568,6 +568,11 @@ public class DBWSModelProject extends Project {
         descriptorName.setXPath("descriptor-name/text()");
         descriptor.addMapping(descriptorName);
 
+        XMLDirectMapping findByPKQuery = new XMLDirectMapping();
+        findByPKQuery.setAttributeName("findByPKQuery");
+        findByPKQuery.setXPath("find-by-pk-query/text()");
+        descriptor.addMapping(findByPKQuery);
+
         XMLCompositeCollectionMapping parameters = new XMLCompositeCollectionMapping();
         parameters.setAttributeName("parameters");
         parameters.setReferenceClass(Parameter.class);

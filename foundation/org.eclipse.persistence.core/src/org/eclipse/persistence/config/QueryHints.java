@@ -858,4 +858,14 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setShouldUseSerializedObjectPolicy(boolean)
      */
     public static final String SERIALIZED_OBJECT = "eclipselink.serialized-object";
+
+    /**
+     * "eclipselink.query-return-name-value-pairs"
+     * <p>Configures a ResultSetMappingQuery to return populated DatabaseRecord(s)
+     * instead of raw data.  This is particularly useful when the structure of the
+     * returned data is not known.
+     * @see org.eclipse.persistence.queries.ResultSetMappingQuery#setShouldReturnNameValuePairs(boolean)
+     * @see org.eclipse.persistence.queries.ResultSetMappingQuery#shouldReturnNameValuePairs()
+     */
+    public static final String RETURN_NAME_VALUE_PAIRS = "eclipselink.query-return-name-value-pairs";
 }

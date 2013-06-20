@@ -73,6 +73,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
+
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.oxm.Constants.INT_QNAME;
 import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
@@ -362,7 +363,6 @@ public class QueryOperation extends Operation {
      *
      * @see  {@link Operation}
      */
-    @SuppressWarnings("rawtypes")
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
         DatabaseQuery query = queryHandler.getDatabaseQuery();
@@ -407,7 +407,7 @@ public class QueryOperation extends Operation {
                     ((Vector) value).add(1);
                 }
             }
-
+        	
             // JPA spec returns an ArrayList<Object[]> for stored procedure queries - will need to unwrap.
             // Note that for legacy deployment XML projects this is not the case.
             if (value instanceof ArrayList) {
@@ -522,7 +522,6 @@ public class QueryOperation extends Operation {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     public Object createSimpleXMLFormat(XRServiceAdapter xrService, Object value) {
         XMLRoot xmlRoot = new XMLRoot();
         SimpleXMLFormat simpleXMLFormat = result.getSimpleXMLFormat();
@@ -550,12 +549,24 @@ public class QueryOperation extends Operation {
             for (Object obj : dsCall.getParameters()) {
                 if (obj instanceof OutputParameterForCallableStatement) {
                     paramFlds.add(((OutputParameterForCallableStatement) obj).getOutputField());
+                } else if (obj instanceof Object[]) {
+                    Object[] objArray = (Object[]) obj;
+                    for (int i = 0; i < objArray.length; i++) {
+                        Object o = objArray[i];
+                        if (o instanceof OutputParameterForCallableStatement) {
+                            paramFlds.add(((OutputParameterForCallableStatement) o).getOutputField());
+                        }
+                    }
                 }
             }
             // now create a record using DatabaseField/value pairs
             DatabaseRecord dr = new DatabaseRecord();
-            for (int i=0; i <  ((ArrayList) value).size(); i++) {
-                dr.add(paramFlds.get(i), ((ArrayList) value).get(i));
+            if (paramFlds.size() > 0) {
+                for (int i=0; i <  ((ArrayList) value).size(); i++) {
+                    dr.add(paramFlds.get(i), ((ArrayList) value).get(i));
+                }
+            } else {
+                dr.add(new DatabaseField(RESULT_STR), ((ArrayList) value).get(0));
             }
             records = new Vector<DatabaseRecord>();
             records.add(dr);

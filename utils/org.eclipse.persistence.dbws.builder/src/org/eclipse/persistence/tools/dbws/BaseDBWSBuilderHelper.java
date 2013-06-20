@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -80,6 +79,7 @@ import org.eclipse.persistence.internal.xr.XmlBindingsModel;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -109,11 +109,6 @@ import org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementSty
 import org.eclipse.persistence.tools.dbws.jdbc.DbColumn;
 import org.eclipse.persistence.tools.dbws.jdbc.DbTable;
 import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
-import static org.eclipse.persistence.internal.helper.ClassConstants.INTEGER;
-import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
-import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_LABEL;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_LABEL;
@@ -132,22 +127,17 @@ import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.Ele
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ELEMENT;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
 import static org.eclipse.persistence.tools.dbws.Util.AT_SIGN;
-import static org.eclipse.persistence.tools.dbws.Util.BOOLEAN_STR;
+import static org.eclipse.persistence.tools.dbws.Util.COMMA;
 import static org.eclipse.persistence.tools.dbws.Util.CHAR_STR;
-import static org.eclipse.persistence.tools.dbws.Util.DATE_STR;
 import static org.eclipse.persistence.tools.dbws.Util.DECIMAL_STR;
-import static org.eclipse.persistence.tools.dbws.Util.INTEGER_STR;
-import static org.eclipse.persistence.tools.dbws.Util.NUMBER_STR;
 import static org.eclipse.persistence.tools.dbws.Util.CREATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DOT;
-import static org.eclipse.persistence.tools.dbws.Util.NUMERIC_STR;
 import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
 import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
 import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.ROWTYPE_STR;
-import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.Util.SLASH_TEXT;
 import static org.eclipse.persistence.tools.dbws.Util.SINGLE_SPACE;
 import static org.eclipse.persistence.tools.dbws.Util.CLOSE_BRACKET;
@@ -155,6 +145,7 @@ import static org.eclipse.persistence.tools.dbws.Util.OPEN_BRACKET;
 import static org.eclipse.persistence.tools.dbws.Util.CLOSE_SQUARE_BRACKET;
 import static org.eclipse.persistence.tools.dbws.Util.OPEN_SQUARE_BRACKET;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
+import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.dbws.Util.UPDATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
@@ -165,12 +156,12 @@ import static org.eclipse.persistence.tools.dbws.Util.XML_MIME_PREFIX;
 import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.buildORDescriptor;
 import static org.eclipse.persistence.tools.dbws.Util.buildOXDescriptor;
+import static org.eclipse.persistence.tools.dbws.Util.buildTypeForJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedWrapperClassName;
-import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
 import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs;
 import static org.eclipse.persistence.tools.dbws.Util.isNullStream;
 import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
@@ -178,20 +169,10 @@ import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 
 //DDL parser imports
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
-import org.eclipse.persistence.tools.oracleddl.metadata.BinaryType;
-import org.eclipse.persistence.tools.oracleddl.metadata.BlobType;
-import org.eclipse.persistence.tools.oracleddl.metadata.CharType;
-import org.eclipse.persistence.tools.oracleddl.metadata.ClobType;
 import org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
-import org.eclipse.persistence.tools.oracleddl.metadata.DecimalType;
-import org.eclipse.persistence.tools.oracleddl.metadata.DoubleType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FieldType;
-import org.eclipse.persistence.tools.oracleddl.metadata.FloatType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FunctionType;
-import org.eclipse.persistence.tools.oracleddl.metadata.LongRawType;
-import org.eclipse.persistence.tools.oracleddl.metadata.NCharType;
-import org.eclipse.persistence.tools.oracleddl.metadata.NClobType;
 import org.eclipse.persistence.tools.oracleddl.metadata.NumericType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
@@ -203,16 +184,11 @@ import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PrecisionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ROWTYPEType;
-import org.eclipse.persistence.tools.oracleddl.metadata.RawType;
-import org.eclipse.persistence.tools.oracleddl.metadata.RealType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseType;
-import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TYPEType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
-import org.eclipse.persistence.tools.oracleddl.metadata.TimeStampType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
-import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
 import org.eclipse.persistence.tools.oracleddl.metadata.visit.EnclosedTypeVisitor;
 
 public abstract class BaseDBWSBuilderHelper {
@@ -230,8 +206,15 @@ public abstract class BaseDBWSBuilderHelper {
     public static final String SELECT_FROM_STR = "SELECT * FROM ";
     public static final String WHERE_STR = " WHERE ";
     public static final String AND_STR = " AND ";
+    public static final String SET_STR = " SET ";
+    public static final String VALUES_STR = " VALUES ";
+    public static final String UPDATE_STR = "UPDATE ";
+    public static final String INSERT_STR = "INSERT INTO ";
+    public static final String DELETE_STR = "DELETE FROM ";
+    public static final String COMMA_SPACE_STR = COMMA + SINGLE_SPACE;
     public static final String EQUALS_BINDING1_STR = " = ?1";
     public static final String EQUALS_BINDING_STR = " = ?";
+    public static final String QUESTION_STR = "?";
     public static final String TIMESTAMP_CLASS = "oracle.sql.TIMESTAMP";
     public static final String USER_STR = "user";
     public static final String PASSWORD_STR = "password";
@@ -247,6 +230,8 @@ public abstract class BaseDBWSBuilderHelper {
     protected Map<String, ClassDescriptor> createdORDescriptors = new HashMap<String, ClassDescriptor>();
     protected List<String> referencedORDescriptors = new ArrayList<String>();
     protected List<CompositeDatabaseType> complextypes = new ArrayList<CompositeDatabaseType>();
+    
+    protected Map<String, Map<String, String>> crudOps = new HashMap<String, Map<String, String>>();
 
     public BaseDBWSBuilderHelper(DBWSBuilder dbwsBuilder) {
         this.dbwsBuilder = dbwsBuilder;
@@ -260,10 +245,8 @@ public abstract class BaseDBWSBuilderHelper {
         return dbStoredProcedures;
     }
 
-    //abstract methods - platform-specific behaviour in JDBCHelper, OracleHelper
+    //abstract methods - platform-specific behavior in JDBCHelper, OracleHelper
     public abstract boolean hasTables();
-
-    public abstract boolean hasComplexProcedureArgs();
 
     protected abstract List<TableType> loadTables(List<String> catalogPatterns, List<String> schemaPatterns, List<String> tableNamePatterns);
 
@@ -276,19 +259,14 @@ public abstract class BaseDBWSBuilderHelper {
     protected void addToOROXProjectsForBuildSql(ModelWithBuildSql modelWithBuildSql, Project orProject, Project oxProject, NamingConventionTransformer nct) {
         List<DbColumn> columns = buildDbColumns(dbwsBuilder.getConnection(), modelWithBuildSql.getBuildSql());
         String schemaAlias = modelWithBuildSql.getReturnType();
-        String tableName = null;
-        if (schemaAlias.endsWith(TYPE_STR)) {
-            tableName = schemaAlias.substring(0, schemaAlias.lastIndexOf(TYPE_STR));
-        } else {
-            tableName = schemaAlias;
-        }
+        String tableName = schemaAlias;
         NamingConventionTransformer customNct = setUpCustomTransformer(tableName, nct);
         RelationalDescriptor desc = buildORDescriptor(tableName, dbwsBuilder.getProjectName(), null, customNct);
         createdORDescriptors.put(desc.getJavaClassName(), desc);
         
         desc.descriptorIsAggregate();
         orProject.addDescriptor(desc);
-        XMLDescriptor xdesc = buildOXDescriptor(tableName, schemaAlias, dbwsBuilder.getProjectName(), dbwsBuilder.getTargetNamespace(), customNct);
+        XMLDescriptor xdesc = buildOXDescriptor(desc.getAlias(), schemaAlias, desc.getJavaClassName(), dbwsBuilder.getTargetNamespace());
         oxProject.addDescriptor(xdesc);
         List<String> columnsAlreadyProcessed = new ArrayList<String>();
         for (DbColumn dbColumn : columns) {
@@ -374,7 +352,7 @@ public abstract class BaseDBWSBuilderHelper {
      * SQL will be used when building.  
      */
     public void buildOROXProjects(NamingConventionTransformer nct) {
-    	buildOROXProjects(nct, new ArrayList<CompositeDatabaseType>());
+        buildOROXProjects(nct, new ArrayList<CompositeDatabaseType>());
     }
     
     /**
@@ -419,7 +397,7 @@ public abstract class BaseDBWSBuilderHelper {
                     orFieldMapping.setAttributeClassificationName(APBYTE.getName());
                 }
           }
-          setUpFindQueries(tableName, desc);
+          setUpFindQueries(nct, tableName, desc);
         }
         finishUpProjects(orProject, oxProject, types);
     }
@@ -443,13 +421,8 @@ public abstract class BaseDBWSBuilderHelper {
             if (opModel.isProcedureOperation()) {
                 ProcedureOperationModel procedureOperation = (ProcedureOperationModel)opModel;
                     for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
-                        // build list of arguments to process (i.e. build descriptors for)
-                        List<ArgumentType> args = getArgumentListForProcedureType(procType);
-                        boolean hasPLSQLArgs = hasPLSQLArgs(args);
-                        if (hasComplexArgs(args) || hasPLSQLArgs) {
-                            // build a query for this ProcedureType as it has one or more complex arguments
-                            buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation, hasPLSQLArgs);
-                        }
+                        buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation, 
+                                hasPLSQLArgs(getArgumentListForProcedureType(procType)));
                     }
             }
         }
@@ -571,30 +544,30 @@ public abstract class BaseDBWSBuilderHelper {
                 List<TableType> tables = loadTables(catalogPatterns, schemaPatterns, tableNamePatterns);
                 // if we didn't find any tables log a WARNING
                 if (tables == null || tables.isEmpty()) {
-                	logNotFoundWarnings(NO_TABLE_MSG, schemaPatterns, catalogPatterns, tableNamePatterns);
+                    logNotFoundWarnings(NO_TABLE_MSG, schemaPatterns, catalogPatterns, tableNamePatterns);
                 } else {
-	                //now assign tables to operations
-	                for (TableType tableType : tables) {
-	                    for (TableOperationModel tableOperation : tableOperations) {
-	                        //figure out catalog(optional)/schema/tableName matching
+                    //now assign tables to operations
+                    for (TableType tableType : tables) {
+                        for (TableOperationModel tableOperation : tableOperations) {
+                            //figure out catalog(optional)/schema/tableName matching
                             boolean tableNameMatch = sqlMatch(tableOperation.getTablePattern(), tableType.getTableName());
                             boolean schemaNameMatch = sqlMatch(tableOperation.getSchemaPattern(), tableType.getSchema());
-	                        if (tableNameMatch && schemaNameMatch) {
-	                            String originalCatalogPattern = tableOperation.getCatalogPattern();
-	                            if (tableType.isDbTableType() && originalCatalogPattern != null) {
+                            if (tableNameMatch && schemaNameMatch) {
+                                String originalCatalogPattern = tableOperation.getCatalogPattern();
+                                if (tableType.isDbTableType() && originalCatalogPattern != null) {
                                     boolean catalogNameMatch = sqlMatch(originalCatalogPattern, ((DbTable) tableType).getCatalog());
-	                                if (catalogNameMatch) {
-	                                    tableOperation.getDbTables().add(tableType);
-	                                }
+                                    if (catalogNameMatch) {
+                                        tableOperation.getDbTables().add(tableType);
+                                    }
                                 } else {
-	                                tableOperation.getDbTables().add(tableType);
-	                            }
-	                        }
-	                    }
-	                }
-	                dbTables.addAll(tables);
-	            }
-	        }
+                                    tableOperation.getDbTables().add(tableType);
+                                }
+                            }
+                        }
+                    }
+                    dbTables.addAll(tables);
+                }
+            }
         }
 
         // next do StoredProcedure operations
@@ -617,37 +590,40 @@ public abstract class BaseDBWSBuilderHelper {
                 List<ProcedureType> procedures = loadProcedures(catalogPatterns, schemaPatterns, procedureNamePatterns);
                 // if we didn't find any procs/funcs log a WARNING 
                 if (procedures == null || procedures.isEmpty()) {
-                	logNotFoundWarnings(NO_PROC_MSG, schemaPatterns, catalogPatterns, procedureNamePatterns);
+                    logNotFoundWarnings(NO_PROC_MSG, schemaPatterns, catalogPatterns, procedureNamePatterns);
                 } else {
-	                //now assign procedures to operations
-	                for (ProcedureType procedureType : procedures) {
-	                    for (ProcedureOperationModel procedureOperation : procedureOperations) {
-	                        boolean procedureNameMatch = sqlMatch(procedureOperation.getProcedurePattern(),
-	                            procedureType.getProcedureName());
-	                        boolean schemaNameMatch = true;
-	                        boolean catalogNameMatch = true;
-	                        if (procedureNameMatch) {
-	                            String originalSchemaPattern = procedureOperation.getSchemaPattern();
-	                            if (originalSchemaPattern != null) {
+                    //now assign procedures to operations
+                    for (ProcedureType procedureType : procedures) {
+                        for (ProcedureOperationModel procedureOperation : procedureOperations) {
+                            boolean procedureNameMatch = sqlMatch(procedureOperation.getProcedurePattern(),
+                                procedureType.getProcedureName());
+                            boolean schemaNameMatch = true;
+                            boolean catalogNameMatch = true;
+                            if (procedureNameMatch) {
+                                String originalSchemaPattern = procedureOperation.getSchemaPattern();
+                                if (originalSchemaPattern != null) {
                                     schemaNameMatch = sqlMatch(originalSchemaPattern, procedureType.getSchema());
-	                            }
-	                            String originalCatalogPattern = procedureOperation.getCatalogPattern();
-	                            if (originalCatalogPattern != null) {
+                                }
+                                String originalCatalogPattern = procedureOperation.getCatalogPattern();
+                                if (originalCatalogPattern != null) {
                                     catalogNameMatch = sqlMatch(originalCatalogPattern, procedureType.getCatalogName());
-	                            }
-	                        }
-	                        if (procedureNameMatch && schemaNameMatch && catalogNameMatch) {
-	                            procedureOperation.getDbStoredProcedures().add(procedureType);
-	                        }
-	                    }
-	                }
-	                dbStoredProcedures.addAll(procedures);
+                                }
+                            }
+                            if (procedureNameMatch && schemaNameMatch && catalogNameMatch) {
+                                procedureOperation.getDbStoredProcedures().add(procedureType);
+                            }
+                        }
+                    }
+                    dbStoredProcedures.addAll(procedures);
                 }
             }
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    /**
+     * Build the schema
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void buildSchema(NamingConventionTransformer nct) {
         Project oxProject = dbwsBuilder.getOxProject();
         Schema schema = null;
@@ -703,6 +679,9 @@ public abstract class BaseDBWSBuilderHelper {
         dbwsBuilder.setSchema(schema);
     }
 
+    /**
+     * Build the sessions xml file.
+     */
     public void buildSessionsXML(OutputStream dbwsSessionsStream) {
         if (!isNullStream(dbwsSessionsStream)) {
             dbwsBuilder.logMessage(FINEST, "Building " + dbwsBuilder.getSessionsFileName());
@@ -714,21 +693,49 @@ public abstract class BaseDBWSBuilderHelper {
         }
     }
 
+    /**
+     * Build the DBWS model, a.k.a. service file.
+     */
     @SuppressWarnings({"rawtypes"})
     public void buildDBWSModel(NamingConventionTransformer nct, OutputStream dbwsServiceStream) {
         Project orProject = dbwsBuilder.getOrProject();
-        Project oxProject = dbwsBuilder.getOxProject();
         if (!isNullStream(dbwsServiceStream)) {
             for (Iterator i = orProject.getOrderedDescriptors().iterator(); i.hasNext();) {
                 ClassDescriptor desc = (ClassDescriptor)i.next();
                 String tablenameAlias = desc.getAlias();
                 if (dbwsBuilder.requireCRUDOperations.contains(tablenameAlias)) {
-                    String schemaAlias = tablenameAlias.concat(TYPE_STR);
+                    String aliasType = tablenameAlias + TYPE_STR;
+                    String tableName = desc.getTableName();
+                    String schemaAlias = nct.generateSchemaAlias(tableName);
+                    Map<String, String> ops;
+                    if (!crudOps.containsKey(tableName)) {
+                        ops = new HashMap<String, String>();
+                        crudOps.put(tableName, ops);
+                    }
+                    ops = crudOps.get(tableName);
+                    
+                    String pks = null;
+                    int pkCount = 0;
+                    for (Iterator j = desc.getPrimaryKeyFields().iterator(); j.hasNext();) {
+                        DatabaseField field = (DatabaseField)j.next();
+                        if (pkCount++ == 0) {
+                            pks = OPEN_BRACKET + field.getName() + EQUALS_BINDING1_STR;
+                        } else {
+                            pks = pks.concat(AND_STR + field.getName() + EQUALS_BINDING_STR + pkCount++);
+                        }
+                    }
+                    if (pks != null) {
+                       pks = pks.concat(CLOSE_BRACKET);
+                    }
+                    
+                    // findByPk
+                    String crudOpName = Util.PK_QUERYNAME + UNDERSCORE + aliasType;
+                    String findByPKName = crudOpName;
                     QueryOperation findByPKQueryOperation = new QueryOperation();
-                    findByPKQueryOperation.setName(Util.PK_QUERYNAME + UNDERSCORE + schemaAlias);
+                    findByPKQueryOperation.setName(crudOpName);
                     findByPKQueryOperation.setUserDefined(false);
                     NamedQueryHandler nqh1 = new NamedQueryHandler();
-                    nqh1.setName(Util.PK_QUERYNAME + UNDERSCORE + schemaAlias);
+                    nqh1.setName(crudOpName);
                     nqh1.setDescriptor(tablenameAlias);
                     Result result = new Result();
                     QName theInstanceType = new QName(dbwsBuilder.getTargetNamespace(), schemaAlias, TARGET_NAMESPACE_PREFIX);
@@ -743,31 +750,82 @@ public abstract class BaseDBWSBuilderHelper {
                         findByPKQueryOperation.getParameters().add(p);
                     }
                     dbwsBuilder.xrServiceModel.getOperations().put(findByPKQueryOperation.getName(), findByPKQueryOperation);
+                                        
+                    // find all
+                    crudOpName = FINDALL_QUERYNAME + UNDERSCORE + aliasType;
                     QueryOperation findAllOperation = new QueryOperation();
-                    findAllOperation.setName(FINDALL_QUERYNAME + UNDERSCORE + schemaAlias);
+                    findAllOperation.setName(crudOpName);
                     findAllOperation.setUserDefined(false);
                     NamedQueryHandler nqh2 = new NamedQueryHandler();
-                    nqh2.setName(FINDALL_QUERYNAME + UNDERSCORE + schemaAlias);
+                    nqh2.setName(crudOpName);
                     nqh2.setDescriptor(tablenameAlias);
                     Result result2 = new CollectionResult();
                     result2.setType(theInstanceType);
                     findAllOperation.setResult(result2);
                     findAllOperation.setQueryHandler(nqh2);
                     dbwsBuilder.xrServiceModel.getOperations().put(findAllOperation.getName(), findAllOperation);
+
+                    // create
+                    crudOpName = CREATE_OPERATION_NAME + UNDERSCORE + aliasType;
                     InsertOperation insertOperation = new InsertOperation();
-                    insertOperation.setName(CREATE_OPERATION_NAME + UNDERSCORE + schemaAlias);
+                    insertOperation.setName(crudOpName);
                     Parameter theInstance = new Parameter();
                     theInstance.setName(THE_INSTANCE_NAME);
                     theInstance.setType(theInstanceType);
                     insertOperation.getParameters().add(theInstance);
                     dbwsBuilder.xrServiceModel.getOperations().put(insertOperation.getName(), insertOperation);
+                    
+                    String sqlStmt = INSERT_STR + tableName + SINGLE_SPACE + OPEN_BRACKET;
+                    int idx = 1;
+                    String cols = "";
+                    for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
+                        DatabaseMapping mapping = (DatabaseMapping) j.next();
+                        cols += mapping.getField().getName();
+                        if (j.hasNext()) {
+                            cols += COMMA_SPACE_STR;
+                        }
+                        idx++;
+                    }
+                    sqlStmt += cols + CLOSE_BRACKET + VALUES_STR + OPEN_BRACKET;
+                    String vals = "";
+                    for (int k=1; k<idx; k++) {
+                        vals += QUESTION_STR + k;
+                        if (k+1 < idx) {
+                            vals += COMMA_SPACE_STR;
+                        }
+                    }
+                    sqlStmt += vals + CLOSE_BRACKET;
+                    ops.put(crudOpName, sqlStmt);
+                    
+                    // update
+                    crudOpName = UPDATE_OPERATION_NAME + UNDERSCORE + aliasType;
                     UpdateOperation updateOperation = new UpdateOperation();
-                    updateOperation.setName(UPDATE_OPERATION_NAME + UNDERSCORE + schemaAlias);
+                    updateOperation.setName(crudOpName);
                     updateOperation.getParameters().add(theInstance);
                     dbwsBuilder.xrServiceModel.getOperations().put(updateOperation.getName(), updateOperation);
+                    
+                    sqlStmt = UPDATE_STR + tableName + SET_STR;
+                    idx = pkCount;
+                    for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
+                        DatabaseMapping mapping = (DatabaseMapping) j.next();
+                        DatabaseField field = mapping.getField();
+                        if (!desc.getPrimaryKeyFields().contains(field)) {
+                            sqlStmt += mapping.getField().getName() + EQUALS_BINDING_STR + (++idx);
+                            if (j.hasNext()) {
+                                sqlStmt += COMMA_SPACE_STR;
+                            }                            
+                        }
+                    }
+                    
+                    sqlStmt += WHERE_STR + pks;
+                    ops.put(crudOpName, sqlStmt);
+                    
+                    // delete
+                    crudOpName = REMOVE_OPERATION_NAME + UNDERSCORE + aliasType;
                     DeleteOperation deleteOperation = new DeleteOperation();
-                    deleteOperation.setName(REMOVE_OPERATION_NAME + UNDERSCORE + schemaAlias);
+                    deleteOperation.setName(crudOpName);
                     deleteOperation.setDescriptorName(tablenameAlias);
+                    deleteOperation.setFindByPKQuery(findByPKName);
                     for (Iterator j = desc.getPrimaryKeyFields().iterator(); j.hasNext();) {
                         DatabaseField field = (DatabaseField)j.next();
                         Parameter p = new Parameter();
@@ -776,6 +834,9 @@ public abstract class BaseDBWSBuilderHelper {
                         deleteOperation.getParameters().add(p);
                     }
                     dbwsBuilder.xrServiceModel.getOperations().put(deleteOperation.getName(), deleteOperation);
+                    
+                    sqlStmt = DELETE_STR + tableName + WHERE_STR + pks;
+                    ops.put(crudOpName, sqlStmt);
                 }
             }
             // check for additional operations
@@ -785,7 +846,7 @@ public abstract class BaseDBWSBuilderHelper {
                     if (tableModel.additionalOperations != null && tableModel.additionalOperations.size() > 0) {
                         for (OperationModel additionalOperation : tableModel.additionalOperations) {
                             if (additionalOperation.hasBuildSql()) {
-                                addToOROXProjectsForBuildSql((ModelWithBuildSql) additionalOperation, orProject, oxProject, nct);
+                                addToOROXProjectsForBuildSql((ModelWithBuildSql) additionalOperation, orProject, dbwsBuilder.getOxProject(), nct);
                             } else {
                                 additionalOperation.buildOperation(dbwsBuilder);
                             }
@@ -804,7 +865,7 @@ public abstract class BaseDBWSBuilderHelper {
             dbwsBuilder.getPackager().closeServiceStream(dbwsServiceStream);
         }
     }
-
+    
     public void writeAttachmentSchema(OutputStream swarefStream) {
         if (!isNullStream(swarefStream)) {
             dbwsBuilder.logMessage(FINEST, "writing " + WSI_SWAREF_XSD_FILE);
@@ -877,11 +938,9 @@ public abstract class BaseDBWSBuilderHelper {
         boolean writeORProject = false;
         if (hasTables() || dbwsBuilder.hasBuildSqlOperations()) {
             writeORProject = true;
-        } else if (hasComplexProcedureArgs()) {
-            writeORProject = true;
         }
         if (!writeORProject) {
-            // check for any named queries - SimpleXMLFormatProject's sometimes need them
+            // check for any named queries - SimpleXMLFormatProject sometimes need them
             if (orProject.getQueries().size() > 0) {
                 writeORProject = true;
             }
@@ -896,20 +955,19 @@ public abstract class BaseDBWSBuilderHelper {
                 }
             }
         }
-        if (writeORProject && !isNullStream(dbwsOrStream)) {
+        if ((writeORProject || !dbwsBuilder.xrServiceModel.getOperations().isEmpty()) && !isNullStream(dbwsOrStream)) {
             XMLContext context = new XMLContext(workbenchXMLProject);
             context.getSession(orProject).getEventManager().addListener(new MissingDescriptorListener());
-            XMLEntityMappings mappings = XmlEntityMappingsGenerator.generateXmlEntityMappings(orProject, complextypes);
+            
+            XMLEntityMappings mappings = XmlEntityMappingsGenerator.generateXmlEntityMappings(orProject, complextypes, crudOps);
             if (mappings != null) {
                 XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
-                writer.write(mappings, dbwsOrStream); 
+                writer.write(mappings, dbwsOrStream);
             }
         }
         if (!isNullStream(dbwsOxStream)) {
             boolean writeOXProject = false;
             if (hasTables() || dbwsBuilder.hasBuildSqlOperations()) {
-                writeOXProject = true;
-            } else if (hasComplexProcedureArgs()) {
                 writeOXProject = true;
             }
             if (!writeOXProject) {
@@ -1089,7 +1147,7 @@ public abstract class BaseDBWSBuilderHelper {
      * Generates 'findByPrimaryKey' and 'findAll' queries for a given table
      * and descriptor. The queries are set on the given descriptor.
      */
-    protected void setUpFindQueries(String tableName, RelationalDescriptor desc) {
+    protected void setUpFindQueries(NamingConventionTransformer nct, String tableName, RelationalDescriptor desc) {
         ReadObjectQuery roq = new ReadObjectQuery();
         String generatedJavaClassName = getGeneratedJavaClassName(tableName, dbwsBuilder.getProjectName());
         roq.setReferenceClassName(generatedJavaClassName);
@@ -1122,10 +1180,11 @@ public abstract class BaseDBWSBuilderHelper {
         }
 
         roq.setSelectionCriteria(expression);
-        desc.getQueryManager().addQuery(PK_QUERYNAME + UNDERSCORE + tableName.toLowerCase().concat(TYPE_STR), roq);
+
+        desc.getQueryManager().addQuery(PK_QUERYNAME + UNDERSCORE + desc.getAlias() + TYPE_STR, roq);
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClassName(generatedJavaClassName);
-        desc.getQueryManager().addQuery(FINDALL_QUERYNAME + UNDERSCORE + tableName.toLowerCase().concat(TYPE_STR), raq);
+        desc.getQueryManager().addQuery(FINDALL_QUERYNAME + UNDERSCORE + desc.getAlias() + TYPE_STR, raq);
         
         // find by pk
         String findByPk = SELECT_FROM_STR + tableName + WHERE_STR + pks;
@@ -1192,68 +1251,6 @@ public abstract class BaseDBWSBuilderHelper {
     }
 
     /**
-     * Return a DatabaseType instance for a given JDCBType.  If applicable, precision
-     * and scale values will be applied.  The default type instance will be
-     * VarChar2Type.
-     *
-     */
-    protected static DatabaseType buildTypeForJDBCType(int jdbcType, int precision, int scale) {
-        DatabaseType type = new VarChar2Type();
-        switch (jdbcType) {
-            case Types.BINARY:
-                type = new BinaryType();
-                break;
-            case Types.BLOB:
-                type = new BlobType();
-                break;
-            case Types.CHAR:
-                type = new CharType();
-                break;
-            case Types.CLOB:
-                type = new ClobType();
-                break;
-            case Types.DATE:
-                type = ScalarDatabaseTypeEnum.DATE_TYPE;
-                break;
-            case Types.BIGINT:
-                type = ScalarDatabaseTypeEnum.BIGINT_TYPE;
-                break;
-            case Types.DECIMAL:
-            case Types.NUMERIC:
-                type = new DecimalType(precision, scale);
-                break;
-            case Types.DOUBLE:
-                type = new DoubleType(precision, scale);
-                break;
-            case Types.FLOAT:
-                type = new FloatType(precision, scale);
-                break;
-            case Types.LONGVARBINARY:
-                type = new LongRawType();
-                break;
-            case Types.NCHAR:
-                type = new NCharType();
-                break;
-            case Types.NCLOB:
-                type = new NClobType();
-                break;
-            case Types.REAL:
-                type = new RealType(precision, scale);
-                break;
-            case Types.TIME:
-                type = ScalarDatabaseTypeEnum.TIME_TYPE;
-                break;
-            case Types.TIMESTAMP:
-                type = new TimeStampType();
-                break;
-            case Types.VARBINARY:
-                type = new RawType();
-                break;
-        }
-        return type;
-    }
-
-    /**
      * Build a org.eclipse.persistence.internal.helper.DatabaseType instance from an
      * org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType instance.
      */
@@ -1266,7 +1263,7 @@ public abstract class BaseDBWSBuilderHelper {
      * the case of PLSQL Packages, the catalog (package) name can be passed in as well.
      */
     @SuppressWarnings("rawtypes")
-	protected org.eclipse.persistence.internal.helper.DatabaseType buildDatabaseTypeFromMetadataType(DatabaseType dType, String catalog) {
+    protected org.eclipse.persistence.internal.helper.DatabaseType buildDatabaseTypeFromMetadataType(DatabaseType dType, String catalog) {
         // argument could be from a different package
         if (dType.isPLSQLType()) {
             PLSQLType pType = (PLSQLType) dType;
@@ -1279,11 +1276,7 @@ public abstract class BaseDBWSBuilderHelper {
                 dType = ((ArgumentType)dType).getEnclosedType();
             }
             PLSQLCursorType pType = (PLSQLCursorType)dType;
-            String typeName = pType.getCursorName();
-            if (catalog != null) {
-                typeName = (catalog + DOT).concat(typeName);
-            }
-            return new PLSQLCursor(typeName);
+            return new PLSQLCursor(pType.getParentType().getPackageName() + DOT + pType.getCursorName());
         } 
         
         if (dType.isArgumentType()) {
@@ -1301,7 +1294,7 @@ public abstract class BaseDBWSBuilderHelper {
 
             // handle PL/SQL types
             if (dType.isPLSQLType()) {
-            	// for %ROWTYPE we don't want the catalog name prepended even if non-null
+                // for %ROWTYPE we don't want the catalog name prepended even if non-null
                 if (catalog != null && !typeName.contains(ROWTYPE_STR)) {
                     typeName = (catalog + DOT).concat(typeName);
                     compatibleType = (catalog + UNDERSCORE).concat(compatibleType);
@@ -1366,7 +1359,7 @@ public abstract class BaseDBWSBuilderHelper {
                 // need to set the Java Type on the nested type
                 Class wrapper = getWrapperClass(nestedType);
                 if (wrapper != null) {
-                	((ComplexDatabaseType) nestedType).setJavaType(wrapper);
+                    ((ComplexDatabaseType) nestedType).setJavaType(wrapper);
                 }
                 tableType.setNestedType(nestedType);
                 return tableType;
@@ -1380,28 +1373,6 @@ public abstract class BaseDBWSBuilderHelper {
         }
         // scalar types
         return JDBCTypes.getDatabaseTypeForCode(org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName(dType.getTypeName()));
-    }
-
-    /**
-     * Get the attribute class for a given DatabaseType.
-     */
-    public static Class<?> getAttributeClassForDatabaseType(DatabaseType dbType) {
-        if (!dbType.isComposite()) {
-            String typeName = dbType.getTypeName();
-            if (NUMBER_STR.equals(typeName) || NUMERIC_STR.equals(typeName)) {
-                return BIGDECIMAL;
-            }
-            if (INTEGER_STR.equals(typeName)) {
-                return INTEGER;
-            }
-            if (BOOLEAN_STR.equals(typeName)) {
-                return BOOLEAN;
-            }
-            if (DATE_STR.equals(typeName)) {
-                return JavaSqlDate_Class;
-            }
-        }
-        return STRING;
     }
 
     /**
@@ -1465,11 +1436,11 @@ public abstract class BaseDBWSBuilderHelper {
      *
      */
     @SuppressWarnings("rawtypes")
-	protected Class getWrapperClass(org.eclipse.persistence.internal.helper.DatabaseType databaseType) {
-		if (databaseType instanceof ComplexDatabaseType) {
-        	return getWrapperClass(((ComplexDatabaseType) databaseType).getJavaTypeName());
-		}
-		return null;
+    protected Class getWrapperClass(org.eclipse.persistence.internal.helper.DatabaseType databaseType) {
+        if (databaseType instanceof ComplexDatabaseType) {
+            return getWrapperClass(((ComplexDatabaseType) databaseType).getJavaTypeName());
+        }
+        return null;
     }
 
     /**
@@ -1482,15 +1453,15 @@ public abstract class BaseDBWSBuilderHelper {
      *
      */
     @SuppressWarnings("rawtypes")
-	protected Class getWrapperClass(String wrapperClassName) {
+    protected Class getWrapperClass(String wrapperClassName) {
         Class wrapperClass = null;
         try {
             // the following call will try and load the collection wrapper class via XRDynamicClassLoader
-        	wrapperClass = new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(wrapperClassName);
+            wrapperClass = new XRDynamicClassLoader(this.getClass().getClassLoader()).loadClass(wrapperClassName);
         } catch (ClassNotFoundException e) {
             // should never get here, so ignore
         }
-		return wrapperClass;
+        return wrapperClass;
     }
     
     /**
@@ -1499,35 +1470,35 @@ public abstract class BaseDBWSBuilderHelper {
      * 
      */
     protected void logNotFoundWarnings(String message, List<String> schemaPatterns, List<String> catalogPatterns, List<String> targetPatterns) {
-    	StringBuffer sb = new StringBuffer();
-    	sb.append(message);
-    	for (int i=0; i < targetPatterns.size(); i++) {
-        	sb.append(SINGLE_SPACE);
-        	sb.append(OPEN_SQUARE_BRACKET);
-        	boolean prependDot = false;
-    		String schemaName = schemaPatterns.get(i);
-    		if (schemaName != null && schemaName.length() > 0) {
-            	sb.append(schemaName);
-            	prependDot = true;
-    		}
-    		String pkgName = catalogPatterns.get(i);
-    		if (pkgName != null && pkgName.length() > 0) {
-            	if (prependDot) {
-            		sb.append(DOT);
-            	}
-            	prependDot = true;
-            	sb.append(pkgName);
-    		}
-    		String tgtName = targetPatterns.get(i);
-    		if (tgtName != null && tgtName.length() > 0) {
-            	if (prependDot) {
-            		sb.append(DOT);
-            	}
-            	sb.append(tgtName);
-    		}
-        	sb.append(CLOSE_SQUARE_BRACKET);
-    	}
-    	dbwsBuilder.logMessage(Level.WARNING, sb.toString());
+        StringBuffer sb = new StringBuffer();
+        sb.append(message);
+        for (int i=0; i < targetPatterns.size(); i++) {
+            sb.append(SINGLE_SPACE);
+            sb.append(OPEN_SQUARE_BRACKET);
+            boolean prependDot = false;
+            String schemaName = schemaPatterns.get(i);
+            if (schemaName != null && schemaName.length() > 0) {
+                sb.append(schemaName);
+                prependDot = true;
+            }
+            String pkgName = catalogPatterns.get(i);
+            if (pkgName != null && pkgName.length() > 0) {
+                if (prependDot) {
+                    sb.append(DOT);
+                }
+                prependDot = true;
+                sb.append(pkgName);
+            }
+            String tgtName = targetPatterns.get(i);
+            if (tgtName != null && tgtName.length() > 0) {
+                if (prependDot) {
+                    sb.append(DOT);
+                }
+                sb.append(tgtName);
+            }
+            sb.append(CLOSE_SQUARE_BRACKET);
+        }
+        dbwsBuilder.logMessage(Level.WARNING, sb.toString());
     }
     
     /**
@@ -1536,27 +1507,27 @@ public abstract class BaseDBWSBuilderHelper {
      * 
      */
     protected void logPackageNotFoundWarnings(String message, List<String> schemaPatterns, List<String> catalogPatterns) {
-    	StringBuffer sb = new StringBuffer();
-    	sb.append(message);
-    	for (int i=0; i < catalogPatterns.size(); i++) {
-        	sb.append(SINGLE_SPACE);
-        	sb.append(OPEN_SQUARE_BRACKET);
-        	boolean prependDot = false;
-    		String schemaName = schemaPatterns.get(i);
-    		if (schemaName != null && schemaName.length() > 0) {
-            	sb.append(schemaName);
-            	prependDot = true;
-    		}
-    		String pkgName = catalogPatterns.get(i);
-    		if (pkgName != null && pkgName.length() > 0) {
-            	if (prependDot) {
-            		sb.append(DOT);
-            	}
-            	prependDot = true;
-            	sb.append(pkgName);
-    		}
-        	sb.append(CLOSE_SQUARE_BRACKET);
-    	}
-    	dbwsBuilder.logMessage(Level.WARNING, sb.toString());
+        StringBuffer sb = new StringBuffer();
+        sb.append(message);
+        for (int i=0; i < catalogPatterns.size(); i++) {
+            sb.append(SINGLE_SPACE);
+            sb.append(OPEN_SQUARE_BRACKET);
+            boolean prependDot = false;
+            String schemaName = schemaPatterns.get(i);
+            if (schemaName != null && schemaName.length() > 0) {
+                sb.append(schemaName);
+                prependDot = true;
+            }
+            String pkgName = catalogPatterns.get(i);
+            if (pkgName != null && pkgName.length() > 0) {
+                if (prependDot) {
+                    sb.append(DOT);
+                }
+                prependDot = true;
+                sb.append(pkgName);
+            }
+            sb.append(CLOSE_SQUARE_BRACKET);
+        }
+        dbwsBuilder.logMessage(Level.WARNING, sb.toString());
     }
 }

@@ -210,7 +210,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
 
     @Test
     public void findByPrimaryKey() {
-        Invocation invocation = new Invocation("findByPrimaryKey_customType");
+        Invocation invocation = new Invocation("findByPrimaryKey_CustomType");
         invocation.setParameter("empno", 7788);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -239,7 +239,7 @@ public class CustomSQLTestSuite extends DBWSTestSuite {
     @SuppressWarnings("rawtypes")
     @Test
     public void findAll() {
-        Invocation invocation = new Invocation("findAll_customType");
+        Invocation invocation = new Invocation("findAll_CustomType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);

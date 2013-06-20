@@ -18,6 +18,10 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,6 +40,9 @@ import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
@@ -44,9 +51,14 @@ import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.dbws.BaseDBWSBuilderHelper;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+import org.eclipse.persistence.tools.dbws.DefaultNamingConventionTransformer;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 
 //test imports
@@ -201,7 +213,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
 
     @Test
     public void findByPrimaryKeyTest() {
-        Invocation invocation = new Invocation("findByPrimaryKey_tabletypeType");
+        Invocation invocation = new Invocation("findByPrimaryKey_TabletypeType");
         invocation.setParameter("id", 1);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -216,7 +228,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     @SuppressWarnings("rawtypes")
     @Test
     public void findAllTest() {
-        Invocation invocation = new Invocation("findAll_tabletypeType");
+        Invocation invocation = new Invocation("findAll_TabletypeType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -234,7 +246,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     @SuppressWarnings("rawtypes")
     @Test
     public void getLongRawTest() {
-        Invocation invocation = new Invocation("findAll_tabletype2Type");
+        Invocation invocation = new Invocation("findAll_Tabletype2Type");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -258,12 +270,12 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         firstPerson.set("c", "ababababababababababababababab");
         // TODO: don't update binary data until we figure out how to round trip
         //firstPerson.set("b", "101010101010101010101010101011");
-        Invocation invocation = new Invocation("update_tabletypeType");
+        Invocation invocation = new Invocation("update_TabletypeType");
         invocation.setParameter("theInstance", firstPerson);
         Operation op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
 
-        invocation = new Invocation("findByPrimaryKey_tabletypeType");
+        invocation = new Invocation("findByPrimaryKey_TabletypeType");
         invocation.setParameter("id", 1);
         op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -277,10 +289,11 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         firstPerson.set("sal", 100000.8);
         firstPerson.set("c", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         //firstPerson.set("b", "010101010101010101010101010101");
-        invocation = new Invocation("update_tabletypeType");
+        invocation = new Invocation("update_TabletypeType");
         invocation.setParameter("theInstance", firstPerson);
         op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
+        xrService.getORSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
     @Test
@@ -305,12 +318,12 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         //newPerson.set("r", new String("110").getBytes());
         //newPerson.set("lr", new String("111111010101010101").getBytes());
 
-        Invocation invocation = new Invocation("create_tabletypeType");
+        Invocation invocation = new Invocation("create_TabletypeType");
         invocation.setParameter("theInstance", newPerson);
         Operation op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
         // verify create call succeeded
-        invocation = new Invocation("findByPrimaryKey_tabletypeType");
+        invocation = new Invocation("findByPrimaryKey_TabletypeType");
         invocation.setParameter("id", 99);
         op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -322,18 +335,233 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "but was:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
 
         // delete newly created person
-        invocation = new Invocation("delete_tabletypeType");
+        invocation = new Invocation("delete_TabletypeType");
         invocation.setParameter("id", 99);
         op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
         // verify delete succeeded
-        invocation = new Invocation("findByPrimaryKey_tabletypeType");
+        invocation = new Invocation("findByPrimaryKey_TabletypeType");
         invocation.setParameter("id", 99);
         op = xrService.getOperation(invocation.getName());
         result = op.invoke(xrService, invocation);
         assertNull("Result is not null after delete call", result);
     }
 
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void testUpdateSQL() {
+        xrService.getORSession().getActiveSession().getIdentityMapAccessor().initializeIdentityMaps();
+
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        InputSource inputSource = new InputSource(new StringReader(ONE_PERSON_XML));
+        XRDynamicEntity firstPerson = (XRDynamicEntity) unmarshaller.unmarshal(inputSource);
+        Float originalSal = firstPerson.get("sal");
+        String originalC = firstPerson.get("c");
+        firstPerson.set("sal", 112000.99);
+        firstPerson.set("c", "ababababababababababababababab");
+        
+        DatabaseQuery updateQuery = xrService.getORSession().getQuery("update_TabletypeType");
+
+        // map property names to parameter binding values
+        Map<String, Integer> propOrder = new HashMap<String, Integer>();
+        propOrder.put("id", 1);
+        propOrder.put("name", 2);
+        propOrder.put("deptno", 3);
+        propOrder.put("deptname", 4);
+        propOrder.put("section", 5);
+        propOrder.put("sal", 6);
+        propOrder.put("commission", 7);
+        propOrder.put("sales", 8);
+        propOrder.put("binid", 9);
+        propOrder.put("b", 10);
+        propOrder.put("c", 11);
+        propOrder.put("r", 12);
+        
+        List<String> args = new ArrayList<String>();
+        Vector<DatabaseField> fieldVector = new Vector<DatabaseField>(12);
+        List<Object> argVals = new ArrayList<Object>();
+        
+        for (String prop : firstPerson.getPropertiesMap().keySet()) {
+            args.add(propOrder.get(prop).toString());
+            argVals.add(firstPerson.get(prop));
+            fieldVector.add(new DatabaseField(prop.toUpperCase(), "TABLETYPE"));
+        }
+        
+        // by default, JPA will create a DataReadQuery, but we want a DataModifyQuery
+        DataModifyQuery query = new DataModifyQuery();
+        query.setIsUserDefined(updateQuery.isUserDefined());
+        query.copyFromQuery(updateQuery);
+        // Need to clone call, in case was executed as read.
+        query.setDatasourceCall((Call) updateQuery.getDatasourceCall().clone());
+        
+        query.setArguments(args);
+        query.setArgumentValues(argVals);
+        ((SQLCall) query.getDatasourceCall()).setFields(fieldVector);
+        
+        // need to create/set a translation row
+        AbstractRecord row = query.rowFromArguments(argVals, (AbstractSession) xrService.getORSession());
+        query.setTranslationRow(row);
+        query.prepareCall(xrService.getORSession().getActiveSession(), row);
+        query.setSession((AbstractSession) xrService.getORSession().getActiveSession());
+        
+        // execute the update
+        query.executeDatabaseQuery();
+
+        // verify update operation
+        DatabaseQuery findQuery = xrService.getORSession().getActiveSession().getQuery("findByPrimaryKey_TabletypeType");
+        findQuery.setIsPrepared(false);
+        args = new ArrayList<String>();
+        fieldVector = new Vector<DatabaseField>(12);
+        argVals = new ArrayList<Object>();
+        
+        argVals.add(1);
+        args.add("1");
+        fieldVector.add(new DatabaseField("ID", "TABLETYPE"));
+        
+        findQuery.setArguments(args);
+        findQuery.setArgumentValues(argVals);
+        ((SQLCall) findQuery.getDatasourceCall()).setFields(fieldVector);
+        
+        // need to create/set a translation row
+        row = findQuery.rowFromArguments(argVals, (AbstractSession) xrService.getORSession().getActiveSession());
+        findQuery.setTranslationRow(row);
+        findQuery.prepareCall(xrService.getORSession().getActiveSession(), row);
+        findQuery.setSession((AbstractSession) xrService.getORSession().getActiveSession());
+        xrService.getORSession().getActiveSession().getIdentityMapAccessor().initializeIdentityMaps();
+        
+        // execute the FindByPk
+        Object result = findQuery.executeDatabaseQuery();
+
+        assertTrue("Expected Vector, but result was " + result.getClass().getName(), result instanceof Vector);
+        Vector resultVector = (Vector) result;
+        assertTrue("Expected vector of size 1, but was " + resultVector.size(), resultVector.size() == 1);
+        result = resultVector.get(0);
+        assertTrue("Expected TableType (XRDynamicEntity) but was " + result.getClass().getName(), result instanceof XRDynamicEntity);
+        
+        // verify that 'sal' and 'c' fields were updated successfully
+        XRDynamicEntity tableTypeEntity = (XRDynamicEntity) result;
+        assertTrue("Expected [sal] '112000.99' but was '" + tableTypeEntity.get("sal") + "'", Float.compare(((Float) tableTypeEntity.get("sal")), new Float(112000.99)) == 0);
+        
+        Character[] chars = tableTypeEntity.get("c");
+        StringBuilder sb = new StringBuilder(chars.length);
+        for (Character c : chars) {
+            sb.append(c.charValue());
+        }
+        String charStr = sb.toString();
+        assertTrue("Expected [c] 'ababababababababababababababab' but was '" + tableTypeEntity.get("c") + "'", charStr.equals("ababababababababababababababab"));
+
+        // reset original value
+        firstPerson.set("sal", originalSal);
+        firstPerson.set("c", originalC);
+        Invocation invocation = new Invocation("update_TabletypeType");
+        invocation.setParameter("theInstance", firstPerson);
+        Operation op = xrService.getOperation(invocation.getName());
+        op.invoke(xrService, invocation);        
+    }
+        
+    @Test
+    public void testCreateAndDeleteSQL() {
+        xrService.getORSession().getActiveSession().getIdentityMapAccessor().initializeIdentityMaps();
+        DatabaseQuery createQuery = xrService.getORSession().getQuery("create_TabletypeType");
+        
+        // by default, JPA will create a DataReadQuery, but we want a DataModifyQuery
+        DataModifyQuery query = new DataModifyQuery();
+        query.setIsUserDefined(createQuery.isUserDefined());
+        query.copyFromQuery(createQuery);
+        // Need to clone call, in case was executed as read.
+        query.setDatasourceCall((Call) createQuery.getDatasourceCall().clone());
+        
+        List<String> args = new ArrayList<String>();
+        Vector<DatabaseField> fieldVector = new Vector<DatabaseField>(12);
+        List<Object> argVals = new ArrayList<Object>();
+        
+        argVals.add(99);
+        argVals.add("Joe Black");
+        argVals.add("22");
+        argVals.add("Janitor");
+        argVals.add("q");
+        argVals.add(19000);
+        argVals.add(333);
+        argVals.add(1.00);
+        argVals.add("1111");
+        argVals.add("040404040404040404040404040404");
+        argVals.add("dddddddddddddddddddddddddddddd");
+        argVals.add("040404");
+        
+        fieldVector.add(new DatabaseField("ID", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("NAME", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("DEPTNO", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("DEPTNAME", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("SECTION", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("SAL", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("COMMISSION", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("SALES", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("BINID", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("B", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("C", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("R", "TABLETYPE"));
+        
+        for (int i=1; i<=argVals.size(); i++) {
+            args.add(String.valueOf(i));
+        }
+        
+        query.setArguments(args);
+        query.setArgumentValues(argVals);
+        ((SQLCall) query.getDatasourceCall()).setFields(fieldVector);
+        
+        // need to create/set a translation row
+        AbstractRecord row = query.rowFromArguments(argVals, (AbstractSession) xrService.getORSession());
+        query.setTranslationRow(row);
+        query.prepareCall(xrService.getORSession(), query.getTranslationRow());
+        query.setSession((AbstractSession) xrService.getORSession());
+        query.executeDatabaseQuery();
+        
+        // verify create call succeeded
+        Invocation invocation = new Invocation("findByPrimaryKey_TabletypeType");
+        invocation.setParameter("id", 99);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("Result is null after create call", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(NEW_PERSON2_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "but was:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+        
+        // delete
+        DatabaseQuery deleteQuery = xrService.getORSession().getQuery("delete_TabletypeType");
+        
+        // by default, JPA will create a DataReadQuery, but we want a DataModifyQuery
+        query = new DataModifyQuery();
+        query.setIsUserDefined(deleteQuery.isUserDefined());
+        query.copyFromQuery(deleteQuery);
+        // Need to clone call, in case was executed as read.
+        query.setDatasourceCall((Call) deleteQuery.getDatasourceCall().clone());
+
+        args = new ArrayList<String>();
+        fieldVector = new Vector<DatabaseField>(12);
+        argVals = new ArrayList<Object>();
+        
+        argVals.add(99);
+        args.add("1");
+        fieldVector.add(new DatabaseField("ID", "TABLETYPE"));
+        
+        query.setArguments(args);
+        query.setArgumentValues(argVals);
+        ((SQLCall) query.getDatasourceCall()).setFields(fieldVector);
+        
+        // need to create/set a translation row
+        row = query.rowFromArguments(argVals, (AbstractSession) xrService.getORSession());
+        query.setTranslationRow(row);
+        query.prepareCall(xrService.getORSession(), query.getTranslationRow());
+        query.setSession((AbstractSession) xrService.getORSession());
+        query.executeDatabaseQuery();
+        
+        // verify delete call succeeded
+        result = op.invoke(xrService, invocation);
+        assertNull("Result not null after delete call", result);
+    }
+    
     @Test
     public void validateSchema() {
         Document testDoc = xmlParser.parse(new StringReader(DBWS_SCHEMA_STREAM.toString()));
@@ -414,7 +642,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 "<xsd:schema elementFormDefault=\"qualified\" targetNamespace=\"urn:tabletypeService\" xmlns:tns=\"urn:tabletypeService\"\n" +
                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
                 "<xsd:import namespace=\"urn:tabletype\" schemaLocation=\"eclipselink-dbws-schema.xsd\"/>\n" +
-                "<xsd:complexType name=\"findByPrimaryKey_tabletype2TypeResponseType\">\n" +
+                "<xsd:complexType name=\"findByPrimaryKey_Tabletype2TypeResponseType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"result\">\n" +
                          "<xsd:complexType>\n" +
@@ -425,7 +653,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"create_tabletype2TypeRequestType\">\n" +
+                "<xsd:complexType name=\"create_Tabletype2TypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"theInstance\">\n" +
                          "<xsd:complexType>\n" +
@@ -436,19 +664,19 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findByPrimaryKey_tabletype2TypeRequestType\">\n" +
+                "<xsd:complexType name=\"findByPrimaryKey_Tabletype2TypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findAll_tabletypeTypeRequestType\"/>\n" +
-                "<xsd:complexType name=\"findAll_tabletype2TypeRequestType\"/>\n" +
-                "<xsd:complexType name=\"delete_tabletype2TypeRequestType\">\n" +
+                "<xsd:complexType name=\"findAll_TabletypeTypeRequestType\"/>\n" +
+                "<xsd:complexType name=\"findAll_Tabletype2TypeRequestType\"/>\n" +
+                "<xsd:complexType name=\"delete_Tabletype2TypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"update_tabletypeTypeRequestType\">\n" +
+                "<xsd:complexType name=\"update_TabletypeTypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"theInstance\">\n" +
                          "<xsd:complexType>\n" +
@@ -459,7 +687,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findAll_tabletypeTypeResponseType\">\n" +
+                "<xsd:complexType name=\"findAll_TabletypeTypeResponseType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"result\">\n" +
                          "<xsd:complexType>\n" +
@@ -470,12 +698,12 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"delete_tabletypeTypeRequestType\">\n" +
+                "<xsd:complexType name=\"delete_TabletypeTypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findByPrimaryKey_tabletypeTypeResponseType\">\n" +
+                "<xsd:complexType name=\"findByPrimaryKey_TabletypeTypeResponseType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"result\">\n" +
                          "<xsd:complexType>\n" +
@@ -486,7 +714,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findAll_tabletype2TypeResponseType\">\n" +
+                "<xsd:complexType name=\"findAll_Tabletype2TypeResponseType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"result\">\n" +
                          "<xsd:complexType>\n" +
@@ -497,7 +725,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"update_tabletype2TypeRequestType\">\n" +
+                "<xsd:complexType name=\"update_Tabletype2TypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"theInstance\">\n" +
                          "<xsd:complexType>\n" +
@@ -508,12 +736,12 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findByPrimaryKey_tabletypeTypeRequestType\">\n" +
+                "<xsd:complexType name=\"findByPrimaryKey_TabletypeTypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"create_tabletypeTypeRequestType\">\n" +
+                "<xsd:complexType name=\"create_TabletypeTypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"theInstance\">\n" +
                          "<xsd:complexType>\n" +
@@ -524,17 +752,17 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:element name=\"update_tabletypeType\" type=\"tns:update_tabletypeTypeRequestType\"/>\n" +
-                "<xsd:element name=\"create_tabletype2Type\" type=\"tns:create_tabletype2TypeRequestType\"/>\n" +
-                "<xsd:element name=\"findAll_tabletypeTypeResponse\" type=\"tns:findAll_tabletypeTypeResponseType\"/>\n" +
-                "<xsd:element name=\"update_tabletype2Type\" type=\"tns:update_tabletype2TypeRequestType\"/>\n" +
-                "<xsd:element name=\"findByPrimaryKey_tabletypeType\" type=\"tns:findByPrimaryKey_tabletypeTypeRequestType\"/>\n" +
-                "<xsd:element name=\"findAll_tabletype2TypeResponse\" type=\"tns:findAll_tabletype2TypeResponseType\"/>\n" +
-                "<xsd:element name=\"delete_tabletype2Type\" type=\"tns:delete_tabletype2TypeRequestType\"/>\n" +
-                "<xsd:element name=\"findAll_tabletype2Type\" type=\"tns:findAll_tabletype2TypeRequestType\"/>\n" +
-                "<xsd:element name=\"create_tabletypeType\" type=\"tns:create_tabletypeTypeRequestType\"/>\n" +
-                "<xsd:element name=\"findAll_tabletypeType\" type=\"tns:findAll_tabletypeTypeRequestType\"/>\n" +
-                "<xsd:element name=\"findByPrimaryKey_tabletypeTypeResponse\" type=\"tns:findByPrimaryKey_tabletypeTypeResponseType\"/>\n" +
+                "<xsd:element name=\"update_TabletypeType\" type=\"tns:update_TabletypeTypeRequestType\"/>\n" +
+                "<xsd:element name=\"create_Tabletype2Type\" type=\"tns:create_Tabletype2TypeRequestType\"/>\n" +
+                "<xsd:element name=\"findAll_TabletypeTypeResponse\" type=\"tns:findAll_TabletypeTypeResponseType\"/>\n" +
+                "<xsd:element name=\"update_Tabletype2Type\" type=\"tns:update_Tabletype2TypeRequestType\"/>\n" +
+                "<xsd:element name=\"findByPrimaryKey_TabletypeType\" type=\"tns:findByPrimaryKey_TabletypeTypeRequestType\"/>\n" +
+                "<xsd:element name=\"findAll_Tabletype2TypeResponse\" type=\"tns:findAll_Tabletype2TypeResponseType\"/>\n" +
+                "<xsd:element name=\"delete_Tabletype2Type\" type=\"tns:delete_Tabletype2TypeRequestType\"/>\n" +
+                "<xsd:element name=\"findAll_Tabletype2Type\" type=\"tns:findAll_Tabletype2TypeRequestType\"/>\n" +
+                "<xsd:element name=\"create_TabletypeType\" type=\"tns:create_TabletypeTypeRequestType\"/>\n" +
+                "<xsd:element name=\"findAll_TabletypeType\" type=\"tns:findAll_TabletypeTypeRequestType\"/>\n" +
+                "<xsd:element name=\"findByPrimaryKey_TabletypeTypeResponse\" type=\"tns:findByPrimaryKey_TabletypeTypeResponseType\"/>\n" +
                 "<xsd:element name=\"FaultType\">\n" +
                    "<xsd:complexType>\n" +
                       "<xsd:sequence>\n" +
@@ -543,114 +771,114 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:sequence>\n" +
                    "</xsd:complexType>\n" +
                 "</xsd:element>\n" +
-                "<xsd:element name=\"findByPrimaryKey_tabletype2Type\" type=\"tns:findByPrimaryKey_tabletype2TypeRequestType\"/>\n" +
+                "<xsd:element name=\"findByPrimaryKey_Tabletype2Type\" type=\"tns:findByPrimaryKey_Tabletype2TypeRequestType\"/>\n" +
                 "<xsd:element name=\"EmptyResponse\">\n" +
                    "<xsd:complexType/>\n" +
                 "</xsd:element>\n" +
-                "<xsd:element name=\"findByPrimaryKey_tabletype2TypeResponse\" type=\"tns:findByPrimaryKey_tabletype2TypeResponseType\"/>\n" +
-                "<xsd:element name=\"delete_tabletypeType\" type=\"tns:delete_tabletypeTypeRequestType\"/>\n" +
+                "<xsd:element name=\"findByPrimaryKey_Tabletype2TypeResponse\" type=\"tns:findByPrimaryKey_Tabletype2TypeResponseType\"/>\n" +
+                "<xsd:element name=\"delete_TabletypeType\" type=\"tns:delete_TabletypeTypeRequestType\"/>\n" +
                 "</xsd:schema>\n" +
               "</wsdl:types>\n" +
-              "<wsdl:message name=\"delete_tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"delete_tabletype2TypeRequest\" element=\"tns:delete_tabletype2Type\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"delete_Tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"delete_Tabletype2TypeRequest\" element=\"tns:delete_Tabletype2Type\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"update_tabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"update_tabletypeTypeRequest\" element=\"tns:update_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"update_TabletypeTypeRequest\">\n" +
+                 "<wsdl:part name=\"update_TabletypeTypeRequest\" element=\"tns:update_TabletypeType\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findByPrimaryKey_tabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"findByPrimaryKey_tabletypeTypeRequest\" element=\"tns:findByPrimaryKey_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findByPrimaryKey_TabletypeTypeRequest\">\n" +
+                 "<wsdl:part name=\"findByPrimaryKey_TabletypeTypeRequest\" element=\"tns:findByPrimaryKey_TabletypeType\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"create_tabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"create_tabletypeTypeRequest\" element=\"tns:create_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"create_TabletypeTypeRequest\">\n" +
+                 "<wsdl:part name=\"create_TabletypeTypeRequest\" element=\"tns:create_TabletypeType\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findAll_tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"findAll_tabletype2TypeRequest\" element=\"tns:findAll_tabletype2Type\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findAll_Tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"findAll_Tabletype2TypeRequest\" element=\"tns:findAll_Tabletype2Type\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"update_tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"update_tabletype2TypeRequest\" element=\"tns:update_tabletype2Type\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"update_Tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"update_Tabletype2TypeRequest\" element=\"tns:update_Tabletype2Type\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"create_tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"create_tabletype2TypeRequest\" element=\"tns:create_tabletype2Type\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"create_Tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"create_Tabletype2TypeRequest\" element=\"tns:create_Tabletype2Type\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findAll_tabletypeTypeResponse\">\n" +
-                 "<wsdl:part name=\"findAll_tabletypeTypeResponse\" element=\"tns:findAll_tabletypeTypeResponse\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findAll_TabletypeTypeResponse\">\n" +
+                 "<wsdl:part name=\"findAll_TabletypeTypeResponse\" element=\"tns:findAll_TabletypeTypeResponse\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
               "<wsdl:message name=\"FaultType\">\n" +
                  "<wsdl:part name=\"fault\" element=\"tns:FaultType\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findByPrimaryKey_tabletypeTypeResponse\">\n" +
-                 "<wsdl:part name=\"findByPrimaryKey_tabletypeTypeResponse\" element=\"tns:findByPrimaryKey_tabletypeTypeResponse\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findByPrimaryKey_TabletypeTypeResponse\">\n" +
+                 "<wsdl:part name=\"findByPrimaryKey_TabletypeTypeResponse\" element=\"tns:findByPrimaryKey_TabletypeTypeResponse\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findByPrimaryKey_tabletype2TypeRequest\">\n" +
-                 "<wsdl:part name=\"findByPrimaryKey_tabletype2TypeRequest\" element=\"tns:findByPrimaryKey_tabletype2Type\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findByPrimaryKey_Tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"findByPrimaryKey_Tabletype2TypeRequest\" element=\"tns:findByPrimaryKey_Tabletype2Type\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findByPrimaryKey_tabletype2TypeResponse\">\n" +
-                 "<wsdl:part name=\"findByPrimaryKey_tabletype2TypeResponse\" element=\"tns:findByPrimaryKey_tabletype2TypeResponse\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findByPrimaryKey_Tabletype2TypeResponse\">\n" +
+                 "<wsdl:part name=\"findByPrimaryKey_Tabletype2TypeResponse\" element=\"tns:findByPrimaryKey_Tabletype2TypeResponse\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
               "<wsdl:message name=\"EmptyResponse\">\n" +
                  "<wsdl:part name=\"emptyResponse\" element=\"tns:EmptyResponse\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findAll_tabletype2TypeResponse\">\n" +
-                 "<wsdl:part name=\"findAll_tabletype2TypeResponse\" element=\"tns:findAll_tabletype2TypeResponse\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findAll_Tabletype2TypeResponse\">\n" +
+                 "<wsdl:part name=\"findAll_Tabletype2TypeResponse\" element=\"tns:findAll_Tabletype2TypeResponse\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findAll_tabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"findAll_tabletypeTypeRequest\" element=\"tns:findAll_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findAll_TabletypeTypeRequest\">\n" +
+                 "<wsdl:part name=\"findAll_TabletypeTypeRequest\" element=\"tns:findAll_TabletypeType\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"delete_tabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"delete_tabletypeTypeRequest\" element=\"tns:delete_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"delete_TabletypeTypeRequest\">\n" +
+                 "<wsdl:part name=\"delete_TabletypeTypeRequest\" element=\"tns:delete_TabletypeType\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
               "<wsdl:portType name=\"tabletypeService_Interface\">\n" +
-                 "<wsdl:operation name=\"update_tabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:update_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"update_tabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"update_TabletypeType\">\n" +
+                    "<wsdl:input message=\"tns:update_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"update_TabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
                     "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
                  "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"delete_tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:delete_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"delete_tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"delete_Tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:delete_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"delete_Tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
                     "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
                  "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"create_tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:create_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"create_tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"create_Tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:create_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"create_Tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
                     "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
                  "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"findAll_tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:findAll_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output message=\"tns:findAll_tabletype2TypeResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"findAll_Tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:findAll_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output message=\"tns:findAll_Tabletype2TypeResponse\">\n" +"</wsdl:output>\n" +
                  "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"create_tabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:create_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"create_tabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"create_TabletypeType\">\n" +
+                    "<wsdl:input message=\"tns:create_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"create_TabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
                     "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
                  "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"findAll_tabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:findAll_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output message=\"tns:findAll_tabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"findAll_TabletypeType\">\n" +
+                    "<wsdl:input message=\"tns:findAll_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output message=\"tns:findAll_TabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
                  "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"update_tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:update_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"update_tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"update_Tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:update_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"update_Tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
                     "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
                  "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"findByPrimaryKey_tabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:findByPrimaryKey_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output message=\"tns:findByPrimaryKey_tabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"findByPrimaryKey_TabletypeType\">\n" +
+                    "<wsdl:input message=\"tns:findByPrimaryKey_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output message=\"tns:findByPrimaryKey_TabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
                  "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"findByPrimaryKey_tabletype2Type\">\n" +
-                    "<wsdl:input message=\"tns:findByPrimaryKey_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output message=\"tns:findByPrimaryKey_tabletype2TypeResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"findByPrimaryKey_Tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:findByPrimaryKey_Tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output message=\"tns:findByPrimaryKey_Tabletype2TypeResponse\">\n" +"</wsdl:output>\n" +
                  "</wsdl:operation>\n" +
-                 "<wsdl:operation name=\"delete_tabletypeType\">\n" +
-                    "<wsdl:input message=\"tns:delete_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                    "<wsdl:output name=\"delete_tabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                 "<wsdl:operation name=\"delete_TabletypeType\">\n" +
+                    "<wsdl:input message=\"tns:delete_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"delete_TabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
                     "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
                  "</wsdl:operation>\n" +
              "</wsdl:portType>\n" +
              "<wsdl:binding name=\"tabletypeService_SOAP_HTTP\" type=\"tns:tabletypeService_Interface\">\n" +
                 "<soap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/>\n" +
-                "<wsdl:operation name=\"update_tabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:update_tabletypeType\"/>\n" +
+                "<wsdl:operation name=\"update_TabletypeType\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:update_TabletypeType\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -661,8 +889,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                        "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
                    "</wsdl:fault>\n" +
                 "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"delete_tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:delete_tabletype2Type\"/>\n" +
+                "<wsdl:operation name=\"delete_Tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:delete_Tabletype2Type\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -673,8 +901,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
                    "</wsdl:fault>\n" +
                 "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"create_tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:create_tabletype2Type\"/>\n" +
+                "<wsdl:operation name=\"create_Tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:create_Tabletype2Type\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -685,8 +913,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
                    "</wsdl:fault>\n" +
                 "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findAll_tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:findAll_tabletype2Type\"/>\n" +
+                "<wsdl:operation name=\"findAll_Tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:findAll_Tabletype2Type\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -694,8 +922,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:output>\n" +
                 "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"create_tabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:create_tabletypeType\"/>\n" +
+                "<wsdl:operation name=\"create_TabletypeType\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:create_TabletypeType\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -706,8 +934,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
                    "</wsdl:fault>\n" +
                 "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findAll_tabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:findAll_tabletypeType\"/>\n" +
+                "<wsdl:operation name=\"findAll_TabletypeType\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:findAll_TabletypeType\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -715,8 +943,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:output>\n" +
                 "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"update_tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:update_tabletype2Type\"/>\n" +
+                "<wsdl:operation name=\"update_Tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:update_Tabletype2Type\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -727,8 +955,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                        "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
                    "</wsdl:fault>\n" +
                 "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findByPrimaryKey_tabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:findByPrimaryKey_tabletypeType\"/>\n" +
+                "<wsdl:operation name=\"findByPrimaryKey_TabletypeType\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:findByPrimaryKey_TabletypeType\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -736,8 +964,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:output>\n" +
                 "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findByPrimaryKey_tabletype2Type\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:findByPrimaryKey_tabletype2Type\"/>\n" +
+                "<wsdl:operation name=\"findByPrimaryKey_Tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:findByPrimaryKey_Tabletype2Type\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -745,8 +973,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:output>\n" +
                 "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"delete_tabletypeType\">\n" +
-                   "<soap:operation soapAction=\"urn:tabletypeService:delete_tabletypeType\"/>\n" +
+                "<wsdl:operation name=\"delete_TabletypeType\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:delete_TabletypeType\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -768,13 +996,22 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     protected static final String OR_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
         "\n<orm:entity-mappings xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\">" +
-        "\n  <orm:entity access=\"VIRTUAL\" class=\"tabletype.Tabletype\" name=\"tabletype\">" +
+        "\n  <orm:entity access=\"VIRTUAL\" class=\"tabletype.Tabletype\">" +
         "\n    <orm:table name=\"TABLETYPE\"/>" +
-        "\n    <orm:named-native-query name=\"findByPrimaryKey_tabletypeType\" result-class=\"tabletype.Tabletype\">" +
+        "\n    <orm:named-native-query name=\"findByPrimaryKey_TabletypeType\" result-class=\"tabletype.Tabletype\">" +
         "\n      <orm:query>SELECT * FROM TABLETYPE WHERE (ID = ?1)</orm:query>" +
         "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"findAll_tabletypeType\" result-class=\"tabletype.Tabletype\">" +
+        "\n    <orm:named-native-query name=\"findAll_TabletypeType\" result-class=\"tabletype.Tabletype\">" +
         "\n      <orm:query>SELECT * FROM TABLETYPE</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"update_TabletypeType\">" +
+        "\n      <orm:query>UPDATE TABLETYPE SET NAME = ?2, DEPTNO = ?3, DEPTNAME = ?4, SECTION = ?5, SAL = ?6, COMMISSION = ?7, SALES = ?8, BINID = ?9, B = ?10, C = ?11, R = ?12 WHERE (ID = ?1)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"create_TabletypeType\">" +
+        "\n      <orm:query>INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"delete_TabletypeType\">" +
+        "\n      <orm:query>DELETE FROM TABLETYPE WHERE (ID = ?1)</orm:query>" +
         "\n    </orm:named-native-query>" +
         "\n    <orm:attributes>" +
         "\n      <orm:id attribute-type=\"java.math.BigInteger\" name=\"id\">" +
@@ -815,13 +1052,22 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "\n      </orm:basic>" +
         "\n    </orm:attributes>" +
         "\n  </orm:entity>" +
-        "\n  <orm:entity access=\"VIRTUAL\" class=\"tabletype.Tabletype2\" name=\"tabletype2\">" +
+        "\n  <orm:entity access=\"VIRTUAL\" class=\"tabletype.Tabletype2\">" +
         "\n    <orm:table name=\"TABLETYPE2\"/>" +
-        "\n    <orm:named-native-query name=\"findByPrimaryKey_tabletype2Type\" result-class=\"tabletype.Tabletype2\">" +
+        "\n    <orm:named-native-query name=\"findByPrimaryKey_Tabletype2Type\" result-class=\"tabletype.Tabletype2\">" +
         "\n      <orm:query>SELECT * FROM TABLETYPE2 WHERE (ID = ?1)</orm:query>" +
         "\n    </orm:named-native-query>" +
-        "\n    <orm:named-native-query name=\"findAll_tabletype2Type\" result-class=\"tabletype.Tabletype2\">" +
+        "\n    <orm:named-native-query name=\"findAll_Tabletype2Type\" result-class=\"tabletype.Tabletype2\">" +
         "\n      <orm:query>SELECT * FROM TABLETYPE2</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"delete_Tabletype2Type\">" +
+        "\n      <orm:query>DELETE FROM TABLETYPE2 WHERE (ID = ?1)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"create_Tabletype2Type\">" +
+        "\n      <orm:query>INSERT INTO TABLETYPE2 (ID, LR) VALUES (?1, ?2)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"update_Tabletype2Type\">" +
+        "\n      <orm:query>UPDATE TABLETYPE2 SET LR = ?2 WHERE (ID = ?1)</orm:query>" +
         "\n    </orm:named-native-query>" +
         "\n    <orm:attributes>" +
         "\n      <orm:id attribute-type=\"java.math.BigInteger\" name=\"id\">" +
@@ -833,192 +1079,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "\n    </orm:attributes>" +
         "\n  </orm:entity>" +
         "\n</orm:entity-mappings>";
-    
-    /*
-    protected static final String OR_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<object-persistence xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"Eclipse Persistence Services - " + releaseVersion + "\">\n" +
-           "<name>tabletype-dbws-or</name>\n" +
-           "<class-mapping-descriptors>\n" +
-              "<class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
-                 "<class>tabletype.Tabletype</class>\n" +
-                 "<alias>tabletype</alias>\n" +
-                 "<primary-key>\n" +
-                    "<field table=\"TABLETYPE\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                 "</primary-key>\n" +
-                 "<events/>\n" +
-                 "<querying>\n" +
-                    "<queries>\n" +
-                       "<query name=\"findByPrimaryKey\" xsi:type=\"read-object-query\">\n" +
-                          "<criteria operator=\"equal\" xsi:type=\"relation-expression\">\n" +
-                             "<left xsi:type=\"field-expression\">\n" +
-                                "<field table=\"TABLETYPE\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                                "<base xsi:type=\"base-expression\"/>\n" +
-                             "</left>\n" +
-                             "<right xsi:type=\"parameter-expression\">\n" +
-                                "<parameter name=\"id\" xsi:type=\"column\"/>\n" +
-                             "</right>\n" +
-                          "</criteria>\n" +
-                          "<arguments>\n" +
-                             "<argument name=\"id\">\n" +
-                                "<type>java.lang.Object</type>\n" +
-                             "</argument>\n" +
-                          "</arguments>\n" +
-                          "<reference-class>tabletype.Tabletype</reference-class>\n" +
-                       "</query>\n" +
-                       "<query name=\"findAll\" xsi:type=\"read-all-query\">\n" +
-                          "<reference-class>tabletype.Tabletype</reference-class>\n" +
-                          "<container xsi:type=\"list-container-policy\">\n" +
-                             "<collection-type>java.util.Vector</collection-type>\n" +
-                          "</container>\n" +
-                       "</query>\n" +
-                    "</queries>\n" +
-                 "</querying>\n" +
-                 "<attribute-mappings>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>id</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>name</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"NAME\" sql-typecode=\"12\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.String</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>deptno</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"DEPTNO\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>deptname</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"DEPTNAME\" sql-typecode=\"12\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.String</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>section</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"SECTION\" sql-typecode=\"1\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.Character</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>sal</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"SAL\" sql-typecode=\"6\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.Float</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>commission</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"COMMISSION\" sql-typecode=\"6\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.Float</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>sales</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"SALES\" sql-typecode=\"6\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.Float</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>binid</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"BINID\" sql-typecode=\"2004\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>b</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"B\" sql-typecode=\"2004\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>c</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"C\" sql-typecode=\"2005\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[Ljava.lang.Character;</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>r</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"R\" sql-typecode=\"-3\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                 "</attribute-mappings>\n" +
-                 "<descriptor-type>independent</descriptor-type>\n" +
-                 "<caching>\n" +
-                    "<cache-type>weak-reference</cache-type>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</caching>\n" +
-                 "<remote-caching>\n" +
-                    "<cache-type>weak-reference</cache-type>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</remote-caching>\n" +
-                 "<instantiation/>\n" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
-                 "<tables>\n" +
-                    "<table name=\"TABLETYPE\"/>\n" +
-                 "</tables>\n" +
-              "</class-mapping-descriptor>\n" +
-              "<class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
-                 "<class>tabletype.Tabletype2</class>\n" +
-                 "<alias>tabletype2</alias>\n" +
-                 "<primary-key>\n" +
-                    "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                 "</primary-key>\n" +
-                 "<events/>\n" +
-                 "<querying>\n" +
-                    "<queries>\n" +
-                       "<query name=\"findByPrimaryKey\" xsi:type=\"read-object-query\">\n" +
-                          "<criteria operator=\"equal\" xsi:type=\"relation-expression\">\n" +
-                             "<left xsi:type=\"field-expression\">\n" +
-                                "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                                "<base xsi:type=\"base-expression\"/>\n" +
-                             "</left>\n" +
-                             "<right xsi:type=\"parameter-expression\">\n" +
-                                "<parameter name=\"id\" xsi:type=\"column\"/>\n" +
-                             "</right>\n" +
-                          "</criteria>\n" +
-                          "<arguments>\n" +
-                             "<argument name=\"id\">" +
-                                "<type>java.lang.Object</type>\n" +
-                             "</argument>\n" +
-                          "</arguments>\n" +
-                          "<reference-class>tabletype.Tabletype2</reference-class>\n" +
-                       "</query>\n" +
-                       "<query name=\"findAll\" xsi:type=\"read-all-query\">\n" +
-                          "<reference-class>tabletype.Tabletype2</reference-class>\n" +
-                          "<container xsi:type=\"list-container-policy\">\n" +
-                             "<collection-type>java.util.Vector</collection-type>\n" +
-                          "</container>\n" +
-                       "</query>\n" +
-                    "</queries>\n" +
-                 "</querying>\n" +
-                 "<attribute-mappings>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>id</attribute-name>\n" +
-                       "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>lr</attribute-name>\n" +
-                       "<field table=\"TABLETYPE2\" name=\"LR\" sql-typecode=\"-4\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                 "</attribute-mappings>\n" +
-                 "<descriptor-type>independent</descriptor-type>\n" +
-                 "<caching>\n" +
-                    "<cache-type>weak-reference</cache-type>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</caching>\n" +
-                 "<remote-caching>\n" +
-                    "<cache-type>weak-reference</cache-type>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</remote-caching>\n" +
-                 "<instantiation/>\n" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
-                 "<tables>\n" +
-                    "<table name=\"TABLETYPE2\"/>\n" +
-                 "</tables>\n" +
-              "</class-mapping-descriptor>\n" +
-           "</class-mapping-descriptors>\n" +
-           "<login xsi:type=\"database-login\">\n" +
-              "<platform-class>org.eclipse.persistence.platform.database.DatabasePlatform</platform-class>\n" +
-              "<connection-url></connection-url>\n" +
-           "</login>\n" +
-        "</object-persistence>";
-    */
             
     protected static final String OX_PROJECT =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
@@ -1168,6 +1228,23 @@ public class TableTypeTestSuite extends DBWSTestSuite {
             "<c>adadadadadadadadadadadadadadad</c>" +
             "<r xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
         "</tabletypeType>";
+    
+    protected static final String NEW_PERSON2_XML =
+        REGULAR_XML_HEADER +
+        "<tabletypeType xmlns=\"urn:tabletype\">" +
+            "<id>99</id>" +
+            "<name>Joe Black</name>" +
+            "<deptno>22</deptno>" +
+            "<deptname>Janitor</deptname>" +
+            "<section>q</section>" +
+            "<sal>19000.0</sal>" +
+            "<commission>333.0</commission>" +
+            "<sales>1.0</sales>" +
+            "<binid>ERE=</binid>" +
+            "<b>BAQEBAQEBAQEBAQEBAQE</b>" +
+            "<c>dddddddddddddddddddddddddddddd</c>" +
+            "<r>BAQE</r>" +
+        "</tabletypeType>";
 
     protected static final String ALL_PEOPLE_XML =
         REGULAR_XML_HEADER +
@@ -1232,4 +1309,65 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     	      "<lr>AwMDAwMDAwMD</lr>" +
     	   "</tabletype2Type>" +
     	"</tabletype2-collection>";
+
+    @Test
+    public void testNamingConventionTransformer() throws WSDLException {
+        builder = new DBWSBuilder();
+        builder.setTopNamingConventionTransformer(new DBWSNamingConventionTransformer());
+        DBWSTestSuite.setUp(".");
+
+        Invocation invocation = new Invocation("findByPrimaryKey_TabletypeType");
+        invocation.setParameter("id", 3);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ANOTHER_PERSON_XML));
+        assertTrue("Control document not same as instance document.  Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    public static final String ANOTHER_PERSON_XML =
+        REGULAR_XML_HEADER +
+        "<TABLETYPExTYPE xmlns=\"urn:tabletype\" id=\"3\">" +
+          "<name>rick</name>" +
+        "</TABLETYPExTYPE>";
+
+    /**
+     * Inner class used for testing NamingConventionTransformer
+     *
+     */
+    static class DBWSNamingConventionTransformer extends DefaultNamingConventionTransformer {
+
+        @Override
+        public String generateSchemaAlias(String tableName) {
+            return super.generateSchemaAlias(tableName +"xTYPE");
+        }
+
+        @Override
+        public String generateElementAlias(String originalElementName) {
+            return super.generateElementAlias(originalElementName.toLowerCase());
+        }
+
+        @Override
+        public ElementStyle styleForElement(String elementName) {
+            if ("id".equalsIgnoreCase(elementName)) {
+                return ElementStyle.ATTRIBUTE;
+            }
+            if ("deptno".equalsIgnoreCase(elementName) ||
+                "deptname".equalsIgnoreCase(elementName) ||
+                "section".equalsIgnoreCase(elementName) ||
+                "sal".equalsIgnoreCase(elementName) ||
+                "commission".equalsIgnoreCase(elementName) ||
+                "sales".equalsIgnoreCase(elementName) ||
+                "binid".equalsIgnoreCase(elementName) ||
+                "b".equalsIgnoreCase(elementName) ||
+                "c".equalsIgnoreCase(elementName) ||
+                "r".equalsIgnoreCase(elementName)) {
+                return ElementStyle.NONE;
+            }
+            return ElementStyle.ELEMENT;
+        }
+    }
 }

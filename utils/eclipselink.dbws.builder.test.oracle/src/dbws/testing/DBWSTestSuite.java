@@ -51,7 +51,6 @@ import javax.xml.transform.stream.StreamSource;
 //EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
@@ -67,7 +66,6 @@ import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -89,7 +87,6 @@ import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAM
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
 import static org.eclipse.persistence.tools.dbws.Util.OR_PRJ_SUFFIX;
 import static org.eclipse.persistence.tools.dbws.Util.OX_PRJ_SUFFIX;
-import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 public class DBWSTestSuite {
@@ -142,7 +139,7 @@ public class DBWSTestSuite {
 
     public static DBWSLogger dbwsLogger;
     public static void setUp(String stageDir) throws WSDLException {
-    	setUp(stageDir, false, false);
+        setUp(stageDir, false, false);
     }
     public static void setUp(String stageDir, boolean useLogger, boolean builderIsInitialized) throws WSDLException {
         comparer.setIgnoreOrder(true);
@@ -160,15 +157,15 @@ public class DBWSTestSuite {
             if (builder == null) {
                 builder = new DBWSBuilder();
             }
-	        username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-	        password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
-	        url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-	        String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-	            password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
-	            DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
-	        DBWSBuilderModel builderModel = (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
-	        builder.properties = builderModel.properties;
-	        builder.operations = builderModel.operations;
+            username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+            password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+            url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
+            String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
+                password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
+                DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
+            DBWSBuilderModel builderModel = (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
+            builder.properties = builderModel.properties;
+            builder.operations = builderModel.operations;
         }        
 
         builder.quiet = true;
@@ -207,28 +204,28 @@ public class DBWSTestSuite {
         };
         xrPackager.setDBWSBuilder(builder);
         builder.setPackager(xrPackager);
-    	dbwsLogger = null;
+        dbwsLogger = null;
         if (useLogger) {
-        	dbwsLogger = new DBWSLogger("DBWSTestLogger", null);
+            dbwsLogger = new DBWSLogger("DBWSTestLogger", null);
         }
         if (stageDir == null) {
             builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
             if (!builderIsInitialized) {
-	            builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
-	                DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream,
-	                __nullStream, __nullStream, __nullStream, dbwsLogger);
+                builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+                    DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream,
+                    __nullStream, __nullStream, __nullStream, dbwsLogger);
             } else {
-            	builder.start();
+                builder.start();
             }
         } else {
             xrPackager.setSessionsFileName(builder.getSessionsFileName());
             xrPackager.setStageDir(new File(stageDir));
             if (!builderIsInitialized) {
-	            builder.build(DBWS_SCHEMA_STREAM, DBWS_SESSION_STREAM, DBWS_SERVICE_STREAM,
-	                DBWS_OR_STREAM, DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM,
-	                __nullStream, __nullStream,  __nullStream, __nullStream, dbwsLogger);
+                builder.build(DBWS_SCHEMA_STREAM, DBWS_SESSION_STREAM, DBWS_SERVICE_STREAM,
+                    DBWS_OR_STREAM, DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM,
+                    __nullStream, __nullStream,  __nullStream, __nullStream, dbwsLogger);
             } else {
-            	builder.start();
+                builder.start();
             }
         }
         XRServiceFactory factory = new XRServiceFactory() {
@@ -319,7 +316,7 @@ public class DBWSTestSuite {
                 }
                 xrService.setXMLContext(new XMLContext(oxProject));
                 xrService.setOXSession(xrService.getXMLContext().getSession(0));
-                alignDescriptorAliases(oxProject, orProject, xrdecl);                
+                prepareDescriptors(oxProject, orProject, xrdecl);                
                 ProjectHelper.fixOROXAccessors(orProject, oxProject);
             }
         };
@@ -329,44 +326,6 @@ public class DBWSTestSuite {
         xrService = factory.buildService(model);
     }
 
-    @SuppressWarnings("unchecked")
-    protected static void alignDescriptorAliases(Project oxProject, Project orProject, XRDynamicClassLoader xrdcl) {
-        // may need to alter descriptor alias
-        if (oxProject.getAliasDescriptors() != null) {
-            Map<String, XMLDescriptor> oxAliases = new HashMap<String, XMLDescriptor>();
-            for (Object key : oxProject.getAliasDescriptors().keySet()) {
-                String alias = key.toString();
-                
-                XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
-                ClassDescriptor odesc = null;
-                
-                if ((odesc = (ClassDescriptor) orProject.getAliasDescriptors().get(alias)) == null) {
-                    // for some reason we occasionally see an upper case first char in the OX alias
-                    alias = Character.toLowerCase(alias.charAt(0)) + (alias.length() > 1 ? alias.substring(1) : "");
-                }
-                
-                String defaultRootElement = xdesc.getDefaultRootElement();
-                String proposedAlias = defaultRootElement;
-                if (defaultRootElement.endsWith(TYPE_STR)) {
-                    proposedAlias = defaultRootElement.substring(0, defaultRootElement.lastIndexOf(TYPE_STR));
-                }
-                proposedAlias = proposedAlias.toLowerCase();
-                xdesc.setAlias(proposedAlias);
-
-                oxAliases.put(proposedAlias, xdesc);
-                
-                if (odesc != null) {
-                    orProject.getAliasDescriptors().remove(alias);
-                    odesc.setAlias(proposedAlias);
-                    odesc.convertClassNamesToClasses(xrdcl);
-                    orProject.getAliasDescriptors().put(proposedAlias, odesc);
-                    // what about updating ordered descriptors here...
-                }
-            }
-            oxProject.setAliasDescriptors(oxAliases);            
-        }
-    }
-    
     /**
      * Helper method that removes empty text nodes from a Document.
      * This is typically called prior to comparing two documents
@@ -439,48 +398,48 @@ public class DBWSTestSuite {
      *
      */
     public static class DBWSLogger extends Logger {
-    	List<String> messages;
-    	
-		protected DBWSLogger(String name, String resourceBundleName) {
-			super(name, resourceBundleName);
-			messages = new ArrayList<String>();
-		}
-		
-		public void log(Level level, String msg) {
-			//System.out.println(level.getName() + ": " + msg);
-			messages.add(level.getName() + ": " + msg);
-		}
-		
-		public boolean hasMessages() {
-			return messages != null && messages.size() > 0;
-		}
+        List<String> messages;
+        
+        protected DBWSLogger(String name, String resourceBundleName) {
+            super(name, resourceBundleName);
+            messages = new ArrayList<String>();
+        }
+        
+        public void log(Level level, String msg) {
+            //System.out.println(level.getName() + ": " + msg);
+            messages.add(level.getName() + ": " + msg);
+        }
+        
+        public boolean hasMessages() {
+            return messages != null && messages.size() > 0;
+        }
 
-		public boolean hasWarnings() {
-			if (messages != null || messages.size() > 0) {
-				for (String message : messages) {
-					if (message.startsWith("WARNING")) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		
-		public List<String> getWarnings() {
-			List<String> warnings = null;
-			if (messages != null || messages.size() > 0) {
-				warnings = new ArrayList<String>();
-				for (String message : messages) {
-					if (message.startsWith("WARNING")) {
-						warnings.add(message);
-					}
-				}
-			}
-			return warnings;
-		}
-		
-		public List<String> getMessages() {
-			return messages;
-		}
+        public boolean hasWarnings() {
+            if (messages != null || messages.size() > 0) {
+                for (String message : messages) {
+                    if (message.startsWith("WARNING")) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
+        public List<String> getWarnings() {
+            List<String> warnings = null;
+            if (messages != null || messages.size() > 0) {
+                warnings = new ArrayList<String>();
+                for (String message : messages) {
+                    if (message.startsWith("WARNING")) {
+                        warnings.add(message);
+                    }
+                }
+            }
+            return warnings;
+        }
+        
+        public List<String> getMessages() {
+            return messages;
+        }
     }
 }

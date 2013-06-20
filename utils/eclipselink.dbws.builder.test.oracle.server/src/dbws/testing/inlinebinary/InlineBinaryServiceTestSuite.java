@@ -50,15 +50,15 @@ public class InlineBinaryServiceTestSuite extends DBWSTestSuite {
     static final String SOAP_FINDBYPK_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<findByPrimaryKey_inlinebinaryType xmlns=\"urn:inlinebinaryService\">" +
+            "<findByPrimaryKey_InlinebinaryType xmlns=\"urn:inlinebinaryService\">" +
               "<id>2</id>" +
-            "</findByPrimaryKey_inlinebinaryType>" +
+            "</findByPrimaryKey_InlinebinaryType>" +
           "</env:Body>" +
         "</env:Envelope>";
     static final String SOAP_FINDALL_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
-            "<findAll_inlinebinaryType xmlns=\"urn:inlinebinaryService\" />" +
+            "<findAll_InlinebinaryType xmlns=\"urn:inlinebinaryService\" />" +
           "</env:Body>" +
         "</env:Envelope>";
     

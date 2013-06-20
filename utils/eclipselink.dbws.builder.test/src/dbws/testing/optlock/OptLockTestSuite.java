@@ -62,7 +62,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -77,7 +76,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -95,7 +93,6 @@ import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_K
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.DOM_PLATFORM_CLASSNAME;
 import static org.eclipse.persistence.tools.dbws.Util.OR_PRJ_SUFFIX;
-import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //testing imports
@@ -341,47 +338,14 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
              org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx = 
                      org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory.createContextFromOXM(parentClassLoader, properties);
              oxProject = jCtx.getXMLContext().getSession(0).getProject();
-
-             // may need to alter descriptor alias
-             if (oxProject.getAliasDescriptors() != null) {
-                 Map<String, ClassDescriptor> aliasDescriptors = new HashMap<String, ClassDescriptor>();
-                 for (Object key : oxProject.getAliasDescriptors().keySet()) {
-                     String alias = key.toString();
-                     XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
-                     
-                     String defaultRootElement = xdesc.getDefaultRootElement();
-                     String proposedAlias = defaultRootElement;
-                     if (defaultRootElement.endsWith(TYPE_STR)) {
-                         proposedAlias = defaultRootElement.substring(0, defaultRootElement.lastIndexOf(TYPE_STR));
-                     }
-                     proposedAlias = proposedAlias.toLowerCase();
-                     xdesc.setAlias(proposedAlias);
-                     aliasDescriptors.put(proposedAlias, xdesc);
-                 }
-                 oxProject.setAliasDescriptors(aliasDescriptors);
-             }
          } catch (JAXBException e) {
              e.printStackTrace();
          }
          ((XMLLogin)oxProject.getDatasourceLogin()).setPlatformClassName(DOM_PLATFORM_CLASSNAME);
          ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
 
-         /*Project orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
-             parentClassLoader);
-         DatasourceLogin login = orProject.getLogin();
-         login.setUserName(builder.getUsername());
-         login.setPassword(builder.getPassword());
-         ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-         ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
-         Platform platform = builder.getDatabasePlatform();
-         ConversionManager cm = platform.getConversionManager();
-         cm.setLoader(parentClassLoader);
-         login.setDatasourcePlatform(platform);
-         ((DatabaseLogin)login).bindAllParameters();
-         orProject.setDatasourceLogin(login);*/
+         prepareDescriptors(oxProject, orProject, xrdecl);
          ProjectHelper.fixOROXAccessors(orProject, oxProject);
-         /*DatabaseSession databaseSession = orProject.createDatabaseSession();
-         databaseSession.dontLogMessages();*/
          xrService.setORSession(databaseSession);
          xrService.setXMLContext(new XMLContext(oxProject));
          xrService.setOXSession(xrService.getXMLContext().getSession(0));
@@ -400,12 +364,12 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<env:Header/>" +
           "<env:Body>" +
-            "<srvc:update_optlockType xmlns:srvc=\"" + OPTLOCK_SERVICE_NAMESPACE +"\" " +
+            "<srvc:update_OptlockType xmlns:srvc=\"" + OPTLOCK_SERVICE_NAMESPACE +"\" " +
             "xmlns=\"" + OPTLOCK_NAMESPACE + "\">" +
               "<srvc:theInstance>" +
                 THE_INSTANCE +
               "</srvc:theInstance>" +
-            "</srvc:update_optlockType>" +
+            "</srvc:update_OptlockType>" +
           "</env:Body>" +
         "</env:Envelope>";
 

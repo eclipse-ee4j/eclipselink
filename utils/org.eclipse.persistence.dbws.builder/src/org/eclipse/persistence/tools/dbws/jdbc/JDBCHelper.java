@@ -65,6 +65,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
 import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.escapePunctuation;
+import static org.eclipse.persistence.tools.dbws.Util.buildTypeForJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 
@@ -248,23 +249,17 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                                                               //  procedure name. This field indicates
                                                               //  the 'overload level' - i.e. which
                                                               //  procedure we are dealing with
-    //protected List<DbStoredProcedure> dbStoredProcedures = new ArrayList<DbStoredProcedure>();
-    //protected Map<DbStoredProcedure, DbStoredProcedureNameAndModel> dbStoredProcedure2QueryName =
-    //    new HashMap<DbStoredProcedure, DbStoredProcedureNameAndModel>();
 
     public JDBCHelper(DBWSBuilder dbwsBuilder) {
         super(dbwsBuilder);
     }
 
+    /**
+     * Indicates if one or more database tables were discovered.
+     * 
+     */
     public boolean hasTables() {
-        if (dbTables.size() == 0) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean hasComplexProcedureArgs() {
-        return false;
+    	return dbTables.size() != 0;
     }
 
     public void buildProcedureOperation(ProcedureOperationModel procedureOperationModel) {
@@ -598,10 +593,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
                         indexInfo.close();
                     }
                     catch (SQLException sqlException) {
-                        //TODO - do we still need this if we (JDBCHelper) isn't handling Oracle?
-                        // sqlException.printStackTrace();
-                        // ORA-01702: a view is not appropriate here: can't retrieve indexInfo
-                        // for views on Oracle, it blows up (other platforms just ignore)
+                    	// ignore
                     }
                 }
                 tablesInfo.close();
@@ -636,7 +628,7 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
         if (platform instanceof MySQLPlatform ||
             platform instanceof DerbyPlatform ||
             platform instanceof PostgreSQLPlatform ) {
-            // TODO - get info on other platforms that also require catalogMatchDontCare = true
+            // note that get info on other platforms that also require catalogMatchDontCare = true
             catalogMatchDontCare = true;
         }
         String catalogPattern = escapePunctuation(originalCatalogPattern);
@@ -818,10 +810,8 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
 
     @Override
     public void addToOROXProjectsForComplexTypes(List<CompositeDatabaseType> types, Project orProject, Project oxProject) {
-        // TODO - handle complex types
     }
     @Override
     protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs) {
-        // TODO - handle queries
     }
 }

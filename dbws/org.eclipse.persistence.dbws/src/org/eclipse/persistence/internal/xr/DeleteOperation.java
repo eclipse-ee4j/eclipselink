@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
+
 import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
 import static org.eclipse.persistence.internal.xr.Util.TYPE_STR;
 import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
@@ -37,10 +38,11 @@ import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
  */
-@SuppressWarnings({"unchecked"/*, "rawtypes"*/})
+@SuppressWarnings({"unchecked"})
 public class DeleteOperation extends Operation {
     protected String descriptorName;
     protected ClassDescriptor classDescriptor;
+    protected String findByPKQuery;
 
     public String getDescriptorName() {
         return descriptorName;
@@ -53,6 +55,28 @@ public class DeleteOperation extends Operation {
         return classDescriptor;
     }
 
+    /**
+     * Return the findByPrimaryKey query that this DeleteOperation
+     * will use to acquire the object to delete.
+     * 
+     */
+    public String getFindByPKQuery() {
+        // provide backward compatibility
+        if (findByPKQuery == null) {
+            findByPKQuery = PK_QUERYNAME + UNDERSCORE_STR + descriptorName + TYPE_STR;
+        }
+        return findByPKQuery;
+    }
+    
+    /**
+     * Set the findByPrimaryKey query that this DeleteOperation
+     * will use to acquire the object to delete.
+     * 
+     */
+    public void setFindByPKQuery(String findByPKQuery) {
+        this.findByPKQuery = findByPKQuery;
+    }
+    
     @Override
     public void validate(XRServiceAdapter xrService) {
         super.validate(xrService);
@@ -78,8 +102,8 @@ public class DeleteOperation extends Operation {
     @SuppressWarnings("rawtypes")
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
-        DatabaseQuery query = classDescriptor.getQueryManager().getQuery(PK_QUERYNAME + UNDERSCORE_STR + descriptorName + TYPE_STR);
-        
+        DatabaseQuery query = classDescriptor.getQueryManager().getQuery(getFindByPKQuery());
+                
         // a named query created via ORM metadata processing needs initialization
         if (query instanceof JPAQuery) {
             query = ((JPAQuery) query).processSQLQuery(xrService.getORSession().getActiveSession());

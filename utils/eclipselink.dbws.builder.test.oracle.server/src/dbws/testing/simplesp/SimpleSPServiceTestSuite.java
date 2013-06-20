@@ -59,7 +59,7 @@ public class SimpleSPServiceTestSuite extends DBWSTestSuite {
           "<srvc:result>" +
             "<simple-xml-format>" +
               "<simple-xml>" +
-                "<U>test-Hello</U>" +
+                "<result>test-Hello</result>" +
               "</simple-xml>" +
             "</simple-xml-format>" +
           "</srvc:result>" +

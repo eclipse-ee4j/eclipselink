@@ -427,19 +427,7 @@ public class Util {
     }
 
 	public static final QName SXF_QNAME = new QName("", DEFAULT_SIMPLE_XML_FORMAT_TAG);
-    /*
-     *
-                            if (xmlField.getSchemaType().equals(DATE_QNAME)) {
-                                xmlField.setType(SQLDATE);
-                            }
-                            else if (xmlField.getSchemaType().equals(TIME_QNAME)) {
-                                xmlField.setType(TIME);
-                            }
-                            else if (xmlField.getSchemaType().equals(DATE_TIME_QNAME)) {
-                                xmlField.setType(TIMESTAMP);
-                            }
 
-     */
     public static final Map<QName, Class<?>> SCHEMA_2_CLASS;
     static {
       SCHEMA_2_CLASS = new HashMap<QName, Class<?>>() {{

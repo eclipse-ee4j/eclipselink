@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -44,6 +46,7 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLComplexTypeMet
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLParameterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.QueryHintMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.StoredProcedureParameterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructMetadata;
@@ -117,9 +120,10 @@ public class XmlEntityMappingsGenerator {
      * 
      * @param orProject the ORM Project instance containing Queries and Descriptors to be used to generate an XMLEntityMappings
      * @param complexTypes list of composite database types used to generate metadata for advanced Oracle and PL/SQL types
+     * @param crudOperations map of maps keyed on table name - the second map are operation name to SQL string entries
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static XMLEntityMappings generateXmlEntityMappings(Project orProject, List<CompositeDatabaseType> complexTypes) {
+    public static XMLEntityMappings generateXmlEntityMappings(Project orProject, List<CompositeDatabaseType> complexTypes, Map<String, Map<String, String>> crudOperations) {
         List<ClassDescriptor> descriptors = orProject.getOrderedDescriptors();
         List<DatabaseQuery> queries = orProject.getQueries();
         
@@ -184,7 +188,8 @@ public class XmlEntityMappingsGenerator {
         List<NamedStoredProcedureQueryMetadata> storedProcs = null;
         List<NamedStoredFunctionQueryMetadata> storedFuncs = null;
         List<NamedNativeQueryMetadata> namedNativeQueries = null;
-        
+
+        // process database queries set on the descriptor
         for (DatabaseQuery query : queries) {
             if (query.getCall().isStoredFunctionCall()) {
                 if (query.getCall() instanceof PLSQLStoredFunctionCall) {
@@ -250,12 +255,15 @@ public class XmlEntityMappingsGenerator {
                     DatabaseField arg;
                     StoredProcedureParameterMetadata param;
                     List<DatabaseField> paramFields = call.getParameters();
-                    List types = call.getParameterTypes();
+                    List<Integer> types = call.getParameterTypes();
                     for (int i=0; i < paramFields.size(); i++) {
                         arg = paramFields.get(i);
                         param = new StoredProcedureParameterMetadata();
                         param.setTypeName(arg.getTypeName());
-                        param.setJdbcType(arg.getSqlType());
+
+                        if (arg.getSqlType() != DatabaseField.NULL_SQL_TYPE) {
+                            param.setJdbcType(arg.getSqlType());
+                        }
                         
                         if (arg.isObjectRelationalDatabaseField()) {
                             param.setJdbcTypeName(((ObjectRelationalDatabaseField)arg).getSqlTypeName());
@@ -264,6 +272,10 @@ public class XmlEntityMappingsGenerator {
                         if (i == 0) {
                             // first arg is the return arg
                             metadata.setReturnParameter(param);
+                            // handle CURSOR types - want name/value pairs returned
+                            if ((Integer) types.get(i) == 8) {
+                                addQueryHint(metadata);
+                            }
                         } else {
                             param.setName(arg.getName());
                             param.setMode(getParameterModeAsString((Integer)types.get(i)));
@@ -317,9 +329,9 @@ public class XmlEntityMappingsGenerator {
                     NamedStoredProcedureQueryMetadata metadata = new NamedStoredProcedureQueryMetadata();
                     metadata.setName(query.getName());
                     metadata.setProcedureName(call.getProcedureName());
+                    metadata.setReturnsResultSet(false);
                     
                     List<StoredProcedureParameterMetadata> params = new ArrayList<StoredProcedureParameterMetadata>();
-                    
                     DatabaseField arg;
                     StoredProcedureParameterMetadata param;
                     List paramFields = call.getParameters();
@@ -331,15 +343,24 @@ public class XmlEntityMappingsGenerator {
                         } else {
                             arg = (DatabaseField) paramFields.get(i);
                         }
+
                         param = new StoredProcedureParameterMetadata();
                         param.setName(arg.getName());
                         param.setTypeName(arg.getTypeName());
-                        param.setJdbcType(arg.getSqlType());
+                        if (arg.getSqlType() != DatabaseField.NULL_SQL_TYPE) {
+                            param.setJdbcType(arg.getSqlType());
+                        }
                         if (arg.isObjectRelationalDatabaseField()) {
                             param.setJdbcTypeName(((ObjectRelationalDatabaseField) arg).getSqlTypeName());
                         }
-
+                        
                         param.setMode(getParameterModeAsString((Integer) types.get(i)));
+                        
+                        // handle CURSOR types - want name/value pairs returned
+                        if ((Integer) types.get(i) == 8) {
+                            addQueryHint(metadata);
+                        }
+                        
                         params.add(param);
                     }
                     if (params.size() > 0) {
@@ -388,11 +409,9 @@ public class XmlEntityMappingsGenerator {
             if (cdesc.isAggregateDescriptor()) {
                 embeddable = true;
                 classAccessor = new EmbeddableAccessor();
-                ((EmbeddableAccessor)classAccessor).setName(cdesc.getAlias());
                 embeddables.add(cdesc.getJavaClassName());
             } else {
                 classAccessor = new EntityAccessor();
-                ((EntityAccessor)classAccessor).setEntityName(cdesc.getAlias());
             }
             classAccessor.setClassName(cdesc.getJavaClassName());
             classAccessor.setAccess(EL_ACCESS_VIRTUAL);
@@ -418,6 +437,7 @@ public class XmlEntityMappingsGenerator {
                 List<NamedNativeQueryMetadata> namedNatQueries = new ArrayList<NamedNativeQueryMetadata>();
                 NamedNativeQueryMetadata namedQuery;
                 DatabaseQuery dbQuery;
+                // process findAll and findByPk queries
                 for (Iterator<DatabaseQuery> queryIt = cdesc.getQueryManager().getAllQueries().iterator(); queryIt.hasNext();) {
                     dbQuery = queryIt.next();
                     namedQuery = new NamedNativeQueryMetadata();
@@ -425,6 +445,20 @@ public class XmlEntityMappingsGenerator {
                     namedQuery.setQuery(dbQuery.getSQLString());
                     namedQuery.setResultClassName(dbQuery.getReferenceClassName());
                     namedNatQueries.add(namedQuery);
+                }
+                // now create/update/delete operations
+                Map<String, String> crudOps = crudOperations.get(cdesc.getTableName());
+                if (!crudOps.isEmpty()) {
+                    for (String opName : crudOps.keySet()) {
+                        String crudSql = crudOps.get(opName);
+                        NamedNativeQueryMetadata crudQuery = new NamedNativeQueryMetadata();
+                        crudQuery.setName(opName);
+                        crudQuery.setQuery(crudSql);
+                        if (namedNatQueries == null) {
+                            namedNatQueries = new ArrayList<NamedNativeQueryMetadata>();
+                        }
+                        namedNatQueries.add(crudQuery);
+                    }
                 }
                 if (namedNatQueries.size() > 0) {
                     ((EntityAccessor)classAccessor).setNamedNativeQueries(namedNatQueries);
@@ -914,5 +948,20 @@ public class XmlEntityMappingsGenerator {
         oatMetadata.setNestedType(processTypeName(vType.getEnclosedType().getTypeName()));
 
         return oatMetadata;
+    }
+    
+    /**
+     * Adds a ReturnNameValuePairsHint to the given query metadata instance.
+     */
+    protected static void addQueryHint(NamedNativeQueryMetadata metadata) {
+        List<QueryHintMetadata> hints = metadata.getHints();
+        if (hints == null) {
+            hints = new ArrayList<QueryHintMetadata>();
+        }
+        QueryHintMetadata hint = new QueryHintMetadata();
+        hint.setName(QueryHints.RETURN_NAME_VALUE_PAIRS);
+        hint.setValue(HintValues.TRUE);
+        hints.add(hint);
+        metadata.setHints(hints);
     }
 }

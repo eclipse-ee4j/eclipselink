@@ -47,6 +47,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  */
 public class ResultSetMappingQuery extends ObjectBuildingQuery {
     protected boolean isExecuteCall;
+    protected boolean returnNameValuePairs = false;
     protected Vector resultRows;
     
     protected List<String> resultSetMappingNames = new ArrayList<String>();
@@ -128,6 +129,23 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
         for (SQLResultSetMapping mapping : this.resultSetMappings) {
             mapping.convertClassNamesToClasses(classLoader);
         }
+    }
+
+    /**
+     * Indicates whether or not to return populated DatabaseRecord(s)
+     * as opposed to raw data when an SQLResultSetMapping is not set.
+     */
+    public boolean shouldReturnNameValuePairs() {
+        return returnNameValuePairs;
+    }
+
+    /**
+     * Set the flag that indicates whether or not to return populated
+     * DatabaseRecord(s) as opposed to raw data when an
+     * SQLResultSetMapping is not set.
+     */
+    public void setShouldReturnNameValuePairs(boolean returnNameValuePairs) {
+        this.returnNameValuePairs = returnNameValuePairs;
     }
 
     /**
@@ -225,6 +243,9 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
         List results = new ArrayList(numberOfRecords);
         
         if (mapping == null) {
+            if (shouldReturnNameValuePairs()) {
+                return databaseRecords;
+            }
             for (Iterator iterator = databaseRecords.iterator(); iterator.hasNext();) {
                 DatabaseRecord record = (DatabaseRecord)iterator.next();                
                 results.add(record.values().toArray());

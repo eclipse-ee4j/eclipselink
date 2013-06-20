@@ -378,7 +378,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
             "<simple-xml>" +
-                "<U>test-Hello</U>" +
+                "<result>test-Hello</result>" +
             "</simple-xml>" +
         "</simple-xml-format>";
 }
