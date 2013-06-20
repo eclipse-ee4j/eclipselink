@@ -24,6 +24,8 @@ Bundle-ManifestVersion: 2
 Import-Package: com.sun.xml.bind;resolution:=optional,
  com.sun.xml.bind.annotation;resolution:=optional,
  javax.activation;resolution:=optional,
+ javax.json;resolution:=optional,
+ javax.json.stream;resolution:=optional,
  javax.ws.rs;resolution:=optional,
  javax.ws.rs.core;resolution:=optional,
  javax.ws.rs.ext;resolution:=optional,
