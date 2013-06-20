@@ -255,7 +255,7 @@ public class XmlEntityMappingsGenerator {
                     DatabaseField arg;
                     StoredProcedureParameterMetadata param;
                     List<DatabaseField> paramFields = call.getParameters();
-                    List types = call.getParameterTypes();
+                    List<Integer> types = call.getParameterTypes();
                     for (int i=0; i < paramFields.size(); i++) {
                         arg = paramFields.get(i);
                         param = new StoredProcedureParameterMetadata();
@@ -409,11 +409,9 @@ public class XmlEntityMappingsGenerator {
             if (cdesc.isAggregateDescriptor()) {
                 embeddable = true;
                 classAccessor = new EmbeddableAccessor();
-                ((EmbeddableAccessor)classAccessor).setName(cdesc.getAlias());
                 embeddables.add(cdesc.getJavaClassName());
             } else {
                 classAccessor = new EntityAccessor();
-                ((EntityAccessor)classAccessor).setEntityName(cdesc.getAlias());
             }
             classAccessor.setClassName(cdesc.getJavaClassName());
             classAccessor.setAccess(EL_ACCESS_VIRTUAL);

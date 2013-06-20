@@ -60,6 +60,10 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 
+import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
+import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
+import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
+import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.Util.OPAQUE;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
@@ -80,11 +84,26 @@ import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //DDL parser imports
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
+import org.eclipse.persistence.tools.oracleddl.metadata.BinaryType;
+import org.eclipse.persistence.tools.oracleddl.metadata.BlobType;
+import org.eclipse.persistence.tools.oracleddl.metadata.CharType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ClobType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
+import org.eclipse.persistence.tools.oracleddl.metadata.DecimalType;
+import org.eclipse.persistence.tools.oracleddl.metadata.DoubleType;
+import org.eclipse.persistence.tools.oracleddl.metadata.FloatType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FunctionType;
+import org.eclipse.persistence.tools.oracleddl.metadata.LongRawType;
+import org.eclipse.persistence.tools.oracleddl.metadata.NCharType;
+import org.eclipse.persistence.tools.oracleddl.metadata.NClobType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCursorType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
+import org.eclipse.persistence.tools.oracleddl.metadata.RawType;
+import org.eclipse.persistence.tools.oracleddl.metadata.RealType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
+import org.eclipse.persistence.tools.oracleddl.metadata.TimeStampType;
+import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
+
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
 
@@ -207,6 +226,11 @@ public class Util {
     public static final String XMLTYPE_STR = "XMLTYPE";
     public static final String _TYPE_STR = "_TYPE";
 
+    public static final String ARRAY_CLS_STR = "java.sql.Array";
+    public static final String OPAQUE_CLS_STR = "java.sql.Struct";
+    public static final String ROWID_CLS_STR = "java.sql.RowId";
+    public static final String STRUCT_CLS_STR = "oracle.sql.OPAQUE";
+
     /**
      * Return the JDBC type (as int) for a given type name.
      */
@@ -298,9 +322,9 @@ public class Util {
             jdbcType = Types.VARCHAR;
         }
         else if (typeName.equals(BOOLEAN_STR)  ||
-        		 typeName.equals(INTEGER_STR)  ||
-        		 typeName.equals(SMALLINT_STR) ||
-        		 typeName.equals(TINYINT_STR)) {
+                 typeName.equals(INTEGER_STR)  ||
+                 typeName.equals(SMALLINT_STR) ||
+                 typeName.equals(TINYINT_STR)) {
             jdbcType = Types.INTEGER;
         }
         return jdbcType;
@@ -547,29 +571,104 @@ public class Util {
                 typeName = ClassConstants.BIGINTEGER.getName();
                 break;
             case Types.ARRAY:
-                typeName = "java.sql.Array";
+                typeName = ARRAY_CLS_STR;
                 break;
             case Types.STRUCT:
-                typeName = "java.sql.Struct";
+                typeName = STRUCT_CLS_STR;
                 break;
             case Types.ROWID:
-                typeName = "java.sql.RowId";
+                typeName = ROWID_CLS_STR;
                 break;
             case OPAQUE:
-                typeName = "oracle.sql.OPAQUE";
+                typeName = OPAQUE_CLS_STR;
                 break;
             default:
-                //case Types.VARCHAR:
-                //    typeName = VARCHAR_STR;
-                //    break;
-                //case Types.NVARCHAR:
-                //    typeName = NVARCHAR_STR;
-                //    break;
-                //case Types.NCHAR:
-                //    typeName = NCHAR_STR;
-                //    break;
         }
         return typeName;
+    }
+    
+    /**
+     * Return a DatabaseType instance for a given JDCBType.  If applicable, precision
+     * and scale values will be applied.  The default type instance will be
+     * VarChar2Type.
+     *
+     */
+    public static DatabaseType buildTypeForJDBCType(int jdbcType, int precision, int scale) {
+        DatabaseType type = new VarChar2Type();
+        switch (jdbcType) {
+            case Types.BINARY:
+                type = new BinaryType();
+                break;
+            case Types.BLOB:
+                type = new BlobType();
+                break;
+            case Types.CHAR:
+                type = new CharType();
+                break;
+            case Types.CLOB:
+                type = new ClobType();
+                break;
+            case Types.DATE:
+                type = ScalarDatabaseTypeEnum.DATE_TYPE;
+                break;
+            case Types.BIGINT:
+                type = ScalarDatabaseTypeEnum.BIGINT_TYPE;
+                break;
+            case Types.DECIMAL:
+            case Types.NUMERIC:
+                type = new DecimalType(precision, scale);
+                break;
+            case Types.DOUBLE:
+                type = new DoubleType(precision, scale);
+                break;
+            case Types.FLOAT:
+                type = new FloatType(precision, scale);
+                break;
+            case Types.LONGVARBINARY:
+                type = new LongRawType();
+                break;
+            case Types.NCHAR:
+                type = new NCharType();
+                break;
+            case Types.NCLOB:
+                type = new NClobType();
+                break;
+            case Types.REAL:
+                type = new RealType(precision, scale);
+                break;
+            case Types.TIME:
+                type = ScalarDatabaseTypeEnum.TIME_TYPE;
+                break;
+            case Types.TIMESTAMP:
+                type = new TimeStampType();
+                break;
+            case Types.VARBINARY:
+                type = new RawType();
+                break;
+        }
+        return type;
+    }
+
+    /**
+     * Get the attribute class for a given DatabaseType.
+     */
+    public static Class<?> getAttributeClassForDatabaseType(DatabaseType dbType) {
+        if (!dbType.isComposite()) {
+            String typeName = dbType.getTypeName();
+            if (NUMBER_STR.equals(typeName) || NUMERIC_STR.equals(typeName)) {
+                return BIGDECIMAL;
+            }
+            if (INTEGER_STR.equals(typeName)) {
+                return org.eclipse.persistence.internal.helper.ClassConstants.INTEGER;
+            }
+            if (BOOLEAN_STR.equals(typeName)) {
+                return BOOLEAN;
+            }
+            if (DATE_STR.equals(typeName)) {
+                return JavaSqlDate_Class;
+            }
+        }
+        return STRING;
     }
     
     /*
@@ -636,8 +735,19 @@ public class Util {
         String rest = name.toLowerCase().substring(1);
         return projectName.toLowerCase() + DOT + first + rest;
     }
-
+    
     /**
+     * Returns an alias (typically used as a descriptor alias) based on a given
+     * table name.  The returned string will contain an upper case first char,
+     * with the remaining chars in lower case format.
+     */
+    public static String getGeneratedTableAlias(String tableName) {
+        String first = tableName.substring(0, 1).toUpperCase();
+        String rest = tableName.toLowerCase().substring(1);
+        return first.concat(rest);
+    }
+
+    /**     
      * Returns a Java class name based on a given name and project.  The  returned
      * string  will be  in the format  'projectname.Name_CollectionWrapper'.   For
      * example, given the name 'EMPLOYEE' and projectName 'TEST', the method would
@@ -648,14 +758,16 @@ public class Util {
         return getGeneratedJavaClassName(name, projectName) + COLLECTION_WRAPPER_SUFFIX;
     }
 
+    /**
+     * Build a RelationalDescriptor for a given table.
+     */
     public static RelationalDescriptor buildORDescriptor(String tableName, String projectName,
         List<String> requireCRUDOperations, NamingConventionTransformer nct) {
         RelationalDescriptor desc = new RelationalDescriptor();
         desc.addTableName(tableName);
-        String tableAlias = tableName.toLowerCase();
+        String tableAlias = getGeneratedTableAlias(tableName);
         desc.setAlias(tableAlias);
-        String generatedJavaClassName = getGeneratedJavaClassName(tableName, projectName);
-        desc.setJavaClassName(generatedJavaClassName);
+        desc.setJavaClassName(getGeneratedJavaClassName(tableName, projectName));
         desc.useWeakIdentityMap();
         // keep track of which tables require CRUD operations
         if (requireCRUDOperations != null) {
@@ -664,27 +776,33 @@ public class Util {
         return desc;
     }
 
-    public static XMLDescriptor buildOXDescriptor(String tableName,  String projectName,
-            String targetNamespace, NamingConventionTransformer nct) {
-        return buildOXDescriptor(tableName, nct.generateSchemaAlias(tableName), projectName, targetNamespace, nct);
+    /**
+     * Build an XMLDescriptor for a given table.
+     */
+    public static XMLDescriptor buildOXDescriptor(String tableName, String projectName, String targetNamespace, NamingConventionTransformer nct) {
+        return buildOXDescriptor(getGeneratedTableAlias(tableName), nct.generateSchemaAlias(tableName), getGeneratedJavaClassName(tableName, projectName), targetNamespace);
     }
-    public static XMLDescriptor buildOXDescriptor(String tableName, String schemaAlias, String projectName,
-        String targetNamespace, NamingConventionTransformer nct) {
+
+    /**
+     * Build an XMLDescriptor for a given table.
+     */
+    public static XMLDescriptor buildOXDescriptor(String tableAlias, String schemaAlias, String generatedJavaClassName, String targetNamespace) {
         XMLDescriptor xdesc = new XMLDescriptor();
-        String generatedJavaClassName = getGeneratedJavaClassName(tableName, projectName);
+        xdesc.setAlias(tableAlias);
         xdesc.setJavaClassName(generatedJavaClassName);
-        xdesc.setAlias(tableName.toLowerCase());
+        
         NamespaceResolver nr = new NamespaceResolver();
         nr.setDefaultNamespaceURI(targetNamespace);
         xdesc.setNamespaceResolver(nr);
         xdesc.setDefaultRootElement(schemaAlias);
+
         XMLSchemaURLReference schemaReference = new XMLSchemaURLReference(EMPTY_STRING);
         schemaReference.setSchemaContext(SLASH + schemaAlias);
         schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
         xdesc.setSchemaReference(schemaReference);
         return xdesc;
     }
-
+    
     public static QName buildCustomQName(String typeString, DBWSBuilder builder) {
         // for %TYPE and %ROWTYPE we'll need to replace the '%' with '_' 
         if (typeString.contains(PERCENT)) {
@@ -836,14 +954,14 @@ public class Util {
      */
     public static boolean hasComplexArgs(ProcedureType storedProcedure) {
         for (ArgumentType arg : storedProcedure.getArguments()) {
-        	if (isArgComplex(arg)) {
-        		return true;
-        	}
+            if (isArgComplex(arg)) {
+                return true;
+            }
         }
         if (storedProcedure.isFunctionType()) {
-        	if (isArgComplex(((FunctionType)storedProcedure).getReturnArgument())) {
-        		return true;
-        	}
+            if (isArgComplex(((FunctionType)storedProcedure).getReturnArgument())) {
+                return true;
+            }
         }
         return false;
     }
@@ -857,14 +975,14 @@ public class Util {
      */
     public static boolean hasPLSQLArgs(ProcedureType storedProcedure) {
         for (ArgumentType arg : storedProcedure.getArguments()) {
-        	if (isArgPLSQL(arg)) {
-        		return true;
-        	}
+            if (isArgPLSQL(arg)) {
+                return true;
+            }
         }
         if (storedProcedure.isFunctionType()) {
-        	if (isArgPLSQL(((FunctionType)storedProcedure).getReturnArgument())) {
-        		return true;
-        	}
+            if (isArgPLSQL(((FunctionType)storedProcedure).getReturnArgument())) {
+                return true;
+            }
         }
         return false;
     }
@@ -880,9 +998,9 @@ public class Util {
      */
     public static boolean hasPLSQLArgs(List<ArgumentType> arguments) {
         for (ArgumentType arg : arguments) {
-        	if (isArgPLSQL(arg) || arg.optional()) {
-        		return true;
-        	}
+            if (isArgPLSQL(arg) || arg.optional()) {
+                return true;
+            }
         }
         return false;
     }
@@ -894,9 +1012,9 @@ public class Util {
      */
     public static boolean hasComplexArgs(List<ArgumentType> arguments) {
         for (ArgumentType arg : arguments) {
-        	if (isArgComplex(arg)) {
-        		return true;
-        	}
+            if (isArgComplex(arg)) {
+                return true;
+            }
         }
         return false;
     }
@@ -908,7 +1026,7 @@ public class Util {
      */
     public static boolean hasPLSQLScalarArgs(List<ArgumentType> arguments) {
         for (ArgumentType arg : arguments) {
-        	if (isArgPLSQLScalar(arg)) {
+            if (isArgPLSQLScalar(arg)) {
                 return true;
             }
         }

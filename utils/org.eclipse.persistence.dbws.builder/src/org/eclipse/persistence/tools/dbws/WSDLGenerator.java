@@ -384,6 +384,11 @@ public class WSDLGenerator {
         binding.addBindingOperation(bop);
     }
 
+    /**
+     * Build the inline schema that will make up the content of the
+     * <wsdl:types> section of the WSDL.
+     * @return
+     */
     @SuppressWarnings("unchecked")
     private org.w3c.dom.Element createInlineSchema() {
 
@@ -418,8 +423,9 @@ public class WSDLGenerator {
         for (Operation op : xrServiceModel.getOperationsList()) {
             String opName = op.getName();
             ComplexType requestType = new ComplexType();
-            // extract tableNameAlias from operation name - everything after first underscore _ character
-            String tableNameAlias = opName.substring(opName.indexOf('_')+1);
+            // may need to extract tableNameAlias from operation name - everything after first
+            // underscore '_' character (for cases where a QueryOperation is not user defined)
+            // i.e. String tableNameAlias = opName.substring(opName.indexOf('_') + 1);
             requestType.setName(opName + REQUEST_SUFFIX + TYPE_SUFFIX);
             Sequence requestSequence = null;
             if (op.getParameters().size() > 0) {
@@ -435,19 +441,18 @@ public class WSDLGenerator {
                         Sequence nestedSequence = new Sequence();
                         nestedComplexType.setSequence(nestedSequence);
                         Element nestedElement = new Element();
-                        nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + tableNameAlias);
+                        nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + p.getType().getLocalPart());
+                        // here we may need to use 'tableNameAlias' instead, i.e.
+                        // nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + tableNameAlias);
                         nestedSequence.addElement(nestedElement);
                         arg.setComplexType(nestedComplexType);
-                    }
-                    else {
+                    } else {
                         arg.setName(p.getName());
                         if (p.getType().getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
                             arg.setType(NS_SCHEMA_PREFIX + ":" + p.getType().getLocalPart());
-                        }
-                        else if (p.getType().getNamespaceURI().equals(importedSchemaNameSpace)) {
+                        } else if (p.getType().getNamespaceURI().equals(importedSchemaNameSpace)) {
                             arg.setType(TARGET_NAMESPACE_PREFIX + ":" + p.getType().getLocalPart());
-                        }
-                        else {
+                        } else {
                             arg.setType(p.getType().getLocalPart());
                         }
                     }
@@ -470,30 +475,27 @@ public class WSDLGenerator {
                 result.setName("result");
                 if (q.isAttachment()) {
                     result.setType(WSI_SWAREF_PREFIX + ":" + WSI_SWAREF);
-                }
-                else if (q.isSimpleXMLFormat() ||
-                           q.getResultType().equals(new QName(W3C_XML_SCHEMA_NS_URI, "any"))) {
+                } else if (q.isSimpleXMLFormat() || q.getResultType().equals(new QName(W3C_XML_SCHEMA_NS_URI, "any"))) {
                     ComplexType anyType = new ComplexType();
                     Sequence anySequence = new Sequence();
                     anySequence.addAny(new Any());
                     anyType.setSequence(anySequence);
                     result.setComplexType(anyType);
-                }
-                else {
+                } else {
                     if (q.getResultType().getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
                         result.setType(NS_SCHEMA_PREFIX + ":" + q.getResultType().getLocalPart());
-                    }
-                    else {
+                    } else {
                         ComplexType nestedComplexType = new ComplexType();
                         Sequence nestedSequence = new Sequence();
                         nestedComplexType.setSequence(nestedSequence);
                         Element nestedElement = new Element();
-                        if (!q.isUserDefined()) {
-                            nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + tableNameAlias);
-                        }
-                        else {
-                            nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + q.getResultType().getLocalPart());
-                        }
+                        // may need if/else based on if the operation is/isn't user defined, i.e.
+                        //if (!q.isUserDefined()) {
+                        //    nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + tableNameAlias);
+                        //} else {
+                        //    nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + q.getResultType().getLocalPart());
+                        //}
+                        nestedElement.setRef(TARGET_NAMESPACE_PREFIX + ":" + q.getResultType().getLocalPart());
                         nestedElement.setMinOccurs("0");
                         if (q.isCollection()) {
                             nestedElement.setMaxOccurs("unbounded");
@@ -509,8 +511,7 @@ public class WSDLGenerator {
                 responseElement.setName(op.getName() + RESPONSE_SUFFIX);
                 responseElement.setType(NS_TNS_PREFIX + ":" + responseType.getName());
                 schema.addTopLevelElement(responseElement);
-            }
-            else {
+            } else {
                 requireFaultTypeEmptyResponse = true;
             }
         }
@@ -552,10 +553,16 @@ public class WSDLGenerator {
         return marshaller.objectToXML(schema).getDocumentElement();
     }
 
+    /**
+     * Return the name of the service.
+     */
     public String getServiceName() {
         return serviceName;
     }
 
+    /**
+     * Return the namespace of the service.
+     */
     public String getServiceNameSpace() {
         return serviceNameSpace;
     }

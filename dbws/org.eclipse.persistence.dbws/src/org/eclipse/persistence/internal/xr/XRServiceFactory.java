@@ -84,7 +84,6 @@ import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFF
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
 import static org.eclipse.persistence.internal.xr.Util.COLON_CHAR;
 import static org.eclipse.persistence.internal.xr.Util.DASH_STR;
-import static org.eclipse.persistence.internal.xr.Util.EMPTY_STR;
 import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
 import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
 import static org.eclipse.persistence.internal.xr.Util.SLASH_CHAR;
@@ -190,6 +189,7 @@ public class XRServiceFactory  {
     static final String OR_PRJ_SUFFIX = "-dbws-or";
     static final String DEFAULT_PROJECT_NAME = "org.eclipse.persistence.sessions.Project";
     static final String COLLECTION_WRAPPER_STR = UNDERSCORE_STR + org.eclipse.persistence.internal.xr.Util.COLLECTION_WRAPPER_STR;
+    static final String SIMPLE_XML_FORMAT_STR = "simple-xml-format";
     
     public XRServiceFactory() {
         super();
@@ -328,40 +328,45 @@ public class XRServiceFactory  {
                     DynamicJAXBContext jCtx = DynamicJAXBContextFactory.createContextFromOXM(xrdecl, properties);
                     oxProject = jCtx.getXMLContext().getSession(0).getProject();
                     oxProject.setName(xrService.getName().concat(OX_PRJ_SUFFIX));
-        
-                    // may need to alter descriptor alias
-                    if (oxProject.getAliasDescriptors() != null) {
-                        Map<String, ClassDescriptor> aliasDescriptors = new HashMap<String, ClassDescriptor>();
-                        for (Object key : oxProject.getAliasDescriptors().keySet()) {
-                            XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(key.toString());
-                            
-                            String defaultRootElement = xdesc.getDefaultRootElement();
-                            String proposedAlias = defaultRootElement;
-                            if (proposedAlias.endsWith(TYPE_STR)) {
-                                proposedAlias = proposedAlias.substring(0, proposedAlias.lastIndexOf(TYPE_STR));
-                            } else if (proposedAlias.endsWith(COLLECTION_WRAPPER_STR)) {
-                                proposedAlias = proposedAlias.substring(0, proposedAlias.lastIndexOf(COLLECTION_WRAPPER_STR));
-                            }
-                            xdesc.setAlias(proposedAlias);
-                            aliasDescriptors.put(proposedAlias, xdesc);
-                            
-                            // workaround for JAXB validation:  JAXB expects a DataHandler in the 
-                            // object model for SwaRef, whereas we want to work with a byte[]
-                            for (DatabaseMapping mapping : xdesc.getMappings()) {
-                                if (mapping instanceof XMLBinaryDataMapping) {
-                                    ((XMLBinaryDataMapping) mapping).setAttributeClassification(APBYTE);
-                                    ((XMLBinaryDataMapping) mapping).setAttributeClassificationName(APBYTE.getName());
-                                }
-                            }
-                        }
-                        oxProject.setAliasDescriptors(aliasDescriptors);
-                    }
                 } catch (JAXBException e) {
                     throw new DBWSException(OXM_PROCESSING_EX, e);
                 }
             }
         }       
         return oxProject; 
+    }
+    
+    /**
+     * <p>INTERNAL:
+     * 
+     * Perform any post-load descriptor modifications, such as altering attribute classification
+     * on a given mapping, or converting class names to classes.  In addition, JAXB and JPA
+     * Embeddables will have the descriptor alias set to the class name (w/o package), which
+     * will contain an upper case first character, meaning that the OR/OX descriptors will 
+     * have to be aligned in some cases. 
+     */
+    protected static void prepareDescriptors(Project oxProject, Project orProject, XRDynamicClassLoader xrdcl) {
+        if (oxProject.getAliasDescriptors() != null) {
+            for (Object alias : oxProject.getAliasDescriptors().keySet()) {
+                if (alias.equals(SIMPLE_XML_FORMAT_STR)) {
+                    continue;
+                }
+                // workaround for JAXB validation:  JAXB expects a DataHandler in the 
+                // object model for SwaRef, whereas we want to work with a byte[]
+                XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
+                for (DatabaseMapping mapping : xdesc.getMappings()) {
+                    if (mapping instanceof XMLBinaryDataMapping) {
+                        ((XMLBinaryDataMapping) mapping).setAttributeClassification(APBYTE);
+                        ((XMLBinaryDataMapping) mapping).setAttributeClassificationName(APBYTE.getName());
+                    }
+                }
+                // convert class names to classes on the associated OR descriptor
+                ClassDescriptor odesc = (ClassDescriptor) orProject.getAliasDescriptors().get(alias);
+                if (odesc != null)  {  // shouldn't be null...
+                    odesc.convertClassNamesToClasses(xrdcl);
+                }
+            }
+        }
     }
     
     /**
@@ -424,9 +429,8 @@ public class XRServiceFactory  {
             orProject = xrService.orSession.getProject();
             updateFindQueryNames(orProject);
         }
-        orProject.convertClassNamesToClasses(projectLoader);
         
-        alignDescriptorAliases(oxProject, orProject, projectLoader);
+        prepareDescriptors(oxProject, orProject, projectLoader);
         ProjectHelper.fixOROXAccessors(orProject, oxProject);
         
         xrService.xmlContext = new XMLContext(oxProject);
@@ -438,8 +442,7 @@ public class XRServiceFactory  {
      */
     public void loginSessions() {
         ((DatabaseSession)xrService.orSession).login();
-        // the 'weird' stuff above with XMLContext results in the oxSession begin already logged-in
-        //((DatabaseSession)xrService.oxSession).login();
+        // the oxSession is already logged-in...
     }
 
     /**
@@ -517,13 +520,11 @@ public class XRServiceFactory  {
             String uri = ns.resolveNamespacePrefix(name.substring(0, index));
             return new QName(uri, name.substring(index + 1));
         }
-        else if (ns.getDefaultNamespaceURI() != null) {
-                return new QName(ns.getDefaultNamespaceURI(), name);
-            }
-        else {
-            String uri = ns.resolveNamespacePrefix(XMLNS_STR);
-            return new QName(uri, name);
+        if (ns.getDefaultNamespaceURI() != null) {
+            return new QName(ns.getDefaultNamespaceURI(), name);
         }
+        String uri = ns.resolveNamespacePrefix(XMLNS_STR);
+        return new QName(uri, name);
     }
 
     public static DocumentBuilder getDocumentBuilder() {
@@ -572,50 +573,6 @@ public class XRServiceFactory  {
                     orDesc.getQueryManager().addQuery(qName + END_PART, query);
                 }
             }
-        }
-    }
-    
-    /**
-     * <p>INTERNAL:
-     * 
-     * Make sure OX  and OR descriptor aliases match - this is necessary as at runtime we
-     * typically lookup an OX descriptor, then access the related OR descriptor by alias.
-     *
-     */
-    @SuppressWarnings("unchecked")
-    protected static void alignDescriptorAliases(Project oxProject, Project orProject, XRDynamicClassLoader xrdcl) {
-        // may need to alter descriptor alias
-        if (oxProject.getAliasDescriptors() != null) {
-            Map<String, XMLDescriptor> oxAliases = new HashMap<String, XMLDescriptor>();
-            for (Object key : oxProject.getAliasDescriptors().keySet()) {
-                String alias = key.toString();
-                
-                XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
-                ClassDescriptor odesc = null;
-                
-                if (orProject.getAliasDescriptors() != null && (odesc = (ClassDescriptor) orProject.getAliasDescriptors().get(alias)) == null) {
-                    // for some reason we occasionally see an upper case first char in the OX alias
-                    alias = Character.toLowerCase(alias.charAt(0)) + (alias.length() > 1 ? alias.substring(1) : EMPTY_STR);
-                }
-                
-                String defaultRootElement = xdesc.getDefaultRootElement();
-                String proposedAlias = defaultRootElement;
-                if (defaultRootElement.endsWith(TYPE_STR)) {
-                    proposedAlias = defaultRootElement.substring(0, defaultRootElement.lastIndexOf(TYPE_STR));
-                }
-                proposedAlias = proposedAlias.toLowerCase();
-                xdesc.setAlias(proposedAlias);
-
-                oxAliases.put(proposedAlias, xdesc);
-                
-                if (odesc != null) {
-                    orProject.getAliasDescriptors().remove(alias);
-                    odesc.setAlias(proposedAlias);
-                    odesc.convertClassNamesToClasses(xrdcl);
-                    orProject.getAliasDescriptors().put(proposedAlias, odesc);
-                }
-            }
-            oxProject.setAliasDescriptors(oxAliases);            
         }
     }
     
