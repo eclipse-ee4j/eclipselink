@@ -1,18 +1,6 @@
 {"root":{
-   "@field":"
-   A     
-   a    
-   ",
-   "@property":"
-   B    
-   b   
-   ",
-   "field":"
-   C    
-   c    
-   ",
-   "property":"
-   D    
-   d   
-   "
+   "@field":"\n   A     \n   a    \n   ",
+   "@property":"\n   B    \n   b   \n   ",
+   "field":"\n   C    \n   c    \n   ",
+   "property":"\n   D    \n   d   \n   "
 }}
