@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,9 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Mike Norman - May 2008, created DBWS test package
+ *     David McCann - June 2013 - Initial Implementation
  ******************************************************************************/
-package dbws.testing.simpletable;
+package dbws.testing.namingtransformer;
 
 //javase imports
 import java.io.StringReader;
@@ -33,11 +33,17 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+import org.eclipse.persistence.tools.dbws.DefaultNamingConventionTransformer;
 
 //testing imports
 import dbws.testing.DBWSTestSuite;
 
-public class SimpleTableTestSuite extends DBWSTestSuite {
+/**
+ * Test use of a custom naming convention transformer.
+ *
+ */
+public class NamingTransformerTestSuite extends DBWSTestSuite {
 
     static final String CREATE_SIMPLE_TABLE =
         "CREATE TABLE IF NOT EXISTS simpletable (" +
@@ -118,7 +124,8 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
               "tableNamePattern=\"simpletable\" " +
             "/>" +
           "</dbws-builder>";
-        builder = null;
+        builder = new DBWSBuilder();
+        builder.setTopNamingConventionTransformer(new DBWSNamingConventionTransformer());
         DBWSTestSuite.setUp(".");
     }
 
@@ -128,26 +135,52 @@ public class SimpleTableTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_SIMPLE_TABLE, ddlDebug);
         }
     }
-
+    
     @Test
-    public void findByPrimaryKeyTest() {
+    public void findByPrimaryKeyTest() throws WSDLException {
         Invocation invocation = new Invocation("findByPrimaryKey_SimpletableType");
-        invocation.setParameter("id", 1);
+        invocation.setParameter("id", 3);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(ONE_PERSON_XML));
-        assertTrue("control document not same as instance document", comparer.isNodeEqual(
-            controlDoc, doc));
+        Document controlDoc = xmlParser.parse(new StringReader(ANOTHER_PERSON_XML));
+        assertTrue("Control document not same as instance document.  Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    public static final String ONE_PERSON_XML =
+    
+    public static final String ANOTHER_PERSON_XML =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-        "<simpletableType xmlns=\"urn:simpletable\">" +
-          "<id>1</id>" +
-          "<name>mike</name>" +
-          "<since>2001-12-25</since>" +
-        "</simpletableType>";
+        "<simpletablexType xmlns=\"urn:simpletable\" id=\"3\">" +
+          "<name>rick</name>" +
+        "</simpletablexType>";
+    
+    /**
+     * Inner class used for testing NamingConventionTransformer
+     *
+     */
+    static class DBWSNamingConventionTransformer extends DefaultNamingConventionTransformer {
+        
+        @Override
+        public String generateSchemaAlias(String tableName) {
+            return super.generateSchemaAlias(tableName +"xType");
+        }
+        
+        @Override
+        public String generateElementAlias(String originalElementName) {
+            return super.generateElementAlias(originalElementName.toLowerCase());
+        }
+        
+        @Override
+        public ElementStyle styleForElement(String elementName) {
+            if ("id".equalsIgnoreCase(elementName)) {
+                return ElementStyle.ATTRIBUTE;
+            }
+            if ("since".equalsIgnoreCase(elementName)) {
+                return ElementStyle.NONE;
+            }
+            return ElementStyle.ELEMENT;
+        }
+    }
 }
