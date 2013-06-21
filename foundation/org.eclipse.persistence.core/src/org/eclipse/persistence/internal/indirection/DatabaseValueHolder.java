@@ -19,6 +19,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
 /**
  * DatabaseValueHolder wraps a database-stored object and implements
@@ -93,6 +94,16 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
             }
         }
         return value;
+    }
+
+    /**
+     * Process against the UOW and attempt to load a local copy before going to the shared cache
+     * If null is returned then the calling UOW will instantiate as normal.
+     */
+    public Object getValue(UnitOfWorkImpl uow) {
+        //This method simply returns null as this will cause the UOWVH to trigger
+        //the relationship normally.
+        return null;
     }
 
     /**
