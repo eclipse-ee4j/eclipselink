@@ -31,6 +31,7 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Jalopy;
+import org.eclipse.persistence.testing.models.jpa.inheritance.OffRoadTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.PassengerPerformanceTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.PerformanceTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
@@ -1154,6 +1155,10 @@ public class QueryCastTestSuite extends JUnitTestCase {
             car.setColor("Red");
             em.persist(car);
             daisy.setCar(car);
+            
+            OffRoadTireInfo orti = new OffRoadTireInfo();
+            orti.setName("IThinkThereforIAm");
+            em.persist(orti);
 
             em.flush();
             clearCache();
