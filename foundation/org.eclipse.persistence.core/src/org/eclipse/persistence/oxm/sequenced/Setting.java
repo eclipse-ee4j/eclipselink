@@ -14,9 +14,9 @@ package org.eclipse.persistence.oxm.sequenced;
 
 import java.util.List;
 import java.util.ArrayList;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.mappings.ContainerMapping;
-import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import org.eclipse.persistence.core.mappings.CoreMapping;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 
 /**
  * <p>Setting objects are used to control the order in which the
@@ -89,7 +89,7 @@ public class Setting {
     private String namespaceURI;
     private Object value;
     private Object object;
-    private DatabaseMapping mapping;
+    private CoreMapping mapping;
     private Setting parent;
     private List<Setting> children;
 
@@ -189,14 +189,13 @@ public class Setting {
                 return;
             }
 
-            ContainerMapping containerMapping = (ContainerMapping) mapping;
-            ContainerPolicy containerPolicy = containerMapping.getContainerPolicy();
+            CoreContainerPolicy containerPolicy = mapping.getContainerPolicy();
             if(null == container && !(mapping.isWriteOnly())) {
                 container = containerPolicy.containerInstance();
                 mapping.setAttributeValueInObject(object, container);
             }
-            containerMapping.getContainerPolicy().addInto(value, container, null);
-        }              
+            containerPolicy.addInto(value, container, null);
+        }
     }
 
     /**
@@ -216,14 +215,14 @@ public class Setting {
     /**
      * @return The mapping for the domain object that corresponds to this Setting.
      */
-    public DatabaseMapping getMapping() {
+    public CoreMapping getMapping() {
         return mapping;
     }
 
     /**
      * @param mapping The mapping for the domain object that corresponds to this Setting.
      */
-    public void setMapping(DatabaseMapping mapping) {
+    public void setMapping(CoreMapping mapping) {
         this.mapping = mapping;
     }
 

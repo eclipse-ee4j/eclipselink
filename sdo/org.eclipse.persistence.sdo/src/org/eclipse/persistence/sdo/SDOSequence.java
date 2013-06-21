@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -223,7 +224,7 @@ public class SDOSequence implements Sequence {
     }
 
     public SDOProperty getProperty(Setting setting) {
-        DatabaseMapping mapping = setting.getMapping();
+        CoreMapping mapping = setting.getMapping();
         if (null == mapping) {
             List<Setting> children = setting.getChildren();
             if (null != children && children.size() > 0) {
@@ -324,7 +325,7 @@ public class SDOSequence implements Sequence {
     }
 
     private void remove(Setting setting) {
-        DatabaseMapping mapping = setting.getMapping();
+        CoreMapping mapping = setting.getMapping();
         if (null != mapping) {
             Property property = null;
             if (null == setting.getName()) {
