@@ -10,32 +10,23 @@
  * Contributors:
  *      gonural - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.exceptions;
+package org.eclipse.persistence.exceptions.i18n;
 
-public class JPARSException extends EclipseLinkException {
-    // Next range should start from LAST_ERROR_CODE (62000). 
-    // The JPA-RS uses error codes between 61000-61999 (both inclusive).
-    public enum ErrorCode {
-        ENTITY_NOT_FOUND(61000),
+import java.util.ListResourceBundle;
 
-        // end marker for JPA-RS error codes    
-        LAST_ERROR_CODE(62000);
-        private int value;
+import org.eclipse.persistence.exceptions.JPARSException.ErrorCode;
 
-        private ErrorCode(int value) {
-            this.value = value;
-        }
-
-        public Integer value() {
-            return value;
-        }
+/*
+ * English resource bundle for JPARSException
+ * 
+ */
+public class JPARSExceptionResource extends ListResourceBundle {
+    static final Object[][] contents = {
+            { ErrorCode.ENTITY_NOT_FOUND.value(), "An entity of type {0} with id {1} could not be found in persistence unit {2}." }
     };
 
-    public JPARSException() {
-        super();
-    }
-
-    public JPARSException(String message) {
-        super(message);
+    @Override
+    protected Object[][] getContents() {
+        return contents;
     }
 }
