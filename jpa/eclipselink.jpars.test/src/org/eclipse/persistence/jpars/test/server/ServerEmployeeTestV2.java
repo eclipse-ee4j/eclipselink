@@ -43,6 +43,7 @@ import org.eclipse.persistence.jpars.test.model.employee.SmallProject;
 import org.eclipse.persistence.jpars.test.util.DBUtils;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -68,6 +69,14 @@ public class ServerEmployeeTestV2 {
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
         factory = new PersistenceFactoryBase();
         context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), null, true);
+    }
+
+    @After
+    public void cleanup() {
+        /*try {
+            RestUtils.restUpdateQuery("Employee.deleteAll", "Employee", DEFAULT_PU, null, null);
+        } catch (URISyntaxException e) {
+        }*/
     }
 
     /**
@@ -135,7 +144,7 @@ public class ServerEmployeeTestV2 {
         RestUtils.restDelete(new Integer(20130), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
-    /**
+   /**
      * Test update employee with manager json.
      *
      * @throws Exception the exception

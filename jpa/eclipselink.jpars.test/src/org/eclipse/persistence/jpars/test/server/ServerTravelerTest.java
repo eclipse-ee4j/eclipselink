@@ -99,14 +99,14 @@ public class ServerTravelerTest {
             //<?xml version="1.0" encoding="UTF-8"?>
             //<ns0:traveler xmlns:ns0="http://example.org" xmlns:ns2="http://example.org/fname" xmlns:ns1="http://www.example.org/traveler">
             //   <ns2:firstName>Adrian</ns2:firstName>
-            //   <ns1:id>1</ns1:id>
+            //   <ns1:id>19</ns1:id>
             //   <ns1:lastName>Clinton</ns1:lastName>
             //   <ns1:version>1</ns1:version>
             //   <_relationships>
-            //      <_link href="http://localhost:8080/eclipselink.jpars.test/persistence/jpars_traveler-static/entity/Traveler/1/reservation" rel="reservation" />
+            //      <_link href="http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/jpars_traveler-static/entity/Traveler/19/reservation" rel="reservation" />
             //   </_relationships>
             //   <ns1:reservation>
-            //      <_link href="http://localhost:8080/eclipselink.jpars.test/persistence/jpars_traveler-static/entity/Reservation/2" method="GET" rel="self" />
+            //      <_link href="http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/jpars_traveler-static/entity/Reservation/20" method="GET" rel="self" />
             //   </ns1:reservation>
             //</ns0:traveler>
 

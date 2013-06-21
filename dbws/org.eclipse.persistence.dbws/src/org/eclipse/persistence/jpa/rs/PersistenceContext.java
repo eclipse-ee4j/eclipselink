@@ -946,7 +946,7 @@ public class PersistenceContext {
      * @return the string
      */
     public String toString() {
-        return "Application(" + getName() + ")::" + System.identityHashCode(this);
+        return "PersistenceContext(name:" + getName() + ", version:" + getVersion() + ", identityHashCode:" + System.identityHashCode(this) + ")";
     }
 
     /**
@@ -1353,5 +1353,49 @@ public class PersistenceContext {
      */
     public void setSupportedFeatureSet(FeatureSet supportedFeatureSet) {
         this.supportedFeatureSet = supportedFeatureSet;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((version == null) ? 0 : version.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+
+        if (other == null) {
+            return false;
+        }
+
+        if (getClass() != other.getClass()) {
+            return false;
+        }
+
+        PersistenceContext otherContext = (PersistenceContext) other;
+
+        if (name == null) {
+            if (otherContext.name != null) {
+                return false;
+            }
+        } else if (!name.equals(otherContext.name)) {
+            return false;
+        }
+
+        if (version == null) {
+            if (otherContext.version != null) {
+                return false;
+            }
+        } else if (!version.equals(otherContext.version)) {
+            return false;
+        }
+
+        return true;
     }
 }
