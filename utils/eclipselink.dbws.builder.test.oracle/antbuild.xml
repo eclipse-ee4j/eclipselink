@@ -373,6 +373,9 @@
             name="dbws.testing.iottype.IOTTypeTestSuite"
           />
           <test
+            name="dbws.testing.namingtransformer.NamingTransformerTestSuite"
+          />
+          <test
             name="dbws.testing.nonassociativeplsql.NonAssociativePLSQLCollectionTestSuite"
           />
           <test

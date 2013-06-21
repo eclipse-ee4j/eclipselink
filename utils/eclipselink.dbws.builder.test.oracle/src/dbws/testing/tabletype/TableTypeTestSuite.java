@@ -58,7 +58,6 @@ import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.dbws.BaseDBWSBuilderHelper;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
-import org.eclipse.persistence.tools.dbws.DefaultNamingConventionTransformer;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 
 //test imports
@@ -1309,65 +1308,4 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     	      "<lr>AwMDAwMDAwMD</lr>" +
     	   "</tabletype2Type>" +
     	"</tabletype2-collection>";
-
-    @Test
-    public void testNamingConventionTransformer() throws WSDLException {
-        builder = new DBWSBuilder();
-        builder.setTopNamingConventionTransformer(new DBWSNamingConventionTransformer());
-        DBWSTestSuite.setUp(".");
-
-        Invocation invocation = new Invocation("findByPrimaryKey_TabletypeType");
-        invocation.setParameter("id", 3);
-        Operation op = xrService.getOperation(invocation.getName());
-        Object result = op.invoke(xrService, invocation);
-        assertNotNull("result is null", result);
-        Document doc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
-        marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(ANOTHER_PERSON_XML));
-        assertTrue("Control document not same as instance document.  Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
-    }
-
-    public static final String ANOTHER_PERSON_XML =
-        REGULAR_XML_HEADER +
-        "<TABLETYPExTYPE xmlns=\"urn:tabletype\" id=\"3\">" +
-          "<name>rick</name>" +
-        "</TABLETYPExTYPE>";
-
-    /**
-     * Inner class used for testing NamingConventionTransformer
-     *
-     */
-    static class DBWSNamingConventionTransformer extends DefaultNamingConventionTransformer {
-
-        @Override
-        public String generateSchemaAlias(String tableName) {
-            return super.generateSchemaAlias(tableName +"xTYPE");
-        }
-
-        @Override
-        public String generateElementAlias(String originalElementName) {
-            return super.generateElementAlias(originalElementName.toLowerCase());
-        }
-
-        @Override
-        public ElementStyle styleForElement(String elementName) {
-            if ("id".equalsIgnoreCase(elementName)) {
-                return ElementStyle.ATTRIBUTE;
-            }
-            if ("deptno".equalsIgnoreCase(elementName) ||
-                "deptname".equalsIgnoreCase(elementName) ||
-                "section".equalsIgnoreCase(elementName) ||
-                "sal".equalsIgnoreCase(elementName) ||
-                "commission".equalsIgnoreCase(elementName) ||
-                "sales".equalsIgnoreCase(elementName) ||
-                "binid".equalsIgnoreCase(elementName) ||
-                "b".equalsIgnoreCase(elementName) ||
-                "c".equalsIgnoreCase(elementName) ||
-                "r".equalsIgnoreCase(elementName)) {
-                return ElementStyle.NONE;
-            }
-            return ElementStyle.ELEMENT;
-        }
-    }
 }

@@ -355,6 +355,9 @@
             name="dbws.testing.mtom.MTOMTestSuite"
           />
           <test
+            name="dbws.testing.namingtransformer.NamingTransformerTestSuite"
+          />
+          <test
             name="dbws.testing.optlock.OptLockTestSuite"
           />
           <test

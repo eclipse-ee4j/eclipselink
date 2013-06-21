@@ -32,6 +32,7 @@ import dbws.testing.customsql.CustomSQLTestSuite;
 import dbws.testing.invalidinput.InvalidInputTestSuite;
 import dbws.testing.invalidpackage.InvalidPackageTestSuite;
 import dbws.testing.iottype.IOTTypeTestSuite;
+import dbws.testing.namingtransformer.NamingTransformerTestSuite;
 import dbws.testing.nonassociativeplsql.NonAssociativePLSQLCollectionTestSuite;
 import dbws.testing.objecttabletype.ObjectTableTypeTestSuite;
 import dbws.testing.objecttype.ObjectTypeTestSuite;
@@ -70,6 +71,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     InvalidInputTestSuite.class,
     InvalidPackageTestSuite.class,
     IOTTypeTestSuite.class,
+    NamingTransformerTestSuite.class,
     NonAssociativePLSQLCollectionTestSuite.class,
     ObjectTableTypeTestSuite.class,
     ObjectTypeTestSuite.class,

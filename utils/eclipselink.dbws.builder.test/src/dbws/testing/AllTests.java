@@ -33,6 +33,7 @@ import dbws.testing.inlinebinary.InlineBinaryTestSuite;
 import dbws.testing.invalidinput.InvalidInputTestSuite;
 import dbws.testing.loglevelvalidation.LogLevelValidationTestSuite;
 import dbws.testing.mtom.MTOMTestSuite;
+import dbws.testing.namingtransformer.NamingTransformerTestSuite;
 import dbws.testing.optlock.OptLockTestSuite;
 import dbws.testing.rootcause.RootCauseTestSuite;
 import dbws.testing.secondarysql.SecondarySQLTestSuite;
@@ -55,6 +56,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
 	InvalidInputTestSuite.class,
     LogLevelValidationTestSuite.class,
     MTOMTestSuite.class,
+    NamingTransformerTestSuite.class,
     OptLockTestSuite.class,
     RootCauseTestSuite.class,
     SecondarySQLTestSuite.class,
