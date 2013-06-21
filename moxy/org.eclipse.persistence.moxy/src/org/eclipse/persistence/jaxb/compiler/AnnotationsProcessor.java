@@ -3063,7 +3063,7 @@ public class AnnotationsProcessor {
             if (superClassInfo != null && !superClassInfo.isTransient()) {
                 for (Property prop : properties) {
                     for (Property superProp : superClassInfo.getProperties().values()) {
-                        if (superProp.getGetMethodName() != null && superProp.getGetMethodName().equals(prop.getGetMethodName())) {
+                        if (superProp.getGetMethodName() != null && superProp.getGetMethodName().equals(prop.getGetMethodName()) && !superProp.isTransient()) {
                             revisedProperties.remove(prop);
                         }
                     }
