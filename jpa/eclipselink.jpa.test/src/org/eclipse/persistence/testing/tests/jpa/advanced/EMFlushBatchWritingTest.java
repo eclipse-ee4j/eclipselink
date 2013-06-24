@@ -79,8 +79,8 @@ public class EMFlushBatchWritingTest extends EntityContainerTestBase {
             } catch (Exception e) {
                 //exception not expected if the query gets added to the batch, delaying query being executed until flush.  
                 //This may change in the future if native queries are not added to batches
-                throw new TestWarningException("ExcuteUpdate threw an exception while using batch writing instead " +
-                		"of waiting for the commit/flush call" );
+                throw new TestWarningException("ExecuteUpdate threw an exception while using batch writing instead " +
+                		"of waiting for the commit/flush call "+e);
             }
             try {
                 //exception should be thrown here if query gets added to the batch and batching gets flushed correctly.  

@@ -230,22 +230,7 @@ public class QueryImpl {
             // Execute the query and return the result.
             return session.executeQuery(query, parameterValues);
         } catch (DatabaseException e) {
-            // If we catch a database exception as a result of executing a
-            // pessimistic locking query we need to ask the platform which
-            // JPA 2.0 locking exception we should throw. It will be either
-            // be a PessimisticLockException or a LockTimeoutException (if
-            // the query was executed using a wait timeout value)
-            if (this.lockMode != null && this.lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
-                // ask the platform if it is a lock timeout
-                if (session.getPlatform().isLockTimeoutException(e)) {
-                    throw new LockTimeoutException(e);
-                } else {
-                    throw new PessimisticLockException(e);
-                }
-            } else {
-                setRollbackOnly();
-                throw e;
-            }
+            throw getDetailedException(e);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -264,10 +249,10 @@ public class QueryImpl {
      * @return the number of entities updated or deleted
      */
     public int executeUpdate() {
+        // bug51411440: need to throw IllegalStateException if query
+        // executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         try {
-            // bug51411440: need to throw IllegalStateException if query
-            // executed on closed em
-            entityManager.verifyOpen();
             setAsSQLModifyQuery();
             // bug:4294241, only allow modify queries - UpdateAllQuery preferred
             if (!(getDatabaseQueryInternal() instanceof ModifyQuery)) {
@@ -285,9 +270,15 @@ public class QueryImpl {
             }
             Integer changedRows = (Integer) getActiveSession().executeQuery(databaseQuery, parameterValues);
             return changedRows.intValue();
-        } catch (RuntimeException e) {
+        } catch (PersistenceException exception) {
             setRollbackOnly();
-            throw e;
+            throw exception;
+        } catch (IllegalStateException exception) {
+            setRollbackOnly();
+            throw exception;
+        }catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw new PersistenceException(exception);
         }
     }
 
@@ -325,6 +316,29 @@ public class QueryImpl {
 
         }
         return this.databaseQuery;
+    }
+    
+    /**
+     * Given a DatabaseException, this method will determine if we should
+     * throw a different more specific exception like a lock timeout exception.
+     */
+    protected RuntimeException getDetailedException(DatabaseException e) {
+        // If we catch a database exception as a result of executing a
+        // pessimistic locking query we need to ask the platform which
+        // JPA 2.0 locking exception we should throw. It will be either
+        // be a PessimisticLockException or a LockTimeoutException (if
+        // the query was executed using a wait timeout value)
+        if (this.lockMode != null && this.lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
+            // ask the platform if it is a lock timeout
+            if (getActiveSession().getPlatform().isLockTimeoutException(e)) {
+                return new LockTimeoutException(e);
+            } else {
+                return new PessimisticLockException(e);
+            }
+        } else {
+            setRollbackOnly();
+            return new PersistenceException(e);
+        }
     }
 
     /**
@@ -384,10 +398,10 @@ public class QueryImpl {
      * @return a list of the results
      */
     public List getResultList() {
+        // bug51411440: need to throw IllegalStateException if query
+        // executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         try {
-            // bug51411440: need to throw IllegalStateException if query
-            // executed on closed em
-            this.entityManager.verifyOpen();
             setAsSQLReadQuery();
             propagateResultProperties();
             // bug:4297903, check container policy class and throw exception if
@@ -411,9 +425,15 @@ public class QueryImpl {
             return (List) executeReadQuery();
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (RuntimeException exception) {
+        } catch (PersistenceException exception) {
             setRollbackOnly();
             throw exception;
+        } catch (IllegalStateException exception) {
+            setRollbackOnly();
+            throw exception;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw new PersistenceException(exception);
         }
     }
     
@@ -428,10 +448,10 @@ public class QueryImpl {
      */
     public Object getSingleResult() {
         boolean rollbackOnException = true;
+        // bug51411440: need to throw IllegalStateException if query
+        // executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         try {
-            // bug51411440: need to throw IllegalStateException if query
-            // executed on closed em
-            entityManager.verifyOpen();
             setAsSQLReadQuery();
             propagateResultProperties();
             // This API is used to return non-List results, so no other validation is done.
@@ -459,11 +479,17 @@ public class QueryImpl {
             }
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (RuntimeException exception) {
+        } catch (PersistenceException exception) {
             if (rollbackOnException) {
                 setRollbackOnly();
             }
             throw exception;
+        } catch (IllegalStateException exception) {
+            setRollbackOnly();
+            throw exception;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw new PersistenceException(exception);
         }
     }
 
@@ -531,6 +557,7 @@ public class QueryImpl {
      * @since Java Persistence API 2.0
      */
     public int getFirstResult() {
+        entityManager.verifyOpenWithSetRollbackOnly();
         if (this.firstResultIndex == UNDEFINED) {
             return 0;
         }

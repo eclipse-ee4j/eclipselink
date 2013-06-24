@@ -298,37 +298,43 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return Collection of results
      */
     public Collection getResultCollection() {
-        // bug51411440: need to throw IllegalStateException if query executed on
-        // closed em
-        entityManager.verifyOpen();
+        // bug51411440: need to throw IllegalStateException if query
+        // executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         setAsSQLReadQuery();
         propagateResultProperties();
         // bug:4297903, check container policy class and throw exception if its
         // not the right type
         DatabaseQuery query = getDatabaseQueryInternal();
-        if (query.isReadAllQuery()) {
-            Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
-            if (!Helper.classImplementsInterface(containerClass, ClassConstants.Collection_Class)) {
-                throw QueryException.invalidContainerClass(containerClass, ClassConstants.Collection_Class);
-            }
-        } else if (query.isReadObjectQuery()) {
-            List resultList = new ArrayList();
-            Object result = executeReadQuery();
-            if (result != null) {
-                resultList.add(executeReadQuery());
-            }
-            return resultList;
-        } else if (!query.isReadQuery()) {
-            throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
-        }
-
         try {
+            if (query.isReadAllQuery()) {
+                Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
+                if (!Helper.classImplementsInterface(containerClass, ClassConstants.Collection_Class)) {
+                    throw QueryException.invalidContainerClass(containerClass, ClassConstants.Collection_Class);
+                }
+            } else if (query.isReadObjectQuery()) {
+                List resultList = new ArrayList();
+                Object result = executeReadQuery();
+                if (result != null) {
+                    resultList.add(executeReadQuery());
+                }
+                return resultList;
+            } else if (!query.isReadQuery()) {
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
+            }
+
             return (Collection) executeReadQuery();
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (RuntimeException exception) {
+        } catch (PersistenceException exception) {
             setRollbackOnly();
             throw exception;
+        } catch (IllegalStateException exception) {
+            setRollbackOnly();
+            throw exception;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw new PersistenceException(exception);
         }
     }
     
@@ -338,33 +344,38 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return Cursor on results, either a CursoredStream, or ScrollableCursor
      */
     public Cursor getResultCursor() {
-        // bug51411440: need to throw IllegalStateException if query executed on
-        // closed em
-        entityManager.verifyOpen();
-        setAsSQLReadQuery();
-        propagateResultProperties();
-        // bug:4297903, check container policy class and throw exception if its
-        // not the right type
-        if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
-            if (!((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().isCursorPolicy()) {
-                Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
-                throw QueryException.invalidContainerClass(containerClass, Cursor.class);
-            }
-        } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {
-            // bug:4300879, no support for ReadObjectQuery if a collection is required
-            throw QueryException.incorrectQueryObjectFound(getDatabaseQueryInternal(), ReadAllQuery.class);
-        } else if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
-            throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
-        }
-
+        // bug51411440: need to throw IllegalStateException if query executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         try {
+            setAsSQLReadQuery();
+            propagateResultProperties();
+            // bug:4297903, check container policy class and throw exception if its
+            // not the right type
+            if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
+                if (!((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().isCursorPolicy()) {
+                    Class containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
+                    throw QueryException.invalidContainerClass(containerClass, Cursor.class);
+                }
+            } else if (getDatabaseQueryInternal() instanceof ReadObjectQuery) {
+                // bug:4300879, no support for ReadObjectQuery if a collection is required
+                throw QueryException.incorrectQueryObjectFound(getDatabaseQueryInternal(), ReadAllQuery.class);
+            } else if (!(getDatabaseQueryInternal() instanceof ReadQuery)) {
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
+            }
+
             Object result = executeReadQuery();
             return (Cursor) result;
         } catch (LockTimeoutException e) {
             throw e;
-        } catch (RuntimeException e) {
+        } catch (PersistenceException exception) {
             setRollbackOnly();
-            throw e;
+            throw exception;
+        } catch (IllegalStateException exception) {
+            setRollbackOnly();
+            throw exception;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw new PersistenceException(exception);
         }
     }
     
@@ -421,7 +432,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(int position, Calendar value, TemporalType temporalType) {
-        entityManager.verifyOpen();
+        entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
     
@@ -434,7 +445,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(int position, Date value, TemporalType temporalType) {
-        entityManager.verifyOpen();
+        entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
     
@@ -467,6 +478,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if position does not correspond to a parameter of the query
      */
     public TypedQuery setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
+        entityManager.verifyOpenWithSetRollbackOnly();
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         return this.setParameter(param.getName(), value, temporalType);
@@ -515,7 +527,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(String name, Calendar value, TemporalType temporalType) {
-        entityManager.verifyOpen();
+        entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
     
@@ -528,7 +540,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(String name, Date value, TemporalType temporalType) {
-        entityManager.verifyOpen();
+        entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
     
