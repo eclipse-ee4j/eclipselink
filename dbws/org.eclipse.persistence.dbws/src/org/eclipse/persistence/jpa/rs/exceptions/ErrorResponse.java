@@ -12,6 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.exceptions;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+/*
+ * 
+ * Model class for marshaling error response
+ * 
+ */
+@XmlRootElement(name = "errorResponse")
 public class ErrorResponse {
     private String problemType; // mandatory
     private String title; // mandatory

@@ -16,6 +16,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.eclipse.persistence.jpars.test.server.ServerEmployeeTestV2;
+import org.eclipse.persistence.jpars.test.service.MarshalUnmarshalTestV2;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.runner.Description;
 import org.junit.runner.manipulation.Filter;
@@ -25,7 +26,7 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerBuilder;
 
 public class VersionedTestSuite extends Suite {
-    private static String[] v2TestClasses = { ServerEmployeeTestV2.class.getName() };
+    private static String[] v2TestClasses = { ServerEmployeeTestV2.class.getName(), MarshalUnmarshalTestV2.class.getName() };
 
     public VersionedTestSuite(Class<?> clazz, RunnerBuilder builder) throws InitializationError
     {

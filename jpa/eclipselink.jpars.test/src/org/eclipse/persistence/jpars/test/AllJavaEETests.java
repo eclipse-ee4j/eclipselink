@@ -14,13 +14,13 @@ package org.eclipse.persistence.jpars.test;
 
 import org.eclipse.persistence.jpars.test.server.ServerCrudTest;
 import org.eclipse.persistence.jpars.test.server.ServerEmployeeTest;
+import org.eclipse.persistence.jpars.test.server.ServerEmployeeTestV2;
 import org.eclipse.persistence.jpars.test.server.ServerTravelerTest;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-@RunWith(Suite.class)
-@SuiteClasses({ ServerCrudTest.class, ServerEmployeeTest.class, ServerTravelerTest.class })
+@RunWith(VersionedTestSuite.class)
+@SuiteClasses({ ServerEmployeeTestV2.class, ServerCrudTest.class, ServerEmployeeTest.class, ServerTravelerTest.class })
 public class AllJavaEETests {
 
 }

@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -73,10 +74,10 @@ public class ServerEmployeeTestV2 {
 
     @After
     public void cleanup() {
-        /*try {
+        try {
             RestUtils.restUpdateQuery("Employee.deleteAll", "Employee", DEFAULT_PU, null, null);
         } catch (URISyntaxException e) {
-        }*/
+        }
     }
 
     /**
@@ -144,11 +145,11 @@ public class ServerEmployeeTestV2 {
         RestUtils.restDelete(new Integer(20130), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
-   /**
-     * Test update employee with manager json.
-     *
-     * @throws Exception the exception
-     */
+    /**
+      * Test update employee with manager json.
+      *
+      * @throws Exception the exception
+      */
     @Test
     public void testUpdateEmployeeWithManagerJSON() throws Exception {
         updateEmployeeWithManager(MediaType.APPLICATION_JSON_TYPE);

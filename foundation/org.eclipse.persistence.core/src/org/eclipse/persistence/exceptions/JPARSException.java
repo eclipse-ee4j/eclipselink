@@ -26,9 +26,10 @@ public class JPARSException extends EclipseLinkException {
             this.value = value;
         }
 
-        public Integer value() {
-            return value;
+        public String value() {
+            return String.valueOf(value);
         }
+
     };
 
     public JPARSException() {
@@ -37,5 +38,9 @@ public class JPARSException extends EclipseLinkException {
 
     public JPARSException(String message) {
         super(message);
+    }
+
+    public JPARSException(String msg, Exception e) {
+        super(msg, e);
     }
 }
