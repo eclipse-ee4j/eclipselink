@@ -665,6 +665,9 @@ if(clazz == CoreClassConstants.OBJECT) {
 	            } else {
 	                return unmarshal(streamSource.getSystemId());
 	            }
+	        } else if (source instanceof ExtendedSource){
+	        	ExtendedSource extendedSource = (ExtendedSource)source;
+	        	return unmarshal(null, extendedSource.createReader(xmlUnmarshaller));
 	        } else {
 	        	UnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
 	        	XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
@@ -706,6 +709,9 @@ if(clazz == CoreClassConstants.OBJECT) {
             } else {
             	return unmarshal(streamSource.getSystemId(), clazz);
             }
+        } else if(source instanceof ExtendedSource){
+            ExtendedSource extendedSource = (ExtendedSource)source;
+            return unmarshal(null, clazz, extendedSource.createReader(xmlUnmarshaller, clazz));     
         } else {
         	DOMResult result = new DOMResult();
         	XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();

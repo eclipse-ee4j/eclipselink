@@ -56,6 +56,17 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
     }
     
     
+    public void testJSONUnmarshalFromJsonStructureSource() throws Exception{
+        try{
+            super.testJSONUnmarshalFromJsonStructureSource();
+        }catch (JAXBException e) {
+            assertEquals(ValidationEvent.ERROR, ((MyValidationEventHandler)jaxbUnmarshaller.getEventHandler()).severity);
+            return;
+        }
+        fail("An Exception should have occurred");
+    }
+    
+    
     public void testJSONUnmarshalFromInputStream() throws Exception{
         try{
             super.testJSONUnmarshalFromInputStream();        

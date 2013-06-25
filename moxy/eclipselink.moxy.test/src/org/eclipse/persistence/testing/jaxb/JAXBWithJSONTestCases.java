@@ -22,6 +22,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.json.Json;
+import javax.json.JsonReader;
+import javax.json.JsonStructure;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -34,6 +37,7 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.json.JsonStructureSource;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MyStreamSchemaOutputResolver;
 import org.xml.sax.InputSource;
 
@@ -213,7 +217,25 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             jsonToObjectTest(testObject);
         }
     }
-
+    
+    public void testJSONUnmarshalFromJsonStructureSource() throws Exception {
+        if(isUnmarshalTest()){
+            getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+           InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);    
+           JsonReader reader = Json.createReader(inputStream);
+           JsonStructure jsonStructure = reader.read();		
+           JsonStructureSource source = new JsonStructureSource(jsonStructure);
+    		
+            Object testObject = null;
+            if(getUnmarshalClass() != null){               
+                testObject = getJSONUnmarshaller().unmarshal(source, getUnmarshalClass());
+            }else{
+                testObject = getJSONUnmarshaller().unmarshal(source);
+            }
+            jsonToObjectTest(testObject);
+        }
+    }
+       
     public void testJSONUnmarshalFromURL() throws Exception {
     	if(isUnmarshalTest()){
     		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
