@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -487,6 +487,26 @@ public class EntityManagerSetupImpl {
                                 } else {
                                     login(session, deployProperties);
                                 }
+                                
+                                // Make JTA integration throw JPA exceptions.
+                                if (this.session.hasExternalTransactionController()) {
+                                    if (this.session.getExternalTransactionController().getExceptionHandler() == null) {
+                                        this.session.getExternalTransactionController().setExceptionHandler(new ExceptionHandler() {
+                                            
+                                            public Object handleException(RuntimeException exception) {
+                                                if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
+                                                    throw new javax.persistence.OptimisticLockException(exception);
+                                                } else if (exception instanceof EclipseLinkException) {
+                                                    throw new javax.persistence.PersistenceException(exception);
+                                                } else {
+                                                    throw exception;
+                                                }
+                                            }
+                                            
+                                        });
+                                    }
+                                }
+                                
                                 if (!isSessionLoadedFromSessionsXML) {
                                     addStructConverters();
                                 }

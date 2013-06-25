@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sequencing.SequencingCallback;
@@ -75,6 +76,9 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     /** or the session is a session broker with only one member requiring sequencing callbacks. */
     /** more - the session is a session broker with several members requiring sequencing callbacks. */
     protected int numSessionsRequiringSequencingCallback;
+    
+    /** Allow exception in before/after completion to be wrapped. */
+    protected ExceptionHandler exceptionHandler;
 
     /**
      * INTERNAL:
@@ -85,6 +89,20 @@ public abstract class AbstractTransactionController implements ExternalTransacti
         this.activeUnitOfWorkThreadLocal = new ThreadLocal();
     }
 
+    /**
+     * Return the exception handler used to handle or wrap exceptions thrown in before/after completion.
+     */
+    public ExceptionHandler getExceptionHandler() {
+        return exceptionHandler;
+    }
+    
+    /**
+     * Set an exception handler to handle or wrap exceptions thrown in before/after completion.
+     */
+    public void setExceptionHandler(ExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+    }
+    
     /**
      * INTERNAL:
      * Associate the given unit of work and EclipseLink session with the active external

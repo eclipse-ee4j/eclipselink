@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -271,14 +271,10 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             setUnitOfWorkChangeSet(this.cumulativeUOWChangeSet);
         }
 
-        try {
-            commitTransactionAfterWriteChanges(); // this method will commit the
+        commitTransactionAfterWriteChanges(); // this method will commit the
                                                   // transaction
                                                   // and set the transaction
                                                   // flags appropriately
-        } catch (org.eclipse.persistence.exceptions.OptimisticLockException eclipselinkOLE) {
-            throw new javax.persistence.OptimisticLockException(eclipselinkOLE);
-        }
 
         // Merge after commit	
         mergeChangesIntoParent();

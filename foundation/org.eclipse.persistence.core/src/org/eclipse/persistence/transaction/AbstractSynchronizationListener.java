@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -266,6 +266,10 @@ public abstract class AbstractSynchronizationListener {
     public void handleException(RuntimeException exception) {
         // Don't do this just yet, since some may not be able to handle it
         //	getTransactionController().markTransactionForRollback();
+        if (this.controller.getExceptionHandler() != null) {
+            this.controller.getExceptionHandler().handleException(exception);
+            return;
+        }
         throw exception;
     }
 
