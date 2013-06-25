@@ -63,7 +63,7 @@ public class CacheBasedValueHolder extends DatabaseValueHolder {
         if (this.references != null && this.references.length != 0){
             Collection result = uow.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(this.references, this.mapping.getReferenceDescriptor()).values();
             if (result.size() == references.length){
-                if (mapping.isCollectionMapping()){
+                if (mapping.()){
                     return new Vector(result);
                 }else{
                     return result.iterator().next();
