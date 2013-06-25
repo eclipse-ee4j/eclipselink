@@ -23,11 +23,13 @@ import java.util.*;
 public abstract class ConcurrentPerformanceComparisonTest extends PerformanceComparisonTestCase {
     public static double NUMBER_OF_CPUS = 1.1; // 0.1 for hyper-threading.
     public static int DEFAULT_THREADS = 32;
+    protected int minThreads;
     protected int maxThreads;
     protected Exception caughtException;
     protected List workerThreads;
 
     public ConcurrentPerformanceComparisonTest() {
+        this.minThreads = 2;
         this.maxThreads = DEFAULT_THREADS;
     }
 
@@ -100,7 +102,7 @@ public abstract class ConcurrentPerformanceComparisonTest extends PerformanceCom
      * Start the worker threads.
      */
     public void setup() {
-        int threads = 2;
+        int threads = this.minThreads;
         while (threads <= getMaxThreads()) {
             this.addThreadTest(threads);
             threads = threads * 2;

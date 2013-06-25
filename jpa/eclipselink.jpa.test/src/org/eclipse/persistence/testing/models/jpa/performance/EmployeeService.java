@@ -19,6 +19,10 @@ import java.util.List;
  */
 public interface EmployeeService {
     List findAll();
+
+    void batchFind(long ids[]);
+    
+    int batchUpdate(long ids[], int retry);
     
     Employee findById(long id);
     

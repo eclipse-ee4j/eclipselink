@@ -9,12 +9,22 @@
             <property name="eclipselink.target-server" value="%%server-platform%%" />
             <!--property name="eclipselink.logging.level" value="FINEST"/>
             <property name="eclipselink.logging.logger" value="DefaultLogger"/-->
-            <!--property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.performance.CacheCoordinationSessionCustomizer"/-->
+            <!--property name="eclipselink.profiler" value="PerformanceMonitor"/-->
+            <!--property name="eclipselink.descriptor.customizer.Employee" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.Address" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.PhoneNumber" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.Project" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.LargeProject" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.SmallProject" value="oracle.eclipselink.coherence.integrated.config.GridCacheCustomizer"/-->
             <!--property name="eclipselink.cache.shared.default" value="false"/-->
             <property name="eclipselink.cache.type.default" value="Full" />
             <property name="eclipselink.cache.size.default" value="1000" />
             <!--property name="eclipselink.cache.database-event-listener" value="org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener"/-->
             <property name="eclipselink.cache.coordination.protocol" value="%%cachecoordination-protocol%%" />
+            <!--property name="eclipselink.cache.coordination.channel" value="cluster-test-1" /-->
+            <!--property name="eclipselink.cache.coordination.thread.pool.size" value="128" /-->
+            <!--property name="eclipselink.cache.coordination.serializer" value="org.eclipse.persistence.sessions.serializers.kryo.KryoSerializer" /-->
+            <!--property name="eclipselink.cache.coordination.serializer" value="oracle.toplink.exalogic.serializers.POFSerializer" /-->
             <!--property name="eclipselink.cache.coordination.propagate-asynchronously" value="false" /-->
             <!--property name="eclipselink.cache.coordination.jms.host" value="%%topic-host-url%%" /-->
             <property name="eclipselink.cache.coordination.jms.topic" value="%%topic-name%%" />

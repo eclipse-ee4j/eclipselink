@@ -14,12 +14,14 @@ package org.eclipse.persistence.testing.models.jpa.performance;
 
 import java.io.*;
 
+//import com.tangosol.io.pof.*;
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.
  * <p><b>Description</b>: Used in a 1:M relationship from an employee. Since many people have various numbers
  * they can be contacted at the type describes where the phone number could reach the Employee.
  */
 //@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+//public class PhoneNumber implements Serializable, PortableObject {
 public class PhoneNumber implements Serializable {
 
     /** Sequence id, added for Hibernate as it has issues with composite ids and caching. */
@@ -46,6 +48,18 @@ public class PhoneNumber implements Serializable {
         this.areaCode = theAreaCode;
         this.number = theNumber;
     }
+
+/*	public void readExternal(PofReader in) throws IOException {
+		this.id = in.readLong(0);
+		this.type = in.readString(1);
+		this.areaCode = in.readString(2);
+    }
+ 
+	public void writeExternal(PofWriter out) throws IOException {
+		out.writeLong(0, this.id);
+		out.writeString(1, this.type);
+		out.writeString(2, this.areaCode);
+    }*/
 
     public String getAreaCode() {
         return areaCode;

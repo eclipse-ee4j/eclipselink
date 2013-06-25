@@ -49,6 +49,7 @@
         <antcall target="runclient-cachecoordination-wls"/>
         <ant antfile="${jpatest.basedir}/antbuild.xml" target="generate-report" inheritRefs="true"/>
         <antcall target="server-undeploy-cachecoordination-cluster" inheritRefs="true">
+            <param name="ear.name" value="eclipselink-sessionbean-model.ear"/>
             <param name="application.name" value="eclipselink-sessionbean-model"/>
         </antcall>
         <!--ant antfile="${jpatest.basedir}/cachecoordination_${server.name}.xml" target="${server.name}-stop-cachecoordination" inheritRefs="true"/-->
@@ -94,7 +95,7 @@
         </antcall>
     </target>
 
-    <target name="build-deploy-concurrency-wls">
+    <target name="weblogic-build-deploy-concurrency">
         <sequential>
             <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/jpa-performance/server/persistence.xml" tofile="${jpatest.basedir}/${resource.dir}/jpa-performance/server/persistence_original.xml"/>
             <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_temp.xml"/>
@@ -120,6 +121,13 @@
             <delete file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
             <delete file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_temp.xml"/>
         </sequential>
+    </target>
+
+    <target name="weblogic-undeploy-concurrency">
+        <property file="${jpatest.basedir}/${server.name}.properties"/>
+        <antcall target="server-undeploy-cachecoordination-cluster" inheritRefs="true">
+            <param name="application.name" value="jpa-performance"/>
+        </antcall>
     </target>
 
     <target name="set-app-name-cachecoordination">
@@ -166,6 +174,7 @@
 
     <target name="server-undeploy-cachecoordination-cluster">
         <ant antfile="${jpatest.basedir}/cachecoordination_${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+            <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
             <property name="target.server" value="${rcm.wls.cluster.name}"/>
         </ant>

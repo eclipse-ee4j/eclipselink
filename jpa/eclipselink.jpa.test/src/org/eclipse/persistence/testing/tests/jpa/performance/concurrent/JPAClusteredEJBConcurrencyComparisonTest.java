@@ -30,11 +30,12 @@ import org.eclipse.persistence.testing.framework.*;
 public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerformanceComparisonTest {
     private List<String> serverURLs;
     
-    protected List<Employee> employees;
+    protected long ids[];
     protected ThreadLocal local;
     protected int errors;
     protected int server;
     protected double percentUpdate = 1.0;
+    protected int batchSize = 20;
     
     public JPAClusteredEJBConcurrencyComparisonTest() {
         setDescription("This test compares the concurrency of a cluster using a remote SessionBean.");
@@ -50,6 +51,10 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
         this.serverURLs.add(properties.getProperty("rcm.wls.server1.url"));
         this.serverURLs.add(properties.getProperty("rcm.wls.server2.url"));
         this.serverURLs.add(properties.getProperty("rcm.wls.server3.url"));
+
+        //this.serverURLs.add(properties.getProperty("rcm.wls.server4.url"));
+        //this.serverURLs.add(properties.getProperty("rcm.wls.server5.url"));
+        //this.serverURLs.add(properties.getProperty("rcm.wls.server6.url"));
         
         this.local = new ThreadLocal();
     }
@@ -106,7 +111,11 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
         this.local = new ThreadLocal();
         this.server = -1;
         EmployeeService service = getEmployeeService();
-        this.employees = service.findAll();
+        List<Employee> employees = service.findAll();
+        this.ids = new long[employees.size()];
+        for (int index = 0; index < employees.size(); index++) {
+            this.ids[index] = employees.get(index).getId();
+        }
         this.errors = 0;
     }
 
@@ -115,30 +124,60 @@ public class JPAClusteredEJBConcurrencyComparisonTest extends ConcurrentPerforma
      */
     @Override
     public void runTask() throws Exception {
+        runBatchTask();
+    }
+    
+    /**
+     * Update employee at random.
+     */
+    public void runBatchTask() throws Exception {
         try {
-        EmployeeService service = getEmployeeService();
-        int random = (int)(Math.random() * 1000000);
-        int index = (int)(Math.random() * this.employees.size());
-        double update = Math.random();
-        boolean success = false;
-        int count = 0;
-        while (!success && (count < 20)) {
-            count++;
-            Employee employee = service.findById(this.employees.get(index).getId());
-            if (update <= this.percentUpdate) {
-                employee.setFirstName(String.valueOf(random));
-                employee.setLastName(String.valueOf(random));
-                employee.setSalary(random);
-                try {
-                    service.update(employee);
-                    success = true;
-                } catch (Exception exception) {
-                    this.errors++;
-                }
-            } else {
-                success = true;
+            EmployeeService service = getEmployeeService();
+            long ids[] = new long[this.batchSize];
+            for (int index = 0; index < this.batchSize; index++) {
+                ids[index] = this.ids[(int)(Math.random() * this.ids.length)];                
             }
+            double update = Math.random();
+            if (update <= this.percentUpdate) {
+                int failures = service.batchUpdate(ids, 20);
+                this.errors = this.errors + failures;
+            } else {
+                service.batchFind(ids);
+            }
+        } catch (Exception error) {
+            error.printStackTrace();
+            throw error;
         }
+    }
+
+    /**
+     * Update employee at random.
+     */
+    public void runSingleTask() throws Exception {
+        try {
+            EmployeeService service = getEmployeeService();
+            int random = (int)(Math.random() * 1000000);
+            int index = (int)(Math.random() * this.ids.length);
+            double update = Math.random();
+            boolean success = false;
+            int count = 0;
+            while (!success && (count < 20)) {
+                count++;
+                Employee employee = service.findById(this.ids[index]);
+                if (update <= this.percentUpdate) {
+                    employee.setFirstName(String.valueOf(random));
+                    employee.setLastName(String.valueOf(random));
+                    employee.setSalary(random);
+                    try {
+                        service.update(employee);
+                        success = true;
+                    } catch (Exception exception) {
+                        this.errors++;
+                    }
+                } else {
+                    success = true;
+                }
+            }
         } catch (Exception error) {
             error.printStackTrace();
             throw error;

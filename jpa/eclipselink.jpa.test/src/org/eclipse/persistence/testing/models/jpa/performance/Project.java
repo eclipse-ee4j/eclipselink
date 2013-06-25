@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.models.jpa.performance;
 
 import java.io.*;
 
+//import com.tangosol.io.pof.*;
 /**
  * <b>Purpose</b>: Abstract superclass for Large & Small projects in Employee Demo
  * <p><b>Description</b>:     Project is an example of an abstract superclass. It demonstrates how class inheritance can be mapped to database tables.
@@ -24,6 +25,7 @@ import java.io.*;
  * @see SmallProject
  */
 //@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+//public abstract class Project implements Serializable, PortableObject {
 public abstract class Project implements Serializable {
     protected long id;
     protected long version;
@@ -35,6 +37,20 @@ public abstract class Project implements Serializable {
         this.name = "";
         this.description = "";
     }
+
+/*	public void readExternal(PofReader in) throws IOException {
+		this.id = in.readLong(0);
+		this.version = in.readLong(1);
+		this.name = in.readString(2);
+		this.description = in.readString(3);
+    }
+ 
+	public void writeExternal(PofWriter out) throws IOException {
+		out.writeLong(0, this.id);
+		out.writeLong(1, this.version);
+		out.writeString(2, this.name);
+		out.writeString(3, this.description);
+    }*/
 
     public String getDescription() {
         return description;

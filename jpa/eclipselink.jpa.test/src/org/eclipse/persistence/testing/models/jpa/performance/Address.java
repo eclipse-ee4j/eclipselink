@@ -14,12 +14,14 @@ package org.eclipse.persistence.testing.models.jpa.performance;
 
 import java.io.*;
 
+//import com.tangosol.io.pof.*;
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee
  * <p><b>Description</b>: Held in a private 1:1 relationship from Employee
  * @see Employee
  */
 //@org.hibernate.annotations.Cache(usage=org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+//public class Address implements Serializable, PortableObject {
 public class Address implements Serializable {
     protected long id;
     protected String street;
@@ -35,6 +37,24 @@ public class Address implements Serializable {
         this.street = "";
         this.country = "";
     }
+
+/*	public void readExternal(PofReader in) throws IOException {
+		this.id = in.readLong(0);
+		this.street = in.readString(1);
+		this.city = in.readString(2);
+		this.province = in.readString(3);
+		this.postalCode = in.readString(4);
+		this.country = in.readString(5);
+    }
+ 
+	public void writeExternal(PofWriter out) throws IOException {
+		out.writeLong(0, this.id);
+		out.writeString(1, this.street);
+		out.writeString(2, this.city);
+		out.writeString(3, this.province);
+		out.writeString(4, this.postalCode);
+		out.writeString(5, this.country);
+    }*/
 
     public String getCity() {
         return city;

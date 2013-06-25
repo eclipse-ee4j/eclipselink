@@ -12,14 +12,24 @@
  ******************************************************************************/  
  package org.eclipse.persistence.testing.models.jpa.performance;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.UserTransaction;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -36,6 +46,56 @@ public class EmployeeServiceBean implements EmployeeService {
     public List findAll() {
         Query query = this.entityManager.createQuery("Select e from Employee e");
         return query.getResultList();
+    }
+    
+    /**
+     * Batch find used to off load driver machine.
+     * Simulates n find requests.
+     */
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public void batchFind(long ids[]) {
+        for (long id : ids) {
+            Employee employee = findById(id);
+            serialize(employee);
+        }
+    }
+    
+    /**
+     * Batch find used to off load driver machine.
+     * Simulates n find requests.
+     */
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public int batchUpdate(long ids[], int retry) {
+        int errors = 0;
+        for (long id : ids) {
+            boolean success = false;
+            int attempt = 1;
+            while (!success && (attempt <= retry)) {
+                attempt++;
+                beginTransaction();
+                Employee employee = findById(id);
+                commitTransaction();
+                byte[] bytes = (byte[])serialize(employee);
+                try {
+                    employee = (Employee)deserialize(bytes);
+                    int random = (int)(Math.random() * 1000000);
+                    employee.setFirstName(String.valueOf(random));
+                    employee.setLastName(String.valueOf(random));
+                    employee.setSalary(random);
+                    beginTransaction();
+                    try {
+                        update(employee);
+                    } finally {
+                        commitTransaction();
+                    }
+                    success = true;
+                } catch (Exception failed) {
+                    System.out.println(failed.toString());
+                    errors++;
+                }
+            }
+        }
+        return errors;
     }
     
     public Employee findById(long id) {
@@ -105,5 +165,68 @@ public class EmployeeServiceBean implements EmployeeService {
             project.setName("Tracker");
             this.entityManager.persist(project);
         }
+    }
+
+    /**
+     * Start a new JTA transaction.
+     */
+    public void beginTransaction() {
+        try {
+            getUserTransaction().begin();
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    /**
+     * Commit the existing JTA transaction.
+     */
+    public void commitTransaction() {
+        try {
+            getUserTransaction().commit();
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+    
+    /**
+     * Roll back the existing JTA transaction.
+     */
+    public void rollbackTransaction() {
+        try {
+            getUserTransaction().rollback();
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+    
+    public UserTransaction getUserTransaction() {
+        try {
+            return (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
+        } catch (NamingException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+    
+    public Object deserialize(Object bytes) {
+        ByteArrayInputStream byteIn = new ByteArrayInputStream((byte[])bytes);
+        try {
+            ObjectInputStream objectIn = new ObjectInputStream(byteIn);
+            return objectIn.readObject();
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }        
+    }    
+
+    public Object serialize(Object object) {
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
+            objectOut.writeObject(object);
+            objectOut.flush();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+        return byteOut.toByteArray();        
     }
 }
