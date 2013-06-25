@@ -181,7 +181,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected transient Map<String, Class> classTypes;
 
     /** Allow for case in field names to be ignored as some databases are not case sensitive and when using custom this can be an issue. */
-    protected static boolean shouldIgnoreCaseOnFieldComparisons = false;
+    public static boolean shouldIgnoreCaseOnFieldComparisons = false;
 
 
     /** Bug#3214927 The default is 32000 for DynamicSQLBatchWritingMechanism.  

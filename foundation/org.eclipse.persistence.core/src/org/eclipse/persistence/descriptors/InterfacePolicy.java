@@ -12,17 +12,24 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
-import java.io.*;
+import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 
 /**
  * <b>Purpose</b>: Allows for a descriptor's implemented interfaces to be configured.
@@ -32,11 +39,11 @@ import org.eclipse.persistence.queries.*;
  *
  * @since TopLink for Java 2.0
  */
-public class InterfacePolicy implements Serializable {
-    protected Vector parentInterfaces;
-    protected Vector parentInterfaceNames;
-    protected Vector parentDescriptors;
-    protected Vector childDescriptors;
+public class InterfacePolicy implements Serializable, Cloneable {
+    protected List<Class> parentInterfaces;
+    protected List<String> parentInterfaceNames;
+    protected List<ClassDescriptor> parentDescriptors;
+    protected List<ClassDescriptor> childDescriptors;
     protected ClassDescriptor descriptor;
     protected Class implementorDescriptor;
     protected String implementorDescriptorClassName;
@@ -47,10 +54,10 @@ public class InterfacePolicy implements Serializable {
      * Only descriptor involved in interface should have a policy.
      */
     public InterfacePolicy() {
-        this.childDescriptors = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        this.parentInterfaces = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        this.parentInterfaceNames = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
-        this.parentDescriptors = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        this.childDescriptors = new ArrayList();
+        this.parentInterfaces = new ArrayList(2);
+        this.parentInterfaceNames = new ArrayList(2);
+        this.parentDescriptors = new ArrayList(2);
     }
 
     /**
@@ -68,7 +75,7 @@ public class InterfacePolicy implements Serializable {
      * Add child descriptor to the parent descriptor.
      */
     public void addChildDescriptor(ClassDescriptor childDescriptor) {
-        getChildDescriptors().addElement(childDescriptor);
+        getChildDescriptors().add(childDescriptor);
     }
 
     /**
@@ -76,7 +83,7 @@ public class InterfacePolicy implements Serializable {
      * Add parent descriptor.
      */
     public void addParentDescriptor(ClassDescriptor parentDescriptor) {
-        getParentDescriptors().addElement(parentDescriptor);
+        getParentDescriptors().add(parentDescriptor);
     }
 
     /**
@@ -86,11 +93,11 @@ public class InterfacePolicy implements Serializable {
      * This method should be called once for each parent Interface of the Descriptor.
      */
     public void addParentInterface(Class parentInterface) {
-        getParentInterfaces().addElement(parentInterface);
+        getParentInterfaces().add(parentInterface);
     }
 
     public void addParentInterfaceName(String parentInterfaceName) {
-        getParentInterfaceNames().addElement(parentInterfaceName);
+        getParentInterfaceNames().add(parentInterfaceName);
     }
 
     /**
@@ -105,7 +112,7 @@ public class InterfacePolicy implements Serializable {
      * INTERNAL:
      * Return all the child descriptors.
      */
-    public Vector getChildDescriptors() {
+    public List<ClassDescriptor> getChildDescriptors() {
         return childDescriptors;
     }
 
@@ -136,22 +143,22 @@ public class InterfacePolicy implements Serializable {
      * INTERNAL:
      * Return all the parent descriptors.
      */
-    public Vector getParentDescriptors() {
+    public List<ClassDescriptor> getParentDescriptors() {
         return parentDescriptors;
     }
 
     /**
      * INTERNAL:
-     * Return the vector of parent interfaces.
+     * Return the list of parent interfaces.
      */
-    public Vector getParentInterfaces() {
+    public List<Class> getParentInterfaces() {
         return parentInterfaces;
     }
 
-    public Vector getParentInterfaceNames() {
+    public List<String> getParentInterfaceNames() {
         if (parentInterfaceNames.isEmpty() && !parentInterfaces.isEmpty()) {
             for (int i = 0; i < parentInterfaces.size(); i++) {
-                parentInterfaceNames.addElement(((Class)parentInterfaces.elementAt(i)).getName());
+                parentInterfaceNames.add(parentInterfaces.get(i).getName());
             }
         }
         return parentInterfaceNames;
@@ -164,7 +171,7 @@ public class InterfacePolicy implements Serializable {
      * It will also convert referenced classes to the versions of the classes from the classLoader.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        Vector newParentInterfaces = new Vector();
+        List<Class> newParentInterfaces = new ArrayList(2);
         for (Iterator iterator = getParentInterfaceNames().iterator(); iterator.hasNext(); ) {
             String interfaceName = (String)iterator.next();
             Class interfaceClass = null;
@@ -214,24 +221,54 @@ public class InterfacePolicy implements Serializable {
      * Select all objects for a concrete descriptor.
      */
     protected Object selectAllObjects(ReadAllQuery query) {
-        ReadAllQuery concreteQuery = (ReadAllQuery) query.deepClone();
-        concreteQuery.setReferenceClass(descriptor.getJavaClass());
-        concreteQuery.setDescriptor(descriptor);
-        
-        // Avoid cloning the query again ...
-        concreteQuery.setIsExecutionClone(true);
-        concreteQuery.getExpressionBuilder().setQueryClassAndDescriptor(descriptor.getJavaClass(), descriptor);
-            
-        // Update the selection criteria if needed as well and don't lose 
-        // the translation row.
-        if (concreteQuery.getQueryMechanism().getSelectionCriteria() != null) {
-            //make sure query builder is used for the selection criteria as deepClone will create
-            //two separate builders.
-            concreteQuery.setSelectionCriteria(concreteQuery.getQueryMechanism().getSelectionCriteria().rebuildOn(concreteQuery.getExpressionBuilder()));
-            return query.getSession().executeQuery(concreteQuery, query.getTranslationRow());
+        ReadAllQuery concreteQuery = (ReadAllQuery)prepareQuery(query);
+        return query.getSession().executeQuery(concreteQuery, query.getTranslationRow());
+    }
+    
+    /**
+     * INTERNAL:
+     * Select all objects for a concrete descriptor.
+     */
+    protected ObjectLevelReadQuery prepareQuery(ObjectLevelReadQuery query) {
+        ObjectLevelReadQuery concreteQuery = null;
+        Class javaClass = this.descriptor.getJavaClass();
+        // PERF: First check the subclass query cache for the prepared query.
+        boolean shouldPrepare = query.shouldPrepare();
+        if (shouldPrepare) {
+            concreteQuery = (ObjectLevelReadQuery)query.getConcreteSubclassQueries().get(javaClass);
+        }
+        if (concreteQuery == null) {
+            concreteQuery = (ObjectLevelReadQuery)query.deepClone();
+            concreteQuery.setReferenceClass(javaClass);
+            concreteQuery.setDescriptor(this.descriptor);
+            concreteQuery.getExpressionBuilder().setQueryClassAndDescriptor(javaClass, this.descriptor);
+
+            // Update the selection criteria if needed as well and don't lose 
+            // the translation row.
+            if (concreteQuery.getQueryMechanism().getSelectionCriteria() != null) {
+                //make sure query builder is used for the selection criteria as deepClone will create
+                //two separate builders.
+                concreteQuery.getExpressionBuilder().setSession(query.getSession().getRootSession(concreteQuery));
+                concreteQuery.setSelectionCriteria(concreteQuery.getQueryMechanism().getSelectionCriteria().rebuildOn(concreteQuery.getExpressionBuilder()));
+            }
+            if (shouldPrepare) {
+                concreteQuery.setTranslationRow(null);
+                if (concreteQuery.isReadObjectQuery()) {
+                    ((ReadObjectQuery)concreteQuery).clearSelectionId();
+                }
+                concreteQuery.checkPrepare(query.getSession(), query.getTranslationRow());
+                query.getConcreteSubclassQueries().put(javaClass, concreteQuery);
+                concreteQuery = (ObjectLevelReadQuery)concreteQuery.clone();
+                concreteQuery.setTranslationRow(query.getTranslationRow());
+            }
+            concreteQuery.setIsExecutionClone(true);
+        } else {
+            concreteQuery = (ObjectLevelReadQuery)concreteQuery.clone();
+            concreteQuery.setIsExecutionClone(true);
+            concreteQuery.setTranslationRow(query.getTranslationRow());
         }
         
-        return query.getSession().executeQuery(concreteQuery);
+        return concreteQuery;
     }
     
     /**
@@ -241,10 +278,10 @@ public class InterfacePolicy implements Serializable {
      */
     public Object selectAllObjectsUsingMultipleTableSubclassRead(ReadAllQuery query) throws DatabaseException {
         ContainerPolicy containerPolicy = query.getContainerPolicy();
-        Object objects = containerPolicy.containerInstance(1);
+        Object objects = containerPolicy.containerInstance();
         int size = this.childDescriptors.size();
         for (int index = 0; index < size; index++) {
-            ClassDescriptor descriptor = (ClassDescriptor)this.childDescriptors.get(index);
+            ClassDescriptor descriptor = this.childDescriptors.get(index);
             objects = containerPolicy.concatenateContainers(
                     objects, descriptor.getInterfacePolicy().selectAllObjects(query), query.getSession());
         }
@@ -257,10 +294,7 @@ public class InterfacePolicy implements Serializable {
      * Select one object of any concrete subclass.
      */     
     protected Object selectOneObject(ReadObjectQuery query) throws DescriptorException {
-        ReadObjectQuery concreteQuery = (ReadObjectQuery) query.clone();
-        Class javaClass = descriptor.getJavaClass();
-        concreteQuery.setReferenceClass(javaClass);
-        concreteQuery.setDescriptor(descriptor);
+        ReadObjectQuery concreteQuery = (ReadObjectQuery)prepareQuery(query);        
         return query.getSession().executeQuery(concreteQuery, concreteQuery.getTranslationRow());
     }
     
@@ -269,13 +303,17 @@ public class InterfacePolicy implements Serializable {
      * Select one object of any concrete subclass.
      */
     public Object selectOneObjectUsingMultipleTableSubclassRead(ReadObjectQuery query) throws DatabaseException, QueryException {
-        Object object = null;
-        for (Enumeration childDescriptors = getChildDescriptors().elements(); childDescriptors.hasMoreElements() && (object == null);) {
-            ClassDescriptor descriptor = (ClassDescriptor)childDescriptors.nextElement();
-            object = descriptor.getInterfacePolicy().selectOneObject(query);
+        int size = this.childDescriptors.size();
+        for (int index = 0; index < size; index++) {
+            ClassDescriptor descriptor = this.childDescriptors.get(index);
+            Object object = descriptor.getInterfacePolicy().selectOneObject(query);
+            if (object != null) {
+                System.out.println(descriptor + " : " + object);
+                return object;
+            }
         }
 
-        return object;
+        return null;
     }
 
     /**
@@ -305,17 +343,17 @@ public class InterfacePolicy implements Serializable {
     /**
      * Set the Vector to store parent interfaces.
      */
-    public void setParentInterfaces(Vector parentInterfaces) {
+    public void setParentInterfaces(List<Class> parentInterfaces) {
         this.parentInterfaces = parentInterfaces;
     }
 
-    public void setParentInterfaceNames(Vector parentInterfaceNames) {
+    public void setParentInterfaceNames(List<String> parentInterfaceNames) {
         this.parentInterfaceNames = parentInterfaceNames;
     }
 
     /**
      * INTERNAL:
-     * Returns true if this descriptor should be ignored and the implenting
+     * Returns true if this descriptor should be ignored and the implementing
      * descriptor should be used instead.
      */
     public boolean usesImplementorDescriptor() {

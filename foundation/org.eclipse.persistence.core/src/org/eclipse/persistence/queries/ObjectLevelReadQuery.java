@@ -192,6 +192,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /** Allow concrete subclasses calls to be prepared and cached for inheritance queries. */
     protected Map<Class, DatabaseCall> concreteSubclassCalls;
     
+    /** Allow concrete subclasses queries to be prepared and cached for inheritance queries. */
+    protected Map<Class, DatabaseQuery> concreteSubclassQueries;
+    
     /** Allow concrete subclasses joined mapping indexes to be prepared and cached for inheritance queries. */
     protected Map<Class, Map<DatabaseMapping, Object>> concreteSubclassJoinedMappingIndexes;
     
@@ -1913,6 +1916,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
             this.isReferenceClassLocked = null;
             this.concreteSubclassCalls = null;
+            this.concreteSubclassQueries = null;
             this.concreteSubclassJoinedMappingIndexes = null;
         }
     }
@@ -2027,6 +2031,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.shouldOuterJoinSubclasses = objectQuery.shouldOuterJoinSubclasses;
             this.shouldUseDefaultFetchGroup = objectQuery.shouldUseDefaultFetchGroup;
             this.concreteSubclassCalls = objectQuery.concreteSubclassCalls;
+            this.concreteSubclassQueries = objectQuery.concreteSubclassQueries;
             this.concreteSubclassJoinedMappingIndexes = objectQuery.concreteSubclassJoinedMappingIndexes;
             this.additionalFields = objectQuery.additionalFields;
             this.partialAttributeExpressions = objectQuery.partialAttributeExpressions;
@@ -2194,11 +2199,19 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
         // Ensure the subclass call cache is initialized if a multiple table inheritance descriptor.
         // This must be initialized in the query before it is cloned, and never cloned.
-        if ((!shouldOuterJoinSubclasses()) && this.descriptor.hasInheritance() && this.descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead()) {
+        if (!shouldOuterJoinSubclasses() && this.descriptor.hasInheritance()
+                && this.descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead()) {
             getConcreteSubclassCalls();
             if (hasJoining()) {
                 getConcreteSubclassJoinedMappingIndexes();
             }
+        }
+
+        // Ensure the subclass call cache is initialized if a table per class inheritance descriptor.
+        // This must be initialized in the query before it is cloned, and never cloned.
+        if (this.descriptor.hasTablePerClassPolicy()
+                && (this.descriptor.getTablePerClassPolicy().getChildDescriptors().size() > 0)) {
+            getConcreteSubclassQueries();
         }
     }
 
@@ -2992,6 +3005,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             concreteSubclassCalls = new ConcurrentHashMap(8);
         }
         return concreteSubclassCalls;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the cache of concrete subclass queries.
+     * This allow concrete subclasses calls to be prepared and cached for table per class inheritance and interface queries.
+     */
+    public Map<Class, DatabaseQuery> getConcreteSubclassQueries() {
+        if (concreteSubclassQueries == null) {
+            concreteSubclassQueries = new ConcurrentHashMap(8);
+        }
+        return concreteSubclassQueries;
     }
 
     /**

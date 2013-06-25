@@ -453,16 +453,14 @@ public class ExpressionBuilder extends ObjectExpression {
      * Rebuild myself against the base, with the values of parameters supplied by the context
      * expression. This is used for transforming a standalone expression (e.g. the join criteria of a mapping)
      * into part of some larger expression. You normally would not call this directly, instead calling twist
-     * See the comment there for more details"
-     * @param newBase
-     * @param context
-     * @return
+     * See the comment there for more details.
      */
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
-        // TODO: this is wrong, it should only return the newBase if equal to the old base
-        // since twist needs to copy as it twists it needs a map to keep track of new bases
-        return newBase;
+        if (oldBase == null || this == oldBase) {
+            return newBase;            
+        }
+        return this;
     }
 
     /**

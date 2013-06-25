@@ -482,13 +482,6 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
         if (getHistoryPolicy() != null) {
             getHistoryPolicy().initialize(session);
         }
-        
-        if (getReferenceDescriptor() != null && getReferenceDescriptor().hasTablePerClassPolicy()) {
-            // This will do nothing if we have already prepared for this 
-            // source mapping or if the source mapping does not require
-            // any special prepare logic.
-            getReferenceDescriptor().getTablePerClassPolicy().prepareChildrenSelectionQuery(this, session);              
-        }
     }
 
     /**

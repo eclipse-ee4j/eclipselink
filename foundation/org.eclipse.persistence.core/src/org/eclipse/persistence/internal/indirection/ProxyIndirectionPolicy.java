@@ -113,7 +113,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             //CR#3838
             descriptor = session.getDescriptor(query.getReferenceClass());
             if (descriptor.isDescriptorForInterface()) {
-                descriptor = (ClassDescriptor)descriptor.getInterfacePolicy().getChildDescriptors().firstElement();
+                descriptor = descriptor.getInterfacePolicy().getChildDescriptors().get(0);
             }
         } catch (Exception e) {
             return null;
@@ -148,7 +148,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             // Need an instance of the implementing class
             ClassDescriptor d = originalQuery.getDescriptor();
             if (d.isDescriptorForInterface()) {
-                d = (ClassDescriptor)originalQuery.getDescriptor().getInterfacePolicy().getChildDescriptors().firstElement();
+                d = originalQuery.getDescriptor().getInterfacePolicy().getChildDescriptors().get(0);
             }
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 object = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(d.getJavaClass()));

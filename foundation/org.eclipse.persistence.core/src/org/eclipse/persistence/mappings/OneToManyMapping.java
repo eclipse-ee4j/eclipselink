@@ -505,13 +505,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             initializeRemoveAllTargetsQuery(session);
         }
         
-        if (getReferenceDescriptor().hasTablePerClassPolicy()) {
-            // This will do nothing if we have already prepared for this 
-            // source mapping or if the source mapping does not require
-            // any special prepare logic.
-            getReferenceDescriptor().getTablePerClassPolicy().prepareChildrenSelectionQuery(this, session);              
-        }
-        
         // Check if any foreign keys reference a secondary table.
         if (getDescriptor().getTables().size() > 1) {
             DatabaseTable firstTable = getDescriptor().getTables().get(0);

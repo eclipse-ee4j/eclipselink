@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 import java.util.Collection;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -80,6 +82,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         suite.addTest(new TablePerClassInheritanceJUnitTest("testValidateAssassinWithBombAndEliminations"));
         suite.addTest(new TablePerClassInheritanceJUnitTest("testNamedQueryFindAllWeapons"));
         suite.addTest(new TablePerClassInheritanceJUnitTest("testNamedQueryFindAllWeaponsWhereDescriptionContainsSniper"));
+        suite.addTest(new TablePerClassInheritanceJUnitTest("testBatchFindAllWeapons"));        
         suite.addTest(new TablePerClassInheritanceJUnitTest("testCreateNewSocialClubsWithMembers"));
         suite.addTest(new TablePerClassInheritanceJUnitTest("testValidateSocialClub1Members"));
         suite.addTest(new TablePerClassInheritanceJUnitTest("testValidateSocialClub2Members"));
@@ -102,11 +105,11 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     
     public void testCreateAssassinWithGun() {
         EntityManager em = createEntityManager();
-        
+        Assassin assassin = null;
         try {
             beginTransaction(em);
 
-            Assassin assassin = new Assassin();
+            assassin = new Assassin();
             assassin.setName("Assassin1");
             
             Gun gun = new Gun();
@@ -127,6 +130,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+        verifyObjectInCacheAndDatabase(assassin);
     }
     
     public void testValidateAssassinWithGun() {
@@ -158,14 +162,14 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     
     public void testAddDirectElimination() {
         EntityManager em = createEntityManager();
-        
+        DirectElimination directElimination = null;
         try {
             beginTransaction(em);
             Assassin assassin = em.find(Assassin.class, assassinId);
             
             // Assassin already has a gun, therefore, correct weapon already set
             // for a direct elimination.
-            DirectElimination directElimination = new DirectElimination();
+            directElimination = new DirectElimination();
             directElimination.setId(new Long(System.currentTimeMillis()).intValue());
             directElimination.setName("Joe Smuck");
             directElimination.setDescription("Because he has a big mouth");
@@ -181,6 +185,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+        verifyObjectInCacheAndDatabase(directElimination);
     }
     
     public void testValidateDirectElimination() {
@@ -201,7 +206,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     
     public void testAddIndirectElimination() {
         EntityManager em = createEntityManager();
-
+        IndirectElimination indirectElimination = null;
         try {
             beginTransaction(em);
             
@@ -215,7 +220,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             // Must set the correct weapon before an elimination.
             assassin.setWeapon(bomb);
             
-            IndirectElimination indirectElimination = new IndirectElimination();
+            indirectElimination = new IndirectElimination();
             indirectElimination.setId(new Long(System.currentTimeMillis()).intValue());
             indirectElimination.setName("Jill Smuck");
             indirectElimination.setDescription("Because she has a big mouth");
@@ -231,6 +236,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+        verifyObjectInCacheAndDatabase(indirectElimination);
     }
     
     public void testValidateIndirectElimination() {
@@ -276,9 +282,51 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             Collection<Weapon> weapons = query.getResultList();
             assertFalse("No weapons were returned", weapons.isEmpty());
             assertTrue("Expected weapon count of 2 not returned", weapons.size() == 2);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Error issuing find all weapons query: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    // At this point no Weapon objects have been created only only real weapons.
+    // So if the query returns an empty collection, something is not working.
+    // We have create a gun and a bomb at this point ...
+    public void testBatchFindAllWeapons() {
+        EntityManager em = createEntityManager();
+        
+        try {
+            Query query = em.createQuery("Select w from Weapon w");
+            query.setHint(QueryHints.BATCH, "w.assassin");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            Collection<Weapon> weapons = query.getResultList();
+            for (Weapon weapon : weapons) {
+                weapon.getAssassin();
+            }
+            assertFalse("No weapons were returned", weapons.isEmpty());
+            assertTrue("Expected weapon count of 2 not returned", weapons.size() == 2);
+
+            clearCache();
+            em.clear();
+            query = em.createQuery("Select w from Weapon w");
+            query.setHint(QueryHints.BATCH, "w.assassin");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.EXISTS);
+            weapons = query.getResultList();
+            for (Weapon weapon : weapons) {
+                weapon.getAssassin();
+            }
+            assertFalse("No weapons were returned", weapons.isEmpty());
+            assertTrue("Expected weapon count of 2 not returned", weapons.size() == 2);
+            
+            clearCache();
+            em.clear();
+            query = em.createQuery("Select w from Weapon w");
+            query.setHint(QueryHints.BATCH, "w.assassin");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.JOIN);
+            weapons = query.getResultList();
+            for (Weapon weapon : weapons) {
+                weapon.getAssassin();
+            }
+            assertFalse("No weapons were returned", weapons.isEmpty());
+            assertTrue("Expected weapon count of 2 not returned", weapons.size() == 2);
         } finally {
             closeEntityManager(em);
         }
@@ -310,22 +358,24 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     // ((ObjectLevelReadQuery)((EJBQueryImpl) query).getDatabaseQuery()).setShouldOuterJoinSubclasses(true);
     public void testCreateNewSocialClubsWithMembers() {
         EntityManager em = createEntityManager();
-        
+        SocialClub socialClub1 = null;
+        SocialClub socialClub2 = null;
+        SocialClub socialClub3 = null;        
         try {
             beginTransaction(em);
 
             // Create some new clubs.
-            SocialClub socialClub1 = new SocialClub();
+            socialClub1 = new SocialClub();
             socialClub1.setName("Jimmy's my name and killing is my game!");
             em.persist(socialClub1);
             socialClub1Id = socialClub1.getId();
             
-            SocialClub socialClub2 = new SocialClub();
+            socialClub2 = new SocialClub();
             socialClub2.setName("Sharp shooting");
             em.persist(socialClub2);
             socialClub2Id = socialClub2.getId();
             
-            SocialClub socialClub3 = new SocialClub();
+            socialClub3 = new SocialClub();
             socialClub3.setName("Precision explosions");
             em.persist(socialClub3);
             socialClub3Id = socialClub3.getId();
@@ -356,6 +406,9 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+        verifyObjectInCacheAndDatabase(socialClub1);
+        verifyObjectInCacheAndDatabase(socialClub2);
+        verifyObjectInCacheAndDatabase(socialClub3);
     }
     
     public void testValidateSocialClub1Members() {

@@ -930,6 +930,16 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     }
 
     /**
+     * INTERNAL:
+     * Clear the selection id and object.
+     * This is done after cloning queries to prepare them in inheritance.
+     */
+    public void clearSelectionId() {
+        this.selectionId = null;
+        this.selectionObject = null;
+    }
+
+    /**
      * PUBLIC:
      * The Id of the object to be selected by the query.
      * This will generate a query by primary key.

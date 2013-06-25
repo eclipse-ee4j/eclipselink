@@ -157,15 +157,18 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         if (this == table) {
             return true;
         }
-        if (DatabasePlatform.shouldIgnoreCaseOnFieldComparisons()) {
-            if (getName().equalsIgnoreCase(table.getName())) {
-                if ((getTableQualifier().length() == 0) || (table.getTableQualifier().length() == 0) || (getTableQualifier().equalsIgnoreCase(table.getTableQualifier()))) {
+        if (table == null) {
+            return false;
+        }
+        if (DatabasePlatform.shouldIgnoreCaseOnFieldComparisons) {
+            if (this.name.equalsIgnoreCase(table.name)) {
+                if ((this.tableQualifier.length() == 0) || (table.tableQualifier.length() == 0) || (this.tableQualifier.equalsIgnoreCase(table.tableQualifier))) {
                     return true;
                 }
             }
         } else {
-            if (getName().equals(table.getName())) {
-                if ((getTableQualifier().length() == 0) || (table.getTableQualifier().length() == 0) || (getTableQualifier().equals(table.getTableQualifier()))) {
+            if (this.name.equals(table.name)) {
+                if ((this.tableQualifier.length() == 0) || (table.tableQualifier.length() == 0) || (this.tableQualifier.equals(table.tableQualifier))) {
                     return true;
                 }
             }

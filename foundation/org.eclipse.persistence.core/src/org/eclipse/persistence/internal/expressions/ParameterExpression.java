@@ -194,15 +194,15 @@ public class ParameterExpression extends BaseExpression {
      * This may require recursion if it is a nested parameter.
      */
     public Object getValue(AbstractRecord translationRow, DatabaseQuery query, AbstractSession session) {
-        if (getField() == null) {
+        if (this.field == null) {
             return null;
         }
 
         Object value = null;
 
         // Check for nested parameters.
-        if (getBaseExpression() != null) {
-            value = ((ParameterExpression)getBaseExpression()).getValue(translationRow, query, session);
+        if (this.baseExpression != null) {
+            value = ((ParameterExpression)this.baseExpression).getValue(translationRow, query, session);
             if (value == null) {
                 return null;
             }
@@ -226,22 +226,22 @@ public class ParameterExpression extends BaseExpression {
                 // Bug 245268 must unwrap before validating parameter type
                 validateParameterValueAgainstMapping(value, true);
                 
-                translationRow.put(((ParameterExpression)getBaseExpression()).getField(), value);
+                translationRow.put(((ParameterExpression)this.baseExpression).getField(), value);
 
                 // The local parameter is either a field or attribute of the object.
-                DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForField(getField());
+                DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForField(this.field);
                 if (mapping != null) {
-                    value = mapping.valueFromObject(value, getField(), session);
+                    value = mapping.valueFromObject(value, this.field, session);
                 } else {
-                    mapping = descriptor.getObjectBuilder().getMappingForAttributeName(getField().getName());
+                    mapping = descriptor.getObjectBuilder().getMappingForAttributeName(this.field.getName());
                     if (mapping != null) {
                         value = mapping.getRealAttributeValueFromObject(value, session);
                     } else {
-                        DatabaseField queryKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(getField().getName());
+                        DatabaseField queryKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(this.field.getName());
                         if (queryKeyField != null) {
-                            mapping = descriptor.getObjectBuilder().getMappingForField(getField());
+                            mapping = descriptor.getObjectBuilder().getMappingForField(this.field);
                             if (mapping != null) {
-                                value = mapping.valueFromObject(value, getField(), session);
+                                value = mapping.valueFromObject(value, this.field, session);
                             }
                         }
                     }
@@ -252,27 +252,31 @@ public class ParameterExpression extends BaseExpression {
             if (translationRow == null) {
                 value = AbstractRecord.noEntry;
             } else {
-                value = translationRow.getIndicatingNoEntry(getField());
+                value = translationRow.getIndicatingNoEntry(this.field);
             }
             
             // Throw an exception if the field is not mapped. Null may be 
             // returned if it is a property so check for null and isProperty
-            if (value == AbstractRecord.noEntry || (value == null && isProperty())) {
-                if (isProperty()) {
+            if ((value == AbstractRecord.noEntry) || ((value == null) && this.isProperty)) {
+                if (this.isProperty) {
                     if (query != null) {
-                        value = query.getSession().getProperty(getField().getName());
+                        value = query.getSession().getProperty(this.field.getName());
                     } else {
-                        value = session.getProperty(getField().getName());
+                        value = session.getProperty(this.field.getName());
                     }
                         
                     if (value == null) {
-                        throw QueryException.missingContextPropertyForPropertyParameterExpression(query, getField().getName());
+                        throw QueryException.missingContextPropertyForPropertyParameterExpression(query, this.field.getName());
                     }
                     
                     return value;
                 }
-                
-                throw QueryException.parameterNameMismatch(getField().getName());
+                // Also check the same field, but a different table for table per class inheritance.
+                // TODO: JPA also allows for field to be renamed in subclasses, this needs to account for that (never has...).
+                value = translationRow.getIndicatingNoEntry(new DatabaseField(this.field.getName()));
+                if ((value == AbstractRecord.noEntry) || (value == null)) {
+                    throw QueryException.parameterNameMismatch(this.field.getName());
+                }
             }
             
             // validate parameter type against mapping
@@ -281,8 +285,8 @@ public class ParameterExpression extends BaseExpression {
         }
 
         // Convert the value to the correct type, i.e. object type mappings.
-        if (getLocalBase() != null) {
-            value = getLocalBase().getFieldValue(value, session);
+        if (this.localBase != null) {
+            value = this.localBase.getFieldValue(value, session);
         }
 
         return value;

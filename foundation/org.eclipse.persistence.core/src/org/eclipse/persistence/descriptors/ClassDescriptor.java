@@ -561,7 +561,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (mapping.getDescriptor() == null) {
             mapping.setDescriptor(this);
         }
-        getMappings().addElement(mapping);
+        getMappings().add(mapping);
         return mapping;
     }
 
@@ -1302,7 +1302,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
 
         if (clonedDescriptor.hasSerializedObjectPolicy()) {
-            clonedDescriptor.setSerializedObjectPolicy((SerializedObjectPolicy)getSerializedObjectPolicy().clone());
+            clonedDescriptor.setSerializedObjectPolicy(getSerializedObjectPolicy().clone());
         }
         
         // The returning policy
@@ -3505,9 +3505,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         setInterfaceInitializationStage(INITIALIZED);
 
         if (isInterfaceChildDescriptor()) {
-            for (Enumeration interfaces = getInterfacePolicy().getParentInterfaces().elements();
-                     interfaces.hasMoreElements();) {
-                Class parentInterface = (Class)interfaces.nextElement();
+            for (Iterator<Class> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
+                     interfaces.hasNext();) {
+                Class parentInterface = interfaces.next();
                 ClassDescriptor parentDescriptor = session.getDescriptor(parentInterface);
                 parentDescriptor.interfaceInitialization(session);
 
@@ -4074,9 +4074,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         assignDefaultValues(session);
         
         if (isInterfaceChildDescriptor()) {
-            for (Enumeration interfaces = getInterfacePolicy().getParentInterfaces().elements();
-                     interfaces.hasMoreElements();) {
-                Class parentInterface = (Class)interfaces.nextElement();
+            for (Iterator<Class> interfaces = getInterfacePolicy().getParentInterfaces().iterator();
+                     interfaces.hasNext();) {
+                Class parentInterface = interfaces.next();
                 ClassDescriptor parentDescriptor = session.getDescriptor(parentInterface);
                 if ((parentDescriptor == null) || (parentDescriptor.getJavaClass() == getJavaClass()) || parentDescriptor.getInterfacePolicy().usesImplementorDescriptor()) {
                     session.getProject().getDescriptors().put(parentInterface, this);

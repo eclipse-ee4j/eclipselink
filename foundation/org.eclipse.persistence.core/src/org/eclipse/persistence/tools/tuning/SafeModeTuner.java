@@ -36,7 +36,6 @@ public class SafeModeTuner implements SessionTuner {
         properties.put(PersistenceUnitProperties.JDBC_BIND_PARAMETERS, "false");
         properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
         properties.put(PersistenceUnitProperties.TEMPORAL_MUTABLE, "true");
-        properties.put(PersistenceUnitProperties.ORDER_UPDATES, "true");
     }
 
     /**

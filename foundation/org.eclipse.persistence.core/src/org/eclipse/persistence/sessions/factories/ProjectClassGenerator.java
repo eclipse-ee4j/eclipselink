@@ -626,9 +626,9 @@ public class ProjectClassGenerator {
     protected void addInterfaceLines(NonreflectiveMethodDefinition method, InterfacePolicy policy) {
         method.addLine("// Interface Properties.");
         if (policy.isInterfaceChildDescriptor()) {
-            for (Enumeration interfacesEnum = policy.getParentInterfaceNames().elements();
-                     interfacesEnum.hasMoreElements();) {
-                String parentInterfaceName = (String)interfacesEnum.nextElement();
+            for (Iterator<String> interfacesEnum = policy.getParentInterfaceNames().iterator();
+                     interfacesEnum.hasNext();) {
+                String parentInterfaceName = interfacesEnum.next();
                 method.addLine("descriptor.getInterfacePolicy().addParentInterface(" + parentInterfaceName + ".class);");
             }
         }

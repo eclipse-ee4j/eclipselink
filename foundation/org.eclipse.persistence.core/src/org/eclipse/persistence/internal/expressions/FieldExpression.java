@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
 import java.io.*;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.internal.helper.*;
@@ -244,7 +246,20 @@ public class FieldExpression extends DataExpression {
      * return the root of the new tree
      */
     public Expression rebuildOn(Expression newBase) {
-        FieldExpression expression = new FieldExpression(getField(), getBaseExpression().rebuildOn(newBase));
+        DatabaseField field = getField();
+        ClassDescriptor descriptor = null;
+        // Check for possible table per class rebuild and translate fields to correct table.
+        // TODO: JPA also allows for field to be renamed in subclasses, this needs to account for that (never has...).
+        if (getBaseExpression().isExpressionBuilder() && newBase.isObjectExpression()) {
+            if (((ObjectExpression)newBase).getSession() != null) {
+                descriptor = ((ObjectExpression)newBase).getDescriptor();
+            }
+            if ((descriptor != null) && descriptor.hasTablePerClassPolicy()) {
+                field = field.clone();
+                field.setTable(descriptor.getDefaultTable());
+            }
+        }
+        FieldExpression expression = new FieldExpression(field, getBaseExpression().rebuildOn(newBase));
         expression.setSelectIfOrderedBy(selectIfOrderedBy());
         return expression;
     }
@@ -266,8 +281,22 @@ public class FieldExpression extends DataExpression {
      */
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
-        Expression twistedBase = getBaseExpression().twistedForBaseAndContext(newBase, context, oldBase);
-        return twistedBase.getField(getField());
+        Expression twistedBase = this.baseExpression.twistedForBaseAndContext(newBase, context, oldBase);
+        DatabaseField field = getField();
+        ClassDescriptor descriptor = null;
+        // Check for possible table per class rebuild and translate fields to correct table.
+        // TODO: JPA also allows for field to be renamed in subclasses, this needs to account for that (never has...).
+        if (this.baseExpression.isExpressionBuilder() && newBase.isObjectExpression()
+                && ((this.baseExpression == oldBase) || (oldBase == null))) {
+            if (((ObjectExpression)newBase).getSession() != null) {
+                descriptor = ((ObjectExpression)newBase).getDescriptor();
+            }
+            if ((descriptor != null) && descriptor.hasTablePerClassPolicy()) {
+                field = field.clone();
+                field.setTable(descriptor.getDefaultTable());
+            }
+        }
+        return twistedBase.getField(field);
     }
 
     /**
