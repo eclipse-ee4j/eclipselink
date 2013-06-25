@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonType;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.Property;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
@@ -33,6 +34,7 @@ import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -73,24 +75,58 @@ public class JsonSchemaGenerator {
         schema.setTitle(rootClass.getName());
         XMLDescriptor descriptor = (XMLDescriptor)project.getDescriptor(rootClass);
         schema.setType(JsonType.OBJECT);
+        Property rootProperty = null;
         Map<String, Property> properties = schema.getProperties();
         if(contextProperties != null && Boolean.TRUE.equals(this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT))) {
             XMLField field = descriptor.getDefaultRootElementField();
             if(field != null) {
-                Property prop = new Property();
-                prop.setType(JsonType.OBJECT);
-                prop.setName(field.getXPathFragment().getLocalName());
-                properties.put(prop.getName(), prop);
-                properties = prop.getProperties();
+                rootProperty = new Property();
+                rootProperty.setType(JsonType.OBJECT);
+                rootProperty.setName(field.getXPathFragment().getLocalName());
+                properties.put(rootProperty.getName(), rootProperty);
+                properties = rootProperty.getProperties();
             }
         }
-        populateProperties(properties, descriptor);
+        JsonType type = populateProperties(properties, descriptor);
+        if(type != null) {
+            if(rootProperty != null) {
+                rootProperty.setType(type);
+            } else {
+                schema.setType(type);
+            }
+        }
         return schema;
     }
 
-    private void populateProperties(Map<String, Property> properties, XMLDescriptor descriptor) {
+    /**
+     * Populates the map of properties based on the mappings in this descriptor. If the descriptor represents a
+     * simple type (a single direct mapping with xpath of text) then the name of the simple type is returned. 
+     * Otherwise null is returned.
+     * 
+     * @param properties
+     * @param descriptor
+     * @return null for a complex type, the simple type name for a simple type.
+     */
+    private JsonType populateProperties(Map<String, Property> properties, XMLDescriptor descriptor) {
         
         List<DatabaseMapping> mappings = descriptor.getMappings();
+        if(mappings.size() == 1) {
+            //check for simple type
+            DatabaseMapping mapping = mappings.get(0);
+            if(mapping instanceof DirectMapping) {
+                DirectMapping directMapping = (DirectMapping)mapping;
+                XPathFragment frag = ((XMLField)directMapping.getField()).getXPathFragment();
+                if(frag.nameIsText()) {
+                    return getJsonTypeForJavaType(directMapping.getAttributeClassification());
+                }
+            } else if(mapping instanceof DirectCollectionMapping) {
+                DirectCollectionMapping directMapping = (DirectCollectionMapping)mapping;
+                XPathFragment frag = ((XMLField)directMapping.getField()).getXPathFragment();
+                if(frag.nameIsText()) {
+                    return getJsonTypeForJavaType(directMapping.getAttributeElementClass());
+                }
+            }
+        }
         for(DatabaseMapping next:mappings) {
             if(next instanceof ChoiceObjectMapping) {
                 ChoiceObjectMapping coMapping = (ChoiceObjectMapping)next;
@@ -100,8 +136,7 @@ public class JsonSchemaGenerator {
                         properties.put(prop.getName(), prop);
                     }                    
                 }
-            }
-            else if(next instanceof ChoiceCollectionMapping) {
+            } else if(next instanceof ChoiceCollectionMapping) {
                 ChoiceCollectionMapping coMapping = (ChoiceCollectionMapping)next;
                 for(Object nestedMapping:coMapping.getChoiceElementMappingsByClass().values()) {
                     Property prop = generateProperty((XMLMapping)nestedMapping, descriptor, properties);
@@ -109,16 +144,14 @@ public class JsonSchemaGenerator {
                         properties.put(prop.getName(), prop);
                     }                    
                 }
-            }
-            else {
-           
+            } else {
                 Property prop = generateProperty((XMLMapping)next, descriptor, properties);
                 if(prop != null && !(properties.containsKey(prop.getName()))) {
                     properties.put(prop.getName(), prop);
                 }
             }
         }
-        
+        return null;
     }
 
     private Property generateProperty(XMLMapping next, XMLDescriptor descriptor, Map<String, Property> properties) {
@@ -175,6 +208,10 @@ public class JsonSchemaGenerator {
                     }
                 }
                 String propertyName = frag.getLocalName();
+                if(frag.nameIsText()) {
+                    propertyName = (String)this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
+                }
+
                 if(frag.isAttribute() && this.attributePrefix != null) {
                     propertyName = attributePrefix + propertyName;
                 }
@@ -207,6 +244,15 @@ public class JsonSchemaGenerator {
                     }
                 }                
                 String propertyName = frag.getLocalName();
+                if(frag.nameIsText()) {
+                    propertyName = Constants.VALUE_WRAPPER;
+                    if(this.contextProperties != null)  {
+                        String valueWrapper = (String) this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
+                        if(valueWrapper != null) {
+                            propertyName = valueWrapper;
+                        }
+                    }
+                }                
                 if(frag.isAttribute() && this.attributePrefix != null) {
                     propertyName = attributePrefix + propertyName;
                 }
@@ -266,6 +312,9 @@ public class JsonSchemaGenerator {
     }
 
     private String getReferenceForDescriptor(XMLDescriptor referenceDescriptor) {
+        if(referenceDescriptor == null) {
+            return null;
+        }
         String className = referenceDescriptor.getJavaClass().getSimpleName();
         String referenceName = DEFINITION_PATH + "/" + className;
         
@@ -277,7 +326,12 @@ public class JsonSchemaGenerator {
             definition.setName(className);
             definition.setType(JsonType.OBJECT);
             this.schema.getDefinitions().put(definition.getName(), definition);
-            populateProperties(definition.getProperties(), referenceDescriptor);
+            JsonType jType = populateProperties(definition.getProperties(), referenceDescriptor);
+            if(jType != null) {
+                //this represents a simple type
+                definition.setType(jType);
+                definition.setProperties(null);
+            }
         }
         // TODO Auto-generated method stub
         return referenceName;
