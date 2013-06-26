@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -317,10 +317,10 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     }
     public static final String RECORD_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE1_NRECORD xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package1_nrecordType xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<n1>new record</n1>" +
           "<n2>100.11</n2>" +
-        "</PACKAGE1_NRECORD>";
+        "</package1_nrecordType>";
 
     /**
      * StoredProcedure test.
@@ -345,16 +345,16 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     }
     public static final String INPUTRECORD_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE1_NRECORD xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package1_nrecordType xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<n1>data</n1>" +
           "<n2>100.00</n2>" +
-        "</PACKAGE1_NRECORD>";
+        "</package1_nrecordType>";
     public static final String OUTPUTRECORD_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE1_NRECORD xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package1_nrecordType xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<n1>data.copy</n1>" +
           "<n2>100.1</n2>" +
-        "</PACKAGE1_NRECORD>";
+        "</package1_nrecordType>";
 
     /**
      * StoredFunction test.
@@ -398,16 +398,16 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     }
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE1_MTAB1 xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package1_mtab1Type xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>666</item>" +
-        "</PACKAGE1_MTAB1>";
+        "</package1_mtab1Type>";
     public static final String OUTPUTRECORDWITHTABLE_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE1_MRECORD xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package1_mrecordType xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<m1>" +
               "<item>666</item>" +
           "</m1>" +
-        "</PACKAGE1_MRECORD>";
+        "</package1_mrecordType>";
 
     /**
      * StoredFunction test.
@@ -442,9 +442,9 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String EMPREC_XML =
-      "<EMP_RECORD_PACKAGE_EMPREC xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+      "<emp_record_package_emprecType xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<emp_id>69</emp_id>" +
           "<emp_name>Holly</emp_name>" +
-      "</EMP_RECORD_PACKAGE_EMPREC>";
+      "</emp_record_package_emprecType>";
 
 }

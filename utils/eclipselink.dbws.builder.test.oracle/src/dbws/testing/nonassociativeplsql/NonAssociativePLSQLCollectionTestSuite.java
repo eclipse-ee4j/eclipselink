@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -316,11 +316,11 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
     }
     public static final String NON_ASSOC_ARRAY_XML =
         STANDALONE_XML_HEADER +
-        "<NONASSOC_PACKAGE_NONASSO_ARRAY xmlns=\"urn:NonAssociativePLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<nonassoc_package_nonasso_arrayType xmlns=\"urn:NonAssociativePLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<item>Jim</item>" +
         "<item>Jack</item>" +
         "<item>John</item>" +
-        "</NONASSOC_PACKAGE_NONASSO_ARRAY>";
+        "</nonassoc_package_nonasso_arrayType>";
     public static final String COUNT_XML =
         STANDALONE_XML_HEADER +
         "<value>3</value>";
@@ -342,11 +342,11 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
     }
     public static final String NON_ASSOC_ITEMS_ARRAY_XML =
         STANDALONE_XML_HEADER +
-        "<NONASSOC_PACKAGE_NONASSO_ARRAY xmlns=\"urn:NonAssociativePLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<nonassoc_package_nonasso_arrayType xmlns=\"urn:NonAssociativePLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<item>Some item</item>" +
         "<item>Another item</item>" +
         "<item>The last item</item>" +
-        "</NONASSOC_PACKAGE_NONASSO_ARRAY>";
+        "</nonassoc_package_nonasso_arrayType>";
 
     @Test
     public void copyArrayTest() {
@@ -397,11 +397,11 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
     }
     public static final String ASSOC_ARRAY_XML =
         STANDALONE_XML_HEADER +
-        "<NONASSOC_PACKAGE_ASSO_ARRAY xmlns=\"urn:NonAssociativePLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<nonassoc_package_asso_arrayType xmlns=\"urn:NonAssociativePLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<item>Jim</item>" +
         "<item>Jack</item>" +
         "<item>John</item>" +
-        "</NONASSOC_PACKAGE_ASSO_ARRAY>";
+        "</nonassoc_package_asso_arrayType>";
 
     @Test
     public void addNameToArrayTest() {
@@ -421,12 +421,12 @@ public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
     }
     public static final String NON_ASSOC_ARRAY2_XML =
         STANDALONE_XML_HEADER +
-        "<NONASSOC_PACKAGE_NONASSO_ARRAY xmlns=\"urn:NonAssociativePLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<nonassoc_package_nonasso_arrayType xmlns=\"urn:NonAssociativePLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<item>Jim</item>" +
         "<item>Jack</item>" +
         "<item>John</item>" +
         "<item>Fred</item>" +
-        "</NONASSOC_PACKAGE_NONASSO_ARRAY>";
+        "</nonassoc_package_nonasso_arrayType>";
 
     @Test
     public void getArrayCountFuncTest() {

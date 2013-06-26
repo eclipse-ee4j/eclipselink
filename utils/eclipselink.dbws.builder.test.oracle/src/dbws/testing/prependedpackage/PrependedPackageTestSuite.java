@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -371,7 +371,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
 
     public static final String Q_TABLE_XML =
         STANDALONE_XML_HEADER +
-        "<REF_CURSOR_PKG3_QTAB xmlns=\"urn:PrependedPackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<ref_cursor_pkg3_qtabType xmlns=\"urn:PrependedPackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>101</item>" +
-        "</REF_CURSOR_PKG3_QTAB>";
+        "</ref_cursor_pkg3_qtabType>";
 }

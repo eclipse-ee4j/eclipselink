@@ -1107,15 +1107,8 @@ public abstract class BaseDBWSBuilderHelper {
             xPath += AT_SIGN + fieldName;
         } else if (style == ELEMENT) {
             xPath += fieldName;
-            if (!isPk) {
-                AbstractNullPolicy nullPolicy = xdm.getNullPolicy();
-                nullPolicy.setNullRepresentedByEmptyNode(false);
-                nullPolicy.setMarshalNullRepresentation(XSI_NIL);
-                nullPolicy.setNullRepresentedByXsiNil(true);
-                xdm.setNullPolicy(nullPolicy);
-            }
         }
-        if (attributeClass != APBYTE) {
+        if (style == ELEMENT && attributeClass != APBYTE) {
             xPath += SLASH_TEXT;
         }
         xdm.setXPath(xPath);
@@ -1123,6 +1116,12 @@ public abstract class BaseDBWSBuilderHelper {
         xmlField.setSchemaType(qName);
         if (isPk) {
             xmlField.setRequired(true);
+        } else {
+            AbstractNullPolicy nullPolicy = xdm.getNullPolicy();
+            nullPolicy.setNullRepresentedByEmptyNode(false);
+            nullPolicy.setMarshalNullRepresentation(XSI_NIL);
+            nullPolicy.setNullRepresentedByXsiNil(true);
+            xdm.setNullPolicy(nullPolicy);
         }
         return xdm;
     }

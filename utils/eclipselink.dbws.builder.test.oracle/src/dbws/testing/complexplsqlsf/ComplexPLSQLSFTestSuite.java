@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -871,36 +871,36 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
-        "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<complexpkg2_tab1Type xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>foo</item>" +
           "<item>bar</item>" +
           "<item>blah</item>" +
-        "</COMPLEXPKG2_TAB1>";
+        "</complexpkg2_tab1Type>";
 
     public static final String TABLE2_XML =
         STANDALONE_XML_HEADER +
-        "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<complexpkg2_tab1Type xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>foobar</item>" +
           "<item>barfoo</item>" +
           "<item>blahblah</item>" +
-        "</COMPLEXPKG2_TAB1>";
+        "</complexpkg2_tab1Type>";
 
     public static final String TABLE3_XML =
         STANDALONE_XML_HEADER +
-        "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<complexpkg2_tab1Type xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>foo</item>" +
           "<item>bar</item>" +
           "<item>blah</item>" +
           "<item>foobar</item>" +
           "<item>barfoo</item>" +
           "<item>blahblah</item>" +
-        "</COMPLEXPKG2_TAB1>";
+        "</complexpkg2_tab1Type>";
     public static final String PHONE_TABLE_XML =
         STANDALONE_XML_HEADER +
-        "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<complexpkg2_tab1Type xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>(613)111-2222</item>" +
           "<item>(613)222-3333</item>" +
-        "</COMPLEXPKG2_TAB1>";
+        "</complexpkg2_tab1Type>";
     
     public static final String PHONE_VARRAY_XML =
         STANDALONE_XML_HEADER +
@@ -911,12 +911,12 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 
     public static final String PHONE_AND_VARRAY_TABLE_XML =
         STANDALONE_XML_HEADER +
-        "<COMPLEXPKG2_TAB1 xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<complexpkg2_tab1Type xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>(613)111-2222</item>" +
           "<item>(613)222-3333</item>" +
           "<item>(613)333-4444</item>" +
           "<item>(613)444-5555</item>" +
-        "</COMPLEXPKG2_TAB1>";
+        "</complexpkg2_tab1Type>";
 
     public static final String VARRAY_XML =
         STANDALONE_XML_HEADER +
@@ -971,16 +971,16 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "</a_phone2_type_varrayType>";
     public static final String SIMPLE_RECORD_XML =
 	    STANDALONE_XML_HEADER +
-	    "<COMPLEXPKG2_SIMPLERECORD xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+	    "<complexpkg2_simplerecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
 	      "<sr1>(613)333-4444</sr1>" +
 	      "<sr2>(613)444-5555</sr2>" +
-	    "</COMPLEXPKG2_SIMPLERECORD>";
+	    "</complexpkg2_simplerecordType>";
     public static final String SIMPLE_RECORD2_XML =
 	    STANDALONE_XML_HEADER +
-	    "<COMPLEXPKG2_SIMPLERECORD xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+	    "<complexpkg2_simplerecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
 	      "<sr1>(613)111-2222</sr1>" +
 	      "<sr2>(613)333-4444</sr2>" +
-	    "</COMPLEXPKG2_SIMPLERECORD>";
+	    "</complexpkg2_simplerecordType>";
     public static final String PHONE_TYPE_TABLE_XML = 
     	STANDALONE_XML_HEADER +
     	"<a_phone2_type_tableType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -1019,7 +1019,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "</a_contact2_typeType>";
     public static final String COMPLEX_RECORD_XML = 
         STANDALONE_XML_HEADER +
-        "<COMPLEXPKG2_COMPLEXRECORD xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<complexpkg2_complexrecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<cr1>66</cr1>" +
           "<cr2>" +
             "<address>1234 Somewhere St, Ottawa, ON</address>" +
@@ -1043,11 +1043,11 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
               "<cell>(613)222-3333</cell>" +
             "</item>" +
           "</cr4>" +
-        "</COMPLEXPKG2_COMPLEXRECORD>";
+        "</complexpkg2_complexrecordType>";
     
     public static final String MORECOMPLEX_RECORD_XML = 
         STANDALONE_XML_HEADER +
-        "<COMPLEXPKG2_MORECOMPLEXRECORD xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<complexpkg2_morecomplexrecordType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<mcr1>" +
               "<item>" +
               	"<home>(613)111-2222</home>" +
@@ -1058,5 +1058,5 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
               	"<cell>(613)333-4444</cell>" +
               "</item>" +
             "</mcr1>" +
-        "</COMPLEXPKG2_MORECOMPLEXRECORD>";
+        "</complexpkg2_morecomplexrecordType>";
 }

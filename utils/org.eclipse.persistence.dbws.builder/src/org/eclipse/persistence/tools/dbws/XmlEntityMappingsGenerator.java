@@ -97,6 +97,7 @@ import static org.eclipse.persistence.tools.dbws.Util.VARCHAR_STR;
 import static org.eclipse.persistence.tools.dbws.Util.VARCHAR2_STR;
 import static org.eclipse.persistence.tools.dbws.Util.XMLTYPE_STR;
 
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedAlias;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
 import static org.eclipse.persistence.tools.dbws.Util.getOraclePLSQLTypeForName;
 import static org.eclipse.persistence.tools.dbws.Util.isArgPLSQLScalar;
@@ -902,7 +903,7 @@ public class XmlEntityMappingsGenerator {
      * 
      */
     protected static ComplexTypeMetadata processObjectTableType(ObjectTableType oTableType, Project orProject) {
-        ClassDescriptor cDesc = orProject.getDescriptorForAlias(oTableType.getTypeName().toLowerCase());
+        ClassDescriptor cDesc = orProject.getDescriptorForAlias(getGeneratedAlias(oTableType.getTypeName()));
         
         OracleArrayTypeMetadata oatMetadata = new OracleArrayTypeMetadata();
         oatMetadata.setName(oTableType.getTypeName());
@@ -918,7 +919,7 @@ public class XmlEntityMappingsGenerator {
      * 
      */
     protected static ComplexTypeMetadata processObjectType(ObjectType oType, Project orProject) {
-        ClassDescriptor cDesc = orProject.getDescriptorForAlias(oType.getTypeName().toLowerCase());
+        ClassDescriptor cDesc = orProject.getDescriptorForAlias(getGeneratedAlias(oType.getTypeName()));
         
         OracleObjectTypeMetadata ootMetadata = new OracleObjectTypeMetadata();
         ootMetadata.setName(oType.getTypeName());
@@ -940,7 +941,7 @@ public class XmlEntityMappingsGenerator {
      * 
      */
     protected static ComplexTypeMetadata processVArrayType(VArrayType vType, Project orProject) {
-        ClassDescriptor cDesc = orProject.getDescriptorForAlias(vType.getTypeName().toLowerCase());
+        ClassDescriptor cDesc = orProject.getDescriptorForAlias(getGeneratedAlias(vType.getTypeName()));
         
         OracleArrayTypeMetadata oatMetadata = new OracleArrayTypeMetadata();
         oatMetadata.setName(vType.getTypeName());

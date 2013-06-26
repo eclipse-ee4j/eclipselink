@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,9 +48,9 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class ObjectTableTypeTestSuite extends DBWSTestSuite {
-	static final String PERSON_TYPE_ALIAS = "dbws_persontype";
+	static final String PERSON_TYPE_ALIAS = "Dbws_persontype";
 	static final String PERSON_TYPE_CLASSNAME = "objecttabletypetests.Dbws_persontype";
-	static final String PERSON_TYPE_TABLE_ALIAS = "dbws_persontype_table";
+	static final String PERSON_TYPE_TABLE_ALIAS = "Dbws_persontype_table";
 	static final String PERSON_TYPE_TABLE_CLASSNAME = "objecttabletypetests.Dbws_persontype_table_CollectionWrapper";
 
     static final String CREATE_PERSONTYPE =

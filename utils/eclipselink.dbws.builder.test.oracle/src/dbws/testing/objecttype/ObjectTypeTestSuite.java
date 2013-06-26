@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,9 +45,9 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class ObjectTypeTestSuite extends DBWSTestSuite {
-	static final String EMP_TYPE_ALIAS = "dbws_emp_type";
+	static final String EMP_TYPE_ALIAS = "Dbws_emp_type";
 	static final String EMP_TYPE_CLASSNAME = "objecttypetests.Dbws_emp_type";
-	static final String PHONE_TYPE_ALIAS = "dbws_phone_type";
+	static final String PHONE_TYPE_ALIAS = "Dbws_phone_type";
 	static final String PHONE_TYPE_CLASSNAME = "objecttypetests.Dbws_phone_type";
 
 	//==============================================================================

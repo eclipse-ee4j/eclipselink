@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -197,7 +197,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
                   "name=\"SetRecordTest2\" " +
                   "catalogPattern=\"PACKAGE2\" " +
                   "procedurePattern=\"SETRECORD2\" " +
-                  "returnType=\"PACKAGE2_TAB2\" " +  // note that returnType is not required
+                  "returnType=\"package2_tab2Type\" " +  // note that returnType is not required
               "/>" +
             "</dbws-builder>";
           builder = null;
@@ -233,9 +233,9 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
     }
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE2_TAB1 xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package2_tab1Type xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>BLAH</item>" +
-        "</PACKAGE2_TAB1>";
+        "</package2_tab1Type>";
 
     @Test
     public void copyTableTest2() {
@@ -270,12 +270,12 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
     }
     public static final String TABLE3_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE2_TAB3 xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package2_tab3Type xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>1</item>" +
           "<item>0</item>" +
           "<item>1</item>" +
           "<item>0</item>" +
-        "</PACKAGE2_TAB3>";
+        "</package2_tab3Type>";
 
     @Test
     public void boolTabToVarcharTabTest() {
@@ -294,12 +294,12 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
     }
     public static final String TABLE4_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE2_TAB1 xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package2_tab1Type xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>true</item>" +
           "<item>false</item>" +
           "<item>true</item>" +
           "<item>false</item>" +
-        "</PACKAGE2_TAB1>";
+        "</package2_tab1Type>";
     
     /**
      * StoredProcedure test.
@@ -321,18 +321,18 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
     }
     public static final String INPUTORECORD_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE2_ORECORD xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package2_orecordType xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<o1>somedata</o1>" +
           "<o2>66.6</o2>" +
-        "</PACKAGE2_ORECORD>";
+        "</package2_orecordType>";
     public static final String OUTPUTTABLE_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE2_TAB2 xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<package2_tab2Type xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>" +
             "<o1>somedata</o1>" +
             "<o2>66.6</o2>" +
           "</item>" +
-        "</PACKAGE2_TAB2>";
+        "</package2_tab2Type>";
 
     /**
      * StoredFunction test.
@@ -372,18 +372,18 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         "<wsdl:types>" +
           "<xsd:schema xmlns:tns=\"urn:PLSQLCollectionService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:PLSQLCollectionService\" elementFormDefault=\"qualified\">" +
             "<xsd:import schemaLocation=\"eclipselink-dbws-schema.xsd\" namespace=\"urn:PLSQLCollection\"/>" +
-            "<xsd:complexType name=\"SetRecordTestRequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:PACKAGE2_ORECORD\"/></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"CopyBoolTableTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:PACKAGE2_TAB3\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"CopyTableTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB1\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"BoolTabToVarcharTabTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB3\"/></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"CopyTableTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB1\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"SetRecordTest2RequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:PACKAGE2_ORECORD\"/></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"CopyTableTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"BoolTabToVarcharTabTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"SetRecordTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB2\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"CopyTableTest2RequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"SetRecordTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB2\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
-            "<xsd:complexType name=\"CopyBoolTableTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB3\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"SetRecordTestRequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:package2_orecordType\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyBoolTableTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:package2_tab3Type\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyTableTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:package2_tab1Type\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"BoolTabToVarcharTabTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:package2_tab3Type\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyTableTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:package2_tab1Type\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"SetRecordTest2RequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:package2_orecordType\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyTableTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:package2_tab1Type\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"BoolTabToVarcharTabTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:package2_tab1Type\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"SetRecordTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:package2_tab2Type\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyTableTest2RequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:package2_tab1Type\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"SetRecordTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:package2_tab2Type\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyBoolTableTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:package2_tab3Type\"/></xsd:sequence></xsd:complexType>" +
             "<xsd:element name=\"CopyTableTestResponse\" type=\"tns:CopyTableTestResponseType\"/>" +
             "<xsd:element name=\"CopyBoolTableTestResponse\" type=\"tns:CopyBoolTableTestResponseType\"/>" +
             "<xsd:element name=\"CopyTableTest\" type=\"tns:CopyTableTestRequestType\"/>" +

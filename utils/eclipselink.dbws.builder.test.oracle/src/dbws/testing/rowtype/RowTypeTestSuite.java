@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998-2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -45,18 +45,18 @@ import dbws.testing.DBWSTestSuite;
  */
 public class RowTypeTestSuite extends DBWSTestSuite {
 
-    static final String WSDL_REF = "ref=\"ns1:RTYPE_TABLE_ROWTYPE\"";
+    static final String WSDL_REF = "ref=\"ns1:rtype_table_rowtypeType\"";
     static final String XSD = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:rowtype\" xmlns=\"urn:rowtype\" elementFormDefault=\"qualified\">" +
-           "<xsd:complexType name=\"RTYPE_TABLE_ROWTYPE\">" +
+           "<xsd:complexType name=\"rtype_table_rowtypeType\">" +
               "<xsd:sequence>" + 
-                 "<xsd:element name=\"id\" type=\"xsd:decimal\" nillable=\"true\"/>" +
-                 "<xsd:element name=\"name\" type=\"xsd:string\" nillable=\"true\"/>" +
-                 "<xsd:element name=\"since\" type=\"xsd:date\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"id\" type=\"xsd:decimal\" minOccurs=\"0\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"since\" type=\"xsd:date\" minOccurs=\"0\" nillable=\"true\"/>" +
               "</xsd:sequence>" +
            "</xsd:complexType>" +
-           "<xsd:element name=\"RTYPE_TABLE_ROWTYPE\" type=\"RTYPE_TABLE_ROWTYPE\"/>" +
+           "<xsd:element name=\"rtype_table_rowtypeType\" type=\"rtype_table_rowtypeType\"/>" +
         "</xsd:schema>";
     static final String SERVICE = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -70,7 +70,7 @@ public class RowTypeTestSuite extends DBWSTestSuite {
                  "<type>xsd:int</type>" +
               "</parameter>" +
               "<result>" +
-                 "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
+                 "<type>ns1:rtype_table_rowtypeType</type>" +
               "</result>" +
               "<named-query>" +
                  "<name>rowtypeTest</name>" +
@@ -83,7 +83,7 @@ public class RowTypeTestSuite extends DBWSTestSuite {
                  "<type>xsd:int</type>" +
               "</parameter>" +
               "<result>" +
-                 "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
+                 "<type>ns1:rtype_table_rowtypeType</type>" +
               "</result>" +
               "<named-query>" +
                  "<name>rowtypeTest2</name>" +
@@ -260,11 +260,11 @@ public class RowTypeTestSuite extends DBWSTestSuite {
     }
     public static final String RECORD_XML =
         STANDALONE_XML_HEADER +
-        "<RTYPE_TABLE_ROWTYPE xmlns=\"urn:rowtype\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<rtype_table_rowtypeType xmlns=\"urn:rowtype\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<id>1</id>" +
             "<name>Conky</name>" +
             "<since>2001-12-25</since>" +
-        "</RTYPE_TABLE_ROWTYPE>";
+        "</rtype_table_rowtypeType>";
 
     /**
      * Test element/complex type names do not contain '%'
