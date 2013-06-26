@@ -361,9 +361,9 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
     }
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
-        "<STR_CURSOR_TEST_STRC_TAB1 xmlns=\"urn:strongRefCursor\">" +
+        "<str_cursor_test_strc_tab1Type xmlns=\"urn:strongRefCursor\">" +
             "<item>mike%</item>" +
-        "</STR_CURSOR_TEST_STRC_TAB1>";
+        "</str_cursor_test_strc_tab1Type>";
 
     @Test
     public void emprecRefCursorTest() {
@@ -423,9 +423,9 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
     }
     public static final String TABLE2_XML =
         STANDALONE_XML_HEADER +
-        "<STR_CURSOR_TEST_STRC_TAB1 xmlns=\"urn:strongRefCursor\">" +
+        "<str_cursor_test_strc_tab1Type xmlns=\"urn:strongRefCursor\">" +
             "<item>ri%</item>" +
-        "</STR_CURSOR_TEST_STRC_TAB1>";
+        "</str_cursor_test_strc_tab1Type>";
 
     public static final String NAMES_XML =
         REGULAR_XML_HEADER +

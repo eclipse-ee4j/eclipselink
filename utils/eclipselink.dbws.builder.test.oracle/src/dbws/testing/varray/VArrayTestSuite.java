@@ -45,7 +45,7 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class VArrayTestSuite extends DBWSTestSuite {
-	static final String VCARRAY_ALIAS = "vcarray";
+	static final String VCARRAY_ALIAS = "Vcarray";
 	static final String VCARRAY_CLASSNAME = "varraytests.Vcarray_CollectionWrapper";
 
     static final String CREATE_VCARRAY_VARRAY =
@@ -326,6 +326,7 @@ public class VArrayTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(VARRAY_RESULT));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }    
+    
     static String INPUT_XML =
         REGULAR_XML_HEADER +
         "<vcarrayType xmlns=\"urn:VArrayTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +

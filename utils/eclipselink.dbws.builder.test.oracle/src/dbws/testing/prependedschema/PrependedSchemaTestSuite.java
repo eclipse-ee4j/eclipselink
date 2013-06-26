@@ -232,7 +232,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
 
     public static final String TESMAN_TABLE2_ROWTYPE =
         STANDALONE_XML_HEADER +
-        "<XTESMAN_TABLE2_ROWTYPE xmlns=\"urn:PrependedSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<xtesman_table2_rowtypeType xmlns=\"urn:PrependedSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<srno>666</srno>" +
            "<detail>" +
               "<pnr>12</pnr>" +
@@ -246,5 +246,5 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
                  "<country>CANADA</country>" +
               "</tt>" +
            "</detail>" +
-        "</XTESMAN_TABLE2_ROWTYPE>";
+        "</xtesman_table2_rowtypeType>";
 }

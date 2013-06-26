@@ -738,10 +738,10 @@ public class Util {
     
     /**
      * Returns an alias (typically used as a descriptor alias) based on a given
-     * table name.  The returned string will contain an upper case first char,
-     * with the remaining chars in lower case format.
+     * table or type name.  The returned string will contain an upper case 
+     * first char, with the remaining chars in lower case format.
      */
-    public static String getGeneratedTableAlias(String tableName) {
+    public static String getGeneratedAlias(String tableName) {
         String first = tableName.substring(0, 1).toUpperCase();
         String rest = tableName.toLowerCase().substring(1);
         return first.concat(rest);
@@ -765,7 +765,7 @@ public class Util {
         List<String> requireCRUDOperations, NamingConventionTransformer nct) {
         RelationalDescriptor desc = new RelationalDescriptor();
         desc.addTableName(tableName);
-        String tableAlias = getGeneratedTableAlias(tableName);
+        String tableAlias = getGeneratedAlias(tableName);
         desc.setAlias(tableAlias);
         desc.setJavaClassName(getGeneratedJavaClassName(tableName, projectName));
         desc.useWeakIdentityMap();
@@ -780,7 +780,7 @@ public class Util {
      * Build an XMLDescriptor for a given table.
      */
     public static XMLDescriptor buildOXDescriptor(String tableName, String projectName, String targetNamespace, NamingConventionTransformer nct) {
-        return buildOXDescriptor(getGeneratedTableAlias(tableName), nct.generateSchemaAlias(tableName), getGeneratedJavaClassName(tableName, projectName), targetNamespace);
+        return buildOXDescriptor(getGeneratedAlias(tableName), nct.generateSchemaAlias(tableName), getGeneratedJavaClassName(tableName, projectName), targetNamespace);
     }
 
     /**

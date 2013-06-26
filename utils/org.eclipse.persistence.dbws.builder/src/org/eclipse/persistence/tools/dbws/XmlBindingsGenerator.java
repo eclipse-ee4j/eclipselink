@@ -26,6 +26,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy;
@@ -194,16 +195,52 @@ public class XmlBindingsGenerator {
         }
         jType.setXmlRootElement(xmlRootElt);
         jType.setJavaAttributes(new JavaAttributes());
-        // generate an XmlElement for each mapping
+        // generate an XmlAttribute or XmlElement for each mapping
         for (Iterator<DatabaseMapping> xmapIt = xdesc.getMappings().iterator(); xmapIt.hasNext();) {
-            JAXBElement<XmlElement> jElt = generateJavaAttribute((XMLMapping) xmapIt.next());
-            if (jElt != null) {
-                jType.getJavaAttributes().getJavaAttribute().add(jElt);
+            XMLMapping xMap = (XMLMapping) xmapIt.next();
+            if (((XMLField) xMap.getField()).getXPathFragment().isAttribute()) {
+                JAXBElement<XmlAttribute> jAtt = generateXmlAttribute(xMap);
+                if (jAtt != null) {
+                    jType.getJavaAttributes().getJavaAttribute().add(jAtt);
+                }
+            } else {
+                JAXBElement<XmlElement> jElt = generateXmlElement(xMap);
+                if (jElt != null) {
+                    jType.getJavaAttributes().getJavaAttribute().add(jElt);
+                }
             }
         }
         return jType;
     }
 
+    /**
+     * Process a given XMLMapping and return a JAXBElement<XmlAttribute>.
+     * 
+     * Expected mappings are:
+     * <ul>
+     * <li>org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping
+     * <li>org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping
+     * <li>org.eclipse.persistence.oxm.mappings.XMLDirectMapping
+     * </ul>
+     */
+    protected static JAXBElement<XmlAttribute> generateXmlAttribute(XMLMapping xmap) {
+        XmlAttribute xAtt = null;
+        if (xmap instanceof XMLDirectMapping) {
+            // could be an XMLBinaryDataMapping instance
+            if (xmap instanceof XMLBinaryDataMapping) {
+                xAtt = processXMLBinaryDataMappingAttribute((XMLBinaryDataMapping) xmap);
+            } else {
+                xAtt = processXMLDirectMappingAttribute((XMLDirectMapping) xmap);
+            }
+        } else if (xmap instanceof XMLCompositeDirectCollectionMapping) {
+            xAtt = processXMLCompositeDirectCollectionMappingAttribute((XMLCompositeDirectCollectionMapping) xmap);
+        }
+        if (xAtt == null) {
+            return null;
+        }
+        return new JAXBElement<XmlAttribute>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-attribute"), XmlAttribute.class, xAtt);
+    }
+    
     /**
      * Process a given XMLMapping and return a JAXBElement<XmlElement>.
      * 
@@ -216,7 +253,7 @@ public class XmlBindingsGenerator {
      * <li>org.eclipse.persistence.oxm.mappings.XMLDirectMapping
      * </ul>
      */
-    protected static JAXBElement<XmlElement> generateJavaAttribute(XMLMapping xmap) {
+    protected static JAXBElement<XmlElement> generateXmlElement(XMLMapping xmap) {
         XmlElement xElt = null;
         if (xmap instanceof XMLCompositeObjectMapping) {
             xElt = processXMLCompositeObjectMapping((XMLCompositeObjectMapping) xmap);
@@ -237,6 +274,116 @@ public class XmlBindingsGenerator {
         }
         return new JAXBElement<XmlElement>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element"), XmlElement.class, xElt);
     }
+
+    /**
+     * Process a given XMLMapping and return an XmlAttribute.
+     * 
+     */
+    protected static XmlAttribute processXMLMapping(XMLField xfld, String attName, String xpath, String attClassification, 
+            AbstractNullPolicy nullPolicy, String containerName, boolean inlineBinary, boolean isSWARef, String mimeType) {
+
+        XmlAttribute xAtt = new XmlAttribute();
+        xAtt.setJavaAttribute(attName);
+        xAtt.setXmlPath(xpath);
+        if (xfld.isRequired()) {
+            xAtt.setRequired(true);
+        }
+        if (inlineBinary) {
+            xAtt.setXmlInlineBinaryData(true);
+        }
+        if (isSWARef) {
+            xAtt.setXmlAttachmentRef(true);
+        }
+        if (attClassification != null) {
+            xAtt.setType(attClassification);
+        }
+        if (containerName != null) {
+            xAtt.setContainerType(containerName);
+        }
+        if (mimeType != null) {
+            xAtt.setXmlMimeType(mimeType);
+        }
+        QName schemaType = xfld.getSchemaType();
+        if (schemaType != null) {
+            XmlSchemaType xSchemaType = new XmlSchemaType();
+            xSchemaType.setName(schemaType.getLocalPart());
+            xAtt.setXmlSchemaType(xSchemaType);
+        }
+        if (!isDefaultNullPolicy(nullPolicy)) {
+            XmlAbstractNullPolicy xmlNullPolicy;
+            
+            if (nullPolicy instanceof NullPolicy) {
+                xmlNullPolicy = new XmlNullPolicy();
+                ((XmlNullPolicy) xmlNullPolicy).setIsSetPerformedForAbsentNode(nullPolicy.getIsSetPerformedForAbsentNode());
+            } else {
+                xmlNullPolicy = new XmlIsSetNullPolicy();
+            }
+            xmlNullPolicy.setEmptyNodeRepresentsNull(nullPolicy.isNullRepresentedByEmptyNode());
+            xmlNullPolicy.setXsiNilRepresentsNull(nullPolicy.isNullRepresentedByXsiNil());
+            xmlNullPolicy.setNullRepresentationForXml(XmlMarshalNullRepresentation.fromValue(nullPolicy.getMarshalNullRepresentation().toString()));
+
+            xAtt.setXmlAbstractNullPolicy(new JAXBElement<XmlAbstractNullPolicy>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-null-policy"), XmlAbstractNullPolicy.class, xmlNullPolicy));
+        }
+        return xAtt;
+    }
+
+    /**
+     * Process a given XMLBinaryDataMapping and return an XmlAttribute.
+     * 
+     */
+    protected static XmlAttribute processXMLBinaryDataMappingAttribute(XMLBinaryDataMapping xmap) {
+        // JAXB expects a DataHandler in the object model for SwaRef
+        String attClassName = xmap.getAttributeClassificationName();
+        if (xmap.isSwaRef()) {
+            attClassName = DATAHANDLER_CLASSNAME;
+        }
+        
+        return processXMLMapping(
+                (XMLField)xmap.getField(), 
+                xmap.getAttributeName(), 
+                xmap.getXPath(), 
+                attClassName, 
+                xmap.getNullPolicy(), 
+                null,
+                xmap.shouldInlineBinaryData(),
+                xmap.isSwaRef(),
+                xmap.getMimeType());
+    }
+ 
+
+    /**
+     * Process a given XMLCompositeDirectCollectionMapping and return an XmlAttribute.
+     * 
+     */
+    protected static XmlAttribute processXMLCompositeDirectCollectionMappingAttribute(XMLCompositeDirectCollectionMapping xmap) {
+        return processXMLMapping(
+                (XMLField)xmap.getField(), 
+                xmap.getAttributeName(), 
+                xmap.getXPath(), 
+                null, 
+                xmap.getNullPolicy(), 
+                xmap.getContainerPolicy().getContainerClassName(),
+                false,
+                false,
+                null);
+    }
+    
+    /**
+     * Process a given XMLDirectMapping and return an XmlAttribute.
+     * 
+     */
+    protected static XmlAttribute processXMLDirectMappingAttribute(XMLDirectMapping xmap) {
+        return processXMLMapping(
+                (XMLField)xmap.getField(), 
+                xmap.getAttributeName(), 
+                xmap.getXPath(), 
+                xmap.getAttributeClassificationName(), 
+                xmap.getNullPolicy(), 
+                null,
+                false,
+                false,
+                null);
+    }    
 
     /**
      * Process a given XMLMapping and return an XmlElement.

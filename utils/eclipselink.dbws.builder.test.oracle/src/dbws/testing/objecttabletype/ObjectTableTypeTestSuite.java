@@ -48,9 +48,9 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class ObjectTableTypeTestSuite extends DBWSTestSuite {
-	static final String PERSON_TYPE_ALIAS = "dbws_persontype";
+	static final String PERSON_TYPE_ALIAS = "Dbws_persontype";
 	static final String PERSON_TYPE_CLASSNAME = "objecttabletypetests.Dbws_persontype";
-	static final String PERSON_TYPE_TABLE_ALIAS = "dbws_persontype_table";
+	static final String PERSON_TYPE_TABLE_ALIAS = "Dbws_persontype_table";
 	static final String PERSON_TYPE_TABLE_CLASSNAME = "objecttabletypetests.Dbws_persontype_table_CollectionWrapper";
 
     static final String CREATE_PERSONTYPE =
@@ -431,6 +431,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(NEW_PTABLE_OUTPUT_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
+    
     @Test
     public void getPersonTypeTable2() {
         Invocation invocation = new Invocation("GetPersonTypeTable2");

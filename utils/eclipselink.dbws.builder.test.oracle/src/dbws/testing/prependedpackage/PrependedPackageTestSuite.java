@@ -371,7 +371,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
 
     public static final String Q_TABLE_XML =
         STANDALONE_XML_HEADER +
-        "<REF_CURSOR_PKG3_QTAB xmlns=\"urn:PrependedPackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<ref_cursor_pkg3_qtabType xmlns=\"urn:PrependedPackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>101</item>" +
-        "</REF_CURSOR_PKG3_QTAB>";
+        "</ref_cursor_pkg3_qtabType>";
 }

@@ -45,9 +45,9 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class ObjectTypeTestSuite extends DBWSTestSuite {
-	static final String EMP_TYPE_ALIAS = "dbws_emp_type";
+	static final String EMP_TYPE_ALIAS = "Dbws_emp_type";
 	static final String EMP_TYPE_CLASSNAME = "objecttypetests.Dbws_emp_type";
-	static final String PHONE_TYPE_ALIAS = "dbws_phone_type";
+	static final String PHONE_TYPE_ALIAS = "Dbws_phone_type";
 	static final String PHONE_TYPE_CLASSNAME = "objecttypetests.Dbws_phone_type";
 
 	//==============================================================================

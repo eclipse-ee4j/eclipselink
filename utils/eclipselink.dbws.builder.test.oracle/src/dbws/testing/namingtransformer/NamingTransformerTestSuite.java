@@ -76,6 +76,21 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
     static final String DROP_TABLETYPE_TABLE =
         "DROP TABLE TABLETYPE";
     
+    static final String CREATE_MYTYPEX = 
+        "CREATE OR REPLACE TYPE MYTYPE_X AS OBJECT (" +
+            "\nid NUMBER," +
+            "\nname VARCHAR2(30)" +
+        "\n)";
+    static final String CREATE_GETMYTYPEX_PROC =
+        "CREATE OR REPLACE PROCEDURE GetMyTypeX(RESULT OUT MYTYPE_X) AS" +
+        "\nBEGIN" +
+            "\nRESULT := MYTYPE_X(66, 'Steve French');" +
+        "\nEND GetMyTypeX;";
+    static final String DROP_GETMYTYPEX_PROC =
+         "DROP PROCEDURE GetMyTypeX";
+    static final String DROP_MYTYPEX =
+        "DROP TYPE MYTYPE_X";
+    
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -115,6 +130,8 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
             catch (SQLException e) {
                 //e.printStackTrace();
             }
+            runDdl(conn, CREATE_MYTYPEX, ddlDebug);
+            runDdl(conn, CREATE_GETMYTYPEX_PROC, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
           "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -138,7 +155,13 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
               "schemaPattern=\"%\" " +
               "tableNamePattern=\"TABLETYPE\" " +
             "/>" +
-          "</dbws-builder>";
+            "<procedure " +
+                "name=\"GetMyTypeXTest\" " +
+                "catalogPattern=\"TOPLEVEL\" " +
+                "procedurePattern=\"GetMyTypeX\" " +
+                "isAdvancedJDBC=\"true\" " +
+            "/>" +
+        "</dbws-builder>";
         builder = new DBWSBuilder();
         builder.setTopNamingConventionTransformer(new DBWSNamingConventionTransformer());
         OracleHelper builderHelper = new OracleHelper(builder);
@@ -165,6 +188,8 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         if (ddlDrop) {
             runDdl(conn, DROP_TABLETYPE_TABLE, ddlDebug);
+            runDdl(conn, DROP_GETMYTYPEX_PROC, ddlDebug);
+            runDdl(conn, DROP_MYTYPEX, ddlDebug);
         }
     }
     
@@ -178,15 +203,36 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
+        removeEmptyTextNodes(doc);
         Document controlDoc = xmlParser.parse(new StringReader(ANOTHER_PERSON_XML));
+        removeEmptyTextNodes(controlDoc);
         assertTrue("Control document not same as instance document.  Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
     public static final String ANOTHER_PERSON_XML =
         REGULAR_XML_HEADER +
-        "<TABLETYPExTYPE xmlns=\"urn:tabletype\" id=\"3\">" +
+        "<TABLETYPExTYPE xmlns=\"urn:tabletype\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" id=\"3\">" +
           "<name>rick</name>" +
         "</TABLETYPExTYPE>";
+
+    @Test
+    public void testTransformerOnObject() throws WSDLException {
+        Invocation invocation = new Invocation("GetMyTypeXTest");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(MYTYPEX_XML));
+        assertTrue("Control document not same as instance document.  Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    public static final String MYTYPEX_XML =
+        REGULAR_XML_HEADER +
+        "<MYTYPE_XxTYPE xmlns=\"urn:tabletype\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" id=\"66\">" +
+          "<name>Steve French</name>" +
+        "</MYTYPE_XxTYPE>";
 
     /**
      * Inner class used for testing NamingConventionTransformer
@@ -237,12 +283,19 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
     protected static final String XSD =
         "<?xml version = \"1.0\" encoding = \"UTF-8\"?>" +
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:tabletype\" xmlns=\"urn:tabletype\" elementFormDefault=\"qualified\">" +
+        "   <xsd:complexType name=\"MYTYPE_XxTYPE\">" +
+        "      <xsd:sequence>" +
+        "         <xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>" +
+        "      </xsd:sequence>" +
+        "      <xsd:attribute name=\"id\" type=\"xsd:decimal\"/>" +
+        "   </xsd:complexType>" +
         "   <xsd:complexType name=\"TABLETYPExTYPE\">" +
         "      <xsd:sequence>" +
         "         <xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>" +
         "      </xsd:sequence>" +
         "      <xsd:attribute name=\"id\" type=\"xsd:decimal\" use=\"required\"/>" +
         "   </xsd:complexType>" +
+        "   <xsd:element name=\"MYTYPE_XxTYPE\" type=\"MYTYPE_XxTYPE\"/>" +
         "   <xsd:element name=\"TABLETYPExTYPE\" type=\"TABLETYPExTYPE\"/>" +
         "</xsd:schema>";
 
@@ -325,6 +378,18 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
+                "<xsd:complexType name=\"GetMyTypeXTestResponseType\">\n" +
+                   "<xsd:sequence>\n" +
+                       "<xsd:element name=\"result\">\n" +
+                           "<xsd:complexType>\n" +
+                               "<xsd:sequence>\n" +
+                                   "<xsd:element ref=\"ns1:MYTYPE_XxTYPE\" minOccurs=\"0\"/>\n" +
+                               "</xsd:sequence>\n" +
+                           "</xsd:complexType>\n" +
+                       "</xsd:element>\n" +
+                   "</xsd:sequence>\n" +
+                "</xsd:complexType>\n" +
+                "<xsd:complexType name=\"GetMyTypeXTestRequestType\"/>\n" +
                 "<xsd:element name=\"update_TabletypeType\" type=\"tns:update_TabletypeTypeRequestType\"/>\n" +
                 "<xsd:element name=\"findAll_TabletypeTypeResponse\" type=\"tns:findAll_TabletypeTypeResponseType\"/>\n" +
                 "<xsd:element name=\"findByPrimaryKey_TabletypeType\" type=\"tns:findByPrimaryKey_TabletypeTypeRequestType\"/>\n" +
@@ -343,6 +408,8 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
                    "<xsd:complexType/>\n" +
                 "</xsd:element>\n" +
                 "<xsd:element name=\"delete_TabletypeType\" type=\"tns:delete_TabletypeTypeRequestType\"/>\n" +
+                "<xsd:element name=\"GetMyTypeXTestResponse\" type=\"tns:GetMyTypeXTestResponseType\"/>\n" +
+                "<xsd:element name=\"GetMyTypeXTest\" type=\"tns:GetMyTypeXTestRequestType\"/>\n" +
                 "</xsd:schema>\n" +
               "</wsdl:types>\n" +
               "<wsdl:message name=\"update_TabletypeTypeRequest\">\n" +
@@ -372,6 +439,12 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
               "<wsdl:message name=\"delete_TabletypeTypeRequest\">\n" +
                  "<wsdl:part name=\"delete_TabletypeTypeRequest\" element=\"tns:delete_TabletypeType\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
+              "<wsdl:message name=\"GetMyTypeXTestRequest\">\n" +
+                 "<wsdl:part name=\"GetMyTypeXTestRequest\" element=\"tns:GetMyTypeXTest\"/>\n" +
+              "</wsdl:message>\n" +
+              "<wsdl:message name=\"GetMyTypeXTestResponse\">\n" +
+                 "<wsdl:part name=\"GetMyTypeXTestResponse\" element=\"tns:GetMyTypeXTestResponse\"/>\n" +
+              "</wsdl:message>\n" +
               "<wsdl:portType name=\"tabletypeService_Interface\">\n" +
                  "<wsdl:operation name=\"update_TabletypeType\">\n" +
                     "<wsdl:input message=\"tns:update_TabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
@@ -396,6 +469,10 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
                     "<wsdl:output name=\"delete_TabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
                     "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
                  "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"GetMyTypeXTest\">\n" +
+                    "<wsdl:input message=\"tns:GetMyTypeXTestRequest\"/>\n" +
+                    "<wsdl:output message=\"tns:GetMyTypeXTestResponse\"/>\n" +
+                "</wsdl:operation>\n" +
              "</wsdl:portType>\n" +
              "<wsdl:binding name=\"tabletypeService_SOAP_HTTP\" type=\"tns:tabletypeService_Interface\">\n" +
                 "<soap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/>\n" +
@@ -453,6 +530,15 @@ public class NamingTransformerTestSuite extends DBWSTestSuite {
                       "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
                    "</wsdl:fault>\n" +
                 "</wsdl:operation>\n" +
+                "<wsdl:operation name=\"GetMyTypeXTest\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:GetMyTypeXTest\"/>\n" +
+                   "<wsdl:input>\n" +
+                       "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:input>\n" +
+                   "<wsdl:output>\n" +
+                       "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:output>\n" +
+               "</wsdl:operation>\n" +
              "</wsdl:binding>\n" +
              "<wsdl:service name=\"tabletypeService\">\n" +
                 "<wsdl:port name=\"tabletypeServicePort\" binding=\"tns:tabletypeService_SOAP_HTTP\">\n" +
