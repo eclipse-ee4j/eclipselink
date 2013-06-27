@@ -220,6 +220,7 @@ import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.sessions.remote.rmi.RMIConnection;
 import org.eclipse.persistence.sessions.remote.rmi.RMIServerSessionManager;
 import org.eclipse.persistence.sessions.remote.rmi.RMIServerSessionManagerDispatcher;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
@@ -2158,6 +2159,35 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
         
     /**
+     * Update session serializer.
+     */
+    protected void updateSerializer(Map m, ClassLoader loader) {
+	    String serializer = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SERIALIZER, m, this.session);
+	    if (serializer != null) {
+	    	if (serializer.length() > 0) {
+		        try {
+		        	Class transportClass = findClassForProperty(serializer, PersistenceUnitProperties.SERIALIZER, loader);
+		        	this.session.setSerializer((Serializer)transportClass.newInstance());
+		        } catch (Exception exception) {
+		            this.session.handleException(ValidationException.invalidValueForProperty(serializer, PersistenceUnitProperties.SERIALIZER, exception));
+		        }
+	    	} else {
+	    		this.session.setSerializer(JavaSerializer.instance);
+	    	}
+	    }
+    }
+
+    /**
+     * Update whether session ShouldOptimizeResultSetAccess.
+     */
+    protected void updateShouldOptimizeResultSetAccess(Map m) {
+	    String resultSetAccessOptimization = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.JDBC_RESULT_SET_ACCESS_OPTIMIZATION, m, this.session);
+	    if (resultSetAccessOptimization != null) {
+	    	this.session.setShouldOptimizeResultSetAccess(resultSetAccessOptimization.equals("true"));
+	    }
+    }
+    
+    /**
      * Override the default login creation method.
      * If persistenceInfo is available, use the information from it to setup the login
      * and possibly to set readConnectionPool.
@@ -2614,6 +2644,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             updatePartitioning(m, loader);
             updateDatabaseEventListener(m, loader);
+            updateSerializer(m, loader);
+            updateShouldOptimizeResultSetAccess(m);
             
             // Customizers should be processed last
             processDescriptorCustomizers(m, loader);

@@ -26,6 +26,7 @@ import org.eclipse.persistence.sessions.Session;
  * @author James Sutherland
  */
 public class JavaSerializer extends AbstractSerializer {
+	public static final JavaSerializer instance = new JavaSerializer();
     public Object serialize(Object object, Session session) {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         try {
