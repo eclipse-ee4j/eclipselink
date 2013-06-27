@@ -62,7 +62,6 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
@@ -539,7 +538,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
                 parentRecordCurrentObject = parentRecord.getCurrentObject();
             }
             
-            XMLUnmarshalListener xmlUnmarshalListener = unmarshaller.getUnmarshalListener();
+            Unmarshaller.Listener xmlUnmarshalListener = unmarshaller.getUnmarshalListener();
             if (null != xmlUnmarshalListener) {
                 if (null == this.parentRecord) {
                     xmlUnmarshalListener.beforeUnmarshal(currentObject, null);
@@ -642,7 +641,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
                 }
             }
 
-            XMLUnmarshalListener listener = unmarshaller.getUnmarshalListener();
+            Unmarshaller.Listener listener = unmarshaller.getUnmarshalListener();
             if (listener != null) {
                 if (this.parentRecord != null) {
                     listener.afterUnmarshal(currentObject, parentRecord.getCurrentObject());

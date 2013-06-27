@@ -48,7 +48,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLUnmarshaller extends org.eclipse.persistence.internal.oxm.XMLUnmarshaller<AbstractSession, XMLContext, XMLDescriptor, IDResolver, MediaType, XMLRoot, XMLUnmarshallerHandler> implements Cloneable {
+public class XMLUnmarshaller extends org.eclipse.persistence.internal.oxm.XMLUnmarshaller<AbstractSession, XMLContext, XMLDescriptor, IDResolver, MediaType, XMLRoot, XMLUnmarshallerHandler, XMLUnmarshalListener> implements Cloneable {
 
     public static final int NONVALIDATING = org.eclipse.persistence.internal.oxm.XMLUnmarshaller.NONVALIDATING;
     public static final int SCHEMA_VALIDATION = org.eclipse.persistence.internal.oxm.XMLUnmarshaller.SCHEMA_VALIDATION;
@@ -104,6 +104,16 @@ public class XMLUnmarshaller extends org.eclipse.persistence.internal.oxm.XMLUnm
     @Override
     public MediaType getMediaType(){
         return super.getMediaType();
+    }
+
+    @Override
+    public XMLUnmarshalListener getUnmarshalListener() {
+        return super.getUnmarshalListener();
+    }
+
+    @Override
+    public void setUnmarshalListener(XMLUnmarshalListener listener) {
+        super.setUnmarshalListener(listener);
     }
 
     @Override

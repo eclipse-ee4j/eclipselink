@@ -13,7 +13,6 @@
 package org.eclipse.persistence.oxm.record;
 
 import java.io.UnsupportedEncodingException;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +43,6 @@ import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
 import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.w3c.dom.Document;
@@ -517,7 +515,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     public void beforeContainmentMarshal(Object child) {
         if(null != marshaller) {
-            XMLMarshalListener marshalListener = marshaller.getMarshalListener();
+            Marshaller.Listener marshalListener = marshaller.getMarshalListener();
             if(null != marshalListener) {
                 try {
                     marshalListener.beforeMarshal(child);
@@ -541,7 +539,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     public void afterContainmentMarshal(Object parent, Object child) {
         if(null != marshaller) {
-            XMLMarshalListener marshalListener = marshaller.getMarshalListener();
+            Marshaller.Listener marshalListener = marshaller.getMarshalListener();
             if(null != marshalListener) {
                 try {
                     marshalListener.afterMarshal(child);

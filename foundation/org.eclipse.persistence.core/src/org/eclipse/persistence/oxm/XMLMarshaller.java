@@ -58,7 +58,7 @@ import org.w3c.dom.Node;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarshaller<AbstractSession, XMLContext, XMLDescriptor, MediaType, NamespacePrefixMapper, TreeObjectBuilder> implements Cloneable {
+public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarshaller<AbstractSession, XMLContext, XMLDescriptor, XMLMarshalListener, MediaType, NamespacePrefixMapper, TreeObjectBuilder> implements Cloneable {
 
     private Object marshalAttributeGroup;
 
@@ -233,7 +233,16 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
         return null;
     }
 
-    
+    @Override
+    public XMLMarshalListener getMarshalListener() {
+        return super.getMarshalListener();
+    }
+
+    @Override
+    public void setMarshalListener(XMLMarshalListener listener) {
+        super.setMarshalListener(listener);
+    }
+
     /**
      * Convert the given object to XML and update the given marshal record with
      * that XML Document.

@@ -70,9 +70,10 @@ public abstract class XMLMarshaller<
     ABSTRACT_SESSION extends CoreAbstractSession,
     CONTEXT extends Context<ABSTRACT_SESSION, DESCRIPTOR, ?, ?, ?, ?, ?>,
     DESCRIPTOR extends Descriptor,
+    MARSHALLER_LISTENER extends Marshaller.Listener,
     MEDIA_TYPE extends MediaType,
     NAMESPACE_PREFIX_MAPPER extends NamespacePrefixMapper,
-    OBJECT_BUILDER extends ObjectBuilder<?, ABSTRACT_SESSION, ?, XMLMarshaller>> extends Marshaller<CONTEXT, MEDIA_TYPE, NAMESPACE_PREFIX_MAPPER> {
+    OBJECT_BUILDER extends ObjectBuilder<?, ABSTRACT_SESSION, ?, XMLMarshaller>> extends Marshaller<CONTEXT, MARSHALLER_LISTENER, MEDIA_TYPE, NAMESPACE_PREFIX_MAPPER> {
 
     protected final static String DEFAULT_XML_VERSION = "1.0";
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";

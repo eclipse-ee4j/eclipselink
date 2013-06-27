@@ -36,7 +36,6 @@ import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
@@ -82,7 +81,8 @@ public class XMLUnmarshaller<
     ID_RESOLVER extends IDResolver,
     MEDIA_TYPE extends MediaType,
     ROOT extends Root,
-    UNMARSHALLER_HANDLER extends UnmarshallerHandler> extends Unmarshaller<ABSTRACT_SESSION, CONTEXT, DESCRIPTOR, ID_RESOLVER, MEDIA_TYPE, ROOT, UNMARSHALLER_HANDLER> implements Cloneable {
+    UNMARSHALLER_HANDLER extends UnmarshallerHandler,
+    UNMARSHALLER_LISTENER extends Unmarshaller.Listener> extends Unmarshaller<ABSTRACT_SESSION, CONTEXT, DESCRIPTOR, ID_RESOLVER, MEDIA_TYPE, ROOT, UNMARSHALLER_HANDLER, UNMARSHALLER_LISTENER> implements Cloneable {
 
     public static final int NONVALIDATING = XMLParser.NONVALIDATING;
     public static final int SCHEMA_VALIDATION = XMLParser.SCHEMA_VALIDATION;
@@ -135,7 +135,6 @@ public class XMLUnmarshaller<
     protected UNMARSHALLER_HANDLER xmlUnmarshallerHandler;
     protected PlatformUnmarshaller platformUnmarshaller;
     protected boolean schemasAreInitialized;
-    private XMLUnmarshalListener unmarshalListener;
     private XMLAttachmentUnmarshaller attachmentUnmarshaller;
     private Properties unmarshalProperties;
 
@@ -188,7 +187,9 @@ public class XMLUnmarshaller<
     }
 
     protected XMLUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
-        this((CONTEXT) xmlUnmarshaller.getContext());
+        super(xmlUnmarshaller);
+        stringBuffer = new StrBuffer();
+        initialize(null);
         setAttachmentUnmarshaller(xmlUnmarshaller.getAttachmentUnmarshaller());
         setEntityResolver(xmlUnmarshaller.getEntityResolver());
         setErrorHandler(xmlUnmarshaller.getErrorHandler());
@@ -203,7 +204,6 @@ public class XMLUnmarshaller<
             }
         } catch(UnsupportedOperationException e) {}
         setUnmappedContentHandlerClass(xmlUnmarshaller.unmappedContentHandlerClass);
-        setUnmarshalListener(xmlUnmarshaller.unmarshalListener);
     }
     
     protected void initialize(Map<String, Boolean> parserFeatures) {
@@ -297,14 +297,6 @@ public class XMLUnmarshaller<
         } else {
             platformUnmarshaller.setErrorHandler(errorHandler);
         }
-    }
-
-    public XMLUnmarshalListener getUnmarshalListener() {
-        return this.unmarshalListener;
-    }
-
-    public void setUnmarshalListener(XMLUnmarshalListener listener) {
-        this.unmarshalListener = listener;
     }
 
     /**

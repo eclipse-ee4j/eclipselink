@@ -16,7 +16,6 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
-import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.xml.sax.ErrorHandler;
@@ -26,6 +25,7 @@ import org.xml.sax.ErrorHandler;
  */
 public abstract class Marshaller<
     CONTEXT extends Context,
+    MARSHALLER_LISTENER extends Marshaller.Listener,
     MEDIA_TYPE extends MediaType,
     NAMESPACE_PREFIX_MAPPER extends NamespacePrefixMapper> {
 
@@ -39,7 +39,7 @@ public abstract class Marshaller<
     private boolean formattedOutput;
     private String indentString;
     protected NAMESPACE_PREFIX_MAPPER mapper;
-    private XMLMarshalListener marshalListener;
+    private MARSHALLER_LISTENER marshalListener;
     protected Properties marshalProperties;
 
     public Marshaller(CONTEXT context) {
@@ -62,7 +62,7 @@ public abstract class Marshaller<
         this.formattedOutput = marshaller.isFormattedOutput();
         this.indentString = marshaller.getIndentString();
         this.mapper = (NAMESPACE_PREFIX_MAPPER) marshaller.getNamespacePrefixMapper();
-        this.marshalListener = marshaller.getMarshalListener();
+        this.marshalListener = (MARSHALLER_LISTENER) marshaller.getMarshalListener();
         if(marshaller.marshalProperties != null) {
             marshalProperties = new Properties();
             for(Entry entry : marshalProperties.entrySet()) {
@@ -109,7 +109,7 @@ public abstract class Marshaller<
         return indentString;
     }
 
-    public XMLMarshalListener getMarshalListener() {
+    public MARSHALLER_LISTENER getMarshalListener() {
         return this.marshalListener;
     }
 
@@ -226,7 +226,7 @@ public abstract class Marshaller<
         this.indentString = s;
     }
 
-    public void setMarshalListener(XMLMarshalListener listener) {
+    public void setMarshalListener(MARSHALLER_LISTENER listener) {
         this.marshalListener = listener;
     }
 
@@ -236,6 +236,28 @@ public abstract class Marshaller<
      */
     public void setNamespacePrefixMapper(NAMESPACE_PREFIX_MAPPER mapper) {
         this.mapper = mapper;
+    }
+
+    /**
+     * <p>An implementation of Marshaller.Listener can be set on an Marshaller 
+     * to provide additional behaviour during marshal operations.</p>
+     */
+    public static interface Listener {
+
+        /**
+         * This event  will be called after an object is marshalled.
+         *
+         * @param target The object that was marshalled.
+         */
+        public void afterMarshal(Object target);
+        
+        /**
+         * This event will be called before an object is marshalled.
+         *
+         * @param target The object that will be marshalled.
+         */
+        public void beforeMarshal(Object target);
+
     }
 
 }

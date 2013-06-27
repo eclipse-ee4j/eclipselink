@@ -12,26 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm;
 
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
+
 /**
  * <p>An implementation of XMLUnmarshalListener can be set on an XMLUnmarshaller to provide additional
  * behaviour during unmarshal operations.</p>
  */
-public interface XMLUnmarshalListener {
-	
-    /**
-     * Event that will be called before objects are unmarshalled.
-     *
-     * @param target A newly created instance of the object to be unmarshalled.  
-     * @param parent the owning object of the object that will be unmarshalled. This may be null.
-     */
-    public void beforeUnmarshal(Object target, Object parent);
-    
-    
-    /**
-     * Event that will be called after objects are unmarshalled.
-     *
-     * @param target the object that was unmarshalled.
-     * @param parent the owning object of the object that was unmarshalled. This may be null.
-     */
-    public void afterUnmarshal(Object target, Object parent);
+public interface XMLUnmarshalListener extends Unmarshaller.Listener {
+
 }
