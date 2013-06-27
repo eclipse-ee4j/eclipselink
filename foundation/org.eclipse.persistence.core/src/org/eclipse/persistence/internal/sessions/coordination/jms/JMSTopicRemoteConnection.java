@@ -216,7 +216,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 byteMessage.readBytes(bytes);
                 Serializer serializer = this.rcm.getSerializer();
                 if (serializer == null) {
-                    serializer = new JavaSerializer();
+                    serializer = JavaSerializer.instance;
                 }
                 object = serializer.deserialize(bytes, (AbstractSession)this.rcm.getCommandProcessor());
             } else {

@@ -115,7 +115,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         this.discoveryManager = this.transportManager.createDiscoveryManager();
         this.serviceId.setChannel(DEFAULT_CHANNEL);
         this.isAsynchronous = DEFAULT_ASYNCHRONOUS_MODE;
-        this.serializer = new JavaSerializer();
+        this.serializer = JavaSerializer.instance;
 
         // Set the command processor to point back to this command manager
         commandProcessor.setCommandManager(this);
@@ -260,7 +260,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         try {
             Serializer serializer = getSerializer();
             if (serializer == null) {
-                serializer = new JavaSerializer();
+                serializer = JavaSerializer.instance;
             }
             command = (Command)serializer.deserialize(commandBytes, (AbstractSession)getCommandProcessor());
         } finally {

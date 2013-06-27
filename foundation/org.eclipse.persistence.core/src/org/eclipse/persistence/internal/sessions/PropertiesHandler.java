@@ -28,6 +28,7 @@ import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
  * 
@@ -198,6 +199,7 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_IS_LAZY, "true"));
             addProp(new IdValidationProp());
             addProp(new ConnectionPoolProp());
+            addProp(new BooleanProp(PersistenceUnitProperties.JDBC_RESULT_SET_ACCESS_OPTIMIZATION, Boolean.toString(ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault)));
         }
         
         Prop(String name) {

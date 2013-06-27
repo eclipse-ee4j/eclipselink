@@ -82,6 +82,7 @@ import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.Command;
 import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 
 /**
@@ -304,6 +305,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         this.numberOfActiveUnitsOfWork = 0;
         this.isInBroker = false;
         this.isSynchronized = false;
+        this.serializer = JavaSerializer.instance;
     }
 
     /**

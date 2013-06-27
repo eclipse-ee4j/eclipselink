@@ -2859,7 +2859,7 @@ public class PersistenceUnitProperties {
      * 
      * @see #COORDINATION_PROTOCOL
      * @see Serializer
-     * @see org.eclipse.persistence.sessions.Session#setSerializer(Serializer)
+     * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setSerializer(Serializer)
      */
     public static final String COORDINATION_SERIALIZER = "eclipselink.cache.coordination.serializer";
     
@@ -3033,6 +3033,37 @@ public class PersistenceUnitProperties {
      * @see org.eclipse.persistence.sessions.DatasourceLogin#setProperty(String, Object)
      */
     public static final String JDBC_PROPERTY = "eclipselink.jdbc.property.";
+    
+    /**
+     * Allows to set whether a query should by default use ResultSet Access optimization.
+     * The optimization allows to avoid getting objects from ResultSet if the cached object used.
+     * For instance, SELECT id, blob FROM .. with optimization would extract only "id" from ResultSet,
+     * and if there is a corresponding cached object and it's not a refresh query, "blob" would never be extracted.
+     * The draw back is keeping ResultSet and connection longer: until objects are built
+     * (or extracted from cache) for all rows and all eager references (direct and nested) for each row.
+     * Note that the optimization would not be used if it contradicts other query settings.
+     * <p>
+     * Allowed Values (String):
+     * <ul>
+     * <li>"true" - use optimization
+     * <li>"false" don't use optimization
+     * </ul>
+     * Default value is 
+     * ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault = false;
+     * 
+     * @see org.eclipse.persistence.internal.sessions.AbstractSession#setShouldOptimizeResultSetAccess(boolean)
+	 * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setIsResultSetAccessOptimizedQuery(boolean)
+     */
+    public static final String JDBC_RESULT_SET_ACCESS_OPTIMIZATION = "eclipselink.jdbc.result-set-access-optimization";
+    
+    /**
+     * Specifies class name for session serializer (must implement org.eclipse.persistence.sessions.serializers.Serializer)
+     * <p>
+     * Default value is "org.eclipse.persistence.sessions.serializers.JavaSerializer" 
+     * 
+     * @see org.eclipse.persistence.internal.sessions.AbstractSession#setSerializer(Serializer)
+     */
+    public static final String SERIALIZER = "eclipselink.serializer";
     
     /**
      * INTERNAL: The following properties will not be displayed through logging
