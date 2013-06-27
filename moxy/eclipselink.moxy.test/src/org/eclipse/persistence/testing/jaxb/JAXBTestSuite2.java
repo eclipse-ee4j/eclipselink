@@ -145,6 +145,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.twopackages.BATestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.sessionevents.SessionEventTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.JaxbContextCreationTests.class);        
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.notext.NoTextMappingErrorTests.class);        
         suite.addTest(org.eclipse.persistence.testing.jaxb.jaxbcontext.ByXPathTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.JaxbContextReturnTypesTests.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.JaxbTypeToSchemaTypeTestCases.class);

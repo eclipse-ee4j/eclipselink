@@ -125,6 +125,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int UNKNOWN_TYPE_FOR_VARIABLE_MAPPING = 50093;
     public static final int UNKNOWN_PROPERTY_FOR_VARIABLE_MAPPING = 50094;
     public static final int INVALID_TYPE_FOR_VARIABLE_MAPPING = 50095;
+    public static final int MUST_MAP_TO_TEXT = 50096;
 
 
     protected JAXBException(String message) {
@@ -1158,4 +1159,12 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_TYPE_FOR_VARIABLE_MAPPING);
         return validationException;
     }
+
+    public static JAXBException mustMapToText(String propName, String typeName, String refTypeName) {
+        Object[] args = { propName, typeName, refTypeName };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MUST_MAP_TO_TEXT, args));
+        validationException.setErrorCode(MUST_MAP_TO_TEXT);
+        return validationException;
+    }
+
 }
