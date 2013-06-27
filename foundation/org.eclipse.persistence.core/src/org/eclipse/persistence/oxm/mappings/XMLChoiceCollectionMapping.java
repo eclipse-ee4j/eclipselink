@@ -706,7 +706,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     public void setChoiceFieldToClassAssociations(ArrayList associations) {
         if(associations.size() > 0) {
             for(Object next:associations) {
-                XMLChoiceFieldToClassAssociation<XMLField> association = (XMLChoiceFieldToClassAssociation)next;
+                XMLChoiceFieldToClassAssociation<Converter, XMLField> association = (XMLChoiceFieldToClassAssociation)next;
                 this.addChoiceElement(association.getXmlField(), association.getClassName());
                 if(association.getConverter() != null) {
                     this.addConverter(association.getXmlField(), association.getConverter());

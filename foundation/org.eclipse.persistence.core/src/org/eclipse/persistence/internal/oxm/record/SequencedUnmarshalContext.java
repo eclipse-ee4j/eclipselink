@@ -12,12 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
@@ -78,7 +78,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
     }
 
     public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping) {
-        currentSetting.setMapping((DatabaseMapping) mapping);
+        currentSetting.setMapping((CoreMapping) mapping);
         currentSetting.setObject(unmarshalRecord.getCurrentObject());
         currentSetting.setValue(value);
     }
@@ -88,14 +88,14 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
     }
     
     public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection) {
-        currentSetting.setMapping((DatabaseMapping) containerValue.getMapping());
+        currentSetting.setMapping((CoreMapping) containerValue.getMapping());
         currentSetting.setObject(unmarshalRecord.getCurrentObject());
         currentSetting.addValue(value, true, collection);
     }
 
     public void reference(Reference reference) {
         currentSetting.setObject(reference.getSourceObject());
-        currentSetting.setMapping((DatabaseMapping) reference.getMapping());
+        currentSetting.setMapping((CoreMapping) reference.getMapping());
         reference.setSetting(currentSetting);
     }
 

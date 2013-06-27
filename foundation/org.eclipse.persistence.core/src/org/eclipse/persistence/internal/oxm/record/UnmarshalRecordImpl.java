@@ -1277,13 +1277,6 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
         return prefix;
     }
 
-    public String toString() {
-        StringWriter writer = new StringWriter();
-        writer.write(Helper.getShortClassName(getClass()));
-        writer.write("()");
-        return writer.toString();
-    }
-
     public NodeValue getSelfNodeValueForAttribute(String namespace, String localName) {
         if (this.selfRecords != null) {
             for (int i = 0, selfRecordsSize = selfRecords.size(); i < selfRecordsSize; i++) {

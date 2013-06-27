@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -44,6 +43,7 @@ import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolic
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
+import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 
 /**
  * INTERNAL:
@@ -309,14 +309,9 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                         throw DescriptorException.missingClassIndicatorField((XMLRecord) unmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
-                org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((CoreAbstractSession) session);
-                unmarshalRecord = wrapper.getUnmarshalRecord();
+                unmarshalRecord = unmarshaller.createUnmarshalRecord(xmlDescriptor, session);
             } else {
-                unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
-                if(unmarshalRecord instanceof org.eclipse.persistence.oxm.record.UnmarshalRecord) {
-                    org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((CoreAbstractSession) session);
-                    unmarshalRecord = wrapper.getUnmarshalRecord();
-                }
+                unmarshalRecord = unmarshaller.createUnmarshalRecord(xmlDescriptor, session);
                 unmarshalRecord.setXMLReader(this.getXMLReader());
             }
             this.descriptor = xmlDescriptor;

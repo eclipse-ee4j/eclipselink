@@ -13,8 +13,8 @@ package org.eclipse.persistence.internal.oxm;
 * mmacivor - June 19/2008 - 1.0 - Initial implementation
 ******************************************************************************/
 
+import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.mappings.converters.Converter;
 
 /** INTERNAL:
  * <p><b>Purpose</b>: This class holds onto a class name and an XMLField in order to read and write
@@ -22,12 +22,13 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * @author mmacivor
  */
 public class XMLChoiceFieldToClassAssociation <
+   CONVERTER extends CoreConverter,
    XML_FIELD extends Field
 >
 {
     protected String className;
     protected XML_FIELD xmlField;
-    protected Converter converter;
+    protected CONVERTER converter;
     
     public XMLChoiceFieldToClassAssociation() {
     }
@@ -53,11 +54,11 @@ public class XMLChoiceFieldToClassAssociation <
         this.xmlField = field;
     }
     
-    public Converter getConverter() {
+    public CONVERTER getConverter() {
         return this.converter;
     }
     
-    public void setConverter(Converter valueConverter) {
+    public void setConverter(CONVERTER valueConverter) {
         this.converter = valueConverter;
     }
 }
