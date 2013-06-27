@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings package-name="org.eclipse.persistence.testing.jaxb.jaxbcontext.notext" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+
+    <java-types>
+        <java-type name="Root">
+            <java-attributes>
+                <xml-attribute java-attribute="rootProp" type="org.eclipse.persistence.testing.jaxb.jaxbcontext.notext.TypeWithText"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+
+</xml-bindings>

@@ -909,6 +909,10 @@ public class AnnotationsProcessor {
             List<Property> anyElementProperties = new ArrayList<Property>();
             
             for (Property property : tInfo.getPropertyList()) {
+                // Check that @XmlAttribute references a Java type that maps to text in XML
+                if (property.isAttribute()) {
+                    validateXmlAttributeFieldOrProperty(tInfo, property);
+                }
             	JavaClass typeClass = property.getActualType();
             
             	if(property.isChoice()){
@@ -3983,6 +3987,57 @@ public class AnnotationsProcessor {
         return false;
     }
 
+    private void validateXmlAttributeFieldOrProperty(TypeInfo tInfo, Property property) {
+        // Check that @XmlAttribute references a Java type that maps to text in XML
+        JavaClass ptype = property.getActualType();
+        TypeInfo refInfo = typeInfo.get(ptype.getQualifiedName());
+        if (refInfo != null) {
+            if (!refInfo.isPostBuilt()) {
+                postBuildTypeInfo(new JavaClass[] { ptype });
+            }
+            if (!refInfo.isEnumerationType()) {
+                JavaClass parent = ptype.getSuperclass();
+                boolean hasMapped = false;
+                while (parent != null) {
+                    hasMapped = hasTextMapping(refInfo);
+                    if (hasMapped || parent.getQualifiedName().equals(JAVA_LANG_OBJECT)) {
+                        break;
+                    }
+                    refInfo = typeInfo.get(parent.getQualifiedName());
+                    parent = parent.getSuperclass();
+                }
+                if (!hasMapped) {
+                    String propName = property.getPropertyName();
+                    String typeName = tInfo.getJavaClassName();
+                    String refTypeName = refInfo.getJavaClassName();
+                    throw org.eclipse.persistence.exceptions.JAXBException.mustMapToText(propName, typeName, refTypeName);
+                }
+            }
+        }
+    }
+
+    private boolean hasTextMapping(TypeInfo tInfo) {
+        Collection<Property> props = tInfo.getProperties().values();
+        for (Property property : props) {
+            if (property.isAttribute()) {
+                JavaClass ptype = property.getActualType();
+                TypeInfo refInfo = typeInfo.get(ptype.getQualifiedName());
+                if (refInfo != null) {
+                    return hasTextMapping(refInfo);
+                }
+            }
+        }
+
+        boolean hasXmlId = (tInfo.getIDProperty() != null && !tInfo.getIDProperty().isTransient());
+        boolean hasXmlValue = (tInfo.getXmlValueProperty() != null && !tInfo.getXmlValueProperty().isTransient());
+        if (hasXmlValue) {
+            // Ensure there is an @XmlValue property and nothing else
+            hasXmlValue = CompilerHelper.isSimpleType(tInfo);            
+        }
+
+        return (hasXmlValue || hasXmlId);
+    }
+    
     private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass, TypeMappingInfo typeMappingInfo) {
         String packageName = JAXB_DEV;
         NamespaceResolver combinedNamespaceResolver = new NamespaceResolver();

@@ -535,4 +535,23 @@ public class CompilerHelper {
         }
         return null;
     }
+
+    public static boolean isSimpleType(TypeInfo info) {
+        if (info.isEnumerationType()) {
+            return true;
+        }
+        Property xmlValueProperty = info.getXmlValueProperty();
+
+        boolean hasMappedAttributes = false;
+
+        for (Property nextProp : info.getPropertyList()) {
+            if (nextProp.isAttribute() && !nextProp.isTransient()) {
+                hasMappedAttributes = true;
+            }
+        }
+        hasMappedAttributes = hasMappedAttributes || info.hasPredicateProperties();
+
+        return (xmlValueProperty != null && !hasMappedAttributes);
+    }
+
 }

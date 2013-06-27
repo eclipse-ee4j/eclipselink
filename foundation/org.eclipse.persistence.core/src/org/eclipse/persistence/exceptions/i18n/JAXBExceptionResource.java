@@ -114,7 +114,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50092", "Only one XmlElementRef property of type {0} allowed on class {1}."},
         {"50093", "The class {0} is not a mapped type in the JAXBContext."},
         {"50094", "The property {0} specified on the XmlVariableNode annotation was not found on the class {1}."},
-        {"50095", "The property {0} of type {1} on the class {2} is not valid for a XmlVariableNode.  Only properties of type String or QName are allowed."}
+        {"50095", "The property {0} of type {1} on the class {2} is not valid for a XmlVariableNode.  Only properties of type String or QName are allowed."},
+        {"50096", "The @XmlAttribute property {0} in type {1} must reference a type that maps to text in XML.  {2} cannot be mapped to a text value."}
     };
 
     /**
