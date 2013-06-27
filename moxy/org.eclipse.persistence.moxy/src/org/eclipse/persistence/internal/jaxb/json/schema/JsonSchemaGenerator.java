@@ -24,6 +24,8 @@ import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonType;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.Property;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
@@ -54,6 +56,7 @@ public class JsonSchemaGenerator {
     Map contextProperties;
     String attributePrefix;
     Class rootClass;
+    Property[] xopIncludeProp = null;
 
     private static String DEFINITION_PATH="#/definitions";
     
@@ -228,6 +231,34 @@ public class JsonSchemaGenerator {
                 } 
                 nestedProperty.getItem().setType(getJsonTypeForJavaType(mapping.getAttributeElementClass()));
                 return prop;
+            } else if(next instanceof BinaryDataCollectionMapping) {
+                BinaryDataCollectionMapping mapping = (BinaryDataCollectionMapping)next;
+                XMLField field = (XMLField)mapping.getField();
+                XPathFragment frag = field.getXPathFragment();
+
+                String propertyName = frag.getLocalName();
+                if(frag.nameIsText()) {
+                    propertyName = (String)this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
+                }
+
+                if(frag.isAttribute() && this.attributePrefix != null) {
+                    propertyName = attributePrefix + propertyName;
+                }
+                prop = properties.get(propertyName);
+                if(prop == null) {
+                    prop = new Property();
+                    prop.setName(propertyName);
+                }
+                Property nestedProperty = getNestedPropertyForFragment(frag, prop);
+                nestedProperty.setType(JsonType.ARRAY);
+                nestedProperty.setItem(new Property());
+
+                if(mapping.shouldInlineBinaryData()) {
+                    nestedProperty.getItem().setType(JsonType.STRING);
+                } else {
+                    nestedProperty.getItem().setAnyOf(getXopIncludeProperties());
+                }
+                return prop;          
             }
         } else {
             if(next.isAbstractDirectMapping()) {
@@ -265,7 +296,19 @@ public class JsonSchemaGenerator {
                 if(enumeration != null) {
                     nestedProperty.setEnumeration(enumeration);
                 } 
-                nestedProperty.setType(getJsonTypeForJavaType(directMapping.getAttributeClassification()));
+                if(directMapping instanceof BinaryDataMapping) {
+                    BinaryDataMapping binaryMapping = (BinaryDataMapping)directMapping;
+                    if(binaryMapping.shouldInlineBinaryData() || binaryMapping.isSwaRef()) {
+                        nestedProperty.setType(JsonType.STRING);
+                    } else {
+                        if(this.xopIncludeProp == null) {
+                            initXopIncludeProp();
+                        }
+                        nestedProperty.setAnyOf(this.xopIncludeProp);
+                    }
+                } else {
+                    nestedProperty.setType(getJsonTypeForJavaType(directMapping.getAttributeClassification()));
+                }
                 return prop;
             } else if(next instanceof ObjectReferenceMapping) {
                 ObjectReferenceMapping mapping = (ObjectReferenceMapping)next;
@@ -305,11 +348,71 @@ public class JsonSchemaGenerator {
                 Property nestedProperty = getNestedPropertyForFragment(firstFragment, prop);
                 nestedProperty.setRef(getReferenceForDescriptor(nextDescriptor));
                 //populateProperties(nestedProperty.getProperties(), nextDescriptor);
+            } else if(next instanceof BinaryDataMapping) {
+                BinaryDataMapping binaryMapping = (BinaryDataMapping)next;
+                XMLField field = (XMLField)binaryMapping.getField();
+                XPathFragment frag = field.getXPathFragment();
+                String propertyName = frag.getLocalName();
+                if(frag.nameIsText()) {
+                    propertyName = Constants.VALUE_WRAPPER;
+                    if(this.contextProperties != null)  {
+                        String valueWrapper = (String) this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
+                        if(valueWrapper != null) {
+                            propertyName = valueWrapper;
+                        }
+                    }
+                }                
+                if(frag.isAttribute() && this.attributePrefix != null) {
+                    propertyName = attributePrefix + propertyName;
+                }
+                prop = properties.get(propertyName);
+                if(prop == null) {
+                    prop = new Property();
+                    prop.setName(propertyName);
+                }
+                Property nestedProperty = getNestedPropertyForFragment(frag, prop);
+                if(binaryMapping.shouldInlineBinaryData() || binaryMapping.isSwaRef()) {
+                    nestedProperty.setType(JsonType.STRING);
+                } else {
+                    if(this.xopIncludeProp == null) {
+                        initXopIncludeProp();
+                    }
+                    nestedProperty.setAnyOf(this.xopIncludeProp);
+                }
+                return prop;                
             }
         }
         
         return prop;
     }
+
+    private void initXopIncludeProp() {
+        this.xopIncludeProp = new Property[2];
+        Property p = new Property();
+        p.setType(JsonType.STRING);
+        this.xopIncludeProp[0] = p;
+        
+        p = new Property();
+        this.xopIncludeProp[1] = p;
+        p.setType(JsonType.OBJECT);
+        Property includeProperty = new Property();
+        includeProperty.setName("Include");
+        includeProperty.setType(JsonType.OBJECT);
+        p.getProperties().put(includeProperty.getName(), includeProperty);
+        
+        Property hrefProp = new Property();
+        String propName = "href";
+        if(this.attributePrefix != null) {
+            propName = this.attributePrefix + propName;
+        }
+        hrefProp.setName(propName);
+        hrefProp.setType(JsonType.STRING);
+        includeProperty.getProperties().put(propName, hrefProp);
+            
+        
+    }
+
+
 
     private String getReferenceForDescriptor(XMLDescriptor referenceDescriptor) {
         if(referenceDescriptor == null) {
@@ -420,7 +523,7 @@ public class JsonSchemaGenerator {
                 nestedProperty.setName(propertyName);
             }
             currentProperties.put(nestedProperty.getName(), nestedProperty);
-            if(frag.getNextFragment().nameIsText() || frag.getNextFragment() == null) {
+            if(frag.getNextFragment() == null || frag.getNextFragment().nameIsText()) {
                 return nestedProperty;
             } else {
                 nestedProperty.setType(JsonType.OBJECT);
@@ -430,6 +533,13 @@ public class JsonSchemaGenerator {
             frag = frag.getNextFragment();
         }
         return null;
+    }
+    
+    private Property[] getXopIncludeProperties() {
+        if(this.xopIncludeProp == null) {
+            this.initXopIncludeProp();
+        }
+        return this.xopIncludeProp;
     }
 
 }
