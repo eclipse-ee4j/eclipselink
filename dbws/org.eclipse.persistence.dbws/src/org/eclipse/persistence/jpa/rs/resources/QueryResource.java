@@ -10,6 +10,7 @@
  *
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources;
+
 import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
 
 import javax.ws.rs.Consumes;
@@ -32,18 +33,20 @@ import org.eclipse.persistence.jpa.rs.resources.common.AbstractQueryResource;
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version : " +  SERVICE_VERSION_FORMAT +"}/{context}/query/")
+@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/query/")
 public class QueryResource extends AbstractQueryResource {
 
     @POST
     @Path("{name}")
     public Response namedQueryUpdate(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return namedQueryUpdateInternal(version, persistenceUnit, name, hh, ui);
     }
-    
+
     @GET
     @Path("{name}")
     public Response namedQuery(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return namedQueryInternal(version, persistenceUnit, name, hh, ui);
     }
 }

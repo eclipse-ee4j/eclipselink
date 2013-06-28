@@ -13,27 +13,89 @@
 package org.eclipse.persistence.jpa.rs.exceptions;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import org.eclipse.persistence.jpa.rs.ReservedWords;
 
 /*
  * 
  * Model class for marshaling error response
  * 
  */
-@XmlRootElement(name = "errorResponse")
+@XmlRootElement(name = ReservedWords.ERROR_RESPONSE_LABEL)
+@XmlType(propOrder = { "problemType", "title", "httpStatus", "detail", "problemInstance", "errorCode", "errorPath", "errorDetails", "requestUniqueId" })
+/*
+ *    {
+ *        "$schema": "http://json-schema.org/draft-04/schema#",
+ *        "id": "rest-schemas/exception#",
+ *        "title": "Error Detail",
+ *        "description": "This complex type is used to capture the error detail during REST calls",
+ *        "type": "object",
+ *        "properties": {
+ *              "problemType": {
+ *                   "type": "string",
+ *                   "description": "An absolute URI that identifies the problem type.  When dereferenced, it SHOULD provide human-readable documentation for the problem type (e.g., using HTML)."
+ *               },
+ *               "title": {
+ *                   "type": "string",
+ *                   "description": "A short, human-readable summary of the problem type.  It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localisation."
+ *               },
+ *               "httpStatus": {
+ *                   "type": "integer",
+ *                   "description": "The HTTP status code set by the origin server for this occurrence of the problem."
+ *               },
+ *               "detail": {
+ *                   "type": "string",
+ *                    "description": "An human readable explanation specific to this occurrence of the problem."
+ *               },
+ *               "problemInstance": {
+ *                   "type": "string",
+ *                    "description": "An absolute URI that identifies the specific occurrence of the problem.  It may or may not yield further information if dereferenced."
+ *               },
+ *               "errorCode": {
+ *                   "type": "string",
+ *                    "description": "application error code, which is different from HTTP error code"
+ *               },
+ *               "errorPath": {
+ *                   "type": "string",
+ *                   "description": "path to the problem, it could be at a resource level, or maybe at property level"
+ *               },
+ *               "errorDetails": {
+ *                   "$ref": "rest-schemas/exception#",
+ *                   "description": "contains details of the error message. This is basically a hierarchical tree structure."
+ *               }
+ *        },
+ *        "required": ["problemType", "title"]
+ *    }
+ */
 public class ErrorResponse {
     private String problemType; // mandatory
     private String title; // mandatory
-    private Integer httpStatus;
+    private int httpStatus;
     private String detail;
     private String problemInstance;
     private String errorCode;
     private String errorPath;
-    private String errorDetails;
+    private ErrorResponse errorDetails;
+    private String requestUniqueId;
 
-    public ErrorResponse(String problemType, String title) {
-        super();
+    /**
+     * Instantiates a new error response.
+     */
+    public ErrorResponse() {
+    }
+
+    /**
+     * Instantiates a new error response.
+     *
+     * @param problemType the problem type
+     * @param title the title
+     * @param errorCode the error code
+     */
+    public ErrorResponse(String problemType, String title, String errorCode) {
         this.problemType = problemType;
         this.title = title;
+        this.errorCode = errorCode;
     }
 
     /**
@@ -77,7 +139,7 @@ public class ErrorResponse {
      *
      * @return the http status
      */
-    public Integer getHttpStatus() {
+    public int getHttpStatus() {
         return httpStatus;
     }
 
@@ -86,7 +148,7 @@ public class ErrorResponse {
      *
      * @param httpStatus the new http status
      */
-    public void setHttpStatus(Integer httpStatus) {
+    public void setHttpStatus(int httpStatus) {
         this.httpStatus = httpStatus;
     }
 
@@ -167,7 +229,7 @@ public class ErrorResponse {
      *
      * @return the error details
      */
-    public String getErrorDetails() {
+    public ErrorResponse getErrorDetails() {
         return errorDetails;
     }
 
@@ -176,7 +238,25 @@ public class ErrorResponse {
      *
      * @param errorDetails the new error details
      */
-    public void setErrorDetails(String errorDetails) {
+    public void setErrorDetails(ErrorResponse errorDetails) {
         this.errorDetails = errorDetails;
+    }
+
+    /**
+     * Gets the request unique id.
+     *
+     * @return the request unique id
+     */
+    public String getRequestUniqueId() {
+        return requestUniqueId;
+    }
+
+    /**
+     * Sets the request unique id.
+     *
+     * @param requestUniqueId the new request unique id
+     */
+    public void setRequestUniqueId(String requestUniqueId) {
+        this.requestUniqueId = requestUniqueId;
     }
 }

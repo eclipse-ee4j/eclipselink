@@ -31,9 +31,11 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidator;
@@ -58,22 +60,24 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  */
 public abstract class AbstractEntityResource extends AbstractResource {
     protected Response findAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null || context.getClass(type) == null) {
-            if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            } else {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
-            }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-
-        Object id = IdHelper.buildId(context, type, key);
-        EntityManager em = context.getEmf().createEntityManager(getMatrixParameters(uriInfo, persistenceUnit));
-
-        Object entity = null;
-
+        EntityManager em = null;
         try {
+
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null || context.getClass(type) == null) {
+                if (context == null) {
+                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                } else {
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                }
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+
+            Object id = IdHelper.buildId(context, type, key);
+            em = context.getEmf().createEntityManager(getMatrixParameters(uriInfo, persistenceUnit));
+
+            Object entity = null;
+
             entity = em.find(context.getClass(type), id, getQueryParameters(uriInfo));
             DatabaseSession serverSession = context.getServerSession();
             ClassDescriptor descriptor = serverSession.getClassDescriptor(context.getClass(type));
@@ -120,95 +124,98 @@ public abstract class AbstractEntityResource extends AbstractResource {
             }
             result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
             return response(context, attribute, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         } finally {
-            em.close();
+            if (em != null) {
+                if (em.isOpen()) {
+                    em.close();
+                }
+            }
         }
     }
 
     protected Response find(String version, String persistenceUnit, String type, String key, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null || context.getClass(type) == null) {
-            if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            } else {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
+        try {
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null || context.getClass(type) == null) {
+                if (context == null) {
+                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                } else {
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                }
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-        Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
-
-        Object id = IdHelper.buildId(context, type, key);
-
-        Object entity = context.find(discriminators, type, id, getQueryParameters(uriInfo));
-
-        if (entity == null) {
-            JPARSLogger.fine("jpars_could_not_entity_for_key", new Object[] { type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        } else {
+            Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
+            Object id = IdHelper.buildId(context, type, key);
+            Object entity = context.find(discriminators, type, id, getQueryParameters(uriInfo));
+            if (entity == null) {
+                JPARSLogger.fine("jpars_could_not_entity_for_key", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, key, persistenceUnit });
+                throw JPARSException.entityNotFound((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), Status.NOT_FOUND.getStatusCode(), type, key, persistenceUnit);
+            }
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
     }
 
     @SuppressWarnings("rawtypes")
     protected Response create(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) throws JAXBException {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null) {
-            JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-        ClassDescriptor descriptor = context.getDescriptor(type);
-        if (descriptor == null) {
-            JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-        Object entity = null;
         try {
-            entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
-        } catch (JAXBException e) {
-            JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-
-        // maintain idempotence on PUT by disallowing sequencing
-        AbstractDirectMapping sequenceMapping = descriptor.getObjectBuilder().getSequenceMapping();
-        if (sequenceMapping != null) {
-            Object value = sequenceMapping.getAttributeAccessor().getAttributeValueFromObject(entity);
-
-            if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
-                    || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
-                JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
-                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null) {
+                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
-        }
+            ClassDescriptor descriptor = context.getDescriptor(type);
+            if (descriptor == null) {
+                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
 
-        // maintain idempotence on PUT by disallowing sequencing in relationships
-        List<DatabaseMapping> mappings = descriptor.getMappings();
-        if ((mappings != null) && (!mappings.isEmpty())) {
-            for (DatabaseMapping mapping : mappings) {
-                if (mapping instanceof ForeignReferenceMapping) {
-                    ForeignReferenceMapping fkMapping = (ForeignReferenceMapping) mapping;
-                    if ((fkMapping.isCascadePersist()) || (fkMapping.isCascadeMerge())) {
-                        ClassDescriptor referenceDescriptor = fkMapping.getReferenceDescriptor();
-                        if (referenceDescriptor != null) {
-                            if (referenceDescriptor instanceof RelationalDescriptor) {
-                                RelationalDescriptor relDesc = (RelationalDescriptor) referenceDescriptor;
-                                AbstractDirectMapping relSequenceMapping = relDesc.getObjectBuilder().getSequenceMapping();
-                                if (relSequenceMapping != null) {
-                                    Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
-                                    if (value != null) {
-                                        if (value instanceof ValueHolder) {
-                                            ValueHolder holder = (ValueHolder) value;
-                                            if (holder != null) {
-                                                Object obj = holder.getValue();
-                                                if (obj != null) {
+            Object entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
+
+            // maintain idempotence on PUT by disallowing sequencing
+            AbstractDirectMapping sequenceMapping = descriptor.getObjectBuilder().getSequenceMapping();
+            if (sequenceMapping != null) {
+                Object value = sequenceMapping.getAttributeAccessor().getAttributeValueFromObject(entity);
+
+                if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
+                        || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
+                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                    return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                }
+            }
+
+            // maintain idempotence on PUT by disallowing sequencing in relationships
+            List<DatabaseMapping> mappings = descriptor.getMappings();
+            if ((mappings != null) && (!mappings.isEmpty())) {
+                for (DatabaseMapping mapping : mappings) {
+                    if (mapping instanceof ForeignReferenceMapping) {
+                        ForeignReferenceMapping fkMapping = (ForeignReferenceMapping) mapping;
+                        if ((fkMapping.isCascadePersist()) || (fkMapping.isCascadeMerge())) {
+                            ClassDescriptor referenceDescriptor = fkMapping.getReferenceDescriptor();
+                            if (referenceDescriptor != null) {
+                                if (referenceDescriptor instanceof RelationalDescriptor) {
+                                    RelationalDescriptor relDesc = (RelationalDescriptor) referenceDescriptor;
+                                    AbstractDirectMapping relSequenceMapping = relDesc.getObjectBuilder().getSequenceMapping();
+                                    if (relSequenceMapping != null) {
+                                        Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
+                                        if (value != null) {
+                                            if (value instanceof ValueHolder) {
+                                                ValueHolder holder = (ValueHolder) value;
+                                                if (holder != null) {
+                                                    Object obj = holder.getValue();
+                                                    if (obj != null) {
+                                                        JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
+                                                        return Response.status(Status.BAD_REQUEST).build();
+                                                    }
+                                                }
+                                            } else if (value instanceof Collection) {
+                                                if (!(((Collection) value).isEmpty())) {
                                                     JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
                                                     return Response.status(Status.BAD_REQUEST).build();
                                                 }
-                                            }
-                                        } else if (value instanceof Collection) {
-                                            if (!(((Collection) value).isEmpty())) {
-                                                JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
-                                                return Response.status(Status.BAD_REQUEST).build();
                                             }
                                         }
                                     }
@@ -218,134 +225,145 @@ public abstract class AbstractEntityResource extends AbstractResource {
                     }
                 }
             }
+            // No sequencing in relationships, we can create the object now...
+            context.create(getMatrixParameters(uriInfo, persistenceUnit), entity);
+            ResponseBuilder rb = Response.status(Status.CREATED);
+            return rb.entity(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
-
-        // No sequencing in relationships, we can create the object now...
-        context.create(getMatrixParameters(uriInfo, persistenceUnit), entity);
-        ResponseBuilder rb = Response.status(Status.CREATED);
-        return rb.entity(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
     }
 
     protected Response update(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null || context.getClass(type) == null) {
-            if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            } else {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
-            }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-        Object entity = null;
         try {
-            entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
-        } catch (JAXBException e) {
-            JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null || context.getClass(type) == null) {
+                if (context == null) {
+                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                } else {
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                }
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+            Object entity = null;
+            try {
+                entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
+            } catch (JAXBException e) {
+                JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit, e.toString() });
+                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
 
-        entity = context.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
-        return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
+            entity = context.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
+            return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
+        }
     }
 
     protected Response setOrAddAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null || context.getClass(type) == null) {
-            if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            } else {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
-            }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-
-        Object id = IdHelper.buildId(context, type, key);
-
-        Object entity = null;
-        String partner = getRelationshipPartner(getMatrixParameters(uriInfo, attribute), getQueryParameters(uriInfo));
         try {
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null || context.getClass(type) == null) {
+                if (context == null) {
+                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                } else {
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                }
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+
+            Object id = IdHelper.buildId(context, type, key);
+
+            Object entity = null;
+            String partner = getRelationshipPartner(getMatrixParameters(uriInfo, attribute), getQueryParameters(uriInfo));
+            ClassDescriptor descriptor = context.getDescriptor(type);
+            DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
+            if (!mapping.isForeignReferenceMapping()) {
+                JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), attribute, type, key, persistenceUnit });
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+
+            entity = context.unmarshalEntity(((ForeignReferenceMapping) mapping).getReferenceDescriptor().getAlias(), mediaType(headers.getAcceptableMediaTypes()), in);
+
+            Object result = context.updateOrAddAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, getQueryParameters(uriInfo), attribute, entity, partner);
+            if (result == null) {
+                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+            return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
+        }
+    }
+
+    protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo) {
+        try {
+            String listItemId = null;
+            Map<String, String> matrixParams = getMatrixParameters(uriInfo, attribute);
+            Map<String, Object> queryParams = getQueryParameters(uriInfo);
+
+            if ((queryParams != null) && (!queryParams.isEmpty())) {
+                listItemId = (String) queryParams.get(QueryParameters.JPARS_LIST_ITEM_ID);
+            }
+
+            String partner = getRelationshipPartner(matrixParams, queryParams);
+
+            PersistenceContext context = getPersistenceContext(persistenceUnit, uriInfo.getBaseUri(), version, null);
+            if (context == null || context.getClass(type) == null) {
+                if (context == null) {
+                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                } else {
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                }
+                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+
+            if ((attribute == null) && (listItemId == null)) {
+                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
+
+            Object id = IdHelper.buildId(context, type, key);
+
             ClassDescriptor descriptor = context.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
                 JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { attribute, type, key, persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
-            entity = context.unmarshalEntity(((ForeignReferenceMapping) mapping).getReferenceDescriptor().getAlias(), mediaType(headers.getAcceptableMediaTypes()), in);
-        } catch (JAXBException e) {
-            JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
 
-        Object result = context.updateOrAddAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, getQueryParameters(uriInfo), attribute, entity, partner);
+            Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
+            Object entity = context.find(discriminators, type, id, getQueryParameters(uriInfo));
+            Object result = context.removeAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, attribute, listItemId, entity, partner);
 
-        if (result == null) {
-            JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-        return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
-    }
-
-    protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo) {
-        String listItemId = null;
-        Map<String, String> matrixParams = getMatrixParameters(uriInfo, attribute);
-        Map<String, Object> queryParams = getQueryParameters(uriInfo);
-
-        if ((queryParams != null) && (!queryParams.isEmpty())) {
-            listItemId = (String) queryParams.get(QueryParameters.JPARS_LIST_ITEM_ID);
-        }
-
-        String partner = getRelationshipPartner(matrixParams, queryParams);
-
-        PersistenceContext context = getPersistenceContext(persistenceUnit, uriInfo.getBaseUri(), version, null);
-        if (context == null || context.getClass(type) == null) {
-            if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
+            if (result == null) {
+                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             } else {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
+                return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
             }
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-
-        if ((attribute == null) && (listItemId == null)) {
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-
-        Object id = IdHelper.buildId(context, type, key);
-
-        ClassDescriptor descriptor = context.getDescriptor(type);
-        DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
-        if (!mapping.isForeignReferenceMapping()) {
-            JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-
-        Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
-        Object entity = context.find(discriminators, type, id, getQueryParameters(uriInfo));
-        Object result = context.removeAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, attribute, listItemId, entity, partner);
-
-        if (result == null) {
-            JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        } else {
-            return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
     }
 
     protected Response delete(String version, String persistenceUnit, String type, String key, UriInfo uriInfo, HttpHeaders headers, URI baseURI) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null || context.getClass(type) == null) {
-            if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            } else {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
+        try {
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null || context.getClass(type) == null) {
+                if (context == null) {
+                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                } else {
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
+                }
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
+            Object id = IdHelper.buildId(context, type, key);
+            context.delete(discriminators, type, id);
+            return Response.ok().build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
-
-        Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
-        Object id = IdHelper.buildId(context, type, key);
-        context.delete(discriminators, type, id);
-        return Response.ok().build();
     }
 
     private Response response(PersistenceContext context, String attribute, Object queryResults, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
@@ -368,7 +386,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             ReadAllQuery readAllQuery = (ReadAllQuery) query;
             orderBy = readAllQuery.getOrderByExpressions();
             if ((orderBy == null) || (orderBy.isEmpty())) {
-                JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { query.toString() });
+                JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), query.toString() });
             }
         }
     }

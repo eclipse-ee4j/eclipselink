@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
+import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -20,9 +21,9 @@ import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
-import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
@@ -146,8 +147,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         if (entity != null) {
             return entity;
         }
-        // It is an error if the object referred by a link in unmarshal doesn't
-        // exist, so throw exception
-        throw new JPARSException(LoggingLocalization.buildMessage("object_referred_by_link_does_not_exist", new Object[] { entityType, id }));
+        // It is an error if the object referred by a link doesn't exist, so throw exception
+        throw JPARSException.objectReferredByLinkDoesNotExist((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), Status.NOT_FOUND.getStatusCode(), entityType, id);
     }
 }

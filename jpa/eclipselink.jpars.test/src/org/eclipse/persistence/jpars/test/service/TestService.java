@@ -40,6 +40,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.resources.unversioned.EntityResource;
@@ -144,7 +145,7 @@ public class TestService {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testUpdateUserList() throws URISyntaxException {
+    public void testUpdateUserList() throws Exception {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = TestService.getAuctionPersistenceContext(null);
@@ -197,7 +198,7 @@ public class TestService {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testUpdatePhoneNumberList() throws URISyntaxException {
+    public void testUpdatePhoneNumberList() throws Exception {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getPhoneBookPersistenceContext(null);
@@ -253,7 +254,7 @@ public class TestService {
     }
 
     @Test
-    public void testMarshallBid() throws URISyntaxException {
+    public void testMarshallBid() throws Exception {
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -287,7 +288,7 @@ public class TestService {
     }
 
     @Test
-    public void testNamedQuery() throws URISyntaxException {
+    public void testNamedQuery() throws Exception {
         QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -321,7 +322,7 @@ public class TestService {
     }
 
     @Test
-    public void testNamedQuerySingleResult() throws URISyntaxException {
+    public void testNamedQuerySingleResult() throws Exception {
         SingleResultQueryResource resource = new SingleResultQueryResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -351,7 +352,7 @@ public class TestService {
     }
 
     @Test
-    public void testUpdate() throws URISyntaxException {
+    public void testUpdate() throws Exception {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -372,7 +373,7 @@ public class TestService {
     }
 
     @Test
-    public void testUpdateRelationship() throws URISyntaxException {
+    public void testUpdateRelationship() throws Exception {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -437,7 +438,7 @@ public class TestService {
     }
 
     @Test
-    public void testDelete() throws URISyntaxException {
+    public void testDelete() throws Exception {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -456,7 +457,7 @@ public class TestService {
     }
 
     @Test
-    public void testWriteQuery() throws URISyntaxException {
+    public void testWriteQuery() throws Exception {
         QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -477,7 +478,7 @@ public class TestService {
     }
 
     @Test
-    public void testDynamicCompositeKey() throws URISyntaxException {
+    public void testDynamicCompositeKey() throws Exception {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -623,7 +624,7 @@ public class TestService {
         resource.getQueriesMetadata("jpars_auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
     }
 
-    @Test
+    @Test(expected = JPARSException.class)
     public void testMultitenant() throws JAXBException, URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
@@ -654,7 +655,6 @@ public class TestService {
 
         output = (StreamingOutput) resource.find("jpars_auction-static-local", "Account", String.valueOf(account.getId()),
                 generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui2).getEntity();
-        assertTrue("output should be null", output == null);
     }
 
     public static String stringifyResults(StreamingOutput output) {

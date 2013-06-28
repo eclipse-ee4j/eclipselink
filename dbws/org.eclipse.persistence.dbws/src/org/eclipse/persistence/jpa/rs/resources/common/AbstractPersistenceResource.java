@@ -31,6 +31,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Parameter;
@@ -38,6 +39,7 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.SessionBeanCall;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -50,84 +52,91 @@ import org.eclipse.persistence.jpa.rs.util.list.LinkList;
 public abstract class AbstractPersistenceResource extends AbstractResource {
 
     protected Response getContexts(String version, HttpHeaders headers, URI baseURI) throws JAXBException {
-        if (!isValidVersion(version)) {
-            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-
-        Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
-        Iterator<String> contextIterator = contexts.iterator();
-        List<Link> links = new ArrayList<Link>();
-        String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
-        while (contextIterator.hasNext()) {
-            String context = contextIterator.next();
-            if (version != null) {
-                links.add(new Link(context, mediaType, baseURI + version + "/" + context + "/metadata"));
-            } else {
-                links.add(new Link(context, mediaType, baseURI + context + "/metadata"));
+        try {
+            if (!isValidVersion(version)) {
+                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), version });
+                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
+
+            Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
+            Iterator<String> contextIterator = contexts.iterator();
+            List<Link> links = new ArrayList<Link>();
+            String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
+            while (contextIterator.hasNext()) {
+                String context = contextIterator.next();
+                if (version != null) {
+                    links.add(new Link(context, mediaType, baseURI + version + "/" + context + "/metadata"));
+                } else {
+                    links.add(new Link(context, mediaType, baseURI + context + "/metadata"));
+                }
+            }
+            LinkList linkList = new LinkList();
+            linkList.setList(links);
+            String result = null;
+            if (mediaType.equals(MediaType.APPLICATION_JSON)) {
+                result = marshallMetadata(linkList.getList(), mediaType);
+            } else {
+                result = marshallMetadata(linkList, mediaType);
+            }
+            return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
-        LinkList linkList = new LinkList();
-        linkList.setList(links);
-        String result = null;
-        if (mediaType.equals(MediaType.APPLICATION_JSON)) {
-            result = marshallMetadata(linkList.getList(), mediaType);
-        } else {
-            result = marshallMetadata(linkList, mediaType);
-        }
-        return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
     }
 
     @SuppressWarnings("rawtypes")
-    protected Response callSessionBeanInternal(String version, HttpHeaders headers, UriInfo uriInfo, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException,
-            InvocationTargetException, IllegalAccessException {
-        if (!isValidVersion(version)) {
-            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
-            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
+    protected Response callSessionBeanInternal(String version, HttpHeaders headers, UriInfo uriInfo, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        try {
+            if (!isValidVersion(version)) {
+                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), version });
+                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
 
-        SessionBeanCall call = null;
-        call = unmarshallSessionBeanCall(is);
+            SessionBeanCall call = null;
+            call = unmarshallSessionBeanCall(is);
 
-        String jndiName = call.getJndiName();
-        javax.naming.Context ctx = new InitialContext();
-        Object ans = ctx.lookup(jndiName);
-        if (ans == null) {
-            JPARSLogger.fine("jpars_could_not_find_session_bean", new Object[] { jndiName });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
-
-        PersistenceContext context = null;
-        if (call.getContext() != null) {
-            context = getPersistenceFactory().get(call.getContext(), uriInfo.getBaseUri(), version, null);
-            if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { call.getContext() });
+            String jndiName = call.getJndiName();
+            javax.naming.Context ctx = new InitialContext();
+            Object ans = ctx.lookup(jndiName);
+            if (ans == null) {
+                JPARSLogger.fine("jpars_could_not_find_session_bean", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), jndiName });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
-        }
 
-        Class[] parameters = new Class[call.getParameters().size()];
-        Object[] args = new Object[call.getParameters().size()];
-        int i = 0;
-        for (Parameter param : call.getParameters()) {
-            Class parameterClass = null;
-            Object parameterValue = null;
-            if (context != null) {
-                parameterClass = context.getClass(param.getTypeName());
+            PersistenceContext context = null;
+            if (call.getContext() != null) {
+                context = getPersistenceFactory().get(call.getContext(), uriInfo.getBaseUri(), version, null);
+                if (context == null) {
+                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), call.getContext() });
+                    return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                }
             }
-            if (parameterClass != null) {
-                parameterValue = context.unmarshalEntity(param.getTypeName(), headers.getMediaType(), is);
-            } else {
-                parameterClass = Thread.currentThread().getContextClassLoader().loadClass(param.getTypeName());
-                parameterValue = ConversionManager.getDefaultManager().convertObject(param.getValue(), parameterClass);
+
+            Class[] parameters = new Class[call.getParameters().size()];
+            Object[] args = new Object[call.getParameters().size()];
+            int i = 0;
+            for (Parameter param : call.getParameters()) {
+                Class parameterClass = null;
+                Object parameterValue = null;
+                if (context != null) {
+                    parameterClass = context.getClass(param.getTypeName());
+                }
+                if (parameterClass != null) {
+                    parameterValue = context.unmarshalEntity(param.getTypeName(), headers.getMediaType(), is);
+                } else {
+                    parameterClass = Thread.currentThread().getContextClassLoader().loadClass(param.getTypeName());
+                    parameterValue = ConversionManager.getDefaultManager().convertObject(param.getValue(), parameterClass);
+                }
+                parameters[i] = parameterClass;
+                args[i] = parameterValue;
+                i++;
             }
-            parameters[i] = parameterClass;
-            args[i] = parameterValue;
-            i++;
+            Method method = ans.getClass().getMethod(call.getMethodName(), parameters);
+            Object returnValue = method.invoke(ans, args);
+            return Response.ok(new StreamingOutputMarshaller(null, returnValue, headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
-        Method method = ans.getClass().getMethod(call.getMethodName(), parameters);
-        Object returnValue = method.invoke(ans, args);
-        return Response.ok(new StreamingOutputMarshaller(null, returnValue, headers.getAcceptableMediaTypes())).build();
     }
 
     protected SessionBeanCall unmarshallSessionBeanCall(InputStream data) throws JAXBException {

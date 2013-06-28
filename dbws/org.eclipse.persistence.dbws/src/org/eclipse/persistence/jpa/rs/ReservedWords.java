@@ -31,4 +31,6 @@ public class ReservedWords {
 
     public static final String NO_ROUTE_JAXB_ELEMENT_LABEL = "result";
     // 
+
+    public static final String ERROR_RESPONSE_LABEL = "error";
 }

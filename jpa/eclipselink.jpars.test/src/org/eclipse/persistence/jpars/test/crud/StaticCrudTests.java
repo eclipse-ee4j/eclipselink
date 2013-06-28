@@ -44,20 +44,20 @@ public class StaticCrudTests {
 
     private static PersistenceContext persistenceContext;
     private static PersistenceFactoryBase factory;
-    
+
     @BeforeClass
-    public static void setup(){
+    public static void setup() {
         Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties); 
+        ExamplePropertiesLoader.loadProperties(properties);
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
         factory = null;
-        try{
+        try {
             factory = new PersistenceFactoryBase();
             persistenceContext = factory.bootstrapPersistenceContext("jpars_auction-static-local", Persistence.createEntityManagerFactory("jpars_auction-static-local", properties), new URI(
                     "http://localhost:9090/JPA-RS/"), null, true);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             fail(e.toString());
         }
@@ -67,11 +67,11 @@ public class StaticCrudTests {
         em.createQuery("delete from StaticAuction a").executeUpdate();
         em.createQuery("delete from StaticUser u").executeUpdate();
         em.getTransaction().commit();
-        
+
     }
-    
+
     @AfterClass
-    public static void tearDown(){
+    public static void tearDown() {
         EntityManager em = persistenceContext.getEmf().createEntityManager();
         em.getTransaction().begin();
         em.createQuery("delete from StaticBid b").executeUpdate();
@@ -79,58 +79,57 @@ public class StaticCrudTests {
         em.createQuery("delete from StaticUser u").executeUpdate();
         em.getTransaction().commit();
     }
-    
+
     @Test
-    public void testCreateAndDelete() {
+    public void testCreateAndDelete() throws Exception {
         StaticUser user = new StaticUser();
         user.setName("Jim");
         user.setId(1);
         persistenceContext.create(null, user);
-        user = (StaticUser)persistenceContext.find("StaticUser", user.getId());
-        
+        user = (StaticUser) persistenceContext.find("StaticUser", user.getId());
+
         assertNotNull("Entity was not persisted", user);
         assertTrue("Entity Name was incorrect", user.getName().equals("Jim"));
-        
+
         persistenceContext.delete(null, "StaticUser", user.getId());
-        
-        user = (StaticUser)persistenceContext.find("StaticUser",user.getId());
-        
+
+        user = (StaticUser) persistenceContext.find("StaticUser", user.getId());
+
         assertNull("Entity was not deleted", user);
     }
 
-    
     @Test
     @SuppressWarnings("unchecked")
-    public void testQuery(){
+    public void testQuery() throws Exception {
         StaticUser user = new StaticUser();
         user.setName("Jill");
         user.setId(2);
         persistenceContext.create(null, user);
-        
+
         user = new StaticUser();
         user.setName("Arthur");
         user.setId(3);
         persistenceContext.create(null, user);
-        
+
         user = new StaticUser();
         user.setName("Judy");
         user.setId(4);
         persistenceContext.create(null, user);
-        
+
         List<StaticUser> users = (List<StaticUser>) persistenceContext.queryMultipleResults(null, "User.all", null, null);
         assertTrue(users.size() == 3);
     }
-    
+
     @Test
-    public void testUpdate(){
+    public void testUpdate() throws Exception {
         StaticUser user = new StaticUser();
         user.setName("Tom");
         user.setId(5);
         persistenceContext.create(null, user);
-        user = (StaticUser)persistenceContext.find("StaticUser", user.getId());
+        user = (StaticUser) persistenceContext.find("StaticUser", user.getId());
         user.setName("Thomas");
         persistenceContext.merge(null, user);
-        user = (StaticUser)persistenceContext.find("StaticUser", user.getId());
+        user = (StaticUser) persistenceContext.find("StaticUser", user.getId());
         assertTrue("Entity name was not correctly updated.", user.getName().equals("Thomas"));
         persistenceContext.delete(null, "StaticUser", user.getId());
     }

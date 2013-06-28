@@ -22,18 +22,18 @@ import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
-import org.eclipse.persistence.jpa.rs.exceptions.JPARSConfigurationException;
 import org.eclipse.persistence.jpa.rs.features.FeatureSetPreV2;
 import org.eclipse.persistence.jpa.rs.features.FeatureSetV2;
-import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
@@ -44,7 +44,6 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
  *
  */
 public class PersistenceFactoryBase implements PersistenceContextFactory {
-
     protected Map<String, Set<PersistenceContext>> dynamicPersistenceContexts = new HashMap<String, Set<PersistenceContext>>();
 
     /**
@@ -159,12 +158,13 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                     }
                 }
             } catch (Exception e) {
-                JPARSLogger.exception("exception_creating_persistence_context", new Object[] { persistenceUnitName, e.toString() }, e);
+                JPARSLogger.exception("exception_creating_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnitName, e.toString() }, e);
             }
         }
 
         if ((persistenceContext != null) && (!persistenceContext.isWeavingEnabled())) {
-            throw new JPARSConfigurationException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[] { persistenceUnitName }));
+            JPARSLogger.fine("weaving_required_for_relationships", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) });
+            throw JPARSException.invalidConfiguration((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), Status.INTERNAL_SERVER_ERROR.getStatusCode());
         }
 
         return persistenceContext;

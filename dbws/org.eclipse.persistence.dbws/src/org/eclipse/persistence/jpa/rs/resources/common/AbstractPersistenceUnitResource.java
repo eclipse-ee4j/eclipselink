@@ -29,6 +29,7 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
+import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Query;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -58,122 +60,128 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  */
 public class AbstractPersistenceUnitResource extends AbstractResource {
     protected Response getDescriptorMetadata(String version, String persistenceUnit, String descriptorAlias, HttpHeaders headers, URI baseURI) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null) {
-            JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        } else {
-            ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(descriptorAlias);
-            if (descriptor == null) {
-                JPARSLogger.fine("jpars_could_not_find_entity_type", new Object[] { descriptorAlias, persistenceUnit });
+        try {
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null) {
+                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             } else {
-                String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
-                Descriptor returnDescriptor = buildDescriptor(context, persistenceUnit, descriptor, baseURI.toString());
-                String result = null;
-                try {
-                    result = marshallMetadata(returnDescriptor, mediaType);
-                } catch (JAXBException e) {
-                    JPARSLogger.fine("exception_marshalling_entity_metadata", new Object[] { descriptorAlias, persistenceUnit, e.toString() });
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(descriptorAlias);
+                if (descriptor == null) {
+                    JPARSLogger.fine("jpars_could_not_find_entity_type", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), descriptorAlias, persistenceUnit });
+                    return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                } else {
+                    String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
+                    Descriptor returnDescriptor = buildDescriptor(context, persistenceUnit, descriptor, baseURI.toString());
+                    String result = null;
+                    try {
+                        result = marshallMetadata(returnDescriptor, mediaType);
+                    } catch (JAXBException e) {
+                        JPARSLogger.fine("exception_marshalling_entity_metadata", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), descriptorAlias, persistenceUnit, e.toString() });
+                        return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                    }
+                    return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
                 }
-                return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
             }
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
     }
 
     protected Response getQueriesMetadata(String version, String persistenceUnit, HttpHeaders headers, URI baseURI) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null) {
-            JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        } else {
-            List<Query> queries = new ArrayList<Query>();
-            addQueries(queries, context, null);
-            String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
-            QueryList queryList = new QueryList();
-            queryList.setList(queries);
-            String result = null;
-            try {
-                if (mediaType.equals(MediaType.APPLICATION_JSON)) {
-                    result = marshallMetadata(queryList.getList(), mediaType);
-                } else {
-                    result = marshallMetadata(queryList, mediaType);
+        try {
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null) {
+                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            } else {
+                List<Query> queries = new ArrayList<Query>();
+                addQueries(queries, context, null);
+                String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
+                QueryList queryList = new QueryList();
+                queryList.setList(queries);
+                String result = null;
+                try {
+                    if (mediaType.equals(MediaType.APPLICATION_JSON)) {
+                        result = marshallMetadata(queryList.getList(), mediaType);
+                    } else {
+                        result = marshallMetadata(queryList, mediaType);
+                    }
+                } catch (JAXBException e) {
+                    JPARSLogger.fine("exception_marshalling_query_metadata", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit, e.toString() });
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                 }
-            } catch (JAXBException e) {
-                JPARSLogger.fine("exception_marshalling_query_metadata", new Object[] { persistenceUnit, e.toString() });
-                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
             }
-            return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
     }
 
     protected Response getQueryMetadata(String version, String persistenceUnit, String queryName, HttpHeaders headers, URI baseURI) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null) {
-            JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        } else {
-            List<Query> returnQueries = new ArrayList<Query>();
-            Map<String, List<DatabaseQuery>> queries = context.getServerSession().getQueries();
-            if (queries.get(queryName) != null) {
-                for (DatabaseQuery query : queries.get(queryName)) {
-                    returnQueries.add(getQuery(query, context));
+        try {
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null) {
+                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            } else {
+                List<Query> returnQueries = new ArrayList<Query>();
+                Map<String, List<DatabaseQuery>> queries = context.getServerSession().getQueries();
+                if (queries.get(queryName) != null) {
+                    for (DatabaseQuery query : queries.get(queryName)) {
+                        returnQueries.add(getQuery(query, context));
+                    }
                 }
-            }
-            String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
-            QueryList queryList = new QueryList();
-            queryList.setList(returnQueries);
-            String result = null;
-            try {
+                String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
+                QueryList queryList = new QueryList();
+                queryList.setList(returnQueries);
+                String result = null;
                 if (mediaType.equals(MediaType.APPLICATION_JSON)) {
                     result = marshallMetadata(queryList.getList(), mediaType);
                 } else {
                     result = marshallMetadata(queryList, mediaType);
                 }
-            } catch (JAXBException e) {
-                JPARSLogger.fine("exception_marshalling_individual_query_metadata", new Object[] { queryName, persistenceUnit, e.toString() });
-                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
             }
-            return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
     }
 
     @SuppressWarnings("rawtypes")
     public Response getTypes(String version, String persistenceUnit, HttpHeaders headers, URI baseURI) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null) {
-            JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        } else {
-            PersistenceUnit pu = new PersistenceUnit();
-            pu.setPersistenceUnitName(persistenceUnit);
-            Map<Class, ClassDescriptor> descriptors = context.getServerSession().getDescriptors();
-            String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
-            Iterator<Class> contextIterator = descriptors.keySet().iterator();
-            while (contextIterator.hasNext()) {
-                ClassDescriptor descriptor = descriptors.get(contextIterator.next());
-                String alias = descriptor.getAlias();
-                if (descriptor.isAggregateDescriptor()) {
-                    // skip embeddables
-                    continue;
+        try {
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null) {
+                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            } else {
+                PersistenceUnit pu = new PersistenceUnit();
+                pu.setPersistenceUnitName(persistenceUnit);
+                Map<Class, ClassDescriptor> descriptors = context.getServerSession().getDescriptors();
+                String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
+                Iterator<Class> contextIterator = descriptors.keySet().iterator();
+                while (contextIterator.hasNext()) {
+                    ClassDescriptor descriptor = descriptors.get(contextIterator.next());
+                    String alias = descriptor.getAlias();
+                    if (descriptor.isAggregateDescriptor()) {
+                        // skip embeddables
+                        continue;
+                    }
+                    if (version != null) {
+                        pu.getTypes().add(new Link(alias, mediaType, baseURI + version + "/" + persistenceUnit + "/metadata/entity/" + alias));
+                    } else {
+                        pu.getTypes().add(new Link(alias, mediaType, baseURI + persistenceUnit + "/metadata/entity/" + alias));
+                    }
                 }
-                if (version != null) {
-                    pu.getTypes().add(new Link(alias, mediaType, baseURI + version + "/" + persistenceUnit + "/metadata/entity/" + alias));
-                } else {
-                    pu.getTypes().add(new Link(alias, mediaType, baseURI + persistenceUnit + "/metadata/entity/" + alias));
-                }
-            }
-            String result = null;
-            try {
+                String result = null;
                 result = marshallMetadata(pu, mediaType);
-            } catch (JAXBException e) {
-                JPARSLogger.fine("exception_marshalling_persitence_unit", new Object[] { persistenceUnit, e.toString() });
-                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                ResponseBuilder rb = Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes()));
+                rb.header("Content-Type", MediaType.APPLICATION_JSON);
+                return rb.build();
             }
-            ResponseBuilder rb = Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes()));
-            rb.header("Content-Type", MediaType.APPLICATION_JSON);
-            return rb.build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
     }
 

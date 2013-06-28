@@ -30,10 +30,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.exceptions.UnsupportedMediaTypeException;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
@@ -87,8 +89,8 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                     }
                     return;
                 } catch (Exception e) {
-                    JPARSLogger.exception("jpars_caught_exception", new Object[] {}, e);
-                    throw new WebApplicationException();
+                    JPARSLogger.exception("jpars_caught_exception", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) }, e);
+                    throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(e), e);
                 }
             }
 
@@ -114,14 +116,10 @@ public class StreamingOutputMarshaller implements StreamingOutput {
      * @param types
      *            List of {@link MediaType} values;
      * @return selected {@link MediaType}
-     * @throws WebApplicationException
-     *             with Status.UNSUPPORTED_MEDIA_TYPE if neither the JSON, XML
-     *             or OCTET_STREAM values are found.
      */
     public static MediaType mediaType(List<MediaType> types) {
-        MediaType aMediaType = null;
+        MediaType aMediaType = MediaType.APPLICATION_JSON_TYPE;
         if ((types != null) && (!types.isEmpty())) {
-            JPARSLogger.fine("jpars_requested_type", new Object[] { types });
             for (int i = 0; i < types.size(); i++) {
                 aMediaType = types.get(i);
                 if (aMediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
@@ -135,7 +133,8 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 }
             }
         }
-        throw new UnsupportedMediaTypeException((aMediaType != null) ? aMediaType.toString() : "unknown");
+        // An unsupported media type never comes to resource, no need to throw exception here.
+        return MediaType.APPLICATION_JSON_TYPE;
     }
 
     public static Marshaller createMarshaller(PersistenceContext context, MediaType mediaType) throws JAXBException {

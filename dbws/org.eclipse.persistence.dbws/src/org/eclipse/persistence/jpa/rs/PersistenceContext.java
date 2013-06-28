@@ -35,8 +35,10 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.persistence.RollbackException;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -74,9 +76,8 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.jpa.rs.exceptions.JPARSConfigurationException;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
-import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
@@ -89,6 +90,7 @@ import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.DynamicXMLMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.ErrorResponseMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.ItemLinksMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaLangMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaMathMetadataSource;
@@ -127,7 +129,6 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  * @author douglas.clarke, tom.ware
  */
 public class PersistenceContext {
-
     public static final String JPARS_CONTEXT = "eclipselink.jpars.context";
 
     @SuppressWarnings("rawtypes")
@@ -178,10 +179,10 @@ public class PersistenceContext {
         try {
             this.jaxbContext = createDynamicJAXBContext(emf.getDatabaseSession());
         } catch (JAXBException jaxbe) {
-            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, jaxbe.toString() }, jaxbe);
+            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), emfName, jaxbe.toString() }, jaxbe);
             emf.close();
         } catch (IOException e) {
-            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, e.toString() }, e);
+            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), emfName, e.toString() }, e);
             emf.close();
         }
         setBaseURI(defaultURI);
@@ -237,13 +238,19 @@ public class PersistenceContext {
      * Persist an entity in JPA and commit
      * @param tenantId
      * @param entity
+     * @throws Exception 
      */
-    public void create(Map<String, String> tenantId, Object entity) {
+    public void create(Map<String, String> tenantId, Object entity) throws Exception {
         EntityManager em = getEmf().createEntityManager(tenantId);
         try {
             transaction.beginTransaction(em);
             em.persist(entity);
             transaction.commitTransaction(em);
+        } catch (RollbackException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            transaction.rollbackTransaction(em);
+            throw ex;
         } finally {
             em.close();
         }
@@ -335,6 +342,7 @@ public class PersistenceContext {
         metadataLocations.add(new JavaUtilMetadataSource());
         metadataLocations.add(new LinkV2MetadataSource());
         metadataLocations.add(new ItemLinksMetadataSource());
+        metadataLocations.add(new ErrorResponseMetadataSource());
 
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataLocations);
         properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, new PreLoginMappingAdapter((AbstractSession) session));
@@ -359,6 +367,11 @@ public class PersistenceContext {
                 em.remove(entity);
             }
             transaction.commitTransaction(em);
+        } catch (RollbackException ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+        } catch (Exception ex) {
+            transaction.rollbackTransaction(em);
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
         } finally {
             em.close();
         }
@@ -467,8 +480,11 @@ public class PersistenceContext {
                     attributeValue = em.merge(attributeValue);
                     setMappingValueInObject(object, attributeValue, mapping, partnerMapping);
                     transaction.commitTransaction(em);
+                } catch (RollbackException e) {
+                    JPARSLogger.fine("exception_while_updating_attribute", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), entityName, getName(), e.toString() });
+                    return null;
                 } catch (Exception e) {
-                    JPARSLogger.fine("exception_while_updating_attribute", new Object[] { entityName, getName(), e.toString() });
+                    JPARSLogger.fine("exception_while_updating_attribute", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), entityName, getName(), e.toString() });
                     transaction.rollbackTransaction(em);
                     return null;
                 }
@@ -561,7 +577,7 @@ public class PersistenceContext {
             }
             return null;
         } catch (Exception e) {
-            JPARSLogger.fine("exception_while_removing_attribute", new Object[] { fieldName, entityName, getName(), e.toString() });
+            JPARSLogger.fine("exception_while_removing_attribute", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), fieldName, entityName, getName(), e.toString() });
             transaction.rollbackTransaction(em);
             return null;
         } finally {
@@ -767,6 +783,11 @@ public class PersistenceContext {
             }
             transaction.commitTransaction(em);
             return mergedEntity;
+        } catch (RollbackException ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+        } catch (Exception ex) {
+            transaction.rollbackTransaction(em);
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
         } finally {
             em.close();
         }
@@ -800,7 +821,7 @@ public class PersistenceContext {
                     return jaxbType.newDynamicEntity();
                 }
             }
-            JPARSLogger.fine("exception_thrown_while_creating_dynamic_entity", new Object[] { type, e.toString() });
+            JPARSLogger.fine("exception_thrown_while_creating_dynamic_entity", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, e.toString() });
             throw e;
         }
         return entity;
@@ -823,6 +844,11 @@ public class PersistenceContext {
             int result = query.executeUpdate();
             transaction.commitTransaction(em);
             return result;
+        } catch (RollbackException ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+        } catch (Exception ex) {
+            transaction.rollbackTransaction(em);
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
         } finally {
             em.close();
         }
@@ -1058,7 +1084,8 @@ public class PersistenceContext {
                 for (DatabaseMapping mapping : descriptor.getMappings()) {
                     if (mapping instanceof XMLInverseReferenceMapping) {
                         // we require Fetch groups to handle relationships
-                        throw new JPARSConfigurationException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[] {}));
+                        JPARSLogger.fine("weaving_required_for_relationships", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) });
+                        throw JPARSException.invalidConfiguration((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), Status.INTERNAL_SERVER_ERROR.getStatusCode());
                     }
                 }
             }
@@ -1124,7 +1151,7 @@ public class PersistenceContext {
                 postMarshallEntity(object);
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new JPARSException(e.toString());
+                throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(e), e);
             }
         } else {
             marshaller.marshal(object, output);
@@ -1274,7 +1301,7 @@ public class PersistenceContext {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new JPARSException(ex.getMessage());
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
         }
         return adapters;
     }

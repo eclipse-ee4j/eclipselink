@@ -31,12 +31,13 @@ import org.eclipse.persistence.jpa.rs.resources.common.AbstractSingleResultQuery
  */
 //Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery 
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_OCTET_STREAM })
-@Path("/{version : " +SERVICE_VERSION_FORMAT + "}/{context}/singleResultQuery/")
+@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/singleResultQuery/")
 public class SingleResultQueryResource extends AbstractSingleResultQueryResource {
-    
+
     @GET
     @Path("{name}")
     public Response namedQuerySingleResult(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return namedQuerySingleResult(version, persistenceUnit, name, hh, ui, ui.getBaseUri());
     }
 }

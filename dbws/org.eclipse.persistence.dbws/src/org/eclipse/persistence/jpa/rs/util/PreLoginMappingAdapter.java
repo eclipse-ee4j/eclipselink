@@ -32,6 +32,8 @@ import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jaxb.DefaultXMLNameTransformer;
+import org.eclipse.persistence.jpa.rs.DataStorage;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -356,8 +358,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);
                     }
-                } catch (ClassNotFoundException e) {
-                    throw new JPARSException(e.toString());
+                } catch (Exception e) {
+                    throw JPARSException.exceptionOccurred(DataStorage.UNKNOWN_REQUEST_UNIQUE_ID, AbstractResource.getHttpStatusCode(e), e);
                 }
             }
         }

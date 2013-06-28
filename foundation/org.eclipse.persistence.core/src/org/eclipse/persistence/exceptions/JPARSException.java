@@ -12,11 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
+import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+
 public class JPARSException extends EclipseLinkException {
     // Next range should start from LAST_ERROR_CODE (62000). 
     // The JPA-RS uses error codes between 61000-61999 (both inclusive).
     public enum ErrorCode {
         ENTITY_NOT_FOUND(61000),
+        OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST(61001),
+        INVALID_CONFIGURATION(61002),
+
+        // wraps eclipselink exceptions    
+        AN_EXCEPTION_OCCURRED(61999),
 
         // end marker for JPA-RS error codes    
         LAST_ERROR_CODE(62000);
@@ -29,18 +36,138 @@ public class JPARSException extends EclipseLinkException {
         public String value() {
             return String.valueOf(value);
         }
-
     };
+
+    private int httpStatusCode;
+    private String requestId;
 
     public JPARSException() {
         super();
     }
 
-    public JPARSException(String message) {
+    @Override
+    public String getMessage() {
+        return super.getUnformattedMessage();
+    }
+
+    public int getHttpStatusCode() {
+        return httpStatusCode;
+    }
+
+    public void setHttpStatusCode(int httpStatusCode) {
+        this.httpStatusCode = httpStatusCode;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    private JPARSException(String message) {
         super(message);
     }
 
-    public JPARSException(String msg, Exception e) {
-        super(msg, e);
+    private JPARSException(Throwable internalException) {
+        super(ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.AN_EXCEPTION_OCCURRED.value, new Object[] {}), internalException);
+    }
+
+    private JPARSException(String msg, Throwable internalException) {
+        super(msg, internalException);
+    }
+
+    /**
+     * Entity not found.
+     *
+     * @param requestId the request id
+     * @param httpStatusCode the http status code
+     * @param entityType the entity type
+     * @param entityId the entity id
+     * @param persistenceUnit the persistence unit
+     * @return the jPARS exception
+     */
+    public static JPARSException entityNotFound(String requestId, int httpStatusCode, String entityType, String entityId, String persistenceUnit) {
+        Object[] args = { entityType, entityId, persistenceUnit };
+
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.ENTITY_NOT_FOUND.value, args);
+        JPARSException exception = new JPARSException(msg);
+        exception.setErrorCode(ErrorCode.ENTITY_NOT_FOUND.value);
+        exception.setHttpStatusCode(httpStatusCode);
+        exception.setRequestId(requestId);
+        return exception;
+    }
+
+    /**
+     * Object referred by link does not exist.
+     *
+     * @param requestId the request id
+     * @param httpStatusCode the http status code
+     * @param entityType the entity type
+     * @param entityId the entity id
+     * @return the jPARS exception
+     */
+    public static JPARSException objectReferredByLinkDoesNotExist(String requestId, int httpStatusCode, String entityType, Object entityId) {
+        Object[] args = { entityType, entityId };
+
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST.value, args);
+        JPARSException exception = new JPARSException(msg);
+
+        exception.setErrorCode(ErrorCode.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST.value);
+        exception.setRequestId(requestId);
+        exception.setHttpStatusCode(httpStatusCode);
+
+        return exception;
+    }
+
+    /**
+     * Invalid configuration.
+     *
+     * @param requestId the request id
+     * @param httpStatusCode the http status code
+     * @return the jPARS exception
+     */
+    public static JPARSException invalidConfiguration(String requestId, int httpStatusCode) {
+        Object[] args = {};
+
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.INVALID_CONFIGURATION.value, args);
+        JPARSException exception = new JPARSException(msg);
+
+        exception.setErrorCode(ErrorCode.INVALID_CONFIGURATION.value);
+        exception.setRequestId(requestId);
+        exception.setHttpStatusCode(httpStatusCode);
+
+        return exception;
+    }
+
+    /**
+     * Exception occurred.
+     *
+     * @param requestId the request id
+     * @param httpStatusCode the http status code
+     * @param exception the exception
+     * @return the jPARS exception
+     */
+    public static JPARSException exceptionOccurred(String requestId, int httpStatusCode, Exception exception) {
+        int errorCode = ErrorCode.AN_EXCEPTION_OCCURRED.value;
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.AN_EXCEPTION_OCCURRED.value, new Object[] { exception.getClass().getSimpleName() }).trim();
+
+        if (exception instanceof EclipseLinkException) {
+            errorCode = ((EclipseLinkException) exception).getErrorCode();
+            msg = ((EclipseLinkException) exception).getClass().getName().trim();
+        } else if (exception.getCause() instanceof EclipseLinkException) {
+            errorCode = ((EclipseLinkException) (exception.getCause())).getErrorCode();
+            msg = ((EclipseLinkException) (exception.getCause())).getClass().getName().trim();
+        }
+
+        JPARSException jparsException = new JPARSException(msg, exception);
+        jparsException.setErrorCode(errorCode);
+
+        jparsException.setInternalException(exception);
+        jparsException.setRequestId(requestId);
+        jparsException.setHttpStatusCode(httpStatusCode);
+
+        return jparsException;
     }
 }

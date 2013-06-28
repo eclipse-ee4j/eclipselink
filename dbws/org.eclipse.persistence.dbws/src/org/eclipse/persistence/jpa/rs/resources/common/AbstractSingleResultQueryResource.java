@@ -22,8 +22,10 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
+import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
@@ -54,45 +56,49 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
      */
     @SuppressWarnings("rawtypes")
     protected Response namedQuerySingleResult(String version, String persistenceUnit, String name, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
-        PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
-        if (context == null) {
-            JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-        }
+        try {
+            PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
+            if (context == null) {
+                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
 
-        Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), name, getMatrixParameters(uriInfo, name), getQueryParameters(uriInfo));
-        DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
-        if (dbQuery instanceof ReportQuery) {
-            List<ReportItem> reportItems = ((ReportQuery) dbQuery).getItems();
-            Object queryResults = query.getSingleResult();
-            SingleResultQueryList list = populateReportQueryResponse(queryResults, reportItems);
-            if (list != null) {
-                List<JAXBElement> item = list.getFields();
-                if ((item != null) && (item.size() == 1)) {
-                    // Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery 
-                    // If there is only one item in the select clause and if value of that item is binary, we will create a response with 
-                    // that binary data without converting its to Base64.
-                    JAXBElement element = item.get(0);
-                    Object elementValue = element.getValue();
-                    if (elementValue instanceof byte[]) {
-                        List<MediaType> acceptableMediaTypes = headers.getAcceptableMediaTypes();
-                        if (acceptableMediaTypes.contains(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
-                            return Response.ok(new StreamingOutputMarshaller(context, elementValue, headers.getAcceptableMediaTypes())).build();
+            Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), name, getMatrixParameters(uriInfo, name), getQueryParameters(uriInfo));
+            DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
+            if (dbQuery instanceof ReportQuery) {
+                List<ReportItem> reportItems = ((ReportQuery) dbQuery).getItems();
+                Object queryResults = query.getSingleResult();
+                SingleResultQueryList list = populateReportQueryResponse(queryResults, reportItems);
+                if (list != null) {
+                    List<JAXBElement> item = list.getFields();
+                    if ((item != null) && (item.size() == 1)) {
+                        // Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery 
+                        // If there is only one item in the select clause and if value of that item is binary, we will create a response with 
+                        // that binary data without converting its to Base64.
+                        JAXBElement element = item.get(0);
+                        Object elementValue = element.getValue();
+                        if (elementValue instanceof byte[]) {
+                            List<MediaType> acceptableMediaTypes = headers.getAcceptableMediaTypes();
+                            if (acceptableMediaTypes.contains(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
+                                return Response.ok(new StreamingOutputMarshaller(context, elementValue, headers.getAcceptableMediaTypes())).build();
+                            }
                         }
                     }
+                    return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes())).build();
+                } else {
+                    // something went wrong with the descriptors, return error
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                 }
-                return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes())).build();
-            } else {
-                // something went wrong with the descriptors, return error
-                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
+
+            Object queryResult = query.getSingleResult();
+
+            FeatureSet featureSet = context.getSupportedFeatureSet();
+            FeatureResponseBuilder responseBuilder = featureSet.getResponseBuilder(Feature.NO_PAGING);
+            return Response.ok(new StreamingOutputMarshaller(context, responseBuilder.buildSingleEntityResponse(context, getQueryParameters(uriInfo), queryResult, uriInfo), headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), getHttpStatusCode(ex), ex);
         }
-
-        Object queryResult = query.getSingleResult();
-
-        FeatureSet featureSet = context.getSupportedFeatureSet();
-        FeatureResponseBuilder responseBuilder = featureSet.getResponseBuilder(Feature.NO_PAGING);
-        return Response.ok(new StreamingOutputMarshaller(context, responseBuilder.buildSingleEntityResponse(context, getQueryParameters(uriInfo), queryResult, uriInfo), headers.getAcceptableMediaTypes())).build();
     }
 
     @SuppressWarnings({ "rawtypes" })

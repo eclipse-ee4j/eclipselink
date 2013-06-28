@@ -9,12 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.exceptions;
 
-import java.io.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p>
@@ -114,11 +117,11 @@ public abstract class EclipseLinkException extends RuntimeException {
             writer.write(ExceptionMessageGenerator.getHeader("InternalExceptionHeader"));
             writer.write(getInternalException().toString());
 
-            if ((getInternalException() instanceof java.lang.reflect.InvocationTargetException) && ((((java.lang.reflect.InvocationTargetException)getInternalException()).getTargetException()) != null)) {
+            if ((getInternalException() instanceof java.lang.reflect.InvocationTargetException) && ((((java.lang.reflect.InvocationTargetException) getInternalException()).getTargetException()) != null)) {
                 writer.write(cr());
                 writer.write(getIndentationString());
                 writer.write(ExceptionMessageGenerator.getHeader("TargetInvocationExceptionHeader"));
-                writer.write(((java.lang.reflect.InvocationTargetException)getInternalException()).getTargetException().toString());
+                writer.write(((java.lang.reflect.InvocationTargetException) getInternalException()).getTargetException().toString());
             }
         }
 
@@ -171,10 +174,10 @@ public abstract class EclipseLinkException extends RuntimeException {
             writer.write(cr());
             getInternalException().printStackTrace(writer);
 
-            if ((getInternalException() instanceof java.lang.reflect.InvocationTargetException) && ((((java.lang.reflect.InvocationTargetException)getInternalException()).getTargetException()) != null)) {
+            if ((getInternalException() instanceof java.lang.reflect.InvocationTargetException) && ((((java.lang.reflect.InvocationTargetException) getInternalException()).getTargetException()) != null)) {
                 writer.write(ExceptionMessageGenerator.getHeader("TargetInvocationExceptionStackHeader"));
                 writer.write(cr());
-                ((java.lang.reflect.InvocationTargetException)getInternalException()).getTargetException().printStackTrace(writer);
+                ((java.lang.reflect.InvocationTargetException) getInternalException()).getTargetException().printStackTrace(writer);
             }
         }
         writer.flush();
@@ -251,5 +254,12 @@ public abstract class EclipseLinkException extends RuntimeException {
      */
     public String toString() {
         return getIndentationString() + ExceptionMessageGenerator.getHeader("ExceptionHeader") + getErrorCode() + "] (" + org.eclipse.persistence.sessions.DatabaseLogin.getVersion() + "): " + getClass().getName() + getMessage();
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public String getUnformattedMessage() {
+        return super.getMessage();
     }
 }

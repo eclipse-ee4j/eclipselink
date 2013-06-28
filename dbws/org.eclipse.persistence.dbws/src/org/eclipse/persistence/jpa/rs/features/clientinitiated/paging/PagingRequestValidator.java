@@ -20,6 +20,7 @@ import javax.persistence.Query;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.SystemDefaults;
 import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidatorImpl;
@@ -55,7 +56,7 @@ public class PagingRequestValidator extends FeatureRequestValidatorImpl {
                 }
 
                 if ((orderBy == null) || (orderBy.isEmpty())) {
-                    JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { query.toString() });
+                    JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), query.toString() });
                 }
             }
         }

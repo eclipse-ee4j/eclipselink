@@ -31,54 +31,63 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractEntityResource;
+
 /**
  * @author gonural
  *
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version : " + SERVICE_VERSION_FORMAT +"}/{context}/entity/")
+@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/entity/")
 public class EntityResource extends AbstractEntityResource {
 
     @GET
     @Path("{type}/{key}/{attribute}")
     public Response findAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
+
+        setRequestUniqueId();
         return findAttribute(version, persistenceUnit, type, key, attribute, hh, ui, ui.getBaseUri());
     }
 
     @GET
     @Path("{type}/{key}")
     public Response find(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return find(version, persistenceUnit, type, key, hh, ui, ui.getBaseUri());
     }
 
     @PUT
     @Path("{type}")
     public Response create(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) throws JAXBException {
+        setRequestUniqueId();
         return create(version, persistenceUnit, type, hh, uriInfo, uriInfo.getBaseUri(), in);
     }
 
     @POST
     @Path("{type}")
     public Response update(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) {
+        setRequestUniqueId();
         return update(version, persistenceUnit, type, hh, uriInfo, uriInfo.getBaseUri(), in);
     }
 
     @POST
     @Path("{type}/{key}/{attribute}")
     public Response setOrAddAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
+        setRequestUniqueId();
         return setOrAddAttribute(version, persistenceUnit, type, key, attribute, hh, ui, ui.getBaseUri(), in);
     }
 
     @DELETE
     @Path("{type}/{key}/{attribute}")
     public Response removeAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return removeAttributeInternal(version, persistenceUnit, type, key, attribute, hh, ui);
     }
 
     @DELETE
     @Path("{type}/{key}")
     public Response delete(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context UriInfo ui, @Context HttpHeaders hh) {
+        setRequestUniqueId();
         return delete(version, persistenceUnit, type, key, ui, hh, ui.getBaseUri());
     }
 }
