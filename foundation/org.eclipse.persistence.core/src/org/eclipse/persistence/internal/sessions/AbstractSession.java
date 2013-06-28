@@ -82,7 +82,6 @@ import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.Command;
 import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
-import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 
 /**
@@ -285,11 +284,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /** Allow CDI injection of entity listeners **/
     transient protected EntityListenerInjectionManager entityListenerInjectionManager;
     
-    /** Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
-     * If not set then parent's flag is used, is none set then ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault is used.
-     * If the optimization specified by the session is ignored if incompatible with other query settings. 
+    /**
+     * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
+    * Optimization specified by the session is ignored if incompatible with other query settings. 
      */
-    protected Boolean shouldOptimizeResultSetAccess; 
+    protected boolean shouldOptimizeResultSetAccess; 
     
     /**
      * INTERNAL:
@@ -304,8 +303,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         // PERF - move to lazy init (3286091)
         this.numberOfActiveUnitsOfWork = 0;
         this.isInBroker = false;
-        this.isSynchronized = false;
-        this.serializer = JavaSerializer.instance;
     }
 
     /**
@@ -5215,18 +5212,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    /**
     * ADVANCED:
     * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
-    * If not set then parent's flag is used, is none set then ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault is used.
-    * If the optimization specified by the session is ignored if incompatible with other query settings. 
+    * Optimization specified by the session is ignored if incompatible with other query settings. 
     */
    public boolean shouldOptimizeResultSetAccess() {
-       if (this.shouldOptimizeResultSetAccess != null) {
-           return this.shouldOptimizeResultSetAccess.booleanValue();
-       } else {
-           if (getParent() != null) {
-               return getParent().shouldOptimizeResultSetAccess();
-           } else {
-               return ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault;
-           }
-       }
+       return this.shouldOptimizeResultSetAccess;
    }   
 }
