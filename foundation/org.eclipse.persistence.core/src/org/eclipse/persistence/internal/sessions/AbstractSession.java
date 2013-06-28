@@ -286,7 +286,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     
     /**
      * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
-     * If the optimization specified by the session is ignored if incompatible with other query settings. 
+    * Optimization specified by the session is ignored if incompatible with other query settings. 
      */
     protected boolean shouldOptimizeResultSetAccess; 
     
@@ -5214,8 +5214,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    /**
     * ADVANCED:
     * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
-    * If not set then parent's flag is used, is none set then ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault is used.
-    * If the optimization specified by the session is ignored if incompatible with other query settings. 
+    * Optimization specified by the session is ignored if incompatible with other query settings. 
     */
    public boolean shouldOptimizeResultSetAccess() {
        return this.shouldOptimizeResultSetAccess;
