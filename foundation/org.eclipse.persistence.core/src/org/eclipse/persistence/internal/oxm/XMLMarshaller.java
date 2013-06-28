@@ -35,6 +35,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -931,6 +932,8 @@ public abstract class XMLMarshaller<
            }
        } catch (UnsupportedEncodingException exception) {
            throw XMLMarshalException.marshalException(exception);
+       } catch(EclipseLinkException e) {
+           throw e;
        } catch (Exception ex) {
            throw XMLMarshalException.marshalException(ex);
        }
@@ -1028,6 +1031,8 @@ public abstract class XMLMarshaller<
                             return;
                         }
                     }
+                } catch(EclipseLinkException e) {
+                    throw e;
                 } catch (Exception e) {
                     throw XMLMarshalException.marshalException(e);
                 }

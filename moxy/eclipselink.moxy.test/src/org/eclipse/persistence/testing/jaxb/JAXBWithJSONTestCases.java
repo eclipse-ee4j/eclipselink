@@ -256,7 +256,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        getJSONMarshaller().marshal(getWriteControlObject(), os);
+        try {
+            getJSONMarshaller().marshal(getWriteControlObject(), os);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
         compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
         os.close();
     }
@@ -266,7 +271,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
         getJSONMarshaller().marshal(getWriteControlObject(), os);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
         compareStringToControlFile("testJSONMarshalToOutputStream_FORMATTED", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
         os.close();
     }
@@ -275,7 +285,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
         StringWriter sw = new StringWriter();
+        try {
         getJSONMarshaller().marshal(getWriteControlObject(), sw);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
         log(sw.toString());
         compareStringToControlFile("**testJSONMarshalToStringWriter**", sw.toString());
     }
@@ -285,7 +300,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         StringWriter sw = new StringWriter();
+        try {
         getJSONMarshaller().marshal(getWriteControlObject(), sw);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
         log(sw.toString());
         compareStringToControlFile("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted(),shouldRemoveWhitespaceFromControlDocJSON());
     }

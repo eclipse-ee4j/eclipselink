@@ -18,6 +18,7 @@ package org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingel
  *  @author  mfobrien
  *  @since   10.1.3.1.0
  */
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.Child;
@@ -46,5 +47,17 @@ public class AnyObjectNoDefaultRootComplexChildrenTestCases extends XMLWithJSONM
         root.setAny(child);
         return root;
     }
+
+    @Override
+    public void assertMarshalException(Exception exception) throws Exception {
+        if(exception.getClass() == XMLMarshalException.class) {
+            XMLMarshalException xmlMarshalException = (XMLMarshalException) exception;
+            if(XMLMarshalException.DEFAULT_ROOT_ELEMENT_NOT_SPECIFIED == xmlMarshalException.getErrorCode()) {
+                return;
+            }
+        }
+        throw exception;
+    }
+
 
 }

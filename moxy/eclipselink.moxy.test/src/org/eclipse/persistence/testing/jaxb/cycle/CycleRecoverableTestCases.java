@@ -98,8 +98,8 @@ public class CycleRecoverableTestCases extends JAXBWithJSONTestCases {
         }
 
         assertNotNull("No exception caught as expected.", expectedException);
-        XMLMarshalException nested = (XMLMarshalException) expectedException.getCause();
-        assertEquals("Incorrect exception code.", nested.getErrorCode(), XMLMarshalException.OBJECT_CYCLE_DETECTED);
+        XMLMarshalException xmlMarshalException = (XMLMarshalException) expectedException;
+        assertEquals("Incorrect exception code.", xmlMarshalException.getErrorCode(), XMLMarshalException.OBJECT_CYCLE_DETECTED);
     }
 
     @Override

@@ -301,7 +301,13 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
         }
         int sizeBefore = getNamespaceResolverSize(desc);
-        Document testDocument = xmlMarshaller.objectToXML(objectToWrite);
+        Document testDocument;
+        try {
+            testDocument = xmlMarshaller.objectToXML(objectToWrite);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
         int sizeAfter = getNamespaceResolverSize(desc);
         assertEquals(sizeBefore, sizeAfter);
         objectToXMLDocumentTest(testDocument);
@@ -322,7 +328,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
         int sizeBefore = getNamespaceResolverSize(desc);
 
-        xmlMarshaller.marshal(objectToWrite, writer);
+        try {
+            xmlMarshaller.marshal(objectToWrite, writer);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
 
         int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -354,7 +365,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
         XMLMarshaller validatingMarshaller = createMarshaller();
         validatingMarshaller.setSchema(FakeSchema.INSTANCE);
-        validatingMarshaller.marshal(objectToWrite, writer);
+        try {
+            validatingMarshaller.marshal(objectToWrite, writer);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
 
         StringReader reader = new StringReader(writer.toString());
         InputSource inputSource = new InputSource(reader);
@@ -380,7 +396,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         int sizeBefore = getNamespaceResolverSize(desc);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        xmlMarshaller.marshal(objectToWrite, stream);
+        try {
+            xmlMarshaller.marshal(objectToWrite, stream);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
 
         int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -410,8 +431,13 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         
-        xmlMarshaller.marshal(objectToWrite, stream);
-        xmlMarshaller.setEncoding("US-ASCII");
+        try {
+            xmlMarshaller.setEncoding("US-ASCII");
+            xmlMarshaller.marshal(objectToWrite, stream);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
        
         int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -446,7 +472,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             int sizeBefore = getNamespaceResolverSize(desc);
 
             Result result = (Result)PrivilegedAccessHelper.invokeConstructor(staxResultStreamWriterConstructor, new Object[]{streamWriter});
-            xmlMarshaller.marshal(objectToWrite, result);
+            try {
+                xmlMarshaller.marshal(objectToWrite, result);
+            } catch(Exception e) {
+                assertMarshalException(e);
+                return;
+            }
 
             streamWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
@@ -481,7 +512,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             int sizeBefore = getNamespaceResolverSize(desc);
 
             Result result = (Result)PrivilegedAccessHelper.invokeConstructor(staxResultEventWriterConstructor, new Object[]{eventWriter});
-            xmlMarshaller.marshal(objectToWrite, result);
+            try {
+                xmlMarshaller.marshal(objectToWrite, result);
+            } catch(Exception e) {
+                assertMarshalException(e);
+                return;
+            }
 
             eventWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
@@ -522,7 +558,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         }
         int sizeBefore = getNamespaceResolverSize(desc);
 
-        xmlMarshaller.marshal(objectToWrite, builder);
+        try {
+            xmlMarshaller.marshal(objectToWrite, builder);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
 
         int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -574,6 +615,10 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void setShouldRemoveEmptyTextNodesFromControlDoc(boolean value) {
         this.shouldRemoveEmptyTextNodesFromControlDoc = value;
+    }
+
+    public void assertMarshalException(Exception exception) throws Exception {
+        throw exception;
     }
 
     public static class FakeSchema extends Schema {

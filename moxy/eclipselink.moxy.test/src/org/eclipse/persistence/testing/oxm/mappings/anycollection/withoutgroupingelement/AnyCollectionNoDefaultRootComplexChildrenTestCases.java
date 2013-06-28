@@ -20,6 +20,7 @@ package org.eclipse.persistence.testing.oxm.mappings.anycollection.withoutgroupi
 
 import java.util.Vector;
 
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
@@ -49,6 +50,17 @@ public class AnyCollectionNoDefaultRootComplexChildrenTestCases extends XMLMappi
         // add object vector to root object
         root.setAny(any);
          return root;
+    }
+
+    @Override
+    public void assertMarshalException(Exception exception) throws Exception {
+        if(exception.getClass() == XMLMarshalException.class) {
+            XMLMarshalException xmlMarshalException = (XMLMarshalException) exception;
+            if(XMLMarshalException.DEFAULT_ROOT_ELEMENT_NOT_SPECIFIED == xmlMarshalException.getErrorCode()) {
+                return;
+            }
+        }
+        throw exception;
     }
 
 }

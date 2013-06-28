@@ -102,7 +102,12 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
         	    xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));    	    
     	    }    	    
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            xmlMarshaller.marshal(getWriteControlObject(), os);
+            try {
+                xmlMarshaller.marshal(getWriteControlObject(), os);
+            } catch(Exception e) {
+                assertMarshalException(e);
+                return;
+            }
             compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
             os.close();
     	}
@@ -116,7 +121,12 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     	    }
         	xmlMarshaller.setFormattedOutput(true);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            xmlMarshaller.marshal(getWriteControlObject(), os);
+            try {
+                xmlMarshaller.marshal(getWriteControlObject(), os);
+            } catch(Exception e) {
+                assertMarshalException(e);
+                return;
+            }
             compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
             os.close();
     	}
@@ -130,7 +140,12 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
         	    xmlMarshaller.setNamespacePrefixMapper(new MapNamespacePrefixMapper(getNamespaces()));    	    
     	    }
             StringWriter sw = new StringWriter();
-            xmlMarshaller.marshal(getWriteControlObject(), sw);
+            try {
+                xmlMarshaller.marshal(getWriteControlObject(), sw);
+            } catch(Exception e) {
+                assertMarshalException(e);
+                return;
+            }
             compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     	}
     }
@@ -145,7 +160,12 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
         	xmlMarshaller.setFormattedOutput(true);
 
             StringWriter sw = new StringWriter();
-            xmlMarshaller.marshal(getWriteControlObject(), sw);
+            try {
+                xmlMarshaller.marshal(getWriteControlObject(), sw);
+            } catch(Exception e) {
+                assertMarshalException(e);
+                return;
+            }
             compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     	}
     }

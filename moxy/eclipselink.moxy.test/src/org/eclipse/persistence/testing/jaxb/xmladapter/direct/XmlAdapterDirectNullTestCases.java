@@ -39,144 +39,15 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
         MyCalendar myCal = new MyCalendar();      
         return myCal;
     }
-    
-    public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
-        try{
-            super.testJSONMarshalToOutputStream_FORMATTED();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue(nestedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)nestedException).getInternalException();
-            assertTrue(actualException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
+
+    @Override
+    public void assertMarshalException(Exception exception) throws Exception {
+        Throwable nestedException = exception.getCause();
+        assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
     }
-    
-    public void testJSONMarshalToOutputStream() throws Exception{
-        try{
-            super.testJSONMarshalToOutputStream();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue(nestedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)nestedException).getInternalException();
-            assertTrue(actualException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    
-    public void testJSONMarshalToStringWriter() throws Exception{
-        try{
-            super.testJSONMarshalToStringWriter();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);            
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    
-    public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
-        try{
-            super.testJSONMarshalToStringWriter_FORMATTED();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    
-    public void testObjectToContentHandler() throws Exception{
-        try{
-            super.testObjectToContentHandler();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    
-    public void testObjectToOutputStream() throws Exception{
-        try{
-            super.testObjectToOutputStream();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a XMLMarshalException but was " + nestedException.getClass().getName(), nestedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)nestedException).getInternalException();
-            assertTrue("Nested exception should be a ConversionException but was " + actualException.getClass().getName(), actualException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    
-    public void testObjectToOutputStreamASCIIEncoding() throws Exception{
-        try{
-            super.testObjectToOutputStreamASCIIEncoding();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a XMLMarshalException but was " + nestedException.getClass().getName(), nestedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)nestedException).getInternalException();
-            assertTrue("Nested exception should be a ConversionException but was " + actualException.getClass().getName(), actualException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    
-    public void testObjectToXMLDocument() throws Exception{
-        try{
-            super.testObjectToXMLDocument();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    
-    public void testObjectToXMLEventWriter() throws Exception{
-        try{
-            super.testObjectToXMLEventWriter();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    public void testObjectToXMLStreamWriter() throws Exception{
-        try{
-            super.testObjectToXMLStreamWriter();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    public void testObjectToXMLStreamWriterRecord() throws Exception{
-        try{
-            super.testObjectToXMLStreamWriterRecord();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
-            return;
-        }
-    }
-    public void testObjectToXMLStringWriter() throws Exception{
-        try{
-            super.testObjectToXMLStringWriter();
-        }catch(MarshalException me){
-            Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
-            return;
-        }
-        fail("An exception should have been thrown");
-    }
-    
+
     public void testRoundTrip(){
         //no need to perform this test 
     }
+    
 }

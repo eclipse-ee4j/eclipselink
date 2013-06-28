@@ -13,12 +13,12 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.mappings.AnyObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
@@ -30,8 +30,7 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -117,7 +116,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
              */
             String defaultRootElementString = descriptor.getDefaultRootElement();
             if (!wasXMLRoot && (defaultRootElementString == null)) {
-                AbstractSessionLog.getLog().log(SessionLog.WARNING, "marshal_warning_null_document_root_element", new Object[] { Helper.getShortClassName(this.getClass()), descriptor });
+                throw XMLMarshalException.defaultRootElementNotSpecified((XMLDescriptor) descriptor);
             } else {
                 marshalRecord.beforeContainmentMarshal(objectValue);
 
