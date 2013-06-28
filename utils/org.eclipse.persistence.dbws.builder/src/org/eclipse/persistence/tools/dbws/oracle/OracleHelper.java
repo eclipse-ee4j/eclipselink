@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -147,6 +147,7 @@ import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.dbws.Util.SLASH;
 import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
 import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.XMLTYPE_STR;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
@@ -407,7 +408,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     }
                     // for XMLType, we want the type code to be 'OPAQUE' (2007)
                     if (arg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
-                        pa.setJdbcType(getJDBCTypeForTypeName(ScalarDatabaseTypeEnum.XMLTYPE_TYPE.toString()));
+                        pa.setJdbcType(getJDBCTypeForTypeName(XMLTYPE_STR));
                     }
                     if (hasComplexArgs && arg.getEnclosedType().isPLSQLType()) {
                         pa.setComplexTypeName(storedProcedure.getCatalogName() + UNDERSCORE + arg.getTypeName());
@@ -494,7 +495,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
         // for XMLType, we want the type code to be 'OPAQUE' (2007)
         if (rargDataType == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
-            result.setJdbcType(getJDBCTypeForTypeName(ScalarDatabaseTypeEnum.XMLTYPE_TYPE.toString()));
+            result.setJdbcType(getJDBCTypeForTypeName(XMLTYPE_STR));
         }
         return result;
     }
@@ -1294,7 +1295,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             ((StoredFunctionCall) call).setResult(null, ClassConstants.TIMESTAMP);
                         } else if (returnArg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
                             // special handling for XMLType types
-                            ((StoredFunctionCall) call).setResult(null, Types.SQLXML);
+                            ((StoredFunctionCall) call).setResult(getJDBCTypeForTypeName(XMLTYPE_STR), XMLTYPE_STR, ClassConstants.OBJECT);
                         } else if (resultType == Types.OTHER || resultType == Types.CLOB) {
                             // default to OBJECT for OTHER, CLOB and LONG types
                             ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
@@ -1398,9 +1399,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.STRUCT, argType.getTypeName(), wrapperClass);
                         }
                     } else {
-                        // need special handling for XMLType - we'll use 2009 (SQLXML)
+                        // need special handling for XMLType - we want the type code to be 'OPAQUE' (2007)
                         if (argType == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
-                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), Types.SQLXML);
+                            call.addNamedOutputArgument(arg.getArgumentName(), arg.getArgumentName(), getJDBCTypeForTypeName(XMLTYPE_STR), XMLTYPE_STR);
                         } else if (argType == ScalarDatabaseTypeEnum.SYS_REFCURSOR_TYPE) {
                             call.addNamedCursorOutputArgument(arg.getArgumentName());
                         } else {
