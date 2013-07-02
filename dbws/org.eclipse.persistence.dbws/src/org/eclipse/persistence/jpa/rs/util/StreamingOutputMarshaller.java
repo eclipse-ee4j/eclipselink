@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
@@ -88,9 +87,9 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                         context.marshallEntity(result, mediaType, output);
                     }
                     return;
-                } catch (Exception e) {
-                    JPARSLogger.exception("jpars_caught_exception", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) }, e);
-                    throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(e), e);
+                } catch (Exception ex) {
+                    JPARSLogger.exception("jpars_caught_exception", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) }, ex);
+                    throw JPARSException.exceptionOccurred(ex);
                 }
             }
 
@@ -103,7 +102,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 oos.close();
                 output.write(baos.toByteArray());
             } else {
-                JPARSLogger.fine("jpars_could_marshal_requested_result_to_requested_type", new Object[] { result });
+                JPARSLogger.fine("jpars_could_marshal_requested_result_to_requested_type", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), result });
                 throw new WebApplicationException();
             }
         }

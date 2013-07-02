@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractQueryResource;
+
 /**
  * PersistenceResource
  *  
@@ -38,12 +39,14 @@ public class QueryResource extends AbstractQueryResource {
     @POST
     @Path("{name}")
     public Response namedQueryUpdate(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return namedQueryUpdateInternal(null, persistenceUnit, name, hh, ui);
     }
-    
+
     @GET
     @Path("{name}")
     public Response namedQuery(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return namedQueryInternal(null, persistenceUnit, name, hh, ui);
     }
 }

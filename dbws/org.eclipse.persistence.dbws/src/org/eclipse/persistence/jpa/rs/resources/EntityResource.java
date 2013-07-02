@@ -28,7 +28,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractEntityResource;
 
@@ -44,7 +43,6 @@ public class EntityResource extends AbstractEntityResource {
     @GET
     @Path("{type}/{key}/{attribute}")
     public Response findAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
-
         setRequestUniqueId();
         return findAttribute(version, persistenceUnit, type, key, attribute, hh, ui, ui.getBaseUri());
     }
@@ -58,7 +56,7 @@ public class EntityResource extends AbstractEntityResource {
 
     @PUT
     @Path("{type}")
-    public Response create(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) throws JAXBException {
+    public Response create(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) throws Exception {
         setRequestUniqueId();
         return create(version, persistenceUnit, type, hh, uriInfo, uriInfo.getBaseUri(), in);
     }

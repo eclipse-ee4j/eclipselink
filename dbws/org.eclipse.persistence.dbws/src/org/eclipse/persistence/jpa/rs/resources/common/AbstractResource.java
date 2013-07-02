@@ -11,15 +11,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,25 +23,11 @@ import java.util.Map.Entry;
 import java.util.ServiceLoader;
 import java.util.UUID;
 
-import javax.naming.NamingException;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.persistence.PessimisticLockException;
-import javax.persistence.QueryTimeoutException;
-import javax.persistence.RollbackException;
-import javax.persistence.TransactionRequiredException;
 import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Attribute;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Descriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
@@ -76,35 +58,6 @@ public abstract class AbstractResource {
 
     public static final String SERVICE_VERSION_1_0 = "v1.0";
     public static final String SERVICE_VERSION_2_0 = "v2.0";
-
-    private static final Map<String, Status> HTTP_STATUS_CODE_MAPPING =
-            Collections.unmodifiableMap(new HashMap<String, Status>() {
-                {
-                    put(ClassNotFoundException.class.getName(), Status.BAD_REQUEST);
-                    put(ConversionException.class.getName(), Status.BAD_REQUEST);
-                    put(DatabaseException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(EntityExistsException.class.getName(), Status.CONFLICT);
-                    put(EntityNotFoundException.class.getName(), Status.NOT_FOUND);
-                    put(IOException.class.getName(), Status.BAD_REQUEST);
-                    put(IllegalAccessException.class.getName(), Status.BAD_REQUEST);
-                    put(IllegalArgumentException.class.getName(), Status.BAD_REQUEST);
-                    put(IllegalStateException.class.getName(), Status.BAD_REQUEST);
-                    put(InvocationTargetException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(JAXBException.class.getName(), Status.NOT_FOUND); // TODO: we might want to change this http status in v2.0
-                    put(MalformedURLException.class.getName(), Status.BAD_REQUEST);
-                    put(NamingException.class.getName(), Status.BAD_REQUEST);
-                    put(NoResultException.class.getName(), Status.NOT_FOUND);
-                    put(NoSuchMethodException.class.getName(), Status.BAD_REQUEST);
-                    put(NonUniqueResultException.class.getName(), Status.NOT_FOUND);
-                    put(NumberFormatException.class.getName(), Status.BAD_REQUEST);
-                    put(OptimisticLockException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(PersistenceException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(PessimisticLockException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                    put(QueryTimeoutException.class.getName(), Status.BAD_REQUEST);// TODO: we might want to change this http status in v2.0
-                    put(RollbackException.class.getName(), Status.BAD_REQUEST);
-                    put(TransactionRequiredException.class.getName(), Status.INTERNAL_SERVER_ERROR);
-                }
-            });
 
     /**
      * Sets the persistence factory.
@@ -222,7 +175,7 @@ public abstract class AbstractResource {
      */
     protected PersistenceContext getPersistenceContext(String persistenceUnit, URI baseURI, String version, Map<String, Object> initializationProperties) {
         if (!isValidVersion(version)) {
-            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), version });
+            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), version });
             throw new IllegalArgumentException();
         }
 
@@ -291,33 +244,6 @@ public abstract class AbstractResource {
             // TODO: Log it
             return uri;
         }
-    }
-
-    /**
-     * Gets the http status code.
-     *
-     * @param ex the ex
-     * @return the http status code
-     */
-    public static int getHttpStatusCode(Exception ex) {
-        if (ex != null) {
-            Status httpStatusCode = HTTP_STATUS_CODE_MAPPING.get(ex.getClass().getName());
-            if (ex instanceof RollbackException) {
-                if (ex != null) {
-                    Throwable cause = ex.getCause();
-                    if (cause != null) {
-                        if (cause instanceof DatabaseException) {
-                            //  409 Conflict ("The request could not be completed due to a conflict with the current state of the resource.")
-                            httpStatusCode = Status.CONFLICT;
-                        }
-                    }
-                }
-            }
-            if (httpStatusCode != null) {
-                return httpStatusCode.getStatusCode();
-            }
-        }
-        return Status.BAD_REQUEST.getStatusCode();
     }
 
     protected void setRequestUniqueId() {

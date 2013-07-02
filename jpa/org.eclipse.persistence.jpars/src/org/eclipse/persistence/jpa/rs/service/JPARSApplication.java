@@ -21,6 +21,7 @@ import javax.annotation.PreDestroy;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSExceptionMapper;
@@ -61,30 +62,7 @@ public class JPARSApplication extends Application {
         // Exception Mapping
         c.add(JPARSExceptionMapper.class);
 
-        //c.add(ClassNotFoundExceptionMapper.class);
-        //c.add(ConversionExceptionMapper.class);
-        //c.add(DatabaseExceptionMapper.class);
-        //c.add(EntityExistsExceptionMapper.class);
-        //c.add(EntityNotFoundExceptionMapper.class);
-        //c.add(IllegalAccessExceptionMapper.class);
-        //c.add(IllegalArgumentExceptionMapper.class);
-        //c.add(IllegalStateExceptionMapper.class);
-        //c.add(InvocationTargetExceptionMapper.class);
-        //c.add(IOExceptionMapper.class);
-        //c.add(JAXBExceptionMapper.class);
-        //c.add(MalformedURLExceptionMapper.class);
-        //c.add(NamingExceptionMapper.class);
-        //c.add(NonUniqueResultExceptionExceptionMapper.class);
-        //c.add(NoResultExceptionMapper.class);
-        //c.add(NoSuchMethodExceptionMapper.class);
-        //c.add(OptimisticLockExceptionMapper.class);
-        //c.add(PersistenceExceptionMapper.class);
-        //c.add(PessimisticLockExceptionMapper.class);
-        //c.add(QueryTimeoutExceptionMapper.class);
-        //c.add(RollbackExceptionMapper.class);
-        //c.add(TransactionRequiredExceptionMapper.class);
-        //c.add(JPARSConfigurationExceptionMapper.class);
-
+        //
         classes = Collections.unmodifiableSet(c);
     }
 
@@ -101,6 +79,8 @@ public class JPARSApplication extends Application {
      */
     @PreDestroy
     public void preDestroy() {
+        DataStorage.destroy();
+
         ServiceLoader<PersistenceContextFactoryProvider> persistenceContextFactoryProviderLoader =
                 ServiceLoader.load(PersistenceContextFactoryProvider.class, Thread.currentThread().getContextClassLoader());
 

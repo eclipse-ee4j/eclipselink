@@ -44,12 +44,14 @@ public class PersistenceResource extends AbstractPersistenceResource {
 
     @GET
     public Response getContexts(@Context HttpHeaders hh, @Context UriInfo uriInfo) throws JAXBException {
+        setRequestUniqueId();
         return getContexts(null, hh, uriInfo.getBaseUri());
     }
 
     @POST
     @Produces(MediaType.WILDCARD)
     public Response callSessionBean(@Context HttpHeaders hh, @Context UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        setRequestUniqueId();
         return callSessionBeanInternal(null, hh, ui, is);
     }
 }

@@ -21,7 +21,6 @@ import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.JpaHelper;
-import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
@@ -148,6 +147,6 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
             return entity;
         }
         // It is an error if the object referred by a link doesn't exist, so throw exception
-        throw JPARSException.objectReferredByLinkDoesNotExist((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), Status.NOT_FOUND.getStatusCode(), entityType, id);
+        throw JPARSException.objectReferredByLinkDoesNotExist(Status.NOT_FOUND.getStatusCode(), entityType, id);
     }
 }

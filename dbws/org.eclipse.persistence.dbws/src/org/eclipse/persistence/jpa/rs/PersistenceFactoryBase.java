@@ -158,13 +158,13 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                     }
                 }
             } catch (Exception e) {
-                JPARSLogger.exception("exception_creating_persistence_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnitName, e.toString() }, e);
+                JPARSLogger.exception("exception_creating_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnitName, e.toString() }, e);
             }
         }
 
         if ((persistenceContext != null) && (!persistenceContext.isWeavingEnabled())) {
-            JPARSLogger.fine("weaving_required_for_relationships", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) });
-            throw JPARSException.invalidConfiguration((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            JPARSLogger.fine("weaving_required_for_relationships", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) });
+            throw JPARSException.invalidConfiguration(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         }
 
         return persistenceContext;

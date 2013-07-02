@@ -33,37 +33,49 @@ public class JPARSException extends EclipseLinkException {
             this.value = value;
         }
 
+        /**
+         * Value.
+         *
+         * @return the string
+         */
         public String value() {
             return String.valueOf(value);
         }
     };
 
     private int httpStatusCode;
-    private String requestId;
 
+    /**
+     * Instantiates a new JPARS exception.
+     */
     public JPARSException() {
         super();
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.exceptions.EclipseLinkException#getMessage()
+     */
     @Override
     public String getMessage() {
         return super.getUnformattedMessage();
     }
 
+    /**
+     * Gets the http status code.
+     *
+     * @return the http status code
+     */
     public int getHttpStatusCode() {
         return httpStatusCode;
     }
 
+    /**
+     * Sets the http status code.
+     *
+     * @param httpStatusCode the new http status code
+     */
     public void setHttpStatusCode(int httpStatusCode) {
         this.httpStatusCode = httpStatusCode;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
     }
 
     private JPARSException(String message) {
@@ -88,14 +100,14 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the jPARS exception
      */
-    public static JPARSException entityNotFound(String requestId, int httpStatusCode, String entityType, String entityId, String persistenceUnit) {
+    public static JPARSException entityNotFound(int httpStatusCode, String entityType, String entityId, String persistenceUnit) {
         Object[] args = { entityType, entityId, persistenceUnit };
 
         String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.ENTITY_NOT_FOUND.value, args);
         JPARSException exception = new JPARSException(msg);
         exception.setErrorCode(ErrorCode.ENTITY_NOT_FOUND.value);
         exception.setHttpStatusCode(httpStatusCode);
-        exception.setRequestId(requestId);
+
         return exception;
     }
 
@@ -108,14 +120,12 @@ public class JPARSException extends EclipseLinkException {
      * @param entityId the entity id
      * @return the jPARS exception
      */
-    public static JPARSException objectReferredByLinkDoesNotExist(String requestId, int httpStatusCode, String entityType, Object entityId) {
+    public static JPARSException objectReferredByLinkDoesNotExist(int httpStatusCode, String entityType, Object entityId) {
         Object[] args = { entityType, entityId };
 
         String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST.value, args);
         JPARSException exception = new JPARSException(msg);
-
         exception.setErrorCode(ErrorCode.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST.value);
-        exception.setRequestId(requestId);
         exception.setHttpStatusCode(httpStatusCode);
 
         return exception;
@@ -128,14 +138,12 @@ public class JPARSException extends EclipseLinkException {
      * @param httpStatusCode the http status code
      * @return the jPARS exception
      */
-    public static JPARSException invalidConfiguration(String requestId, int httpStatusCode) {
+    public static JPARSException invalidConfiguration(int httpStatusCode) {
         Object[] args = {};
 
         String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.INVALID_CONFIGURATION.value, args);
         JPARSException exception = new JPARSException(msg);
-
         exception.setErrorCode(ErrorCode.INVALID_CONFIGURATION.value);
-        exception.setRequestId(requestId);
         exception.setHttpStatusCode(httpStatusCode);
 
         return exception;
@@ -149,7 +157,7 @@ public class JPARSException extends EclipseLinkException {
      * @param exception the exception
      * @return the jPARS exception
      */
-    public static JPARSException exceptionOccurred(String requestId, int httpStatusCode, Exception exception) {
+    public static JPARSException exceptionOccurred(Exception exception) {
         int errorCode = ErrorCode.AN_EXCEPTION_OCCURRED.value;
         String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.AN_EXCEPTION_OCCURRED.value, new Object[] { exception.getClass().getSimpleName() }).trim();
 
@@ -163,10 +171,7 @@ public class JPARSException extends EclipseLinkException {
 
         JPARSException jparsException = new JPARSException(msg, exception);
         jparsException.setErrorCode(errorCode);
-
         jparsException.setInternalException(exception);
-        jparsException.setRequestId(requestId);
-        jparsException.setHttpStatusCode(httpStatusCode);
 
         return jparsException;
     }

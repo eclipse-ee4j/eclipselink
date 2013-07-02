@@ -15,12 +15,10 @@ package org.eclipse.persistence.jpa.rs;
 import java.util.HashMap;
 
 public class DataStorage {
-    public static final String UNKNOWN_REQUEST_UNIQUE_ID = "unknown";
+    // key names in the data storage
+    public static final String REQUEST_UNIQUE_ID = "eclipselink.jpars.request-id";
 
-    // key name in data storage
-    public static final String REQUEST_UNIQUE_ID = "eclipselink.jpars.request.unique-id";
-
-    private final static ThreadLocal<HashMap<String, Object>> storage = new ThreadLocal<HashMap<String, Object>>() {
+    private final static InheritableThreadLocal<HashMap<String, Object>> storage = new InheritableThreadLocal<HashMap<String, Object>>() {
         @Override
         protected HashMap<String, Object> initialValue() {
             return new HashMap<String, Object>();
@@ -37,9 +35,7 @@ public class DataStorage {
         Object value = storage.get().get(key);
         if (REQUEST_UNIQUE_ID.equals(key)) {
             if (value == null) {
-                return UNKNOWN_REQUEST_UNIQUE_ID;
-            } else {
-                return (String) value;
+                return "unknown";
             }
         }
         return value;
@@ -59,6 +55,11 @@ public class DataStorage {
      * Destroy.
      */
     public static void destroy() {
-        storage.remove();
+        if (storage != null) {
+            if (storage.get() != null) {
+                storage.get().clear();
+            }
+            storage.remove();
+        }
     }
 }

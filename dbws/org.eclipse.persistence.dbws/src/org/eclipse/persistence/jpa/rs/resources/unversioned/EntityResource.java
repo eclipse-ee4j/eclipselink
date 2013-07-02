@@ -27,7 +27,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractEntityResource;
 
@@ -43,30 +42,35 @@ public class EntityResource extends AbstractEntityResource {
     @GET
     @Path("{type}/{key}/{attribute}")
     public Response findAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return findAttribute(null, persistenceUnit, type, key, attribute, hh, ui, ui.getBaseUri());
     }
 
     @GET
     @Path("{type}/{key}")
     public Response find(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return find(null, persistenceUnit, type, key, hh, ui, ui.getBaseUri());
     }
 
     @PUT
     @Path("{type}")
-    public Response create(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) throws JAXBException {
+    public Response create(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) throws Exception {
+        setRequestUniqueId();
         return create(null, persistenceUnit, type, hh, uriInfo, uriInfo.getBaseUri(), in);
     }
 
     @POST
     @Path("{type}")
     public Response update(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) {
+        setRequestUniqueId();
         return update(null, persistenceUnit, type, hh, uriInfo, uriInfo.getBaseUri(), in);
     }
 
     @POST
     @Path("{type}/{key}/{attribute}")
     public Response setOrAddAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
+        setRequestUniqueId();
         return setOrAddAttribute(null, persistenceUnit, type, key, attribute, hh, ui, ui.getBaseUri(), in);
     }
 
@@ -74,12 +78,14 @@ public class EntityResource extends AbstractEntityResource {
     @Path("{type}/{key}/{attribute}")
     public Response removeAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute,
             @Context HttpHeaders hh, @Context UriInfo ui) {
+        setRequestUniqueId();
         return removeAttributeInternal(null, persistenceUnit, type, key, attribute, hh, ui);
     }
 
     @DELETE
     @Path("{type}/{key}")
     public Response delete(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context UriInfo ui, @Context HttpHeaders hh) {
+        setRequestUniqueId();
         return delete(null, persistenceUnit, type, key, ui, hh, ui.getBaseUri());
     }
 }

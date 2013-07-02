@@ -17,6 +17,11 @@ import java.util.ListResourceBundle;
 public class LoggingLocalizationResource extends ListResourceBundle {
 
     static final Object[][] contents = {
+            /*
+             * 
+             * EACH RESOURCE STRING, MUST HAVE "requestId: {0}" AS FIRST PARAMETER in RESOURCE STRING.
+             *  
+             */
             { "jpars_could_not_find_session_bean", "requestId: {0}. A call is being made to a session bean with JNDI Name: [{1}].  That bean can not be found." },
             { "jpars_could_not_find_persistence_context", "requestId: {0}. A JPA-RS call is requesting persistence context: [{1}].  That persistence context is not found." },
             { "jpars_could_not_find_class_in_persistence_unit", "requestId: {0}. Type: [{1}] cannot be found in persistence unit: [{2}]." },
@@ -47,6 +52,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
             { "object_referred_by_link_does_not_exist", "requestId: {0}. Entity referred by link does not exist, entity type:[{1}], id:[{2}]." },
             { "unsupported_service_version_in_the_request", "requestId: {0}. JPARS version [{1}] is not supported." },
             { "no_orderby_clause_for_paging", "requestId: {0}. No OrderBy clause is defined for query:[{1}]. As a result, no guarantee exists that paging will work deterministically." }
+
+            /*
+             * 
+             * EACH RESOURCE STRING, MUST HAVE "requestId: {0}" AS FIRST PARAMETER in RESOURCE STRING.
+             *  
+             */
     };
 
     @Override

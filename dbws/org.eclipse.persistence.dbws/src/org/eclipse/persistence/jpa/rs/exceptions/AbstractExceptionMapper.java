@@ -12,14 +12,36 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.exceptions;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.naming.NamingException;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+import javax.persistence.PessimisticLockException;
+import javax.persistence.QueryTimeoutException;
+import javax.persistence.RollbackException;
+import javax.persistence.TransactionRequiredException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
 
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.JPARSException;
+import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
@@ -30,11 +52,41 @@ public abstract class AbstractExceptionMapper {
     @Context
     UriInfo uriInfo;
 
+    private static final Map<String, Status> HTTP_STATUS_CODE_MAPPING =
+            Collections.unmodifiableMap(new HashMap<String, Status>() {
+                {
+                    put(ClassNotFoundException.class.getName(), Status.BAD_REQUEST);
+                    put(ConversionException.class.getName(), Status.BAD_REQUEST);
+                    put(DatabaseException.class.getName(), Status.INTERNAL_SERVER_ERROR);
+                    put(EntityExistsException.class.getName(), Status.CONFLICT);
+                    put(EntityNotFoundException.class.getName(), Status.NOT_FOUND);
+                    put(IOException.class.getName(), Status.BAD_REQUEST);
+                    put(IllegalAccessException.class.getName(), Status.BAD_REQUEST);
+                    put(IllegalArgumentException.class.getName(), Status.BAD_REQUEST);
+                    put(IllegalStateException.class.getName(), Status.BAD_REQUEST);
+                    put(InvocationTargetException.class.getName(), Status.INTERNAL_SERVER_ERROR);
+                    put(JAXBException.class.getName(), Status.NOT_FOUND); // TODO: we might want to change this http status in v2.0
+                    put(MalformedURLException.class.getName(), Status.BAD_REQUEST);
+                    put(NamingException.class.getName(), Status.BAD_REQUEST);
+                    put(NoResultException.class.getName(), Status.NOT_FOUND);
+                    put(NoSuchMethodException.class.getName(), Status.BAD_REQUEST);
+                    put(NonUniqueResultException.class.getName(), Status.NOT_FOUND);
+                    put(NumberFormatException.class.getName(), Status.BAD_REQUEST);
+                    put(OptimisticLockException.class.getName(), Status.INTERNAL_SERVER_ERROR);
+                    put(PersistenceException.class.getName(), Status.INTERNAL_SERVER_ERROR);
+                    put(PessimisticLockException.class.getName(), Status.INTERNAL_SERVER_ERROR);
+                    put(QueryTimeoutException.class.getName(), Status.BAD_REQUEST);// TODO: we might want to change this http status in v2.0
+                    put(RollbackException.class.getName(), Status.BAD_REQUEST);
+                    put(TransactionRequiredException.class.getName(), Status.INTERNAL_SERVER_ERROR);
+                }
+            });
+
     // An absolute URI that identifies the problem type.  When dereferenced, it SHOULD provide human-readable documentation for the problem type (e.g., using HTML)."
     private static final String PROBLEM_TYPE = "http://www.eclipse.org/eclipselink/documentation/";
 
     protected Response buildResponse(JPARSException exception) {
         String path = null;
+        exception.setHttpStatusCode(getHttpStatusCode(exception.getCause()));
 
         if (uriInfo != null) {
             URI requestURI = uriInfo.getRequestUri();
@@ -45,10 +97,31 @@ public abstract class AbstractExceptionMapper {
 
         if ((path != null) && (path.contains(AbstractResource.SERVICE_VERSION_2_0))) {
             ErrorResponse errorResponse = new ErrorResponse(PROBLEM_TYPE, exception.getMessage(), String.valueOf(exception.getErrorCode()));
-            errorResponse.setRequestUniqueId(exception.getRequestId());
+            errorResponse.setRequestUniqueId((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID));
             errorResponse.setHttpStatus(exception.getHttpStatusCode());
             return Response.status(exception.getHttpStatusCode()).entity(errorResponse).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }
         return Response.status(exception.getHttpStatusCode()).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+    }
+
+    private static int getHttpStatusCode(Throwable throwable) {
+        if (throwable != null) {
+            Status httpStatusCode = HTTP_STATUS_CODE_MAPPING.get(throwable.getClass().getName());
+            if (throwable instanceof RollbackException) {
+                if (throwable != null) {
+                    Throwable cause = throwable.getCause();
+                    if (cause != null) {
+                        if (cause instanceof DatabaseException) {
+                            //  409 Conflict ("The request could not be completed due to a conflict with the current state of the resource.")
+                            httpStatusCode = Status.CONFLICT;
+                        }
+                    }
+                }
+            }
+            if (httpStatusCode != null) {
+                return httpStatusCode.getStatusCode();
+            }
+        }
+        return Status.BAD_REQUEST.getStatusCode();
     }
 }

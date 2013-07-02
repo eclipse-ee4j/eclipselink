@@ -77,7 +77,6 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
-import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
@@ -179,10 +178,10 @@ public class PersistenceContext {
         try {
             this.jaxbContext = createDynamicJAXBContext(emf.getDatabaseSession());
         } catch (JAXBException jaxbe) {
-            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), emfName, jaxbe.toString() }, jaxbe);
+            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), emfName, jaxbe.toString() }, jaxbe);
             emf.close();
         } catch (IOException e) {
-            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), emfName, e.toString() }, e);
+            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), emfName, e.toString() }, e);
             emf.close();
         }
         setBaseURI(defaultURI);
@@ -368,10 +367,10 @@ public class PersistenceContext {
             }
             transaction.commitTransaction(em);
         } catch (RollbackException ex) {
-            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+            throw JPARSException.exceptionOccurred(ex);
         } catch (Exception ex) {
             transaction.rollbackTransaction(em);
-            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+            throw JPARSException.exceptionOccurred(ex);
         } finally {
             em.close();
         }
@@ -784,10 +783,10 @@ public class PersistenceContext {
             transaction.commitTransaction(em);
             return mergedEntity;
         } catch (RollbackException ex) {
-            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+            throw JPARSException.exceptionOccurred(ex);
         } catch (Exception ex) {
             transaction.rollbackTransaction(em);
-            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+            throw JPARSException.exceptionOccurred(ex);
         } finally {
             em.close();
         }
@@ -821,7 +820,7 @@ public class PersistenceContext {
                     return jaxbType.newDynamicEntity();
                 }
             }
-            JPARSLogger.fine("exception_thrown_while_creating_dynamic_entity", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, e.toString() });
+            JPARSLogger.fine("exception_thrown_while_creating_dynamic_entity", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, e.toString() });
             throw e;
         }
         return entity;
@@ -845,10 +844,10 @@ public class PersistenceContext {
             transaction.commitTransaction(em);
             return result;
         } catch (RollbackException ex) {
-            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+            throw JPARSException.exceptionOccurred(ex);
         } catch (Exception ex) {
             transaction.rollbackTransaction(em);
-            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+            throw JPARSException.exceptionOccurred(ex);
         } finally {
             em.close();
         }
@@ -1084,8 +1083,8 @@ public class PersistenceContext {
                 for (DatabaseMapping mapping : descriptor.getMappings()) {
                     if (mapping instanceof XMLInverseReferenceMapping) {
                         // we require Fetch groups to handle relationships
-                        JPARSLogger.fine("weaving_required_for_relationships", new Object[] { (String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) });
-                        throw JPARSException.invalidConfiguration((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), Status.INTERNAL_SERVER_ERROR.getStatusCode());
+                        JPARSLogger.fine("weaving_required_for_relationships", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) });
+                        throw JPARSException.invalidConfiguration(Status.INTERNAL_SERVER_ERROR.getStatusCode());
                     }
                 }
             }
@@ -1149,9 +1148,8 @@ public class PersistenceContext {
                 writer.writeEndDocument();
                 writer.flush();
                 postMarshallEntity(object);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(e), e);
+            } catch (Exception ex) {
+                throw JPARSException.exceptionOccurred(ex);
             }
         } else {
             marshaller.marshal(object, output);
@@ -1301,7 +1299,7 @@ public class PersistenceContext {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw JPARSException.exceptionOccurred((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), AbstractResource.getHttpStatusCode(ex), ex);
+            throw JPARSException.exceptionOccurred(ex);
         }
         return adapters;
     }
