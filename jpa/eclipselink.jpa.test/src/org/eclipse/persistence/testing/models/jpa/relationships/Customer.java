@@ -42,6 +42,7 @@ public class Customer implements java.io.Serializable{
     private String name;
     private Collection<Order> orders = new HashSet<Order>();
     private CustomerCollection controlledCustomers = new CustomerCollection();
+    private CustomerCollection controlledCustomers2 = new CustomerCollection();
     private Map<ServiceCall, CustomerServiceRepresentative> customerServiceInteractions = new HashMap<ServiceCall, CustomerServiceRepresentative>();
         
     public Customer() {}
@@ -115,12 +116,26 @@ public class Customer implements java.io.Serializable{
         return controlledCustomers;
     }
     
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="CMP3_CUSTOMER_CUSTOMER2")
+    public CustomerCollection<Customer> getCCustomers2() {
+        return controlledCustomers2;
+    }
+    
     public void setCCustomers(CustomerCollection controlledCustomers) {
         this.controlledCustomers = controlledCustomers;
     }
     
+    public void setCCustomers2(CustomerCollection controlledCustomers) {
+        this.controlledCustomers2 = controlledCustomers;
+    }
+    
     public void addCCustomer(Customer controlledCustomer) {
         getCCustomers().add(controlledCustomer);
+    }
+    
+    public void addCCustomer2(Customer controlledCustomer) {
+        getCCustomers2().add(controlledCustomer);
     }
     
     @ManyToMany(cascade={ALL})

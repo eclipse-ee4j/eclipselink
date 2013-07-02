@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.indirection;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -70,9 +71,10 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
      * the underlying data.
      */
     public Object getRealAttributeValueFromObject(Object object, Object attribute) {
+        boolean wasInstantiated = ((ValueHolderInterface)attribute).isInstantiated();
         Object value = super.getRealAttributeValueFromObject(object, attribute);
         // Provide the indirection policy with a callback that allows it to do any updates it needs as the result of getting the value.
-        if (value != attribute) {
+        if (!wasInstantiated && (value != attribute)) {
             //if the attribute was already unwrapped then do not call this method
             updateValueInObject(object, value, attribute);
         }
@@ -96,29 +98,36 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
             try {
                 setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
             } catch (NoSuchMethodException e) {
-                if (actualTypeClassName != null){
-                    try{
+                if (actualTypeClassName != null) {
+                    try {
                         // try the actual class of the field or property
                         parameterTypes[0] = Helper.getClassFromClasseName(actualTypeClassName, sourceMapping.getReferenceClass().getClassLoader());
                         setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
                     } catch (NoSuchMethodException nsme) {}
-                    if (setMethod != null){
+                    if (setMethod != null) {
                         return setMethod;
                     }
-                 }
-                // As a last ditch effort, change the parameter type to Object.class. 
-                // If the model uses generics:
-                //   public T getStuntDouble()
-                //   public void setStuntDouble(T)
-                // The weaved methods will be:
-                //   public Object getStuntDouble() and 
-                //   public void setStuntDouble(Object)
+                }
                 try {
-                    parameterTypes[0] = Object.class;
-                    setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);    
-                } catch (NoSuchMethodException ee) {
-                    // Throw the original exception.
-                    throw DescriptorException.errorAccessingSetMethodOfEntity(sourceMapping.getDescriptor().getJavaClass(), setMethodName, sourceMapping.getDescriptor(), e);
+                    // Get the set method type from the get method.
+                    Method getMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), getGetMethodName(), new Class[0]);
+                    parameterTypes[0] = getMethod.getReturnType();
+                    setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
+                } catch (NoSuchMethodException e2) {                
+                    // As a last ditch effort, change the parameter type to Object.class. 
+                    // If the model uses generics:
+                    //   public T getStuntDouble()
+                    //   public void setStuntDouble(T)
+                    // The weaved methods will be:
+                    //   public Object getStuntDouble() and 
+                    //   public void setStuntDouble(Object)
+                    try {
+                        parameterTypes[0] = Object.class;
+                        setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);    
+                    } catch (NoSuchMethodException e3) {
+                        // Throw the original exception.
+                        throw DescriptorException.errorAccessingSetMethodOfEntity(sourceMapping.getDescriptor().getJavaClass(), setMethodName, sourceMapping.getDescriptor(), e);
+                    }
                 }
             }
         }

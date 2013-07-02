@@ -87,6 +87,10 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
                 if (!this.isInstantiated) {
                     // The value must be set directly because the setValue can also cause instantiation under UOW.
                     privilegedSetValue(instantiate());
+                    // Cycles can somehow recurse into this twice...
+                    if (this.isInstantiated) {
+                        return value;
+                    }
                     this.isInstantiated = true;
                     postInstantiate();
                     resetFields();

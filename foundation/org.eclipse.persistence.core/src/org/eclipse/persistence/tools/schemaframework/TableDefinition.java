@@ -960,7 +960,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
                     }
                     // Also check unique fields.
                     if (foreignKey.getSourceFields().size() == 1) {
-                        if (getField(foreignKey.getSourceFields().get(0)).isUnique()) {
+                        FieldDefinition field = getField(foreignKey.getSourceFields().get(0));
+                        if ((field != null) && field.isUnique()) {
                             alreadyIndexed = true;
                         }
                     }
@@ -1174,7 +1175,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
                         }
                         // Also check unique fields.
                         if (foreignKey.getSourceFields().size() == 1) {
-                            if (getField(foreignKey.getSourceFields().get(0)).isUnique()) {
+                            FieldDefinition field = getField(foreignKey.getSourceFields().get(0));
+                            if ((field != null) && field.isUnique()) {
                                 alreadyIndexed = true;
                             }
                         }

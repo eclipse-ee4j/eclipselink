@@ -2373,8 +2373,9 @@ public class DatabasePlatform extends DatasourcePlatform {
             if (usesStringBinding() && (((String)parameter).length() > getStringBindingSize())) {
                 CharArrayReader reader = new CharArrayReader(((String)parameter).toCharArray());
                 statement.setCharacterStream(index, reader, ((String)parameter).length());
+            } else {
+                statement.setString(index, (String) parameter);
             }
-            statement.setString(index, (String) parameter);
         } else if (parameter instanceof Number) {
             Number number = (Number) parameter;
             if (number instanceof Integer) {

@@ -39,6 +39,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         addTableDefinition(buildORDER_ORDERLABELTable());
         addTableDefinition(buildCMP3_SALESPERSONTable());
         addTableDefinition(buildCUSTOMER_CUSTOMERTable());
+        addTableDefinition(buildCUSTOMER_CUSTOMER2Table());
         addTableDefinition(buildCMP3_ENTITYATable());
         addTableDefinition(buildCMP3_ENTITYBTable());
         addTableDefinition(buildCMP3_ENTITYA_ENTITYBTable());
@@ -570,6 +571,38 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         // SECTION: FIELD
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("CCustomers_CUST_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(true);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        field1.setForeignKeyFieldName("CMP3_CUSTOMER.CUST_ID");
+        table.addField(field1);
+
+        return table;
+    }
+    
+    public static TableDefinition buildCUSTOMER_CUSTOMER2Table() {
+        TableDefinition table = new TableDefinition();
+
+        table.setName("CMP3_CUSTOMER_CUSTOMER2");
+
+        // SECTION: FIELD
+        FieldDefinition field = new FieldDefinition();
+        field.setName("Customer_CUST_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("CMP3_CUSTOMER.CUST_ID");
+        table.addField(field);
+    
+        // SECTION: FIELD
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("CCustomers2_CUST_ID");
         field1.setTypeName("NUMERIC");
         field1.setSize(15);
         field1.setShouldAllowNull(false);
