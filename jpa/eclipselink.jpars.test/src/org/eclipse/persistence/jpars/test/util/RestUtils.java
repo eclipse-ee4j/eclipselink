@@ -60,9 +60,8 @@ public class RestUtils {
      */
     public static URI getServerURI() throws URISyntaxException {
         String serverURIBase = System.getProperty(SERVER_URI_BASE, DEFAULT_SERVER_URI_BASE);
-        String versionString = "v2.0";//System.getProperty(JPA_RS_VERSION_STRING, "");
+        String versionString = System.getProperty(JPA_RS_VERSION_STRING, "");
         String versionStringUrlFragment = versionString.equals("") ? versionString : versionString + "/";
-
         return new URI(serverURIBase + APPLICATION_LOCATION + versionStringUrlFragment);
     }
 
