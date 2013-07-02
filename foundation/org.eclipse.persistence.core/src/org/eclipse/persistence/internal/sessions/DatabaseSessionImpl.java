@@ -41,7 +41,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.tools.tuning.SessionTuner;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
@@ -310,7 +309,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         super();
         this.setServerPlatform(new NoServerPlatform(this));
         this.shouldOptimizeResultSetAccess = ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault;
-        this.serializer = JavaSerializer.instance;
     }
 
     /**
@@ -338,7 +336,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         super(project);
         this.setServerPlatform(new NoServerPlatform(this));
         this.shouldOptimizeResultSetAccess = ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault;
-        this.serializer = JavaSerializer.instance;
     }
 
     /**
