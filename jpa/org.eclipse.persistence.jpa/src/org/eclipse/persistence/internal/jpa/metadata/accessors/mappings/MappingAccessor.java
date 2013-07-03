@@ -1989,8 +1989,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected void setIndirectionPolicy(ContainerMapping mapping, String mapKey, boolean usesIndirection) {
         MetadataClass rawClass = getRawClass();
-        
+        boolean containerPolicySet = false;
         if (usesIndirection && (mapping instanceof ForeignReferenceMapping)) {
+            containerPolicySet = true;
             CollectionMapping collectionMapping = (CollectionMapping)mapping;
             if (rawClass.equals(Map.class)) {
                 if (collectionMapping.isDirectMapMapping()) {
@@ -2005,14 +2006,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
             } else if (rawClass.equals(Set.class)) {
                 collectionMapping.useTransparentSet();
             } else {
-                //bug221577: This should be supported when a transparent indirection class can be set through eclipseLink_orm.xml, or basic indirection is used
                 getLogger().logWarningMessage(MetadataLogger.WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, getJavaClass(), getAnnotatedElement(), rawClass);
+                containerPolicySet = false;
             }
         } else {
             if (mapping instanceof CollectionMapping) {
                 ((CollectionMapping)mapping).dontUseIndirection();
             }
-            
+        }
+        if (!containerPolicySet) {            
             if (rawClass.equals(Map.class)) {
                 if (mapping instanceof DirectMapMapping) {
                     ((DirectMapMapping) mapping).useMapClass(java.util.Hashtable.class);
