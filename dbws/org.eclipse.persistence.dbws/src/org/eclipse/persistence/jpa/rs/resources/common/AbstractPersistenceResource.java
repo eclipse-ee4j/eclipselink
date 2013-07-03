@@ -54,7 +54,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
     protected Response getContexts(String version, HttpHeaders headers, URI baseURI) throws JAXBException {
         try {
             if (!isValidVersion(version)) {
-                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), version });
+                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), version });
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
@@ -88,7 +88,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
     protected Response callSessionBeanInternal(String version, HttpHeaders headers, UriInfo uriInfo, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         try {
             if (!isValidVersion(version)) {
-                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), version });
+                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), version });
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
@@ -99,7 +99,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             javax.naming.Context ctx = new InitialContext();
             Object ans = ctx.lookup(jndiName);
             if (ans == null) {
-                JPARSLogger.fine("jpars_could_not_find_session_bean", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), jndiName });
+                JPARSLogger.fine("jpars_could_not_find_session_bean", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), jndiName });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
@@ -107,7 +107,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             if (call.getContext() != null) {
                 context = getPersistenceFactory().get(call.getContext(), uriInfo.getBaseUri(), version, null);
                 if (context == null) {
-                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), call.getContext() });
+                    JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), call.getContext() });
                     return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                 }
             }

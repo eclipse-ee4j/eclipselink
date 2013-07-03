@@ -88,7 +88,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                     }
                     return;
                 } catch (Exception ex) {
-                    JPARSLogger.exception("jpars_caught_exception", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) }, ex);
+                    JPARSLogger.exception("jpars_caught_exception", new Object[] { DataStorage.get(DataStorage.REQUEST_ID) }, ex);
                     throw JPARSException.exceptionOccurred(ex);
                 }
             }
@@ -102,7 +102,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 oos.close();
                 output.write(baos.toByteArray());
             } else {
-                JPARSLogger.fine("jpars_could_marshal_requested_result_to_requested_type", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), result });
+                JPARSLogger.fine("jpars_could_marshal_requested_result_to_requested_type", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), result });
                 throw new WebApplicationException();
             }
         }

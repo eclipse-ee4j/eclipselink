@@ -60,7 +60,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, uriInfo.getBaseUri(), version, null);
             if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
             int result = context.queryExecuteUpdate(getMatrixParameters(uriInfo, persistenceUnit), name, getMatrixParameters(uriInfo, name), getQueryParameters(uriInfo));
@@ -85,7 +85,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, uriInfo.getBaseUri(), version, null);
             if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 

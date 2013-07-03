@@ -24,9 +24,9 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 public class JPARSExceptionMapper extends AbstractExceptionMapper implements ExceptionMapper<JPARSException> {
     public Response toResponse(JPARSException exception) {
         if (exception.getCause() != null) {
-            JPARSLogger.exception("jpars_caught_exception", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) }, (Exception) exception.getCause());
+            JPARSLogger.exception("jpars_caught_exception", new Object[] { DataStorage.get(DataStorage.REQUEST_ID) }, (Exception) exception.getCause());
         } else {
-            JPARSLogger.exception("jpars_caught_exception", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID) }, exception);
+            JPARSLogger.exception("jpars_caught_exception", new Object[] { DataStorage.get(DataStorage.REQUEST_ID) }, exception);
         }
         return buildResponse(exception);
     }

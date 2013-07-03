@@ -56,7 +56,7 @@ public class PagingRequestValidator extends FeatureRequestValidatorImpl {
                 }
 
                 if ((orderBy == null) || (orderBy.isEmpty())) {
-                    JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), query.toString() });
+                    JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), query.toString() });
                 }
             }
         }

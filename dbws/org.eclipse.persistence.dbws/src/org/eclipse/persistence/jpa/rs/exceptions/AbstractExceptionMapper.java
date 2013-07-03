@@ -97,7 +97,7 @@ public abstract class AbstractExceptionMapper {
 
         if ((path != null) && (path.contains(AbstractResource.SERVICE_VERSION_2_0))) {
             ErrorResponse errorResponse = new ErrorResponse(PROBLEM_TYPE, exception.getMessage(), String.valueOf(exception.getErrorCode()));
-            errorResponse.setRequestUniqueId((String) DataStorage.get(DataStorage.REQUEST_UNIQUE_ID));
+            errorResponse.setRequestId((String) DataStorage.get(DataStorage.REQUEST_ID));
             errorResponse.setHttpStatus(exception.getHttpStatusCode());
             return Response.status(exception.getHttpStatusCode()).entity(errorResponse).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
         }

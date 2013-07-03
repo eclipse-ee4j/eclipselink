@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class DataStorage {
     // key names in the data storage
-    public static final String REQUEST_UNIQUE_ID = "eclipselink.jpars.request-id";
+    public static final String REQUEST_ID = "requestId";
 
     private final static InheritableThreadLocal<HashMap<String, Object>> storage = new InheritableThreadLocal<HashMap<String, Object>>() {
         @Override
@@ -33,7 +33,7 @@ public class DataStorage {
      */
     public static Object get(String key) {
         Object value = storage.get().get(key);
-        if (REQUEST_UNIQUE_ID.equals(key)) {
+        if (REQUEST_ID.equals(key)) {
             if (value == null) {
                 return "unknown";
             }

@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.rs.ReservedWords;
  * 
  */
 @XmlRootElement(name = ReservedWords.ERROR_RESPONSE_LABEL)
-@XmlType(propOrder = { "problemType", "title", "httpStatus", "detail", "problemInstance", "errorCode", "errorPath", "errorDetails", "requestUniqueId" })
+@XmlType(propOrder = { "problemType", "title", "httpStatus", "detail", "problemInstance", "errorCode", "errorPath", "errorDetails", "requestId" })
 /*
  *    {
  *        "$schema": "http://json-schema.org/draft-04/schema#",
@@ -77,7 +77,7 @@ public class ErrorResponse {
     private String errorCode;
     private String errorPath;
     private ErrorResponse errorDetails;
-    private String requestUniqueId;
+    private String requestId;
 
     /**
      * Instantiates a new error response.
@@ -243,12 +243,12 @@ public class ErrorResponse {
     }
 
     /**
-     * Gets the request unique id.
+     * Gets the request id.
      *
-     * @return the request unique id
+     * @return the request id
      */
-    public String getRequestUniqueId() {
-        return requestUniqueId;
+    public String getRequestId() {
+        return requestId;
     }
 
     /**
@@ -256,7 +256,7 @@ public class ErrorResponse {
      *
      * @param requestUniqueId the new request unique id
      */
-    public void setRequestUniqueId(String requestUniqueId) {
-        this.requestUniqueId = requestUniqueId;
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 }

@@ -66,9 +66,9 @@ public abstract class AbstractEntityResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
             if (context == null || context.getClass(type) == null) {
                 if (context == null) {
-                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                    JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 } else {
-                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                 }
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
@@ -140,9 +140,9 @@ public abstract class AbstractEntityResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
             if (context == null || context.getClass(type) == null) {
                 if (context == null) {
-                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                    JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 } else {
-                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                 }
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
@@ -150,7 +150,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             Object id = IdHelper.buildId(context, type, key);
             Object entity = context.find(discriminators, type, id, getQueryParameters(uriInfo));
             if (entity == null) {
-                JPARSLogger.fine("jpars_could_not_entity_for_key", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, key, persistenceUnit });
+                JPARSLogger.fine("jpars_could_not_entity_for_key", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, key, persistenceUnit });
                 throw JPARSException.entityNotFound(Status.NOT_FOUND.getStatusCode(), type, key, persistenceUnit);
             }
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
@@ -164,12 +164,12 @@ public abstract class AbstractEntityResource extends AbstractResource {
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
             if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
             ClassDescriptor descriptor = context.getDescriptor(type);
             if (descriptor == null) {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
@@ -182,7 +182,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
                 if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
                         || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
-                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                     return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                 }
             }
@@ -207,13 +207,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
                                                 if (holder != null) {
                                                     Object obj = holder.getValue();
                                                     if (obj != null) {
-                                                        JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                                                        JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                                                         return Response.status(Status.BAD_REQUEST).build();
                                                     }
                                                 }
                                             } else if (value instanceof Collection) {
                                                 if (!(((Collection) value).isEmpty())) {
-                                                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                                                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                                                     return Response.status(Status.BAD_REQUEST).build();
                                                 }
                                             }
@@ -239,9 +239,9 @@ public abstract class AbstractEntityResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
             if (context == null || context.getClass(type) == null) {
                 if (context == null) {
-                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                    JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 } else {
-                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                 }
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
@@ -249,7 +249,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             try {
                 entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
             } catch (JAXBException e) {
-                JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit, e.toString() });
+                JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit, e.toString() });
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
@@ -265,9 +265,9 @@ public abstract class AbstractEntityResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
             if (context == null || context.getClass(type) == null) {
                 if (context == null) {
-                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                    JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 } else {
-                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                 }
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
@@ -279,7 +279,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             ClassDescriptor descriptor = context.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
-                JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), attribute, type, key, persistenceUnit });
+                JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), attribute, type, key, persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
@@ -287,7 +287,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
             Object result = context.updateOrAddAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, getQueryParameters(uriInfo), attribute, entity, partner);
             if (result == null) {
-                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), attribute, type, key, persistenceUnit });
+                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), attribute, type, key, persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
@@ -311,9 +311,9 @@ public abstract class AbstractEntityResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, uriInfo.getBaseUri(), version, null);
             if (context == null || context.getClass(type) == null) {
                 if (context == null) {
-                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                    JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 } else {
-                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                 }
                 return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
@@ -327,7 +327,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             ClassDescriptor descriptor = context.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
-                JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), attribute, type, key, persistenceUnit });
+                JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), attribute, type, key, persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
@@ -336,7 +336,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             Object result = context.removeAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, attribute, listItemId, entity, partner);
 
             if (result == null) {
-                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), attribute, type, key, persistenceUnit });
+                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), attribute, type, key, persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             } else {
                 return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
@@ -351,9 +351,9 @@ public abstract class AbstractEntityResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
             if (context == null || context.getClass(type) == null) {
                 if (context == null) {
-                    JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                    JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 } else {
-                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), type, persistenceUnit });
+                    JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
                 }
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
@@ -386,7 +386,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             ReadAllQuery readAllQuery = (ReadAllQuery) query;
             orderBy = readAllQuery.getOrderByExpressions();
             if ((orderBy == null) || (orderBy.isEmpty())) {
-                JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), query.toString() });
+                JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), query.toString() });
             }
         }
     }

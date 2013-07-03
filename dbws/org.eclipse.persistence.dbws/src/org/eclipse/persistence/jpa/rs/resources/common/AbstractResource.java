@@ -175,7 +175,7 @@ public abstract class AbstractResource {
      */
     protected PersistenceContext getPersistenceContext(String persistenceUnit, URI baseURI, String version, Map<String, Object> initializationProperties) {
         if (!isValidVersion(version)) {
-            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), version });
+            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), version });
             throw new IllegalArgumentException();
         }
 
@@ -247,6 +247,6 @@ public abstract class AbstractResource {
     }
 
     protected void setRequestUniqueId() {
-        DataStorage.set(DataStorage.REQUEST_UNIQUE_ID, UUID.randomUUID().toString());
+        DataStorage.set(DataStorage.REQUEST_ID, UUID.randomUUID().toString());
     }
 }

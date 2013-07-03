@@ -59,7 +59,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, baseURI, version, null);
             if (context == null) {
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_UNIQUE_ID), persistenceUnit });
+                JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
             }
 
