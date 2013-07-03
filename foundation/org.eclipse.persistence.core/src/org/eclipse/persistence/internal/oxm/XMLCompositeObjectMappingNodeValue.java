@@ -209,6 +209,19 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             marshalRecord.beforeContainmentMarshal(objectValue);
             ObjectBuilder objectBuilder = (ObjectBuilder)descriptor.getObjectBuilder();
 
+            CoreAttributeGroup group = marshalRecord.getCurrentAttributeGroup();
+            CoreAttributeItem item = group.getItem(getMapping().getAttributeName());
+            CoreAttributeGroup nestedGroup = XMLRecord.DEFAULT_ATTRIBUTE_GROUP;
+            if(item != null) {
+                if(item.getGroups() != null) {
+                    nestedGroup = item.getGroup(descriptor.getJavaClass());
+                } 
+                if(nestedGroup == null) {
+                    nestedGroup = item.getGroup() == null?XMLRecord.DEFAULT_ATTRIBUTE_GROUP:item.getGroup();
+                }
+            }
+ 
+            marshalRecord.pushAttributeGroup(nestedGroup);
             if (!(isSelfFragment || xPathFragment.nameIsText)) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
             }
@@ -222,18 +235,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, (Descriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (Field)xmlCompositeObjectMapping.getField(), false);
             }
 
-            CoreAttributeGroup group = marshalRecord.getCurrentAttributeGroup();
-            CoreAttributeItem item = group.getItem(getMapping().getAttributeName());
-            CoreAttributeGroup nestedGroup = XMLRecord.DEFAULT_ATTRIBUTE_GROUP;
-            if(item != null) {
-                if(item.getGroups() != null) {
-                    nestedGroup = item.getGroup(descriptor.getJavaClass());
-                } 
-                if(nestedGroup == null) {
-                    nestedGroup = item.getGroup() == null?XMLRecord.DEFAULT_ATTRIBUTE_GROUP:item.getGroup();
-                }
-            }
-            marshalRecord.pushAttributeGroup(nestedGroup);
+
             objectBuilder.buildRow(marshalRecord, objectValue, session, marshalRecord.getMarshaller(), xPathFragment);
             marshalRecord.afterContainmentMarshal(object, objectValue);
             marshalRecord.popAttributeGroup();

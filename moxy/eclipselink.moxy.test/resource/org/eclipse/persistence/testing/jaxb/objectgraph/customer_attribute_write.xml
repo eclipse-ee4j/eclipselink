@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<customer>
+    <lastName>Doe</lastName>
+    <age>35</age>
+    <address>
+        <country>Canada</country>
+    </address>
+    <phone-numbers>
+        <phone-number areaCode="613">123-4567</phone-number>
+        <phone-number areaCode="613">345-6789</phone-number>
+    </phone-numbers>
+</customer>
