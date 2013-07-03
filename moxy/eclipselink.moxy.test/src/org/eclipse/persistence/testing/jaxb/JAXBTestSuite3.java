@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.testing.jaxb.interfaces.xmltransient.InvalidTransientInterfaceTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.duplicateelem.ObjectFactoryTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.multielemref.MultipleXmlElementRefTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithIndexTestCases;
@@ -68,6 +69,7 @@ public class JAXBTestSuite3 extends TestCase {
         
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.interfaces.InterfaceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.interfaces.choice.InterfaceChoiceTestCases.class);
+        suite.addTestSuite(InvalidTransientInterfaceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.inheritance.interfaces.InterfacesTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.MarshalSchemaValidationTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.NoSchemaRefTestCases.class);

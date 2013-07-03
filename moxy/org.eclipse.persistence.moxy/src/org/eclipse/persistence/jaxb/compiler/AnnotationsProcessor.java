@@ -1882,8 +1882,14 @@ public class AnnotationsProcessor {
             if (!Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic ||hasJAXBAnnotations(nextField))) {
                 if (!Modifier.isStatic(modifiers)) {
                     if ((onlyExplicit && hasJAXBAnnotations(nextField)) || !onlyExplicit) {
-                         property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
-                         properties.add(property);
+                        try {
+                            property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
+                            properties.add(property);
+                        } catch(JAXBException ex) {
+                            if(ex.getErrorCode() != JAXBException.INVALID_INTERFACE || !helper.isAnnotationPresent(nextField, XmlTransient.class)) {
+                                throw ex;
+                            }
+                        }
                     }
                 } else {
                     try {
@@ -1904,6 +1910,10 @@ public class AnnotationsProcessor {
                         // do Nothing
                     } catch (IllegalAccessException e) {
                         // do Nothing
+                    } catch(JAXBException ex) {
+                        if(ex.getErrorCode() != JAXBException.INVALID_INTERFACE || !helper.isAnnotationPresent(nextField, XmlTransient.class)) {
+                            throw ex;
+                        }
                     }
                 }
             }
@@ -3017,10 +3027,9 @@ public class AnnotationsProcessor {
             }
 
             if (!propertyNames.contains(propertyName)) {
-                propertyNames.add(propertyName);
-
+               try {
                 Property property = buildNewProperty(info, cls, propertyMethod, propertyName, ptype);
-
+                propertyNames.add(propertyName);
                 property.setTransient(isPropertyTransient);
 
                 if (getMethod != null) {
@@ -3044,6 +3053,11 @@ public class AnnotationsProcessor {
                 //if (!isTransient || (isTransient && isLocation)) {
                 properties.add(property);
                 //}
+               } catch(JAXBException ex) {
+                   if(ex.getErrorCode() != JAXBException.INVALID_INTERFACE || !isPropertyTransient) {
+                       throw ex;
+                   }                   
+               }
             }
         }
 
