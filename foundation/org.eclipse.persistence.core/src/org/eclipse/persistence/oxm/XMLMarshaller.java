@@ -58,7 +58,7 @@ import org.w3c.dom.Node;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarshaller<AbstractSession, XMLContext, XMLDescriptor, XMLMarshalListener, MediaType, NamespacePrefixMapper, TreeObjectBuilder> implements Cloneable {
+public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarshaller<AbstractSession, CharacterEscapeHandler, XMLContext, XMLDescriptor, XMLMarshalListener, MediaType, NamespacePrefixMapper, TreeObjectBuilder> implements Cloneable {
 
     private Object marshalAttributeGroup;
 
@@ -494,6 +494,24 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
      */
     public NamespacePrefixMapper getNamespacePrefixMapper() {
         return super.getNamespacePrefixMapper();
+    }
+
+    /**
+     * Return this Marshaller's CharacterEscapeHandler.
+     * @since 2.3.3
+     */
+    @Override
+    public CharacterEscapeHandler getCharacterEscapeHandler() {
+        return super.getCharacterEscapeHandler();
+    }
+
+    /**
+     * Set this Marshaller's CharacterEscapeHandler.
+     * @since 2.3.3
+     */
+    @Override
+    public void setCharacterEscapeHandler(CharacterEscapeHandler c) {
+        super.setCharacterEscapeHandler(c);
     }
 
     /**

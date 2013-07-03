@@ -23,10 +23,9 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Marshaller;
@@ -36,13 +35,12 @@ import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.Login;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
-import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.w3c.dom.Document;
@@ -63,7 +61,7 @@ import org.xml.sax.SAXException;
  *
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
-public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends AbstractMarshalRecordImpl<CoreAbstractSession, DatabaseField, MARSHALLER, NamespaceResolver> implements org.eclipse.persistence.internal.oxm.record.MarshalRecord<CoreAbstractSession, DatabaseField, MARSHALLER, NamespaceResolver> {
+public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends AbstractMarshalRecordImpl<CoreAbstractSession, CoreField, MARSHALLER, NamespaceResolver> implements org.eclipse.persistence.internal.oxm.record.MarshalRecord<CoreAbstractSession, CoreField, MARSHALLER, NamespaceResolver> {
     private ArrayList<XPathNode> groupingElements;
     private HashMap positionalNodes;
 
@@ -140,8 +138,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     
     public void setSession(CoreAbstractSession session) {
         super.setSession(session);
-        if (session != null && session.getDatasourceLogin() instanceof XMLLogin) {
-            this.equalNamespaceResolvers = ((XMLLogin) session.getDatasourceLogin()).hasEqualNamespaceResolvers();
+        if (session != null && session.getDatasourceLogin() instanceof Login) {
+            this.equalNamespaceResolvers = ((Login) session.getDatasourceLogin()).hasEqualNamespaceResolvers();
         }
     }
 
@@ -149,7 +147,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * INTERNAL:
      * Add the field-value pair to the document.
      */
-    public void add(DatabaseField key, Object value) {
+    @Override
+    public void add(CoreField key, Object value) {
         if (null == value) {
             return;
         }
@@ -169,7 +168,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * INTERNAL:
      * Add the field-value pair to the document.
      */
-    public Object put(DatabaseField key, Object value) {
+    @Override
+    public Object put(CoreField key, Object value) {
         add(key, value);
         return null;
     }
@@ -354,7 +354,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     	     String convertedValue = getStringForQName((QName)value);
              attribute(xPathFragment, namespaceResolver, convertedValue);
     	 } else{
-             String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));         	
+             String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));         	
              attribute(xPathFragment, namespaceResolver, convertedValue);
          }               
     }     
@@ -377,7 +377,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             String convertedValue = getStringForQName((QName)value);
             characters(convertedValue);
         }else{
-            String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
+            String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
             if(isCDATA){
                 cdata(convertedValue);        	    
             }else{
@@ -396,7 +396,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }else if(value.getClass() == String.class){
         	return (String) value;
         }
-        return (String) conversionManager.convertObject(value, ClassConstants.STRING, schemaType);
+        return (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
     }   
     
     protected String getStringForQName(QName qName){

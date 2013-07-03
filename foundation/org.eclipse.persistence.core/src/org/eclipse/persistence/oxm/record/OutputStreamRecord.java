@@ -16,6 +16,7 @@ import java.io.CharArrayWriter;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,14 +24,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLMarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
-import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -61,40 +61,23 @@ import org.xml.sax.ext.LexicalHandler;
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
 public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
-    protected static byte[] OPEN_XML_PI_AND_VERSION_ATTRIBUTE;
-    protected static byte[] OPEN_ENCODING_ATTRIBUTE;
-    protected static byte[] CLOSE_PI;
-    protected static byte SPACE = (byte) ' ';
-    protected static byte[] CR;
-    protected static byte CLOSE_ATTRIBUTE_VALUE = (byte) '"';
-    protected static byte[] OPEN_CDATA;
-    protected static byte[] CLOSE_CDATA;
-    protected static byte[] OPEN_COMMENT;
-    protected static byte[] CLOSE_COMMENT;
-    protected static byte OPEN_START_ELEMENT = (byte) '<';
-    protected static byte CLOSE_ELEMENT = (byte) '>';
-    protected static byte[] AMP;
-    protected static byte[] LT;
-    protected static byte[] QUOT;
-    protected static byte[] ENCODING;
 
-    static {
-        try {
-            OPEN_XML_PI_AND_VERSION_ATTRIBUTE = "<?xml version=\"".getBytes(Constants.DEFAULT_XML_ENCODING);
-            OPEN_ENCODING_ATTRIBUTE = " encoding=\"".getBytes(Constants.DEFAULT_XML_ENCODING);
-            CLOSE_PI = "?>".getBytes(Constants.DEFAULT_XML_ENCODING);
-            CR = Helper.cr().getBytes(Constants.DEFAULT_XML_ENCODING);
-            OPEN_CDATA = "<![CDATA[".getBytes(Constants.DEFAULT_XML_ENCODING);
-            CLOSE_CDATA = "]]>".getBytes(Constants.DEFAULT_XML_ENCODING);
-            OPEN_COMMENT = "<!--".getBytes(Constants.DEFAULT_XML_ENCODING);
-            CLOSE_COMMENT = "-->".getBytes(Constants.DEFAULT_XML_ENCODING);
-            AMP = "&amp;".getBytes(Constants.DEFAULT_XML_ENCODING);
-            LT = "&lt;".getBytes(Constants.DEFAULT_XML_ENCODING);
-            QUOT = "&quot;".getBytes(Constants.DEFAULT_XML_ENCODING);
-            ENCODING = Constants.DEFAULT_XML_ENCODING.getBytes(Constants.DEFAULT_XML_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-        }
-    }
+    protected static final Charset CHARSET = Charset.forName(Constants.DEFAULT_XML_ENCODING);
+    protected static final byte[] OPEN_XML_PI_AND_VERSION_ATTRIBUTE = "<?xml version=\"".getBytes(CHARSET);
+    protected static final byte[] OPEN_ENCODING_ATTRIBUTE = " encoding=\"".getBytes(CHARSET);
+    protected static final byte[] CLOSE_PI = "?>".getBytes(CHARSET);
+    protected static final byte SPACE = (byte) ' ';
+    protected static final byte CLOSE_ATTRIBUTE_VALUE = (byte) '"';
+    protected static final byte[] OPEN_CDATA = "<![CDATA[".getBytes(CHARSET);
+    protected static final byte[] CLOSE_CDATA = "]]>".getBytes(CHARSET);
+    protected static final byte[] OPEN_COMMENT = "<!--".getBytes(CHARSET);
+    protected static final byte[] CLOSE_COMMENT = "-->".getBytes(CHARSET);
+    protected static final byte OPEN_START_ELEMENT = (byte) '<';
+    protected static final byte CLOSE_ELEMENT = (byte) '>';
+    protected static final byte[] AMP = "&amp;".getBytes(CHARSET);
+    protected static final byte[] LT = "&lt;".getBytes(CHARSET);
+    protected static final byte[] QUOT = "&quot;".getBytes(CHARSET);
+    protected static final byte[] ENCODING = Constants.DEFAULT_XML_ENCODING.getBytes(CHARSET);
 
     protected OutputStream outputStream;
     protected boolean isStartElementOpen = false;

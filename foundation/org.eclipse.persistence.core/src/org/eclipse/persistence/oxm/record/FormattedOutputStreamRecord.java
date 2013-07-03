@@ -14,6 +14,7 @@ package org.eclipse.persistence.oxm.record;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -47,6 +48,8 @@ import org.xml.sax.SAXException;
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
 public class FormattedOutputStreamRecord extends OutputStreamRecord {
+
+    protected static byte[] CR = FormattedWriterRecord.CR.getBytes(CHARSET);
 
     private byte[] tab;
     private int numberOfTabs;

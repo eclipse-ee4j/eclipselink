@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.Properties;
 import java.util.Map.Entry;
 
-import org.eclipse.persistence.oxm.CharacterEscapeHandler;
+import org.eclipse.persistence.internal.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.xml.sax.ErrorHandler;
@@ -24,6 +24,7 @@ import org.xml.sax.ErrorHandler;
  *
  */
 public abstract class Marshaller<
+    CHARACTER_ESCAPE_HANDLER extends CharacterEscapeHandler,
     CONTEXT extends Context,
     MARSHALLER_LISTENER extends Marshaller.Listener,
     MEDIA_TYPE extends MediaType,
@@ -31,7 +32,7 @@ public abstract class Marshaller<
 
     private static String DEFAULT_INDENT = "   "; // default indent is three spaces;
 
-    private CharacterEscapeHandler charEscapeHandler;
+    private CHARACTER_ESCAPE_HANDLER charEscapeHandler;
     protected CONTEXT context;
     private String encoding;
     private boolean equalUsingIdenity;
@@ -54,7 +55,7 @@ public abstract class Marshaller<
      * Copy constructor
      */
     protected Marshaller(Marshaller marshaller) {
-        this.charEscapeHandler = marshaller.getCharacterEscapeHandler();
+        this.charEscapeHandler = (CHARACTER_ESCAPE_HANDLER) marshaller.getCharacterEscapeHandler();
         this.context = (CONTEXT) marshaller.getContext();
         this.encoding = marshaller.getEncoding();
         this.equalUsingIdenity = marshaller.isEqualUsingIdenity();
@@ -77,7 +78,7 @@ public abstract class Marshaller<
      * Return this Marshaller's CharacterEscapeHandler.
      * @since 2.3.3
      */
-    public CharacterEscapeHandler getCharacterEscapeHandler() {
+    public CHARACTER_ESCAPE_HANDLER getCharacterEscapeHandler() {
         return this.charEscapeHandler;
     }
 
@@ -184,7 +185,7 @@ public abstract class Marshaller<
      * Set this Marshaller's CharacterEscapeHandler.
      * @since 2.3.3
      */
-    public void setCharacterEscapeHandler(CharacterEscapeHandler c) {
+    public void setCharacterEscapeHandler(CHARACTER_ESCAPE_HANDLER c) {
         this.charEscapeHandler = c;
     }
 

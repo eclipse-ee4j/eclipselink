@@ -19,8 +19,8 @@ import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 import javax.xml.validation.ValidatorHandler;
 
+import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -118,13 +118,13 @@ public class ValidatingMarshalRecord extends MarshalRecord<Marshaller> {
     }
 
     @Override
-    public void add(DatabaseField key, Object value) {
+    public void add(CoreField key, Object value) {
         validatingRecord.add(key, value);
         marshalRecord.add(key, value);
     }
 
     @Override
-    public Object put(DatabaseField key, Object value) {
+    public Object put(CoreField key, Object value) {
         validatingRecord.put(key, value);
         return marshalRecord.put(key, value);
     }

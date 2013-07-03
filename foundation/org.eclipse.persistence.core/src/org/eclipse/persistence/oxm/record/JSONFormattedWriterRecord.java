@@ -17,7 +17,6 @@ import java.io.Writer;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -95,7 +94,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
     @Override
     protected void closeComplex() throws IOException {
-        writer.write(Helper.cr());
+        writer.write(FormattedWriterRecord.CR);
         for (int x = 0; x < numberOfTabs; x++) {
             writeValue(tab(), false);            
         }
@@ -146,7 +145,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 if(position.isCollection() && !position.isEmptyCollection()) {
                     writer.write(' ');
                 } else {
-                    writer.write(Helper.cr());
+                    writer.write(FormattedWriterRecord.CR);
                     for (int x = 0; x < numberOfTabs; x++) {
                         writeValue(tab(), false);
                     }
@@ -181,7 +180,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 writer.write('>');
                 isStartElementOpen = false;
             }
-            writer.write(Helper.cr());
+            writer.write(FormattedWriterRecord.CR);
             for (int x = 0; x < numberOfTabs; x++) {
                 writeValue(tab(), false);
             }
@@ -279,7 +278,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
     @Override
     protected void writeKey(XPathFragment xPathFragment) throws IOException {
-        writer.write(Helper.cr());
+        writer.write(FormattedWriterRecord.CR);
         for (int x = 0; x < numberOfTabs; x++) {
             writeValue(tab(), false);
         }
@@ -310,7 +309,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             try {
                 if (isStartElementOpen) {
                     writer.write('>');
-                    writer.write(Helper.cr());
+                    writer.write(FormattedWriterRecord.CR);
                     isStartElementOpen = false;
                 }
                 writeComment(ch, start, length);

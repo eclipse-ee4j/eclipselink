@@ -88,6 +88,7 @@ public class XMLLogin extends DatasourceLogin implements Login<Platform> {
         this.equalNamespaceResolvers = equalNRs;
     }
 
+    @Override
     public boolean hasEqualNamespaceResolvers() {
         return equalNamespaceResolvers;
     }

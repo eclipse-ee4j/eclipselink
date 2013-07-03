@@ -1,17 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
- *
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *  - rbarkhouse - 07 February 2012 - 2.3.3 - Initial implementation
+ *     Blaise Doughan - 2.6 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.oxm;
+package org.eclipse.persistence.internal.oxm;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -21,7 +20,7 @@ import java.io.Writer;
  * Provide an interface to allow for custom character escaping behaviour.
  * </p>
  */
-public interface CharacterEscapeHandler extends org.eclipse.persistence.internal.oxm.CharacterEscapeHandler {
+public interface CharacterEscapeHandler {
 
     /**
      * <p>
@@ -45,7 +44,6 @@ public interface CharacterEscapeHandler extends org.eclipse.persistence.internal
      * @param out The resulting escaped characters will be written to this Writer
      * @throws IOException In an error condition, IOException can be thrown to stop the marshalling process
      */
-    @Override
     public void escape(char[] buffer, int start, int length, boolean isAttributeValue, Writer out) throws IOException;
 
 }

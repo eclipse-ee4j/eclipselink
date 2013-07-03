@@ -23,8 +23,11 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
+import org.eclipse.persistence.internal.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.Root;
@@ -35,7 +38,6 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
-import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -470,7 +472,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
          } else if(value.getClass() == String.class){        	
              //if schemaType is set and it's a numeric or boolean type don't treat as a string
              if(schemaType != null && isNumericOrBooleanType(schemaType)){
-                 String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
+                 String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
                  characters(convertedValue, false, isAttribute);
              }else if(isCDATA){
                  cdata((String)value);
@@ -478,11 +480,11 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                  characters((String)value);
              }
         }else{
-            String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
+            String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
             Class theClass = (Class) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);        	
 
             if(schemaType == null || theClass == null){
-                if(value.getClass() == ClassConstants.BOOLEAN || ClassConstants.NUMBER.isAssignableFrom(value.getClass())){
+                if(value.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(value.getClass())){
                 	characters(convertedValue, false, isAttribute);
                 }else{
                     characters(convertedValue);
@@ -722,7 +724,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         if(null == qName) {
             return null;
         }
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) getSession().getDatasourcePlatform().getConversionManager();
+        CoreConversionManager xmlConversionManager = getSession().getDatasourcePlatform().getConversionManager();
 
         return (String) xmlConversionManager.convertObject(qName, String.class);       
     }

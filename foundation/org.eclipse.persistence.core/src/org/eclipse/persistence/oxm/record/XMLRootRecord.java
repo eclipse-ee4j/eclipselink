@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
@@ -114,7 +114,7 @@ public class XMLRootRecord extends UnmarshalRecord {
             setLocalName(localName);
             setRootElementNamespaceUri(namespaceURI);
         }
-        if(XMLConstants.EMPTY_STRING.equals(localName)) {
+        if(Constants.EMPTY_STRING.equals(localName)) {
             return;
         }
         elementCount++;

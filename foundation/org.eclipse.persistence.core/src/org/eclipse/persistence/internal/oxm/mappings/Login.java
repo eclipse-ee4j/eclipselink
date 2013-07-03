@@ -20,6 +20,8 @@ public interface Login<PLATFORM extends CorePlatform> extends CoreLogin<PLATFORM
 
     public DocumentPreservationPolicy getDocumentPreservationPolicy();
 
+    public boolean hasEqualNamespaceResolvers();
+    
     public void setDocumentPreservationPolicy(DocumentPreservationPolicy documentPreservationPolicy);
 
 }

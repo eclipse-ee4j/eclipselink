@@ -187,7 +187,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                 // Returned object might have a different descriptor
                 xmlDescriptor = (Descriptor) session.getDescriptor(object.getClass());
                 if (xmlDescriptor != null) {
-                    node = ((TreeObjectBuilder) xmlDescriptor.getObjectBuilder()).getRootXPathNode();
+                    node = ((ObjectBuilder) xmlDescriptor.getObjectBuilder()).getRootXPathNode();
                 } else {
                     node = null;
                 }
