@@ -568,8 +568,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             preReadFrom(type, genericType, annotations, mediaType, httpHeaders, unmarshaller);
 
             StreamSource jsonSource;
-            Map<String, String> mediaTypeParameters = mediaType.getParameters();
-            if(mediaTypeParameters.containsKey(CHARSET)) {
+            Map<String, String> mediaTypeParameters = null;
+            if(null != mediaType) {
+                mediaTypeParameters = mediaType.getParameters();
+            }
+            if(null != mediaTypeParameters && mediaTypeParameters.containsKey(CHARSET)) {
                 String charSet = mediaTypeParameters.get(CHARSET);
                 Reader entityReader = new InputStreamReader(entityStream, charSet);
                 jsonSource = new StreamSource(entityReader);
@@ -798,8 +801,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, wrapperAsArrayName);
             marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespacePrefixMapper);
 
-            Map<String, String> mediaTypeParameters = mediaType.getParameters();
-            if(mediaTypeParameters.containsKey(CHARSET)) {
+            Map<String, String> mediaTypeParameters = null;
+            if(null != mediaType) {
+                mediaTypeParameters = mediaType.getParameters();
+            }
+            if(null != mediaTypeParameters && mediaTypeParameters.containsKey(CHARSET)) {
                 String charSet = mediaTypeParameters.get(CHARSET);
                 marshaller.setProperty(Marshaller.JAXB_ENCODING, charSet);
             }

@@ -226,6 +226,9 @@ public class JSONReader extends XMLReaderAdapter {
                 }
             }
             
+        } else {
+            getContentHandler().startDocument();
+            parse(tree);
         }
     }
     
