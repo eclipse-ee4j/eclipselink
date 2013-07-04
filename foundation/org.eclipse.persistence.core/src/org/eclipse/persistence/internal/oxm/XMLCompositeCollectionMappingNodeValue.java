@@ -300,12 +300,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             marshalRecord.beforeContainmentMarshal(value);
 
             ObjectBuilder objectBuilder = (ObjectBuilder)descriptor.getObjectBuilder();
-            xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);            
 
-            List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session,true, false);
-            writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-
-            marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, (Descriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (Field)xmlCompositeCollectionMapping.getField(), false);
             CoreAttributeGroup group = marshalRecord.getCurrentAttributeGroup();
             CoreAttributeGroup nestedGroup = XMLRecord.DEFAULT_ATTRIBUTE_GROUP;
             CoreAttributeItem item = group.getItem(getMapping().getAttributeName());
@@ -318,6 +313,14 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 }
             }
             marshalRecord.pushAttributeGroup(nestedGroup);
+            
+            xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);            
+
+            List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session,true, false);
+            writeExtraNamespaces(extraNamespaces, marshalRecord, session);
+
+            marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, (Descriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (Field)xmlCompositeCollectionMapping.getField(), false);
+
             objectBuilder.buildRow(marshalRecord, value, session, marshaller, xPathFragment);
             marshalRecord.afterContainmentMarshal(object, value);
             marshalRecord.popAttributeGroup();
