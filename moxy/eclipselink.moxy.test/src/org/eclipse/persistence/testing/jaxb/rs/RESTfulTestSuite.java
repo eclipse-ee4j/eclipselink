@@ -21,6 +21,7 @@ public class RESTfulTestSuite extends TestSuite {
         TestSuite suite = new TestSuite("RESTful Test Suite");
         suite.addTestSuite(IsReadableTestCases.class);
         suite.addTestSuite(IsWriteableTestCases.class);
+        suite.addTestSuite(SimpleListTestCases.class);
         return suite;
     }
 
