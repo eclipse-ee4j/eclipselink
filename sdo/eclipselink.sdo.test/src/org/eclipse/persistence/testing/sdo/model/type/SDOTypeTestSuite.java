@@ -9,13 +9,16 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.model.type;
+
+import org.eclipse.persistence.testing.sdo.substitution.SubstitutionInheritanceTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class SDOTypeTestSuite {
+
     public SDOTypeTestSuite() {
     }
 
@@ -24,17 +27,18 @@ public class SDOTypeTestSuite {
     }
 
     /**
-    *  Inherited suite mthod for generating all test cases.
-    * @return
-    */
+     * Inherited suite method for generating all test cases.
+     */
     public static Test suite() {
         TestSuite suite = new TestSuite("All SDO Type Tests");
 
         suite.addTest(new TestSuite(SDOTypeInstanceClassTestCases.class));
         suite.addTest(new TestSuite(AddBaseTypeTestCases.class));
-        // Unit test the packageName generation during Type generation
-        suite.addTest(new TestSuite(DefaultPackageFromTypeGenerationTestCases.class));        
-        suite.addTest(new TestSuite(ElementWithBuiltInTypeNameTestCases.class));        
+        suite.addTest(new TestSuite(DefaultPackageFromTypeGenerationTestCases.class));
+        suite.addTest(new TestSuite(ElementWithBuiltInTypeNameTestCases.class));
+        suite.addTest(new TestSuite(SubstitutionInheritanceTestCases.class));
+
         return suite;
     }
+
 }

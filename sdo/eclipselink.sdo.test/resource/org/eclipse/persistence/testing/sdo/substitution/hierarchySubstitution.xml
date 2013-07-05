@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="hierarchySubstitution">
+    <substituteElement name="substitute2" id="2" color="red"/>
+    <genericElement name="generic" surname="element"/>
+    <substituteElement name="substitute3" id="3" color="blue"/>
+    <substituteElement name="substitute1" id="1" color="green"/>
+</root>

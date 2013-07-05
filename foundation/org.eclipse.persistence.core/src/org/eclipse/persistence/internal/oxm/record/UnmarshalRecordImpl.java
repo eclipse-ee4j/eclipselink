@@ -1534,8 +1534,10 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
 
     @Override
     public void setLeafElementType(QName type) {
-        if(type != null){
+        if (type != null) {
             setLeafElementType(new XPathQName(type, isNamespaceAware()));
+        } else {
+            setLeafElementType((XPathQName) null);
         }
     }
 
