@@ -390,6 +390,38 @@ public class XRPackager implements DBWSPackager {
     }
     
     /**
+     * Write the deployment descriptor contents to the provided OutputStream.
+     */
+    @Override
+    public void writeDeploymentDescriptor(OutputStream descriptorOutputStream) {
+        // no-op
+    }    
+    /**
+     * Return an OutputStream to the deployment descriptor.  Deployment descriptor
+     * is optional, so return a null stream.
+     */
+    @Override
+    public OutputStream getDeploymentDescriptorStream() throws FileNotFoundException {
+        return __nullStream;
+    }
+    /**
+     * Closes the given OutputStream.
+     */
+    @Override
+    public void closeDeploymentDescriptorStream(OutputStream descriptorOutputStream) {
+        closeStream(descriptorOutputStream);
+    }
+    /**
+     * Return the name of the deployment descriptor file - this will depend on the
+     * target application server.  Since the deployment descriptor is optional,
+     * return null.
+     */
+    @Override
+    public String getDeploymentDescriptorFileName() {
+        return null;
+    }
+    
+    /**
      * Validates user-set log level.  Valid values are: off, severe,
      * warning, info, config, fine, finer, finest, all.
      * 

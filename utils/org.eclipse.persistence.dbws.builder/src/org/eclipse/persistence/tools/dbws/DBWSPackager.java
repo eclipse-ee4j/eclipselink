@@ -21,6 +21,11 @@ import java.io.OutputStream;
 //EclipseLink imports
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 
+/**
+ * This interface defines methods necessary for packaging generated artifacts for
+ * deployment to application servers, display in Java IDEs, etc.
+ *
+ */
 public interface DBWSPackager {
 
     public enum ArchiveUse {
@@ -84,6 +89,24 @@ public interface DBWSPackager {
     public void writeProvider(OutputStream sourceProviderStream, OutputStream codeGenProviderStream,
         OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream,
         DBWSBuilder builder);
+    
+    /**
+     * Write the deployment descriptor contents to the provided OutputStream.
+     */
+    public void writeDeploymentDescriptor(OutputStream descriptorOutputStream);
+    /**
+     * Return an OutputStream to the deployment descriptor.
+     */
+    public OutputStream getDeploymentDescriptorStream() throws FileNotFoundException;
+    /**
+     * Closes the provided OutputStream.
+     */
+    public void closeDeploymentDescriptorStream(OutputStream descriptorOutputStream);
+    /**
+     * Return the name of the deployment descriptor file - this will depend on the
+     * target application server.
+     */
+    public String getDeploymentDescriptorFileName();
 
     public void setArchiveUse(ArchiveUse archiveUse);
     public String getUsage();

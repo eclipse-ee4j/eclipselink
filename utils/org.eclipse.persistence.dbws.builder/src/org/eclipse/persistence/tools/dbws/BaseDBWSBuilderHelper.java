@@ -896,8 +896,18 @@ public abstract class BaseDBWSBuilderHelper {
         }
     }
 
+    /**
+     * Write the (optional) deployment descriptor to the given OutputStream.
+     */
+    public void writeDeploymentDescriptor(OutputStream deploymentDescriptorStream) {
+        if (!isNullStream(deploymentDescriptorStream)) {
+            dbwsBuilder.logMessage(FINEST, "writing " + dbwsBuilder.getPackager().getDeploymentDescriptorFileName());
+            dbwsBuilder.getPackager().writeDeploymentDescriptor(deploymentDescriptorStream);
+            dbwsBuilder.getPackager().closeDeploymentDescriptorStream(deploymentDescriptorStream);
+        }
+    }
+    
     public void generateDBWSProvider(OutputStream sourceProviderStream, OutputStream classProviderStream, OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream) {
-
         if (isNullStream(sourceProviderStream) && isNullStream(classProviderStream) && isNullStream(sourceProviderListenerStream) && isNullStream(classProviderListenerStream)) {
             //no work to do
             return;

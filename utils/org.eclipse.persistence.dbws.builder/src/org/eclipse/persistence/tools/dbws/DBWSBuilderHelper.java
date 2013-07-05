@@ -46,6 +46,11 @@ public interface DBWSBuilderHelper {
     public void buildWSDL(OutputStream wsdlStream, NamingConventionTransformer nct) throws WSDLException;
 
     public void writeWebXML(OutputStream webXmlStream);
+    
+    /**
+     * Write the (optional) deployment descriptor to the given OutputStream.
+     */
+    public void writeDeploymentDescriptor(OutputStream deploymentDescriptorStream);
 
     public void generateDBWSProvider(OutputStream sourceProviderStream,
         OutputStream classProviderStream, OutputStream sourceProviderListenerStream,

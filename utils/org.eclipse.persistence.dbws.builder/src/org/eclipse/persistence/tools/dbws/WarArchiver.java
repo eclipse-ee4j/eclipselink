@@ -118,6 +118,13 @@ public class WarArchiver extends JarArchiver {
         return new JarEntry(WEB_INF_DIR + WSDL_DIR + DBWS_WSDL);
     }
 
+    /**
+     * Returns a JarEntry based on WEB-INF/ + the given descriptorFileName.
+     */
+    protected ZipEntry getDeploymentDescriptorJarEntry(String descriptorFileName) {
+        return new JarEntry(WEB_INF_DIR + descriptorFileName);
+    }
+    
     @Override
     protected JarOutputStream buildJarOutputStream() {
         JarOutputStream jarOutputStream = null;
@@ -152,7 +159,20 @@ public class WarArchiver extends JarArchiver {
             }
             fis.close();
             f.deleteOnExit();
-
+            
+            // Deployment descriptor is optional
+            String deploymentDescriptorFileName = packager.getDeploymentDescriptorFileName();
+            if (deploymentDescriptorFileName != null) {
+                f = new File(packager.getStageDir(), deploymentDescriptorFileName);
+                jarOutputStream.putNextEntry(getDeploymentDescriptorJarEntry(deploymentDescriptorFileName));
+                fis = new FileInputStream(f);
+                for (int read = 0; read != -1; read = fis.read(buffer)) {
+                    jarOutputStream.write(buffer, 0, read);
+                }
+                fis.close();
+                f.deleteOnExit();
+            }
+            
             jarOutputStream.putNextEntry(getDBWSProviderClassJarEntry());
             f = new File(packager.getStageDir(), DBWS_PROVIDER_CLASS_FILE);
             fis = new FileInputStream(f);
