@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,6 +46,11 @@ public interface DBWSBuilderHelper {
     public void buildWSDL(OutputStream wsdlStream, NamingConventionTransformer nct) throws WSDLException;
 
     public void writeWebXML(OutputStream webXmlStream);
+    
+    /**
+     * Write the (optional) deployment descriptor to the given OutputStream.
+     */
+    public void writeDeploymentDescriptor(OutputStream deploymentDescriptorStream);
 
     public void generateDBWSProvider(OutputStream sourceProviderStream,
         OutputStream classProviderStream, OutputStream sourceProviderListenerStream,

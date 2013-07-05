@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -137,16 +137,30 @@ public class DBWSBuilder extends DBWSBuilderModel {
         ns.put("xsd", W3C_XML_SCHEMA_NS_URI);
     }
 
+    /**
+     * This method creates a new DBWSBuilder instance, and calls the start method
+     * with the given arguments.
+     */
     public static void main(String[] args) throws WSDLException {
         DBWSBuilder builder = new DBWSBuilder();
         builder.start(args);
     }
 
+    /**
+     * This method processes the given arguments, sets properties and operations, 
+     * initializes the target packager, then calls the start method.
+     * 
+     * This method expects 6 or 7 arguments (7 if the archive file name is provided), as follows:
+     *   [0] -builderFile
+     *   [1] <builder filename> 
+     *   [2] -stageDir
+     *   [3] <stage dir>
+     *   [4] -packagAs 
+     *   [5] <package type> (wls, jdev, etc.)
+     *   [6] <archive filename> (optional)
+     */
     public void start(String[] args) throws WSDLException {
-
-        if (args.length > 5 && BUILDER_FILE_PATH.equals(args[0]) &&
-            STAGE_DIR.equals(args[2]) &&
-            args[4].startsWith(BUILDER_PACKAGING)) {
+        if (args.length > 5 && BUILDER_FILE_PATH.equals(args[0]) && STAGE_DIR.equals(args[2]) && args[4].startsWith(BUILDER_PACKAGING)) {
             String builderFilename = args[1];
             String stageDirname = args[3];
             String packagerTag = args[5];
@@ -157,8 +171,7 @@ public class DBWSBuilder extends DBWSBuilderModel {
                 archiverTag = args[4].substring(cIdx+1);
                 if (archive.name().equals(archiverTag)) {
                     archiveUse = archive;
-                }
-                else if (noArchive.name().equals(archiverTag)) {
+                } else if (noArchive.name().equals(archiverTag)) {
                     archiveUse = noArchive;
                 }
             }
@@ -190,22 +203,20 @@ public class DBWSBuilder extends DBWSBuilderModel {
                         start();
                         return;
                     }
-                }
-                else {
-                    logMessage(SEVERE, "DBWSBuilder unable to locate stage directory " +
-                        stageDirname);
+                } else {
+                    logMessage(SEVERE, "DBWSBuilder unable to locate stage directory " + stageDirname);
                     return;
                 }
-            }
-            else {
-                logMessage(SEVERE, "DBWSBuilder unable to locate dbws-builder.xml file " +
-                    builderFilename);
+            } else {
+                logMessage(SEVERE, "DBWSBuilder unable to locate dbws-builder.xml file " + builderFilename);
                 return;
             }
         }
-/*
-prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar org.eclipse.persistence.tools.dbws.DBWSBuilder -builderFile {path_to_dbws_builder.xml_file} -stageDir {path_to_staging_directory} -packageAs {how_to_package_output} [additionalArgs]
- */
+        
+        // ------
+        // prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar org.eclipse.persistence.tools.dbws.DBWSBuilder -builderFile {path_to_dbws_builder.xml_file} -stageDir {path_to_staging_directory} -packageAs {how_to_package_output} [additionalArgs]
+        // ------
+        
         StringBuilder sb = new StringBuilder(30);
         sb.append("DBWSBuilder usage ([] indicates optional argument):\nprompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_driver.jar \\\n\t");
         sb.append(this.getClass().getName());
@@ -229,77 +240,71 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         return;
     }
 
+    /**
+     * Initialize the required OutputStreams and call the build method.
+     */
     public void start() throws WSDLException {
         packager.setHasAttachments(hasAttachments());
         OutputStream dbwsSchemaStream = null;
         try {
             dbwsSchemaStream = packager.getSchemaStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE, "DBWSBuilder unable to create " + DBWS_SCHEMA_XML, fnfe);
             return;
         }
         OutputStream dbwsSessionsStream = null;
         try {
             dbwsSessionsStream = packager.getSessionsStream(getSessionsFileName());
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE, "DBWSBuilder unable to create " + DBWS_SESSIONS_XML, fnfe);
             return;
         };
         OutputStream dbwsServiceStream = null;
         try {
             dbwsServiceStream = packager.getServiceStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE, "DBWSBuilder unable to create " + DBWS_SERVICE_XML, fnfe);
             return;
         };
         OutputStream dbwsOrStream = null;
         try {
             dbwsOrStream = packager.getOrStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE, "DBWSBuilder unable to create " + DBWS_OR_XML, fnfe);
             return;
         };
         OutputStream dbwsOxStream = null;
         try {
             dbwsOxStream = packager.getOxStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE, "DBWSBuilder unable to create " + DBWS_OX_XML, fnfe);
             return;
         };
         OutputStream wsdlStream = null;
         try {
             wsdlStream = packager.getWSDLStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE, "DBWSBuilder unable to create " + DBWS_WSDL, fnfe);
             return;
         };
         OutputStream swarefStream = null;
         try {
             swarefStream = packager.getSWARefStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE, "DBWSBuilder unable to create " + SWAREF_FILENAME, fnfe);
             return;
         };
         OutputStream webXmlStream = null;
         try {
             webXmlStream = packager.getWebXmlStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE, "DBWSBuilder unable to create " + WEB_XML_FILENAME, fnfe);
             return;
         };
         OutputStream classProviderStream = null;
         try {
             classProviderStream = packager.getProviderClassStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE,
                 "DBWSBuilder unable to create " + DBWS_PROVIDER_CLASS_FILE, fnfe);
             return;
@@ -307,8 +312,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         OutputStream sourceProviderStream = null;
         try {
             sourceProviderStream = packager.getProviderSourceStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE,
                 "DBWSBuilder unable to create " + DBWS_PROVIDER_SOURCE_FILE, fnfe);
             return;
@@ -316,8 +320,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         OutputStream classProviderListenerStream = null;
         try {
             classProviderListenerStream = packager.getProviderListenerClassStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE,
                 "DBWSBuilder unable to create " + PROVIDER_LISTENER_CLASS_FILE, fnfe);
             return;
@@ -325,24 +328,54 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         OutputStream sourceProviderListenerStream = null;
         try {
             sourceProviderListenerStream = packager.getProviderListenerSourceStream();
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             logMessage(SEVERE,
                 "DBWSBuilder unable to create " + PROVIDER_LISTENER_SOURCE_FILE, fnfe);
             return;
         };
+        // Deployment descriptor is optional
+        OutputStream deploymentDescriptorStream = null;
+        if (packager.getDeploymentDescriptorFileName() != null) {
+            try {
+                deploymentDescriptorStream = packager.getDeploymentDescriptorStream();
+            } catch (FileNotFoundException fnfe) {
+                logMessage(SEVERE, "DBWSBuilder unable to create " + packager.getDeploymentDescriptorFileName(), fnfe);
+                return;
+            }
+        }
         build(dbwsSchemaStream, dbwsSessionsStream, dbwsServiceStream, dbwsOrStream,
             dbwsOxStream, swarefStream, webXmlStream, wsdlStream, classProviderStream,
             sourceProviderStream, classProviderListenerStream, sourceProviderListenerStream,
-            logger);
+            deploymentDescriptorStream, logger);
     }
 
+    /**
+     * Continue to support calling the build method without providing an OutputStream
+     * for the optional deployment descriptor.
+     */
+    public void build(OutputStream dbwsSchemaStream, OutputStream dbwsSessionsStream,
+            OutputStream dbwsServiceStream, OutputStream dbwsOrStream, OutputStream dbwsOxStream,
+            OutputStream swarefStream, OutputStream webXmlStream, OutputStream wsdlStream,
+            OutputStream classProviderStream, OutputStream sourceProviderStream,
+            OutputStream classProviderListenerStream, OutputStream sourceProviderListenerStream,
+            Logger logger)
+            throws WSDLException {
+        build(dbwsSchemaStream, dbwsSessionsStream, dbwsServiceStream, dbwsOrStream,
+                dbwsOxStream, swarefStream, webXmlStream, wsdlStream, classProviderStream,
+                sourceProviderStream, classProviderListenerStream, sourceProviderListenerStream,
+                null, logger);
+    }
+    
+    /**
+     * Generate the required artifacts for the target packaging/archiving, and write each
+     * to the given OutputStreams as appropriate.
+     */
     public void build(OutputStream dbwsSchemaStream, OutputStream dbwsSessionsStream,
         OutputStream dbwsServiceStream, OutputStream dbwsOrStream, OutputStream dbwsOxStream,
         OutputStream swarefStream, OutputStream webXmlStream, OutputStream wsdlStream,
         OutputStream classProviderStream, OutputStream sourceProviderStream,
         OutputStream classProviderListenerStream, OutputStream sourceProviderListenerStream,
-        Logger logger)
+        OutputStream deploymentDescriptorStream, Logger logger)
         throws WSDLException {
 
         this.logger = logger; // in case some other tool wishes to use a java.util.logger
@@ -366,13 +399,11 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                     NamingConventionTransformer nextTransformer = transformerIter.next();
                     if (!((DefaultNamingConventionTransformer)nextTransformer).isDefaultTransformer()) {
                         transformerList.addLast(nextTransformer);
-                    }
-                    else if (nextTransformer instanceof SQLX2003Transformer) {
+                    } else if (nextTransformer instanceof SQLX2003Transformer) {
                         transformerList.addLast(nextTransformer);
                     }
                 }
-            }
-            else {
+            } else {
                 // assume usual configuration: ToLowerTransformer -> TypeSuffixTransformer -> SQLX2003Transformer
                 for (; transformerIter.hasNext(); ) {
                     transformerList.addLast(transformerIter.next());
@@ -403,6 +434,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
             classProviderListenerStream);
         helper.writeSchema(dbwsSchemaStream); // now write out schema
         helper.writeOROXProjects(dbwsOrStream, dbwsOxStream);
+        helper.writeDeploymentDescriptor(deploymentDescriptorStream);  // write out the (optional) deployment descriptor
         packager.end();
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -896,8 +896,18 @@ public abstract class BaseDBWSBuilderHelper {
         }
     }
 
+    /**
+     * Write the (optional) deployment descriptor to the given OutputStream.
+     */
+    public void writeDeploymentDescriptor(OutputStream deploymentDescriptorStream) {
+        if (!isNullStream(deploymentDescriptorStream)) {
+            dbwsBuilder.logMessage(FINEST, "writing " + dbwsBuilder.getPackager().getDeploymentDescriptorFileName());
+            dbwsBuilder.getPackager().writeDeploymentDescriptor(deploymentDescriptorStream);
+            dbwsBuilder.getPackager().closeDeploymentDescriptorStream(deploymentDescriptorStream);
+        }
+    }
+    
     public void generateDBWSProvider(OutputStream sourceProviderStream, OutputStream classProviderStream, OutputStream sourceProviderListenerStream, OutputStream classProviderListenerStream) {
-
         if (isNullStream(sourceProviderStream) && isNullStream(classProviderStream) && isNullStream(sourceProviderListenerStream) && isNullStream(classProviderListenerStream)) {
             //no work to do
             return;
