@@ -13,19 +13,15 @@ import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
  *
  */
 public class ErrorResponseMetadataSource implements MetadataSource {
-
     private XmlBindings xmlBindings;
 
     public ErrorResponseMetadataSource() {
         xmlBindings = new XmlBindings();
         xmlBindings.setPackageName(ErrorResponse.class.getPackage().getName());
-
         JavaTypes javaTypes = new JavaTypes();
         xmlBindings.setJavaTypes(javaTypes);
-
         JavaType javaType = new JavaType();
         javaType.setName(ErrorResponse.class.getSimpleName());
-        javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
         javaTypes.getJavaType().add(javaType);
     }
 

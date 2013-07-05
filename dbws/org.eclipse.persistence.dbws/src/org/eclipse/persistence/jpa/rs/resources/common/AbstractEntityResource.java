@@ -208,13 +208,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
                                                     Object obj = holder.getValue();
                                                     if (obj != null) {
                                                         JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
-                                                        return Response.status(Status.BAD_REQUEST).build();
+                                                        throw JPARSException.entityIsNotIdempotent(Status.BAD_REQUEST.getStatusCode(), persistenceUnit, type);
                                                     }
                                                 }
                                             } else if (value instanceof Collection) {
                                                 if (!(((Collection) value).isEmpty())) {
                                                     JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
-                                                    return Response.status(Status.BAD_REQUEST).build();
+                                                    throw JPARSException.entityIsNotIdempotent(Status.BAD_REQUEST.getStatusCode(), persistenceUnit, type);
                                                 }
                                             }
                                         }

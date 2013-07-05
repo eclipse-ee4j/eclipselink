@@ -605,7 +605,8 @@ public class ServerCrudTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "newName");
-        String result = RestUtils.restUpdateQuery("User.updateName", "StaticUser", DEFAULT_PU, parameters, null);
+
+        String result = RestUtils.restUpdateQuery(context, "User.updateName", "StaticUser", parameters, null, MediaType.APPLICATION_JSON_TYPE);
         assertTrue(result.contains("{\"value\":1}"));
         StaticUser user1 = dbRead(StaticModelDatabasePopulator.USER1_ID, StaticUser.class);
         assertTrue(user1.getName().equals("newName"));
@@ -941,7 +942,7 @@ public class ServerCrudTest {
         assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
 
         // remove relationship between bid and the new user
-        String removedUser = RestUtils.restRemoveBidirectionalRelationship(String.valueOf(bid.getId()), StaticBid.class.getSimpleName(), "user", DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, null, null);
+        String removedUser = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(bid.getId()), StaticBid.class.getSimpleName(), "user", MediaType.APPLICATION_JSON_TYPE, null, null);
         if (removedUser != null) {
             System.out.println(removedUser);
         }
@@ -958,7 +959,7 @@ public class ServerCrudTest {
         String auction = RestUtils.getJSONMessage("auction-bidsByValueNoId.json");
         // The bid contained by the auction object has generated id field, and create is idempotent.
         // So, create operation on auction with bid list should fail.
-        RestUtils.restCreateWithSequence(auction, StaticAuction.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restCreateWithSequence(context, auction, StaticAuction.class.getSimpleName(), null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     private static void dbCreate(Object object) {

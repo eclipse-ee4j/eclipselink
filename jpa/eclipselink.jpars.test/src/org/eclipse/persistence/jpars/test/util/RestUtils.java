@@ -34,6 +34,7 @@ import javax.xml.bind.JAXBException;
 import org.eclipse.persistence.jpa.rs.MatrixParameters;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
+import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 
 import com.sun.jersey.api.client.Client;
@@ -56,7 +57,7 @@ public class RestUtils {
      * Gets the server uri.
      *
      * @return the server uri
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
     public static URI getServerURI() throws URISyntaxException {
         String serverURIBase = System.getProperty(SERVER_URI_BASE, DEFAULT_SERVER_URI_BASE);
@@ -74,12 +75,10 @@ public class RestUtils {
      * @param mediaType the media type
      * @return the string
      * @throws RestCallFailedException the rest call failed exception
-     * @throws JAXBException the jAXB exception
+     * @throws JAXBException the JAXB exception
      * @throws UnsupportedEncodingException the unsupported encoding exception
      */
-    public static <T> String marshal(PersistenceContext context, Object object, MediaType mediaType)
-            throws RestCallFailedException, JAXBException,
-            UnsupportedEncodingException {
+    public static <T> String marshal(PersistenceContext context, Object object, MediaType mediaType) throws RestCallFailedException, JAXBException, UnsupportedEncodingException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         context.marshallEntity(object, mediaType, os, true);
         return os.toString("UTF-8");
@@ -93,8 +92,8 @@ public class RestUtils {
      * @param msg the msg
      * @param type the type
      * @param mediaType the media type
-     * @return the t
-     * @throws JAXBException the jAXB exception
+     * @return T the generic type
+     * @throws JAXBException the JAXB exception
      */
     @SuppressWarnings("unchecked")
     public static <T> T unmarshal(PersistenceContext context, String msg, String type, MediaType mediaType) throws JAXBException {
@@ -111,17 +110,16 @@ public class RestUtils {
      * @param id the id
      * @param type the type
      * @param resultClass the result class
-     * @param persistenceUnit the persistence unit
      * @param tenantId the tenant id
      * @param outputMediaType the output media type
-     * @return the t
+     * @return T the generic type
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
     @SuppressWarnings("unchecked")
-    public static <T> T restRead(PersistenceContext context, Object id, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
+    public static <T> T restRead(PersistenceContext context, Object id, String type, Class<T> resultClass, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
@@ -131,10 +129,11 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
         String result = response.getEntity(String.class);
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, outputMediaType);
+        }
+
         T resultObject = null;
         try {
             resultObject = (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
@@ -150,17 +149,15 @@ public class RestUtils {
      * @param context the context
      * @param id the id
      * @param type the type
-     * @param persistenceUnit the persistence unit
      * @param tenantId the tenant id
      * @param outputMediaType the output media type
      * @return the string
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static String restRead(PersistenceContext context, Object id, String type, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType)
-            throws RestCallFailedException, URISyntaxException {
+    public static String restRead(PersistenceContext context, Object id, String type, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
@@ -170,10 +167,10 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
         String result = response.getEntity(String.class);
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, outputMediaType);
+        }
         return result;
     }
 
@@ -185,16 +182,15 @@ public class RestUtils {
      * @param object the object
      * @param type the type
      * @param resultClass the result class
-     * @param persistenceUnit the persistence unit
      * @param tenantId the tenant id
      * @param mediaType the media type
      * @param sendLinks the send links
-     * @return the t
+     * @return T the generic type
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
     @SuppressWarnings("unchecked")
-    public static <T> T restUpdate(PersistenceContext context, Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
+    public static <T> T restUpdate(PersistenceContext context, Object object, String type, Class<T> resultClass, Map<String, String> tenantId, MediaType mediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             if (sendLinks) {
@@ -207,7 +203,7 @@ public class RestUtils {
         }
 
         StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
@@ -217,11 +213,11 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-
         String result = response.getEntity(String.class);
+
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, mediaType);
+        }
 
         T resultObject = null;
         try {
@@ -235,18 +231,18 @@ public class RestUtils {
     /**
      * Rest update.
      *
+     * @param context the context
      * @param message the message
      * @param type the type
-     * @param persistenceUnit the persistence unit
      * @param tenantId the tenant id
      * @param mediaType the media type
      * @return the string
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static String restUpdate(String message, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
+    public static String restUpdate(PersistenceContext context, String message, String type, Map<String, String> tenantId, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
         StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
@@ -256,10 +252,11 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, message);
         Status status = response.getClientResponseStatus();
+        String result = response.getEntity(String.class);
         if (status != Status.OK) {
-            throw new RestCallFailedException(status);
+            restCallFailed(context, status, result, mediaType);
         }
-        return response.getEntity(String.class);
+        return result;
     }
 
     /**
@@ -270,16 +267,15 @@ public class RestUtils {
      * @param object the object
      * @param type the type
      * @param resultClass the result class
-     * @param persistenceUnit the persistence unit
      * @param tenantId the tenant id
      * @param mediaType the media type
      * @param sendLinks the send links
-     * @return the t
+     * @return T the generic type
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
     @SuppressWarnings("unchecked")
-    public static <T> T restCreate(PersistenceContext context, Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
+    public static <T> T restCreate(PersistenceContext context, Object object, String type, Class<T> resultClass, Map<String, String> tenantId, MediaType mediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             if (sendLinks) {
@@ -292,7 +288,7 @@ public class RestUtils {
         }
 
         StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
@@ -306,11 +302,14 @@ public class RestUtils {
         } else {
             response = webResource.type(mediaType).accept(mediaType).put(ClientResponse.class, os.toString());
         }
+
         Status status = response.getClientResponseStatus();
-        if (status != Status.CREATED) {
-            throw new RestCallFailedException(status);
-        }
         String result = response.getEntity(String.class);
+
+        if (status != Status.CREATED) {
+            restCallFailed(context, status, result, mediaType);
+        }
+
         T resultObject = null;
         try {
             resultObject = (T) context.unmarshalEntity(type, mediaType, new ByteArrayInputStream(result.getBytes()));
@@ -323,16 +322,16 @@ public class RestUtils {
     /**
      * Rest create with sequence.
      *
+     * @param context the context
      * @param object the object
      * @param type the type
-     * @param persistenceUnit the persistence unit
      * @param tenantId the tenant id
      * @param mediaType the media type
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static void restCreateWithSequence(String object, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException {
+    public static void restCreateWithSequence(PersistenceContext context, String object, String type, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException {
         StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
@@ -342,8 +341,9 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.type(mediaType).accept(mediaType).put(ClientResponse.class, object.toString());
         Status status = response.getClientResponseStatus();
+        String result = response.getEntity(String.class);
         if (status == Status.BAD_REQUEST) {
-            throw new RestCallFailedException(status);
+            restCallFailed(context, status, result, mediaType);
         } else {
             throw new IllegalArgumentException();
         }
@@ -357,16 +357,15 @@ public class RestUtils {
      * @param object the object
      * @param type the type
      * @param resultClass the result class
-     * @param persistenceUnit the persistence unit
      * @param tenantId the tenant id
      * @param mediaType the media type
-     * @return the t
-     * @throws URISyntaxException the uRI syntax exception
+     * @return T the generic type
+     * @throws URISyntaxException the URI syntax exception
      */
     @SuppressWarnings("unchecked")
-    public static <T> T restCreate(PersistenceContext context, String object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException {
+    public static <T> T restCreate(PersistenceContext context, String object, String type, Class<T> resultClass, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException {
         StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
@@ -376,10 +375,12 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.type(mediaType).accept(mediaType).put(ClientResponse.class, object.toString());
         Status status = response.getClientResponseStatus();
-        if (status != Status.CREATED) {
-            throw new RestCallFailedException(status);
-        }
         String result = response.getEntity(String.class);
+
+        if (status != Status.CREATED) {
+            restCallFailed(context, status, result, mediaType);
+        }
+
         T resultObject = null;
         try {
             resultObject = (T) context.unmarshalEntity(type, mediaType, new ByteArrayInputStream(result.getBytes()));
@@ -393,19 +394,19 @@ public class RestUtils {
      * Rest delete.
      *
      * @param <T> the generic type
+     * @param context the context
      * @param id the id
      * @param type the type
      * @param resultClass the result class
-     * @param persistenceUnit the persistence unit
      * @param attribute the attribute
      * @param tenantId the tenant id
      * @param mediaType the media type
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static <T> void restDelete(Object id, String type, Class<T> resultClass, String persistenceUnit, String attribute, Map<String, String> tenantId, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
+    public static <T> void restDelete(PersistenceContext context, Object id, String type, Class<T> resultClass, String attribute, Map<String, String> tenantId, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
         StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
@@ -419,8 +420,9 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.type(mediaType).accept(mediaType).delete(ClientResponse.class);
         Status status = response.getClientResponseStatus();
+        String result = response.getEntity(String.class);
         if (status != Status.OK) {
-            throw new RestCallFailedException(status);
+            restCallFailed(context, status, result, mediaType);
         }
     }
 
@@ -432,9 +434,9 @@ public class RestUtils {
      * @param href the href
      * @param type the type
      * @param outputMediaType the output media type
-     * @return the t
+     * @return T the generic type
      * @throws RestCallFailedException the rest call failed exception
-     * @throws JAXBException the jAXB exception
+     * @throws JAXBException the JAXB exception
      */
     @SuppressWarnings("unchecked")
     public static <T> T restReadByHref(PersistenceContext context, String href, String type, MediaType outputMediaType) throws RestCallFailedException, JAXBException {
@@ -442,63 +444,63 @@ public class RestUtils {
         ClientResponse response = webResource.accept(outputMediaType).get(
                 ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
         String result = response.getEntity(String.class);
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, outputMediaType);
+        }
         return (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
     }
 
     /**
      * Rest named multi result query.
      *
+     * @param context the context
      * @param queryName the query name
-     * @param persistenceUnit the persistence unit
      * @param parameters the parameters
      * @param hints the hints
-     * @param outputMediaType the output media type
+     * @param mediaType the media type
      * @return the string
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static String restNamedMultiResultQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
-            throws URISyntaxException {
+    public static String restNamedMultiResultQuery(PersistenceContext context, String queryName, Map<String, Object> parameters, Map<String, String> hints, MediaType mediaType) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
-        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
+        resourceURL.append(RestUtils.getServerURI() + context.getName() + "/query/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
-        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
+        ClientResponse response = webResource.accept(mediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
+        String result = response.getEntity(String.class);
         if (status != Status.OK) {
-            throw new RestCallFailedException(status);
+            restCallFailed(context, status, result, mediaType);
         }
 
-        return response.getEntity(String.class);
+        return result;
     }
 
     /**
      * Rest named single result query.
      *
+     * @param context the context
      * @param queryName the query name
-     * @param persistenceUnit the persistence unit
      * @param parameters the parameters
      * @param hints the hints
      * @param outputMediaType the output media type
-     * @return the object
-     * @throws URISyntaxException the uRI syntax exception
+     * @return the string
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static String restNamedSingleResultQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
-            throws URISyntaxException {
+    public static String restNamedSingleResultQuery(PersistenceContext context, String queryName, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
-        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/singleResultQuery/" + queryName);
+        resourceURL.append(RestUtils.getServerURI() + context.getName() + "/singleResultQuery/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
+        String result = response.getEntity(String.class);
         if (status != Status.OK) {
-            throw new RestCallFailedException(status);
+            restCallFailed(context, status, result, outputMediaType);
         }
 
-        return response.getEntity(String.class);
+        return result;
     }
 
     /**
@@ -510,10 +512,9 @@ public class RestUtils {
      * @param hints the hints
      * @param outputMediaType the output media type
      * @return the byte[]
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static byte[] restNamedSingleResultQueryInByteArray(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
-            throws URISyntaxException {
+    public static byte[] restNamedSingleResultQueryInByteArray(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/singleResultQuery/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
@@ -549,30 +550,6 @@ public class RestUtils {
     }
 
     /**
-     * Rest update query.
-     *
-     * @param queryName the query name
-     * @param persistenceUnit the persistence unit
-     * @param parameters the parameters
-     * @param hints the hints
-     * @param mediaType the media type
-     * @return the object
-     * @throws URISyntaxException the uRI syntax exception
-     */
-    public static String restUpdateQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType mediaType) throws URISyntaxException {
-        StringBuilder resourceURL = new StringBuilder();
-        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
-        appendParametersAndHints(resourceURL, parameters, hints);
-        WebResource webResource = client.resource(resourceURL.toString());
-        ClientResponse response = webResource.accept(mediaType).post(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-        return response.getEntity(String.class);
-    }
-
-    /**
      * Rest update relationship.
      *
      * @param <T> the generic type
@@ -582,15 +559,14 @@ public class RestUtils {
      * @param relationshipName the relationship name
      * @param newValue the new value
      * @param resultClass the result class
-     * @param persistenceUnit the persistence unit
      * @param mediaType the media type
-     * @return the t
+     * @return T the generic type
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
     @SuppressWarnings("unchecked")
-    public static <T> T restUpdateRelationship(PersistenceContext context, String objectId, String type, String relationshipName, Object newValue, Class<T> resultClass, String persistenceUnit, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
-        WebResource webResource = client.resource(RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/" + objectId + "/" + relationshipName);
+    public static <T> T restUpdateRelationship(PersistenceContext context, String objectId, String type, String relationshipName, Object newValue, Class<T> resultClass, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
+        WebResource webResource = client.resource(RestUtils.getServerURI() + context.getName() + "/entity/" + type + "/" + objectId + "/" + relationshipName);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             context.marshallEntity(newValue, mediaType, os);
@@ -600,10 +576,11 @@ public class RestUtils {
         }
         ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
         String result = response.getEntity(String.class);
+
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, mediaType);
+        }
 
         T resultObject = null;
         try {
@@ -622,20 +599,17 @@ public class RestUtils {
      * @param type the type
      * @param relationshipName the relationship name
      * @param newValue the new value
-     * @param persistenceUnit the persistence unit
      * @param mediaType the media type
      * @param partner the partner
      * @param sendLinks the send links
      * @return the string
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
+     * @throws URISyntaxException the URI syntax exception
+     * @throws JAXBException the JAXB exception
      */
-    public static String restUpdateBidirectionalRelationship(PersistenceContext context, String objectId, String type, String relationshipName, Object newValue,
-            String persistenceUnit, MediaType mediaType, String partner, boolean sendLinks)
-            throws RestCallFailedException, URISyntaxException, JAXBException {
+    public static String restUpdateBidirectionalRelationship(PersistenceContext context, String objectId, String type, String relationshipName, Object newValue, MediaType mediaType, String partner, boolean sendLinks) throws RestCallFailedException, URISyntaxException, JAXBException {
 
-        String url = RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/"
+        String url = RestUtils.getServerURI() + context.getName() + "/entity/" + type + "/"
                 + objectId + "/" + relationshipName;
         if (partner != null) {
             url += ";" + MatrixParameters.JPARS_RELATIONSHIP_PARTNER + "=" + partner;
@@ -645,33 +619,32 @@ public class RestUtils {
         context.marshallEntity(newValue, mediaType, os, sendLinks);
         ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
+        String result = response.getEntity(String.class);
         if (status != Status.OK) {
-            throw new RestCallFailedException(status);
+            restCallFailed(context, status, result, mediaType);
         }
 
-        return response.getEntity(String.class);
+        return result;
     }
 
     /**
      * Rest remove bidirectional relationship.
      *
+     * @param context the context
      * @param objectId the object id
      * @param type the type
      * @param relationshipName the relationship name
-     * @param persistenceUnit the persistence unit
      * @param mediaType the media type
      * @param partner the partner
      * @param listItemId the list item id
      * @return the string
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
+     * @throws URISyntaxException the URI syntax exception
+     * @throws JAXBException the JAXB exception
      */
-    public static String restRemoveBidirectionalRelationship(String objectId, String type, String relationshipName,
-            String persistenceUnit, MediaType mediaType, String partner, String listItemId)
-            throws RestCallFailedException, URISyntaxException, JAXBException {
+    public static String restRemoveBidirectionalRelationship(PersistenceContext context, String objectId, String type, String relationshipName, MediaType mediaType, String partner, String listItemId) throws RestCallFailedException, URISyntaxException, JAXBException {
 
-        String url = RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/"
+        String url = RestUtils.getServerURI() + context.getName() + "/entity/" + type + "/"
                 + objectId + "/" + relationshipName;
         if (partner != null) {
             url += "?" + QueryParameters.JPARS_RELATIONSHIP_PARTNER + "=" + partner;
@@ -687,35 +660,33 @@ public class RestUtils {
         WebResource webResource = client.resource(url);
         ClientResponse response = webResource.type(mediaType).accept(mediaType).delete(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
         String result = response.getEntity(String.class);
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, mediaType);
+        }
         return result;
     }
 
     /**
-     * Gets the jSON message.
+     * Gets the JSON message.
      *
      * @param inputFile the input file
-     * @return the jSON message
+     * @return the JSON message
      */
     public static String getJSONMessage(String inputFile) {
-        InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(JSON_REST_MESSAGE_FOLDER + inputFile);
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(JSON_REST_MESSAGE_FOLDER + inputFile);
         String msg = convertStreamToString(is);
         return msg;
     }
 
     /**
-     * Gets the xML message.
+     * Gets the XML message.
      *
      * @param inputFile the input file
-     * @return the xML message
+     * @return the XML message
      */
     public static String getXMLMessage(String inputFile) {
-        InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(XML_REST_MESSAGE_FOLDER + inputFile);
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(XML_REST_MESSAGE_FOLDER + inputFile);
         return convertStreamToString(is);
     }
 
@@ -737,20 +708,19 @@ public class RestUtils {
     /**
      * Rest find attribute.
      *
+     * @param context the context
      * @param id the id
      * @param type the type
      * @param attribute the attribute
-     * @param persistenceUnit the persistence unit
      * @param tenantId the tenant id
      * @param outputMediaType the output media type
      * @return the string
      * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static String restFindAttribute(Object id, String type, String attribute, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType)
-            throws RestCallFailedException, URISyntaxException {
+    public static String restFindAttribute(PersistenceContext context, Object id, String type, String attribute, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         StringBuilder uri = new StringBuilder();
-        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
                 uri.append(";" + key + "=" + tenantId.get(key));
@@ -760,108 +730,93 @@ public class RestUtils {
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
         String result = response.getEntity(String.class);
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, outputMediaType);
+        }
+
         return result;
     }
 
-    public static String restPagedFindAttribute(Object id, String type, String attribute, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
-            throws RestCallFailedException, URISyntaxException {
+    /**
+     * Rest paged find attribute.
+     *
+     * @param context the context
+     * @param id the id
+     * @param type the type
+     * @param attribute the attribute
+     * @param parameters the parameters
+     * @param hints the hints
+     * @param outputMediaType the output media type
+     * @return the string
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the URI syntax exception
+     */
+    public static String restPagedFindAttribute(PersistenceContext context, Object id, String type, String attribute, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
-        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/" + id + "/" + attribute);
+        resourceURL.append(RestUtils.getServerURI() + context.getName() + "/entity/" + type + "/" + id + "/" + attribute);
         appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
 
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
         String result = response.getEntity(String.class);
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, outputMediaType);
+        }
         return result;
     }
 
     /**
      * Rest named paged multi result query.
      *
+     * @param context the context
      * @param queryName the query name
-     * @param persistenceUnit the persistence unit
      * @param parameters the parameters
      * @param hints the hints
      * @param outputMediaType the output media type
      * @return the string
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static String restNamedPagedMultiResultQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
+    public static String restNamedPagedMultiResultQuery(PersistenceContext context, String queryName, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
-        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
+        resourceURL.append(RestUtils.getServerURI() + context.getName() + "/query/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-        return response.getEntity(String.class);
-    }
-
-    /**
-     * Test get contexts.
-     *
-     * @param mediaType the media type
-     * @return the string
-     * @throws Exception the exception
-     */
-    public static String restGetContexts(MediaType mediaType) throws Exception {
-        StringBuffer uri = new StringBuffer();
-        uri.append(RestUtils.getServerURI());
-        WebResource webResource = client.resource(uri.toString());
-        ClientResponse response = webResource.accept(mediaType).get(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-
         String result = response.getEntity(String.class);
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, outputMediaType);
+        }
         return result;
     }
 
     /**
-     * Rest get types.
+     * Rest update query.
      *
-     * @param persistenceUnit the persistence unit
+     * @param context the context
+     * @param queryName the query name
+     * @param returnType the return type
+     * @param parameters the parameters
+     * @param hints the hints
      * @param mediaType the media type
      * @return the string
-     * @throws Exception the exception
+     * @throws URISyntaxException the URI syntax exception
      */
-    public static String restGetTypes(String persistenceUnit, MediaType mediaType) throws Exception {
-        StringBuffer uri = new StringBuffer();
-        uri.append(RestUtils.getServerURI() + persistenceUnit + "/metadata");
-        WebResource webResource = client.resource(uri.toString());
-        ClientResponse response = webResource.accept(mediaType).get(ClientResponse.class);
-        Status status = response.getClientResponseStatus();
-        if (status != Status.OK) {
-            throw new RestCallFailedException(status);
-        }
-
-        String result = response.getEntity(String.class);
-        return result;
-    }
-
-    public static String restUpdateQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
+    public static String restUpdateQuery(PersistenceContext context, String queryName, String returnType, Map<String, Object> parameters, Map<String, String> hints, MediaType mediaType) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
-        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
+        resourceURL.append(RestUtils.getServerURI() + context.getName() + "/query/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
 
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.post(ClientResponse.class);
         Status status = response.getClientResponseStatus();
+        String result = response.getEntity(String.class);
         if (status != Status.OK) {
-            throw new RestCallFailedException(status);
+            restCallFailed(context, status, result, mediaType);
         }
-        return response.getEntity(String.class);
+        return result;
     }
 
     private static String getExtension(File f) {
@@ -923,4 +878,17 @@ public class RestUtils {
         }
     }
 
+    private static void restCallFailed(PersistenceContext context, Status httpStatus, String response, MediaType mediaType) {
+        if ((response != null) && (!response.isEmpty())) {
+            if ((response.contains("problemType")) && (response.contains("title") && (response.contains("httpStatus")))) {
+                try {
+                    ErrorResponse errorDetail = (ErrorResponse) context.unmarshalEntity(ErrorResponse.class.getSimpleName(), mediaType, new ByteArrayInputStream(response.getBytes()));
+                    throw new RestCallFailedException(httpStatus, errorDetail);
+                } catch (JAXBException e) {
+                    fail("Exception thrown unmarshalling: " + e);
+                }
+            }
+        }
+        throw new RestCallFailedException(httpStatus);
+    }
 }

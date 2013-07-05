@@ -10,21 +10,39 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server;
 
+import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
+
 import com.sun.jersey.api.client.ClientResponse.Status;
 
 public class RestCallFailedException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    private Status responseStatus = null;
-    
-    public RestCallFailedException(Status responseStatus){
-        this.responseStatus = responseStatus;
+    private Status httpStatus = null;
+    private ErrorResponse errorDetails = null;
+
+    public RestCallFailedException(Status httpStatus, ErrorResponse errorDetails) {
+        super();
+        this.httpStatus = httpStatus;
+        this.errorDetails = errorDetails;
     }
 
-    public Status getResponseStatus() {
-        return responseStatus;
+    public RestCallFailedException(Status httpStatus) {
+        super();
+        this.httpStatus = httpStatus;
     }
 
-    public void setResponseStatus(Status responseStatus) {
-        this.responseStatus = responseStatus;
+    public Status getHttpStatus() {
+        return httpStatus;
+    }
+
+    public void setHttpStatus(Status httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
+    public ErrorResponse getErrorDetails() {
+        return errorDetails;
+    }
+
+    public void setErrorDetails(ErrorResponse errorDetails) {
+        this.errorDetails = errorDetails;
     }
 }

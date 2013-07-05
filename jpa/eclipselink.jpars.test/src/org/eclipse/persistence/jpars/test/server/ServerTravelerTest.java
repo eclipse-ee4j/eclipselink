@@ -60,7 +60,7 @@ public class ServerTravelerTest {
     @After
     public void cleanup() {
         try {
-            RestUtils.restUpdateQuery("Traveler.deleteAll", "Traveler", DEFAULT_PU, null, null);
+            RestUtils.restUpdateQuery(context, "Traveler.deleteAll", "Traveler", null, null, MediaType.APPLICATION_JSON_TYPE);
         } catch (URISyntaxException e) {
         }
     }
@@ -92,7 +92,7 @@ public class ServerTravelerTest {
         } else {
             traveler = RestUtils.getJSONMessage("traveler.json");
         }
-        String response = RestUtils.restUpdate(traveler, Traveler.class.getSimpleName(), DEFAULT_PU, null, mediaType);
+        String response = RestUtils.restUpdate(context, traveler, Traveler.class.getSimpleName(), null, mediaType);
         assertNotNull(response);
         if (mediaType == MediaType.APPLICATION_XML_TYPE) {
 

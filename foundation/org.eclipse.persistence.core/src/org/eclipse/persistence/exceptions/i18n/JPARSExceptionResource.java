@@ -25,7 +25,7 @@ public class JPARSExceptionResource extends ListResourceBundle {
             { ErrorCode.ENTITY_NOT_FOUND.value(), "An entity of type {0} with id {1} could not be found in persistence unit {2}." },
             { ErrorCode.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST.value(), "Entity referred by link does not exist, entity type:{0}, id:{1}." },
             { ErrorCode.INVALID_CONFIGURATION.value(), "Invalid configuration." },
-
+            { ErrorCode.ENTITY_NOT_IDEMPOTENT.value(), "An entity of type {0} in persistence unit {1} is being created with a PUT, but the entity is not idempotent due to either sequence generation or cascading." },
             { ErrorCode.AN_EXCEPTION_OCCURRED.value(), "{0} occurred." },
     };
 

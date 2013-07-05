@@ -21,6 +21,7 @@ public class JPARSException extends EclipseLinkException {
         ENTITY_NOT_FOUND(61000),
         OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST(61001),
         INVALID_CONFIGURATION(61002),
+        ENTITY_NOT_IDEMPOTENT(61003),
 
         // wraps eclipselink exceptions    
         AN_EXCEPTION_OCCURRED(61999),
@@ -98,7 +99,7 @@ public class JPARSException extends EclipseLinkException {
      * @param entityType the entity type
      * @param entityId the entity id
      * @param persistenceUnit the persistence unit
-     * @return the jPARS exception
+     * @return the JPARS exception
      */
     public static JPARSException entityNotFound(int httpStatusCode, String entityType, String entityId, String persistenceUnit) {
         Object[] args = { entityType, entityId, persistenceUnit };
@@ -118,7 +119,7 @@ public class JPARSException extends EclipseLinkException {
      * @param httpStatusCode the http status code
      * @param entityType the entity type
      * @param entityId the entity id
-     * @return the jPARS exception
+     * @return the JPARS exception
      */
     public static JPARSException objectReferredByLinkDoesNotExist(int httpStatusCode, String entityType, Object entityId) {
         Object[] args = { entityType, entityId };
@@ -136,7 +137,7 @@ public class JPARSException extends EclipseLinkException {
      *
      * @param requestId the request id
      * @param httpStatusCode the http status code
-     * @return the jPARS exception
+     * @return the JPARS exception
      */
     public static JPARSException invalidConfiguration(int httpStatusCode) {
         Object[] args = {};
@@ -150,12 +151,31 @@ public class JPARSException extends EclipseLinkException {
     }
 
     /**
+     * Entity is not idempotent.
+     *
+     * @param httpStatusCode the http status code
+     * @param persistenceUnit the persistence unit
+     * @param entityType the entity type
+     * @return the JPARS exception
+     */
+    public static JPARSException entityIsNotIdempotent(int httpStatusCode, String persistenceUnit, String entityType) {
+        Object[] args = { persistenceUnit, entityType };
+
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.ENTITY_NOT_IDEMPOTENT.value, args);
+        JPARSException exception = new JPARSException(msg);
+        exception.setErrorCode(ErrorCode.ENTITY_NOT_IDEMPOTENT.value);
+        exception.setHttpStatusCode(httpStatusCode);
+
+        return exception;
+    }
+
+    /**
      * Exception occurred.
      *
      * @param requestId the request id
      * @param httpStatusCode the http status code
      * @param exception the exception
-     * @return the jPARS exception
+     * @return the JPARS exception
      */
     public static JPARSException exceptionOccurred(Exception exception) {
         int errorCode = ErrorCode.AN_EXCEPTION_OCCURRED.value;
