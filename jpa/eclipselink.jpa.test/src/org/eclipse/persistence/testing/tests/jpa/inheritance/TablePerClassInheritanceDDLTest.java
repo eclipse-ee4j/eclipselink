@@ -69,6 +69,10 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
     public void testSetup() {
         clearCache();
         createEntityManager().close();
+        // Only test DDL on Oracle.
+        if (!getServerSession().getPlatform().isOracle()) {
+            super.testSetup();
+        }
     }
         
     /**
@@ -86,6 +90,11 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
      */
     public EntityManagerFactory getEntityManagerFactory() {
         if (this.factory == null) {
+            // Only test DDL on Oracle, otherwise will have constraint issues.
+            if (!getServerSession().getPlatform().isOracle()) {
+                this.factory = Persistence.createEntityManagerFactory(getPersistenceUnitName());
+                return this.factory;
+            }
             // Ensure real one inits first.
             super.createEntityManager().close();
             
