@@ -18,6 +18,7 @@ package org.eclipse.persistence.testing.models.jpa.relationships;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
@@ -597,7 +598,6 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("CMP3_CUSTOMER.CUST_ID");
         table.addField(field);
     
         // SECTION: FIELD
@@ -609,9 +609,11 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         field1.setIsPrimaryKey(true);
         field1.setUnique(false);
         field1.setIsIdentity(false);
-        field1.setForeignKeyFieldName("CMP3_CUSTOMER.CUST_ID");
         table.addField(field1);
 
+        table.addForeignKeyConstraint(new ForeignKeyConstraint("CMP3CUST2_CID", "Customer_CUST_ID", "CUST_ID", "CMP3_CUSTOMER"));
+        table.addForeignKeyConstraint(new ForeignKeyConstraint("CMP3CCUST2_CID", "CCustomers2_CUST_ID", "CUST_ID", "CMP3_CUSTOMER"));
+        
         return table;
     }
 
