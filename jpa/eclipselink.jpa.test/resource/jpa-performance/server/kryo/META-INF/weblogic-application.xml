@@ -1,0 +1,5 @@
+<weblogic-application>
+  <prefer-application-packages>
+  <package-name>org.objectweb.asm.*</package-name>
+  </prefer-application-packages>
+</weblogic-application>
