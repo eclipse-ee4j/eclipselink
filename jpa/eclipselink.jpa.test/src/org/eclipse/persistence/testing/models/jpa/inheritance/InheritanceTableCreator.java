@@ -77,6 +77,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSOCIALCLUBTable());
         addTableDefinition(buildPERSONELCLUBTable());
         addTableDefinition(buildSMALLASSIGNMENTTable());
+        addTableDefinition(buildNICKNAMESTable());
         
         addTableDefinition(buildAPPLETable());
         addTableDefinition(buildMACBOOKTable());
@@ -2126,7 +2127,36 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
+    
+    public TableDefinition buildNICKNAMESTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TPC_NICKNAMES");
 
+        FieldDefinition fieldPERSONELID = new FieldDefinition();
+        fieldPERSONELID.setName("PERSONEL_ID");
+        fieldPERSONELID.setTypeName("NUMERIC");
+        fieldPERSONELID.setSize(10);
+        fieldPERSONELID.setShouldAllowNull(false);
+        fieldPERSONELID.setIsPrimaryKey(true);
+        fieldPERSONELID.setUnique(false);
+        fieldPERSONELID.setIsIdentity(false);
+        // Can't set foreign key field constraints.
+        //fieldPERSONELID.setForeignKeyFieldName("CMP3_PERSONEL.ID");
+        table.addField(fieldPERSONELID);
+    
+        FieldDefinition fieldNICKNAME = new FieldDefinition();
+        fieldNICKNAME.setName("NICKNAME");
+        fieldNICKNAME.setTypeName("VARCHAR");
+        fieldNICKNAME.setSize(50);
+        fieldNICKNAME.setShouldAllowNull(false);
+        fieldNICKNAME.setIsPrimaryKey(true);
+        fieldNICKNAME.setUnique(false);
+        fieldNICKNAME.setIsIdentity(false);
+        table.addField(fieldNICKNAME);
+
+        return table;
+    }
+    
     public TableDefinition buildSMALLASSIGNMENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_SMALL_ASSIGNMENT");

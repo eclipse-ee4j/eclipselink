@@ -86,8 +86,6 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
@@ -503,29 +501,6 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // Add the primary key fields to the descriptor.  
         for (DatabaseField pkField : mapping.getForeignKeyFields()) {
             getOwningDescriptor().addPrimaryKeyField(pkField);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Process the indirection (aka fetch type)
-     */
-    protected void processIndirection(ObjectReferenceMapping mapping) {
-        boolean usesIndirection = usesIndirection();
-        
-        // Lazy is not disabled until descriptor initialization (OneToOneMapping preInitialize),
-        // as it cannot be known if weaving occurred until then.
-        String actualAttributeType = getAttributeType();
-        if (getAccessibleObject() != null){
-            actualAttributeType = getAccessibleObject().getType();
-        }
-        
-        if (usesIndirection && usesPropertyAccess()) {
-            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getGetMethodName(), getSetMethodName(), actualAttributeType, true));
-        } else if (usesIndirection && usesFieldAccess()) {
-            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(Helper.getWeavedGetMethodName(mapping.getAttributeName()), Helper.getWeavedSetMethodName(mapping.getAttributeName()), actualAttributeType, false));
-        } else {
-            mapping.setUsesIndirection(usesIndirection);
         }
     }
     

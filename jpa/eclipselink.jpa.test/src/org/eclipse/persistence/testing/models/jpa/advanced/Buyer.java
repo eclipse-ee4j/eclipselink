@@ -207,7 +207,7 @@ public class Buyer implements Serializable {
     @Id
     @GeneratedValue(strategy=SEQUENCE, generator="BUYER_SEQUENCE_GENERATOR")
     @SequenceGenerator(name="BUYER_SEQUENCE_GENERATOR", sequenceName="BUYER_SEQ", allocationSize=10)
-    @Column(name="BUYER_ID", length=49)
+    @Column(name="BUYER_ID", length=29)
     public Integer getId() { 
         return id; 
     }

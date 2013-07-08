@@ -427,6 +427,13 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
         if (this.descriptor.hasTablePerClassPolicy() && this.descriptor.isAbstract()) {
             result = this.containerPolicy.containerInstance();
+            
+            if (this.shouldIncludeData) {
+                ComplexQueryResult complexResult = new ComplexQueryResult();
+                complexResult.setResult(result);
+                complexResult.setData(new ArrayList());
+                result = complexResult;
+            }
         } else {
             Object sopObject = getTranslationRow().getSopObject();
             boolean useOptimization = false;
@@ -528,7 +535,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Add the other (already registered) results and return them.
         if (this.descriptor.hasTablePerClassPolicy()) {
             result = this.containerPolicy.concatenateContainers(
-                    result, this.descriptor.getTablePerClassPolicy().selectAllObjectsUsingMultipleTableSubclassRead(this), this.session);
+                        result, this.descriptor.getTablePerClassPolicy().selectAllObjectsUsingMultipleTableSubclassRead(this), this.session);
         }
 
         // If the results were empty, then ensure they get cached still.
@@ -869,7 +876,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                                 || (unitOfWork.isClassReadOnly(this.getReferenceClass(), this.getDescriptor())))){
                     Object[] pkList = new Object[size];
                     for (int i = 0; i< size; ++i){
-                        pkList[i] = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow((AbstractRecord)rows.get(i), session);
+                        pkList[i] = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(rows.get(i), session);
                     }
                     setPrefetchedCacheKeys(unitOfWork.getParentIdentityMapSession(this).getIdentityMapAccessorInstance().getAllCacheKeysFromIdentityMapWithEntityPK(pkList, descriptor));
                 }

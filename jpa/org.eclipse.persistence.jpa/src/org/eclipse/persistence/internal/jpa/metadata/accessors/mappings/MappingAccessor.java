@@ -109,7 +109,9 @@ import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -1655,6 +1657,29 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Process the indirection (aka fetch type)
+     */
+    protected void processIndirection(ForeignReferenceMapping mapping) {
+        boolean usesIndirection = usesIndirection();
+        
+        // Lazy is not disabled until descriptor initialization (OneToOneMapping preInitialize),
+        // as it cannot be known if weaving occurred until then.
+        String actualAttributeType = getAttributeType();
+        if (getAccessibleObject() != null){
+            actualAttributeType = getAccessibleObject().getType();
+        }
+        
+        if (usesIndirection && usesPropertyAccess()) {
+            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(getGetMethodName(), getSetMethodName(), actualAttributeType, true));
+        } else if (usesIndirection && usesFieldAccess()) {
+            mapping.setIndirectionPolicy(new WeavedObjectBasicIndirectionPolicy(Helper.getWeavedGetMethodName(mapping.getAttributeName()), Helper.getWeavedSetMethodName(mapping.getAttributeName()), actualAttributeType, false));
+        } else {
+            mapping.setUsesIndirection(usesIndirection);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Return the mapping join fetch type.
      */
     protected void processJoinFetch(String joinFetch, ForeignReferenceMapping mapping) {
@@ -2007,6 +2032,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 collectionMapping.useTransparentSet();
             } else {
                 getLogger().logWarningMessage(MetadataLogger.WARNING_INVALID_COLLECTION_USED_ON_LAZY_RELATION, getJavaClass(), getAnnotatedElement(), rawClass);
+                processIndirection((ForeignReferenceMapping)mapping);
                 containerPolicySet = false;
             }
         } else {

@@ -23,10 +23,12 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ComplexQueryResult;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -251,6 +253,17 @@ public class InterfacePolicy implements Serializable, Cloneable {
                 concreteQuery.getExpressionBuilder().setSession(query.getSession().getRootSession(concreteQuery));
                 concreteQuery.setSelectionCriteria(concreteQuery.getQueryMechanism().getSelectionCriteria().rebuildOn(concreteQuery.getExpressionBuilder()));
             }
+            if (concreteQuery.hasAdditionalFields()) {
+                List rebuiltFields = new ArrayList(concreteQuery.getAdditionalFields().size());
+                for (Object field : concreteQuery.getAdditionalFields()) {
+                    if (field instanceof Expression) {
+                        rebuiltFields.add(((Expression)field).rebuildOn(concreteQuery.getExpressionBuilder()));
+                    } else {
+                        rebuiltFields.add(field);                        
+                    }
+                }
+                concreteQuery.setAdditionalFields(rebuiltFields);
+            }
             if (shouldPrepare) {
                 concreteQuery.setTranslationRow(null);
                 if (concreteQuery.isReadObjectQuery()) {
@@ -279,6 +292,12 @@ public class InterfacePolicy implements Serializable, Cloneable {
     public Object selectAllObjectsUsingMultipleTableSubclassRead(ReadAllQuery query) throws DatabaseException {
         ContainerPolicy containerPolicy = query.getContainerPolicy();
         Object objects = containerPolicy.containerInstance();
+        if (query.shouldIncludeData()) {
+            ComplexQueryResult result = new ComplexQueryResult();
+            result.setResult(objects);
+            result.setData(new ArrayList());
+            objects = result;
+        }
         int size = this.childDescriptors.size();
         for (int index = 0; index < size; index++) {
             ClassDescriptor descriptor = this.childDescriptors.get(index);
@@ -308,7 +327,6 @@ public class InterfacePolicy implements Serializable, Cloneable {
             ClassDescriptor descriptor = this.childDescriptors.get(index);
             Object object = descriptor.getInterfacePolicy().selectOneObject(query);
             if (object != null) {
-                System.out.println(descriptor + " : " + object);
                 return object;
             }
         }

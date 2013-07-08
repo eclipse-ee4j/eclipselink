@@ -82,8 +82,8 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
         suite.addTest(new TablePerClassInheritanceJUnitTest("testValidateAssassinWithBombAndEliminations"));
         suite.addTest(new TablePerClassInheritanceJUnitTest("testNamedQueryFindAllWeapons"));
         suite.addTest(new TablePerClassInheritanceJUnitTest("testNamedQueryFindAllWeaponsWhereDescriptionContainsSniper"));
-        suite.addTest(new TablePerClassInheritanceJUnitTest("testBatchFindAllWeapons"));        
         suite.addTest(new TablePerClassInheritanceJUnitTest("testCreateNewSocialClubsWithMembers"));
+        suite.addTest(new TablePerClassInheritanceJUnitTest("testBatchFindAllWeapons"));
         suite.addTest(new TablePerClassInheritanceJUnitTest("testValidateSocialClub1Members"));
         suite.addTest(new TablePerClassInheritanceJUnitTest("testValidateSocialClub2Members"));
         suite.addTest(new TablePerClassInheritanceJUnitTest("testValidateSocialClub3Members"));
@@ -111,6 +111,9 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
 
             assassin = new Assassin();
             assassin.setName("Assassin1");
+
+            assassin.getNicknames().add("Bonny");
+            assassin.getNicknames().add("Clyde");
             
             Gun gun = new Gun();
             gun.setCaliber(new Integer(50));
@@ -327,6 +330,36 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
             }
             assertFalse("No weapons were returned", weapons.isEmpty());
             assertTrue("Expected weapon count of 2 not returned", weapons.size() == 2);
+
+            clearCache();
+            em.clear();
+            query = em.createQuery("Select s from SocialClub s");
+            query.setHint(QueryHints.BATCH, "s.members");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            Collection<SocialClub> clubs = query.getResultList();
+            for (SocialClub club : clubs) {
+                club.getMembers().size();
+            }
+
+            clearCache();
+            em.clear();
+            query = em.createQuery("Select s from SocialClub s");
+            query.setHint(QueryHints.BATCH, "s.members");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.JOIN);
+            clubs = query.getResultList();
+            for (SocialClub club : clubs) {
+                club.getMembers().size();
+            }
+
+            clearCache();
+            em.clear();
+            query = em.createQuery("Select s from SocialClub s");
+            query.setHint(QueryHints.BATCH, "s.members");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.EXISTS);
+            clubs = query.getResultList();
+            for (SocialClub club : clubs) {
+                club.getMembers().size();
+            }
         } finally {
             closeEntityManager(em);
         }

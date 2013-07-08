@@ -583,6 +583,15 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Both of the containers must use the same container policy (namely, this one).
      */
     public Object concatenateContainers(Object firstContainer, Object secondContainer, AbstractSession session) {
+        if (firstContainer instanceof ComplexQueryResult) {
+            ComplexQueryResult firstResult = (ComplexQueryResult)firstContainer;
+            ComplexQueryResult secondResult = (ComplexQueryResult)secondContainer;
+            firstResult.setResult(concatenateContainers(
+                    firstResult.getResult(), secondResult.getResult(), session));
+            ((List)firstResult.getData()).addAll((List)secondResult.getData());
+            return firstResult;
+        }
+    
         Object container = containerInstance(sizeFor(firstContainer) + sizeFor(secondContainer));
 
         for (Object firstIter = iteratorFor(firstContainer); hasNext(firstIter);) {
