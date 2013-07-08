@@ -102,10 +102,18 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     public AttributeImpl getMemberFromInheritingType(String name) {
         AttributeImpl inheritedAttribute = null;
         // search the inheriting types map for an attribute matching the attribute name
-        for(IdentifiableTypeImpl inheritingType : inheritingIdentifiableTypes.values()) {            
-            if(inheritingType.getMembers().containsKey(name)) {
-                inheritedAttribute = (AttributeImpl)inheritingType.getAttribute(name);
-                break;
+        for(IdentifiableTypeImpl inheritingType : inheritingIdentifiableTypes.values()) {   
+            //Entity types are initialized before MappedSuperclass types.  However, it is possible that the inheriting MappedSuperclass is not yet initialized.
+            Map inheritingTypeMembers = inheritingType.getMembers();
+            if ((null == inheritingTypeMembers) && inheritingType.isMappedSuperclass()) {
+               //not initialized
+               ((ManagedTypeImpl) inheritingType).initialize();
+               inheritingTypeMembers = inheritingType.getMembers();
+            }
+               
+            if(inheritingTypeMembers.containsKey(name)) {
+               inheritedAttribute = (AttributeImpl)inheritingType.getAttribute(name);
+               break;
             }
         }
         // we will return a null attribute in the case that a MappedSuperclass has no implementing entities
