@@ -13,6 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import java.io.IOException;
 import java.io.Writer;
@@ -169,6 +170,40 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         func.addStatement("P_INOUT := P_IN");
         func.addStatement("RETURN P_OUT");
         return func;
+    }
+    
+    public NestedTableDefinition buildOracleLOOKUPTABLETYPE() {
+        NestedTableDefinition ntd = new NestedTableDefinition();
+        ntd.setName("SF_LOOKUP_TBL");
+        ntd.setTypeName("SF_LOOKUP_RECORD");
+        return ntd;
+    }
+    
+    public TypeDefinition buildOracleLOOKUPRECORDTYPE() {
+        TypeDefinition td = new TypeDefinition();
+        td.setName("SF_LOOKUP_RECORD");
+        
+        FieldDefinition fd1 = new FieldDefinition();
+        fd1.setName("ATTR_1");
+        fd1.setTypeName("VARCHAR2");
+        fd1.setSize(200);
+        td.addField(fd1);
+        
+        FieldDefinition fd2 = new FieldDefinition();
+        fd2.setName("ATTR_2");
+        fd2.setTypeName("VARCHAR2");
+        fd2.setSize(200);
+        td.addField(fd2);
+        
+        return td;
+    }
+    
+    public PackageDefinition buildOraclePackageStoredFunctionResultCursor() {
+        PackageDefinition pkgd = new PackageDefinition();
+        pkgd.setName("PackageFunction_ResultCursor");
+        pkgd.addStatement("TYPE REF_CURSOR IS REF CURSOR");
+        pkgd.addStatement("FUNCTION BUSINESS_DATE (P_CODE IN VARCHAR2, P_LOOKUP_TBL IN SF_LOOKUP_TBL) RETURN REF_CURSOR");
+        return pkgd; 
     }
 
     public StoredProcedureDefinition buildOracleUpdateProcedure() {
@@ -678,6 +713,15 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         }
 
         if (platform.isOracle()) {
+            // Drop the dependent type before calling replaceObject to avoid error.
+            try {
+                session.executeQuery(new DataModifyQuery("DROP TYPE SF_LOOKUP_TBL FORCE"));
+            } catch (Exception exception) {
+            }
+            try {
+                session.executeQuery(new DataModifyQuery("DROP TYPE SF_LOOKUP_RECORD FORCE"));
+            } catch (Exception exception) {
+            }
             schema.replaceObject(buildOracleStoredProcedureInOutPut());
             schema.replaceObject(buildOracleStoredProcedureInOutOutIn());
             schema.replaceObject(buildOracleStoredProcedureTimestamp());
@@ -691,6 +735,18 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
             schema.replaceObject(buildOracleInsertProcedure());
             schema.replaceObject(buildOracleUpdateProcedure());
             schema.replaceObject(buildOracle2OutCursorsProcedure());
+            schema.replaceObject(buildOracleLOOKUPRECORDTYPE());
+            schema.replaceObject(buildOracleLOOKUPTABLETYPE());
+            schema.replaceObject(buildOraclePackageStoredFunctionResultCursor());
+            
+            try {
+                session.executeNonSelectingCall(new SQLCall("CREATE OR REPLACE PACKAGE BODY PackageFunction_ResultCursor IS " +
+                        "FUNCTION BUSINESS_DATE (P_CODE IN VARCHAR2, P_LOOKUP_TBL IN SF_LOOKUP_TBL) RETURN REF_CURSOR IS " +
+                        "L_CURSOR REF_CURSOR; BEGIN OPEN L_CURSOR FOR SELECT SYSDATE FROM DUAL; RETURN L_CURSOR; " +
+                        "END BUSINESS_DATE; " +
+                        "END PackageFunction_ResultCursor;"));
+            } catch (Exception exception) {
+            }
         }
         if (platform.isDB2()) {
             schema.replaceObject(buildDB2SelectWithOutputAndResultSetProcedure());
