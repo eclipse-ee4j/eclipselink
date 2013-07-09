@@ -1480,9 +1480,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             marshaller.setJaxbContext(jaxbContext);
             if (generator != null && generator.hasMarshalCallbacks()) {
                 // initialize each callback in the map
+                ClassLoader classLoader = getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager().getLoader();
                 for (Iterator callIt = generator.getMarshalCallbacks().keySet().iterator(); callIt.hasNext();) {
                     MarshalCallback cb = (MarshalCallback) generator.getMarshalCallbacks().get(callIt.next());
-                    cb.initialize(generator.getClass().getClassLoader());
+                    cb.initialize(classLoader);
                 }
                 marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
             }
@@ -1505,9 +1506,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
             if (generator != null && generator.hasUnmarshalCallbacks()) {
                 // initialize each callback in the map
+                ClassLoader classLoader = getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager().getLoader();
                 for (Iterator callIt = generator.getUnmarshalCallbacks().keySet().iterator(); callIt.hasNext();) {
                     UnmarshalCallback cb = (UnmarshalCallback) generator.getUnmarshalCallbacks().get(callIt.next());
-                    cb.initialize(generator.getClass().getClassLoader());
+                    cb.initialize(classLoader);
                 }
                 unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
             }
