@@ -115,6 +115,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(JAXBInheritanceSubTypeNoParentRootTestCases.class);
         suite.addTestSuite(JAXBInheritanceSubTypeParentRootOnlyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.ClassLoaderTestCases.class);
         suite.addTest(JAXBDOMTestSuite.suite());
         suite.addTest(JAXBSAXTestSuite.suite());
 
