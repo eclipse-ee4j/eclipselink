@@ -15,5 +15,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/com.sun.xml.bind"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.ws.rs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.asm"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

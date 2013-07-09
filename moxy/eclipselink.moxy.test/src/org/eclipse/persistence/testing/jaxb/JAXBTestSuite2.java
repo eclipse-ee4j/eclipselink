@@ -120,6 +120,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(JAXBInheritanceSubTypeParentRootOnlyTestCases.class);
         suite.addTestSuite(JAXBInheritanceNSSeparatorTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.ClassLoaderTestCases.class);
         suite.addTestSuite(ExternalMetadataTestCases.class);
         suite.addTestSuite(JAXBElementTestCases.class);
         suite.addTest(JAXBDOMTestSuite.suite());
