@@ -40,9 +40,9 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.resources.unversioned.EntityResource;
 import org.eclipse.persistence.jpa.rs.resources.unversioned.PersistenceResource;
 import org.eclipse.persistence.jpa.rs.resources.unversioned.PersistenceUnitResource;
@@ -448,7 +448,7 @@ public class TestService {
         context.create(null, entity1);
 
         TestURIInfo ui = new TestURIInfo();
-        resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), ui, generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON));
+        resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), ui);
 
         entity1 = (DynamicEntity) context.find("Auction", entity1.get("id"));
 

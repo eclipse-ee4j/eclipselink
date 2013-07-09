@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jpa.rs.exceptions;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -37,10 +38,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.exceptions.JPARSException;
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -98,13 +102,17 @@ public abstract class AbstractExceptionMapper {
         if ((path != null) && (path.contains(AbstractResource.SERVICE_VERSION_2_0))) {
             ErrorResponse errorResponse = new ErrorResponse(PROBLEM_TYPE, exception.getMessage(), String.valueOf(exception.getErrorCode()));
             errorResponse.setRequestId((String) DataStorage.get(DataStorage.REQUEST_ID));
-            errorResponse.setHttpStatus(exception.getHttpStatusCode());
-            return Response.status(exception.getHttpStatusCode()).entity(errorResponse).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            errorResponse.setHttpStatus(exception.getHttpStatusCode().getStatusCode());
+
+            String error = marshallErrorResponse(errorResponse, StreamingOutputMarshaller.getResponseMediaType(headers).toString());
+            if (error != null) {
+                return Response.status(exception.getHttpStatusCode()).entity(error).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+            }
         }
         return Response.status(exception.getHttpStatusCode()).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
     }
 
-    private static int getHttpStatusCode(Throwable throwable) {
+    private static Status getHttpStatusCode(Throwable throwable) {
         if (throwable != null) {
             Status httpStatusCode = HTTP_STATUS_CODE_MAPPING.get(throwable.getClass().getName());
             if (throwable instanceof RollbackException) {
@@ -119,9 +127,26 @@ public abstract class AbstractExceptionMapper {
                 }
             }
             if (httpStatusCode != null) {
-                return httpStatusCode.getStatusCode();
+                return httpStatusCode;
             }
         }
-        return Status.BAD_REQUEST.getStatusCode();
+        return Status.BAD_REQUEST;
+    }
+
+    private String marshallErrorResponse(ErrorResponse errorResponse, String mediaType) {
+        try {
+            JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(new Class[] { ErrorResponse.class }, null);
+            Marshaller marshaller = context.createMarshaller();
+
+            marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType);
+            marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
+            marshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
+
+            StringWriter writer = new StringWriter();
+            marshaller.marshal(errorResponse, writer);
+            return writer.toString();
+        } catch (Exception ex) {
+        }
+        return null;
     }
 }

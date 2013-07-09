@@ -12,17 +12,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
-import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
@@ -147,6 +146,6 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
             return entity;
         }
         // It is an error if the object referred by a link doesn't exist, so throw exception
-        throw JPARSException.objectReferredByLinkDoesNotExist(Status.NOT_FOUND.getStatusCode(), entityType, id);
+        throw JPARSException.objectReferredByLinkDoesNotExist(entityType, id);
     }
 }

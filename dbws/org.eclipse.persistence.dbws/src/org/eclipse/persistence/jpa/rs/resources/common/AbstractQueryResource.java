@@ -18,23 +18,20 @@ import java.util.Map;
 import javax.persistence.Query;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
-import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidator;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
-import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -58,11 +55,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected Response namedQueryUpdateInternal(String version, String persistenceUnit, String name, HttpHeaders headers, UriInfo uriInfo) {
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, uriInfo.getBaseUri(), version, null);
-            if (context == null) {
-                JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
-                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-            }
+            PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             int result = context.queryExecuteUpdate(getMatrixParameters(uriInfo, persistenceUnit), name, getMatrixParameters(uriInfo, name), getQueryParameters(uriInfo));
             JAXBElement jaxbElement = new JAXBElement(new QName(ReservedWords.NO_ROUTE_JAXB_ELEMENT_LABEL), Integer.class, result);
             return Response.ok(new StreamingOutputMarshaller(context, jaxbElement, headers.getAcceptableMediaTypes())).build();
@@ -83,14 +76,8 @@ public abstract class AbstractQueryResource extends AbstractResource {
      */
     protected Response namedQueryInternal(String version, String persistenceUnit, String name, HttpHeaders headers, UriInfo uriInfo) {
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, uriInfo.getBaseUri(), version, null);
-            if (context == null) {
-                JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
-                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
-            }
-
+            PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), name, getMatrixParameters(uriInfo, name), getQueryParameters(uriInfo));
-
             DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
 
             FeatureSet featureSet = context.getSupportedFeatureSet();
@@ -101,20 +88,20 @@ public abstract class AbstractQueryResource extends AbstractResource {
                     map.put(PagingRequestValidator.DB_QUERY, dbQuery);
                     map.put(PagingRequestValidator.QUERY, query);
                     if (!requestValidator.isRequestValid(uriInfo, map)) {
-                        // some query parameters for paging are invalid or the named query doesn't have orderBy clause !
-                        return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                        // some query parameters for paging are invalid 
+                        throw JPARSException.invalidPagingRequest();
                     }
-                    return response(context, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.PAGING));
+                    return namedQueryResponse(context, name, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.PAGING));
                 }
             }
-            return response(context, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.NO_PAGING));
+            return namedQueryResponse(context, name, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.NO_PAGING));
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private Response response(PersistenceContext context, DatabaseQuery dbQuery, Query query, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
+    private Response namedQueryResponse(PersistenceContext context, String queryName, DatabaseQuery dbQuery, Query query, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
         Map<String, Object> queryParams = getQueryParameters(uriInfo);
 
         if (dbQuery instanceof ReportQuery) {
@@ -127,7 +114,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
                     return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes())).build();
                 } else {
                     // something is wrong with the descriptors
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                    throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
                 }
             }
             return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();

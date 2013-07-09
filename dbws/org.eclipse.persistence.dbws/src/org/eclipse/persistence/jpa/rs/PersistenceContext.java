@@ -38,7 +38,6 @@ import javax.persistence.Query;
 import javax.persistence.RollbackException;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -56,7 +55,6 @@ import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
-import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -76,6 +74,7 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
@@ -1084,7 +1083,7 @@ public class PersistenceContext {
                     if (mapping instanceof XMLInverseReferenceMapping) {
                         // we require Fetch groups to handle relationships
                         JPARSLogger.fine("weaving_required_for_relationships", new Object[] { DataStorage.get(DataStorage.REQUEST_ID) });
-                        throw JPARSException.invalidConfiguration(Status.INTERNAL_SERVER_ERROR.getStatusCode());
+                        throw JPARSException.invalidConfiguration();
                     }
                 }
             }

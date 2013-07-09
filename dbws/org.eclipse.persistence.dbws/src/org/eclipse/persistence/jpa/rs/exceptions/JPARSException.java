@@ -10,54 +10,16 @@
  * Contributors:
  *      gonural - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.exceptions;
+package org.eclipse.persistence.jpa.rs.exceptions;
 
+import javax.ws.rs.core.Response.Status;
+
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.JPARSErrorCodes;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
 public class JPARSException extends EclipseLinkException {
-    // Next range should start from LAST_ERROR_CODE (62000). 
-    // The JPA-RS uses error codes between 61000-61999 (both inclusive).
-    public enum ErrorCode {
-        ENTITY_NOT_FOUND(61000),
-        OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST(61001),
-        INVALID_CONFIGURATION(61002),
-        ENTITY_NOT_IDEMPOTENT(61003),
-        PERSISTENCE_CONTEXT_COULD_NOT_BE_BOOTSTRAPPED(61004),
-        CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND_FOR_ENTITY(61005),
-        DATABASE_MAPPING_COULD_NOT_BE_FOUND_FOR_ENTITY_ATTRIBUTE(61006),
-        ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY(61007),
-        SELECTION_QUERY_FOR_ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY(61008),
-        INVALID_PAGING_REQUEST(61009),
-        ATTRIBUTE_COULD_NOT_BE_UPDATED(61010),
-        INVALID_ATTRIBUTE_REMOVAL_REQUEST(61011),
-        RESPONSE_COULD_NOT_BE_BUILT_FOR_FIND_ATTRIBUTE_REQUEST(61012),
-        SESSION_BEAN_LOOKUP_FAILED(61013),
-        RESPONSE_COULD_NOT_BE_BUILT_FOR_NAMED_QUERY_REQUEST(61014),
-
-        INVALID_SERVICE_VERSION(61013),
-
-        // wraps eclipselink exceptions    
-        AN_EXCEPTION_OCCURRED(61999),
-
-        // end marker for JPA-RS error codes    
-        LAST_ERROR_CODE(62000);
-        private int value;
-
-        private ErrorCode(int value) {
-            this.value = value;
-        }
-
-        /**
-         * Value.
-         *
-         * @return the string
-         */
-        public String value() {
-            return String.valueOf(value);
-        }
-    };
-
-    private int httpStatusCode;
+    private Status httpStatusCode;
 
     /**
      * Instantiates a new JPARS exception.
@@ -79,7 +41,7 @@ public class JPARSException extends EclipseLinkException {
      *
      * @return the http status code
      */
-    public int getHttpStatusCode() {
+    public Status getHttpStatusCode() {
         return httpStatusCode;
     }
 
@@ -88,16 +50,12 @@ public class JPARSException extends EclipseLinkException {
      *
      * @param httpStatusCode the new http status code
      */
-    public void setHttpStatusCode(int httpStatusCode) {
+    public void setHttpStatusCode(Status httpStatusCode) {
         this.httpStatusCode = httpStatusCode;
     }
 
     private JPARSException(String message) {
         super(message);
-    }
-
-    private JPARSException(Throwable internalException) {
-        super(ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.AN_EXCEPTION_OCCURRED.value, new Object[] {}), internalException);
     }
 
     private JPARSException(String msg, Throwable internalException) {
@@ -113,14 +71,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException entityNotFound(int httpStatusCode, String entityType, String entityId, String persistenceUnit) {
+    public static JPARSException entityNotFound(String entityType, String entityId, String persistenceUnit) {
         Object[] args = { entityType, entityId, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.ENTITY_NOT_FOUND.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.ENTITY_NOT_FOUND, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.ENTITY_NOT_FOUND.value);
-        exception.setHttpStatusCode(httpStatusCode);
-
+        exception.setErrorCode(JPARSErrorCodes.ENTITY_NOT_FOUND);
+        exception.setHttpStatusCode(Status.NOT_FOUND);
         return exception;
     }
 
@@ -132,13 +89,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException classDescriptorCouldNotBeFoundForEntity(int httpStatusCode, String entityType, String persistenceUnit) {
+    public static JPARSException classDescriptorCouldNotBeFoundForEntity(String entityType, String persistenceUnit) {
         Object[] args = { entityType, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND_FOR_ENTITY.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND_FOR_ENTITY, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND_FOR_ENTITY.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND_FOR_ENTITY);
+        exception.setHttpStatusCode(Status.NOT_FOUND);
 
         return exception;
     }
@@ -153,13 +110,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException attributeCouldNotBeFoundForEntity(int httpStatusCode, String attributeName, String entityType, String entityId, String persistenceUnit) {
+    public static JPARSException attributeCouldNotBeFoundForEntity(String attributeName, String entityType, String entityId, String persistenceUnit) {
         Object[] args = { attributeName, entityType, entityId, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY);
+        exception.setHttpStatusCode(Status.NOT_FOUND);
 
         return exception;
     }
@@ -174,13 +131,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException selectionQueryForAttributeCouldNotBeFoundForEntity(int httpStatusCode, String attributeName, String entityType, String entityId, String persistenceUnit) {
+    public static JPARSException selectionQueryForAttributeCouldNotBeFoundForEntity(String attributeName, String entityType, String entityId, String persistenceUnit) {
         Object[] args = { attributeName, entityType, entityId, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.SELECTION_QUERY_FOR_ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.SELECTION_QUERY_FOR_ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.SELECTION_QUERY_FOR_ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.SELECTION_QUERY_FOR_ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY);
+        exception.setHttpStatusCode(Status.NOT_FOUND);
 
         return exception;
     }
@@ -191,13 +148,13 @@ public class JPARSException extends EclipseLinkException {
      * @param httpStatusCode the http status code
      * @return the JPARS exception
      */
-    public static JPARSException invalidPagingRequest(int httpStatusCode) {
+    public static JPARSException invalidPagingRequest() {
         Object[] args = {};
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.INVALID_PAGING_REQUEST.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.INVALID_PAGING_REQUEST, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.INVALID_PAGING_REQUEST.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.INVALID_PAGING_REQUEST);
+        exception.setHttpStatusCode(Status.BAD_REQUEST);
 
         return exception;
     }
@@ -212,13 +169,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException databaseMappingCouldNotBeFoundForEntityAttribute(int httpStatusCode, String attributeName, String entityType, String entityId, String persistenceUnit) {
+    public static JPARSException databaseMappingCouldNotBeFoundForEntityAttribute(String attributeName, String entityType, String entityId, String persistenceUnit) {
         Object[] args = { attributeName, entityType, entityId, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.DATABASE_MAPPING_COULD_NOT_BE_FOUND_FOR_ENTITY_ATTRIBUTE.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.DATABASE_MAPPING_COULD_NOT_BE_FOUND_FOR_ENTITY_ATTRIBUTE, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.DATABASE_MAPPING_COULD_NOT_BE_FOUND_FOR_ENTITY_ATTRIBUTE.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.DATABASE_MAPPING_COULD_NOT_BE_FOUND_FOR_ENTITY_ATTRIBUTE);
+        exception.setHttpStatusCode(Status.NOT_FOUND);
 
         return exception;
     }
@@ -233,13 +190,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException attributeCouldNotBeUpdated(int httpStatusCode, String attributeName, String entityType, String entityId, String persistenceUnit) {
+    public static JPARSException attributeCouldNotBeUpdated(String attributeName, String entityType, String entityId, String persistenceUnit) {
         Object[] args = { attributeName, entityType, entityId, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.ATTRIBUTE_COULD_NOT_BE_UPDATED.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.ATTRIBUTE_COULD_NOT_BE_UPDATED, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.ATTRIBUTE_COULD_NOT_BE_UPDATED.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.ATTRIBUTE_COULD_NOT_BE_UPDATED);
+        exception.setHttpStatusCode(Status.INTERNAL_SERVER_ERROR);
 
         return exception;
     }
@@ -251,13 +208,13 @@ public class JPARSException extends EclipseLinkException {
      * @param serviceVersion the service version
      * @return the JPARS exception
      */
-    public static JPARSException invalidServiceVersion(int httpStatusCode, String serviceVersion) {
+    public static JPARSException invalidServiceVersion(String serviceVersion) {
         Object[] args = { serviceVersion };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.INVALID_SERVICE_VERSION.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.INVALID_SERVICE_VERSION, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.INVALID_SERVICE_VERSION.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.INVALID_SERVICE_VERSION);
+        exception.setHttpStatusCode(Status.BAD_REQUEST);
 
         return exception;
     }
@@ -272,13 +229,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException invalidRemoveAttributeRequest(int httpStatusCode, String attributeName, String entityType, String entityId, String persistenceUnit) {
+    public static JPARSException invalidRemoveAttributeRequest(String attributeName, String entityType, String entityId, String persistenceUnit) {
         Object[] args = { entityType, entityId, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.INVALID_ATTRIBUTE_REMOVAL_REQUEST.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.INVALID_ATTRIBUTE_REMOVAL_REQUEST, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.INVALID_ATTRIBUTE_REMOVAL_REQUEST.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.INVALID_ATTRIBUTE_REMOVAL_REQUEST);
+        exception.setHttpStatusCode(Status.BAD_REQUEST);
 
         return exception;
     }
@@ -293,13 +250,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException responseCouldNotBeBuiltForFindAttributeRequest(int httpStatusCode, String attributeName, String entityType, String entityId, String persistenceUnit) {
+    public static JPARSException responseCouldNotBeBuiltForFindAttributeRequest(String attributeName, String entityType, String entityId, String persistenceUnit) {
         Object[] args = { entityType, entityId, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.RESPONSE_COULD_NOT_BE_BUILT_FOR_FIND_ATTRIBUTE_REQUEST.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.RESPONSE_COULD_NOT_BE_BUILT_FOR_FIND_ATTRIBUTE_REQUEST, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.RESPONSE_COULD_NOT_BE_BUILT_FOR_FIND_ATTRIBUTE_REQUEST.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.RESPONSE_COULD_NOT_BE_BUILT_FOR_FIND_ATTRIBUTE_REQUEST);
+        exception.setHttpStatusCode(Status.INTERNAL_SERVER_ERROR);
 
         return exception;
     }
@@ -312,13 +269,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException responseCouldNotBeBuiltForNamedQueryRequest(int httpStatusCode, String query, String persistenceUnit) {
+    public static JPARSException responseCouldNotBeBuiltForNamedQueryRequest(String query, String persistenceUnit) {
         Object[] args = { query, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.RESPONSE_COULD_NOT_BE_BUILT_FOR_NAMED_QUERY_REQUEST.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.RESPONSE_COULD_NOT_BE_BUILT_FOR_NAMED_QUERY_REQUEST, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.RESPONSE_COULD_NOT_BE_BUILT_FOR_NAMED_QUERY_REQUEST.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.RESPONSE_COULD_NOT_BE_BUILT_FOR_NAMED_QUERY_REQUEST);
+        exception.setHttpStatusCode(Status.INTERNAL_SERVER_ERROR);
 
         return exception;
     }
@@ -331,13 +288,13 @@ public class JPARSException extends EclipseLinkException {
      * @param entityId the entity id
      * @return the JPARS exception
      */
-    public static JPARSException objectReferredByLinkDoesNotExist(int httpStatusCode, String entityType, Object entityId) {
+    public static JPARSException objectReferredByLinkDoesNotExist(String entityType, Object entityId) {
         Object[] args = { entityType, entityId };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST);
+        exception.setHttpStatusCode(Status.NOT_FOUND);
 
         return exception;
     }
@@ -349,13 +306,13 @@ public class JPARSException extends EclipseLinkException {
      * @param jndiName the jndi name
      * @return the JPARS exception
      */
-    public static JPARSException sessionBeanLookupFailed(int httpStatusCode, String jndiName) {
+    public static JPARSException sessionBeanCouldNotBeFound(String jndiName) {
         Object[] args = { jndiName };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.SESSION_BEAN_LOOKUP_FAILED.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.SESSION_BEAN_COULD_NOT_BE_FOUND, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.SESSION_BEAN_LOOKUP_FAILED.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.SESSION_BEAN_COULD_NOT_BE_FOUND);
+        exception.setHttpStatusCode(Status.NOT_FOUND);
 
         return exception;
     }
@@ -366,13 +323,13 @@ public class JPARSException extends EclipseLinkException {
      * @param httpStatusCode the http status code
      * @return the JPARS exception
      */
-    public static JPARSException invalidConfiguration(int httpStatusCode) {
+    public static JPARSException invalidConfiguration() {
         Object[] args = {};
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.INVALID_CONFIGURATION.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.INVALID_CONFIGURATION, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.INVALID_CONFIGURATION.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.INVALID_CONFIGURATION);
+        exception.setHttpStatusCode(Status.INTERNAL_SERVER_ERROR);
 
         return exception;
     }
@@ -385,13 +342,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException entityIsNotIdempotent(int httpStatusCode, String entityType, String persistenceUnit) {
+    public static JPARSException entityIsNotIdempotent(String entityType, String persistenceUnit) {
         Object[] args = { entityType, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.ENTITY_NOT_IDEMPOTENT.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.ENTITY_NOT_IDEMPOTENT, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.ENTITY_NOT_IDEMPOTENT.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.ENTITY_NOT_IDEMPOTENT);
+        exception.setHttpStatusCode(Status.BAD_REQUEST);
 
         return exception;
     }
@@ -403,13 +360,13 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException persistenceContextCouldNotBeBootstrapped(int httpStatusCode, String persistenceUnit) {
+    public static JPARSException persistenceContextCouldNotBeBootstrapped(String persistenceUnit) {
         Object[] args = { persistenceUnit, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.PERSISTENCE_CONTEXT_COULD_NOT_BE_BOOTSTRAPPED.value, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.PERSISTENCE_CONTEXT_COULD_NOT_BE_BOOTSTRAPPED, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(ErrorCode.PERSISTENCE_CONTEXT_COULD_NOT_BE_BOOTSTRAPPED.value);
-        exception.setHttpStatusCode(httpStatusCode);
+        exception.setErrorCode(JPARSErrorCodes.PERSISTENCE_CONTEXT_COULD_NOT_BE_BOOTSTRAPPED);
+        exception.setHttpStatusCode(Status.INTERNAL_SERVER_ERROR);
 
         return exception;
     }
@@ -421,8 +378,8 @@ public class JPARSException extends EclipseLinkException {
      * @return the JPARS exception
      */
     public static JPARSException exceptionOccurred(Exception exception) {
-        int errorCode = ErrorCode.AN_EXCEPTION_OCCURRED.value;
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, ErrorCode.AN_EXCEPTION_OCCURRED.value, new Object[] { exception.getClass().getSimpleName() }).trim();
+        int errorCode = JPARSErrorCodes.AN_EXCEPTION_OCCURRED;
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, errorCode, new Object[] { exception.getClass().getSimpleName() }).trim();
 
         if (exception instanceof EclipseLinkException) {
             errorCode = ((EclipseLinkException) exception).getErrorCode();

@@ -22,16 +22,15 @@ import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.FeatureSetPreV2;
 import org.eclipse.persistence.jpa.rs.features.FeatureSetV2;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
@@ -164,7 +163,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
 
         if ((persistenceContext != null) && (!persistenceContext.isWeavingEnabled())) {
             JPARSLogger.fine("weaving_required_for_relationships", new Object[] { DataStorage.get(DataStorage.REQUEST_ID) });
-            throw JPARSException.invalidConfiguration(Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            throw JPARSException.invalidConfiguration();
         }
 
         return persistenceContext;

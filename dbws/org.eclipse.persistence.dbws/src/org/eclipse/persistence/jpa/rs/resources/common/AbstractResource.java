@@ -43,6 +43,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.list.LinkList;
 import org.eclipse.persistence.jpa.rs.util.list.QueryList;
@@ -173,13 +174,21 @@ public abstract class AbstractResource {
      * @param initializationProperties the initialization properties
      * @return the persistence context
      */
-    protected PersistenceContext getPersistenceContext(String persistenceUnit, URI baseURI, String version, Map<String, Object> initializationProperties) {
+    protected PersistenceContext getPersistenceContext(String persistenceUnit, String type, URI baseURI, String version, Map<String, Object> initializationProperties) {
         if (!isValidVersion(version)) {
             JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), version });
             throw new IllegalArgumentException();
         }
-
-        return getPersistenceFactory().get(persistenceUnit, baseURI, version, initializationProperties);
+        PersistenceContext context = getPersistenceFactory().get(persistenceUnit, baseURI, version, initializationProperties);
+        if ((context == null) || ((type != null) && (context.getClass(type) == null))) {
+            if (context == null) {
+                JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnit });
+            } else {
+                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
+            }
+            throw JPARSException.persistenceContextCouldNotBeBootstrapped(persistenceUnit);
+        }
+        return context;
     }
 
     /**

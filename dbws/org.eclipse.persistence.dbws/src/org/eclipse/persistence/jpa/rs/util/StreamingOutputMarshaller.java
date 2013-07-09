@@ -30,11 +30,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
@@ -102,7 +102,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 oos.close();
                 output.write(baos.toByteArray());
             } else {
-                JPARSLogger.fine("jpars_could_marshal_requested_result_to_requested_type", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), result });
+                JPARSLogger.fine("jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), result });
                 throw new WebApplicationException();
             }
         }

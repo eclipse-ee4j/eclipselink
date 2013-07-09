@@ -25,13 +25,11 @@ import javax.naming.NamingException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.exceptions.JPARSException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Parameter;
@@ -41,6 +39,7 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.LinkList;
@@ -55,7 +54,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
         try {
             if (!isValidVersion(version)) {
                 JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), version });
-                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                JPARSException.invalidServiceVersion(version);
             }
 
             Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
@@ -89,7 +88,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
         try {
             if (!isValidVersion(version)) {
                 JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), version });
-                return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                JPARSException.invalidServiceVersion(version);
             }
 
             SessionBeanCall call = null;
@@ -100,7 +99,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             Object ans = ctx.lookup(jndiName);
             if (ans == null) {
                 JPARSLogger.fine("jpars_could_not_find_session_bean", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), jndiName });
-                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                throw JPARSException.sessionBeanCouldNotBeFound(jndiName);
             }
 
             PersistenceContext context = null;
@@ -108,7 +107,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
                 context = getPersistenceFactory().get(call.getContext(), uriInfo.getBaseUri(), version, null);
                 if (context == null) {
                     JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), call.getContext() });
-                    return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
+                    throw JPARSException.persistenceContextCouldNotBeBootstrapped(call.getContext());
                 }
             }
 
