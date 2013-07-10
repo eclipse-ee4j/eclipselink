@@ -27,7 +27,7 @@ public class JPARSExceptionResource extends ListResourceBundle {
             { String.valueOf(JPARSErrorCodes.INVALID_CONFIGURATION), "Invalid configuration." },
             { String.valueOf(JPARSErrorCodes.ENTITY_NOT_IDEMPOTENT), "An entity type {0} in persistence unit {1} is being created with a PUT, but the entity is not idempotent due to either sequence generation or cascading." },
             { String.valueOf(JPARSErrorCodes.PERSISTENCE_CONTEXT_COULD_NOT_BE_BOOTSTRAPPED), "Persistence Context {0} could not be bootstrapped." },
-            { String.valueOf(JPARSErrorCodes.CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND_FOR_ENTITY), "Class descriptor could not be found for entity type {0} in persistence unit {1}." },
+            { String.valueOf(JPARSErrorCodes.CLASS_OR_CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND), "Class or class descriptor could not be found for entity type {0} in persistence unit {1}." },
             { String.valueOf(JPARSErrorCodes.DATABASE_MAPPING_COULD_NOT_BE_FOUND_FOR_ENTITY_ATTRIBUTE), "‎Appropriate database mapping could not be found for attribute {0} for entity type {1} and id {2} in persistence unit {3}." },
             { String.valueOf(JPARSErrorCodes.ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY), "Attribute {0} for entity type {1} and id {2} could not be found in persistence unit {3}." },
             { String.valueOf(JPARSErrorCodes.SELECTION_QUERY_FOR_ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY), "Selection query for attribute {0}, for entity type {1} and id {2} could not be found in persistence unit {3}." },

@@ -20,7 +20,7 @@ public class JPARSErrorCodes {
     public static final int INVALID_CONFIGURATION = 61002;
     public static final int ENTITY_NOT_IDEMPOTENT = 61003;
     public static final int PERSISTENCE_CONTEXT_COULD_NOT_BE_BOOTSTRAPPED = 61004;
-    public static final int CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND_FOR_ENTITY = 61005;
+    public static final int CLASS_OR_CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND = 61005;
     public static final int DATABASE_MAPPING_COULD_NOT_BE_FOUND_FOR_ENTITY_ATTRIBUTE = 61006;
     public static final int ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY = 61007;
     public static final int SELECTION_QUERY_FOR_ATTRIBUTE_COULD_NOT_BE_FOUND_FOR_ENTITY = 61008;

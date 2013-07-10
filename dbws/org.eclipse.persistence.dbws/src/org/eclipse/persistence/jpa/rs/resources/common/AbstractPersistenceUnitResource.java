@@ -63,7 +63,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(descriptorAlias);
             if (descriptor == null) {
                 JPARSLogger.fine("jpars_could_not_find_entity_type", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), descriptorAlias, persistenceUnit });
-                throw JPARSException.classDescriptorCouldNotBeFoundForEntity(descriptorAlias, persistenceUnit);
+                throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(descriptorAlias, persistenceUnit);
             } else {
                 String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
                 Descriptor returnDescriptor = buildDescriptor(context, persistenceUnit, descriptor, baseURI.toString());

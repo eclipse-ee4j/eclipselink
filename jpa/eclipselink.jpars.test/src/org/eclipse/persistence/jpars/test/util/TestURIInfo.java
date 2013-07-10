@@ -29,10 +29,10 @@ public class TestURIInfo implements UriInfo {
 
     protected List<PathSegment> pathSegments = new ArrayList<PathSegment>();
     protected MultivaluedMap<String, String> queryParameters = new StringKeyIgnoreCaseMultivaluedMap<String>();
-    
-    public TestURIInfo(){
+
+    public TestURIInfo() {
     }
-    
+
     @Override
     public URI getAbsolutePath() {
         return null;
@@ -115,48 +115,49 @@ public class TestURIInfo implements UriInfo {
 
     @Override
     public URI getRequestUri() {
-        return null;
+        // adding a dummy implementation so that printing uriInfo in the web service methods 
+        // that TestService calls wouldn't throw null pointer exception
+        return getBaseUri();
     }
 
     @Override
     public UriBuilder getRequestUriBuilder() {
         return null;
     }
-    
-    public void addMatrixParameter(String segment, String key, String value){
+
+    public void addMatrixParameter(String segment, String key, String value) {
         PathSegment segmentToUse = null;
-        for (PathSegment pathSegment: pathSegments){
-            if (pathSegment.getPath().equals(segment)){
+        for (PathSegment pathSegment : pathSegments) {
+            if (pathSegment.getPath().equals(segment)) {
                 segmentToUse = pathSegment;
             }
         }
-        if (segmentToUse == null){
+        if (segmentToUse == null) {
             segmentToUse = new TestPathSegment(segment);
             pathSegments.add(segmentToUse);
         }
-        
+
         List<String> parameters = segmentToUse.getMatrixParameters().get(key);
-        if (parameters == null){
+        if (parameters == null) {
             parameters = new ArrayList<String>();
         }
         parameters.add(value);
         segmentToUse.getMatrixParameters().put(key, parameters);
     }
-    
-    public class TestPathSegment implements PathSegment{
+
+    public class TestPathSegment implements PathSegment {
         private MultivaluedMap<String, String> matrixParameters = new MultivaluedMapImpl();
         private String path;
-        
-        public TestPathSegment(String path){
+
+        public TestPathSegment(String path) {
             this.path = path;
         }
 
-            
         @Override
         public String getPath() {
             return path;
         }
-                
+
         @Override
         public MultivaluedMap<String, String> getMatrixParameters() {
             // TODO Auto-generated method stub

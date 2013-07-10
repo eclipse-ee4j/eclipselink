@@ -89,12 +89,12 @@ public class JPARSException extends EclipseLinkException {
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */
-    public static JPARSException classDescriptorCouldNotBeFoundForEntity(String entityType, String persistenceUnit) {
+    public static JPARSException classOrClassDescriptorCouldNotBeFoundForEntity(String entityType, String persistenceUnit) {
         Object[] args = { entityType, persistenceUnit };
 
-        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND_FOR_ENTITY, args);
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.CLASS_OR_CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND, args);
         JPARSException exception = new JPARSException(msg);
-        exception.setErrorCode(JPARSErrorCodes.CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND_FOR_ENTITY);
+        exception.setErrorCode(JPARSErrorCodes.CLASS_OR_CLASS_DESCRIPTOR_COULD_NOT_BE_FOUND);
         exception.setHttpStatusCode(Status.NOT_FOUND);
 
         return exception;
