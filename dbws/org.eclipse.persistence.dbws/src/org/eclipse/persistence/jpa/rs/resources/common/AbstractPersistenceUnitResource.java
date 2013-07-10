@@ -167,13 +167,11 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             String result = null;
             try {
                 result = marshallMetadata(pu, mediaType);
+                return Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes())).build();
             } catch (JAXBException e) {
                 JPARSLogger.fine("exception_marshalling_persitence_unit", new Object[] { persistenceUnit, e.toString() });
                 return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
             }
-            ResponseBuilder rb = Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes()));
-            rb.header("Content-Type", MediaType.APPLICATION_JSON);
-            return rb.build();
         }
     }
 
