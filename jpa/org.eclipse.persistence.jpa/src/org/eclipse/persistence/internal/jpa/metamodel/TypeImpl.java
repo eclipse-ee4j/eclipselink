@@ -21,6 +21,7 @@ import java.io.Serializable;
 
 import javax.persistence.metamodel.Type;
 
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -43,17 +44,20 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
     /** The Java Class in use that this Type represents */
     private Class<X> javaClass;
     
+    private String javaClassName;
+    
     protected TypeImpl(Class<X> javaClass) {
         this(javaClass, null);
     }
 
     protected TypeImpl(Class<X> javaClass, String javaClassName) {
         // 303063: secondary check for case where descriptor has no java class set - should never happen but should be warned about
-        if(null == javaClass) { 
+        if(null == javaClass && null == javaClassName) { 
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_typeImpl_javaClass_should_not_be_null", this, javaClassName); // exporting (this) outside the constructor breaks concurrency
             // Default to Object to avoid a NPE - in the case where javaClass is not set or not set yet via Project.convertClassNamesToClasses() 
             this.javaClass = MetamodelImpl.DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS;
-        } else {        
+        } else {
+            this.javaClassName = javaClassName;
             this.javaClass = javaClass;
         }
     }
@@ -63,7 +67,17 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
      *  @return Java type
      */
     public Class<X> getJavaType() {
+        if (javaClass == null){
+            javaClass = ConversionManager.getDefaultManager().convertClassNameToClass(javaClassName);
+        }
         return this.javaClass;
+    }
+    
+    /**
+     * Return the name of the java type
+     */
+    public String getJavaTypeName(){
+        return javaClassName;
     }
 
     /**

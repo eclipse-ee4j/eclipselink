@@ -93,6 +93,8 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -115,8 +117,13 @@ import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.persistence.ValidationMode;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
@@ -167,14 +174,24 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
+import org.eclipse.persistence.internal.jpa.metamodel.ManagedTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.proxy.AttributeProxyImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.proxy.CollectionAttributeProxyImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.proxy.ListAttributeProxyImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.proxy.MapAttributeProxyImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.proxy.SetAttributeProxyImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.proxy.SingularAttributeProxyImpl;
 import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredFields;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
+import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
@@ -1930,7 +1947,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 if(state != STATE_INITIAL || this.isInContainerMode()) {
                     factoryCount++;
                 }
+                preInitializeMetamodel();
             }
+
             state = STATE_PREDEPLOYED;
             session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
             //gf3146: if static weaving is used, we should not return a transformer.  Transformer should still be created though as it modifies descriptors 
@@ -3441,24 +3460,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
         return validationMode;
     }
-
+    
     /**
      * INTERNAL:
      * Return an instance of Metamodel interface for access to the
      * metamodel of the persistence unit.
+     * This method will complete any initialization done in the predeploy phase
+     * of deployment.
      * @return Metamodel instance
      * @since Java Persistence 2.0
      */
     public Metamodel getMetamodel() {
-        // perform lazy initialisation
-        Metamodel tempMetaModel = null;
-        if(null == metaModel) {
-            // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
-            tempMetaModel = new MetamodelImpl(this);
+        preInitializeMetamodel();
+        if (!((MetamodelImpl)metaModel).isInitialized()){
+            ((MetamodelImpl)metaModel).initialize();
             // If the canonical metamodel classes exist, initialize them
-            initializeCanonicalMetamodel(tempMetaModel);
-            // set variable after init has executed without exception
-            metaModel = tempMetaModel;
+            initializeCanonicalMetamodel(metaModel);
         }
         return metaModel;
     }
@@ -3485,10 +3502,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     try {
                         fieldName = ((Attribute)attribute).getName();
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                          ((Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, false))).set(clazz, attribute);
-                         } else {
+                            ((Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, false))).set(clazz, attribute);
+                        } else {
                             PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false).set(clazz, attribute);
-                         }  
+                        }  
                     } catch (NoSuchFieldException nsfe) {
                         // Ignore fields missing in canonical model (dclarke bug 346106)
                     } catch (Exception e) {
@@ -3629,6 +3646,93 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Cause the first phase of metamodel initialization.  This phase involves detecting the classes involved
+     * and build metamodel instances for them. 
+     */
+    public void preInitializeMetamodel(){
+        // perform lazy initialisation
+        Metamodel tempMetaModel = null;
+        if (null == metaModel){
+            // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
+            tempMetaModel = new MetamodelImpl(this);
+            // set variable after init has executed without exception
+            metaModel = tempMetaModel;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * First phase of canonical metamodel initialization.  For each class the metamodel is aware of, check
+     * for a canonical metamodel class and initialize each attribute in it with a proxy that can cause the
+     * rest of the metamodel population.  Attributes are found reflectively rather than through the metamodel
+     * to avoid having to further initialize the metamodel.
+     * @param factory
+     */
+    public void preInitializeCanonicalMetamodel(EntityManagerFactoryImpl factory){
+        // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
+        if(null == metaModel.getManagedTypes() || metaModel.getManagedTypes().isEmpty()) {
+            getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_type_collection_empty");
+        }
+        for (ManagedType manType : metaModel.getManagedTypes()) {
+            boolean classInitialized = false;
+            String className = MetadataHelper.getQualifiedCanonicalName(((ManagedTypeImpl)manType).getJavaTypeName(), getSession());
+            try {                
+                Class clazz = (Class)this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
+                classInitialized=true;
+                this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className); 
+                Field[] fields = null;
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    fields = AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
+                } else {
+                    fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
+                }
+                for(Field attribute : fields) {
+                    if (Attribute.class.isAssignableFrom(attribute.getType())){
+                        Object assignedAttribute = null;
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                            assignedAttribute = AccessController.doPrivileged(new PrivilegedGetValueFromField(attribute, null));
+                        } else {
+                            assignedAttribute =PrivilegedAccessHelper.getValueFromField(attribute, null);
+                        }
+                        AttributeProxyImpl proxy = null;
+                        if (assignedAttribute == null){
+                            if (SingularAttribute.class.isAssignableFrom(attribute.getType())){
+                                proxy = new SingularAttributeProxyImpl();
+                            } else if (MapAttribute.class.isAssignableFrom(attribute.getType())){
+                                proxy = new MapAttributeProxyImpl();
+                            } else if (SetAttribute.class.isAssignableFrom(attribute.getType())){
+                                proxy = new SetAttributeProxyImpl();
+                            } else if (ListAttribute.class.isAssignableFrom(attribute.getType())){
+                                proxy = new ListAttributeProxyImpl();
+                            } else if (CollectionAttribute.class.isAssignableFrom(attribute.getType())){
+                                proxy = new CollectionAttributeProxyImpl();
+                            }
+                            if (proxy != null){
+                                attribute.setAccessible(true);
+                                attribute.set(null, proxy);
+                            }
+                        } else if (assignedAttribute instanceof AttributeProxyImpl){
+                            proxy = (AttributeProxyImpl)assignedAttribute;
+                        }
+                        if (proxy != null){
+                            proxy.addFactory(factory);
+                        }
+                    }
+                }
+            } catch (PrivilegedActionException pae){
+                getSession().logThrowable(SessionLog.FINEST,  SessionLog.METAMODEL, pae);
+            } catch (IllegalAccessException iae){
+                getSession().logThrowable(SessionLog.FINEST,  SessionLog.METAMODEL, iae);
+            } catch (ConversionException ce){
+            }
+            if (!classInitialized) {
+                getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_not_found", className);
+            }
+        }
+    }
+    
     /*
      * Overide composite member properties' map with a new one, which
      * has (possibly empty but non-null) properties for each composite member,

@@ -134,12 +134,14 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             try {
                 factory = new EntityManagerFactoryImpl(emSetupImpl, properties);
                 emSetupImpl.setRequiresConnection(requiresConnection);
-                
+
+                emSetupImpl.preInitializeCanonicalMetamodel(factory);
                 // This code has been added to allow validation to occur without actually calling createEntityManager
+
                 if (emSetupImpl.shouldGetSessionOnCreateFactory(properties)) {
                     factory.getDatabaseSession();
                 }
-                
+
                 return factory;
             } catch (RuntimeException ex) {
                 if (factory != null) {
@@ -352,7 +354,8 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         EntityManagerFactoryImpl factory = null;
         try {
             factory = new EntityManagerFactoryImpl(emSetupImpl, nonNullProperties);
-        
+            emSetupImpl.preInitializeCanonicalMetamodel(factory);
+            
             // This code has been added to allow validation to occur without actually calling createEntityManager
             if (emSetupImpl.shouldGetSessionOnCreateFactory(nonNullProperties)) {
                 factory.getDatabaseSession();

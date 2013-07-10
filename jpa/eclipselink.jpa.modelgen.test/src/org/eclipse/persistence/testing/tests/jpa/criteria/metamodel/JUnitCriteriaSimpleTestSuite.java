@@ -27,12 +27,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
@@ -48,6 +52,7 @@ import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
@@ -101,6 +106,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("JUnitJPQLSimpleTestSuite");
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testNotLoggedIn"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testSetup"));
 		suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleModTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleJoinFetchTest"));
@@ -171,6 +177,14 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("simpleAsOrderByTest"));
         
         return suite;
+    }
+    
+    public void testNotLoggedIn(){
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put(PersistenceUnitProperties.DDL_GENERATION, null);
+        EntityManagerFactory em = Persistence.createEntityManagerFactory(getPersistenceUnitName());
+        
+        assertNotNull(Employee_.address);
     }
     
     /**

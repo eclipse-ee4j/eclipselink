@@ -88,26 +88,29 @@ public class MetamodelImpl implements Metamodel, Serializable {
     private AbstractSession session;
 
     /** The Map of entities in this metamodel keyed on Class **/
-    private Map<Class, EntityTypeImpl<?>> entities;
+    private Map<String, EntityTypeImpl<?>> entities;
 
     /** The Map of embeddables in this metamodel keyed on Class **/
-    private Map<Class, EmbeddableTypeImpl<?>> embeddables;
+    private Map<String, EmbeddableTypeImpl<?>> embeddables;
 
     /** The Map of managed types (Entity, Embeddable and MappedSuperclass) in this metamodel keyed on Class **/
-    private Map<Class, ManagedTypeImpl<?>> managedTypes;
+    private Map<String, ManagedTypeImpl<?>> managedTypes;
     
     /** The Map of types (Entity, Embeddable, MappedSuperclass and Basic - essentially Basic + managedTypes) in this metamodel keyed on Class **/
-    private Map<Class, TypeImpl<?>> types;
+    private Map<String, TypeImpl<?>> types;
 
     /** The Set of MappedSuperclassTypes in this metamodel**/
     private Set<MappedSuperclassTypeImpl<?>> mappedSuperclasses;
+    
+    /** maintains initialization state to avoid extra work in calls to initialize **/
+    private boolean isInitialized = false;
 
     /** Default elementType Class when we the type cannot be determined for unsupported mappings such as Transformation and VariableOneToOne */
     public static final Class DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS = Object.class;
 
     public MetamodelImpl(AbstractSession session) {
         this.session = session;
-        initialize();
+        preInitialize();
     }
 
     public MetamodelImpl(EntityManager em) {
@@ -137,7 +140,8 @@ public class MetamodelImpl implements Metamodel, Serializable {
      *  @throws IllegalArgumentException if not an embeddable class
      */
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
-        Object aType = this.embeddables.get(clazz);
+        String key = clazz == null ? null : clazz.getName();
+        Object aType = this.embeddables.get(key);
         if(!(aType instanceof EmbeddableType)) { // will only be true for null or non-metamodel types - as the map only stores EmbeddableType values
         	entityEmbeddableManagedTypeNotFound(embeddables, aType, clazz, "Embeddable", "EmbeddableType");
         }
@@ -188,7 +192,8 @@ public class MetamodelImpl implements Metamodel, Serializable {
      *  @throws IllegalArgumentException if not an entity
      */
     public <X> EntityType<X> entity(Class<X> clazz) {
-        Object aType = this.entities.get(clazz);
+        String key = clazz == null ? null : clazz.getName();
+        Object aType = this.entities.get(key);
         if(!(aType instanceof EntityType)) { // will only be true for null or non-metamodel types - as the map only stores EntityType values 
         	entityEmbeddableManagedTypeNotFound(entities, aType, clazz, "Entity", "EntityType");
         }
@@ -227,7 +232,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
     /**
      *  Return the metamodel managed types map.
      */
-    public Map<Class, ManagedTypeImpl<?>> getManagedTypesMap() {
+    public Map<String, ManagedTypeImpl<?>> getManagedTypesMap() {
         return this.managedTypes;
     }
 
@@ -275,7 +280,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * @param typeValue
      * @return
      */
-    private boolean putType(Class javaClassKey, TypeImpl typeValue) {
+    private boolean putType(String javaClassKey, TypeImpl typeValue) {
         boolean isValid = true;
         // DI99: Check for an invalid key without reporting it (a non-Fail-Fast pattern)
         if(null == javaClassKey) {
@@ -297,7 +302,8 @@ public class MetamodelImpl implements Metamodel, Serializable {
      */
     public <X> TypeImpl<X> getType(Class<X> javaClass) {
         // Return an existing matching type on the metamodel keyed on class name
-        TypeImpl type = this.types.get(javaClass);
+        String key = javaClass == null ? null : javaClass.getName();
+        TypeImpl type = this.types.get(key);
         // the type was not cached yet on the metamodel - lets add it - usually a non Metamodel class like Integer
         if (null == type) {
             // make types field modification thread-safe
@@ -308,7 +314,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
                 if(null == type) {
                     type = new BasicTypeImpl<X>(javaClass);
                     // add the type to the types map keyed on Java class
-                    putType(javaClass, type);
+                    putType(javaClass.getName(), type);
                 }
             } // synchronized end
         }        
@@ -321,7 +327,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * This includes all Entity, MappedSuperclass, Embeddable and Basic types
      * @return
      */
-    public Map<Class, TypeImpl<?>> getTypes() {
+    public Map<String, TypeImpl<?>> getTypes() {
         return types;
     }
 
@@ -342,32 +348,29 @@ public class MetamodelImpl implements Metamodel, Serializable {
         return this.getSession().getProject().hasMappedSuperclass(qualifiedClassNameKeyString);
     }    
     
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
     /**
      * INTERNAL:
-     * Initialize the JPA metamodel that wraps the EclipseLink JPA metadata created descriptors.<br>
-     * Note: Since the types Map is lazy-loaded with key:value pairs - the designer and especially the user
-     * must realized that a particular BasicType may not be in the Map until it is referenced.
-     * 
-     * Also note that a transient superclass (non-entity, non-mappedSuperclass)
-     * exists as a BasicType (it has no attributes), and that any inheriting Entity either
-     * directly subclassing or indirectly subclassing via a MappedSuperclass inheritance chain
-     * - does not pick up non-persistence fields that normally would be inherited.
-     * (The fields exist in Java but not in ORM:Metamodel)
-     * The transient class will have no JPA annotations.
+     * First phase of metamodel intialization.  Builds a list of the classes in the metamodel and
+     * stores them in appropriate lists indexed by the classname.  We index by classname to avoid having
+     * to load classes at this phase of initialization
      */
-    private void initialize() {
+    private void preInitialize(){
         // Design Note: Use LinkedHashMap and LinkedHashSet to preserve ordering
-        this.types = new LinkedHashMap<Class, TypeImpl<?>>();
-        this.entities = new LinkedHashMap<Class, EntityTypeImpl<?>>();
-        this.embeddables = new LinkedHashMap<Class, EmbeddableTypeImpl<?>>();
-        this.managedTypes = new LinkedHashMap<Class, ManagedTypeImpl<?>>();
+        this.types = new LinkedHashMap<String, TypeImpl<?>>();
+        this.entities = new LinkedHashMap<String, EntityTypeImpl<?>>();
+        this.embeddables = new LinkedHashMap<String, EmbeddableTypeImpl<?>>();
+        this.managedTypes = new LinkedHashMap<String, ManagedTypeImpl<?>>();
         this.mappedSuperclasses = new LinkedHashSet<MappedSuperclassTypeImpl<?>>();
         
         // Process all Entity and Embeddable types (MappedSuperclasses are handled later)
-        for (Object descriptor : this.getSession().getDescriptors().values()) {
+        for (ClassDescriptor descriptor : this.getSession().getProject().getOrderedDescriptors()) {
             // The ClassDescriptor is always of type RelationalDescriptor - the cast is safe
             ManagedTypeImpl<?> managedType = ManagedTypeImpl.create(this, (ClassDescriptor)descriptor);
-            Class descriptorJavaType = managedType.getJavaType();
+            String descriptorJavaType = managedType.getJavaTypeName();
             if(null == descriptorJavaType) {
                 AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_relationaldescriptor_javaclass_null_on_managedType", descriptor, managedType);
             }            
@@ -397,7 +400,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
             // Add the MappedSuperclass to our Set of MappedSuperclasses
             this.mappedSuperclasses.add(mappedSuperclassType);
 
-            Class descriptorJavaType = mappedSuperclassType.getJavaType();
+            String descriptorJavaType = mappedSuperclassType.getJavaTypeName();
             if(null == descriptorJavaType) {
                 AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_relationaldescriptor_javaclass_null_on_managedType", 
                         descriptor, mappedSuperclassType);
@@ -409,8 +412,27 @@ public class MetamodelImpl implements Metamodel, Serializable {
             // So we can find hierarchies of the form [Entity --> MappedSuperclass(abstract) --> Entity]
             this.managedTypes.put(descriptorJavaType, mappedSuperclassType);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * 
+     * Initialize the JPA metamodel that wraps the EclipseLink JPA metadata created descriptors.<br>
+     * Note: Since the types Map is lazy-loaded with key:value pairs - the designer and especially the user
+     * must realized that a particular BasicType may not be in the Map until it is referenced.
+     * 
+     * Also note that a transient superclass (non-entity, non-mappedSuperclass)
+     * exists as a BasicType (it has no attributes), and that any inheriting Entity either
+     * directly subclassing or indirectly subclassing via a MappedSuperclass inheritance chain
+     * - does not pick up non-persistence fields that normally would be inherited.
+     * (The fields exist in Java but not in ORM:Metamodel)
+     * The transient class will have no JPA annotations.
+     * 
+     * This is the second phase of metamodel initialization.  It causes preindexed classes to have their 
+     * attributes populated.
+     */
+    public void initialize() {
 
-        
         // Handle all IdentifiableTypes (after all ManagedTypes have been created)
         // Assign all superType fields on all IdentifiableTypes (only after all managedType objects have been created)
         for(ManagedTypeImpl<?> potentialIdentifiableType : managedTypes.values()) {
@@ -435,10 +457,10 @@ public class MetamodelImpl implements Metamodel, Serializable {
                 Class superclass = aClass.getSuperclass();
                 // explicitly set the superType to null (just in case it is initialized to a non-null value in a constructor)
                 IdentifiableType<?> identifiableTypeSuperclass = null;
-                if(potentialIdentifiableType.isIdentifiableType() && superclass != ClassConstants.OBJECT) {
+                if(potentialIdentifiableType.isIdentifiableType() && (superclass != ClassConstants.OBJECT && superclass != null)) {
                     // Get the Entity or MappedSuperclass
                     // A hierarchy of Entity --> Entity or Entity --> MappedSuperclass will be found
-                    identifiableTypeSuperclass = (IdentifiableType<?>)managedTypes.get(superclass);
+                    identifiableTypeSuperclass = (IdentifiableType<?>)managedTypes.get(superclass.getName());
                     // If there is no superclass (besides Object for a top level identifiable type) then keep the supertype set to null
                     // See design issue #42 - we return Object for top-level types (with no superclass) and null if the supertype was not set
                     // http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_42:_20090709:_IdentifiableType.supertype_-_what_do_top-level_types_set_it_to
@@ -478,6 +500,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
                 (null == this.entities || this.entities.isEmpty())) {
             AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.METAMODEL, "metamodel_type_collection_empty", null, true);
         }
+        isInitialized = true;
     }
 
     /**
@@ -488,7 +511,8 @@ public class MetamodelImpl implements Metamodel, Serializable {
      *  @throws IllegalArgumentException if not a managed class
      */
     public <X> ManagedType<X> managedType(Class<X> clazz) {
-        Object aType = this.managedTypes.get(clazz);
+        String key = clazz == null ? null : clazz.getName();
+        Object aType = this.managedTypes.get(key);
         // Throw an IAE exception if the returned type is not a ManagedType
         // For any clazz that resolves to a BasicType - use getType(clazz) in implementations when you are expecting a BasicType
         if(!(aType instanceof ManagedType)) { // will only be true for null or non-metamodel types - as entities and embeddables are managedTypes

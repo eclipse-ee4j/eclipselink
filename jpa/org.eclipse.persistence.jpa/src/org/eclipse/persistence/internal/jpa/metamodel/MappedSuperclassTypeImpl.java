@@ -81,13 +81,6 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      * @return
      */
     protected static MappedSuperclassTypeImpl<?> create(MetamodelImpl metamodel, ClassDescriptor relationalDescriptor) {
-        /**
-         * Set the javaClass on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass).
-         * This will ensure the class is both set and is in the right classLoader - even if the class is already set.
-         * Perform this conversion only for our custom pseudo descriptors for MappedSuperclasses.
-         * The classLoader should be obtained from the ConversionManager so we handle EE deployments using a shared-library
-         */ 
-        relationalDescriptor.convertClassNamesToClasses(metamodel.getSession().getDatasourcePlatform().getConversionManager().getLoader());
         MappedSuperclassTypeImpl<?> mappedSuperclassTypeImpl = new MappedSuperclassTypeImpl(metamodel, relationalDescriptor);
         return mappedSuperclassTypeImpl;
     }
@@ -127,7 +120,18 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
     public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
         return PersistenceType.MAPPED_SUPERCLASS;
     }
-
+    
+    protected void initialize(){
+        /**
+         * Set the javaClass on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass).
+         * This will ensure the class is both set and is in the right classLoader - even if the class is already set.
+         * Perform this conversion only for our custom pseudo descriptors for MappedSuperclasses.
+         * The classLoader should be obtained from the ConversionManager so we handle EE deployments using a shared-library
+         */ 
+        descriptor.convertClassNamesToClasses(metamodel.getSession().getDatasourcePlatform().getConversionManager().getLoader());
+        super.initialize();
+    }
+    
     /**
      * INTERNAL:
      * Return whether this type is an Entity (true) or MappedSuperclass (false) or Embeddable (false)

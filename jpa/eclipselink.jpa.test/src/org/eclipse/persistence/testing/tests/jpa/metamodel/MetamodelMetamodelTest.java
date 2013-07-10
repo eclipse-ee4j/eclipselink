@@ -2270,7 +2270,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             
             // Verify all types (entities, embeddables, mappedsuperclasses and basic)
             // get all 21 types (a non spec function - for testing introspection)
-            Map<Class, TypeImpl<?>> typesMap = ((MetamodelImpl)metamodel).getTypes();
+            Map<String, TypeImpl<?>> typesMap = ((MetamodelImpl)metamodel).getTypes();
             // verify each one
             assertNotNull(typesMap);
             ((MetamodelImpl)metamodel).printAllTypes();
