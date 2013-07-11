@@ -1020,11 +1020,24 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         // gMonth
         if (Constants.G_MONTH_QNAME.equals(schemaTypeQName)) {
-        	//There was previously some workaround in the method for handling gMonth and the older/invalid
-        	//--MM-- format.  Those have been removed and the output will always be in the --MM format
-        	//bug #410084        	
+            //There was previously some workaround in the method for handling gMonth and the older/invalid
+            //--MM-- format.  Output should now always be in the --MM format
+            //bug #410084        	
             xgc.setMonth(cal.get(Calendar.MONTH) + 1);
-            return xgc.toXMLFormat();        
+            String xmlFormat = xgc.toXMLFormat();
+            int lastDashIndex = xmlFormat.lastIndexOf('-');
+            if(lastDashIndex > 1){
+            	//this means the format is the --MM--, --MM--Z, --MM--+03:00 and we need to trim the String
+            	String pre = xmlFormat.substring(0, 4);
+            	if(xmlFormat.length() > 6){
+            		String post = xmlFormat.substring(6, xmlFormat.length());
+            		return pre + post;
+            	}else{
+            		return pre;
+            	}
+            }
+            return xmlFormat;
+          
         }
         // gMonthDay
         if (Constants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
@@ -1728,14 +1741,13 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     private String stringFromXMLGregorianCalendar(XMLGregorianCalendar cal, QName schemaTypeQName) {
-    	if(schemaTypeQName !=null && schemaTypeQName.equals(cal.getXMLSchemaType())){
+    	if(schemaTypeQName !=null && schemaTypeQName.equals(cal.getXMLSchemaType()) && schemaTypeQName != Constants.G_MONTH_QNAME){
     	  return cal.toXMLFormat();
     	}
-    	
         GregorianCalendar gCal = cal.toGregorianCalendar();
         if(cal.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
             gCal.clear(Calendar.ZONE_OFFSET);
-        }        
+        }                
         return  stringFromCalendar(gCal, schemaTypeQName);
     }
 
