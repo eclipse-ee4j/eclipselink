@@ -55,7 +55,11 @@ public class InImpl<T> extends CompoundExpressionImpl implements In<T> {
     }
 
     public InImpl(Metamodel metamodel, ExpressionImpl leftExpression, ExpressionImpl rightExp, List expressions) {
-        super(metamodel, rightExp.getCurrentNode().equal(leftExpression.getCurrentNode()), expressions, "in");
+        super(metamodel, 
+            (rightExp.isParameter()?
+                leftExpression.getCurrentNode().in(rightExp.getCurrentNode()):
+                leftExpression.getCurrentNode().equal(rightExp.getCurrentNode())), 
+            expressions, "in");
         this.leftExpression = leftExpression;
         
     }
