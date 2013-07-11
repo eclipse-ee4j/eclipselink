@@ -131,7 +131,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         List list = new ArrayList();
         list.add(values);
         list.add(this);
-        return new InImpl(metamodel, (ExpressionImpl)values, this, list);
+        return new InImpl(metamodel, this, (ExpressionImpl)values, list);
     }
     
     public Predicate isNotNull() {

@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
@@ -32,9 +33,11 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -112,6 +115,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testInParameterCollection"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testProd"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSize"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testJoinDistinct"));
@@ -368,6 +372,28 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
+        } 
+    }
+
+    /*
+     * bug 349477 - Using criteria.in(...) with ParameterExpression of type Collection creates invalid SQL
+     */
+    public void testInParameterCollection(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List respons = new Vector();
+        respons.add("NoResults");
+        respons.add("Bug fixes");
+        try {
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery =qbuilder.createQuery(Employee.class);
+            Root<Employee> emp = cquery.from(Employee.class);
+            ParameterExpression pe = qbuilder.parameter(java.util.Collection.class, "param");
+            cquery.where(emp.join("responsibilities").in(pe));
+            List<Employee> result = em.createQuery(cquery).setParameter("param",respons).getResultList();
+            assertFalse("testInParameterCollection failed: No Employees were returned", result.isEmpty());
+        } finally {
+            closeEntityManagerAndTransaction(em);
         } 
     }
     public void testInlineInParameter(){
