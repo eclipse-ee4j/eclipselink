@@ -44,6 +44,7 @@ import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.MethodExitLogData;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
@@ -71,7 +72,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             DatabaseSession serverSession = context.getServerSession();
             ClassDescriptor descriptor = serverSession.getClassDescriptor(context.getClass(type));
             if (descriptor == null) {
-                throw JPARSException.classDescriptorCouldNotBeFoundForEntity(type, persistenceUnit);
+                throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(type, persistenceUnit);
             }
 
             DatabaseMapping attributeMapping = descriptor.getMappingForAttributeName(attribute);
@@ -125,6 +126,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     protected Response find(String version, String persistenceUnit, String type, String key, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
+        JPARSLogger.entering(AbstractEntityResource.class.getName(), "find", new Object[] { version, persistenceUnit, type, key, uriInfo.getRequestUri().toASCIIString(), baseURI });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
             Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
@@ -134,6 +136,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 JPARSLogger.fine("jpars_could_not_find_entity_for_key", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, key, persistenceUnit });
                 throw JPARSException.entityNotFound(type, key, persistenceUnit);
             }
+            JPARSLogger.exiting(AbstractEntityResource.class.getName(), "find", new MethodExitLogData(new Object[] { context, id, entity }));
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
@@ -147,7 +150,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             ClassDescriptor descriptor = context.getDescriptor(type);
             if (descriptor == null) {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
-                throw JPARSException.classDescriptorCouldNotBeFoundForEntity(type, persistenceUnit);
+                throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(type, persistenceUnit);
             }
 
             Object entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
