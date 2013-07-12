@@ -20,12 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -60,7 +60,7 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
         Exception exception = null;
         try {
             em.createQuery("Select c from Course c").getResultList();
-        } catch (DatabaseException caught){
+        } catch (PersistenceException caught){
             //we expect an exception since the table should not exist, but do not know what exception the database might throw.  
             exception = caught;
         }
