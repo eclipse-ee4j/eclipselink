@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<customer>
+    <address>
+        <contact>
+            <idRefPhoneNumber>A</idRefPhoneNumber>
+            <idRefPhoneNumbers>
+                <idRefPhoneNumber>A</idRefPhoneNumber>
+            </idRefPhoneNumbers>
+        </contact>
+    </address>
+    <phoneNumber>
+        <id>A</id>
+    </phoneNumber>
+</customer>
