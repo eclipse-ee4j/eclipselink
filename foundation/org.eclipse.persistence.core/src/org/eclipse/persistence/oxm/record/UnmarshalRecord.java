@@ -127,7 +127,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private boolean isXsiNil;
     private boolean xpathNodeIsMixedContent = false;
     private int unmappedLevel = -1;
-    private ReferenceResolver referenceResolver = new ReferenceResolver();
+    private ReferenceResolver referenceResolver;
 
     // The "snapshot" location of this object, for @XmlLocation
     private Locator xmlLocation;
@@ -135,7 +135,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     protected XPathFragment textWrapperFragment;    
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
+        this(treeObjectBuilder, new ReferenceResolver());
+    }
+
+    public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder, ReferenceResolver referenceResolver) {
         super();
+        this.referenceResolver = referenceResolver;
         this.xPathFragment = new XPathFragment();
         xPathFragment.setNamespaceAware(isNamespaceAware());
         initialize(treeObjectBuilder);
