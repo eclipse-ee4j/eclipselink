@@ -139,6 +139,10 @@
         <contains string="${cachecoordination.protocol}" substring="jms"/>
     </condition>
 
+    <condition property="is.jgroups">
+        <contains string="${cachecoordination.protocol}" substring="jgroups"/>
+    </condition>
+
     <condition property="is.rmi">
         <contains string="${cachecoordination.protocol}" substring="rmi"/>
     </condition>

@@ -61,6 +61,10 @@
         </classpath>
     </taskdef>
 
+    <condition property="is.jgroups">
+        <contains string="${cachecoordination.protocol}" substring="jgroups"/>
+    </condition>
+
     <!-- Stop all servers. -->
     <target name="weblogic-stop-cachecoordination" depends="stop-server3,stop-server2,stop-server1,stop-adminserver"/>
     <!-- Stop the managed server1 -->
@@ -304,10 +308,10 @@
 			fork="true"
 			failonerror="true">
 			<jvmarg value="-server"/>
-			<jvmarg value="-Xms2g"/>
-			<jvmarg value="-Xmx2g"/>
-			<jvmarg value="-XX:PermSize=1g"/>
-			<jvmarg value="-XX:MaxPermSize=1960m"/>
+			<jvmarg value="-Xms512m"/>
+			<jvmarg value="-Xmx960m"/>
+			<jvmarg value="-XX:PermSize=512m"/>
+			<jvmarg value="-XX:MaxPermSize=960m"/>
 			<env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
 			<sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
 			<sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
@@ -602,6 +606,7 @@
     <target name="weblogic-create-cluster">
         <delete dir="${weblogic.domain}"/>
         <mkdir dir="${weblogic.domain}"/>
+        <antcall target="copy-dependencies-to-domain-lib" inheritRefs="true"/>
         <wlserver fork="true" spawn="true" weblogichome="${weblogic.home}"
                 dir="${weblogic.domain}" host="${rcm.wls.admin.httphost}" servername="${rcm.wls.admin.name}" generateConfig="true" verbose="true"
                 username="${server.user}" password="${server.pwd}" action="start">
@@ -672,6 +677,13 @@
             dir="${weblogic.domain}" host="${rcm.wls.admin.httphost}" port="${rcm.wls.admin.port}" servername="admin"
             username="${server.user}" password="${server.pwd}" action="shutdown">
         </wlserver>
+    </target>
+
+    <target name="copy-dependencies-to-domain-lib" if="is.jgroups">
+        <copy overwrite="true" file="../../../extension.lib.external/jgroups.jar" todir="${weblogic.domain}/lib"/>
+        <copy overwrite="true" todir="${weblogic.domain}/lib">
+            <fileset dir="../../plugins" includes="org.eclipse.persistence.extension_*.jar"/>
+        </copy>
     </target>
 
     <target name="weblogic-setup-cluster">
