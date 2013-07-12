@@ -533,12 +533,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 	                }
 	            }
 	            ObjectBuilder stob2 = (ObjectBuilder)xmlDescriptor.getObjectBuilder();
-	            org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) stob2.createRecord(unmarshalRecord.getSession());
-	            UnmarshalRecord childRecord = wrapper.getUnmarshalRecord();
-	            childRecord.setUnmarshaller(unmarshalRecord.getUnmarshaller());
+	            UnmarshalRecord childRecord = unmarshalRecord.getChildUnmarshalRecord(stob2);
 	            childRecord.setSelfRecord(true);
 	            unmarshalRecord.setChildRecord(childRecord);
-	            childRecord.setXMLReader(unmarshalRecord.getXMLReader());
 	            childRecord.startDocument();
 	            childRecord.initializeRecord(this.xmlCompositeObjectMapping);
 

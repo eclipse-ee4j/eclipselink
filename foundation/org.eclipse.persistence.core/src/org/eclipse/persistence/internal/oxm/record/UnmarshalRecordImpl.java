@@ -122,7 +122,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
     private boolean isXsiNil;
     private boolean xpathNodeIsMixedContent = false;
     private int unmappedLevel = -1;
-    private ReferenceResolver referenceResolver = new ReferenceResolver();
+    private ReferenceResolver referenceResolver;
     
     
     protected Unmarshaller unmarshaller;
@@ -140,7 +140,12 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
     protected XPathFragment textWrapperFragment;    
 
     public UnmarshalRecordImpl(ObjectBuilder objectBuilder) {
+        this(objectBuilder, new ReferenceResolver());
+    }
+
+    private UnmarshalRecordImpl(ObjectBuilder objectBuilder, ReferenceResolver referenceResolver) {
         super();
+        this.referenceResolver = referenceResolver;
         this.xPathFragment = new XPathFragment();
         xPathFragment.setNamespaceAware(isNamespaceAware());
         this.setUnmarshalAttributeGroup(DEFAULT_ATTRIBUTE_GROUP);
@@ -1422,14 +1427,13 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
 	        childRecord.setParentRecord(this);        
 	        return childRecord;
     	}else{
-    	    childRecord = new UnmarshalRecordImpl(treeObjectBuilder);
+    	    childRecord = new UnmarshalRecordImpl(treeObjectBuilder, referenceResolver);
     	    childRecord.setSession(session);
 	        childRecord.setUnmarshaller(unmarshaller);
 	        childRecord.setTextWrapperFragment(textWrapperFragment);
 	        childRecord.setXMLReader(this.xmlReader);
 	        childRecord.setFragmentBuilder(fragmentBuilder);
 	        childRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
-	        childRecord.setReferenceResolver(referenceResolver);
 	        childRecord.setParentRecord(this);     
     	}
         return childRecord;    	
