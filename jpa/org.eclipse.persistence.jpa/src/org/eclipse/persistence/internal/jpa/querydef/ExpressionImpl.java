@@ -134,6 +134,10 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         List list = new ArrayList();
         list.add(values);
         list.add(this);
+        if (((ExpressionImpl)values).isParameter()) {
+            return new CompoundExpressionImpl(metamodel, 
+                    ((InternalSelection)this).getCurrentNode().in(((InternalSelection)values).getCurrentNode()), list, "in");
+        }
         return new CompoundExpressionImpl(metamodel, ((InternalSelection)values).getCurrentNode().equal(((InternalSelection)this).getCurrentNode()), list, "in");
     }
     
