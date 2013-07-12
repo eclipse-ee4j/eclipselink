@@ -532,11 +532,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 	                    }
 	                }
 	            }
-	            UnmarshalRecord childRecord = unmarshalRecord.getUnmarshaller().createUnmarshalRecord(xmlDescriptor, unmarshalRecord.getSession());
-	            childRecord.setUnmarshaller(unmarshalRecord.getUnmarshaller());
+                UnmarshalRecord childRecord = unmarshalRecord.getChildUnmarshalRecord((ObjectBuilder) xmlDescriptor.getObjectBuilder());
 	            childRecord.setSelfRecord(true);
 	            unmarshalRecord.setChildRecord(childRecord);
-	            childRecord.setXMLReader(unmarshalRecord.getXMLReader());
 	            childRecord.startDocument();
 	            childRecord.initializeRecord(this.xmlCompositeObjectMapping);
 

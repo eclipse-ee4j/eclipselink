@@ -1,0 +1,13 @@
+{
+    "customer":{
+        "address":{
+            "contact":{
+                "idRefPhoneNumber":"A",
+                "idRefPhoneNumbers":{
+                    "idRefPhoneNumber":["A"]
+                }
+            }
+        },
+        "phoneNumber":{"id":"A"}
+    }
+}
