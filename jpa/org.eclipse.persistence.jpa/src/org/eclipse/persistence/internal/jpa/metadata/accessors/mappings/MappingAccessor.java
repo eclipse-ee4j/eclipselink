@@ -87,6 +87,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -893,6 +895,22 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Return the map key reference class for this accessor if applicable. It 
+     * will try to extract a reference class from a generic specification.  
+     * If no generics are used, then it will return void.class. This avoids NPE's 
+     * when processing JPA converters that can default (Enumerated and Temporal) 
+     * based on the reference class.
+     * 
+     * Future: this method is where we would provide a more explicit reference
+     * class to support an auto-apply jpa converter. Per the spec auto-apply
+     * converters are applied against basics only.
+     */
+    public MetadataClass getMapKeyReferenceClassWithGenerics() {
+        return getMapKeyReferenceClass();
+    }
+    
+    /**
+     * INTERNAL:
      * Return the raw class for this accessor. 
      * E.g. For an accessor with a type of java.util.Collection<Employee>, this 
      * method will return java.util.Collection. To check for the attribute
@@ -907,6 +925,25 @@ public abstract class MappingAccessor extends MetadataAccessor {
             return getMetadataClass(getAttributeType());
         } else {
             return getAccessibleObject().getRawClass(getDescriptor());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the raw class with any generic specifications for this accessor. 
+     * E.g. For an accessor with a type of java.util.Collection<Employee>, this 
+     * method will return java.util.CollectionEmployee. To check for the 
+     * attribute type we must go through the method calls since some accessors 
+     * define the attribute type through a target entity specification. Do not 
+     * access the m_attributeType variable directly in this method.
+     */
+    public MetadataClass getRawClassWithGenerics() {
+        if (hasAttributeType()) {
+            // If the class doesn't exist the factory we'll just return a
+            // generic MetadataClass
+            return getMetadataClass(getAttributeType());
+        } else {
+            return getAccessibleObject().getRawClassWithGenerics(getDescriptor());
         }
     }
     
@@ -927,6 +964,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public MetadataClass getReferenceClass() {
         return getRawClass();
+    }
+    
+    /**
+     * INTERNAL: 
+     * Return the reference class for this accessor. By default the reference
+     * class is the raw class. Some accessors may need to override this
+     * method to drill down further. That is, try to extract a reference class
+     * from generics.
+     */
+    public MetadataClass getReferenceClassWithGenerics() {
+        return getRawClassWithGenerics();
     }
     
     /**
@@ -1565,7 +1613,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         
         // Process a convert key or jpa converter for the map key if specified.
-        processMappingKeyConverter(keyMapping, mappedKeyMapAccessor.getMapKeyConvert(), mappedKeyMapAccessor.getMapKeyConverts(), mappedKeyMapAccessor.getMapKeyClass());
+        processMappingKeyConverter(keyMapping, mappedKeyMapAccessor.getMapKeyConvert(), mappedKeyMapAccessor.getMapKeyConverts(), mappedKeyMapAccessor.getMapKeyClass(), mappedKeyMapAccessor.getMapKeyClassWithGenerics());
         
         return keyMapping;
     }
@@ -1741,7 +1789,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process a convert value which specifies the name of an EclipseLink
      * converter to process with this accessor's mapping.     
      */
-    protected void processMappingConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass, boolean isForMapKey) {
+    protected void processMappingConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass, MetadataClass referenceClassWithGenerics, boolean isForMapKey) {
         boolean hasConverts = (converts != null && ! converts.isEmpty());
         
         // A convert value is an EclipseLink extension and it takes precedence
@@ -1751,10 +1799,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
         } else if (hasConverts) {
             // If we have JPA converts, apply them.
             processConverts(converts, mapping, referenceClass, isForMapKey);
-        } else if (getProject().hasAutoApplyConverter(referenceClass)) {
+        } else if (getProject().hasAutoApplyConverter(referenceClassWithGenerics)) {
             // If no convert is specified and there exist an auto-apply
             // converter for the reference class, apply it.
-            getProject().getAutoApplyConverter(referenceClass).process(mapping, isForMapKey, null);
+            getProject().getAutoApplyConverter(referenceClassWithGenerics).process(mapping, isForMapKey, null);
         } else {
             // Check for original JPA converters. Check for an enum first since 
             // it will fall into a serializable mapping otherwise since enums 
@@ -1777,8 +1825,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * specification or a JPA converter specification (map-key-convert, 
      * map-key-temporal, map-key-enumerated) to be applied to the given mapping.
      */
-    protected void processMappingKeyConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass) {
-        processMappingConverter(mapping, convertValue, getMapKeyConverts(converts), referenceClass, true);
+    protected void processMappingKeyConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass, MetadataClass referenceClassWithGenerics) {
+        processMappingConverter(mapping, convertValue, getMapKeyConverts(converts), referenceClass, referenceClassWithGenerics, true);
     }
     
     /**
@@ -1786,8 +1834,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process a convert value which specifies the name of an EclipseLink
      * converter to process with this accessor's mapping.
      */
-    protected void processMappingValueConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass) {
-        processMappingConverter(mapping, convertValue, getConverts(converts), referenceClass, false);
+    protected void processMappingValueConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass, MetadataClass referenceClassWithGenerics) {
+        processMappingConverter(mapping, convertValue, getConverts(converts), referenceClass, referenceClassWithGenerics, false);
     }
     
     /**

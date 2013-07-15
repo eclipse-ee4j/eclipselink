@@ -41,6 +41,8 @@
  *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -96,10 +98,16 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     
     /** The name of the element, i.e. class name, field name, method name. */
     private String m_name;
+    
     /** Defines elements modifiers, i.e. private/static/transient. */
     private int m_modifiers;
+    
     /** Used to cache the type metadata class, but cannot be cached in the case of generics. */
     private MetadataClass m_rawClass;
+    
+    /** Used to cache the full type metadata class including some generic specifications. */
+    private MetadataClass m_rawClassWithGenerics;
+    
     /**
      * Defines the generic types of the elements type.
      * This is null if no generics are used.
@@ -289,7 +297,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Return the raw class for this accessible object. E.g. For an 
      * accessible object with a type of java.util.Collection<Employee>, this 
      * method will return java.util.Collection. 
-     * @See getReferenceClassFromGeneric() to get Employee.class back.
+     * @see getReferenceClassFromGeneric() to get Employee.class back.
+     * @see getRawClassWithGenerics() to get java.util.CollectionEmployee back.
      */
     public MetadataClass getRawClass(MetadataDescriptor descriptor) {
         if (m_rawClass == null) {
@@ -314,6 +323,36 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
         }
         
         return m_rawClass;    
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the complete raw class with generics for this accessible object. 
+     * E.g. For an accessible object with a type of 
+     * java.util.Collection<Employee>, this method will return 
+     * java.util.CollectionEmployee. Note, the generics are appended to the name
+     * of the class. 
+     * @see getReferenceClassFromGeneric() to get Employee.class back.
+     * @see getRawClass() to get java.util.Collection back.
+     */
+    public MetadataClass getRawClassWithGenerics(MetadataDescriptor descriptor) {
+        if (m_rawClassWithGenerics == null) {
+            MetadataClass rawClass = getRawClass(descriptor);
+        
+            if (getGenericType() != null && (! getGenericType().isEmpty()) && getGenericType().size() > 1) {
+                String rawClassName = rawClass.getName();
+            
+                for (int i = 1; i < getGenericType().size(); i++) {
+                    rawClassName += getGenericType().get(i);
+                }
+            
+                m_rawClassWithGenerics = getMetadataClass(rawClassName);
+            } else {
+                m_rawClassWithGenerics = rawClass;
+            }
+        }
+        
+        return m_rawClassWithGenerics;
     }
     
     /**
@@ -571,9 +610,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * Method to return whether a type is a generic.
      */
     public boolean isGenericType() {
-        return (m_genericType != null)
-                    && (m_genericType.size() > 1)
-                    && (m_genericType.get(0).length() == 1);
+        return (m_genericType != null) && (m_genericType.size() > 1) && (m_genericType.get(0).length() == 1);
     }
     
     /**

@@ -16,6 +16,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -50,6 +53,7 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderCo
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter;
+import org.eclipse.persistence.testing.models.jpa21.advanced.converters.TagConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
 
@@ -68,6 +72,12 @@ public class Runner extends Athlete {
     @GeneratedValue
     protected Integer id;
     
+    @Basic
+    protected List<RunnerTag> tags;
+    
+    @Basic
+    protected List<String> serials;
+
     @Convert(converter=GenderConverter.class)
     protected Gender gender;
     
@@ -114,6 +124,7 @@ public class Runner extends Athlete {
         races = new ArrayList<Race>();
         personalBests = new HashMap<String, String>();
         shoes = new HashMap<ShoeTag, Shoe>();
+        tags = new ArrayList<RunnerTag>();
     }
     
     public void addPersonalBest(String distance, String time) {
@@ -122,6 +133,14 @@ public class Runner extends Athlete {
     
     public void addRace(Race race) {
         races.add(race);
+    }
+    
+    public void addSerial(String serial) {
+        serials.add(serial);
+    }
+    
+    public void addTag(String tag) {
+        tags.add(new RunnerTag(tag));
     }
     
     public Gender getGender() { 
@@ -144,10 +163,18 @@ public class Runner extends Athlete {
         return races;
     }
     
+    public List<String> getSerials() {
+        return serials;
+    }
+    
     public Map<ShoeTag, Shoe> getShoes() {
         return shoes;
     }
     
+    public List<RunnerTag> getTags() {
+        return tags;
+    }
+
     public boolean isFemale() {
         return gender.equals(Gender.Female);
     }
@@ -180,7 +207,15 @@ public class Runner extends Athlete {
         this.races = races;
     }
     
+    public void setSerials(List<String> serials) {
+        this.serials = serials;
+    }
+    
     public void setShoes(Map<ShoeTag, Shoe> shoes) {
         this.shoes = shoes;
+    }
+    
+    public void setTags(List<RunnerTag> tags) {
+        this.tags = tags;
     }
 }

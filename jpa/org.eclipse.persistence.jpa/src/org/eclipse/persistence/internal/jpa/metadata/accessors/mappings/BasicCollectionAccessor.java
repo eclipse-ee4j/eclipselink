@@ -33,6 +33,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -170,6 +172,17 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
     public MetadataClass getReferenceClass() {
         MetadataClass cls = getReferenceClassFromGeneric();
         return (cls == null) ? getMetadataClass(void.class) : cls;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Future: this method is where we would provide a more explicit reference
+     * class to support an auto-apply jpa converter. Per the spec auto-apply
+     * converters are applied against basics only.
+     */
+    @Override
+    public MetadataClass getReferenceClassWithGenerics() {
+        return getReferenceClass();
     }
     
     /**

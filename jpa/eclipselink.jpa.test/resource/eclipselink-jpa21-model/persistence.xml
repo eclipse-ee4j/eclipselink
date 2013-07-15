@@ -38,6 +38,7 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.LongToStringConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TagConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
         
