@@ -98,6 +98,9 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 int eventType = xmlStreamReader.next();
                 parseEvent(xmlStreamReader, eventType);
             }
+            if(xmlStreamReader.hasNext()) {
+                xmlStreamReader.next();
+            }
             contentHandler.endDocument();
         } catch(SAXException e ) {
             throw e;

@@ -78,11 +78,8 @@ public class UnmarshalLevelTestCases extends OXTestCase {
         XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(xmlStreamReader);
         xmlUnmarshaller.unmarshal(staxReader, inputSource);
 
-        if(xmlStreamReader.getEventType() != XMLStreamReader.END_ELEMENT) {
+        if(xmlStreamReader.getEventType() != XMLStreamReader.END_DOCUMENT) {
             fail("The last event type should have the been end document");
-        }
-        if(!xmlStreamReader.getLocalName().equals("address")) {
-            fail("The last local name should have been 'address'");
         }
 
         instream.close();
@@ -104,11 +101,8 @@ public class UnmarshalLevelTestCases extends OXTestCase {
            XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(xmlStreamReader);
            xmlUnmarshaller.unmarshal(staxReader, inputSource, Address.class);          
 
-           if(xmlStreamReader.getEventType() != XMLStreamReader.END_ELEMENT) {
+           if(xmlStreamReader.getEventType() != XMLStreamReader.END_DOCUMENT) {
                fail("The last event type should have the been end document");
-           }
-           if(!xmlStreamReader.getLocalName().equals("address")) {
-               fail("The last local name should have been 'address'");
            }
 
            instream.close();
