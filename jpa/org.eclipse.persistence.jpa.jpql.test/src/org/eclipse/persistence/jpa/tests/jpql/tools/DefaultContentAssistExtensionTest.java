@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 /**
  * Unit-test for {@link ContentAssistExtension} when the JPQL grammar is based on the JPA spec.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.5
  * @author Pascal Filion
  */

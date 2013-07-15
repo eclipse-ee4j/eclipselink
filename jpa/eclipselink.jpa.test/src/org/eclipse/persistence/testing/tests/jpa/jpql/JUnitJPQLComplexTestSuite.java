@@ -295,6 +295,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testDeleteWithUnqualifiedPathExpression");
         tests.add("testElementCollectionInLikeExpression");
         tests.add("converterOnElementCollectionTest");
+        tests.add("testCountExpression");
+        tests.add("testInItemCollectionValuedPath");
+
         Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new JUnitJPQLComplexTestSuite(test));
@@ -4323,7 +4326,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             String jpql = "SELECT e FROM Employee e where e.address.ID = 5";
             Query query = em.createQuery(jpql);
             query.getResultList();
-            String sql = (String)counter.getSqlStatements().get(0);
+            String sql = counter.getSqlStatements().get(0);
             if (sql.indexOf("CMP3_ADDRESS") != -1) {
                 fail("Join to address should have been optimized.");
             }
@@ -4588,7 +4591,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
    	 query.getResultList();
    	 closeEntityManager(em);
     }
-    
+
     public void converterOnElementCollectionTest()
     {
         EntityManager em = createEntityManager();
@@ -4606,5 +4609,28 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Object result = em.createQuery(ejbqlString).setParameter("id", buyer.getId()).getSingleResult();
         assertTrue("Converter not applied to element collection in jpql", (result instanceof Long));
         rollbackTransaction(em);
+    }
+
+    // Bug#406631 - JPQL parser: The state field path 'x.y' cannot be resolved to a collection type.
+    public void testCountExpression() {
+   	 EntityManager em = createEntityManager();
+   	 Query query = em.createQuery(
+   	 	"SELECT employee, COUNT(projects.teamMembers) " +
+   	 	"FROM Employee employee " +
+   	 	"     JOIN employee.managedEmployees managedEmployees" +
+   	 	"     JOIN managedEmployees.projects projects"
+   	 );
+   	 query.getResultList();
+   	 closeEntityManager(em);
+    }
+
+    // Bug#412928 - JPQL parser: Regression, an IN item should allow a collection type
+    public void testInItemCollectionValuedPath() {
+   	 EntityManager em = createEntityManager();
+   	 Query query = em.createQuery(
+	   	 "select e from Employee e, Project p where e in (p.teamMembers)"
+   	 );
+   	 assertFalse(query.getResultList().isEmpty());
+   	 closeEntityManager(em);
     }
 }

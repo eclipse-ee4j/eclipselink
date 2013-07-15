@@ -279,4 +279,47 @@ public final class ResultVariableTest extends JPQLParserTest {
 
 		testQuery(jpqlQuery, selectStatement);
 	}
+
+	@Test
+	public void test_JPQLQuery_18() {
+
+		String jpqlQuery = "SELECT a.name, " +
+		                   "       a.UUID, " +
+		                   "       a.typeUUID AS assetTypeUUID, " +
+		                   "       p.name AS projectName, " +
+		                   "       ap.usageType " +
+		                   "FROM Asset a, " +
+		                   "     UsedAssetUsingProject ap, " +
+		                   "     Project p " +
+		                   "WHERE a.UUID = ap.usedAsset AND ap.usingProject = p.UUID";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				path("a.name"),
+				path("a.UUID"),
+				resultVariableAs(path("a.typeUUID"), "assetTypeUUID"),
+				resultVariableAs(path("p.name"), "projectName"),
+				path("ap.usageType")
+			),
+			from(
+				"Asset", "a",
+				"UsedAssetUsingProject", "ap",
+				"Project", "p"
+			),
+			where(
+						path("a.UUID")
+					.equal(
+						path("ap.usedAsset")
+					)
+				.and(
+						path("ap.usingProject")
+					.equal(
+						path("p.UUID")
+					)
+				)
+			)
+		);
+		
+		testQuery(jpqlQuery, selectStatement);
+	}
 }

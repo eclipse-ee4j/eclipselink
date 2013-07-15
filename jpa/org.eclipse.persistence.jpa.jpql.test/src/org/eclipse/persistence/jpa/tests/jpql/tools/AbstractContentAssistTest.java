@@ -33,7 +33,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * This unit-test tests the JPQL content assist at various position within a JPQL query, which can
  * be complete, incomplete or invalid.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */

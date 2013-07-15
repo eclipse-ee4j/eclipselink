@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.tests.jpql.EclipseLinkVersionTools;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * @version 2.5
+ * @version 2.5.1
  * @since 2.5
  * @author Pascal Filion
  */

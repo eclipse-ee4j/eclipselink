@@ -50,6 +50,8 @@ import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
+import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.DefaultJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
@@ -141,7 +143,7 @@ import static org.junit.Assert.*;
  * Note: This class provides the {@link ExpressionTester} for all JPQL grammars (1.0, 2.0 and 2.1),
  * as well as for EclipseLink (all versions).
  *
- * @version 2.5
+ * @version 2.6
  * @since 2.3
  * @author Pascal Filion
  */
@@ -153,6 +155,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected JPQLGrammar getGrammar() {
 		return jpqlGrammar;
+	}
+
+	protected final boolean isEclipseLinkProvider() {
+		return DefaultEclipseLinkJPQLGrammar.PROVIDER_NAME == jpqlGrammar.getProvider();
+	}
+
+	protected final boolean isGenericProvider() {
+		return DefaultJPQLGrammar.PROVIDER_NAME == jpqlGrammar.getProvider();
 	}
 
 	protected final boolean isJPA1_0() {

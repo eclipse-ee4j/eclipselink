@@ -146,4 +146,10 @@ public final class JPQLQueries2_0 {
 		       "WHERE e.name LIKE 'myArtifactWith%' " +
 		       "ORDER BY name_order ASC";
 	}
+
+	public static String query_018() {
+		return "SELECT a.name, a.UUID, a.typeUUID AS assetTypeUUID, p.name AS projectName, ap.usageType " +
+		       "FROM Asset a, UsedAssetUsingProject ap, Project p " +
+		       "WHERE a.UUID = ap.usedAsset AND ap.usingProject = p.UUID";
+	}
 }

@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
  * This unit-test tests the JPQL content assist at various position within the JPQL query and with
  * complete and incomplete queries using the default (generic) JPA support.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */

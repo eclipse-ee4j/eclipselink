@@ -54,7 +54,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap>Example: </code><b>SELECT</b> p <b>FROM</b> Project p <b>WHERE</b> <b>TYPE</b>(p) <b>IN</b>(LargeProject, SmallProject)</p>
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -156,6 +156,7 @@ public final class InExpression extends AbstractExpression {
 		// 'NOT'
 		if (notIdentifier != null) {
 			children.add(buildStringExpression(NOT));
+			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'IN'

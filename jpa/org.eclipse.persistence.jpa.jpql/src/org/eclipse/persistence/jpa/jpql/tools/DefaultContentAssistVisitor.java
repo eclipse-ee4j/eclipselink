@@ -66,7 +66,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
