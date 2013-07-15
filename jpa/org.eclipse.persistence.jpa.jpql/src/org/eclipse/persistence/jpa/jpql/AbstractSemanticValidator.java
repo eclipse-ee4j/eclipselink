@@ -125,7 +125,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see AbstractGrammarValidator
  *
- * @version 2.4.2
+ * @version 2.4.3
  * @since 2.4
  * @author Pascal Filion
  */
@@ -154,6 +154,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * The given helper allows this validator to access the JPA artifacts without using Hermes SPI.
 	 */
 	protected final SemanticValidatorHelper helper;
+
+	/**
+	 * This visitor makes sure the path expressions are properly validated.
+	 */
+	private InItemsVisitor inItemsVisitor;
 
 	/**
 	 * This flag is used to register the {@link IdentificationVariable IdentificationVariables} that
@@ -200,6 +205,10 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 	protected ComparingEntityTypeLiteralVisitor buildComparingEntityTypeLiteralVisitor() {
 		return new ComparingEntityTypeLiteralVisitor();
+	}
+
+	protected InItemsVisitor buildInItemsVisitor() {
+		return new InItemsVisitor();
 	}
 
 	protected SubqueryFirstDeclarationVisitor buildSubqueryFirstDeclarationVisitor() {
@@ -278,6 +287,13 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	@Override
 	protected JPQLGrammar getGrammar() {
 		return helper.getGrammar();
+	}
+
+	protected InItemsVisitor getInItemsVisitor() {
+		if (inItemsVisitor == null) {
+			inItemsVisitor = buildInItemsVisitor();
+		}
+		return inItemsVisitor;
 	}
 
 	protected StateFieldPathExpression getStateFieldPathExpression(Expression expression) {
@@ -1139,7 +1155,19 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * @param expression The {@link CountFunction} to validate
 	 */
 	protected void validateCountFunction(CountFunction expression) {
-		super.visit(expression);
+
+		if (expression.hasExpression()) {
+
+			Expression leftExpression = expression.getExpression();
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(leftExpression);
+
+			if (pathExpression != null) {
+				validateStateFieldPathExpression(pathExpression, validPathExpressionTypeForCountFunction());
+			}
+			else {
+				leftExpression.accept(this);
+			}
+		}
 	}
 
 	/**
@@ -1546,7 +1574,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			}
 		}
 
-		expression.getInItems().accept(this);
+		// Validate the items
+		expression.getInItems().accept(getInItemsVisitor());
 	}
 
 	/**
@@ -2476,12 +2505,32 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	}
 
 	/**
+	 * Returns the type of path expression that is valid for a count function; which is the left
+	 * expression in a <code><b>COUNT</b></code> expression.
+	 *
+	 * @return By default, any field are allowed except collection
+	 */
+	protected PathType validPathExpressionTypeForCountFunction() {
+		return PathType.ANY_FIELD;
+	}
+
+	/**
 	 * Returns the type of path expression that is valid for the expression being tested by an
 	 * <code><b>IN</b></code> expression; which is the left expression.
 	 *
 	 * @return By default, any field (without collection) is allowed
 	 */
 	protected PathType validPathExpressionTypeForInExpression() {
+		return PathType.ANY_FIELD;
+	}
+
+	/**
+	 * Returns the type of path expression that is valid for an <code>IN</code> items; which is the
+	 * left expression in a <code><b>IN</b></code> expression.
+	 *
+	 * @return By default, any field are allowed except collection
+	 */
+	protected PathType validPathExpressionTypeForInItem() {
 		return PathType.ANY_FIELD;
 	}
 
@@ -3346,6 +3395,25 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		@Override
 		public void visit(RangeVariableDeclaration expression) {
 			expression.getRootObject().accept(this);
+		}
+	}
+
+	protected class InItemsVisitor extends AnonymousExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected void visit(Expression expression) {
+			expression.accept(AbstractSemanticValidator.this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(StateFieldPathExpression expression) {
+			validateStateFieldPathExpression(expression, validPathExpressionTypeForInItem());
 		}
 	}
 

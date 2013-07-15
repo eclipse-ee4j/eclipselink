@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
+
 import org.junit.Test;
 
 @SuppressWarnings("nls")
@@ -231,5 +233,120 @@ public final class ResultVariableTest extends JPQLParserTest {
 		);
 
 		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_16() {
+
+		String jpqlQuery = "SELECT e.name, e.dept, e.UUID, e.salary AS salary, AVG(e.age) AS age FROM Employee e ORDER BY age, salary ASC";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				path("e.name"),
+				path("e.dept"),
+				path("e.UUID"),
+				resultVariableAs(path("e.salary"), "salary"),
+				resultVariableAs(avg("e.age"), "age")
+			),
+			from("Employee", "e"),
+			orderBy(
+				orderByItem(variable("age")),
+				orderByItemAsc(variable("salary"))
+			)
+		);
+
+		testQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_17() {
+
+		if (getGrammar().getJPAVersion().isOlderThan(JPAVersion.VERSION_2_1)) {
+			return;
+		}
+
+		String jpqlQuery = "SELECT e.name, " +
+		                   "       UPPER(e.dept) dept, " +
+		                   "       e.UUID, " +
+		                   "       e.salary AS salary, " +
+		                   "       AVG(e.age) + e.age AS age " +
+		                   "FROM Employee e " +
+		                   "ORDER BY age, salary ASC";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				path("e.name"),
+				resultVariable(upper(path("e.dept")), "dept"),
+				path("e.UUID"),
+				resultVariableAs(path("e.salary"), "salary"),
+				resultVariableAs(avg("e.age").add(path("e.age")), "age")
+			),
+			from("Employee", "e"),
+			orderBy(
+				orderByItem(variable("age")),
+				orderByItemAsc(variable("salary"))
+			)
+		);
+
+		testQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_18() {
+
+		String jpqlQuery = "SELECT a.name, " +
+		                   "       a.UUID, " +
+		                   "       a.typeUUID AS assetTypeUUID, " +
+		                   "       p.name AS projectName, " +
+		                   "       ap.usageType " +
+		                   "FROM Asset a, " +
+		                   "     UsedAssetUsingProject ap, " +
+		                   "     Project p " +
+		                   "WHERE a.UUID = ap.usedAsset AND ap.usingProject = p.UUID";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				path("a.name"),
+				path("a.UUID"),
+				resultVariableAs(path("a.typeUUID"), "assetTypeUUID"),
+				resultVariableAs(path("p.name"), "projectName"),
+				path("ap.usageType")
+			),
+			from(
+				"Asset", "a",
+				"UsedAssetUsingProject", "ap",
+				"Project", "p"
+			),
+			where(
+						path("a.UUID")
+					.equal(
+						path("ap.usedAsset")
+					)
+				.and(
+						path("ap.usingProject")
+					.equal(
+						path("p.UUID")
+					)
+				)
+			)
+		);
+		
+		testQuery(jpqlQuery, selectStatement);
+	}
+
+	public void testBuildExpression_19() {
+		
+		String jpqlQuery = "select f.id as id, f.name as name, f.description as description from Foo f";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				resultVariableAs(path("f.id"), "id"),
+				resultVariableAs(path("f.name"), "name"),
+				resultVariableAs(path("f.description"), "description")
+			),
+			from("Foo", "f")
+		);
+		
+		testQuery(jpqlQuery, selectStatement);
 	}
 }

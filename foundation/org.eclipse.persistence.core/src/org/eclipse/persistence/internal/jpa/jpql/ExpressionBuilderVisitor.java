@@ -145,7 +145,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * JPQL Expression} and creates the corresponding {@link org.eclipse.persistence.expressions.
  * Expression EclipseLink Expression}.
  *
- * @version 2.4.2
+ * @version 2.4.3
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
@@ -1009,17 +1009,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(FunctionExpression expression) {
 
-		List<org.eclipse.persistence.jpa.jpql.parser.Expression> expressions = children(expression.getExpression());
-
 		String identifier   = expression.getIdentifier();
 		String functionName = expression.getUnquotedFunctionName();
 
-		boolean sqlFunction      = identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.SQL;
-		boolean columnFunction   = identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.COLUMN;
-		boolean operatorFunction = identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.OPERATOR;
-
 		// COLUMN
-		if (columnFunction) {
+		if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.COLUMN) {
 
 			// Create the expression for the single child
 			expression.getExpression().accept(this);
@@ -1029,12 +1023,14 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 		else {
 
+			List<org.eclipse.persistence.jpa.jpql.parser.Expression> expressions = children(expression.getExpression());
+
 			// No arguments
 			if (expressions.isEmpty()) {
 				queryExpression = queryContext.getBaseExpression();
 
 				// OPERATOR
-				if (sqlFunction) {
+				if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.SQL) {
 					queryExpression = queryExpression.literal(functionName);
 				}
 				// FUNC/FUNCTION
@@ -1056,11 +1052,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				queryExpression = queryExpressions.remove(0);
 
 				// SQL
-				if (sqlFunction) {
+				if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.SQL) {
 					queryExpression = queryExpression.sql(functionName, queryExpressions);
 				}
 				// OPERATOR
-				else if (operatorFunction) {
+				else if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.OPERATOR) {
 					queryExpression = queryExpression.operator(functionName, queryExpressions);
 				}
 				// FUNC/FUNCTION
@@ -1160,16 +1156,16 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(InExpression expression) {
 
-		// Create the expression for the left expression
-		expression.getExpression().accept(this);
-		Expression leftExpression = queryExpression;
+		// Visit the left expression
+		InExpressionExpressionBuilder visitor1 = new InExpressionExpressionBuilder();
+		expression.getExpression().accept(visitor1);
 
-		// Visit the IN expression
-		InExpressionBuilder visitor = new InExpressionBuilder();
-		visitor.hasNot               = expression.hasNot();
-		visitor.singleInputParameter = expression.isSingleInputParameter();
-		visitor.leftExpression       = leftExpression;
-		expression.getInItems().accept(visitor);
+		// Visit the IN items
+		InExpressionBuilder visitor2 = new InExpressionBuilder();
+		visitor2.hasNot               = expression.hasNot();
+		visitor2.singleInputParameter = expression.isSingleInputParameter();
+		visitor2.leftExpression       = queryExpression;
+		expression.getInItems().accept(visitor2);
 
 		// Set the expression type
 		type[0] = Boolean.class;
@@ -1190,7 +1186,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
 
 		// Cache the input parameter type
-		queryContext.addInputParameter(parameterName, type);
+		queryContext.addInputParameter(expression, queryExpression);
 	}
 
 	/**
@@ -1497,7 +1493,16 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		// Instantiate a Number object with the value
 		type[0] = queryContext.getType(expression);
-		Number number = queryContext.newInstance(type[0], String.class, expression.getText());
+
+		// Special case for a long number, Long.parseLong() does not handle 'l|L'
+		// but Double.parseDouble() and Float.parseFloat() do handle 'd|D' and 'f|F', respectively
+		String text = expression.getText();
+
+		if ((type[0] == Long.class) && (text.endsWith("L") || text.endsWith("l"))) {
+			text = text.substring(0, text.length() - 1);
+		}
+
+		Number number = queryContext.newInstance(type[0], String.class, text);
 
 		// Now create the numeric expression
 		queryExpression = new ConstantExpression(number, queryContext.getBaseExpression());
@@ -2065,6 +2070,46 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	}
 
 	/**
+	 * This visitor takes care of creating the left expression of an <code><b>IN</b></code> expression
+	 * and make sure to support nested arrays.
+	 */
+	private class InExpressionExpressionBuilder extends EclipseLinkAnonymousExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+
+			// Assume this is a nested array
+			List<Expression> children = new LinkedList<Expression>();
+
+			for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
+				child.accept(this);
+				children.add(queryExpression);
+			}
+
+			queryExpression = new ConstantExpression(children, queryContext.getBaseExpression());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
+			expression.accept(ExpressionBuilderVisitor.this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubExpression expression) {
+			expression.getExpression().accept(this);
+		}
+	}
+
+	/**
 	 * This visitor takes care of creating the <code><b>IN</b></code> expression by visiting the items.
 	 */
 	private class InExpressionBuilder extends EclipseLinkAnonymousExpressionVisitor {
@@ -2136,15 +2181,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			if (singleInputParameter) {
 				String parameterName = expression.getParameter();
 
-				// The type is by default Collection
-				Class<?> type = Collection.class;
-
-				// Create the expression
+				// Create the expression with Collection as the default type
 				queryExpression = queryContext.getBaseExpression();
-				queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
+				queryExpression = queryExpression.getParameter(parameterName.substring(1), Collection.class);
 
 				// Cache the input parameter type, which is by default Collection
-				queryContext.addInputParameter(parameterName, type);
+				queryContext.addInputParameter(expression, queryExpression);
 
 				if (hasNot) {
 					queryExpression = leftExpression.notIn(queryExpression);

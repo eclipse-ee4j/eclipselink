@@ -51,7 +51,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * This context is used when creating and populating a {@link DatabaseQuery} when traversing the
  * parsed representation of a JPQL query.
  *
- * @version 2.4
+ * @version 2.4.3
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
@@ -92,7 +92,7 @@ final class JPQLQueryContext {
 	 * The input parameter name mapped to its type. The input parameter name starts with the
 	 * positional parameter ('?' or ':').
 	 */
-	private Map<String, Class<?>> inputParameters;
+	Map<InputParameter, Expression> inputParameters;
 
 	/**
 	 * The parsed representation of the JPQL query.
@@ -195,17 +195,17 @@ final class JPQLQueryContext {
 	 * @param parameterName The name of the input parameter
 	 * @param type The calculated type based on its surrounding, which is never <code>null</code>
 	 */
-	void addInputParameter(String parameterName, Class<?> type) {
+	void addInputParameter(InputParameter inputParameter, Expression queryExpression) {
 
 		if (parent != null) {
-			parent.addInputParameter(parameterName, type);
+			parent.addInputParameter(inputParameter, queryExpression);
 		}
-
-		if (inputParameters == null) {
-			inputParameters = new HashMap<String, Class<?>>();
+		else {
+			if (inputParameters == null) {
+				inputParameters = new HashMap<InputParameter, Expression>();
+			}
+			inputParameters.put(inputParameter, queryExpression);
 		}
-
-		inputParameters.put(parameterName, type);
 	}
 
 	/**
@@ -369,8 +369,7 @@ final class JPQLQueryContext {
 	 *
 	 * @param session The EclipseLink {@link AbstractSession} this context will use
 	 * @param query The {@link DatabaseQuery} that may already exist and it will be populated with
-	 * the information contained in the JPQL query or <code>null</code> if the query will need to
-	 * be created
+	 * the information contained in the JPQL query or <code>null</code> if the query will need to be created
 	 * @param jpqlExpression The parsed tree representation of the JPQL query
 	 * @param jpqlQuery The JPQL query
 	 */
@@ -510,6 +509,7 @@ final class JPQLQueryContext {
 	 */
 	@SuppressWarnings("unchecked")
 	<T> Constructor<T> getConstructor(Class<?> type, Class<?>[] parameterTypes) {
+
 		try {
 			if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
 				try {
@@ -799,7 +799,16 @@ final class JPQLQueryContext {
 	}
 
 	private Map<String, Class<?>> getTypes() {
-		return (parent != null) ? parent.getTypes() : (types == null) ? types = new HashMap<String, Class<?>>() : types;
+
+		if (parent != null) {
+			return parent.getTypes();
+		}
+
+		if (types == null) {
+			types = new HashMap<String, Class<?>>();
+		}
+
+		return types;
 	}
 
 	/**
@@ -823,17 +832,6 @@ final class JPQLQueryContext {
 			return Collections.emptySet();
 		}
 		return usedIdentificationVariables;
-	}
-
-	/**
-	 * Returns the input parameter types mapped by their literal or <code>null</code> if none was
-	 * present in the JPQL query.
-	 *
-	 * @return The input parameter types mapped by their literal or <code>null</code> if none was
-	 * present in the JPQL query
-	 */
-	Map<String, Class<?>> inputParameters() {
-		return inputParameters;
 	}
 
 	/**

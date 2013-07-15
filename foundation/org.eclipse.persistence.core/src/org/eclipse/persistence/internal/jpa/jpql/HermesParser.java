@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
@@ -31,6 +32,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
+import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
@@ -45,7 +47,6 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -60,7 +61,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see JPQLExpression
  *
- * @version 2.4
+ * @version 2.4.3
  * @since 2.3
  * @author John Bracken
  * @author Pascal Filion
@@ -89,12 +90,15 @@ public final class HermesParser implements JPAQueryBuilder {
 	 */
 	private void addArguments(JPQLQueryContext queryContext, DatabaseQuery databaseQuery) {
 
-		Map<String, Class<?>> inputParameters = queryContext.inputParameters();
+		if (queryContext.inputParameters != null) {
 
-		if (inputParameters != null) {
+			for (Map.Entry<InputParameter, Expression> entry : queryContext.inputParameters.entrySet()) {
+				ParameterExpression parameter = (ParameterExpression) entry.getValue();
 
-			for (String inputParameter : inputParameters.keySet()) {
-				databaseQuery.addArgument(inputParameter.substring(1), inputParameters.get(inputParameter));
+				databaseQuery.addArgument(
+					parameter.getField().getName(),
+					(Class<?>) parameter.getType()
+				);
 			}
 		}
 	}

@@ -287,6 +287,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testDirectColletionInSubquery");
         tests.add("testDeleteWithUnqualifiedPathExpression");
         tests.add("testElementCollectionInLikeExpression");
+        tests.add("testCountExpression");
+        tests.add("testInItemCollectionValuedPath");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -3860,6 +3862,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("attrKey",   "test");
         query.setParameter("attrValue", 0);
         query.getResultList();
+        query = em.createQuery("select g from Golfer g join g.sponsorDollars sd where key(sd) = :attrKey and value(sd) = :attrValue");
+        query.setParameter("attrKey",   "oracle");
+        query.setParameter("attrValue", 20);
+        query.getResultList();
         closeEntityManager(em);
     }
 
@@ -4463,6 +4469,29 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
    	 EntityManager em = createEntityManager();
    	 Query query = em.createQuery("SELECT b FROM Buyer b WHERE b.creditLines LIKE '%e%'");
    	 query.getResultList();
+   	 closeEntityManager(em);
+    }
+
+    // Bug#406631 - JPQL parser: The state field path 'x.y' cannot be resolved to a collection type.
+    public void testCountExpression() {
+   	 EntityManager em = createEntityManager();
+   	 Query query = em.createQuery(
+   	 	"SELECT employee, COUNT(projects.teamMembers) " +
+   	 	"FROM Employee employee " +
+   	 	"     JOIN employee.managedEmployees managedEmployees" +
+   	 	"     JOIN managedEmployees.projects projects"
+   	 );
+   	 query.getResultList();
+   	 closeEntityManager(em);
+    }
+
+    // Bug#412928 - JPQL parser: Regression, an IN item should allow a collection type
+    public void testInItemCollectionValuedPath() {
+   	 EntityManager em = createEntityManager();
+   	 Query query = em.createQuery(
+	   	 "select e from Employee e, Project p where e in (p.teamMembers)"
+   	 );
+   	 assertFalse(query.getResultList().isEmpty());
    	 closeEntityManager(em);
     }
 }

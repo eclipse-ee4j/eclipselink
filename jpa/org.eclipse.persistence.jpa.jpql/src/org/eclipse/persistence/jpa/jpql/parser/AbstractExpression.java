@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  * @see ExpressionFactory
  * @see JPQLGrammar
  *
- * @version 2.4.2
+ * @version 2.4.3
  * @since 2.3
  * @author Pascal Filion
  */
@@ -360,7 +360,7 @@ public abstract class AbstractExpression implements Expression {
 	 * @param expression The {@link Expression} for which its position within the parsed tree needs
 	 * to be determined
 	 * @param length The current cursor position within the JPQL query while digging into the tree
-	 * until the searche reaches the expression
+	 * until the search reaches the expression
 	 * @return The length of the string representation for what is coming before the given {@link Expression}
 	 * @since 2.4
 	 */
@@ -748,7 +748,7 @@ public abstract class AbstractExpression implements Expression {
 				character = wordParser.character();
 
 				// Store the SubExpression
-				currentInfo = (rootInfo == null) ? (rootInfo = new Info()) : (currentInfo.next = new Info());
+				currentInfo = (rootInfo == null) ? (rootInfo = new Info()) : (currentInfo.next = new Info(currentInfo));
 				currentInfo.expression = expression;
 				currentInfo.space = count > 0;
 			}
@@ -783,7 +783,13 @@ public abstract class AbstractExpression implements Expression {
 							// The new expression is a child of the previous expression,
 							// remove it from the collection since it's already parented
 							if ((expression != null) && child.isAncestor(expression)) {
-								currentInfo = (currentInfo == rootInfo) ? (rootInfo = null) : rootInfo;
+								if (currentInfo == rootInfo) {
+									rootInfo = null;
+									currentInfo = null;
+								}
+								else if (currentInfo != null) {
+									currentInfo = currentInfo.previous;
+								}
 							}
 
 							// Something has been parsed, which means it's not the beginning anymore
@@ -811,7 +817,13 @@ public abstract class AbstractExpression implements Expression {
 						// The new expression is a child of the previous expression,
 						// remove it from the collection since it's already parented
 						if ((expression != null) && child.isAncestor(expression)) {
-							currentInfo = (currentInfo == rootInfo) ? (rootInfo = null) : rootInfo;
+							if (currentInfo == rootInfo) {
+								rootInfo = null;
+								currentInfo = null;
+							}
+							else if (currentInfo != null) {
+								currentInfo = currentInfo.previous;
+							}
 						}
 
 						// Something has been parsed, which means it's not the beginning anymore
@@ -848,7 +860,13 @@ public abstract class AbstractExpression implements Expression {
 								// The new expression is a child of the previous expression,
 								// remove it from the collection since it's already parented
 								if ((expression != null) && child.isAncestor(expression)) {
-									currentInfo = (currentInfo == rootInfo) ? (rootInfo = null) : rootInfo;
+									if (currentInfo == rootInfo) {
+										rootInfo = null;
+										currentInfo = null;
+									}
+									else if (currentInfo != null) {
+										currentInfo = currentInfo.previous;
+									}
 								}
 
 								// Something has been parsed, which means it's not the beginning anymore
@@ -877,7 +895,7 @@ public abstract class AbstractExpression implements Expression {
 			// Store the child but skip a very special case, which happens when parsing
 			// two subqueries in a collection expression. Example: (SELECT ... ), (SELECT ... )
 			if ((expression == null) || (child != null)) {
-				currentInfo = (rootInfo == null) ? (rootInfo = new Info()) : (currentInfo.next = new Info());
+				currentInfo = (rootInfo == null) ? (rootInfo = new Info()) : (currentInfo.next = new Info(currentInfo));
 				currentInfo.expression = child;
 				currentInfo.space = count > 1;
 			}
@@ -922,7 +940,7 @@ public abstract class AbstractExpression implements Expression {
 					count = 0;
 
 					// Add a null Expression since the expression ends with a comma
-					currentInfo = (rootInfo == null) ? (rootInfo = new Info()) : (currentInfo.next = new Info());
+					currentInfo = (rootInfo == null) ? (rootInfo = new Info()) : (currentInfo.next = new Info(currentInfo));
 
 					// Nothing else to parse
 					if (stopParsing) {
@@ -1166,9 +1184,31 @@ public abstract class AbstractExpression implements Expression {
 		Info next;
 
 		/**
+		 * The parent within the chain of this one.
+		 */
+		Info previous;
+
+		/**
 		 * Flag indicating a whitespace follows the parsed {@link #expression}.
 		 */
 		boolean space;
+
+		/**
+		 * Creates a new <code>Info</code>.
+		 */
+		Info() {
+			super();
+		}
+
+		/**
+		 * Creates a new <code>Info</code>.
+		 *
+		 * @param previous The parent within the chain of this one
+		 */
+		Info(Info previous) {
+			super();
+			this.previous = previous;
+		}
 
 		private void addChild(ArrayList<AbstractExpression> children) {
 			children.add(expression);

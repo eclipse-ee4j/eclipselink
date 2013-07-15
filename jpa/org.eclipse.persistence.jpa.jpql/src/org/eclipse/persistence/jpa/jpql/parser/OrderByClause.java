@@ -168,7 +168,7 @@ public final class OrderByClause extends AbstractExpression {
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// 'ORDER BY'
-		identifier = wordParser.moveForward(ORDER_BY);
+		identifier = wordParser.moveForwardIgnoreWhitespace(ORDER_BY);
 
 		hasSpaceAfterOrderBy = wordParser.skipLeadingWhitespace() > 0;
 

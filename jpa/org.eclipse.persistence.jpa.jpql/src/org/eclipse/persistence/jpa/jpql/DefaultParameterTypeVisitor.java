@@ -13,12 +13,26 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.spi.IType;
+
 /**
- * @version 2.4
+ * This visitor calculates the type of an input parameter.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
+ *
+ * @version 2.4.3
  * @since 2.4
  * @author Pascal Filion
  */
 public class DefaultParameterTypeVisitor extends ParameterTypeVisitor {
+
+	/**
+	 * The context used to query information about the application metadata and cached information.
+	 */
+	private JPQLQueryContext queryContext;
 
 	/**
 	 * Creates a new <code>DefaultParameterTypeVisitor</code>.
@@ -27,6 +41,34 @@ public class DefaultParameterTypeVisitor extends ParameterTypeVisitor {
 	 * cached information
 	 */
 	public DefaultParameterTypeVisitor(JPQLQueryContext queryContext) {
-		super(queryContext);
+		super();
+		this.queryContext = queryContext;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IType getType() {
+
+		// The type should be ignored, use the special constant
+		if (ignoreType) {
+			return queryContext.getTypeHelper().unknownType();
+		}
+
+		// The type name was set
+		if (typeName != null) {
+			return queryContext.getType(typeName);
+		}
+
+		// The calculation couldn't find an expression with a type
+		if (expression == null) {
+			if (type == null) {
+				type = Object.class;
+			}
+			return queryContext.getType(type);
+		}
+
+		return queryContext.getType(expression);
 	}
 }

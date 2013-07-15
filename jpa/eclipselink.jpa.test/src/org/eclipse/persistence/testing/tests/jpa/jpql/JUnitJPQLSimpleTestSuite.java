@@ -172,6 +172,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleTypeTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleAsOrderByTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralDateTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralLongTest_Long1"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralLongTest_Long2"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralLongTest_Float1"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralLongTest_Float2"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralLongTest_Double1"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleLiteralLongTest_Double2"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleSingleArgSubstringTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("elementCollectionIsNotEmptyTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("relationshipElementCollectionIsNotEmptyTest"));
@@ -182,6 +188,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("testMultipleSubqueries"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("testDirectCollectionComparison"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleQueryWithFirstUnusedEntity"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testSimpleGroupByOrderByClauses"));
 
         return suite;
     }
@@ -2194,6 +2201,41 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Assert.assertTrue("simpleLiteralDateTest", comparer.compareObjects(result, expectedResult));
     }
 
+    private void simpleLiteralLongTest(String numericalLiteral) {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.salary = 500000" + numericalLiteral);
+        List<Employee> results  = query.getResultList();
+        assertFalse(results.isEmpty());
+        for (Employee employee : results) {
+            assertEquals(500000, employee.getSalary());
+        }
+    }
+
+    public void simpleLiteralLongTest_Long1() {
+        simpleLiteralLongTest("l");
+    }
+
+    public void simpleLiteralLongTest_Long2() {
+        simpleLiteralLongTest("L");
+    }
+
+    public void simpleLiteralLongTest_Float1() {
+        simpleLiteralLongTest("f");
+    }
+
+    public void simpleLiteralLongTest_Float2() {
+        simpleLiteralLongTest("F");
+    }
+
+    public void simpleLiteralLongTest_Double1() {
+        simpleLiteralLongTest("d");
+    }
+
+    public void simpleLiteralLongTest_Double2() {
+        simpleLiteralLongTest("D");
+    }
+
     public void simpleSingleArgSubstringTest(){
         EntityManager em = createEntityManager();
 
@@ -2324,5 +2366,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
    	 for (Object item : resultList) {
    		 assertTrue(item instanceof org.eclipse.persistence.testing.models.jpa.advanced.Buyer);
    	 }
+    }
+
+    /** Test for bug#404509 */
+    public void testSimpleGroupByOrderByClauses() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("select e.firstName from Employee e group  by e.firstName  order   by e.firstName");
+        query.getResultList();
     }
 }

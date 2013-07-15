@@ -47,7 +47,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
  *
  * @see EclipseLinkGrammarValidator
  *
- * @version 2.4.2
+ * @version 2.4.3
  * @since 2.4
  * @author Pascal Filion
  */
@@ -140,7 +140,23 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected PathType validPathExpressionTypeForCountFunction() {
+		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected PathType validPathExpressionTypeForInExpression() {
+		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected PathType validPathExpressionTypeForInItem() {
 		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
 	}
 

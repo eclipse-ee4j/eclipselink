@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>groupby_clause ::= GROUP BY groupby_item {, groupby_item}*</code><p>
  *
- * @version 2.4.2
+ * @version 2.4.3
  * @since 2.3
  * @author Pascal Filion
  */
@@ -167,8 +167,7 @@ public final class GroupByClause extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was found after <b>GROUP BY</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>GROUP BY</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>GROUP BY</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterGroupBy() {
 		return hasSpace;
@@ -181,7 +180,7 @@ public final class GroupByClause extends AbstractExpression {
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse 'GROUP BY'
-		identifier = wordParser.moveForward(GROUP_BY);
+		identifier = wordParser.moveForwardIgnoreWhitespace(GROUP_BY);
 
 		hasSpace = wordParser.skipLeadingWhitespace() > 0;
 

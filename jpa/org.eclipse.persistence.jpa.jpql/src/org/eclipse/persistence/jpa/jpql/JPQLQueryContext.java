@@ -186,7 +186,7 @@ public abstract class JPQLQueryContext {
 
 	protected ParameterTypeVisitor buildParameterTypeVisitor() {
 		// Oops!!! to fix, this needs to become abstract
-		return new ParameterTypeVisitor(this);
+		return new DefaultParameterTypeVisitor(this);
 	}
 
 	protected QueryExpressionVisitor buildQueryExpressionVisitor() {
@@ -496,7 +496,7 @@ public abstract class JPQLQueryContext {
 		ParameterTypeVisitor visitor = getParameterTypeVisitor();
 		try {
 			inputParameter.accept(visitor);
-			return visitor.getType();
+			return (IType) visitor.getType();
 		}
 		finally {
 			visitor.dispose();

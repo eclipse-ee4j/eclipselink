@@ -147,6 +147,7 @@ public final class InExpression extends AbstractExpression {
 		// 'NOT'
 		if (hasNot) {
 			children.add(buildStringExpression(NOT));
+			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'IN'
