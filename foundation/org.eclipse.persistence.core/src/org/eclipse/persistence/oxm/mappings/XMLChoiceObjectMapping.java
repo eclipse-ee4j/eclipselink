@@ -561,13 +561,11 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     }
     private void addChoiceElementMapping(XMLField xmlField, String className){
          if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
-             Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
              XMLDirectMapping xmlMapping = new XMLDirectMapping();
              xmlMapping.setAttributeAccessor(temporaryAccessor);
-             xmlMapping.setAttributeClassification(theClass);
+             xmlMapping.setAttributeClassificationName(className);
              xmlMapping.setField(xmlField);
              this.choiceElementMappings.put(xmlField, xmlMapping);
-             
          } else {
              if(isBinaryType(className)) {
                  XMLBinaryDataMapping xmlMapping = new XMLBinaryDataMapping();

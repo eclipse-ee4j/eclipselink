@@ -554,6 +554,27 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     }
 
     /**
+     * PUBLIC:
+     * Set the class each element in the object's
+     * collection should be converted to, before the collection
+     * is inserted into the object.
+     * This is optional - if left null, the elements will be added
+     * to the object's collection unconverted.
+     */
+    public void setAttributeElementClassName(String attributeElementClass) {
+        TypeConversionConverter converter;
+        if (getValueConverter() instanceof TypeConversionConverter) {
+            converter = (TypeConversionConverter)getValueConverter();
+        } else {
+            converter = new TypeConversionConverter();
+            setValueConverter(converter);
+        }
+        converter.setObjectClassName(attributeElementClass);
+    }
+
+
+
+    /**
      * ADVANCED:
      * Set the mapping's containerPolicy.
      */
