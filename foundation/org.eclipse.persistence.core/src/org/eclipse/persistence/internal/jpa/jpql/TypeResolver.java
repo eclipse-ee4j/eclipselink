@@ -144,7 +144,7 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 /**
  * This visitor resolves the type of any given {@link Expression}.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -1109,13 +1109,19 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 			if (ExpressionTools.LONG_REGEXP   .matcher(text).matches() ||
 			    ExpressionTools.INTEGER_REGEXP.matcher(text).matches()) {
 
-				Long value = Long.parseLong(text);
-
-				if (value <= Integer.MAX_VALUE) {
-					type = Integer.class;
+				// Special case for a long number, Long.parseLong() does not handle 'l|L'
+				if (text.endsWith("L") || text.endsWith("l")) {
+					type = Long.class;
 				}
 				else {
-					type = Long.class;
+					Long value = Long.parseLong(text);
+
+					if (value <= Integer.MAX_VALUE) {
+						type = Integer.class;
+					}
+					else {
+						type = Long.class;
+					}
 				}
 			}
 			// Float

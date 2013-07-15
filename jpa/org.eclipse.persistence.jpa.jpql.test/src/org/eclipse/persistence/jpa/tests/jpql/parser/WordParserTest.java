@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.WordParser.WordType;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -180,6 +181,186 @@ public final class WordParserTest {
 		int position = "SELECT e".length();
 		CharSequence word = wordParser.partialWord(position);
 		assertEquals("e", word);
+	}
+
+	@Test
+	public void testStartsWithIgnoreCase_01() {
+
+		String query = "SELECT e FROM Employee e";
+		WordParser wordParser = new WordParser(query);
+		boolean result = wordParser.startsWithIgnoreCase("select");
+		assertTrue(result);
+	}
+
+	@Test
+	public void testStartsWithIgnoreCase_02() {
+
+		String query = "SELECT e FROM Employee e";
+		WordParser wordParser = new WordParser(query);
+		boolean result = wordParser.startsWithIgnoreCase(Expression.SELECT);
+		assertTrue(result);
+	}
+
+	@Test
+	public void testStartsWithIgnoreCase_03() {
+
+		String query = "SELECT e FROM Employee e";
+		int offset = "SELECT e FROM Employee".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIgnoreCase(Expression.SELECT, offset);
+		assertFalse(result);
+	}
+
+	@Test
+	public void testStartsWithIgnoreCase_04() {
+
+		String query = "SELECT e FROM Employee e ORDER BY e.name";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIgnoreCase(Expression.ORDER_BY, offset);
+		assertTrue(result);
+	}
+
+	@Test
+	public void testStartsWithIgnoreCase_05() {
+
+		String query = "SELECT e FROM Employee e ORDER  BY e.name";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIgnoreCase(Expression.ORDER_BY, offset);
+		assertFalse(result);
+	}
+
+	@Test
+	public void testStartsWithIgnoreCase_06() {
+
+		String query = "SELECT e FROM Employee e ORDER\nBY e.name";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIgnoreCase(Expression.ORDER_BY, offset);
+		assertFalse(result);
+	}
+
+	@Test
+	public void testStartsWithIgnoreCase_07() {
+
+		String query = "SELECT e FROM Employee e ORDER \nBY e.name";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIgnoreCase(Expression.ORDER_BY, offset);
+		assertFalse(result);
+	}
+
+	@Test
+	public void testStartsWithIgnoreCase_08() {
+
+		String query = "SELECT e FROM Employee e ORDER \n BY e.name";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIgnoreCase(Expression.ORDER_BY, offset);
+		assertFalse(result);
+	}
+
+	@Test
+	public void testStartWithIdentifier_01() {
+
+		String query = "SELECT e FROM Employee e ORDER \n BY e.name";
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIdentifier(Expression.SELECT);
+		assertTrue(result);
+	}
+
+	@Test
+	public void testStartWithIdentifier_02() {
+
+		String query = "SELECT( e FROM Employee e ORDER \n BY e.name";
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIdentifier(Expression.SELECT);
+		assertTrue(result);
+	}
+
+	@Test
+	public void testStartWithIdentifier_03() {
+
+		String query = "SELECT, e FROM Employee e ORDER \n BY e.name";
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIdentifier(Expression.SELECT);
+		assertTrue(result);
+	}
+
+	@Test
+	public void testStartWithIdentifier_04() {
+
+		String query = "SELECT e FROM Employee e ORDER \n BY e.name";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIdentifier(Expression.ORDER_BY, offset);
+		assertTrue(result);
+	}
+
+	@Test
+	public void testStartWithIdentifier_05() {
+
+		String query = "SELECT e FROM Employee e ORDER \n BY e.name";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIdentifier("OrDeR bY", offset);
+		assertTrue(result);
+	}
+
+	@Test
+	public void testStartWithIdentifier_06() {
+
+		String query = "SELECT e FROM Employee e oRdEr \n By e.name";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIdentifier(Expression.ORDER_BY, offset);
+		assertTrue(result);
+	}
+
+	@Test
+	public void testStartWithIdentifier_07() {
+
+		String query = "SELECT e FROM Employee e oRdEr \n";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIdentifier(Expression.ORDER_BY, offset);
+		assertFalse(result);
+	}
+
+	@Test
+	public void testStartWithIdentifier_08() {
+
+		String query = "SELECT e FROM Employee e ORDER ";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIdentifier(Expression.ORDER_BY, offset);
+		assertFalse(result);
+	}
+
+	@Test
+	public void testStartWithIdentifier_09() {
+
+		String query = "SELECT e FROM Employee e ORDER  ";
+		int offset = "SELECT e FROM Employee e ".length();
+		WordParser wordParser = new WordParser(query);
+
+		boolean result = wordParser.startsWithIdentifier(Expression.ORDER_BY, offset);
+		assertFalse(result);
 	}
 
 	@Test

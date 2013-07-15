@@ -532,8 +532,7 @@ public abstract class AbstractExpression implements Expression {
 	 * Returns the encapsulated text of this {@link AbstractExpression}, which can be used in various
 	 * ways, it can be a keyword, a literal, etc.
 	 *
-	 * @return Either the JPQL identifier for this {@link AbstractExpression}, the literal it
-	 * encapsulates or an empty string
+	 * @return The full text of this expression or a keyword, or only what this expression encapsulates
 	 */
 	protected String getText() {
 		return text;

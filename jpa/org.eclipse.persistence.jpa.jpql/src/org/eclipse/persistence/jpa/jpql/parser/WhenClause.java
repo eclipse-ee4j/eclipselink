@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -135,6 +136,26 @@ public final class WhenClause extends AbstractExpression {
 		if (thenExpression != null) {
 			children.add(thenExpression);
 		}
+	}
+
+	/**
+	 * Creates a new {@link CollectionExpression} that will wrap the single <code><b>WHEN </b></code>
+	 * expression.
+	 *
+	 * @return The single <code><b>WHEN</b></code> expression represented by a temporary collection
+	 */
+	public CollectionExpression buildWhenCollectionExpression() {
+
+		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+		children.add(getWhenExpression());
+
+		List<Boolean> commas = new ArrayList<Boolean>(1);
+		commas.add(Boolean.FALSE);
+
+		List<Boolean> spaces = new ArrayList<Boolean>(1);
+		spaces.add(hasSpaceAfterWhenExpression);
+
+		return new CollectionExpression(this, children, commas, spaces, true);
 	}
 
 	/**

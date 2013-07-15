@@ -85,6 +85,20 @@ public final class RefactoringToolTest2_0 extends AbstractRefactoringToolTest {
 	}
 
 	@Test
+	public final void test_RenameEntityName_4() throws Exception {
+
+		// SELECT a.name, a.UUID, a.typeUUID AS assetTypeUUID, p.name AS projectName, ap.usageType FROM Asset a, UsedAssetUsingProject ap, Project p WHERE a.UUID = ap.usedAsset AND ap.usingProject = p.UUID
+		String jpqlQuery = query_018();
+		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+		refactoringTool.renameEntityName("Asset",                 "governance_Asset_v1");
+		refactoringTool.renameEntityName("UsedAssetUsingProject", "governance_UsedAssetUsingProject_v1");
+		refactoringTool.renameEntityName("Project",               "governance_Project_v1");
+
+		String expected = "SELECT a.name, a.UUID, a.typeUUID AS assetTypeUUID, p.name AS projectName, ap.usageType FROM governance_Asset_v1 a, governance_UsedAssetUsingProject_v1 ap, governance_Project_v1 p WHERE a.UUID = ap.usedAsset AND ap.usingProject = p.UUID";
+		assertEquals(expected, refactoringTool.toActualText());
+	}
+
+	@Test
 	public final void test_RenameResultVariable_1() throws Exception {
 
 		String jpqlQuery = "SELECT NEW java.util.Vector(a.employees) AS u FROM Address A";

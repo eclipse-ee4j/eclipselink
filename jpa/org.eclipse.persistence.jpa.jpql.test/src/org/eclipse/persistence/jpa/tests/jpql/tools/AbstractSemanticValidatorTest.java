@@ -1445,7 +1445,7 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	}
 
 	@Test
-	public final void test_StateFieldPathExpression_CollectionType() throws Exception {
+	public final void test_StateFieldPathExpression_CollectionType_1() throws Exception {
 
 		String jpqlQuery = "SELECT a.customerList FROM Address a";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1456,6 +1456,50 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 		else {
 			int startPosition = "SELECT ".length();
 			int endPosition   = "SELECT a.customerList".length();
+
+			testHasProblem(
+				problems,
+				StateFieldPathExpression_CollectionType,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public final void test_StateFieldPathExpression_CollectionType_2() throws Exception {
+
+		String jpqlQuery = "SELECT COUNT(a.customerList) FROM Address a";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		if (isPathExpressionToCollectionMappingAllowed()) {
+			testHasNoProblems(problems);
+		}
+		else {
+			int startPosition = "SELECT COUNT(".length();
+			int endPosition   = "SELECT COUNT(a.customerList".length();
+
+			testHasProblem(
+				problems,
+				StateFieldPathExpression_CollectionType,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public final void test_StateFieldPathExpression_CollectionType_3() throws Exception {
+
+		String jpqlQuery = "SELECT c FROM Customer c, Address a WHERE c NOT IN (a.customerList)";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		if (isPathExpressionToCollectionMappingAllowed()) {
+			testHasNoProblems(problems);
+		}
+		else {
+			int startPosition = "SELECT c FROM Customer c, Address a WHERE c NOT IN(".length();
+			int endPosition   = "SELECT c FROM Customer c, Address a WHERE c NOT IN(a.customerList".length();
 
 			testHasProblem(
 				problems,

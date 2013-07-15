@@ -114,6 +114,9 @@ public abstract class JPQLQueryBNF {
 	 */
 	private Boolean handleCollection;
 
+	/**
+	 * Determines whether this BNF handles parsing a nested array or not.
+	 */
 	private boolean handleNestedArray;
 
 	/**

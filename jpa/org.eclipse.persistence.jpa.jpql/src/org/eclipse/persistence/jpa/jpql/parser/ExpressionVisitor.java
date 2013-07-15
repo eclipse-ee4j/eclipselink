@@ -14,7 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * The interface is used to traverse the JPQL parsed tree. It follows the Visitor pattern. It visits
+ * This interface is used to traverse the JPQL parsed tree. It follows the Visitor pattern. It visits
  * the concrete instances of {@link Expression}.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and

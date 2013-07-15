@@ -19,8 +19,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation can be added to unit-test when it is run more than once and the signature of its
- * methods remain identical. This will allow Eclipse to differentiate between them.
+ * This annotation can be added to a unit-test class when it is executed more than once and the
+ * signature of its methods remain identical. This will allow Eclipse to differentiate between them
+ * and to properly update the test's status in the JUnit view.
  *
  * @version 2.4
  * @since 2.4
