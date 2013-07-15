@@ -41,6 +41,8 @@
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -414,7 +416,7 @@ public class BasicAccessor extends DirectAccessor {
         // converter, that is, Convert, Enumerated, Lob and Temporal. With 
         // everything falling into a serialized mapping if no converter 
         // whatsoever is found.
-        processMappingValueConverter(mapping, getConvert(), getConverts(), getReferenceClass());
+        processMappingValueConverter(mapping, getConvert(), getConverts(), getReferenceClass(), getReferenceClassWithGenerics());
 
         // Process a mutable setting.
         if (m_mutable != null) {

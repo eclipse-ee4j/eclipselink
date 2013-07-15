@@ -25,6 +25,8 @@
  *     06/03/2013-2.5.1 Guy Pelletier    
  *       - 402380: 3 jpa21/advanced tests failed on server with 
  *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -38,6 +40,7 @@ import junit.framework.Test;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.converters.ConverterClass;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
@@ -86,12 +89,20 @@ public class ConverterTestSuite extends JUnitTestCase {
 
         ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
         DirectToFieldMapping salaryMapping = (DirectToFieldMapping) employeeDescriptor.getMappingForAttributeName("salary");
-
         assertNotNull("Salary mapping did not have the auto apply converter", salaryMapping.getConverter());
 
         DirectToFieldMapping previousSalaryMapping = (DirectToFieldMapping) employeeDescriptor.getMappingForAttributeName("previousSalary");
-
         assertNull("Salary mapping did not have the auto apply converter", previousSalaryMapping.getConverter());
+        
+        ClassDescriptor runnerDescriptor = session.getDescriptor(Runner.class);
+        
+        DirectToFieldMapping tagsMapping = (DirectToFieldMapping) runnerDescriptor.getMappingForAttributeName("tags");
+        assertTrue("Tags mapping did not have a converter", tagsMapping.hasConverter());
+        assertTrue("Serials mappings did not have a SerializedObjectConverter", tagsMapping.getConverter() instanceof ConverterClass);
+        
+        DirectToFieldMapping serialsMapping = (DirectToFieldMapping) runnerDescriptor.getMappingForAttributeName("serials");
+        assertTrue("Serials mapping did not have a converter", serialsMapping.hasConverter());
+        assertTrue("Serials mappings did not have a SerializedObjectConverter", serialsMapping.getConverter() instanceof SerializedObjectConverter);
     }  
 
     /**
@@ -110,6 +121,7 @@ public class ConverterTestSuite extends JUnitTestCase {
             runner.setLastName("Day");
             runner.addPersonalBest("10 KM", "47:34");
             runner.addPersonalBest("5", "26:41");
+            runner.addTag("tag1");
             runner.addAccomplishment("Ran 100KM without stopping", new Date(System.currentTimeMillis()));
             RunnerInfo runnerInfo = new RunnerInfo();
             runnerInfo.setHealth(Health.H);

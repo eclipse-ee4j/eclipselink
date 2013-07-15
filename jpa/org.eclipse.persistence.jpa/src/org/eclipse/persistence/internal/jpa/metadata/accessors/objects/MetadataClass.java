@@ -19,6 +19,8 @@
  *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -105,6 +107,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
         if (m_enclosedClasses == null) {
             m_enclosedClasses = new ArrayList<MetadataClass>();
         }
+        
         m_enclosedClasses.add(enclosedClass);
     }
     
@@ -115,6 +118,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
         if (m_fields == null) {
             m_fields = new HashMap<String, MetadataField>();
         }
+        
         m_fields.put(field.getName(), field);
     }
     
@@ -125,6 +129,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
         if (m_interfaces == null) {
             m_interfaces = new ArrayList<String>();
         }
+        
         m_interfaces.add(interfaceName);
     }
     
@@ -135,6 +140,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
         if (m_methods == null) {
             m_methods = new HashMap<String, MetadataMethod>();
         }
+        
         m_methods.put(method.getName(), method);
     }
     
@@ -233,6 +239,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
         if (m_enclosedClasses == null) {
             m_enclosedClasses = new ArrayList<MetadataClass>();
         }
+        
         return m_enclosedClasses;
     }
     
@@ -266,10 +273,12 @@ public class MetadataClass extends MetadataAnnotatedElement {
     public Map<String, MetadataField> getFields() {
         if (m_fields == null) {
             m_fields = new HashMap<String, MetadataField>();
+     
             if (m_isLazy) {
                 m_factory.getMetadataClass(getName(), false);
             }
         }
+        
         return m_fields;
     }
 
@@ -280,6 +289,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
         if (m_interfaces == null) {
             m_interfaces = new ArrayList<String>();
         }
+        
         return m_interfaces;
     }
     
@@ -297,9 +307,11 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public MetadataMethod getMethod(String name, Class[] arguments) {
         List<String> argumentNames = new ArrayList<String>(arguments.length);
+        
         for (int index = 0; index < arguments.length; index++) {
             argumentNames.add(arguments[index].getName());
         }
+        
         return getMethod(name, argumentNames);
     }
 
@@ -317,12 +329,15 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public MetadataMethod getMethod(String name, List<String> arguments, boolean checkSuperClass) {
         MetadataMethod method = getMethods().get(name);
+        
         while ((method != null) && !method.getParameters().equals(arguments)) {
             method = method.getNext();
         }
+        
         if (checkSuperClass && (method == null) && (getSuperclassName() != null)) {
             return getSuperclass().getMethod(name, arguments);
         }
+        
         return method;
     }
     
@@ -365,6 +380,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     public Map<String, MetadataMethod> getMethods() {
         if (m_methods == null) {
             m_methods = new HashMap<String, MetadataMethod>();
+            
             if (m_isLazy) {
                 m_factory.getMetadataClass(getName(), false);
             }
@@ -475,6 +491,13 @@ public class MetadataClass extends MetadataAnnotatedElement {
     
     /**
      * INTERNAL:
+     */
+    public boolean isLazy() {
+        return m_isLazy;
+    }
+    
+    /**
+     * INTERNAL:
      * Return if this is extends List.
      */
     public boolean isList() {
@@ -513,6 +536,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
         if (isArray()) {
             return true;
         }
+        
         return extendsInterface(Serializable.class);
     }
     
@@ -557,10 +581,29 @@ public class MetadataClass extends MetadataAnnotatedElement {
     /**
      * INTERNAL:
      */
+    public void setIsLazy(boolean isLazy) {
+        m_isLazy = isLazy;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     public void setModifiers(int modifiers) {
         m_modifiers = modifiers;
     }
 
+    /**
+     * INTERNAL:
+     */
+    public void setName(String name) {
+        super.setName(name);
+        
+        if ((!MetadataFactory.ALLOW_JDK) && (name.startsWith("java.") || name.startsWith("javax.")
+                || name.startsWith("org.eclipse.persistence.internal."))) {
+            setIsJDK(true);
+        }
+    }
+    
     /**
      * INTERNAL:
      */
@@ -573,24 +616,5 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public void setSuperclassName(String superclass) {
         m_superclassName = superclass;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setName(String name) {
-        super.setName(name);
-        if ((!MetadataFactory.ALLOW_JDK) && (name.startsWith("java.") || name.startsWith("javax.")
-                || name.startsWith("org.eclipse.persistence.internal."))) {
-            setIsJDK(true);
-        }
-    }
-
-    public boolean isLazy() {
-        return m_isLazy;
-    }
-
-    public void setIsLazy(boolean isLazy) {
-        m_isLazy = isLazy;
     }
 }

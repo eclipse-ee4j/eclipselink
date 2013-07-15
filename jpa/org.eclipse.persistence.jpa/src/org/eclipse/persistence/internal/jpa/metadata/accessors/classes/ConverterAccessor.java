@@ -19,15 +19,18 @@
  *     06/03/2013-2.5.1 Guy Pelletier    
  *       - 402380: 3 jpa21/advanced tests failed on server with 
  *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
+
+import java.util.List;
 
 import javax.persistence.AttributeConverter;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -127,14 +130,6 @@ public class ConverterAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Return the field classificaiton type for this converter accessor.
-     */
-    protected String getClassificationType(boolean disableConversion) {
-        return (disableConversion) ? attributeClassification.getName() : fieldClassification.getName(); 
-    }
-    
-    /**
-     * INTERNAL:
      * To satisfy the abstract getIdentifier() method from ORMetadata.
      */
     @Override
@@ -160,8 +155,21 @@ public class ConverterAccessor extends ORMetadata {
         }
 
         // By implementing the attribute converter interface, the generic types are confirmed through the compiler.
-        attributeClassification = getMetadataClass(((MetadataClass) getAccessibleObject()).getGenericType().get(2));
-        fieldClassification = getMetadataClass(((MetadataClass) getAccessibleObject()).getGenericType().get(3));
+        List<String> genericTypes = ((MetadataClass) getAccessibleObject()).getGenericType();
+        int genericTypesSize = genericTypes.size();
+        
+        // Start building the attribute classification name that will include
+        // any generic specifications, e.g. List<String>. We need to be able to 
+        // distinguish between List<String> and List<Integer> etc. to correctly
+        // handle the auto-apply feature for basics.
+        String attributeClassificationName = "";
+        for (int i = 2; i < genericTypesSize - 1; i++) {
+            attributeClassificationName += genericTypes.get(i);
+        }
+        
+        // Cache the classification classes.
+        attributeClassification = getMetadataClass(attributeClassificationName);
+        fieldClassification = getMetadataClass(genericTypes.get(genericTypesSize - 1));
     }
     
     /**
@@ -203,21 +211,17 @@ public class ConverterAccessor extends ORMetadata {
      * Process this converter for the given mapping.
      */
     public void process(DatabaseMapping mapping, boolean isForMapKey, String attributeName, boolean disableConversion) {
-        String fieldClassificationName = getClassificationType(disableConversion);
-        ConverterClass converterClass = new ConverterClass(getJavaClassName(), isForMapKey, fieldClassificationName, disableConversion);
+        ConverterClass converterClass = new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName(), disableConversion);
         
         if (mapping.isDirectMapMapping() && isForMapKey) {
             ((DirectMapMapping) mapping).setKeyConverter(converterClass);
-            ((DirectMapMapping) mapping).setDirectKeyFieldClassificationName(fieldClassificationName);
         } else if (mapping.isDirectCollectionMapping()) {
             ((DirectCollectionMapping) mapping).setValueConverter(converterClass);
-            ((DirectCollectionMapping) mapping).setDirectFieldClassificationName(fieldClassificationName);
         } else if (mapping.isDirectToFieldMapping()) {
             ((AbstractDirectMapping) mapping).setConverter(converterClass);
-            ((AbstractDirectMapping) mapping).setFieldClassificationClassName(fieldClassificationName);
         } else if (mapping.isAggregateObjectMapping()) {
             ((AggregateObjectMapping) mapping).addConverter(converterClass, attributeName);
-        }  else if (mapping.isAggregateCollectionMapping()) {
+        } else if (mapping.isAggregateCollectionMapping()) {
             // TODO: Be nice to support converters on AggregateCollections keys.
             // For now they are silently ignored.
         }

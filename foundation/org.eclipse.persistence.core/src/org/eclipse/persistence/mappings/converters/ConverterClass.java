@@ -18,7 +18,9 @@
  *       - 374688: JPA 2.1 Converter support
  *     06/03/2013-2.5.1 Guy Pelletier    
  *       - 402380: 3 jpa21/advanced tests failed on server with 
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
+ *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work 
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.converters;
 
@@ -143,24 +145,37 @@ public class ConverterClass implements Converter {
      */
     @Override
     public void initialize(DatabaseMapping mapping, Session session) {
-        Converter converter = (disableConversion) ? null : this;
-        
         // Ensure the mapping has the correct field classification set.
         if (mapping.isDirectToFieldMapping()) {
             DirectToFieldMapping m = (DirectToFieldMapping) mapping; 
-            m.setConverter(converter);
-            m.setFieldClassification(fieldClassification);
-            m.setFieldClassificationClassName(fieldClassificationName);
+            
+            if (disableConversion) {
+                m.setConverter(null);
+            } else {
+                m.setConverter(this);
+                m.setFieldClassification(fieldClassification);
+                m.setFieldClassificationClassName(fieldClassificationName);
+            }
         } else if (mapping.isDirectMapMapping() && isForMapKey) {
             DirectMapMapping m = (DirectMapMapping) mapping;
-            m.setKeyConverter(converter);
-            m.setDirectKeyFieldClassification(fieldClassification);
-            m.setDirectKeyFieldClassificationName(fieldClassificationName);
+            
+            if (disableConversion) {
+                m.setKeyConverter(null);
+            } else {
+                m.setKeyConverter(this);
+                m.setDirectKeyFieldClassification(fieldClassification);
+                m.setDirectKeyFieldClassificationName(fieldClassificationName);
+            }
         }  else if (mapping.isDirectCollectionMapping()) {
             DirectCollectionMapping m = (DirectCollectionMapping) mapping;
-            m.setValueConverter(converter);
-            m.setDirectFieldClassification(fieldClassification);
-            m.setDirectFieldClassificationName(fieldClassificationName);
+            
+            if (disableConversion) {
+                m.setValueConverter(null);
+            } else {
+                m.setValueConverter(this);
+                m.setDirectFieldClassification(fieldClassification);
+                m.setDirectFieldClassificationName(fieldClassificationName);
+            }
         } else {
             // TODO: what else could it be???
         }

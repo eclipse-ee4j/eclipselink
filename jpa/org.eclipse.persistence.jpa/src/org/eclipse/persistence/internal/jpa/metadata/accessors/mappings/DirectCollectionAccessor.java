@@ -38,6 +38,8 @@
  *       - 3746888: JPA 2.1 Converter support
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     07/16/2013-2.5.1 Guy Pelletier 
+ *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -463,7 +465,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // value. If none is found then we'll look for a JPA converter, that 
         // is, Enumerated, Lob and Temporal. With everything falling into 
         // a serialized mapping if no converter whatsoever is found.
-        processMappingValueConverter(mapping, getValueConverter(), getConverts(), getReferenceClass());        
+        processMappingValueConverter(mapping, getValueConverter(), getConverts(), getReferenceClass(), getReferenceClassWithGenerics());        
     }
     
     /**
@@ -495,7 +497,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
             }
             
             // Process a converter for the key column of this mapping.
-            processMappingKeyConverter(mapping, getKeyConverter(), null, getMapKeyReferenceClass());
+            processMappingKeyConverter(mapping, getKeyConverter(), null, getMapKeyReferenceClass(), getMapKeyReferenceClassWithGenerics());
         }
         
         // Process the value column (we must process this field before the call
@@ -510,7 +512,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         }
         
         // Process a converter for value column of this mapping.
-        processMappingValueConverter(mapping, getValueConverter(), getConverts(), getReferenceClass());
+        processMappingValueConverter(mapping, getValueConverter(), getConverts(), getReferenceClass(), getReferenceClassWithGenerics());
     }
     
     /**
