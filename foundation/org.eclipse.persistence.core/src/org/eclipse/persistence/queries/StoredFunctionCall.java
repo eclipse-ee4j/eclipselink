@@ -168,4 +168,14 @@ public class StoredFunctionCall extends StoredProcedureCall {
         returnField.setName(name);
         returnField.setSqlType(type);
     }
+    
+    /** 
+     * PUBLIC:
+     * Define to return cursor as result.
+     */
+    public void setResultCursor() {
+        getParameterTypes().set(0, OUT_CURSOR); 
+        setIsCursorOutputProcedure(!hasOutputCursors());
+        setIsMultipleCursorOutputProcedure(hasOutputCursors());
+    }
 }

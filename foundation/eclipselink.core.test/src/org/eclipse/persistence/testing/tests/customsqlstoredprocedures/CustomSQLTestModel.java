@@ -12,9 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
+import java.sql.Types;
 import java.util.*;
 
 import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -73,6 +75,7 @@ public class CustomSQLTestModel extends TestModel {
         addTest(getSelectWithOutputParametersTestSuite());
         addTest(getOutputParametersTestSuite());
         addTest(getStoredProcedureTestSuite());
+        addTest(getStoredFunctionTestSuite());
     }
 
     public static TestSuite getDeleteObjectTestSuite() {
@@ -215,6 +218,14 @@ public class CustomSQLTestModel extends TestModel {
         suite.addTest(build2OutCursorTest());
         suite.addTest(buildUnnamedCursorTest());
         suite.addTest(build2ResultSetTest());
+        return suite;
+    }
+    
+    public static TestSuite getStoredFunctionTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("CustomSQLStoredFunctionTestSuite");
+        suite.setDescription("This suite tests certains aspects of StoredFunction");
+        suite.addTest(buildStoredFunctionRefCursorTest());
         return suite;
     }
 
@@ -360,6 +371,42 @@ public class CustomSQLTestModel extends TestModel {
             }
         };
         test.setName("2ResultSetTest");
+        return test;
+    }
+    
+    /**
+     * Test a stored function with ref cursor.
+     */
+    public static TestCase buildStoredFunctionRefCursorTest() {
+        TestCase test = new TestCase() {
+            public void test() {
+                if (!(getSession().getPlatform().isOracle())) {
+                    throwWarning("This test can only be run in Oracle");
+                }
+                StoredFunctionCall call = new StoredFunctionCall();
+                call.setProcedureName("PackageFunction_ResultCursor.BUSINESS_DATE");
+                call.addNamedArgument("P_CODE");
+                call.addNamedArgument("P_LOOKUP_TBL", "P_LOOKUP_TBL", Types.ARRAY, "SF_LOOKUP_TBL");
+                call.setResultCursor();
+
+                DataReadQuery query = new DataReadQuery();
+                query.setCall(call);
+                query.addArgument("P_CODE");
+                query.addArgument("P_LOOKUP_TBL");
+                
+                Object[] data = new Object[] {"5-Jul-13", 5L};
+                
+                List args = new ArrayList();
+                args.add("CN");
+                args.add(new Object[] {data});
+                
+                List<Map> result = (List<Map>) getSession().executeQuery(query, args);
+                if (result == null || result.size() != 1) {
+                    throwError("Incorrect number of rows returned: " + result);
+                }
+            }
+        };
+        test.setName("StoredFunctionRefCursorTest");
         return test;
     }
 }
