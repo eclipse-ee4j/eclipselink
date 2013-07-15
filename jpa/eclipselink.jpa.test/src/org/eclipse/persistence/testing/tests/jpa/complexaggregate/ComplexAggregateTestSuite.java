@@ -22,10 +22,12 @@ import javax.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.Body;
@@ -76,6 +78,7 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         suite.addTest(new ComplexAggregateTestSuite("testNestedAggregatePrimaryKey"));
         suite.addTest(new ComplexAggregateTestSuite("testAggregateReadOnlyMapKey"));
         suite.addTest(new ComplexAggregateTestSuite("testComplexAggregateJoin"));
+        suite.addTest(new ComplexAggregateTestSuite("testComplexAggregateBatch"));
 
         return suite;
     }
@@ -889,6 +892,194 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         errorMsg = JoinedAttributeTestHelper.compareCollections(controledPlayerList, hockeyPlayerResults, m_session.getClassDescriptor(HockeyPlayer.class), m_session);
         if (errorMsg.length() > 0) {
             throw new TestErrorException(errorMsg);
+        }
+    }
+
+    public void testComplexAggregateBatch() {
+        clearCache();
+
+        HockeyTeam team1 = new HockeyTeam();
+        team1.setName("Axemen");
+        team1.setAwayColor("Red");
+        team1.setHomeColor("White");
+        team1.setLevel("Division 5");
+
+        HockeyTeam team2 = new HockeyTeam();
+        team2.setName("Ducks");
+        team2.setAwayColor("Black");
+        team2.setHomeColor("Red");
+        team2.setLevel("Division 4");
+
+        ////////Player 1 ////////
+        HockeyPlayer player1 = new HockeyPlayer();
+        player1.setFirstName("Guy");
+        player1.setLastName("Pelletier");
+
+        PersonalVitals personalVitals1 = new PersonalVitals();
+        personalVitals1.setAge(29);
+        personalVitals1.setHeight(1.80);
+        personalVitals1.setWeight(180);
+
+        TeamVitals teamVitals1 = new TeamVitals();
+
+        teamVitals1.setJerseyNumber(20);
+        teamVitals1.setPosition("Goalie");
+        teamVitals1.getRoles().add(new Role("Stop pucks!"));
+
+        Vitals vitals1 = new Vitals();
+        vitals1.setPersonalVitals(personalVitals1);
+        vitals1.setTeamVitals(teamVitals1);
+        player1.setVitals(vitals1);
+
+
+        ////////Coach 1 ////////
+        HockeyCoach coach1 = new HockeyCoach();
+        coach1.setFirstName("Don");
+        coach1.setLastName("Hyslop");
+
+        PersonalVitals coachPersonalVitals1 = new PersonalVitals();
+        coachPersonalVitals1.setAge(55);
+        coachPersonalVitals1.setHeight(1.85);
+        coachPersonalVitals1.setWeight(200);
+
+        CoachVitals coachVitals1 = new CoachVitals();
+        coachVitals1.setPersonalVitals(coachPersonalVitals1);
+        coach1.setVitals(coachVitals1);
+        
+        ////////Coach 2 ////////
+        HockeyCoach coach2 = new HockeyCoach();
+        coach2.setFirstName("Bob");
+        coach2.setLastName("Jones");
+
+        PersonalVitals coachPersonalVitals2 = new PersonalVitals();
+        coachPersonalVitals2.setAge(44);
+        coachPersonalVitals2.setHeight(1.95);
+        coachPersonalVitals2.setWeight(250);
+
+        CoachVitals coachVitals2 = new CoachVitals();
+        coachVitals2.setPersonalVitals(coachPersonalVitals2);
+        coach2.setVitals(coachVitals2);
+
+        ////////persist the new objects ////////
+
+        DatabaseSessionImpl m_session = getDatabaseSession();
+
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(m_session);
+
+        EntityManager em = createEntityManager();
+        
+        beginTransaction(em);
+        em.persist(team1);
+        em.persist(team2);
+
+        em.persist(player1);
+        em.persist(coach1);
+        em.persist(coach2);
+
+        //setup relationships:
+        teamVitals1.setHockeyTeam(team1);
+        team1.getPlayers().add(player1);
+        team1.getCoaches().add(coach1);
+        team2.getCoaches().add(coach2);
+        coachVitals1.setHockeyTeam(team1);
+        coachVitals2.setHockeyTeam(team2);
+
+        em.flush();
+        try {
+            counter.getSqlStatements().clear();
+            
+            em.clear();
+            m_session.getIdentityMapAccessor().initializeAllIdentityMaps();
+            
+            Query query1 = em.createQuery("Select a from HockeyCoach a");
+            query1.setHint(QueryHints.BATCH, "a.vitals.hockeyTeam");
+            List<HockeyCoach> hockeyCoachResults = query1.getResultList();
+            for (HockeyCoach coach : hockeyCoachResults) {
+                coach.getVitals().getHockeyTeam();
+            }
+            
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 2) {
+                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
+            }
+            
+            counter.getSqlStatements().clear();
+            
+            em.clear();
+            m_session.getIdentityMapAccessor().initializeAllIdentityMaps();
+                        
+            query1 = em.createQuery("Select a from HockeyCoach a");
+            query1.setHint(QueryHints.BATCH, "a.vitals.hockeyTeam");
+            query1.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            hockeyCoachResults = query1.getResultList();
+            for (HockeyCoach coach : hockeyCoachResults) {
+                coach.getVitals().getHockeyTeam();
+            }
+            
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 2) {
+                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
+            }
+            
+            em.clear();
+            m_session.getIdentityMapAccessor().initializeAllIdentityMaps();
+            
+            counter.getSqlStatements().clear();
+            
+            query1 = em.createQuery("Select a from HockeyCoach a");
+            query1.setHint(QueryHints.BATCH, "a.vitals.hockeyTeam");
+            query1.setHint(QueryHints.BATCH_TYPE, BatchFetchType.EXISTS);
+            hockeyCoachResults = query1.getResultList();
+            for (HockeyCoach coach : hockeyCoachResults) {
+                coach.getVitals().getHockeyTeam();
+            }
+            
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 2) {
+                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
+            }
+            
+            em.clear();
+            m_session.getIdentityMapAccessor().initializeAllIdentityMaps();
+            
+            Query query2 = em.createQuery("Select z from HockeyPlayer z where z.playerId <> 0");
+            query2.setHint(QueryHints.BATCH, "z.vitals.teamVitals.hockeyTeam.coaches");
+            List<HockeyPlayer> hockeyPlayerResults = query2.getResultList();
+            for (HockeyPlayer player : hockeyPlayerResults) {
+                player.getVitals().getTeamVitals().getHockeyTeam().getCoaches();
+            }
+            
+            em.clear();
+            m_session.getIdentityMapAccessor().initializeAllIdentityMaps();
+            
+            query2 = em.createQuery("Select z from HockeyPlayer z where z.playerId <> 0");
+            query2.setHint(QueryHints.BATCH, "z.vitals.teamVitals.hockeyTeam.coaches");
+            query2.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            hockeyPlayerResults = query2.getResultList();
+            for (HockeyPlayer player : hockeyPlayerResults) {
+                player.getVitals().getTeamVitals().getHockeyTeam().getCoaches();
+            }
+            
+            em.clear();
+            m_session.getIdentityMapAccessor().initializeAllIdentityMaps();
+            
+            query2 = em.createQuery("Select z from HockeyPlayer z where z.playerId <> 0");
+            query2.setHint(QueryHints.BATCH, "z.vitals.teamVitals.hockeyTeam.coaches");
+            query2.setHint(QueryHints.BATCH_TYPE, BatchFetchType.EXISTS);
+            hockeyPlayerResults = query2.getResultList();
+            for (HockeyPlayer player : hockeyPlayerResults) {
+                player.getVitals().getTeamVitals().getHockeyTeam().getCoaches();
+            }
+                        
+            em.clear();
+            m_session.getIdentityMapAccessor().initializeAllIdentityMaps();
+        } finally  {
+            try {
+                closeEntityManagerAndTransaction(em);
+            } catch (RuntimeException re){
+                //ignore
+            }
+            if (counter != null) {
+                counter.remove();
+            }
         }
     }
 }

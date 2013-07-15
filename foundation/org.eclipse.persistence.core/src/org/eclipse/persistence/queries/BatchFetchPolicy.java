@@ -38,7 +38,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     protected int size = 500;
     /** Define the attributes to be batch fetched. */
     protected List<Expression> attributeExpressions;
-    /** Define the mapping to be batch fetched. */
+    /** Define the mapping to be batch fetched (from mapping settings). */
     protected List<DatabaseMapping> batchedMappings;
     /** PERF: Used internally to store the prepared mapping queries. */
     protected transient Map<DatabaseMapping, ReadQuery> mappingQueries;
@@ -120,6 +120,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
      * PERF: Return the internally stored prepared mapping queries.
      */
     public Map<DatabaseMapping, ReadQuery> getMappingQueries() {
@@ -127,6 +128,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
      * PERF: Set the internally stored prepared mapping queries.
      */
     public void setMappingQueries(Map<DatabaseMapping, ReadQuery> mappingQueries) {
@@ -134,6 +136,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
      * PERF: Return the cached local (only) batch read attribute names.
      */
     public List<String> getAttributes() {
@@ -141,6 +144,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
      * PERF: Set the cached local (only) batch read attribute names.
      */
     public void setAttributes(List<String> attributes) {

@@ -755,5 +755,34 @@ public abstract class ObjectExpression extends DataExpression {
     public void setOuterJoinExpIndex(Integer outerJoinExpIndex) {
         this.outerJoinExpIndex = outerJoinExpIndex;
     }
+    
+    /**
+     * INTERNAL:
+     * Parses an expression to return the first non-AggregateObjectMapping expression after the base ExpressionBuilder.
+     * This is used by joining and batch fetch to get the list of mappings that really need to be processed (non-aggregates).
+     * @param aggregateMappingsEncountered - collection of aggregateObjectMapping expressions encountered in the returned expression
+     *  between the first expression and the ExpressionBuilder
+     * @return first non-AggregateObjectMapping expression after the base ExpressionBuilder from the fullExpression
+     */
+    public ObjectExpression getFirstNonAggregateExpressionAfterExpressionBuilder(List aggregateMappingsEncountered) {
+        boolean done = false;
+        ObjectExpression baseExpression = this;
+        ObjectExpression prevExpression = this;
+        while (!baseExpression.getBaseExpression().isExpressionBuilder() && !done) {
+            baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
+            while (!baseExpression.isExpressionBuilder() && baseExpression.getMapping().isAggregateObjectMapping()) {
+                aggregateMappingsEncountered.add(baseExpression.getMapping());
+                baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
+            }
+            if (baseExpression.isExpressionBuilder()) {
+                done = true;
+                //use the one closest to the expression builder that wasn't an aggregate
+                baseExpression = prevExpression;
+            } else {
+                prevExpression = baseExpression;
+            }
+        }
+        return baseExpression;
+    }
 
 }

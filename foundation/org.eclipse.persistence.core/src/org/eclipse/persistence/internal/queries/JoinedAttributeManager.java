@@ -289,7 +289,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 objectExpression.getBuilder().setQueryClass(descriptor.getJavaClass());
             }
             //get the first expression after the builder that is not an aggregate, and populate the aggregateMapping list if there are aggregates
-            ObjectExpression baseExpression = getFirstNonAggregateExpressionAfterExpressionBuilder(objectExpression, getJoinedAggregateMappings());
+            ObjectExpression baseExpression = objectExpression.getFirstNonAggregateExpressionAfterExpressionBuilder(getJoinedAggregateMappings());
 
             // PERF: Cache local join attribute Expression.
             this.addJoinedAttribute(baseExpression);
@@ -337,7 +337,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             DatabaseMapping mapping = objectExpression.getMapping();
             // only store the index if this is the local expression to avoid it being added multiple times
             //This means the base local expression must be first on the list, followed by nested expressions
-            ObjectExpression localExpression = getFirstNonAggregateExpressionAfterExpressionBuilder(objectExpression, new ArrayList(1));
+            ObjectExpression localExpression = objectExpression.getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(1));
             if ((localExpression == objectExpression) && (mapping != null) && mapping.isForeignReferenceMapping()) {
                 getJoinedMappingIndexes_().put(mapping, Integer.valueOf(currentIndex));
             }
@@ -416,36 +416,6 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             this.descriptor = this.baseQuery.getDescriptor();
         }
         return this.descriptor;
-    }
-    
-    /**
-     * INTERNAL:
-     * Parses an expression to return the first non-AggregateObjectMapping expression after the base ExpressionBuilder.
-     * 
-     * @param fullExpression
-     * @param aggregateMappingsEncountered - collection of aggregateObjectMapping expressions encountered in the returned expression
-     *  between the first expression and the ExpressionBuilder
-     * @return first non-AggregateObjectMapping expression after the base ExpressionBuilder from the fullExpression
-     */
-    protected ObjectExpression getFirstNonAggregateExpressionAfterExpressionBuilder(ObjectExpression fullExpression, List aggregateMappingsEncountered){
-        boolean done = false;
-        ObjectExpression baseExpression = fullExpression;
-        ObjectExpression prevExpression = fullExpression;
-        while (!baseExpression.getBaseExpression().isExpressionBuilder()&& !done) {
-            baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
-            while (!baseExpression.isExpressionBuilder() && baseExpression.getMapping().isAggregateObjectMapping()){
-                aggregateMappingsEncountered.add(baseExpression.getMapping());
-                baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
-            }
-            if (baseExpression.isExpressionBuilder()){
-                done = true;
-                //use the one closest to the expression builder that wasn't an aggregate
-                baseExpression = prevExpression;
-            } else {
-                prevExpression = baseExpression;
-            }
-        }
-        return baseExpression;
     }
 
     /**
@@ -645,7 +615,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     protected boolean isMappingInJoinedExpressionList(DatabaseMapping attributeMapping, List joinedExpressionList) {
         for (Iterator joinEnum = joinedExpressionList.iterator(); joinEnum.hasNext();) {
             List aggregateMappings = new ArrayList();
-            ObjectExpression expression = getFirstNonAggregateExpressionAfterExpressionBuilder((ObjectExpression)joinEnum.next(), aggregateMappings);
+            ObjectExpression expression = ((ObjectExpression)joinEnum.next()).getFirstNonAggregateExpressionAfterExpressionBuilder(aggregateMappings);
             if (attributeMapping.isAggregateObjectMapping() && aggregateMappings.contains(attributeMapping)) {
                 return true;
             } else if (attributeMapping.equals(expression.getMapping())) {//expression may not have been processed yet     

@@ -20,7 +20,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
-import org.eclipse.persistence.testing.framework.TestWarningException;
 
 /**
  * @author cdelahun
@@ -77,18 +76,9 @@ public class EMFlushBatchWritingTest extends EntityContainerTestBase {
             try {
                 query.executeUpdate();
             } catch (Exception e) {
-                //exception not expected if the query gets added to the batch, delaying query being executed until flush.  
-                //This may change in the future if native queries are not added to batches
-                throw new TestWarningException("ExecuteUpdate threw an exception while using batch writing instead " +
-                		"of waiting for the commit/flush call "+e);
+                expectedException = e;
             }
-            try {
-                //exception should be thrown here if query gets added to the batch and batching gets flushed correctly.  
-                em.flush();
-            } catch (Exception e) {
-                 expectedException = e;
-            }
-            
+            em.flush();            
         } finally {
             this.rollbackTransaction();
         }

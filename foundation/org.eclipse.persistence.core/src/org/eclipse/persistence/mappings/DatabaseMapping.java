@@ -460,11 +460,49 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * Extract the nested attribute expressions that apply to this mapping.
-     * This is used for partial objects and joining.
-     * @param rootExpressionsAllowed true if newRoot itself can be one of the
-     * expressions returned
+     * This is used for partial objects, and batch fetching.
      */
-    protected List<Expression> extractNestedExpressions(List<Expression> expressions, ExpressionBuilder newRoot, boolean rootExpressionsAllowed) {
+    protected List<Expression> extractNestedExpressions(List<Expression> expressions, ExpressionBuilder newRoot) {
+        List<Expression> nestedExpressions = new ArrayList(expressions.size());
+
+        /*
+         * If the expression closest to to the Builder is for this mapping, that expression is rebuilt using
+         * newRoot and added to the nestedExpressions list.  
+         */
+        for (Expression next : expressions) {
+            // The expressionBuilder can be one of the locked expressions in
+            // the ForUpdateOfClause.
+            if (!next.isQueryKeyExpression()) {
+                continue;
+            }
+            QueryKeyExpression expression = (QueryKeyExpression)next;
+            ObjectExpression base = expression;
+            boolean afterBase = false;
+            
+            while (!base.getBaseExpression().isExpressionBuilder()) {
+                base = (ObjectExpression)base.getBaseExpression();
+                afterBase = true;
+            }
+            if (base.getName().equals(getAttributeName())) {
+                // Only add the nested expressions for the mapping (not the mapping itself).
+                if (afterBase) {
+                    nestedExpressions.add(expression.rebuildOn(base, newRoot));
+                }
+            }
+        }
+        return nestedExpressions;
+    }
+
+    /**
+     * INTERNAL:
+     * Extract the nested attribute expressions that apply to this mapping.
+     * This is used for joining, and locking.
+     * For aggregates return the nested foreign reference mapping, not the aggregate, as the aggregates are not joined,
+     * and share their parent's query.
+     * @param rootExpressionsAllowed true if newRoot itself can be one of the
+     * expressions returned (used for locking)
+     */
+    protected List<Expression> extractNestedNonAggregateExpressions(List<Expression> expressions, ExpressionBuilder newRoot, boolean rootExpressionsAllowed) {
         List<Expression> nestedExpressions = new ArrayList(expressions.size());
 
         /*

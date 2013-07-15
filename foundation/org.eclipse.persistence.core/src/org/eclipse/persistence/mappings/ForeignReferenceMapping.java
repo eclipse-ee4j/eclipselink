@@ -701,7 +701,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         nestedQuery.setShouldUseSerializedObjectPolicy(baseQuery.shouldUseSerializedObjectPolicy());
         // Must cascade for nested partial/join attributes, the expressions must be filter to only the nested ones.
         if (baseQuery.hasPartialAttributeExpressions()) {
-            nestedQuery.setPartialAttributeExpressions(extractNestedExpressions(((ObjectLevelReadQuery)baseQuery).getPartialAttributeExpressions(), nestedQuery.getExpressionBuilder(), false));
+            nestedQuery.setPartialAttributeExpressions(extractNestedExpressions(((ObjectLevelReadQuery)baseQuery).getPartialAttributeExpressions(), nestedQuery.getExpressionBuilder()));
             // bug 5501751: USING GETALLOWINGNULL() WITH ADDPARTIALATTRIBUTE() BROKEN IN 10.1.3
             // The query against Employee with 
             //   query.addPartialAttribute(builder.getAllowingNull("address"));
@@ -726,7 +726,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 }
             }
             
-            List nestedJoins = extractNestedExpressions(joinManager.getJoinedAttributeExpressions(), nestedQuery.getExpressionBuilder(), false);
+            List nestedJoins = extractNestedNonAggregateExpressions(joinManager.getJoinedAttributeExpressions(), nestedQuery.getExpressionBuilder(), false);
             if (nestedJoins.size() > 0) {
                 // Recompute the joined indexes based on the nested join expressions.
                 nestedQuery.getJoinedAttributeManager().clear();
@@ -743,7 +743,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             if (baseQuery.isLockQuery()) {
                 if (((ObjectLevelReadQuery)baseQuery).getLockingClause().isForUpdateOfClause()) {
                     ForUpdateOfClause clause = (ForUpdateOfClause)((ObjectLevelReadQuery)baseQuery).getLockingClause().clone();
-                    clause.setLockedExpressions(extractNestedExpressions(clause.getLockedExpressions(), nestedQuery.getExpressionBuilder(), true));
+                    clause.setLockedExpressions(extractNestedNonAggregateExpressions(clause.getLockedExpressions(), nestedQuery.getExpressionBuilder(), true));
                     nestedQuery.setLockingClause(clause);
                 } else {
                     nestedQuery.setLockingClause(((ObjectLevelReadQuery)baseQuery).getLockingClause());
@@ -922,13 +922,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 // Batch Read Attribute Expressions may not have initialized.
                 ExpressionBuilder expressionBuilder = batchReadExpression.getBuilder();
                 if (expressionBuilder.getQueryClass() == null) {
-                    expressionBuilder.setSession(query.getSession().getRootSession(null));
                     expressionBuilder.setQueryClass(query.getReferenceClass());
+                }
+                if (expressionBuilder.getSession() == null) {
+                    expressionBuilder.setSession(query.getSession().getRootSession(null));
                 }
             }
             
             // Computed nested batch attribute expressions, and add them to batch query.
-            List<Expression> nestedExpressions = extractNestedExpressions(query.getBatchReadAttributeExpressions(), batchQuery.getExpressionBuilder(), false);
+            List<Expression> nestedExpressions = extractNestedExpressions(query.getBatchReadAttributeExpressions(), batchQuery.getExpressionBuilder());
             batchQuery.getBatchReadAttributeExpressions().addAll(nestedExpressions);
         }
 
@@ -939,9 +941,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         
         // Set nested fetch group.
         if (batchQuery.getDescriptor().hasFetchGroupManager()) {
-            FetchGroup sourceFetchGruop = query.getExecutionFetchGroup();
-            if (sourceFetchGruop != null) {                    
-                FetchGroup targetFetchGroup = sourceFetchGruop.getGroup(getAttributeName());
+            FetchGroup sourceFetchGroup = query.getExecutionFetchGroup();
+            if (sourceFetchGroup != null) {                    
+                FetchGroup targetFetchGroup = sourceFetchGroup.getGroup(getAttributeName());
                 if (targetFetchGroup != null) {
                     ((ObjectLevelReadQuery)batchQuery).setFetchGroup(targetFetchGroup);
                 }

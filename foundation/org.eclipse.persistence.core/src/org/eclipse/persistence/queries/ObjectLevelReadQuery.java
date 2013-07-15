@@ -64,6 +64,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -194,6 +195,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     
     /** Allow concrete subclasses queries to be prepared and cached for inheritance queries. */
     protected Map<Class, DatabaseQuery> concreteSubclassQueries;
+    
+    /** Allow aggregate queries to be prepared and cached. */
+    protected Map<DatabaseMapping, ObjectLevelReadQuery> aggregateQueries;
     
     /** Allow concrete subclasses joined mapping indexes to be prepared and cached for inheritance queries. */
     protected Map<Class, Map<DatabaseMapping, Object>> concreteSubclassJoinedMappingIndexes;
@@ -1041,8 +1045,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void dontAcquireLocks() {
         setLockMode(NO_LOCK);
-        //Bug2804042 Must un-prepare if prepared as the SQL may change.
-        setIsPrepared(false);
     }
 
     /**
@@ -1834,7 +1836,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Return if partial attribute.
      */
     public boolean isPartialAttribute(String attributeName) {
-        if (!hasPartialAttributeExpressions()) {
+        if (this.partialAttributeExpressions == null) {
             return false;
         }
         List<Expression> partialAttributeExpressions = getPartialAttributeExpressions();
@@ -1917,6 +1919,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.isReferenceClassLocked = null;
             this.concreteSubclassCalls = null;
             this.concreteSubclassQueries = null;
+            this.aggregateQueries = null;
             this.concreteSubclassJoinedMappingIndexes = null;
         }
     }
@@ -2032,6 +2035,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.shouldUseDefaultFetchGroup = objectQuery.shouldUseDefaultFetchGroup;
             this.concreteSubclassCalls = objectQuery.concreteSubclassCalls;
             this.concreteSubclassQueries = objectQuery.concreteSubclassQueries;
+            this.aggregateQueries = objectQuery.aggregateQueries;
             this.concreteSubclassJoinedMappingIndexes = objectQuery.concreteSubclassJoinedMappingIndexes;
             this.additionalFields = objectQuery.additionalFields;
             this.partialAttributeExpressions = objectQuery.partialAttributeExpressions;
@@ -2274,8 +2278,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void resetDistinct() {
         setDistinctState(UNCOMPUTED_DISTINCT);
-        //Bug2804042 Must un-prepare if prepared as the SQL may change.
-        setIsPrepared(false);
     }
 
     /**
@@ -2341,6 +2343,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setDistinctState(short distinctState) {
         this.distinctState = distinctState;
+        //Bug2804042 Must un-prepare if prepared as the SQL may change.
+        setIsPrepared(false);
     }
 
     /**
@@ -2705,8 +2709,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void useDistinct() {
         setDistinctState(USE_DISTINCT);
-        //Bug2804042 Must un-prepare if prepared as the SQL may change.
-        setIsPrepared(false);
     }
 
     /**
@@ -3018,6 +3020,37 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
         return concreteSubclassQueries;
     }
+    
+    /**
+     * INTERNAL:
+     * Return the cache of aggregate queries.
+     * This allows aggregate query clones to be cached.
+     */
+    public Map<DatabaseMapping, ObjectLevelReadQuery> getAggregateQueries() {
+        if (aggregateQueries == null) {
+            aggregateQueries = new HashMap(8);
+        }
+        return aggregateQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the aggregate query clone for the mapping.
+     */
+    public ObjectLevelReadQuery getAggregateQuery(DatabaseMapping mapping) {
+        if (this.aggregateQueries == null) {
+            return null;
+        }
+        return this.aggregateQueries.get(mapping);
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the aggregate query clone for the mapping.
+     */
+    public void setAggregateQuery(DatabaseMapping mapping, ObjectLevelReadQuery query) {
+        getAggregateQueries().put(mapping, query);
+    }
 
     /**
      * INTERNAL:
@@ -3125,11 +3158,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (this.batchFetchPolicy == null) {
             return false;
         }
-        // Since aggregates share the same query as their parent, must avoid the aggregate thinking
-        // the parents mappings is for it, (queries only share if the aggregate was not joined).
-        if (mappingDescriptor.isAggregateDescriptor() && (mappingDescriptor != this.descriptor)) {
-            return false;
-        }
         return this.batchFetchPolicy.isAttributeBatchRead(mappingDescriptor, attributeName);
     }
 
@@ -3165,8 +3193,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 this.batchFetchPolicy.setBatchedMappings(getDescriptor().getObjectBuilder().getBatchFetchedAttributes());
             }
         }
-        // Cannot prepare the batch queries if using inheritance, as child descriptors can have different mappings.
-        if (hasBatchReadAttributes() && (!this.descriptor.hasInheritance())) {
+        if (hasBatchReadAttributes()) {
             List<Expression> batchReadAttributeExpressions = getBatchReadAttributeExpressions();
             this.batchFetchPolicy.setAttributes(new ArrayList(batchReadAttributeExpressions.size()));
             if (!initialized) {
@@ -3174,6 +3201,36 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
             computeNestedQueriesForBatchReadExpressions(batchReadAttributeExpressions);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Compute the cache batched attributes.
+     * Used to recompute batched attributes for nested aggregate queries.
+     */
+    public void computeBatchReadAttributes() {
+        List<Expression> batchReadAttributeExpressions = getBatchReadAttributeExpressions();
+        this.batchFetchPolicy.setAttributes(new ArrayList(batchReadAttributeExpressions.size()));
+        int size = batchReadAttributeExpressions.size();
+        for (int index = 0; index < size; index++) {
+            ObjectExpression objectExpression = (ObjectExpression)batchReadAttributeExpressions.get(index);
+
+            // Expression may not have been initialized.
+            ExpressionBuilder builder = objectExpression.getBuilder();
+            if (builder.getSession() == null) {
+                builder.setSession(getSession().getRootSession(null));
+            }
+            if (builder.getQueryClass() == null) {
+                builder.setQueryClass(getReferenceClass());
+            }
+            
+            // PERF: Cache join attribute names.
+            ObjectExpression baseExpression = objectExpression;
+            while (!baseExpression.getBaseExpression().isExpressionBuilder()) {
+                baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
+            }
+            this.batchFetchPolicy.getAttributes().add(baseExpression.getName());
+        }        
     }
 
     /**
@@ -3188,8 +3245,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
             // Expression may not have been initialized.
             ExpressionBuilder builder = objectExpression.getBuilder();
-            builder.setSession(getSession().getRootSession(null));
-            builder.setQueryClass(getReferenceClass());            
+            if (builder.getSession() == null) {
+                builder.setSession(getSession().getRootSession(null));
+            }
+            if (builder.getQueryClass() == null) {
+                builder.setQueryClass(getReferenceClass());
+            }
             
             // PERF: Cache join attribute names.
             ObjectExpression baseExpression = objectExpression;
@@ -3198,10 +3259,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
             this.batchFetchPolicy.getAttributes().add(baseExpression.getName());
             
-            // Ignore nested
-            if (objectExpression.getBaseExpression().isExpressionBuilder()) {
-                DatabaseMapping mapping = objectExpression.getMapping();
-                if ((mapping != null) && mapping.isForeignReferenceMapping()) {
+            DatabaseMapping mapping = baseExpression.getMapping();
+            if ((mapping != null) && mapping.isAggregateObjectMapping()) {
+                // Also prepare the nested aggregate queries, as aggregates do not have their own query.
+                baseExpression = objectExpression.getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(2));
+                mapping = baseExpression.getMapping();
+            }
+            if ((mapping != null) && mapping.isForeignReferenceMapping()) {
+                if (!this.batchFetchPolicy.getMappingQueries().containsKey(mapping)) {
                     // A nested query must be built to pass to the descriptor that looks like the real query execution would.
                     ReadQuery nestedQuery = ((ForeignReferenceMapping)mapping).prepareNestedBatchQuery(this);    
                     // Register the nested query to be used by the mapping for all the objects.
@@ -3251,6 +3316,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             throw QueryException.batchReadingNotSupported(this);
         }
         getBatchReadAttributeExpressions().add(attributeExpression);
+        setIsPrepared(false);
     }
 
     /**
@@ -3264,6 +3330,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setBatchFetchType(BatchFetchType type) {
         getBatchFetchPolicy().setType(type);
+        setIsPrepared(false);
     }
 
     /**
@@ -3277,6 +3344,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setBatchFetchSize(int size) {
         getBatchFetchPolicy().setSize(size);
+        setIsPrepared(false);
     }
 
     /**

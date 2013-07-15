@@ -320,6 +320,65 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
+     * Clone and prepare the selection query as a nested batch read query.
+     * This is used for nested batch reading.
+     */
+    public ObjectBuildingQuery prepareNestedQuery(ObjectBuildingQuery sourceQuery) {
+        if (sourceQuery.isObjectLevelReadQuery()) {
+            ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)sourceQuery;
+            ObjectLevelReadQuery nestedObjectQuery = objectQuery.getAggregateQuery(this);
+            if (nestedObjectQuery != null) {
+                return nestedObjectQuery;
+            }
+            nestedObjectQuery = objectQuery;
+            String attributeName = getAttributeName();
+            if ((objectQuery.isPartialAttribute(attributeName))) {
+                // A nested query must be built to pass to the descriptor that looks like the real query execution would.
+                nestedObjectQuery = (ObjectLevelReadQuery)objectQuery.clone();
+                // Must cascade the nested partial/join expression and filter the nested ones.
+                if (objectQuery.hasPartialAttributeExpressions()) {
+                    nestedObjectQuery.setPartialAttributeExpressions(extractNestedExpressions(objectQuery.getPartialAttributeExpressions(), nestedObjectQuery.getExpressionBuilder()));
+                }
+            }
+            if (objectQuery.isAttributeBatchRead(this.descriptor, attributeName)) {
+                if (nestedObjectQuery == objectQuery) {
+                    // A nested query must be built to pass to the descriptor that looks like the real query execution would.
+                    nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
+                }
+                // Must carry over properties for batching to work.
+                nestedObjectQuery.setProperties(objectQuery.getProperties());
+                // Computed nested batch attribute expressions.
+                nestedObjectQuery.getBatchFetchPolicy().setAttributeExpressions(extractNestedExpressions(objectQuery.getBatchReadAttributeExpressions(), nestedObjectQuery.getExpressionBuilder()));
+                nestedObjectQuery.computeBatchReadAttributes();
+            }
+            FetchGroup parentQueryFetchGroup = sourceQuery.getExecutionFetchGroup(this.descriptor);
+            if (parentQueryFetchGroup != null) {
+                if (nestedObjectQuery == objectQuery) {
+                    // A nested query must be built to pass to the descriptor that looks like the real query execution would.
+                    nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
+                }
+                FetchGroup targetFetchGroup = parentQueryFetchGroup.getGroup(getAttributeName());
+                if (targetFetchGroup != null && sourceQuery.getDescriptor().hasFetchGroupManager()) {
+                    //if the parent object has a fetchgroup manager then aggregates can support a fetchgroup manager
+                    nestedObjectQuery.setFetchGroup(targetFetchGroup);
+                } else {
+                    targetFetchGroup = null;
+                    nestedObjectQuery.setFetchGroup(null);
+                    nestedObjectQuery.setFetchGroupName(null);
+                }
+                nestedObjectQuery.setShouldUseDefaultFetchGroup(false);
+                nestedObjectQuery.prepareFetchGroup();
+            }
+            if (nestedObjectQuery != sourceQuery) {
+                objectQuery.setAggregateQuery(this, nestedObjectQuery);
+                return nestedObjectQuery;
+            }
+        }
+        return sourceQuery;
+    }
+    
+    /**
+     * INTERNAL:
      * Build and return an aggregate object from the specified row.
      * If a null value is allowed and all the appropriate fields in the row are NULL, return a null.
      * If an aggregate is referenced by the target object, return it (maintain identity) 
@@ -365,65 +424,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             refreshing = false;
         }
         
-        ObjectBuildingQuery nestedQuery = sourceQuery;
-        FetchGroup targetFetchGroup = null;
-        if (sourceQuery.isObjectLevelReadQuery()) {
-            ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)sourceQuery;
-            ObjectLevelReadQuery nestedObjectQuery = (ObjectLevelReadQuery)nestedQuery;
-            String attributeName = getAttributeName();
-            if ((objectQuery.isPartialAttribute(attributeName) || ((joinManager != null) && joinManager.isAttributeJoined(this.descriptor, this)))) {
-                // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                nestedObjectQuery = (ObjectLevelReadQuery)objectQuery.deepClone();
-                // Must cascade the nested partial/join expression and filter the nested ones.
-                if (objectQuery.hasPartialAttributeExpressions()) {
-                    nestedObjectQuery.setPartialAttributeExpressions(extractNestedExpressions(objectQuery.getPartialAttributeExpressions(), nestedObjectQuery.getExpressionBuilder(), false));
-                } else if ( nestedObjectQuery.getJoinedAttributeManager().isToManyJoin()) {
-                    // need the data results to build the child object(s).
-                    List dataResults = new ArrayList();
-                    //setDataResults does processing and calculations (such as DataResultsByPrimaryKey) that we do not want to do on the 
-                    //actual data, but it has no other direct set method 
-                    nestedObjectQuery.getJoinedAttributeManager().setDataResults(dataResults, executionSession);
-                    //set the dataResults and DataResultsByPrimaryKey directly from the parent 
-                    dataResults.addAll(joinManager.getDataResults_());
-                    nestedObjectQuery.getJoinedAttributeManager().getDataResultsByPrimaryKey().putAll(joinManager.getDataResultsByPrimaryKey());
-                }
-                nestedObjectQuery.setDescriptor(descriptor);
-                //need to use the new joinManager which has the proper aggregate descriptor set
-                joinManager = nestedObjectQuery.getJoinedAttributeManager();
-            }
-            if (objectQuery.isAttributeBatchRead(this.descriptor, attributeName)) {
-                if(nestedObjectQuery == objectQuery) {
-                    // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                    nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
-                }
-                // Must carry over properties for batching to work.
-                nestedObjectQuery.setProperties(objectQuery.getProperties());
-                // Computed nested batch attribute expressions.
-                nestedObjectQuery.getBatchFetchPolicy().setAttributeExpressions(extractNestedExpressions(objectQuery.getBatchReadAttributeExpressions(), nestedObjectQuery.getExpressionBuilder(), false));
-            }
-            FetchGroup parentQueryFetchGroup = sourceQuery.getExecutionFetchGroup(descriptor);
-            if (parentQueryFetchGroup != null) {
-                if (nestedObjectQuery == objectQuery) {
-                    // A nested query must be built to pass to the descriptor that looks like the real query execution would.
-                    nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
-                }
-                targetFetchGroup = parentQueryFetchGroup.getGroup(getAttributeName());
-                if (targetFetchGroup != null && sourceQuery.getDescriptor().hasFetchGroupManager()) {
-                    //if the parent object has a fetchgroup manager then aggregates can support a fetchgroup manager
-                    nestedObjectQuery.setFetchGroup(targetFetchGroup);
-                } else {
-                    targetFetchGroup = null;
-                    nestedObjectQuery.setFetchGroup(null);
-                    nestedObjectQuery.setFetchGroupName(null);
-                }
-                nestedObjectQuery.setShouldUseDefaultFetchGroup(false);
-                nestedObjectQuery.prepareFetchGroup();
-            }
+        ObjectBuildingQuery nestedQuery = prepareNestedQuery(sourceQuery);
+        FetchGroup targetFetchGroup =  null;
+        if (nestedQuery.isObjectLevelReadQuery()) {
+            targetFetchGroup = ((ObjectLevelReadQuery)nestedQuery).getFetchGroup();
             if (refreshing && descriptor.hasFetchGroupManager()) {
                 descriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(aggregate, descriptor.getFetchGroupManager().getEntityFetchGroup(targetFetchGroup), executionSession, true);
                 //merge fetchgroup into aggregate fetchgroup that may have been there from previous read.
             }
-            nestedQuery = nestedObjectQuery;
         }
         if (buildShallowOriginal) {
             descriptor.getObjectBuilder().buildAttributesIntoShallowObject(aggregate, databaseRow, nestedQuery);

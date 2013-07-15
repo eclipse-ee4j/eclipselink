@@ -75,9 +75,6 @@ public class ReadObjectTest extends AutoVerifyTestCase {
 
     protected void setup() {
         this.logLevel = getSession().getLogLevel();
-        if (getName().indexOf("Joining") != -1) {
-            getSession().setLogLevel(SessionLog.FINEST);
-        }
         // Flush the cache to ensure that the query is actually executed
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 
@@ -86,12 +83,6 @@ public class ReadObjectTest extends AutoVerifyTestCase {
             ReadObjectQuery query = new ReadObjectQuery();
             query.setSelectionObject(getOriginalObject());
             setQuery(query);
-        }
-    }
-
-    public void reset() throws Throwable {
-        if (getName().indexOf("Joining") != -1) {
-            getSession().setLogLevel(this.logLevel);
         }
     }
     
