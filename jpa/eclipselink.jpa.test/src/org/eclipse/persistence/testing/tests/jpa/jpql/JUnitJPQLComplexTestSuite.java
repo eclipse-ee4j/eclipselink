@@ -4566,12 +4566,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     // Bug#395720 - ANTLR allowed it even though it's not spec compliant
     public void testElementCollectionInLikeExpression() {
-   	 EntityManager em = createEntityManager();
-   	 Query query = em.createQuery("SELECT b FROM Buyer b WHERE b.creditLines LIKE '%e%'");
-   	 query.getResultList();
-   	 closeEntityManager(em);
+   	  EntityManager em = createEntityManager();
+   	  Query query = em.createQuery("SELECT b FROM Buyer b WHERE b.creditLines LIKE '%e%'");
+   	  query.getResultList();
+   	  closeEntityManager(em);
     }
-    
+
     public void converterOnElementCollectionTest()
     {
         EntityManager em = createEntityManager();
@@ -4591,27 +4591,23 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         rollbackTransaction(em);
     }
 
-
     // Bug#406631 - JPQL parser: The state field path 'x.y' cannot be resolved to a collection type.
     public void testCountExpression() {
-   	 EntityManager em = createEntityManager();
-   	 Query query = em.createQuery(
-   	 	"SELECT employee, COUNT(projects.teamMembers) " +
-   	 	"FROM Employee employee " +
-   	 	"     JOIN employee.managedEmployees managedEmployees" +
-   	 	"     JOIN managedEmployees.projects projects"
-   	 );
-   	 query.getResultList();
-   	 closeEntityManager(em);
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery(
+            "SELECT COUNT(employee.managedEmployees) FROM Employee employee"
+   	  );
+   	  assertFalse(query.getResultList().isEmpty());
+   	  closeEntityManager(em);
     }
 
     // Bug#412928 - JPQL parser: Regression, an IN item should allow a collection type
     public void testInItemCollectionValuedPath() {
-   	 EntityManager em = createEntityManager();
-   	 Query query = em.createQuery(
-	   	 "select e from Employee e, Project p where e in (p.teamMembers)"
-   	 );
-   	 assertFalse(query.getResultList().isEmpty());
-   	 closeEntityManager(em);
+   	  EntityManager em = createEntityManager();
+   	  Query query = em.createQuery(
+   	      "select e from Employee e, Project p where e in (p.teamMembers)"
+   	  );
+   	  assertFalse(query.getResultList().isEmpty());
+   	  closeEntityManager(em);
     }
 }
