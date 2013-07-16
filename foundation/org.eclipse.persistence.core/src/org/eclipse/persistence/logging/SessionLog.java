@@ -136,7 +136,6 @@ public interface SessionLog extends Cloneable {
         EJB, 
         DMS, 
         METADATA,
-        MONITORING,
         METAMODEL, 
         WEAVER,
         PROPERTIES,
