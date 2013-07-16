@@ -1371,7 +1371,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         instantiateAttribute(object, session);
         ClassDescriptor referenceDescriptor = getReferenceDescriptor();
         if (referenceDescriptor != null) {
-        	boolean hasInheritance = referenceDescriptor.hasInheritance();
+        	boolean hasInheritance = referenceDescriptor.hasInheritance() || referenceDescriptor.hasTablePerClassPolicy();
 	        Object value = getRealAttributeValueFromObject(object, session);
 	        ContainerPolicy cp = this.containerPolicy;
 	        for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
@@ -2100,7 +2100,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             ClassDescriptor descriptor;
 
             //PERF: Use referenceDescriptor if it does not have inheritance
-            if (!getReferenceDescriptor().hasInheritance()) {
+            if (!getReferenceDescriptor().hasInheritance() && !getReferenceDescriptor().hasTablePerClassPolicy()) {
                 descriptor = getReferenceDescriptor();
             } else {
                 descriptor = uow.getDescriptor(newValue);

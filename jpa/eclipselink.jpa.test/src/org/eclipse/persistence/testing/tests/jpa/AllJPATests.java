@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa;
 
+import junit.framework.Test;
+
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JPAAdvancedTestModel;
@@ -35,5 +37,10 @@ public class AllJPATests extends TestModel {
             addTest(new JPAAdvancedTestModel());
             addTest(FullRegressionTestSuite.suite());
             addTest(RemoteEntityManagerTestSuite.suite());
+            try {
+                addTest((Test)Class.forName("org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite").getMethod("suite", null).invoke(null, null));
+            } catch (Exception exception) {
+                System.out.println("WARNING: " + exception);                
+            }
         }
 }

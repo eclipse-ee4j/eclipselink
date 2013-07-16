@@ -33,6 +33,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;
 import org.eclipse.persistence.tools.schemaframework.PackageDefinition;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
@@ -1536,6 +1537,9 @@ public class EmployeePopulator {
         Shoe shoe = new Shoe("One", "Star");
         shoe.setRunner(runner);
         runner.getShoes().put(new ShoeTag("ONESTAR"), shoe);
+        runner.setInfo(new RunnerInfo());
+        runner.getInfo().setStatus(new RunnerStatus());
+        runner.getInfo().getStatus().setRunningStatus(RunningStatus.RACING);
         registerObject(runner, "0001");
         return runner;
     }

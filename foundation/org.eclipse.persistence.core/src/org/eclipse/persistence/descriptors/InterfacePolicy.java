@@ -243,6 +243,8 @@ public class InterfacePolicy implements Serializable, Cloneable {
             concreteQuery = (ObjectLevelReadQuery)query.deepClone();
             concreteQuery.setReferenceClass(javaClass);
             concreteQuery.setDescriptor(this.descriptor);
+            // Disable query cache from implementation queries.
+            concreteQuery.setQueryResultsCachePolicy(null);
             concreteQuery.getExpressionBuilder().setQueryClassAndDescriptor(javaClass, this.descriptor);
 
             // Update the selection criteria if needed as well and don't lose 
