@@ -41,7 +41,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
     protected transient DatabaseMapping mapping;
 
     /** The value holder stored in the backup copy, should not be transient. */
-    protected ValueHolder backupValueHolder;
+    protected ValueHolderInterface backupValueHolder;
 
     /** These cannot be transient because they are required for a remote unit of work.
     When the remote uow is serialized to the server to be committed, these
@@ -87,7 +87,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      */
     public abstract Object buildCloneFor(Object originalAttributeValue);
 
-    protected ValueHolder getBackupValueHolder() {
+    protected ValueHolderInterface getBackupValueHolder() {
         return backupValueHolder;
     }
 
@@ -280,7 +280,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
         //do nothing.  nothing should be reset to null;
     }
 
-    public void setBackupValueHolder(ValueHolder backupValueHolder) {
+    public void setBackupValueHolder(ValueHolderInterface backupValueHolder) {
         this.backupValueHolder = backupValueHolder;
     }
 

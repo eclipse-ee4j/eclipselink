@@ -2323,9 +2323,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(Employee.class);
         cq.where(qb.isMember(qb.parameter(PhoneNumber.class, "1"), root.<Collection<PhoneNumber>>get("phoneNumbers")));
 
-        Vector parameters = new Vector();
-        parameters.add(phone);
-
         List result = null;
         beginTransaction(em);
         try {
@@ -2340,6 +2337,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         uow.commit();
 
         Assert.assertTrue("Select simple member of with parameter test failed", comparer.compareObjects(result, expectedResult));
+        
+        clearCache();
     }
 
     public void selectSimpleNotMemberOfWithParameterTest() {
@@ -2374,9 +2373,6 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(Employee.class);
         cq.where(qb.isNotMember(qb.parameter(PhoneNumber.class, "1"), root.<Collection<PhoneNumber>>get("phoneNumbers")));
 
-        Vector parameters = new Vector();
-        parameters.add(phone);
-
         List result = null;
         beginTransaction(em);
         try {        
@@ -2391,6 +2387,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         uow.commit();
 
         Assert.assertTrue("Select simple Not member of with parameter test failed", comparer.compareObjects(result, expectedResult));
+        
+        clearCache();
     }
 
     public void selectSimpleBetweenWithParameterTest() {

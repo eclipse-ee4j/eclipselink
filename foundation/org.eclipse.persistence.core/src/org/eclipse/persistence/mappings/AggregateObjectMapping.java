@@ -366,8 +366,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                     nestedObjectQuery.setFetchGroup(null);
                     nestedObjectQuery.setFetchGroupName(null);
                 }
-                nestedObjectQuery.setShouldUseDefaultFetchGroup(false);
-                nestedObjectQuery.prepareFetchGroup();
             }
             if (nestedObjectQuery != sourceQuery) {
                 objectQuery.setAggregateQuery(this, nestedObjectQuery);
@@ -438,16 +436,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         } else if (executionSession.isUnitOfWork()) {
             descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
         } else {
-            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, sourceQuery.getExecutionFetchGroup(descriptor), refreshing, executionSession);
+            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, nestedQuery.getExecutionFetchGroup(descriptor), refreshing, executionSession);
         }
-        if (sourceQuery.shouldMaintainCache() && ! sourceQuery.shouldStoreBypassCache()) {
+        if ((targetFetchGroup != null) && descriptor.hasFetchGroupManager()
+                && !refreshing && sourceQuery.shouldMaintainCache() && !sourceQuery.shouldStoreBypassCache()) {
             // Set the fetch group to the domain object, after built.
-            if ((targetFetchGroup != null) && descriptor.hasFetchGroupManager()) {
-                EntityFetchGroup entityFetchGroup = (EntityFetchGroup) descriptor.getFetchGroupManager().getEntityFetchGroup(targetFetchGroup).clone();
-                if (entityFetchGroup !=null){
-                    entityFetchGroup.setRootEntity((FetchGroupTracker) cacheKey.getObject());
-                    entityFetchGroup.setOnEntity(aggregate, executionSession);
-                }
+            EntityFetchGroup entityFetchGroup = descriptor.getFetchGroupManager().getEntityFetchGroup(targetFetchGroup);
+            if (entityFetchGroup != null) {
+                entityFetchGroup = (EntityFetchGroup)entityFetchGroup.clone();
+                entityFetchGroup.setRootEntity((FetchGroupTracker) cacheKey.getObject());
+                entityFetchGroup.setOnEntity(aggregate, executionSession);
             }
         }
         return aggregate;

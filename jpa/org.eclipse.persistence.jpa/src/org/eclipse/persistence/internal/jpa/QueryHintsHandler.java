@@ -276,6 +276,7 @@ public class QueryHintsHandler {
             addHint(new FetchGroupLoadHint());
             addHint(new LoadGroupHint());
             addHint(new LoadGroupAttributeHint());
+            addHint(new LoadGraphHint());
             addHint(new ExclusiveHint());
             addHint(new InheritanceJoinHint());
             addHint(new AsOfHint());
@@ -1149,7 +1150,7 @@ public class QueryHintsHandler {
                     }else if (valueToApply instanceof EntityGraphImpl){
                         ((ObjectLevelReadQuery)query).setLoadGroup(((EntityGraphImpl)valueToApply).getAttributeGroup().toLoadGroup());
                     }else{
-                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_FETCH_GRAPH, valueToApply}));
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_LOAD_GRAPH, valueToApply}));
                     }
                 } else {
                     ((ObjectLevelReadQuery)query).setFetchGroup(null);

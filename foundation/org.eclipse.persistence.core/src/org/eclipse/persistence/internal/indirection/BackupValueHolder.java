@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.indirection;
 
 import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * Used as the backup value holder in the unit of work for transparent indirection.
@@ -22,7 +24,7 @@ import org.eclipse.persistence.indirection.*;
  * @since 10.1.3
  * @author James Sutherland
  */
-public class BackupValueHolder extends ValueHolder {
+public class BackupValueHolder extends DatabaseValueHolder {
 
     /** Stores the original uow clone's value holder. */
     protected ValueHolderInterface unitOfWorkValueHolder;
@@ -30,15 +32,35 @@ public class BackupValueHolder extends ValueHolder {
     public BackupValueHolder(ValueHolderInterface unitOfWorkValueHolder) {
         this.unitOfWorkValueHolder = unitOfWorkValueHolder;
     }
+
+    @Override
+    public boolean isPessimisticLockingValueHolder() {
+        return ((DatabaseValueHolder)this.unitOfWorkValueHolder).isPessimisticLockingValueHolder();
+    }
+
+    @Override
+    public Object instantiateForUnitOfWorkValueHolder(UnitOfWorkValueHolder unitOfWorkValueHolder) {
+        return ((DatabaseValueHolder)this.unitOfWorkValueHolder).instantiateForUnitOfWorkValueHolder(unitOfWorkValueHolder);        
+    }
+    
+    @Override
+    public AbstractRecord getRow() {
+        return ((DatabaseValueHolder)this.unitOfWorkValueHolder).getRow();
+    }
+    
+    @Override
+    public AbstractSession getSession() {
+        return ((DatabaseValueHolder)this.unitOfWorkValueHolder).getSession();
+    }
     
     /**
      * If the original value holder was not instantiated,
      * then first instantiate it to obtain the backup value.
      */
-    public Object getValue() {
+    @Override
+    public Object instantiate() {
         // Ensures instantiation of the original, and setting of this back value holder's value.
-        getUnitOfWorkValueHolder().getValue();
-        return value;
+        return this.unitOfWorkValueHolder.getValue();
     }
 
     /**

@@ -139,7 +139,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         AttributeGroup localGroup = null;
         DatabaseMapping mapping = descriptor.getMappingForAttributeName(attributeName);
         if (mapping == null) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_managed_type_attribute_not_present", new Object[] { this.descriptor.getJavaClassName(), attributeName }));
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_managed_type_attribute_not_present", new Object[] { attributeName, this.descriptor.getJavaClassName() }));
         }
 
         localGroup = new AttributeGroup(attributeName, type, true);

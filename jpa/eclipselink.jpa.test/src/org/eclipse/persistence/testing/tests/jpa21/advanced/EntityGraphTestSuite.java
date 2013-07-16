@@ -29,7 +29,6 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
-import org.eclipse.persistence.testing.models.aggregate.Project_case2;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Project;
@@ -55,6 +54,8 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroupRefresh"));
         suite.addTest(new EntityGraphTestSuite("testsubclassSubgraphs"));
         suite.addTest(new EntityGraphTestSuite("testMapKeyFetchGroupRefresh"));
+        suite.addTest(new EntityGraphTestSuite("testNestedEmbeddedFetchGroup"));
+        suite.addTest(new EntityGraphTestSuite("testLoadGroup"));
         
         return suite;
     }
@@ -121,6 +122,33 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         result.getPeriod().getEndDate();
         assertTrue("FetchGroup was not applied", util.isLoaded(result.getPeriod(), "endDate"));
         assertTrue("FetchGroup was not applied", util.isLoaded(result, "firstName"));
+    }
+    
+    public void testNestedEmbeddedFetchGroup(){
+        EntityManager em = createEntityManager();
+        EntityGraph fetchGraph = em.createEntityGraph(Runner.class);
+        fetchGraph.addSubgraph("info").addSubgraph("status").addAttributeNodes("runningStatus");
+        Runner result = (Runner)em.createQuery("Select r from Runner r").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, fetchGraph).getResultList().get(0);
+        PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
+        assertFalse("FetchGroup was not applied", util.isLoaded(result, "gender"));
+        assertFalse("FetchGroup was not applied", util.isLoaded(result.getInfo(), "health"));
+        assertTrue("FetchGroup was not applied", util.isLoaded(result.getInfo(), "status"));
+        assertTrue("FetchGroup was not applied", util.isLoaded(result.getInfo().getStatus(), "runningStatus"));
+        
+        result.getInfo().getHealth();
+        assertTrue("FetchGroup was not applied", util.isLoaded(result.getInfo(), "status"));
+        assertTrue("FetchGroup was not applied", util.isLoaded(result, "gender"));
+    }
+    
+    public void testLoadGroup(){
+        EntityManager em = createEntityManager();
+        EntityGraph employeeGraph = em.createEntityGraph(Employee.class);
+        employeeGraph.addAttributeNodes("address");
+        Employee result = (Employee) em.createQuery("Select e from Employee e").setMaxResults(1).setHint(QueryHints.JPA_LOAD_GRAPH, employeeGraph).getResultList().get(0);
+        PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
+        assertTrue("LoadGroup was not applied", util.isLoaded(result, "address"));
+        assertTrue("LoadGroup was not applied", util.isLoaded(result, "department"));
+        assertFalse("LoadGroup was not applied", util.isLoaded(result, "managedEmployees"));
     }
 
     public void testEmbeddedFetchGroupRefresh(){
