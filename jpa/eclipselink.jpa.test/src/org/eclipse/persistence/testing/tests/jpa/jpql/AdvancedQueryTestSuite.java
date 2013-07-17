@@ -45,6 +45,7 @@ import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidat
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -673,19 +674,29 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
      * Test that the transaction is committed for a single native query transaction.
      */
     public void testNativeQueryTransactions() {
-        EntityManager em = createEntityManager();
+        Employee emp = (Employee)getServerSession().readObject(Employee.class);
+        if (emp == null) {
+        	fail("Test problem: no Employees in the db, nothing to update");
+        }
+    	EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
             em.setFlushMode(FlushModeType.COMMIT);
-            Query query = em.createNativeQuery("Update CMP3_EMPLOYEE set F_NAME = 'Bobo'");
+            Query query = em.createNativeQuery("Update CMP3_EMPLOYEE set F_NAME = 'Bobo' where EMP_ID = " + emp.getId());
             query.executeUpdate();
             commitTransaction(em);
             closeEntityManager(em);
             em = createEntityManager();
             beginTransaction(em);
-            query = em.createNativeQuery("Select * from CMP3_EMPLOYEE where F_NAME = 'Bobo'");
+            query = em.createNativeQuery("Select * from CMP3_EMPLOYEE where F_NAME = 'Bobo' AND EMP_ID = " + emp.getId());
             if (query.getResultList().size() == 0) {
                 fail("Native query did not commit transaction.");
+            } else {
+            	// clean up - bring back the original name
+                em.setFlushMode(FlushModeType.COMMIT);
+                query = em.createNativeQuery("Update CMP3_EMPLOYEE set F_NAME = '"+emp.getFirstName()+"' where EMP_ID = " + emp.getId());
+                query.executeUpdate();
+                commitTransaction(em);
             }
         } finally {
             if (isTransactionActive(em)) {
@@ -2039,7 +2050,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     /**
-     * Test batch fetching of maps.
+     * Test load groups.
      */
     public void testLoadGroup() {
         clearCache();
@@ -2251,8 +2262,13 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             query.setFirstResult(5);
             query.setMaxResults(5);
             List<Employee> results = query.getResultList();
-            if (isWeavingEnabled() && counter.getSqlStatements().size() != 3) {
-                fail("Should have been 3 query but was: " + counter.getSqlStatements().size());
+            int nExpectedStatements = 3;
+            if (usesSOP()) {
+            	// In SOP case there are no sql to read PhoneNumbers - they are read from sopObject instead.
+            	nExpectedStatements = 1;
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != nExpectedStatements) {
+                fail("Should have been " + nExpectedStatements + " query but was: " + counter.getSqlStatements().size());
             }
             if (results.size() > 5) {
                 fail("Should have only returned 5 objects but was: " + results.size());
@@ -2260,8 +2276,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             for (Employee employee : results) {
                 employee.getAddress();
             }
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 3) {
-                fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > nExpectedStatements) {
+                fail("Should have been " + nExpectedStatements + " queries but was: " + counter.getSqlStatements().size());
             }
             clearCache();
             counter.remove();

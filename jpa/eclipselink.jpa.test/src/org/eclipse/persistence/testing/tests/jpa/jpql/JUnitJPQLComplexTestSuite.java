@@ -1772,7 +1772,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // MEMBER of using identification variable p that is not the base
         // variable of the query
         ejbqlString = "SELECT DISTINCT e FROM Employee e, Project p WHERE p MEMBER OF e.projects";
-        result = em.createQuery(ejbqlString).getResultList();
+        Query query =  em.createQuery(ejbqlString);
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+        	query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+        }
+        result = query.getResultList();
         Assert.assertTrue("Complex MEMBER OF test failed",
                           comparer.compareObjects(result, expectedResult));
     }
@@ -2674,8 +2679,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         beginTransaction(em);
         Expression exp = (new ExpressionBuilder()).get("manager").anyOf("phoneNumbers").get("areaCode").equal("613");
         List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
-         clearCache();
-        String ejbqlString = "select distinct e from Employee e join e.manager.phoneNumbers p where p.areaCode = '613'";
+        clearCache();
+        String ejbqlString;
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+            ejbqlString = "select e from Employee e join e.manager.phoneNumbers p where p.areaCode = '613'";
+        } else {
+            ejbqlString = "select distinct e from Employee e join e.manager.phoneNumbers p where p.areaCode = '613'";
+        }
 
         List result = em.createQuery(ejbqlString).getResultList();
 
@@ -2867,7 +2878,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         em.createQuery(ejbqlString).executeUpdate();
 
         String verificationString = "select e from Employee e where e.lastName = 'Jones'";
-        List results = em.createQuery(verificationString).getResultList();
+        Query query = em.createQuery(verificationString);
+        if (usesSOP() && !isSOPRecoverable()) {
+            // SOP query would fail because all Employees in the db have SOP field set to null after bulk update 
+            query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+        }
+        List results = query.getResultList();
 
         rollbackTransaction(em);
         assertTrue("complexConditionCaseInUpdateTest - wrong number of results", results.size() == 2);
@@ -3444,6 +3460,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                         + " union all Select a2 from Address a2"
             		+ " intersect Select a from Address a where a.city = 'Ottawa'"
                         + " except Select a from Address a where a.city = 'Ottawa'");
+            if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+            	// field comparison is incompatible with blob in selection clause on Oracle
+            	query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+            }
             List result = query.getResultList();
             if (result.size() > 0) {
                 fail("Expected no results: " + result);

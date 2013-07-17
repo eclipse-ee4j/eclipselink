@@ -64,7 +64,6 @@ public class SerializedObjectPolicyMetadata extends ORMetadata {
         // This should be kept in sync with SerializedObject.column default
         if (column == null) {
             m_column.setName("SOP");
-            m_column.setColumnDefinition("BLOB");
         }
     }
     
@@ -111,7 +110,6 @@ public class SerializedObjectPolicyMetadata extends ORMetadata {
             // This should be kept in sync with SerializedObject.column default
             m_column = new ColumnMetadata();
             m_column.setName("SOP");
-            m_column.setColumnDefinition("BLOB");
         }
     }
     

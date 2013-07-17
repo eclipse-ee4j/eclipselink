@@ -42,6 +42,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
@@ -58,6 +59,7 @@ import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
@@ -651,7 +653,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             cq.distinct(true);
-            cq.from(Employee.class).join("phoneNumbers");
+            Root<Employee> root = cq.from(Employee.class);
+            root.fetch("phoneNumbers", JoinType.INNER);
             List result = em.createQuery(cq).getResultList();
 
             Set testSet = new HashSet();
@@ -2141,6 +2144,10 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         ExpressionBuilder employeeBuilder = new ExpressionBuilder(Employee.class);
         Expression selectionCriteria = new ExpressionBuilder(Address.class).equal(employeeBuilder.get("address")).and(employeeBuilder.get("lastName").like("%Way%"));
         query.setSelectionCriteria(selectionCriteria);
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+        	query.setShouldUseSerializedObjectPolicy(false);
+        }
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
 
         clearCache();
@@ -2265,6 +2272,10 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Expression selectionCriteria = employeeBuilder.anyOf("phoneNumbers").get("number").equal(employeeBuilder.all(subQuery));
         query.setSelectionCriteria(selectionCriteria);
         query.setReferenceClass(Employee.class);
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+        	query.dontUseDistinct();
+        }
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
 
@@ -2286,6 +2297,10 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         try {
             Query jpqlQuery = em.createQuery(cq);
             jpqlQuery.setMaxResults(10);
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+        	jpqlQuery.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+        }
             List result = jpqlQuery.getResultList();
 
             Assert.assertTrue("Simple select Phonenumber Declared In IN Clause test failed", comparer.compareObjects(result, expectedResult));
@@ -2345,37 +2360,46 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public void selectSimpleNotMemberOfWithParameterTest() {
         EntityManager em = createEntityManager();
 
-        Vector expectedResult = getServerSession().readAllObjects(Employee.class);
+        Vector<Employee> expectedResult = getServerSession().readAllObjects(Employee.class);
 
         clearCache();
 
         Employee emp = (Employee)expectedResult.get(0);
         expectedResult.remove(0);
 
-        PhoneNumber phone = new PhoneNumber();
-        phone.setAreaCode("613");
-        phone.setNumber("1234567");
-        phone.setType("cell");
-
-
-        Server serverSession = JUnitTestCase.getServerSession();
-        Session clientSession = serverSession.acquireClientSession();
-        UnitOfWork uow = clientSession.acquireUnitOfWork();
-        emp = (Employee)uow.readObject(emp);
-        PhoneNumber phoneClone = (PhoneNumber)uow.registerObject(phone);
-        phoneClone.setOwner(emp);
-        emp.addPhoneNumber(phoneClone);
-        uow.commit();
-
+        boolean shouldCleanUp = false;
+        PhoneNumber phone;
+        if (emp.getPhoneNumbers().isEmpty()) {        
+            phone = new PhoneNumber();
+            phone.setAreaCode("613");
+            phone.setNumber("1234567");
+            phone.setType("cell");    
+    
+            Server serverSession = JUnitTestCase.getServerSession();
+            Session clientSession = serverSession.acquireClientSession();
+            UnitOfWork uow = clientSession.acquireUnitOfWork();
+            emp = (Employee)uow.readObject(emp);
+            PhoneNumber phoneClone = (PhoneNumber)uow.registerObject(phone);
+            emp.addPhoneNumber(phoneClone);
+	        if (usesSOP()) {
+	        	// In SOP is used then the phone is never read back (it's saved in sopObject), 
+	        	// therefore its ownerId (mapped as read only) is never set.
+	        	// If phone.ownerId is not set, then the next query (that takes phone as a parameter) would return all the employees,
+	        	// it supposed to return all the employees minus emp.
+	        	phoneClone.setId(emp.getId());
+	        }
+            uow.commit();
+            phone = emp.getPhoneNumbers().iterator().next();
+            shouldCleanUp = true;
+        } else {
+            phone = emp.getPhoneNumbers().iterator().next();
+        }
 
         //"SELECT OBJECT(emp) FROM Employee emp " + "WHERE ?1 NOT MEMBER OF emp.phoneNumbers"
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where(qb.isNotMember(qb.parameter(PhoneNumber.class, "1"), root.<Collection<PhoneNumber>>get("phoneNumbers")));
-
-        Vector parameters = new Vector();
-        parameters.add(phone);
 
         List result = null;
         beginTransaction(em);
@@ -2386,11 +2410,20 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        uow = clientSession.acquireUnitOfWork();
-        uow.deleteObject(phone);
-        uow.commit();
-
-        Assert.assertTrue("Select simple Not member of with parameter test failed", comparer.compareObjects(result, expectedResult));
+        boolean ok = comparer.compareObjects(result, expectedResult);
+        if (shouldCleanUp) {
+            Server serverSession = JUnitTestCase.getServerSession();
+            Session clientSession = serverSession.acquireClientSession();
+            UnitOfWork uow = clientSession.acquireUnitOfWork();
+            emp = (Employee)uow.readObject(emp);
+            PhoneNumber phoneToRemove = emp.getPhoneNumbers().iterator().next();
+            emp.removePhoneNumber(phoneToRemove);
+            uow.deleteObject(phoneToRemove);
+            uow.commit();
+        }
+        if (!ok) {
+            fail("unexpected query result");
+        }
     }
 
     public void selectSimpleBetweenWithParameterTest() {

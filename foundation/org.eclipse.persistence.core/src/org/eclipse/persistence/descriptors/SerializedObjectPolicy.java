@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
  * SerializedObjectPolicy (SOP) could be set on a non-aggregate descriptor. 
@@ -89,7 +90,7 @@ public interface SerializedObjectPolicy extends Cloneable, Serializable {
     /** 
      * Deserialize the object from the value corresponding to the policy field, nullify that value, set the object into the row using setSopObject, also return it.
      * If the object is null or invalid, behaviour depend on whether the policy allows the query to recover or not (see comments to getFieldsToSelect and getAllFieldsToSelect methods):
-     * if recovery is possible then the method should return null, otherwise throw IllegalState exception.
+     * if recovery is possible then the method should return null, otherwise throw QueryException (query is a parameter of this method only because it's required by QueryException).
      */
-    Object getObjectFromRow(AbstractRecord databaseRow, AbstractSession session);
+    Object getObjectFromRow(AbstractRecord databaseRow, AbstractSession session, ObjectLevelReadQuery query);
 }

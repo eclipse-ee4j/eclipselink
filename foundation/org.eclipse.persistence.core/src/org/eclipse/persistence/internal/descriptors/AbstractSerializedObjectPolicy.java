@@ -53,6 +53,7 @@ public abstract class AbstractSerializedObjectPolicy implements SerializedObject
     public void initializeField(AbstractSession session) {
         if (this.field == null) {
             session.getIntegrityChecker().handleError(DescriptorException.serializedObjectPolicyFieldNotSet(this.descriptor));
+            return;
         }
         if (this.descriptor.isChildDescriptor()) {
             SerializedObjectPolicy parentPolicy = this.descriptor.getInheritancePolicy().getParentDescriptor().getSerializedObjectPolicy();

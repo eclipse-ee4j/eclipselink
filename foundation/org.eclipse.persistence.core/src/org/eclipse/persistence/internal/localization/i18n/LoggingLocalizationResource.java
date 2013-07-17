@@ -466,6 +466,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jpars_could_bootstrap_persistence_context", "Persistence Context: [{0}] could not be bootstrapped."},
         { "entity_not_available_during_merge", "Max tries exceeded.  Unable to find value of locked cacheKey.  Class [{0}] ID:[{1}] This Thread: [{2}] Owning Thread:[{3}]"},        
         { "ddl_generation_unknown_property_value", "Unknown {0} value provided [{1}] for the persistence unit [{2}]. Valid options are: [{3}]" },
+        // SOP:
+        { "sop_object_deserialze_failed", "Failed to deserialize sopObject from [{0}] in [{1}]"},
+        { "sop_object_not_found", "Serialized sopObject is not found in [{0}] in [{1}]"},
+        { "sop_object_wrong_version", "Removing serialized sopObject from the row because it has a wrong version [{0}] in [{1}] in [{2}]"},
+        { "sop_object_wrong_pk", "Removing serialized sopObject from the row because it has a wrong primary key [{0}] in [{1}] in [{2}]"},
         
         // MESSAGES end
         

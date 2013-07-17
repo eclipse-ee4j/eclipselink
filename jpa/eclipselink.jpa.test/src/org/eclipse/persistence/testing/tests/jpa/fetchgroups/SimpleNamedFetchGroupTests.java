@@ -105,14 +105,19 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
             assertNoFetchGroup(phone);
         }
 
-        assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        int nSqlExpected = 3;
+        if (usesSOP()) {
+        	// When SOP is used PhoneNumbers are read in sopObject when the fetch group is triggered, so one less sql.
+        	nSqlExpected--;
+        }
+        assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
         if (emp.getManager() != null) {
             assertNoFetchGroup(emp.getManager());
-            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(++nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         } else {
             // If manager_id field is null then getManager() does not trigger an sql.
-            assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         }
     }
 
@@ -140,14 +145,19 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
             assertNoFetchGroup(phone);
         }
 
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        int nSqlExpected = 4;
+        if (usesSOP()) {
+        	// When SOP is used PhoneNumbers are read in sopObject when the fetch group is triggered, so one less sql.
+        	nSqlExpected--;
+        }
+        assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
         if (emp.getManager() != null) {
             assertNoFetchGroup(emp.getManager());
-            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(++nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         } else {
             // If manager_id field is null then getManager() does not trigger an sql.
-            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         }
     }
 
@@ -180,14 +190,19 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
             assertNoFetchGroup(phone);
         }
 
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        int nSqlExpected = 4;
+        if (usesSOP()) {
+        	// When SOP is used PhoneNumbers are read in sopObject when the fetch group is triggered, so one less sql.
+        	nSqlExpected--;
+        }
+        assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
         if (emp.getManager() != null) {
             assertNoFetchGroup(emp.getManager());
-            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(++nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         } else {
             // If manager_id field is null then getManager() does not trigger an sql.
-            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         }
     }
 
@@ -215,14 +230,19 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
             assertNoFetchGroup(phone);
         }
 
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        int nSqlExpected = 4;
+        if (usesSOP()) {
+        	// When SOP is used PhoneNumbers are read in sopObject when the fetch group is triggered, so one less sql.
+        	nSqlExpected--;
+        }
+        assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
         if (emp.getManager() != null) {
             assertNoFetchGroup(emp.getManager());
-            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(++nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         } else {
             // If manager_id field is null then getManager() does not trigger an sql.
-            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         }
     }
 
@@ -255,14 +275,19 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
             assertNoFetchGroup(phone);
         }
 
-        assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+        int nSqlExpected = 4;
+        if (usesSOP()) {
+        	// When SOP is used PhoneNumbers are read in sopObject when the fetch group is triggered, so one less sql.
+        	nSqlExpected--;
+        }
+        assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
         if (emp.getManager() != null) {
             assertNoFetchGroup(emp.getManager());
-            assertEquals(5, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(++nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         } else {
             // If manager_id field is null then getManager() does not trigger an sql.
-            assertEquals(4, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
+            assertEquals(nSqlExpected, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         }
     }
 

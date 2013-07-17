@@ -12,14 +12,18 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.SerializedObjectPolicy;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.querykeys.DirectCollectionQueryKey;
 import org.eclipse.persistence.mappings.querykeys.ManyToManyQueryKey;
 import org.eclipse.persistence.mappings.querykeys.OneToManyQueryKey;
@@ -35,7 +39,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
     static HashMap sessionCalls = new HashMap();
     static HashMap descriptorCalls = new HashMap();
 
-    public void customize(Session session) {
+    public void customize(Session session) throws Exception {
         String sessionName = session.getName();
         Integer numberOfCalls = (Integer)sessionCalls.get(sessionName);
         int num = 0;
@@ -54,6 +58,29 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                 }
             }
         });
+        
+        if (Boolean.valueOf(System.getProperty("sop"))) {
+        	boolean isRecoverable = Boolean.valueOf(System.getProperty("sop.recoverable"));
+        	Class sopClass = Class.forName("oracle.toplink.exalogic.sop.SerializedObjectPolicy");
+        	Method setIsRecoverableMethod = null;
+        	if (isRecoverable) {
+        		setIsRecoverableMethod = sopClass.getDeclaredMethod("setIsRecoverable", new Class[] {boolean.class});
+        	}
+        	
+        	Class[] sopEntities = {Employee.class, Address.class, Project.class};
+        	for (Class sopEntity : sopEntities) {
+        		ClassDescriptor descriptor = session.getDescriptor(sopEntity); 
+        		Object sop = sopClass.newInstance();
+        		if (isRecoverable) {
+        			setIsRecoverableMethod.invoke(sop, new Object[] {true});
+        		}
+        		((SerializedObjectPolicy)sop).setField(new DatabaseField("SOP"));
+        		descriptor.setSerializedObjectPolicy((SerializedObjectPolicy)sop);
+        		if (descriptor.usesOptimisticLocking() && (descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy)) {
+        			((VersionLockingPolicy)descriptor.getOptimisticLockingPolicy()).setIsCascaded(true);
+        		}
+        	}
+        }
     }
     
     public void customize(ClassDescriptor descriptor) {

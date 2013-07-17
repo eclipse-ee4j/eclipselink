@@ -880,6 +880,28 @@ public class CachePolicy implements Cloneable, Serializable {
 
     /**
      * INTERNAL:
+     * Index the object by index in the cache using the object.
+     */
+    public void indexObjectInCache(CacheKey cacheKey, Object object, ClassDescriptor descriptor, AbstractSession session, boolean refresh) {
+        if (!hasCacheIndexes()) {
+            return;
+        }
+        for (CacheIndex index : this.cacheIndexes.values()) {
+            if (!refresh || index.isUpdateable()) {
+                List<DatabaseField> fields = index.getFields();
+                int size = fields.size();
+                Object[] values = new Object[size];
+                for (int count = 0; count < size; count++) {
+                    values[count] = descriptor.getObjectBuilder().extractValueFromObjectForField(object, fields.get(count), session);
+                }
+                CacheId indexValues = new CacheId(values);
+                session.getIdentityMapAccessorInstance().putCacheKeyByIndex(index, indexValues, cacheKey, descriptor);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Index the object by index in the cache using its changeSet.
      */
     public void indexObjectInCache(ObjectChangeSet changeSet, Object object, ClassDescriptor descriptor, AbstractSession session) {
