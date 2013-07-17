@@ -201,8 +201,8 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
             query.addArgument(((ParameterExpressionImpl)parameter).getInternalName(), parameter.getJavaType());
         }
         if (this.where != null) {
-            if (((InternalExpression) this.where).isPredicate() && ((InternalSelection) this.where).getCurrentNode() == null) {
-                if (((PredicateImpl) this.where).getOperator() == BooleanOperator.OR) {
+            if (((InternalExpression) this.where).isJunction()) {
+                if (!((PredicateImpl) this.where).getJunctionValue()) {
                     query.setSelectionCriteria(new ConstantExpression(1, getBaseExpression()).equal(0));
                 }
             } else {

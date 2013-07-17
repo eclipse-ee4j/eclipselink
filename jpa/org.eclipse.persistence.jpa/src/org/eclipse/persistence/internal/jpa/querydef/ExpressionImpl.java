@@ -161,7 +161,11 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public boolean isExpression(){
         return true;
     }
-    
+
+    public boolean isJunction(){
+        return false;
+    }
+
     public boolean isLiteral(){
         return this.isLiteral;
     }

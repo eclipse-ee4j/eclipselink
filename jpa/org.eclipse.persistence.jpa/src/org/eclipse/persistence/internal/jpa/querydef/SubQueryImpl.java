@@ -549,6 +549,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     public boolean isConstructor(){
         return false;
     }
+    public boolean isJunction(){
+        return false;
+    }
     public boolean isPredicate(){
         return false;
     }
