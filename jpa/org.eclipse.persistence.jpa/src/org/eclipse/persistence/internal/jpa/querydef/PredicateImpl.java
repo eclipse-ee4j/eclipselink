@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.Metamodel;
 
 /**
@@ -41,6 +42,18 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     public <T> PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> parentExpressions, BooleanOperator operator){
         super(metamodel, expressionNode, parentExpressions);
         this.booloperator = operator;
+    }
+    
+    /**
+     * INTERNAL:
+     * This method returns null if this is not a conjunction/disjunction 
+     * TRUE if this is a conjunction, FALSE for disjunction.
+     */
+    public Boolean getJunctionValue() {
+        if (this.currentNode == null) {
+            return null;
+        }
+        return this.getOperator() == BooleanOperator.AND;
     }
 
     @Override
@@ -70,8 +83,12 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      */
     public Predicate not(){
         PredicateImpl predicateImpl = null;
-        if (this.currentNode == null){
-            predicateImpl = new PredicateImpl(this.metamodel, null, null, BooleanOperator.OR);
+        if (isJunction()) {
+            if (getJunctionValue()) {
+                predicateImpl = new PredicateImpl(this.metamodel, null, null, BooleanOperator.OR);
+            } else {
+                predicateImpl = new PredicateImpl(this.metamodel, null, null, BooleanOperator.AND);
+            }
             predicateImpl.setIsNegated(true);
             return predicateImpl;
         }
@@ -88,6 +105,12 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     public void setOperator(BooleanOperator operator) {
         this.booloperator = operator;
     }
+
+    @Override
+    public boolean isJunction(){
+        return this.currentNode == null;
+    }
+
     @Override
     public boolean isPredicate(){
         return true;

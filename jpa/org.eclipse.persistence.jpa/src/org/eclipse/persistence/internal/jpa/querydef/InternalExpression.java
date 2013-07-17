@@ -41,4 +41,7 @@ public interface InternalExpression{
     
     public boolean isSubquery();
     
+    //conjunction or disjunction 
+    public boolean isJunction();
+    
 }

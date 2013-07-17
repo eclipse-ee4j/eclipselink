@@ -121,8 +121,14 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testJoinDistinct"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSome"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereConjunction"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereNotConjunction"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereDisjunction"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereNotDisjunction"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereConjunctionAndDisjunction"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereDisjunctionAndConjunction"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereConjunctionOrDisjunction"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereUsingAndWithPredicates"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testWhereUsingOrWithPredicates"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testVerySimpleJoin"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testAlternateSelection"));
@@ -618,6 +624,23 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         }
     }
 
+    //Added for bug 413084
+    public void testWhereNotDisjunction(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            cq.where(qb.disjunction().not());
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertFalse("Employees were not returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
     public void testWhereConjunction(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -627,7 +650,23 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             cq.where(qb.conjunction());
             TypedQuery<Employee> tq = em.createQuery(cq);
             List<Employee> result = tq.getResultList();
-            assertFalse("Employees were returned", result.isEmpty());
+            assertFalse("Employees were not returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testWhereNotConjunction(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            cq.where(qb.conjunction().not());
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertTrue("Employees were returned", result.isEmpty());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -666,6 +705,88 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             TypedQuery<Employee> tq = em.createQuery(cq);
             List<Employee> result = tq.getResultList();
             assertTrue("Employees were returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testWhereDisjunctionAndConjunction(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            cq.where(qb.and(qb.conjunction(), qb.disjunction()));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertTrue("Employees were returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testWhereConjunctionOrDisjunction(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            cq.where(qb.or(qb.disjunction(), qb.conjunction()));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertTrue("Employees were not returned", !result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testWhereUsingAndWithPredicates(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+            cq.where(qb.and(qb.conjunction(), qb.equal(root.get("lastName"), "Smith")));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertFalse("Employees were not returned for 'true and lastName='Smith' '", result.isEmpty());
+            
+            cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            qb = em.getCriteriaBuilder();
+            root = cq.from(em.getMetamodel().entity(Employee.class));
+            cq.where(qb.and(qb.equal(root.get("lastName"), "Smith"), qb.conjunction()));
+            tq = em.createQuery(cq);
+            result = tq.getResultList();
+            assertFalse("Employees were not returned for 'lastName='Smith' and true'", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testWhereUsingOrWithPredicates(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaQuery<Employee> cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
+            cq.where(qb.or(qb.disjunction(), qb.equal(root.get("lastName"), "Smith")));
+            TypedQuery<Employee> tq = em.createQuery(cq);
+            List<Employee> result = tq.getResultList();
+            assertFalse("Employees were not returned for 'false or lastName='Smith' '", result.isEmpty());
+            
+            cq = em.getCriteriaBuilder().createQuery(Employee.class);
+            qb = em.getCriteriaBuilder();
+            root = cq.from(em.getMetamodel().entity(Employee.class));
+            cq.where(qb.or(qb.equal(root.get("lastName"), "Smith"), qb.disjunction()));
+            tq = em.createQuery(cq);
+            result = tq.getResultList();
+            assertFalse("Employees were not returned for 'lastName='Smith' or false'", result.isEmpty());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
