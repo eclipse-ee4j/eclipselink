@@ -18,11 +18,13 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -209,7 +211,12 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         List expectedResult = (List)getServerSession().executeQuery(raq);
 
         String ejbqlString = "SELECT DISTINCT e FROM Employee e, IN (e.phoneNumbers) l";
-        List firstResult = em.createQuery(ejbqlString).getResultList();
+        Query query = em.createQuery(ejbqlString);
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+        	query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+        }
+        List firstResult = query.getResultList();
 
         String alternateEjbqlString = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NOT EMPTY";
         List secondResult = em.createQuery(alternateEjbqlString).getResultList();
@@ -244,13 +251,29 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
         raq.setSelectionCriteria(whereClause);
-        raq.useDistinct();
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+        } else {
+        	raq.useDistinct();
+        }
 
         List expectedResult = (List)getServerSession().executeQuery(raq);
 
-        String ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
+        String ejbqlString;
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+            ejbqlString = "SELECT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
+        } else {
+            ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
+        }
         List firstResult = em.createQuery(ejbqlString).getResultList();
-        String alternateEjbqlString = "SELECT DISTINCT e FROM Employee e INNER JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
+        String alternateEjbqlString;
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+            alternateEjbqlString = "SELECT e FROM Employee e INNER JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
+        } else {
+            alternateEjbqlString = "SELECT DISTINCT e FROM Employee e INNER JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
+        }
         List secondResult = em.createQuery(alternateEjbqlString).getResultList();
         //4 employees returned
         Assert.assertEquals("Find all employees with cellular phone numbers test failed: data validation error", firstResult.size(), 4);
@@ -286,11 +309,21 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         ReadAllQuery raq = new ReadAllQuery(Employee.class);
         raq.setSelectionCriteria(whereClause1.and(whereClause2));
-        raq.useDistinct();
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+        } else {
+            raq.useDistinct();
+        }
 
         List expectedResult = (List)getServerSession().executeQuery(raq);
 
-        String ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Work' AND p.number = '2258812' ";
+        String ejbqlString;
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+            ejbqlString = "SELECT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Work' AND p.number = '2258812' ";
+        } else {
+            ejbqlString = "SELECT DISTINCT e FROM Employee e JOIN e.phoneNumbers p " + "WHERE p.type = 'Work' AND p.number = '2258812' ";
+        }
         List result = em.createQuery(ejbqlString).getResultList();
         //8 employees
         Assert.assertEquals("Find employee with 2258812 number test failed: data validation error", result.size(), 8);
@@ -307,8 +340,16 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             i++;
         }
         String phoneNumber = (expectedEmployee.getPhoneNumbers().iterator().next()).getNumber();
-        String ejbqlString = "SELECT DISTINCT e FROM Employee e, IN(e.phoneNumbers) p WHERE p.number = ?1";
-        String alternateEjbqlString = "SELECT DISTINCT e FROM Employee e, IN(e.phoneNumbers) p WHERE p.number = :number";
+        String ejbqlString;
+        String alternateEjbqlString;
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+            ejbqlString = "SELECT e FROM Employee e, IN(e.phoneNumbers) p WHERE p.number = ?1";
+            alternateEjbqlString = "SELECT e FROM Employee e, IN(e.phoneNumbers) p WHERE p.number = :number";
+        } else {
+            ejbqlString = "SELECT DISTINCT e FROM Employee e, IN(e.phoneNumbers) p WHERE p.number = ?1";
+            alternateEjbqlString = "SELECT DISTINCT e FROM Employee e, IN(e.phoneNumbers) p WHERE p.number = :number";
+        }
 
         List firstResult = em.createQuery(ejbqlString).setParameter(1, phoneNumber).getResultList();
         List secondResult = em.createQuery(alternateEjbqlString).setParameter("number", phoneNumber).getResultList();

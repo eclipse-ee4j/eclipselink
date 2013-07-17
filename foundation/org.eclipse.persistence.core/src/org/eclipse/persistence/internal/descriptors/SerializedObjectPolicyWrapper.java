@@ -19,6 +19,7 @@ import org.eclipse.persistence.descriptors.SerializedObjectPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
  * It's a transition class that holds SerializedObjectPolicy class name
@@ -64,7 +65,7 @@ public class SerializedObjectPolicyWrapper extends AbstractSerializedObjectPolic
         throw new UnsupportedOperationException("putObjectIntoRow");
     }
     @Override
-    public Object getObjectFromRow(AbstractRecord databaseRow, AbstractSession session) {
+    public Object getObjectFromRow(AbstractRecord databaseRow, AbstractSession session, ObjectLevelReadQuery query) {
         throw new UnsupportedOperationException("getObjectFromRow");
     }
     @Override

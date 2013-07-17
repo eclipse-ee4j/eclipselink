@@ -100,6 +100,12 @@ public abstract class JUnitTestCase extends TestCase {
     /** Allow OSGi specific behavior. */
     public static boolean isOSGi = false;
     
+    /** Indicates whether SOP should be used */
+    public static Boolean usesSOP;
+
+    /** Indicates whether SOP should be recoverable. Ignored unless useSOP is true */
+    public static Boolean isSOPRecoverable;
+    
     /**
      * This is a hack to enable weaving in Spring tests.
      * The Spring agent does not load persistence units in premain
@@ -254,6 +260,26 @@ public abstract class JUnitTestCase extends TestCase {
      */
     public boolean isHermesParser() {
         return getDatabaseSession().getQueryBuilder().getClass().getName().indexOf("Hermes") != -1;
+    }
+    
+    /**
+     * Indicates whether SOP should be used.
+     */
+    public static boolean usesSOP() {
+    	if (usesSOP == null) {
+    		usesSOP = Boolean.valueOf(System.getProperty("sop"));
+    	}
+		return usesSOP;
+    }
+    
+    /**
+     * Indicates whether SOP should be recoverable. Ignored unless useSOP is true.
+     */
+    public static boolean isSOPRecoverable() {
+    	if (isSOPRecoverable == null) {
+    		isSOPRecoverable = Boolean.valueOf(System.getProperty("sop.recoverable"));
+    	}
+		return isSOPRecoverable;
     }
     
     /**

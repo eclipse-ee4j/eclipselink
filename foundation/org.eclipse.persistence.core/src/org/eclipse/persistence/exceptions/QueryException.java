@@ -202,6 +202,11 @@ public class QueryException extends ValidationException {
     public final static int EXCEPTION_WHILE_LOADING_CONSTRUCTOR = 6176;
     public final static int COLUMN_RESULT_NOT_FOUND = 6177;
     public final static int RESULT_SET_ACCESS_OPTIMIZATION_IS_NOT_POSSIBLE = 6178;
+    public final static int SOP_OBJECT_DESERIALIZE_FAILED = 6179;
+    public final static int SOP_OBJECT_IS_NOT_FOUND = 6180;
+    public final static int SOP_OBJECT_WRONG_VERSION = 6181;
+    public final static int SOP_OBJECT_WRONG_PK = 6182;
+    
     
     /**
      * INTERNAL:
@@ -1623,6 +1628,38 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, RESULT_SET_ACCESS_OPTIMIZATION_IS_NOT_POSSIBLE, args), query);
         queryException.setErrorCode(RESULT_SET_ACCESS_OPTIMIZATION_IS_NOT_POSSIBLE);
+        return queryException;
+    }
+
+    public static QueryException sopObjectDeserializeFailed(DatabaseQuery query, DatabaseField sopField, AbstractRecord row, Exception exception) {
+        Object[] args = {sopField, row};
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, SOP_OBJECT_DESERIALIZE_FAILED, args), query, exception);
+        queryException.setErrorCode(SOP_OBJECT_DESERIALIZE_FAILED);
+        return queryException;
+    }
+
+    public static QueryException sopObjectIsNotFound(DatabaseQuery query, DatabaseField sopField, AbstractRecord row) {
+        Object[] args = {sopField, row};
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, SOP_OBJECT_IS_NOT_FOUND, args), query);
+        queryException.setErrorCode(SOP_OBJECT_IS_NOT_FOUND);
+        return queryException;
+    }
+
+    public static QueryException sopObjectWrongVersion(DatabaseQuery query, Object sopObjectVersion, DatabaseField sopField, AbstractRecord row) {
+        Object[] args = {sopObjectVersion, sopField, row};
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, SOP_OBJECT_WRONG_VERSION, args), query);
+        queryException.setErrorCode(SOP_OBJECT_WRONG_VERSION);
+        return queryException;
+    }
+
+    public static QueryException sopObjectWrongPk(DatabaseQuery query, Object sopObjectPk, DatabaseField sopField, AbstractRecord row) {
+        Object[] args = {sopObjectPk, sopField, row};
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, SOP_OBJECT_WRONG_PK, args), query);
+        queryException.setErrorCode(SOP_OBJECT_WRONG_PK);
         return queryException;
     }
 }

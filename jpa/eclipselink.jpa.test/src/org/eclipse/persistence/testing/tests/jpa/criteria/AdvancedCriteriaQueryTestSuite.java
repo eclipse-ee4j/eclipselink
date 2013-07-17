@@ -559,7 +559,11 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             CriteriaBuilder qb = em.getCriteriaBuilder();
             Root<Employee> root = cq.from(em.getMetamodel().entity(Employee.class));
             root.join("phoneNumbers");
-            cq.distinct(true);
+            if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+            	// distinct is incompatible with blob in selection clause on Oracle
+            } else {
+            	cq.distinct(true);
+            }
             TypedQuery<Employee> tq = em.createQuery(cq);
             List<Employee> result = tq.getResultList();
             for (Employee emp : result){
@@ -682,8 +686,12 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         Root<Employee> customer = cquery.from(Employee.class);
         Fetch<Employee, Project> o = customer.fetch("phoneNumbers", JoinType.LEFT);
         cquery.where(customer.get("address").get("city").in("Ottawa", "Halifax"));
-        cquery.select(customer).distinct(true);
+    	cquery.select(customer).distinct(true);
         TypedQuery<Employee> tquery = em.createQuery(cquery);
+        if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+        	// distinct is incompatible with blob in selection clause on Oracle
+        	tquery.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+        }
         List<Employee> result = tquery.getResultList();
         assertFalse ("No results found", result.isEmpty());
         Long count = (Long)em.createQuery("Select count(e) from Employee e where e.address.city in ('Ottawa', 'Halifax')").getSingleResult();
@@ -899,7 +907,11 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
 
         // Create Main Query with SubQuery         
       cquery.where(qbuilder.equal(orders.<String>get("type"), qbuilder.some(sq)));
-      cquery.distinct(true);
+      if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+      	// distinct is incompatible with blob in selection clause on Oracle
+      } else {
+    	  cquery.distinct(true);
+      }
       em.createQuery(cquery).getResultList();
 
         } finally {
@@ -916,7 +928,12 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Employee> customer = cquery.from(Employee.class);
             Join<Employee, Dealer> o = customer.join("dealers");
-            cquery.select(customer).distinct(true);
+            if (usesSOP() && getServerSession().getPlatform().isOracle()) {
+            	// distinct is incompatible with blob in selection clause on Oracle
+                cquery.select(customer);
+            } else {
+                cquery.select(customer).distinct(true);
+            }
             Subquery<Integer> sq = cquery.subquery(Integer.class);
             Root<Dealer> sqo = sq.from(Dealer.class);
             sq.select(qbuilder.min(sqo.<Integer>get("version")));

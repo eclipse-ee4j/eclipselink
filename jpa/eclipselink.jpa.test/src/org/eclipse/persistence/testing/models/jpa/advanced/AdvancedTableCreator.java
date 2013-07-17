@@ -190,6 +190,19 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
         
+        if (Boolean.valueOf(System.getProperty("sop"))) {
+	        FieldDefinition fieldSop = new FieldDefinition();
+	        fieldSop.setName("SOP");
+	        fieldSop.setTypeName("BLOB");
+	        fieldSop.setSize(0);
+	        fieldSop.setSubSize(0);
+	        fieldSop.setIsPrimaryKey(false);
+	        fieldSop.setIsIdentity(false);
+	        fieldSop.setUnique(false);
+	        fieldSop.setShouldAllowNull(true);
+	        table.addField(fieldSop);
+        }
+
         return table;
     }
     
@@ -891,6 +904,19 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldHugeProj.setForeignKeyFieldName("CMP3_PROJECT.PROJ_ID");
         table.addField(fieldHugeProj);
         
+        if (Boolean.valueOf(System.getProperty("sop"))) {
+	        FieldDefinition fieldSop = new FieldDefinition();
+	        fieldSop.setName("SOP");
+	        fieldSop.setTypeName("BLOB");
+	        fieldSop.setSize(0);
+	        fieldSop.setSubSize(0);
+	        fieldSop.setIsPrimaryKey(false);
+	        fieldSop.setIsIdentity(false);
+	        fieldSop.setUnique(false);
+	        fieldSop.setShouldAllowNull(true);
+	        table.addField(fieldSop);
+        }
+
         return table;
     }
     
@@ -1453,6 +1479,19 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field5.setUnique(false );
         field5.setIsIdentity(false );
         table.addField(field5);
+
+        if (Boolean.valueOf(System.getProperty("sop"))) {
+	        FieldDefinition fieldSop = new FieldDefinition();
+	        fieldSop.setName("SOP");
+	        fieldSop.setTypeName("BLOB");
+	        fieldSop.setSize(0);
+	        fieldSop.setSubSize(0);
+	        fieldSop.setIsPrimaryKey(false);
+	        fieldSop.setIsIdentity(false);
+	        fieldSop.setUnique(false);
+	        fieldSop.setShouldAllowNull(true);
+	        table.addField(fieldSop);
+        }
 
         return table;
     }

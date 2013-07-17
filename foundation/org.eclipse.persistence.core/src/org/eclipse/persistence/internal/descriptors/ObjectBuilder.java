@@ -115,6 +115,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /** PERF: is there a mapping using indirection (could be nested in aggregate(s)), or any other reason to keep row after the object has been created. 
      Used by ObjectLevelReadQuery ResultSetAccessOptimization. */
     protected boolean shouldKeepRow = false;
+    /** PERF: is there an cache index field that's would not be selected by SOP query. Ignored unless descriptor uses SOP and CachePolicy has cache indexes. */ 
+    protected boolean hasCacheIndexesInSopObject = false;
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -498,11 +500,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         if (mapping.isOutSopObject()) {
                             // the mapping should be processed as if there is no sopObject
                             databaseRow.setSopObject(null);
-                            mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
                         } else {
                             databaseRow.setSopObject(sopObject);
-                            mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
                         }
+                        mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
                     }
                 }
             }
@@ -517,7 +518,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (sopObject == null) {
                 // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
                 // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
-                sopObject = this.descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, targetSession);
+                sopObject = this.descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, targetSession, (ObjectLevelReadQuery)query);
                 if (sopObject != null) {
                     // PERF: Cache if all mappings should be read.
                     boolean readAllMappings = query.shouldReadAllMappings();
@@ -527,11 +528,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             if (mapping.isOutSopObject()) {
                                 // the mapping should be processed as if there is no sopObject
                                 databaseRow.setSopObject(null);
-                                mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
                             } else {
                                 databaseRow.setSopObject(sopObject);
-                                mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
                             }
+                            mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
                         }
                     }
                     // PERF: Avoid events if no listeners.
@@ -949,6 +949,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         CacheKey cacheKey = null;
         // Keep track if we actually built/refresh the object.
         boolean cacheHit = true;
+        boolean isSopQuery = concreteDescriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy();
+        // has to cache this flag - sopObject is set to null in the row after it has been processed
+        boolean hasSopObject = databaseRow.hasSopObject();
         boolean domainWasMissing = true;
         boolean shouldMaintainCache = query.shouldMaintainCache();
         ObjectBuilder concreteObjectBuilder = concreteDescriptor.getObjectBuilder();
@@ -977,10 +980,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
                         domainObject = ((ReadObjectQuery)query).getSelectionObject();
                     } else {
-                        if (concreteDescriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
+                        if (isSopQuery && !hasSopObject) {
                             // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
                             // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
-                            domainObject = concreteDescriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, session);
+                            domainObject = concreteDescriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, session, (ObjectLevelReadQuery)query);
                         }
                         if (domainObject == null) {
                             domainObject = concreteObjectBuilder.buildNewInstance();
@@ -1072,7 +1075,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (!cacheHit) {
             concreteObjectBuilder.instantiateEagerMappings(domainObject, session);
             if (shouldMaintainCache && (cacheKey != null)) {
-                concreteDescriptor.getCachePolicy().indexObjectInCache(cacheKey, databaseRow, domainObject, concreteDescriptor, session, !domainWasMissing);
+                if (hasSopObject || (isSopQuery && this.hasCacheIndexesInSopObject)) {
+                    // at least some of the cache index fields are missing from the row - extract index values from domainObject
+                    concreteDescriptor.getCachePolicy().indexObjectInCache(cacheKey, domainObject, concreteDescriptor, session, !domainWasMissing);
+                } else {
+                    concreteDescriptor.getCachePolicy().indexObjectInCache(cacheKey, databaseRow, domainObject, concreteDescriptor, session, !domainWasMissing);
+                }
             }
         }
         if (query instanceof ObjectLevelReadQuery) {
@@ -2038,7 +2046,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (sopObject == null) {
                 // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
                 // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
-                sopObject = this.descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, unitOfWork);
+                sopObject = this.descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, unitOfWork, (ObjectLevelReadQuery)query);
                 if (sopObject != null) {
                     // PERF: Cache if all mappings should be read.
                     boolean readAllMappings = query.shouldReadAllMappings();
@@ -2182,7 +2190,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     if (descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
                         // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
                         // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
-                        workingClone = descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, unitOfWork);
+                        workingClone = descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, unitOfWork, (ObjectLevelReadQuery)query);
                     } 
                     if (workingClone == null) {
                         // What happens if a copy policy is defined is not pleasant.
@@ -3745,6 +3753,15 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 break;
             }
         }
+        // PERF: is there an cache index field that's would not be selected by SOP query. Ignored unless descriptor uses SOP and CachePolicy has cache indexes.
+        if (this.descriptor.hasSerializedObjectPolicy() && this.descriptor.getCachePolicy().hasCacheIndexes()) {
+            for (List<DatabaseField> indexFields : this.descriptor.getCachePolicy().getCacheIndexes().keySet()) {
+                if (!this.descriptor.getSerializedObjectPolicy().getSelectionFields().containsAll(indexFields)) {
+                    this.hasCacheIndexesInSopObject = true;
+                    break;
+                }
+            }
+        }
     }
     
     /**
@@ -4489,5 +4506,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     
     public boolean shouldKeepRow() {
         return this.shouldKeepRow;
+    }
+    
+    public boolean hasCacheIndexesInSopObject() {
+        return this.hasCacheIndexesInSopObject;
     }
 }

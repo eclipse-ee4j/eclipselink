@@ -77,6 +77,7 @@ import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.indirection.BatchValueHolder;
+import org.eclipse.persistence.internal.indirection.QueryBasedValueHolder;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -1069,7 +1070,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            throw ex;
+        	if (usesSOP() && !isSOPRecoverable()) {
+        	    // TODO: refresh should throw PersistenceException?
+        	    if (ex instanceof QueryException && ((QueryException)ex).getErrorCode() == QueryException.SOP_OBJECT_IS_NOT_FOUND) {
+                    // refresh is expected to fail because SOP field is set to null after bulk update
+        	        return;
+        	    } else {
+        	        fail("Wrong exception: " + ex);
+        	    }
+        	} else {
+                throw ex;
+        	}
         }
         assertTrue("Failed to flush to Database", emp.getSalary() == 100);
     }
@@ -2281,6 +2292,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         String[] testModeArray1 = {"query", "find", "lock", "refresh"};
         // indicates which method on the second entity manager is used to test the lock. 
         String[] testModeArray2 = {"query", "find", "update_name", "update_salary", "remove_project", "remove_respons", "update_project", "update_respons", "lock", "refresh"};
+        if (usesSOP()) {
+    		// if SOP is used there is no expected exceptions for remove_respons and update_respons because responsibilities read from sopObject, not from db row directly. 
+        	// Therefore exclude remove_respons and update_respons.
+            testModeArray2 = new String[]{"query", "find", "update_name", "update_salary", "remove_project", "update_project", "lock", "refresh"};
+    	}
 /* test runs all combinations of elements of the above three arrays. To limit the number of configuration for debugging override these array, for instance:
         boolean[] isObjectCached = {false};
         String[] testModeArray1 = {"lock"};
@@ -4471,10 +4487,31 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
-            if (Error.class.isAssignableFrom(ex.getClass())){
-                throw (Error)ex;
-            }else{
-                throw (RuntimeException)ex;
+            if (usesSOP() && !isSOPRecoverable()) {
+                int expectedExceptionCode;
+                if (shouldUpdateAll) {
+                    // getSingleResult is expected to fail because SOP field is set to null after bulk update
+                    expectedExceptionCode = QueryException.SOP_OBJECT_IS_NOT_FOUND;
+                } else {
+                    // getSingleResult is expected to fail because SOP field became stale after custom sql
+                    expectedExceptionCode = QueryException.SOP_OBJECT_WRONG_VERSION;
+                }
+                if (ex instanceof PersistenceException) {
+                    if (ex.getCause() instanceof QueryException && ((QueryException)ex.getCause()).getErrorCode() == expectedExceptionCode) {
+                        // getSingleResult is expected to fail.
+                        return;
+                    } else {
+                        fail("Wrong cause of PersistenceException: " + ex.getCause());
+                    }
+                } else {
+                    fail("PersistenceException was expected");
+                }
+            } else {
+                if (Error.class.isAssignableFrom(ex.getClass())){
+                    throw (Error)ex;
+                }else{
+                    throw (RuntimeException)ex;
+                }
             }
         }
         
@@ -6885,7 +6922,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.persist(emp2);
 
         PhoneNumber phone = new PhoneNumber("home", "415", "0007");
-        phone.setOwner(emp);
+        emp.addPhoneNumber(phone);
         em.persist(phone);
         commitTransaction(em);
         
@@ -7568,27 +7605,44 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // verify
         String error = null;
         em = createEntityManager();
-        List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
-        closeEntityManager(em);
-        int nReadBack = result.size();
-        if(n != nUpdated) {
-            error = "n = "+n+", but nUpdated ="+nUpdated+";";
-        }
-        if(n != nReadBack) {
-            error = " n = "+n+", but nReadBack ="+nReadBack+";";
-        }
-        for(int i=0; i<nReadBack; i++) {
-            Employee emp = (Employee)result.get(i);
-            if(emp.getAddress() != null) {
-                error = " Employee "+emp.getLastName()+" still has address;";
+        try {
+            List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
+            int nReadBack = result.size();
+            if(n != nUpdated) {
+                error = "n = "+n+", but nUpdated ="+nUpdated+";";
             }
-            int ind = Integer.valueOf(emp.getLastName()).intValue();
-            if(emp.getSalary() != ind) {
-                error = " Employee "+emp.getLastName()+" has wrong salary "+emp.getSalary()+";";
+            if(n != nReadBack) {
+                error = " n = "+n+", but nReadBack ="+nReadBack+";";
             }
-            if(emp.getRoomNumber() != ind*100) {
-                error = " Employee "+emp.getLastName()+" has wrong roomNumber "+emp.getRoomNumber()+";";
+            for(int i=0; i<nReadBack; i++) {
+                Employee emp = (Employee)result.get(i);
+                if(emp.getAddress() != null) {
+                    error = " Employee "+emp.getLastName()+" still has address;";
+                }
+                int ind = Integer.valueOf(emp.getLastName()).intValue();
+                if(emp.getSalary() != ind) {
+                    error = " Employee "+emp.getLastName()+" has wrong salary "+emp.getSalary()+";";
+                }
+                if(emp.getRoomNumber() != ind*100) {
+                    error = " Employee "+emp.getLastName()+" has wrong roomNumber "+emp.getRoomNumber()+";";
+                }
             }
+        } catch (RuntimeException ex) {
+            if (usesSOP() && !isSOPRecoverable()) {
+                if (ex instanceof PersistenceException) {
+                    if (ex.getCause() instanceof QueryException && ((QueryException)ex.getCause()).getErrorCode() == QueryException.SOP_OBJECT_IS_NOT_FOUND) {
+                        // getResultList is expected to fail because SOP field is set to null after bulk update
+                    } else {
+                        fail("Wrong cause of PersistenceException: " + ex.getCause());
+                    }
+                } else {
+                    fail("PersistenceException was expected");
+                }
+            } else {
+                throw ex;
+            }
+        } finally {
+            closeEntityManager(em);
         }
 
         // clean up
@@ -7722,21 +7776,38 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // verify
             em = createEntityManager();
             String errorMsg = "";
-            projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
-                String readName = p.getName();
-                if(cls.isInstance(p)) {
-                    if(!newName.equals(readName)) {
-                        errorMsg = errorMsg + "haven't updated name: " + p + "; ";
-                    }
-                } else {
-                    if(newName.equals(readName)) {
-                        errorMsg = errorMsg + "have updated name: " + p + "; ";
+            try {
+                projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
+                for(int i=0; i<projects.size(); i++) {
+                    Project p = (Project)projects.get(i);
+                    String readName = p.getName();
+                    if(cls.isInstance(p)) {
+                        if(!newName.equals(readName)) {
+                            errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                        }
+                    } else {
+                        if(newName.equals(readName)) {
+                            errorMsg = errorMsg + "have updated name: " + p + "; ";
+                        }
                     }
                 }
+            } catch (RuntimeException ex) {
+                if (usesSOP() && !isSOPRecoverable()) {
+                    if (ex instanceof PersistenceException) {
+                        if (ex.getCause() instanceof QueryException && ((QueryException)ex.getCause()).getErrorCode() == QueryException.SOP_OBJECT_IS_NOT_FOUND) {
+                            // getResultList is expected to fail because SOP field is set to null after bulk update
+                        } else {
+                            fail("Wrong cause of PersistenceException: " + ex.getCause());
+                        }
+                    } else {
+                        fail("PersistenceException was expected");
+                    }
+                } else {
+                    throw ex;
+                }
+            } finally {
+                closeEntityManager(em);
             }
-            closeEntityManager(em);
 
             if(errorMsg.length() > 0) {
                 fail(errorMsg);
@@ -7749,7 +7820,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 if(map != null) {
                     EntityManager em = createEntityManager();
                     beginTransaction(em);
-                    List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
+                    Query query = em.createQuery("SELECT OBJECT(p) FROM Project p");
+                    if (usesSOP() && !isSOPRecoverable()) {
+                        // otherwise will fail because SOP field is set to null after bulk update
+                        query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
+                    }
+                    List projects = query.getResultList();
                     try {
                         for(int i=0; i<projects.size(); i++) {
                             Project p = (Project)projects.get(i);
@@ -7823,21 +7899,38 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // verify
             em = createEntityManager();
             String errorMsg = "";
-            List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
-                String readName = p.getName();
-                if(cls.isInstance(p)) {
-                    if(!readName.equals(newName)) {
-                        errorMsg = errorMsg + "haven't updated name: " + p + "; ";
-                    }
-                } else {
-                    if(readName.equals(newName)) {
-                        errorMsg = errorMsg + "have updated name: " + p + "; ";
+            try {
+                List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
+                for(int i=0; i<projects.size(); i++) {
+                    Project p = (Project)projects.get(i);
+                    String readName = p.getName();
+                    if(cls.isInstance(p)) {
+                        if(!readName.equals(newName)) {
+                            errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                        }
+                    } else {
+                        if(readName.equals(newName)) {
+                            errorMsg = errorMsg + "have updated name: " + p + "; ";
+                        }
                     }
                 }
+            } catch (RuntimeException ex) {
+                if (usesSOP() && !isSOPRecoverable()) {
+                    if (ex instanceof PersistenceException) {
+                        if (ex.getCause() instanceof QueryException && ((QueryException)ex.getCause()).getErrorCode() == QueryException.SOP_OBJECT_IS_NOT_FOUND) {
+                            // getResultList is expected to fail because SOP field is set to null after bulk update
+                        } else {
+                            fail("Wrong cause of PersistenceException: " + ex.getCause());
+                        }
+                    } else {
+                        fail("PersistenceException was expected");
+                    }
+                } else {
+                    throw ex;
+                }
+            } finally {
+                closeEntityManager(em);
             }
-            closeEntityManager(em);
             
             if(errorMsg.length() > 0) {
                 fail(errorMsg);
@@ -7932,21 +8025,38 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // verify
             em = createEntityManager();
             String errorMsg = "";
-            List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
-                String readName = p.getName();
-                if(cls.isInstance(p) && p.getTeamLeader()==null) {
-                    if(!readName.equals(newName)) {
-                        errorMsg = errorMsg + "haven't updated name: " + p + "; ";
-                    }
-                } else {
-                    if(readName.equals(newName)) {
-                        errorMsg = errorMsg + "have updated name: " + p + "; ";
+            try {
+                List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
+                for(int i=0; i<projects.size(); i++) {
+                    Project p = (Project)projects.get(i);
+                    String readName = p.getName();
+                    if(cls.isInstance(p) && p.getTeamLeader()==null) {
+                        if(!readName.equals(newName)) {
+                            errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                        }
+                    } else {
+                        if(readName.equals(newName)) {
+                            errorMsg = errorMsg + "have updated name: " + p + "; ";
+                        }
                     }
                 }
+            } catch (RuntimeException ex) {
+                if (usesSOP() && !isSOPRecoverable()) {
+                    if (ex instanceof PersistenceException) {
+                        if (ex.getCause() instanceof QueryException && ((QueryException)ex.getCause()).getErrorCode() == QueryException.SOP_OBJECT_IS_NOT_FOUND) {
+                            // getResultList is expected to fail because SOP field is set to null after bulk update
+                        } else {
+                            fail("Wrong cause of PersistenceException: " + ex.getCause());
+                        }
+                    } else {
+                        fail("PersistenceException was expected");
+                    }
+                } else {
+                    throw ex;
+                }
+            } finally {
+                closeEntityManager(em);
             }
-            closeEntityManager(em);
             
             if(errorMsg.length() > 0) {
                 fail(errorMsg);
@@ -9996,7 +10106,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse("PhoneNumbers was empty.  This should not be the case as the test created phone numbers", emp.getPhoneNumbers().isEmpty());
             assertTrue("Phonee numbers was not an indirectList", emp.getPhoneNumbers() instanceof IndirectList);
             assertNotNull("valueholder was null in triggered batch attribute", ((IndirectList) emp.getPhoneNumbers()).getValueHolder());
-            BatchValueHolder bvh = (BatchValueHolder) ((IndirectList) emp.getPhoneNumbers()).getValueHolder();
+            QueryBasedValueHolder bvh = (QueryBasedValueHolder) ((IndirectList) emp.getPhoneNumbers()).getValueHolder();
+            if (!usesSOP()) {
+            	if (!(bvh instanceof BatchValueHolder)) {
+                    fail("BatchValueHolder was expected, instead got " + bvh);
+            	}
+            }
             if (bvh.getQuery() != null && bvh.getQuery().getSession() != null && bvh.getQuery().getSession().isUnitOfWork()) {
                 fail("In Shared Cache a UOW was set within a BatchValueHolder's query object");
             }
@@ -12106,14 +12221,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.persist(address);
             commitTransaction(em);
             // no exception thrown -> passed
-            closeEntityManager(em);
+            
+            // clean-up
+            beginTransaction(em);
+            em.createNativeQuery("DELETE FROM CMP3_ADDRESS WHERE ADDRESS_ID = " + address.getID()).executeUpdate();
+            commitTransaction(em);
         } catch (RuntimeException exception) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-            closeEntityManager(em);
             throw exception;
         } finally {
+            closeEntityManager(em);
             // close the entire factory in order to clean up the session customizer
             closeEntityManagerFactory();
         }

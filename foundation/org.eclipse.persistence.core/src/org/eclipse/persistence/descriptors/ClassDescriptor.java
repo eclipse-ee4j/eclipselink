@@ -3829,12 +3829,19 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             }
         }
 
+        // List of fields selected by a query that uses SOP when descriptor has SOP. Used to index these fields.
+        List<DatabaseField> sopSelectionFields = null;
         if (hasSerializedObjectPolicy()) {
             getSerializedObjectPolicy().postInitialize(session);
             this.selectionFields = (List<DatabaseField>)getFields().clone();
             this.selectionFields.remove(getSerializedObjectPolicy().getField());
             this.allSelectionFields = (List<DatabaseField>)getAllFields().clone();
             this.allSelectionFields.remove(getSerializedObjectPolicy().getField());
+            sopSelectionFields = getSerializedObjectPolicy().getSelectionFields();
+            if (sopSelectionFields.size() == getFields().size()) {
+                // no need for sop field indexes - SOP uses all the field in the descriptor
+                sopSelectionFields = null;
+            }
         } else {
             this.selectionFields = getFields();
             this.allSelectionFields = getAllFields();
@@ -3857,6 +3864,12 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 setHasMultipleTableConstraintDependecy(true);
             }
             field.setIndex(index);
+            if (sopSelectionFields != null) {
+                int sopFieldIndex = sopSelectionFields.indexOf(field);
+                if (sopFieldIndex != -1) {
+                    field.setIndex(sopFieldIndex);
+                }
+            }
         }        
         // Set cache key type.
         if (getCachePolicy().getCacheKeyType() == null || (getCachePolicy().getCacheKeyType() == CacheKeyType.AUTO)) {
