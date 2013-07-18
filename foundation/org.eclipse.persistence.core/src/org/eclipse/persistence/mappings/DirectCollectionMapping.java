@@ -1422,6 +1422,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             this.initializeListOrderField(session);
         }
         getContainerPolicy().initialize(session, this.referenceTable);
+        
+        // Initialize the value converter sooner since it likely will finish
+        // configuring field and attribute classifications.
+        if (getValueConverter() != null) {
+            getValueConverter().initialize(this, session);
+        }
+        
         if (!hasCustomSelectionQuery()){
             initOrRebuildSelectQuery();
             getSelectionQuery().setName(getAttributeName());
@@ -1449,9 +1456,6 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         initializeUpdateAtIndexQuery(session);
         if (getHistoryPolicy() != null) {
             getHistoryPolicy().initialize(session);
-        }
-        if (getValueConverter() != null) {
-            getValueConverter().initialize(this, session);
         }
         super.initialize(session);
     }
