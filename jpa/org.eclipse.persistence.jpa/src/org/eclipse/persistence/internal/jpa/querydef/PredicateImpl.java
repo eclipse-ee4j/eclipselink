@@ -50,7 +50,7 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      * TRUE if this is a conjunction, FALSE for disjunction.
      */
     public Boolean getJunctionValue() {
-        if (this.currentNode == null) {
+        if (this.currentNode != null) {
             return null;
         }
         return this.getOperator() == BooleanOperator.AND;
