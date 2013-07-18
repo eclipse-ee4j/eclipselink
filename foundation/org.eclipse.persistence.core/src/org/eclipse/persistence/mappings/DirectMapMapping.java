@@ -364,10 +364,10 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         getMappedKeyMapContainerPolicy().setDescriptorForKeyMapping(this.getDescriptor());
-        super.initialize(session);
-        if (getValueConverter() != null) {
-            getValueConverter().initialize(this, session);
+        if (getKeyConverter() != null) {
+            getKeyConverter().initialize(this, session);
         }
+        super.initialize(session);
     }
 
     @Override
