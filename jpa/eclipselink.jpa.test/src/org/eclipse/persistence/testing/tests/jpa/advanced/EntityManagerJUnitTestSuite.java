@@ -690,7 +690,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         throw ex;
                     } 
                 } finally {
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
             
                 commitTransaction(em);
@@ -752,7 +752,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         throw ex;
                     } 
                 } finally {
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
             
                 commitTransaction(em);
