@@ -50,13 +50,10 @@ public class JSONWithNullObjectTestCases extends JAXBWithJSONTestCases{
 		try{
 		    super.testJSONMarshalToOutputStream();
 		}catch(JAXBException e){
-			Exception nestedException = (Exception) e.getLinkedException();
-			assertTrue(nestedException instanceof XMLMarshalException);
-			assertEquals(25003, ((XMLMarshalException)nestedException).getErrorCode());
-			Exception internalException = (Exception) ((XMLMarshalException)nestedException).getInternalException();
-			assertTrue(internalException instanceof XMLMarshalException);
-			assertEquals(25011, ((XMLMarshalException)internalException).getErrorCode());
-			return;
+            Exception nestedException = (Exception) e.getLinkedException();
+            assertTrue(nestedException instanceof XMLMarshalException);
+            assertEquals(25011, ((XMLMarshalException)nestedException).getErrorCode());
+            return;
 		}
 		fail("An error should have occurred");
 		
@@ -66,13 +63,10 @@ public class JSONWithNullObjectTestCases extends JAXBWithJSONTestCases{
 		try{
 		    super.testJSONMarshalToOutputStream_FORMATTED();
 		}catch(JAXBException e){
-			Exception nestedException = (Exception) e.getLinkedException();
-			assertTrue(nestedException instanceof XMLMarshalException);
-			assertEquals(25003, ((XMLMarshalException)nestedException).getErrorCode());
-			Exception internalException = (Exception) ((XMLMarshalException)nestedException).getInternalException();
-			assertTrue(internalException instanceof XMLMarshalException);
-			assertEquals(25011, ((XMLMarshalException)internalException).getErrorCode());
-			return;
+            Exception nestedException = (Exception) e.getLinkedException();
+            assertTrue(nestedException instanceof XMLMarshalException);
+            assertEquals(25011, ((XMLMarshalException)nestedException).getErrorCode());
+            return;
 		}
 		fail("An error should have occurred");		
 	}

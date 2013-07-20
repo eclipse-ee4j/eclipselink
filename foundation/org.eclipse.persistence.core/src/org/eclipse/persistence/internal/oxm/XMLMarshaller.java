@@ -15,10 +15,8 @@ package org.eclipse.persistence.internal.oxm;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -35,6 +33,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -642,6 +641,7 @@ public abstract class XMLMarshaller<
             } else {
                 marshalRecord.node(node, nr);
             }
+            marshalRecord.flush();
             return;
         }
       
@@ -863,67 +863,60 @@ public abstract class XMLMarshaller<
     }
 
     private void marshal(Object object, OutputStream outputStream, ABSTRACT_SESSION session, DESCRIPTOR xmlDescriptor) throws XMLMarshalException {
-        if(object instanceof JSONWithPadding && !mediaType.isApplicationJSON()){               
-           object = ((JSONWithPadding)object).getObject();             
-        }
         if ((object == null) || (outputStream == null)) {
-           throw XMLMarshalException.nullArgumentException();
+            throw XMLMarshalException.nullArgumentException();
         }
-        try {
-           String encoding = getEncoding();
-           boolean isXMLRoot = false;
-           String version = DEFAULT_XML_VERSION;
-           if (object instanceof Root) {
-               isXMLRoot = true;
-               Root xroot = (Root) object;
-               version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
-               encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
-           }
-           if(mediaType.isApplicationJSON()) {
-               marshal(object, new OutputStreamWriter(outputStream, encoding), session, xmlDescriptor);
-               return;
-           }
-           if(encoding.equals(Constants.DEFAULT_XML_ENCODING)){
-               if(session == null || xmlDescriptor == null) {
-                   if(isXMLRoot){
-                       try{
-                           session = context.getSession(((Root)object).getObject());
-                           if(session != null){
-                               xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
-                           }
-                      }catch (XMLMarshalException marshalException) {
-                           if (!isSimpleXMLRoot((Root) object)) {
-                               throw marshalException;    
-                           }                
-                       }
-                   }else{
-                           Class objectClass = object.getClass();
-                           session = context.getSession(objectClass);
-                           xmlDescriptor = getDescriptor(objectClass, session);
-                   }
-               }
-               OutputStreamRecord record;
-               if (isFormattedOutput()) {
-                   record = new FormattedOutputStreamRecord();
-               } else {
-                   record = new OutputStreamRecord();
-               }
+        boolean isXMLRoot = false;
+        String version = DEFAULT_XML_VERSION;
+        String encoding = getEncoding();
 
-               record.setMarshaller(this);
-               record.setOutputStream(outputStream);
+        String callbackName = null;
+        if(object instanceof JSONWithPadding){
+            callbackName = ((JSONWithPadding)object).getCallbackName();
+            object = ((JSONWithPadding)object).getObject();
+            if(object == null){
+                throw XMLMarshalException.nullArgumentException();
+            }
+        }
 
-               marshal(object, record, session, xmlDescriptor, isXMLRoot);    
-               record.flush();
-           }else{
-               OutputStreamWriter writer = new OutputStreamWriter(outputStream, encoding);
-               marshal(object, writer);
-               writer.flush();
-           }
-       } catch (UnsupportedEncodingException exception) {
-           throw XMLMarshalException.marshalException(exception);
-       } catch (Exception ex) {
-           throw XMLMarshalException.marshalException(ex);
-       }
+        if (object instanceof Root) {
+            isXMLRoot = true;
+            Root xroot = (Root) object;
+            version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
+            encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
+        }
+
+        if(!encoding.equals(Constants.DEFAULT_XML_ENCODING)) {
+            try {
+                OutputStreamWriter writer = new OutputStreamWriter(outputStream, encoding);
+                marshal(object, writer, session, xmlDescriptor);
+                writer.flush();
+            } catch(EclipseLinkException e) {
+                throw e;
+            } catch(Exception e) {
+                throw XMLMarshalException.marshalException(e);
+            }
+            return;
+        }
+
+        MarshalRecord marshalRecord;
+        if (isFormattedOutput()) {
+            if(mediaType.isApplicationJSON()) {
+                marshalRecord = new JSONFormattedWriterRecord(outputStream, callbackName);
+            } else {
+                marshalRecord = new FormattedOutputStreamRecord();
+                ((FormattedOutputStreamRecord)marshalRecord).setOutputStream(outputStream);
+            }
+        } else {
+            if(mediaType.isApplicationJSON()) {
+                marshalRecord = new JSONWriterRecord(outputStream, callbackName);
+            } else {
+                marshalRecord = new OutputStreamRecord();
+                ((OutputStreamRecord)marshalRecord).setOutputStream(outputStream);
+            }
+        }
+
+        marshalStreamOrWriter(object, marshalRecord, session, xmlDescriptor, isXMLRoot);
    }
 
     /**
@@ -1048,6 +1041,7 @@ public abstract class XMLMarshaller<
         boolean isXMLRoot = false;
         String version = DEFAULT_XML_VERSION;
         String encoding = getEncoding();
+
         String callbackName = null;
         if(object instanceof JSONWithPadding){
             callbackName = ((JSONWithPadding)object).getCallbackName();
@@ -1056,7 +1050,7 @@ public abstract class XMLMarshaller<
                 throw XMLMarshalException.nullArgumentException();
             }
         }
-        
+
         if (object instanceof Root) {
             isXMLRoot = true;
             Root xroot = (Root) object;
@@ -1064,36 +1058,40 @@ public abstract class XMLMarshaller<
             encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
         }
 
-        
-        MarshalRecord writerRecord;
+        MarshalRecord marshalRecord;
         writer = wrapWriter(writer);
         if (isFormattedOutput()) {
             if(mediaType.isApplicationJSON()) {                          
-                writerRecord = new JSONFormattedWriterRecord(writer, callbackName);                
+                marshalRecord = new JSONFormattedWriterRecord(writer, callbackName);                
             } else {
-                writerRecord = new FormattedWriterRecord();
-                ((FormattedWriterRecord) writerRecord).setWriter(writer);
+                marshalRecord = new FormattedWriterRecord();
+                ((FormattedWriterRecord) marshalRecord).setWriter(writer);
             }
         } else {
             if(mediaType.isApplicationJSON()) {
-                writerRecord = new JSONWriterRecord(writer, callbackName);                
+                marshalRecord = new JSONWriterRecord(writer, callbackName);                
             } else {
-                writerRecord = new WriterRecord();
-                ((WriterRecord) writerRecord).setWriter(writer);
+                marshalRecord = new WriterRecord();
+                ((WriterRecord) marshalRecord).setWriter(writer);
             }
         }
-        writerRecord.setMarshaller(this);
+
+        marshalStreamOrWriter(object, marshalRecord, session, xmlDescriptor, isXMLRoot);
+     }
+
+    private void marshalStreamOrWriter(Object object, MarshalRecord marshalRecord, ABSTRACT_SESSION session, DESCRIPTOR descriptor, boolean isXMLRoot) {
+        marshalRecord.setMarshaller(this);
 
         String rootName = null;
         String rootNamespace = null;
         if(isXMLRoot){
             rootName = ((Root)object).getLocalName();
             rootNamespace = ((Root)object).getNamespaceURI();
-            if(session == null || xmlDescriptor == null){
+            if(session == null || descriptor == null){
                 try{
                     session = context.getSession(((Root)object).getObject());
                     if(session != null){
-                        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
+                        descriptor = getDescriptor(((Root)object).getObject(), session);
                     }
                 }catch (XMLMarshalException marshalException) {
                     if (!isSimpleXMLRoot((Root) object)) {
@@ -1104,44 +1102,31 @@ public abstract class XMLMarshaller<
         }else{
             Class objectClass = object.getClass();
             if(object instanceof Collection) {
-                try {
-                    writerRecord.startCollection();
-                    for(Object o : (Collection) object) {
-                        marshal(o, writerRecord);
-                    }
-                    writerRecord.endCollection();
-                    writer.flush();
-                } catch(IOException e) {
-                    throw XMLMarshalException.marshalException(e);
+                marshalRecord.startCollection();
+                for(Object o : (Collection) object) {
+                    marshal(o, marshalRecord);
                 }
+                marshalRecord.endCollection();
+                marshalRecord.flush();
                 return;
             } else if(objectClass.isArray()) {
-                try {
-                    writerRecord.startCollection();
-                    int arrayLength = Array.getLength(object);
-                    for(int x=0; x<arrayLength; x++) {
-                        marshal(Array.get(object, x), writerRecord);
-                    }
-                    writerRecord.endCollection();
-                    writer.flush();
-                } catch(IOException e) {
-                    throw XMLMarshalException.marshalException(e);
+                marshalRecord.startCollection();
+                int arrayLength = Array.getLength(object);
+                for(int x=0; x<arrayLength; x++) {
+                    marshal(Array.get(object, x), marshalRecord);
                 }
+                marshalRecord.endCollection();
+                marshalRecord.flush();
                 return;
             }
-            if(session == null || xmlDescriptor == null){
+            if(session == null || descriptor == null){
                 session = context.getSession(objectClass);
-                xmlDescriptor = getDescriptor(objectClass, session);
+                descriptor = getDescriptor(objectClass, session);
             }
         }
 
-        marshal(object, writerRecord, session, xmlDescriptor, isXMLRoot);
-
-        try {
-            writer.flush();
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+        marshal(object, marshalRecord, session, descriptor, isXMLRoot);
+        marshalRecord.flush();
     }
 
     /**

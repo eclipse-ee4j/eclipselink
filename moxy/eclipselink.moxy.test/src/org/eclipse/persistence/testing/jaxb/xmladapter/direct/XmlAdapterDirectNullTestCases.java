@@ -45,9 +45,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             super.testJSONMarshalToOutputStream_FORMATTED();
         }catch(MarshalException me){
             Throwable nestedException = me.getLinkedException();
-            assertTrue(nestedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)nestedException).getInternalException();
-            assertTrue(actualException instanceof ConversionException);
+            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
         fail("An exception should have been thrown");
@@ -58,9 +56,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             super.testJSONMarshalToOutputStream();
         }catch(MarshalException me){
             Throwable nestedException = me.getLinkedException();
-            assertTrue(nestedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)nestedException).getInternalException();
-            assertTrue(actualException instanceof ConversionException);
+            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
         fail("An exception should have been thrown");
@@ -104,9 +100,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             super.testObjectToOutputStream();
         }catch(MarshalException me){
             Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a XMLMarshalException but was " + nestedException.getClass().getName(), nestedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)nestedException).getInternalException();
-            assertTrue("Nested exception should be a ConversionException but was " + actualException.getClass().getName(), actualException instanceof ConversionException);
+            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
         fail("An exception should have been thrown");
@@ -117,9 +111,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             super.testObjectToOutputStreamASCIIEncoding();
         }catch(MarshalException me){
             Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a XMLMarshalException but was " + nestedException.getClass().getName(), nestedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)nestedException).getInternalException();
-            assertTrue("Nested exception should be a ConversionException but was " + actualException.getClass().getName(), actualException instanceof ConversionException);
+            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
         fail("An exception should have been thrown");

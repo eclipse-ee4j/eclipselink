@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.nio.charset.Charset;
+
 import javax.xml.namespace.QName;
 
 public class Constants {
@@ -23,6 +25,7 @@ public class Constants {
     public static final String CDATA = "CDATA";
     public static final char COLON = ':';
     public static final String DEFAULT_XML_ENCODING = "UTF-8";
+    public static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_XML_ENCODING);
     public static final char DOT = '.';
     public static final String EMPTY_STRING = "";
     public static final String EXPECTED_CONTENT_TYPES = "expectedContentTypes";

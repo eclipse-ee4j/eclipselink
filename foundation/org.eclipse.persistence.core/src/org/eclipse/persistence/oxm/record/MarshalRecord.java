@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.record;
 
-import java.io.UnsupportedEncodingException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -725,25 +724,18 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }
         return xPathFragment.getLocalName();
     }
-    
-    protected byte[] getNameForFragmentBytes(XPathFragment xPathFragment) {
+
+    protected byte[] getPrefixBytes(XPathFragment xPathFragment) {
         if(!this.hasCustomNamespaceMapper()) {
-            return xPathFragment.getShortNameBytes();
+            return xPathFragment.getPrefixBytes();
         }
-        String name = xPathFragment.getLocalName();
-        if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
-            String prefix = this.getPrefixForFragment(xPathFragment);
-            if(prefix != null && prefix.length() > 0) {
-                name = prefix + Constants.COLON + xPathFragment.getLocalName();
-            }
+        String prefix = this.getPrefixForFragment(xPathFragment);
+        if(null == prefix || prefix.isEmpty()) {
+            return null;
         }
-        byte[] bytes = null;
-        try {
-            bytes = name.getBytes(Constants.DEFAULT_XML_ENCODING);
-        } catch(UnsupportedEncodingException ex) {}
-        return bytes;
-    }    
-    
+        return prefix.getBytes(Constants.DEFAULT_CHARSET);
+    } 
+
     protected String getPrefixForFragment(XPathFragment xPathFragment) {
         if(!hasCustomNamespaceMapper) { 
             return xPathFragment.getPrefix();
@@ -887,4 +879,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             attributeGroupStack.pop();
         }
     }
+
+    public void flush() {
+    }
+
 }

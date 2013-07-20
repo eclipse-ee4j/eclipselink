@@ -47,10 +47,8 @@ public class ObjectWithTransientListTestCases extends JAXBWithJSONTestCases{
             super.testJSONMarshalToOutputStream();
         }catch(MarshalException e){
             Throwable linkedException = e.getLinkedException();
-            assertTrue(linkedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)linkedException).getCause();
-            assertTrue(actualException instanceof XMLMarshalException);
-            assertEquals("Wrong XMLMarshalExcpetion was thrown",XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT ,((XMLMarshalException)actualException).getErrorCode());
+            assertTrue(linkedException instanceof XMLMarshalException);            
+            assertEquals("Wrong XMLMarshalExcpetion was thrown",XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT ,((XMLMarshalException)linkedException).getErrorCode());
             return;
         }catch (Exception e) {
 e.printStackTrace();
@@ -63,10 +61,8 @@ e.printStackTrace();
             super.testJSONMarshalToOutputStream_FORMATTED();
         }catch(MarshalException e){
             Throwable linkedException = e.getLinkedException();
-            assertTrue(linkedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)linkedException).getCause();
-            assertTrue(actualException instanceof XMLMarshalException);
-            assertEquals("Wrong XMLMarshalExcpetion was thrown",XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT ,((XMLMarshalException)actualException).getErrorCode());
+            assertTrue(linkedException instanceof XMLMarshalException);            
+            assertEquals("Wrong XMLMarshalExcpetion was thrown",XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT ,((XMLMarshalException)linkedException).getErrorCode());
             return;
         }
         fail("An exception should have been thrown");
@@ -113,10 +109,8 @@ e.printStackTrace();
             super.testObjectToOutputStream();
         }catch(MarshalException e){
             Throwable linkedException = e.getLinkedException();
-            assertTrue(linkedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)linkedException).getCause();
-            assertTrue(actualException instanceof XMLMarshalException);
-            assertEquals("Wrong XMLMarshalExcpetion was thrown",XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT ,((XMLMarshalException)actualException).getErrorCode());
+            assertTrue(linkedException instanceof XMLMarshalException);            
+            assertEquals("Wrong XMLMarshalExcpetion was thrown",XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT ,((XMLMarshalException)linkedException).getErrorCode());
             return;
         }
         fail("An exception should have been thrown");
@@ -127,10 +121,8 @@ e.printStackTrace();
             super.testObjectToOutputStreamASCIIEncoding();
         }catch(MarshalException e){
             Throwable linkedException = e.getLinkedException();
-            assertTrue(linkedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)linkedException).getCause();
-            assertTrue(actualException instanceof XMLMarshalException);
-            assertEquals("Wrong XMLMarshalExcpetion was thrown",XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT ,((XMLMarshalException)actualException).getErrorCode());
+            assertTrue(linkedException instanceof XMLMarshalException);            
+            assertEquals("Wrong XMLMarshalExcpetion was thrown",XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT ,((XMLMarshalException)linkedException).getErrorCode());
             return;
         }
         fail("An exception should have been thrown");

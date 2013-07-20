@@ -82,7 +82,7 @@ public class TransientClassTestCases extends JAXBWithJSONTestCases {
 
         assertNotNull("Did not catch an exception as expected.", caughtEx);
 
-        XMLMarshalException elEx = (XMLMarshalException) caughtEx.getCause().getCause();
+        XMLMarshalException elEx = (XMLMarshalException) caughtEx.getCause();
         assertEquals("Unexpected error code.", elEx.getErrorCode(), XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT);
     }
 

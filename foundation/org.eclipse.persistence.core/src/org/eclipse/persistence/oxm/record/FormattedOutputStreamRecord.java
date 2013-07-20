@@ -14,6 +14,7 @@ package org.eclipse.persistence.oxm.record;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -47,6 +48,8 @@ import org.xml.sax.SAXException;
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
 public class FormattedOutputStreamRecord extends OutputStreamRecord {
+
+    protected static byte[] CR = FormattedWriterRecord.CR.getBytes(Constants.DEFAULT_CHARSET);
 
     private byte[] tab;
     private int numberOfTabs;
@@ -110,7 +113,12 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         }
         isStartElementOpen = true;
         outputStreamWrite(OPEN_START_ELEMENT);
-        outputStreamWrite(getNameForFragmentBytes(xPathFragment));
+        byte[] prefixBytes = getPrefixBytes(xPathFragment);
+        if(null != prefixBytes) {
+            outputStreamWrite(prefixBytes);
+            outputStreamWrite((byte)':');
+        }
+        outputStreamWrite(xPathFragment.getLocalNameBytes());
         if(xPathFragment.isGeneratedPrefix()){
             namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
         }
