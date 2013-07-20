@@ -49,7 +49,7 @@ import org.xml.sax.SAXException;
  */
 public class FormattedOutputStreamRecord extends OutputStreamRecord {
 
-    protected static byte[] CR = FormattedWriterRecord.CR.getBytes(CHARSET);
+    protected static byte[] CR = FormattedWriterRecord.CR.getBytes(Constants.DEFAULT_CHARSET);
 
     private byte[] tab;
     private int numberOfTabs;
@@ -113,7 +113,12 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
         }
         isStartElementOpen = true;
         outputStreamWrite(OPEN_START_ELEMENT);
-        outputStreamWrite(getNameForFragmentBytes(xPathFragment));
+        byte[] prefixBytes = getPrefixBytes(xPathFragment);
+        if(null != prefixBytes) {
+            outputStreamWrite(prefixBytes);
+            outputStreamWrite((byte)':');
+        }
+        outputStreamWrite(xPathFragment.getLocalNameBytes());
         if(xPathFragment.isGeneratedPrefix()){
             namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
         }

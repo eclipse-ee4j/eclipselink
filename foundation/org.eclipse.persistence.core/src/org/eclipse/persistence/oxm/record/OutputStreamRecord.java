@@ -16,7 +16,6 @@ import java.io.CharArrayWriter;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -62,22 +61,21 @@ import org.xml.sax.ext.LexicalHandler;
  */
 public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
 
-    protected static final Charset CHARSET = Charset.forName(Constants.DEFAULT_XML_ENCODING);
-    protected static final byte[] OPEN_XML_PI_AND_VERSION_ATTRIBUTE = "<?xml version=\"".getBytes(CHARSET);
-    protected static final byte[] OPEN_ENCODING_ATTRIBUTE = " encoding=\"".getBytes(CHARSET);
-    protected static final byte[] CLOSE_PI = "?>".getBytes(CHARSET);
+    protected static final byte[] OPEN_XML_PI_AND_VERSION_ATTRIBUTE = "<?xml version=\"".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] OPEN_ENCODING_ATTRIBUTE = " encoding=\"".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] CLOSE_PI = "?>".getBytes(Constants.DEFAULT_CHARSET);
     protected static final byte SPACE = (byte) ' ';
     protected static final byte CLOSE_ATTRIBUTE_VALUE = (byte) '"';
-    protected static final byte[] OPEN_CDATA = "<![CDATA[".getBytes(CHARSET);
-    protected static final byte[] CLOSE_CDATA = "]]>".getBytes(CHARSET);
-    protected static final byte[] OPEN_COMMENT = "<!--".getBytes(CHARSET);
-    protected static final byte[] CLOSE_COMMENT = "-->".getBytes(CHARSET);
+    protected static final byte[] OPEN_CDATA = "<![CDATA[".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] CLOSE_CDATA = "]]>".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] OPEN_COMMENT = "<!--".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] CLOSE_COMMENT = "-->".getBytes(Constants.DEFAULT_CHARSET);
     protected static final byte OPEN_START_ELEMENT = (byte) '<';
     protected static final byte CLOSE_ELEMENT = (byte) '>';
-    protected static final byte[] AMP = "&amp;".getBytes(CHARSET);
-    protected static final byte[] LT = "&lt;".getBytes(CHARSET);
-    protected static final byte[] QUOT = "&quot;".getBytes(CHARSET);
-    protected static final byte[] ENCODING = Constants.DEFAULT_XML_ENCODING.getBytes(CHARSET);
+    protected static final byte[] AMP = "&amp;".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] LT = "&lt;".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] QUOT = "&quot;".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] ENCODING = Constants.DEFAULT_XML_ENCODING.getBytes(Constants.DEFAULT_CHARSET);
 
     protected OutputStream outputStream;
     protected boolean isStartElementOpen = false;
@@ -151,7 +149,12 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
         }
         isStartElementOpen = true;
         outputStreamWrite(OPEN_START_ELEMENT);
-        outputStreamWrite(getNameForFragmentBytes(xPathFragment));
+        byte[] prefixBytes = getPrefixBytes(xPathFragment);
+        if(null != prefixBytes) {
+            outputStreamWrite(prefixBytes);
+            outputStreamWrite((byte)':');
+        }
+        outputStreamWrite(xPathFragment.getLocalNameBytes());
         if(xPathFragment.isGeneratedPrefix()){
             namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
         }
@@ -213,7 +216,12 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
         } else {
             outputStreamWrite((byte)'<');
             outputStreamWrite((byte)'/');
-            outputStreamWrite(getNameForFragmentBytes(xPathFragment));
+            byte[] prefixBytes = getPrefixBytes(xPathFragment);
+            if(null != prefixBytes) {
+                outputStreamWrite(prefixBytes);
+                outputStreamWrite((byte)':');
+            }
+            outputStreamWrite(xPathFragment.getLocalNameBytes());
             outputStreamWrite(CLOSE_ELEMENT);
         }
         isStartElementOpen = false;

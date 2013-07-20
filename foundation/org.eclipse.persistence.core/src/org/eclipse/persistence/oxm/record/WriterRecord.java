@@ -535,4 +535,13 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
         encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
     }
 
+    @Override
+    public void flush() {
+        try {
+            writer.flush();
+        } catch(IOException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
 }

@@ -89,6 +89,8 @@ public interface MarshalRecord<
 
     public void endPrefixMapping(String prefix);
 
+    public void flush();
+
     public CoreAttributeGroup getCurrentAttributeGroup();
 
     public CycleDetectionStack<Object>  getCycleDetectionStack();

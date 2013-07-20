@@ -13,6 +13,7 @@
 package org.eclipse.persistence.oxm.record;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -61,6 +62,16 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         space = " ";
     }
     
+    public JSONFormattedWriterRecord(OutputStream outputStream){
+        this();
+        this.writer = new OutputStreamOutput(outputStream);
+    }
+    
+    public JSONFormattedWriterRecord(OutputStream outputStream, String callbackName){
+        this(outputStream);
+        setCallbackName(callbackName);
+    }
+
     public JSONFormattedWriterRecord(Writer writer){
     	this();
     	setWriter(writer);
@@ -94,7 +105,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
     @Override
     protected void closeComplex() throws IOException {
-        writer.write(FormattedWriterRecord.CR);
+        writer.writeCR();
         for (int x = 0; x < numberOfTabs; x++) {
             writeValue(tab(), false);            
         }
@@ -108,13 +119,11 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         try {
         	Level newLevel = null;
             Level position = null;
-            if(levels.isEmpty()) {
-            	newLevel = new Level(true, true);
-                levels.push(newLevel);
+            if(null == level) {
+                level = new Level(true, true);
             } else {
-                position = levels.peek();
-                newLevel = new Level(true, true);
-                levels.push(newLevel);
+                position = level;
+                level = new Level(true, true, level);
                 if(position.isFirst()) {
                     position.setFirst(false);
                 } else {
@@ -145,7 +154,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 if(position.isCollection() && !position.isEmptyCollection()) {
                     writer.write(' ');
                 } else {
-                    writer.write(FormattedWriterRecord.CR);
+                    writer.writeCR();
                     for (int x = 0; x < numberOfTabs; x++) {
                         writeValue(tab(), false);
                     }
@@ -180,7 +189,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 writer.write('>');
                 isStartElementOpen = false;
             }
-            writer.write(FormattedWriterRecord.CR);
+            writer.writeCR();
             for (int x = 0; x < numberOfTabs; x++) {
                 writeValue(tab(), false);
             }
@@ -201,7 +210,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
     @Override
     public void startCollection() {
-        if(levels.isEmpty()) {
+        if(null == level) {
             try {
                 super.startCollection();
                 writer.write(' ');
@@ -278,7 +287,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
     @Override
     protected void writeKey(XPathFragment xPathFragment) throws IOException {
-        writer.write(FormattedWriterRecord.CR);
+        writer.writeCR();
         for (int x = 0; x < numberOfTabs; x++) {
             writeValue(tab(), false);
         }
@@ -309,7 +318,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             try {
                 if (isStartElementOpen) {
                     writer.write('>');
-                    writer.write(FormattedWriterRecord.CR);
+                    writer.writeCR();
                     isStartElementOpen = false;
                 }
                 writeComment(ch, start, length);
