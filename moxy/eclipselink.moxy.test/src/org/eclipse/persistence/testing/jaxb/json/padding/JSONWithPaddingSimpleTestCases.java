@@ -48,4 +48,8 @@ public class JSONWithPaddingSimpleTestCases extends JAXBWithJSONTestCases{
 	public boolean isUnmarshalTest (){		
 		return false;
 	}
+	
+	public void testJSONMarshalToBuilderResult() throws Exception{     
+    }
+    
 }

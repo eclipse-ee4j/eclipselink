@@ -55,6 +55,9 @@ public class JSONWithPaddingSimpleListTestCases extends JSONTestCases{
 		return false;
 	}
 	
+	public void testJSONMarshalToBuilderResult() throws Exception{     
+    }
+	
 //	public boolean shouldRemoveWhitespaceFromControlDocJSON(){
 	//	return false;
 	//}

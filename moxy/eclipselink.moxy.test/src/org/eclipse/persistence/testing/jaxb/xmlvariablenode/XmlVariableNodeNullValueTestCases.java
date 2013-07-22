@@ -86,6 +86,17 @@ public class XmlVariableNodeNullValueTestCases extends JAXBWithJSONTestCases{
 		fail("An XMLMarshalException should have occurred");
     }
     
+    public void testJSONMarshalToBuilderResult() throws Exception{
+        try{
+            super.testJSONMarshalToBuilderResult();
+        }catch(JAXBException e){
+            if(verifyException(e)){
+                return;
+            }
+        }
+        fail("An XMLMarshalException should have occurred");
+    }
+    
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
     	try{
      		super.testJSONMarshalToStringWriter_FORMATTED();

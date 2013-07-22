@@ -20,10 +20,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.json.Json;
+import javax.json.JsonReader;
+import javax.json.JsonStructure;
 import javax.xml.bind.JAXBElement;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.json.JsonStructureSource;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MyStreamSchemaOutputResolver;
 import org.xml.sax.InputSource;
 
@@ -53,6 +58,22 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
 		inputStream.close();
 		jsonToObjectTest(testObject);
 	}
+	
+	public void testJSONUnmarshalFromJsonStructureSource() throws Exception {
+       
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);    
+        JsonReader reader = Json.createReader(inputStream);
+        JsonStructure jsonStructure = reader.read();     
+        JsonStructureSource source = new JsonStructureSource(jsonStructure);
+            
+        Object testObject = null;
+        if(getUnmarshalClass() != null){               
+            testObject = jsonUnmarshaller.unmarshal(source, getUnmarshalClass());
+        }else{
+            testObject = jsonUnmarshaller.unmarshal(source);
+        }
+        jsonToObjectTest(testObject);        
+    }
 
 	public void testJSONUnmarshalFromInputSource() throws Exception {	
          InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);

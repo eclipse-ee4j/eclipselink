@@ -13,11 +13,21 @@
 package org.eclipse.persistence.testing.jaxb.json;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -27,6 +37,8 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.json.JsonArrayBuilderResult;
+import org.eclipse.persistence.oxm.json.JsonObjectBuilderResult;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public abstract class JSONTestCases extends OXTestCase{
@@ -172,7 +184,48 @@ public abstract class JSONTestCases extends OXTestCase{
 	        compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
 	        os.close();
 	    }
+	 
+     public void testJSONMarshalToBuilderResult() throws Exception{
+           Object writeControlObject = getWriteControlObject();
+           if(writeControlObject instanceof Collection || writeControlObject.getClass().isArray()){
+               marshalToArrayBuilderResult();
+           }else{
+               marshalToObjectBuilderResult();
+           }
+     }  
+	 
+	   public void marshalToObjectBuilderResult() throws Exception{
+	       
+	        JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
+	        JsonObjectBuilderResult result = new JsonObjectBuilderResult(jsonObjectBuilder);
+	        jsonMarshaller.marshal(getWriteControlObject(), result);
 
+	        JsonObject jsonObject = jsonObjectBuilder.build();	        
+	        StringWriter sw = new StringWriter();
+	        
+	        JsonWriter writer= Json.createWriter(sw);
+	        writer.writeObject(jsonObject);
+	        writer.close();
+	        log(sw.toString());
+	        compareStringToControlFile("**testJSONMarshalToBuilderResult**", sw.toString());
+	    }
+
+    public void marshalToArrayBuilderResult() throws Exception{
+           
+           JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+           JsonArrayBuilderResult result = new JsonArrayBuilderResult(jsonArrayBuilder);
+           jsonMarshaller.marshal(getWriteControlObject(), result);
+
+           JsonArray jsonArray = jsonArrayBuilder.build();          
+           StringWriter sw = new StringWriter();
+           JsonWriter writer= Json.createWriter(sw);
+           writer.writeArray(jsonArray);
+           writer.close();
+           
+           log(sw.toString());
+           compareStringToControlFile("**testJSONMarshalToBuilderResult**", sw.toString());
+       }
+	   
 	 public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
 	    jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 	    ByteArrayOutputStream os = new ByteArrayOutputStream();

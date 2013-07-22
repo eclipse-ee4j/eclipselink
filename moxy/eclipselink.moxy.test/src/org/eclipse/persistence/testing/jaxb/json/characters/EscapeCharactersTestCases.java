@@ -59,4 +59,20 @@ public class EscapeCharactersTestCases extends JSONMarshalUnmarshalTestCases {
 		return holder;
 	}
 
+	protected void compareStrings(String test, String testString, String expectedString, boolean removeWhitespace) {
+        log(test);
+        log("Expected (With All Whitespace Removed):");
+        if(removeWhitespace){
+           expectedString = expectedString.replaceAll("[ \b\t\n\r ]", "");
+        }
+        log(expectedString);
+           
+        log("\nActual (With All Whitespace Removed):");
+        if(removeWhitespace){
+            testString = testString.replaceAll("[ \b\t\n\r]", "");
+        }       
+        log(testString);
+        assertEquals(expectedString.toLowerCase(), testString.toLowerCase());
+    }
+	
 }

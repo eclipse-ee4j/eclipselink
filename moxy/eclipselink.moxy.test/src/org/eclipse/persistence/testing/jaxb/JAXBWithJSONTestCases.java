@@ -23,8 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.JsonStructure;
+import javax.json.JsonWriter;
+import javax.json.stream.JsonParser;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -37,6 +41,7 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.json.JsonObjectBuilderResult;
 import org.eclipse.persistence.oxm.json.JsonStructureSource;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MyStreamSchemaOutputResolver;
 import org.xml.sax.InputSource;
@@ -235,7 +240,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             jsonToObjectTest(testObject);
         }
     }
-       
+    
     public void testJSONUnmarshalFromURL() throws Exception {
     	if(isUnmarshalTest()){
     		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
@@ -308,6 +313,27 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         }
         log(sw.toString());
         compareStringToControlFile("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted(),shouldRemoveWhitespaceFromControlDocJSON());
+    }
+    public void testJSONMarshalToBuilderResult() throws Exception{
+        getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+
+        JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
+        JsonObjectBuilderResult result = new JsonObjectBuilderResult(jsonObjectBuilder);
+        try{
+            getJSONMarshaller().marshal(getWriteControlObject(), result);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
+        JsonObject jsonObject = jsonObjectBuilder.build();
+        
+        StringWriter sw = new StringWriter();
+        JsonWriter writer= Json.createWriter(sw);
+        writer.writeObject(jsonObject);
+        writer.close();
+        
+        log(sw.toString());
+        compareStringToControlFile("**testJSONMarshalToStringWriter**", sw.toString());
     }
 
     protected void compareStringToControlFile(String test, String testString) {

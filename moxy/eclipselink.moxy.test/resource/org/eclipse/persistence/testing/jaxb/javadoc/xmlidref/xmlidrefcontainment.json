@@ -1,6 +1,6 @@
 {"customer-data":{
 	"customer":{
-	        "customerID":"Alice",
+	        "@customerID":"Alice",
 		"name":"Alice Jane",
 		"customerID":"Alice"
 		},

@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
+import java.util.Collection;
 import java.util.Properties;
 
 import javax.xml.transform.Result;
@@ -23,6 +24,7 @@ import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
+import org.eclipse.persistence.internal.oxm.record.ExtendedResult;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
@@ -139,8 +141,26 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
             }
         }else{
             Class objectClass = object.getClass();
-            session = context.getSession(objectClass);
-            xmlDescriptor = getDescriptor(objectClass, session);
+            if(result instanceof ExtendedResult){
+                MarshalRecord writerRecord = ((ExtendedResult)result).createRecord();
+                if(object instanceof Collection){
+                    writerRecord.startCollection();
+                    for(Object o : (Collection) object) {                        
+                        marshal(o, writerRecord);
+                    }
+                    writerRecord.endCollection();
+                    return;
+                }else{
+                    marshal(object, writerRecord);
+                    return;
+                }
+            }
+            if(session == null || xmlDescriptor == null){
+                session = context.getSession(objectClass);
+                xmlDescriptor = getDescriptor(objectClass, session);
+            }
+            
+            
         }
 
         //if this is a simple xml root, the session and descriptor will be null

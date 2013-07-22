@@ -144,4 +144,9 @@ public class ChoiceCollectionMappingTestCases extends JAXBWithJSONTestCases {
         super.objectToXMLDocumentTest(testDocument);
         assertTrue("Accessor method was not called as expected", writeCtrlObject.wasGetCalled);
     }  
+    
+    public void testJSONMarshalToBuilderResult() throws Exception{
+        //Currently not supported, 101.1 will get written as 101.0999984741211 
+    }
+   
 }

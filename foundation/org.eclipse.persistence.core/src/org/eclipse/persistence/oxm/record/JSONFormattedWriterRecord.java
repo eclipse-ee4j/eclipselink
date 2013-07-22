@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -131,10 +130,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 }
             }
             if(xPathFragment.nameIsText()){
-               if(position != null && position.isCollection() && position.isEmptyCollection()) {
-            	    if(!charactersAllowed){
-              		     throw JAXBException.jsonValuePropertyRequired("[");   
-              	    }
+               if(position != null && position.isCollection() && position.isEmptyCollection()) {            	    
                     writer.write('[');
                     writer.write(' ');
                     position.setEmptyCollection(false);

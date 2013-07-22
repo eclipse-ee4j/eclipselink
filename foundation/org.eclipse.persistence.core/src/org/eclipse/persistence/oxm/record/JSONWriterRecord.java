@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
@@ -247,10 +246,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                 }
             }
             if(xPathFragment.nameIsText()){
-                if(position != null && position.isCollection() && position.isEmptyCollection()) {
-                	if(!charactersAllowed){
-                		 throw JAXBException.jsonValuePropertyRequired("[");   
-                	}
+                if(position != null && position.isCollection() && position.isEmptyCollection()) {                	
                     writer.write('[');                    
                     position.setEmptyCollection(false);
                     position.setNeedToOpenComplex(false);
@@ -377,6 +373,8 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         } else {
             level.setCollection(true);
             level.setEmptyCollection(true);
+            charactersAllowed = false;
+            isStartElementOpen = false;
         }
     }
     
@@ -421,6 +419,10 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     	  boolean textWrapperOpened = false;
           if(!charactersAllowed){    
         	   if(textWrapperFragment != null){
+        	       if(!isStartElementOpen && level.isFirst()){
+        	           level.needToOpenComplex = true;
+        	           level.needToOpenComplex = true;
+        	       }
         		   openStartElement(textWrapperFragment, namespaceResolver);
         		   textWrapperOpened = true;
         	   }

@@ -40,6 +40,7 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.ExtendedResult;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.JSONWithPadding;
@@ -1004,7 +1005,9 @@ public abstract class XMLMarshaller<
         } else if (result instanceof SAXResult) {
             SAXResult saxResult = (SAXResult) result;
             marshal(object, saxResult.getHandler());
-        } else {
+        } else if (result instanceof ExtendedResult){           
+            marshal(object, ((ExtendedResult)result).createRecord(), session, xmlDescriptor, isXMLRoot);
+        }else {
             if (result.getClass().equals(staxResultClass)) {
                 try {
                     Object xmlStreamWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetStreamWriterMethod, result);

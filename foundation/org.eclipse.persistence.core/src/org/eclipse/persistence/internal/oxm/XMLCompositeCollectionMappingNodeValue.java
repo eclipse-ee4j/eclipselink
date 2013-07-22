@@ -88,7 +88,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         } else {
         	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlCompositeCollectionMapping.getWrapperNullPolicy() != null);
         }
-        marshalRecord.startCollection(); 
+        
         
         int size =marshalRecord.getCycleDetectionStack().size(); 
         //when writing the collection need to see if any of the objects we are writing are in the parent collection inverse ref
@@ -98,6 +98,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         		return false;
         	}
          }
+        marshalRecord.startCollection(); 
         iterator = cp.iteratorFor(collection);
         while (cp.hasNext(iterator)) {
             Object objectValue = cp.next(iterator, session);

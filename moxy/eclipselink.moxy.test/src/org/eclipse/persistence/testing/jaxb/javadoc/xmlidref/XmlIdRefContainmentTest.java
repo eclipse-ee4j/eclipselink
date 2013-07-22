@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlidref;
 
 //Example 2
 
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlIdRefContainmentTest extends JAXBWithJSONTestCases{
@@ -31,6 +32,8 @@ public class XmlIdRefContainmentTest extends JAXBWithJSONTestCases{
 		classes[2] = Shipping.class;
 		classes[3] = CustomerData.class;
 		setClasses(classes);
+		jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+		jaxbUnmarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
 	}
 
 	protected Object getControlObject() {
