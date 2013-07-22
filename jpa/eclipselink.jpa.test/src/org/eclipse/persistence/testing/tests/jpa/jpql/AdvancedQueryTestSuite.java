@@ -1210,7 +1210,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 } catch (javax.persistence.PessimisticLockException ex) {
                     pessimisticLockException = ex;
                 } finally {
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
                 
                 commitTransaction(em);
@@ -1264,7 +1264,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 } catch (javax.persistence.PessimisticLockException ex) {
                     pessimisticLockException = ex;
                 } finally {
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
                 
                 commitTransaction(em);
@@ -1398,7 +1398,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                         throw ex;
                     } 
                 } finally {
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
                 
                 commitTransaction(em);
@@ -1461,7 +1461,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                         throw ex;
                     } 
                 } finally {
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
                 
                 commitTransaction(em);
@@ -1514,7 +1514,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 } catch (PessimisticLockException ex) {
                         pessimisticLockException = ex;
                 } finally {
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
                 
                 commitTransaction(em);

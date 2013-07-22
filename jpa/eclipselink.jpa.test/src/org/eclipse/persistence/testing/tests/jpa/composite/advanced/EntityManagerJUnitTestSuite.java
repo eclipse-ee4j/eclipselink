@@ -788,10 +788,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         throw ex;
                     } 
                 } finally {
-                    if (isTransactionActive(em2)) {
-                        rollbackTransaction(em2);
-                    }
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
             
                 commitTransaction(em);
@@ -853,10 +850,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         throw ex;
                     } 
                 } finally {
-                    if (isTransactionActive(em2)) {
-                        rollbackTransaction(em2);
-                    }
-                    closeEntityManager(em2);
+                    closeEntityManagerAndTransaction(em2);
                 }
             
                 commitTransaction(em);
