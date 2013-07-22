@@ -91,11 +91,12 @@ public class SimpleResultSetRecord extends ResultSetRecord {
         if (this.fieldsArray != null) {
             // Optimize check.
             int index = key.index;
-            if ((index < 0) || (index > this.size)) {
+            if ((index < 0) || (index >= this.size)) {
                 index = 0;
             }            
             DatabaseField field = this.fieldsArray[index];
             if ((field != key) && !field.equals(key)) {
+                index = -1;
                 for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
                     field = this.fieldsArray[fieldIndex];
                     if ((field == key) || field.equals(key)) {
@@ -107,6 +108,9 @@ public class SimpleResultSetRecord extends ResultSetRecord {
                         break;
                     }
                 }                
+                if (index < 0) {
+                    return null;
+                }
             }
             if (this.resultSet != null) {
                 Object value = this.valuesArray[index];
@@ -162,11 +166,12 @@ public class SimpleResultSetRecord extends ResultSetRecord {
         if (this.fieldsArray != null) {
             // Optimize check.
             int index = key.index;
-            if ((index < 0) || (index > this.size)) {
+            if ((index < 0) || (index >= this.size)) {
                 index = 0;
             }            
             DatabaseField field = this.fieldsArray[index];
             if ((field != key) && !field.equals(key)) {
+                index = -1;
                 for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
                     field = this.fieldsArray[fieldIndex];
                     if ((field == key) || field.equals(key)) {
@@ -178,6 +183,9 @@ public class SimpleResultSetRecord extends ResultSetRecord {
                         break;
                     }
                 }                
+                if (index < 0) {
+                    return null;
+                }
             }
             if (this.resultSet != null) {
                 Object value = this.valuesArray[index];
