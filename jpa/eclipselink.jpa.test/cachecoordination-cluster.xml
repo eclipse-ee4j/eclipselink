@@ -74,10 +74,6 @@
                 <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanTestsRCM"/>
                 <param name="eclipselink.jpa.test.dir" value="."/>
             </antcall>
-            <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_original.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence.xml"/>
-            <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_original.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml"/>
-            <delete file="${jpatest.basedir}/${resource.dir}/server/persistence_original.xml"/>
-            <delete file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
         </sequential>
     </target>
 
@@ -98,7 +94,7 @@
     <target name="weblogic-build-deploy-concurrency">
         <sequential>
             <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/jpa-performance/server/persistence.xml" tofile="${jpatest.basedir}/${resource.dir}/jpa-performance/server/persistence_original.xml"/>
-            <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_temp.xml"/>
+            <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
             <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/jpa-performance/server/persistence.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml"/>
             <delete file="${jpatest.basedir}/${resource.dir}/jpa-performance/server/persistence.xml"/>
             <antcall target="config-persistence-xml"/>
@@ -114,12 +110,7 @@
                 <param name="eclipselink.jpa.test.dir" value="."/>
             </antcall>
             <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/jpa-performance/server/persistence_original.xml" tofile="${jpatest.basedir}/${resource.dir}/jpa-performance/server/persistence.xml"/>
-            <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_original.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence.xml"/>
-            <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_temp.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml"/>
             <delete file="${jpatest.basedir}/${resource.dir}/jpa-performance/server/persistence_original.xml"/>
-            <delete file="${jpatest.basedir}/${resource.dir}/server/persistence_original.xml"/>
-            <delete file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
-            <delete file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_temp.xml"/>
         </sequential>
     </target>
 
@@ -161,7 +152,10 @@
     <target name="cachecoordination-build-and-deploy-cluster" depends="set-app-name-cachecoordination">
         <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence.xml"/>
         <ant antfile="${jpatest.basedir}/antbuild.xml" target="server-build" inheritRefs="true"/>
-        <delete file="${jpatest.basedir}/${resource.dir}/server/persistence.xml"/>
+        <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_original.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence.xml"/>
+        <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_original.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml"/>
+        <delete file="${jpatest.basedir}/${resource.dir}/server/persistence_original.xml"/>
+        <delete file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
         <antcall target="server-deploy-cachecoordination-cluster" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
             <param name="application.name" value="${EAR_NAME}"/>
