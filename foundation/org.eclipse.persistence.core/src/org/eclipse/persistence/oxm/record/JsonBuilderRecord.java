@@ -46,7 +46,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
-public class JsonBuilderWriterRecord extends MarshalRecord <XMLMarshaller> {
+public class JsonBuilderRecord extends MarshalRecord <XMLMarshaller> {
 
     private Level position;
     private JsonObjectBuilder rootJsonObjectBuilder;
@@ -58,17 +58,17 @@ public class JsonBuilderWriterRecord extends MarshalRecord <XMLMarshaller> {
     private static final String NULL="null";
     private boolean isLastEventStart;
         
-    public JsonBuilderWriterRecord(){
+    public JsonBuilderRecord(){
         super();
         isLastEventStart = false;
     }
     
-    public JsonBuilderWriterRecord(JsonObjectBuilder jsonObjectBuilder){
+    public JsonBuilderRecord(JsonObjectBuilder jsonObjectBuilder){
         this();
         rootJsonObjectBuilder = jsonObjectBuilder;
     }
     
-    public JsonBuilderWriterRecord(JsonArrayBuilder jsonArrayBuilder){
+    public JsonBuilderRecord(JsonArrayBuilder jsonArrayBuilder){
         this();
         rootJsonArrayBuilder = jsonArrayBuilder;
         isRootArray = true;
@@ -669,7 +669,7 @@ public class JsonBuilderWriterRecord extends MarshalRecord <XMLMarshaller> {
              XPathFragment xPathFragment = new XPathFragment(localName);
              xPathFragment.setNamespaceURI(namespaceURI);
              
-             JsonBuilderWriterRecord.this.endElement(xPathFragment, namespaceResolver);        
+             JsonBuilderRecord.this.endElement(xPathFragment, namespaceResolver);        
          }
 
          public void startPrefixMapping(String prefix, String uri) throws SAXException {
@@ -681,7 +681,7 @@ public class JsonBuilderWriterRecord extends MarshalRecord <XMLMarshaller> {
          }
 
          public void characters(CharSequence characters) throws SAXException {           
-             JsonBuilderWriterRecord.this.characters(characters.toString());      
+             JsonBuilderRecord.this.characters(characters.toString());      
          }
 
          // --------------------- LEXICALHANDLER METHODS --------------------- //

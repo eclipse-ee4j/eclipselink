@@ -15,7 +15,7 @@ package org.eclipse.persistence.oxm.json;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import org.eclipse.persistence.internal.oxm.record.ExtendedResult;
-import org.eclipse.persistence.oxm.record.JsonBuilderWriterRecord;
+import org.eclipse.persistence.oxm.record.JsonBuilderRecord;
 
 
 public class JsonArrayBuilderResult extends ExtendedResult{
@@ -32,7 +32,7 @@ public class JsonArrayBuilderResult extends ExtendedResult{
 
     @Override
     public org.eclipse.persistence.oxm.record.MarshalRecord createRecord() {       
-         return new JsonBuilderWriterRecord(jsonArrayBuilder);
+         return new JsonBuilderRecord(jsonArrayBuilder);
     }
 
     public JsonArrayBuilder getJsonArrayBuilder() {
