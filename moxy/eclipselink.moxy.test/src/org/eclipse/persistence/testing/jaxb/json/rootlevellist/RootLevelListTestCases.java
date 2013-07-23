@@ -32,7 +32,7 @@ public class RootLevelListTestCases extends TestSuite {
         
         suite.addTestSuite(WithoutXmlRootElementArrayTestCases.class);
         suite.addTestSuite(WithXmlRootElementArrayTestCases.class);
-
+        suite.addTestSuite(JsonObjectInArrayBuilderTestCases.class);
         return suite;
     }
 

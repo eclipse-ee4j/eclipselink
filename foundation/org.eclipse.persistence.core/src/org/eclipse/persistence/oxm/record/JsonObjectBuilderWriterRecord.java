@@ -71,6 +71,7 @@ public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller>
     public JsonObjectBuilderWriterRecord(JsonArrayBuilder jsonArrayBuilder){
         this();
         rootJsonArrayBuilder = jsonArrayBuilder;
+        isRootArray = true;
     }
     
     /**
@@ -89,6 +90,9 @@ public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller>
     @Override
     public void startDocument(String encoding, String version) {      
         if(isRootArray){
+            if(position == null){
+                startCollection();
+            }
             position.setEmptyCollection(false);
             
             Level newLevel = new Level(false, position);
@@ -114,7 +118,7 @@ public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller>
             }else{
                 //this is the root level list case
                 position = position.parentLevel;
-            }            
+            }
         }
     }
     
@@ -802,7 +806,8 @@ public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller>
             if(isComplex && jsonObjectBuilder == null){
                 jsonObjectBuilder = Json.createObjectBuilder();
             }
-        }        
+        }
+
     }
 
 }
