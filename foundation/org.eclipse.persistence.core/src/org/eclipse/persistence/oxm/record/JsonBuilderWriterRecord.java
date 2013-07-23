@@ -46,7 +46,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
-public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller> {
+public class JsonBuilderWriterRecord extends MarshalRecord <XMLMarshaller> {
 
     private Level position;
     private JsonObjectBuilder rootJsonObjectBuilder;
@@ -58,17 +58,17 @@ public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller>
     private static final String NULL="null";
     private boolean isLastEventStart;
         
-    public JsonObjectBuilderWriterRecord(){
+    public JsonBuilderWriterRecord(){
         super();
         isLastEventStart = false;
     }
     
-    public JsonObjectBuilderWriterRecord(JsonObjectBuilder jsonObjectBuilder){
+    public JsonBuilderWriterRecord(JsonObjectBuilder jsonObjectBuilder){
         this();
         rootJsonObjectBuilder = jsonObjectBuilder;
     }
     
-    public JsonObjectBuilderWriterRecord(JsonArrayBuilder jsonArrayBuilder){
+    public JsonBuilderWriterRecord(JsonArrayBuilder jsonArrayBuilder){
         this();
         rootJsonArrayBuilder = jsonArrayBuilder;
         isRootArray = true;
@@ -561,7 +561,7 @@ public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller>
             writeValue(node.getNodeValue(), null, false);
         } else {
             try {
-                JsonObjectBuilderRecordContentHandler wrcHandler = new JsonObjectBuilderRecordContentHandler();
+                JsonBuilderRecordContentHandler wrcHandler = new JsonBuilderRecordContentHandler();
                 
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(wrcHandler);
@@ -652,9 +652,9 @@ public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller>
       *
       * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
       */
-     protected class JsonObjectBuilderRecordContentHandler implements ExtendedContentHandler, LexicalHandler {
+     protected class JsonBuilderRecordContentHandler implements ExtendedContentHandler, LexicalHandler {
 
-         JsonObjectBuilderRecordContentHandler() {
+         JsonBuilderRecordContentHandler() {
          }
 
          // --------------------- CONTENTHANDLER METHODS --------------------- //
@@ -669,7 +669,7 @@ public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller>
              XPathFragment xPathFragment = new XPathFragment(localName);
              xPathFragment.setNamespaceURI(namespaceURI);
              
-             JsonObjectBuilderWriterRecord.this.endElement(xPathFragment, namespaceResolver);        
+             JsonBuilderWriterRecord.this.endElement(xPathFragment, namespaceResolver);        
          }
 
          public void startPrefixMapping(String prefix, String uri) throws SAXException {
@@ -681,7 +681,7 @@ public class JsonObjectBuilderWriterRecord extends MarshalRecord <XMLMarshaller>
          }
 
          public void characters(CharSequence characters) throws SAXException {           
-             JsonObjectBuilderWriterRecord.this.characters(characters.toString());      
+             JsonBuilderWriterRecord.this.characters(characters.toString());      
          }
 
          // --------------------- LEXICALHANDLER METHODS --------------------- //
