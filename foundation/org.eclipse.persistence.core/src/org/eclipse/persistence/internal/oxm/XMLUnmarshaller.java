@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
@@ -853,9 +852,7 @@ public class XMLUnmarshaller<
      */
     @Override
     public UnmarshalRecord createRootUnmarshalRecord(Class clazz) {
-        XMLRootRecord rootUnmarshalRecord = new XMLRootRecord(clazz);
-        rootUnmarshalRecord.setSession((AbstractSession) context.getSession());
-        return rootUnmarshalRecord;
+        return new XMLRootRecord(clazz, this);
     }
 
     /**

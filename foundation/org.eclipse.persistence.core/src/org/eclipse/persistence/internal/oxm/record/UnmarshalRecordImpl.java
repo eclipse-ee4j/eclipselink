@@ -135,6 +135,9 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
 
     protected XPathFragment textWrapperFragment;    
 
+    protected UnmarshalRecordImpl() {
+    }
+
     public UnmarshalRecordImpl(ObjectBuilder objectBuilder) {
         this(objectBuilder, new ReferenceResolver());
     }

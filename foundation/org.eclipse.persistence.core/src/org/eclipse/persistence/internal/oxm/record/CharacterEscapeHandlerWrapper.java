@@ -19,8 +19,8 @@ import java.lang.reflect.Method;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 
 /**
  * INTERNAL:

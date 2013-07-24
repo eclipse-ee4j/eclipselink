@@ -41,7 +41,6 @@ import java.lang.reflect.Type;
 
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
-
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.MediaType;
@@ -61,10 +60,8 @@ import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.record.CharacterEscapeHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
-
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.*;
 
@@ -914,4 +911,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return this.xmlMarshaller;
     }
 
+    private static class CharacterEscapeHandlerWrapper extends org.eclipse.persistence.internal.oxm.record.CharacterEscapeHandlerWrapper implements CharacterEscapeHandler {
+
+        public CharacterEscapeHandlerWrapper(Object sunHandler) {
+            super(sunHandler);
+        }
+
+    }
 }
