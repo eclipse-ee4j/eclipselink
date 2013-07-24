@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 public abstract class Context<
@@ -75,13 +74,6 @@ public abstract class Context<
                     session.getEventManager().addListener(sessionEventListener);
                 }
             }
-
-            // turn logging for this session off and leave the global session up
-            // Note: setting level to SEVERE or WARNING will printout stacktraces for expected exceptions
-            session.setLogLevel(SessionLog.OFF);
-            // don't turn off global static logging
-            //AbstractSessionLog.getLog().log(AbstractSessionLog.INFO, "ox_turn_global_logging_off", getClass());
-            //AbstractSessionLog.getLog().setLevel(AbstractSessionLog.OFF);
 
             setupSession(session);
             storeDescriptorsByQName(session);

@@ -735,6 +735,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
  
         @Override
         protected void setupSession(DatabaseSession session) {
+            session.setLogLevel(SessionLog.OFF);
             session.login();
             setupDocumentPreservationPolicy(session);
         }

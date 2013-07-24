@@ -24,6 +24,7 @@ public class Constants {
     public static final String BOOLEAN_STRING_TRUE = "true";
     public static final String CDATA = "CDATA";
     public static final char COLON = ':';
+    private static String CR;
     public static final String DEFAULT_XML_ENCODING = "UTF-8";
     public static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_XML_ENCODING);
     public static final char DOT = '.';
@@ -173,5 +174,17 @@ public class Constants {
         }
         
     };
+
+    /**
+     * Return a string containing the platform-appropriate
+     * characters for carriage return.
+     */
+    public static String cr() {
+        // bug 2756643
+        if (CR == null) {
+            CR = System.getProperty("line.separator");
+        }
+        return CR;
+    }
 
 }

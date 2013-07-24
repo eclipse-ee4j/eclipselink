@@ -41,7 +41,6 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.Helper;
 
 public class XMLBinaryDataHelper {
     protected static XMLBinaryDataHelper binaryDataHelper;
@@ -152,7 +151,7 @@ public class XMLBinaryDataHelper {
             ContentType contentType = new ContentType(value.getContentType());
             String boundary = contentType.getParameter("boundary");
 
-            output.write(Helper.cr().getBytes());
+            output.write(Constants.cr().getBytes());
             output.write(("Content-Type: " + contentType.getBaseType() + "; boundary=\"" + boundary + "\"\n").getBytes());
         } catch (Exception ex) {
             throw ConversionException.couldNotBeConverted(value, byte[].class, ex);

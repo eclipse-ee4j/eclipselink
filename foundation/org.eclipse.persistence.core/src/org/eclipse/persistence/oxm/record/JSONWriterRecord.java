@@ -980,6 +980,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         private byte[] buffer = new byte[BUFFER_SIZE];
         private int bufferIndex = 0;
         private CharacterEscapeHandler characterEscapeHandler;
+        private byte[] cr = Constants.cr().getBytes(Constants.DEFAULT_CHARSET);
         private XMLMarshaller marshaller;
         private char namespaceSeparator;
         private OutputStream outputStream;
@@ -1064,7 +1065,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
         @Override
         public void writeCR() throws IOException {
-            write(FormattedOutputStreamRecord.CR);
+            write(cr);
         }
 
         @Override
@@ -1096,6 +1097,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
         private String attributePrefix;
         private CharacterEscapeHandler characterEscapeHandler;
+        private String cr = Constants.cr();
         private XMLMarshaller marshaller;
         private char namespaceSeparator;
         private Writer writer;
@@ -1147,7 +1149,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         }
     
         public void writeCR() throws IOException {
-            writer.write(FormattedWriterRecord.CR);
+            writer.write(cr);
         }
 
         @Override

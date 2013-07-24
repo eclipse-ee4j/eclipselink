@@ -59,7 +59,6 @@ import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
@@ -1493,7 +1492,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
      * @since EclipseLink 2.5.0
      */
     public Root createRoot() {
-        return new XMLRoot();
+        return unmarshaller.createRoot();
     }
 
     /**
