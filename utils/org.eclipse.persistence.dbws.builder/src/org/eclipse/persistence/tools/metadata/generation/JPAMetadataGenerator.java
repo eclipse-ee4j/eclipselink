@@ -66,7 +66,6 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection;
 import org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType;
@@ -118,6 +117,8 @@ public class JPAMetadataGenerator {
     // keep track of processed embeddables to avoid duplicates and wasted effort
     protected List<String> generatedEmbeddables = null;
     
+    protected static final String DEFAULT_PLATFORM = "org.eclipse.persistence.platform.database.oracle.Oracle11Platform";
+    
     /**
      * Default constructor.  Sets the default package name to null, and dbPlatform to
      * org.eclipse.persistence.platform.database.oracle.Oracle11Platform.
@@ -132,7 +133,7 @@ public class JPAMetadataGenerator {
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
     public JPAMetadataGenerator() {
-        this(null, new Oracle11Platform());
+        this(null, DEFAULT_PLATFORM);
     }
     
     /**
@@ -961,7 +962,7 @@ public class JPAMetadataGenerator {
     
     /**
      * Attempt to load the DatabasePlatform using the given platform class name.  If the
-     * platform cannot be loaded Oracle11Platform will be returned.
+     * platform cannot be loaded Oracle11Platform will be returned - if available.
      * 
      * @param platformClassName class name of the DatabasePlatform to be loaded
      * @return DatabasePlatform loaded for the given platformClassname, or Oracle11Platform if not found
@@ -969,17 +970,26 @@ public class JPAMetadataGenerator {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static DatabasePlatform loadDatabasePlatform(String platformClassName) {
-        DatabasePlatform dbPlatform;
+        DatabasePlatform dbPlatform = null;
+        Class platformClass = null;
         try {
-            Class platformClass = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 platformClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(platformClassName));
             } else {
                 platformClass = PrivilegedAccessHelper.getClassForName(platformClassName);
             }
-            dbPlatform = (DatabasePlatform)Helper.getInstanceFromClass(platformClass);
+            dbPlatform = (DatabasePlatform) Helper.getInstanceFromClass(platformClass);
         } catch (Exception e) {
-            dbPlatform = new Oracle11Platform();
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    platformClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(DEFAULT_PLATFORM));
+                } else {
+                    platformClass = PrivilegedAccessHelper.getClassForName(DEFAULT_PLATFORM);
+                }
+                dbPlatform = (DatabasePlatform) Helper.getInstanceFromClass(platformClass);
+            } catch (Exception ex) {
+                // at this point we can't load the default Oracle11 platform, so null will be returned
+            }
         }
         return dbPlatform;
     }
