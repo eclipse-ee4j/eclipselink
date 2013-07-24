@@ -1,0 +1,500 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Denise Smith - 2.6 - initial implementation
+ ******************************************************************************/
+package org.eclipse.persistence.oxm.record;
+
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
+import org.eclipse.persistence.internal.oxm.CharacterEscapeHandler;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.ObjectBuilder;
+import org.eclipse.persistence.internal.oxm.Root;
+import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
+import org.eclipse.persistence.internal.oxm.XMLMarshaller;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
+import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+
+public abstract class JsonRecord extends MarshalRecord <XMLMarshaller> {
+
+    protected CharacterEscapeHandler characterEscapeHandler;
+    protected String attributePrefix;
+    protected boolean isRootArray;
+    protected static final String NULL="null";
+    protected boolean isLastEventStart;
+    
+    /**
+     * INTERNAL:
+     */
+    public void setMarshaller(XMLMarshaller marshaller) {
+        super.setMarshaller(marshaller);
+        attributePrefix = marshaller.getAttributePrefix();
+        if (marshaller.getValueWrapper() != null) {
+            textWrapperFragment = new XPathFragment();
+            textWrapperFragment.setLocalName(marshaller.getValueWrapper());
+        }
+        characterEscapeHandler = marshaller.getCharacterEscapeHandler();
+    }
+       
+    protected String getKeyName(XPathFragment xPathFragment){
+        String keyName = xPathFragment.getLocalName(); 
+       
+        if(isNamespaceAware()){
+            if(xPathFragment.getNamespaceURI() != null){
+                String prefix = null;
+                if(getNamespaceResolver() !=null){
+                    prefix = getNamespaceResolver().resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                } else if(namespaceResolver != null){
+                    prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                }
+                if(prefix != null && !prefix.equals(Constants.EMPTY_STRING)){
+                    keyName = prefix + getNamespaceSeparator() +  keyName;                           
+                }
+            }
+        } 
+        if(xPathFragment.isAttribute() && attributePrefix != null){
+            keyName = attributePrefix + keyName;
+        }
+
+        return keyName;
+    }
+
+    public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
+        if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI() == javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI){
+            return;
+        }
+        xPathFragment.setAttribute(true);
+        openStartElement(xPathFragment, namespaceResolver);
+        characters(schemaType, value, null, false, true);
+        endElement(xPathFragment, namespaceResolver);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void marshalWithoutRootElement(ObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){
+        if(treeObjectBuilder != null){
+            addXsiTypeAndClassIndicatorIfRequired(descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
+            treeObjectBuilder.marshalAttributes(this, object, session);
+        }         
+     }
+    
+    /**
+     * INTERNAL:
+     * The character used to separate the prefix and uri portions when namespaces are present 
+     * @since 2.4
+     */
+    public char getNamespaceSeparator(){        
+        return marshaller.getNamespaceSeparator();
+    }
+    
+    /**
+     * INTERNAL:
+     * The optional fragment used to wrap the text() mappings
+     * @since 2.4
+     */
+    public XPathFragment getTextWrapperFragment() {
+        return textWrapperFragment;
+    }
+    
+    @Override
+    public boolean isWrapperAsCollectionName() {
+        return marshaller.isWrapperAsCollectionName();
+    }
+    
+    @Override
+    public void element(XPathFragment frag) {
+        isLastEventStart = false;
+    }
+    
+   
+    @Override
+    public void attribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver, String value) {
+        attribute(xPathFragment, namespaceResolver, value, null);
+    }
+
+    @Override
+    public void attribute(String namespaceURI, String localName, String qName, String value) {
+        XPathFragment xPathFragment = new XPathFragment();
+        xPathFragment.setNamespaceURI(namespaceURI);
+        xPathFragment.setAttribute(true);
+        xPathFragment.setLocalName(localName);
+
+        openStartElement(xPathFragment, namespaceResolver);
+        characters(null, value, null, false, true);
+
+        endElement(xPathFragment, namespaceResolver);
+        
+    }
+
+    @Override
+    public void closeStartElement() {}   
+    
+    @Override
+    public void characters(String value) {
+        writeValue(value, null, false);
+    }
+
+    @Override
+    public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){          
+        characters(schemaType, value, mimeType, isCDATA, false);
+     }
+    
+    public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA, boolean isAttribute){
+        if(mimeType != null) {
+            if(value instanceof List){
+               value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesListForBinaryValues((List)value, marshaller, mimeType);
+           }else{
+
+            value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(value, marshaller, mimeType).getData();
+           }
+        }         
+        if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
+            String convertedValue = getStringForQName((QName)value);
+            writeValue(convertedValue, null, isAttribute);
+        } 
+        else if(value.getClass() == String.class){          
+            //if schemaType is set and it's a numeric or boolean type don't treat as a string
+            if(schemaType != null && isNumericOrBooleanType(schemaType)){
+                Class theClass = (Class) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);
+                Object convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, schemaType);
+                writeValue(convertedValue, schemaType, isAttribute);
+            }else if(isCDATA){
+                cdata((String)value);
+            }else{
+                writeValue((String)value, null, isAttribute);                
+            }
+       }else{
+           Class theClass = (Class) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);          
+
+           if(schemaType == null || theClass == null){
+               if(value.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(value.getClass())){
+                   writeValue(value, schemaType, isAttribute);
+               }else{
+                   String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+                   writeValue(convertedValue, schemaType, isAttribute);
+               }
+           }else if(schemaType != null && !isNumericOrBooleanType(schemaType)){
+               //if schemaType exists and is not boolean or number do write quotes (convert to string)
+               String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+               writeValue(convertedValue, schemaType, isAttribute);
+           } else if(isCDATA){
+               String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
+               cdata(convertedValue);
+           }else{
+               writeValue(value, schemaType, isAttribute);           
+           }
+       }        
+    }
+    
+    
+    private boolean isNumericOrBooleanType(QName schemaType){
+        if(schemaType == null){
+            return false;
+        }else if(schemaType.equals(Constants.BOOLEAN_QNAME)
+                || schemaType.equals(Constants.INTEGER_QNAME)
+                || schemaType.equals(Constants.INT_QNAME)
+                || schemaType.equals(Constants.BYTE_QNAME)
+                || schemaType.equals(Constants.DECIMAL_QNAME)
+                || schemaType.equals(Constants.FLOAT_QNAME)
+                || schemaType.equals(Constants.DOUBLE_QNAME)
+                || schemaType.equals(Constants.SHORT_QNAME)
+                || schemaType.equals(Constants.LONG_QNAME)
+                || schemaType.equals(Constants.NEGATIVE_INTEGER_QNAME)
+                || schemaType.equals(Constants.NON_NEGATIVE_INTEGER_QNAME)
+                || schemaType.equals(Constants.NON_POSITIVE_INTEGER_QNAME)
+                || schemaType.equals(Constants.POSITIVE_INTEGER_QNAME)
+                || schemaType.equals(Constants.UNSIGNED_BYTE_QNAME)
+                || schemaType.equals(Constants.UNSIGNED_INT_QNAME)
+                || schemaType.equals(Constants.UNSIGNED_LONG_QNAME)
+                || schemaType.equals(Constants.UNSIGNED_SHORT_QNAME)
+        ){
+            return true;
+        }
+        return false;
+    }        
+    
+    public abstract void writeValue(Object value, QName schemaType, boolean isAttribute);
+
+    @Override
+    public void cdata(String value) {
+        characters(value);        
+    }
+
+    @Override
+    public void node(Node node, NamespaceResolver resolver, String uri, String name) {
+       
+        if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
+            Attr attr = (Attr) node;
+            String resolverPfx = null;
+            if (getNamespaceResolver() != null) {
+                resolverPfx = this.getNamespaceResolver().resolveNamespaceURI(attr.getNamespaceURI());
+            }
+            String namespaceURI = attr.getNamespaceURI();
+            // If the namespace resolver contains a prefix for the attribute's URI,
+            // use it instead of what is set on the attribute
+            if (resolverPfx != null) {
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, resolverPfx+Constants.COLON+attr.getLocalName(), attr.getNodeValue());
+            } else {
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
+                // May need to declare the URI locally
+                if (attr.getNamespaceURI() != null) {
+                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, Constants.EMPTY_STRING, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                    this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
+                }
+            }
+        } else if (node.getNodeType() == Node.TEXT_NODE) {
+            writeValue(node.getNodeValue(), null, false);
+        } else {
+            try {
+                JsonRecordContentHandler wrcHandler = new JsonRecordContentHandler();
+                
+                XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
+                xfragReader.setContentHandler(wrcHandler);
+                xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
+                xfragReader.parse(node, uri, name);
+            } catch (SAXException sex) {
+                throw XMLMarshalException.marshalException(sex);
+            }
+        }
+        
+    }        
+    
+    protected String getStringForQName(QName qName){
+        if(null == qName) {
+            return null;
+        }
+        CoreConversionManager xmlConversionManager = getSession().getDatasourcePlatform().getConversionManager();
+
+        return (String) xmlConversionManager.convertObject(qName, String.class);       
+    }
+
+    /**
+     * INTERNAL:
+     */
+     public void namespaceDeclarations(NamespaceResolver namespaceResolver) {
+     }
+
+     public void namespaceDeclaration(String prefix, String namespaceURI){
+     }
+     
+     public void defaultNamespaceDeclaration(String defaultNamespace){
+     }
+     
+    /**
+     * INTERNAL:
+     */
+     public void nilComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+         closeStartGroupingElements(groupingFragment);
+         openStartElement(xPathFragment, namespaceResolver);
+         characters(NULL);
+         endElement(xPathFragment, namespaceResolver);
+     }
+
+    /**
+     * INTERNAL:
+     */
+     public void nilSimple(NamespaceResolver namespaceResolver){
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);         
+         characters(NULL);        
+         closeStartGroupingElements(groupingFragment);
+     }
+
+     /**
+      * Used when an empty simple value should be written
+      * @since EclipseLink 2.4
+      */
+     public void emptySimple(NamespaceResolver namespaceResolver){
+         nilSimple(namespaceResolver);
+     }
+     
+     public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+         openStartElement(xPathFragment, namespaceResolver);
+         characters(NULL);
+         endElement(xPathFragment, namespaceResolver);
+         closeStartGroupingElements(groupingFragment);
+     }
+
+     /**
+      * Used when an empty complex item should be written
+      * @since EclipseLink 2.4
+      */
+     public void emptyComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+         closeStartGroupingElements(groupingFragment);
+         openStartElement(xPathFragment, namespaceResolver);
+         endElement(xPathFragment, namespaceResolver);
+     }
+    
+    
+     
+     /**
+      * This class will typically be used in conjunction with an XMLFragmentReader.
+      * The XMLFragmentReader will walk a given XMLFragment node and report events
+      * to this class - the event's data is then written to the enclosing class'
+      * writer.
+      *
+      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
+      */
+     protected class JsonRecordContentHandler implements ExtendedContentHandler, LexicalHandler {
+
+         JsonRecordContentHandler() {
+         }
+
+         // --------------------- CONTENTHANDLER METHODS --------------------- //
+         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+                 XPathFragment xPathFragment = new XPathFragment(localName);
+                 xPathFragment.setNamespaceURI(namespaceURI);
+                 openStartElement(xPathFragment, namespaceResolver);
+                 handleAttributes(atts);
+         }
+
+         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+             XPathFragment xPathFragment = new XPathFragment(localName);
+             xPathFragment.setNamespaceURI(namespaceURI);
+             
+             JsonRecord.this.endElement(xPathFragment, namespaceResolver);        
+         }
+
+         public void startPrefixMapping(String prefix, String uri) throws SAXException {
+         }
+
+         public void characters(char[] ch, int start, int length) throws SAXException {
+             String characters = new String (ch, start, length);
+             characters(characters);
+         }
+
+         public void characters(CharSequence characters) throws SAXException {           
+             JsonRecord.this.characters(characters.toString());      
+         }
+
+         // --------------------- LEXICALHANDLER METHODS --------------------- //
+         public void comment(char[] ch, int start, int length) throws SAXException {
+         }
+
+         public void startCDATA() throws SAXException {
+         }
+
+         public void endCDATA() throws SAXException {
+         }
+
+         // --------------------- CONVENIENCE METHODS --------------------- //
+            protected void handleAttributes(Attributes atts) {
+             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
+                 String qName = atts.getQName(i);
+                 if((qName != null && (qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON) || qName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
+                     continue;
+                 }
+                 attribute(atts.getURI(i), atts.getLocalName(i), qName, atts.getValue(i));
+             }
+         }
+
+         protected void writeComment(char[] chars, int start, int length) {        
+         }
+        
+         protected void writeCharacters(char[] chars, int start, int length) {
+             try {
+                 characters(chars, start, length);
+             } catch (SAXException e) {
+                 throw XMLMarshalException.marshalException(e);
+             }           
+         }
+         // --------------- SATISFY CONTENTHANDLER INTERFACE --------------- //
+         public void endPrefixMapping(String prefix) throws SAXException {}
+         public void processingInstruction(String target, String data) throws SAXException {}
+         public void setDocumentLocator(Locator locator) {}
+         public void startDocument() throws SAXException {}
+         public void endDocument() throws SAXException {}
+         public void skippedEntity(String name) throws SAXException {}
+         public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
+
+         // --------------- SATISFY LEXICALHANDLER INTERFACE --------------- //
+         public void startEntity(String name) throws SAXException {}
+         public void endEntity(String name) throws SAXException {}
+         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
+         public void endDTD() throws SAXException {}
+         @Override
+         public void setNil(boolean isNil) {}
+
+     }
+
+     
+     /**
+     * Instances of this class are used to maintain state about the current
+     * level of the JSON message being marshalled.
+     */
+    protected static class Level {
+        
+        protected boolean isCollection;
+        protected boolean emptyCollection;
+        protected String keyName;        
+        protected boolean isComplex;
+        protected Level parentLevel;
+        
+        public Level(boolean isCollection, Level parentLevel) {
+            setCollection(isCollection);
+            emptyCollection = true;
+            this.parentLevel = parentLevel;
+        }
+
+        public boolean isCollection() {
+            return isCollection;
+        }
+
+        public void setCollection(boolean isCollection) {
+            this.isCollection = isCollection;           
+        }
+
+        public String getKeyName() {
+            return keyName;
+        }
+
+        public void setKeyName(String keyName) {
+            this.keyName = keyName;
+        }      
+
+        public boolean isEmptyCollection() {
+            return emptyCollection;
+        }
+
+        public void setEmptyCollection(boolean emptyCollection) {
+            this.emptyCollection = emptyCollection;
+        }
+        public boolean isComplex() {
+            return isComplex;
+        }
+
+        public void setComplex(boolean isComplex) {
+            this.isComplex = isComplex;           
+        }
+
+    }
+
+}

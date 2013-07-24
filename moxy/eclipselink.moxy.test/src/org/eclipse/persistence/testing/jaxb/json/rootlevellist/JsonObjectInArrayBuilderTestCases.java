@@ -13,11 +13,14 @@
 package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonWriter;
+import javax.json.stream.JsonGenerator;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
@@ -26,6 +29,7 @@ import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.json.JsonArrayBuilderResult;
+import org.eclipse.persistence.oxm.json.JsonGeneratorResult;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class JsonObjectInArrayBuilderTestCases extends OXTestCase {
@@ -59,6 +63,33 @@ public class JsonObjectInArrayBuilderTestCases extends OXTestCase {
         JsonWriter writer= Json.createWriter(sw);
         writer.writeArray(jsonArray);
         writer.close();
+        
+        log(sw.toString());
+        String controlString = "[{\"name\":\"FOO\"},{\"name\":\"FOO2\"}]";
+        assertEquals(controlString, sw.toString());        
+    }
+
+    public void testMarshalToGeneratorResult() throws Exception{
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{WithoutXmlRootElementRoot.class}, null);
+        Marshaller jsonMarshaller = ctx.createMarshaller();
+        jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+        jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+        
+        StringWriter sw = new StringWriter();
+        JsonGenerator jsonGenerator = Json.createGenerator(sw);
+        JsonGeneratorResult result = new JsonGeneratorResult(jsonGenerator);    
+        
+        WithoutXmlRootElementRoot foo = new WithoutXmlRootElementRoot();
+        foo.setName("FOO");
+        
+        WithoutXmlRootElementRoot foo2 = new WithoutXmlRootElementRoot();
+        foo2.setName("FOO2");
+        
+        List<WithoutXmlRootElementRoot> things = new ArrayList<WithoutXmlRootElementRoot>();
+        things.add(foo);
+        things.add(foo2);
+        jsonMarshaller.marshal(things, result);
+        jsonGenerator.flush();
         
         log(sw.toString());
         String controlString = "[{\"name\":\"FOO\"},{\"name\":\"FOO2\"}]";

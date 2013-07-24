@@ -45,5 +45,8 @@ public class JSONWithNullNameTestCases extends JAXBWithJSONTestCases{
 	
 	public void testJSONMarshalToBuilderResult() throws Exception{     
     }
+	
+	public void testJSONMarshalToGeneratorResult() throws Exception{     
+    }
     
 }

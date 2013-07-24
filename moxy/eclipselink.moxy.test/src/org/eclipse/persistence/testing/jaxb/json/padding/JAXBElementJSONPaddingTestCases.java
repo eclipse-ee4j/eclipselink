@@ -49,4 +49,6 @@ public class JAXBElementJSONPaddingTestCases extends JAXBWithJSONTestCases{
 	public void testJSONMarshalToBuilderResult() throws Exception{     
     }
     
+    public void testJSONMarshalToGeneratorResult() throws Exception{
+    }
 }

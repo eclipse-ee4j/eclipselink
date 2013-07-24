@@ -28,6 +28,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
+import javax.json.stream.JsonGenerator;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -38,6 +39,7 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.json.JsonArrayBuilderResult;
+import org.eclipse.persistence.oxm.json.JsonGeneratorResult;
 import org.eclipse.persistence.oxm.json.JsonObjectBuilderResult;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
@@ -225,6 +227,18 @@ public abstract class JSONTestCases extends OXTestCase{
            log(sw.toString());
            compareStringToControlFile("**testJSONMarshalToBuilderResult**", sw.toString());
        }
+    
+    public void testJSONMarshalToGeneratorResult() throws Exception{
+        
+        StringWriter sw = new StringWriter();
+        JsonGenerator jsonGenerator = Json.createGenerator(sw);
+        JsonGeneratorResult result = new JsonGeneratorResult(jsonGenerator);
+        jsonMarshaller.marshal(getWriteControlObject(), result);
+        jsonGenerator.flush();
+        
+        log(sw.toString());
+        compareStringToControlFile("**testJSONMarshalToBuilderResult**", sw.toString());
+    }
 	   
 	 public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
 	    jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

@@ -60,4 +60,7 @@ public class JAXBElementListJSONPaddingTestCases extends JSONTestCases{
 	
 	public void testJSONMarshalToBuilderResult() throws Exception{     
     }
+	
+	public void testJSONMarshalToGeneratorResult() throws Exception{     
+    }
 }

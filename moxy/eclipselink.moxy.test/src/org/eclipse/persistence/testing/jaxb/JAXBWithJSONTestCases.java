@@ -28,6 +28,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.JsonStructure;
 import javax.json.JsonWriter;
+import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.json.JsonGeneratorResult;
 import org.eclipse.persistence.oxm.json.JsonObjectBuilderResult;
 import org.eclipse.persistence.oxm.json.JsonStructureSource;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MyStreamSchemaOutputResolver;
@@ -314,6 +316,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         log(sw.toString());
         compareStringToControlFile("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted(),shouldRemoveWhitespaceFromControlDocJSON());
     }
+    
     public void testJSONMarshalToBuilderResult() throws Exception{
         getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
@@ -333,9 +336,27 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         writer.close();
         
         log(sw.toString());
-        compareStringToControlFile("**testJSONMarshalToStringWriter**", sw.toString());
+        compareStringToControlFile("**testJSONMarshalToBuilderResult**", sw.toString());
     }
 
+    public void testJSONMarshalToGeneratorResult() throws Exception{
+        getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+
+        StringWriter sw = new StringWriter();
+        JsonGenerator generator= Json.createGenerator(sw);
+        JsonGeneratorResult result = new JsonGeneratorResult(generator);
+        try{
+            getJSONMarshaller().marshal(getWriteControlObject(), result);
+        } catch(Exception e) {
+            assertMarshalException(e);
+            return;
+        }
+        generator.flush();
+        log(sw.toString());
+        compareStringToControlFile("**testJSONMarshalToGeneratorResult**", sw.toString());
+    }
+
+    
     protected void compareStringToControlFile(String test, String testString) {
     	compareStringToControlFile(test, testString, getWriteControlJSON());
     }

@@ -52,8 +52,12 @@ public class UsAsciiTestCases  extends JSONMarshalUnmarshalTestCases {
         return control;
     }
     
-    public void marshalToObjectBuilderResult() throws Exception{
+    public void testJSONMarshalToBuilderResult() throws Exception{
         //Currently not supported
     }
 
+    public void testJSONMarshalToGeneratorResult() throws Exception{
+        //Currently not supported
+
+    }
 }

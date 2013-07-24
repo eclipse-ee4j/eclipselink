@@ -49,6 +49,9 @@ public class JSONWithNullObjectTestCases extends JAXBWithJSONTestCases{
 	public void testJSONMarshalToBuilderResult() throws Exception{     
     }
 	
+	public void testJSONMarshalToGeneratorResult() throws Exception{     
+    }
+	
     @Override
     public void assertMarshalException(Exception exception) throws Exception {
         Exception nestedException = (Exception) exception.getCause();
