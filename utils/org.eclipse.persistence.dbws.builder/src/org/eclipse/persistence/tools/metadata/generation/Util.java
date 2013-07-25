@@ -18,9 +18,13 @@ import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQL
 import java.sql.Types;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
+import org.eclipse.persistence.tools.oracleddl.metadata.FieldType;
+import org.eclipse.persistence.tools.oracleddl.metadata.NumericType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCursorType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
+import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
 
 /**
  * Utility class typically used when constructing JPA/JAXB metadata from a
@@ -85,10 +89,10 @@ public class Util {
     public static final String OPAQUE_CLS_STR = "java.sql.Struct";
     public static final String ROWID_CLS_STR = "java.sql.RowId";
     public static final String STRUCT_CLS_STR = "oracle.sql.OPAQUE";
+    public static final String ORACLE_TIMESTAMP_CLS_STR = "oracle.sql.TIMESTAMP";
 
     // JDK class names
-    static final String ARRAYLIST_STR = "java.util.ArrayList";
-    static final String STRING_STR = "java.lang.String";
+    static final String ARRAYLIST_CLS_STR = "java.util.ArrayList";
     
     // direction types
     static final String IN_STR = "IN";
@@ -183,10 +187,8 @@ public class Util {
         if (typeName.equals(NCLOB_STR)) {
             return Types.NCLOB;
         }
-        if (typeName.equals(RAW_STR)) {
-            return Types.VARBINARY;
-        }
-        if (typeName.equals(LONGRAW_STR)) {
+        if (typeName.equals(RAW_STR) || 
+                typeName.equals(LONGRAW_STR)) {
             return Types.LONGVARBINARY;
         }
         if (typeName.equals(ROWID_STR)) {
@@ -265,8 +267,8 @@ public class Util {
             case Types.NCLOB:
                 typeName = NCLOB_STR;
                 break;
-            case Types.VARBINARY:
-                typeName = VARBINARY_STR;
+            case Types.VARBINARY :
+                typeName = LONGVARBINARY_STR;
                 break;
             case Types.LONGVARBINARY:
                 typeName = LONGVARBINARY_STR;
@@ -446,5 +448,54 @@ public class Util {
         if (typeName.equals(SIGNTYPE_STR))
             return SIGNTYPE_TYPE_STR;
         return null;
+    }
+    
+    /**
+     * Return the attribute-type name for a given FieldType.
+     * 
+     * For CHAR sized type, java.lang.Character will be returned.
+     * For CHAR non-sized type, java.lang.String will be returned.
+     * For non-CHAR type, the database platform will be used to get the type name.
+     * If the type to be returned is oracle.sql.Timestamp, java.sql.Timestamp will be
+     * returned instead (to handle conversion issue with Oracle11Platform)
+     */
+    protected static String getAttributeTypeNameForFieldType(FieldType fldType, DatabasePlatform dbPlatform) {
+        String typeName = getJDBCTypeName(fldType.getTypeName());
+        String attributeType;
+        if (CHAR_STR.equalsIgnoreCase(typeName) && fldType.getEnclosedType().isSizedType()) {
+            SizedType sizedType = (SizedType) fldType.getEnclosedType();
+            if (sizedType.getSize() == 1) {
+                attributeType = ClassConstants.CHAR.getName();
+            } else {
+                attributeType = ClassConstants.STRING.getName();
+            }
+        } else {
+            attributeType = getClassNameFromJDBCTypeName(typeName.toUpperCase(), dbPlatform);
+        }
+        // handle issue with java.sql.Timestamp conversion and Oracle11 platform
+        if (attributeType.contains(ORACLE_TIMESTAMP_CLS_STR)) {
+            attributeType = ClassConstants.TIMESTAMP.getName();
+        } else if (attributeType.contains(ClassConstants.ABYTE.getName())) {
+            attributeType = ClassConstants.APBYTE.getName();
+        }
+        return attributeType;
+    }
+    
+    /**
+     * Return the type name to be used for a given database type.  The given
+     * DatabaseType's typeName attribute is typically returned, however, in
+     * some cases special handling may be required.  For example, in the
+     * case of a NumericType instance, "DECIMAL" should be used for the
+     * type name.
+     */
+    protected static String getTypeNameForDatabaseType(DatabaseType dataType) {
+        String typeName = dataType.getTypeName();
+        if (dataType.isNumericType()) {
+            NumericType numericDataType = (NumericType)dataType;
+            if (numericDataType.getScale() > 0) {
+                typeName = DECIMAL_STR;
+            }
+        }
+        return typeName;
     }
 }
