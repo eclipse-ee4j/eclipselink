@@ -77,18 +77,19 @@ public class JsonObjectInArrayBuilderTestCases extends OXTestCase {
         
         StringWriter sw = new StringWriter();
         JsonGenerator jsonGenerator = Json.createGenerator(sw);
+        
+        JsonGenerator arrayGenerator = jsonGenerator.writeStartArray();
         JsonGeneratorResult result = new JsonGeneratorResult(jsonGenerator);    
         
         WithoutXmlRootElementRoot foo = new WithoutXmlRootElementRoot();
         foo.setName("FOO");
+        jsonMarshaller.marshal(foo, result);
         
         WithoutXmlRootElementRoot foo2 = new WithoutXmlRootElementRoot();
         foo2.setName("FOO2");
-        
-        List<WithoutXmlRootElementRoot> things = new ArrayList<WithoutXmlRootElementRoot>();
-        things.add(foo);
-        things.add(foo2);
-        jsonMarshaller.marshal(things, result);
+        jsonMarshaller.marshal(foo2, result);
+   
+        jsonGenerator.writeEnd();
         jsonGenerator.flush();
         
         log(sw.toString());
@@ -123,6 +124,42 @@ public class JsonObjectInArrayBuilderTestCases extends OXTestCase {
         
         log(sw.toString());
         String controlString = "[{\"root\":{\"name\":\"FOO\"}},{\"root\":{\"name\":\"FOO2\"}}]";
+        assertEquals(controlString, sw.toString());        
+    }
+    
+    public void testNestedResults() throws Exception{
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{WithXmlRootElementRoot.class}, null);
+        Marshaller jsonMarshaller = ctx.createMarshaller();
+        jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+        jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+        
+        StringWriter sw = new StringWriter();
+        
+             
+        WithXmlRootElementRoot foo = new WithXmlRootElementRoot();
+        foo.setName("FOO");
+
+        WithXmlRootElementRoot foo2 = new WithXmlRootElementRoot();
+        foo2.setName("FOO2");
+        
+        List<WithXmlRootElementRoot> foos = new ArrayList<WithXmlRootElementRoot>();
+        foos.add(foo);
+        foos.add(foo2);
+
+        JsonGenerator generator = Json.createGenerator(sw);
+        JsonGenerator arrayGenerator = generator.writeStartObject();        
+        JsonGeneratorResult nestedResult = new JsonGeneratorResult(arrayGenerator,"foosList");          
+        jsonMarshaller.marshal(foos, nestedResult);        
+
+        JsonGeneratorResult nestedSingleResult = new JsonGeneratorResult(generator,"singleThing");
+        jsonMarshaller.marshal(foo, nestedSingleResult);
+        
+        generator.writeEnd(); //end root object
+        generator.flush();
+        
+        log(sw.toString());
+        String controlString = "{\"foosList\":[{\"name\":\"FOO\"},{\"name\":\"FOO2\"}],\"singleThing\":{\"name\":\"FOO\"}}";
+        
         assertEquals(controlString, sw.toString());        
     }
     

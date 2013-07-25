@@ -20,14 +20,21 @@ import org.eclipse.persistence.oxm.record.JsonGeneratorRecord;
 public class JsonGeneratorResult extends ExtendedResult{
 
     private JsonGenerator generator;
+    private String rootKeyName;
     
     public JsonGeneratorResult(JsonGenerator generator){
         this.generator = generator;
+        rootKeyName = null;
+    }
+    
+    public JsonGeneratorResult(JsonGenerator generator, String rootKeyName){
+        this.generator = generator;
+        this.rootKeyName = rootKeyName;
     }
 
     @Override
     public org.eclipse.persistence.oxm.record.MarshalRecord createRecord() {
-        JsonGeneratorRecord record = new JsonGeneratorRecord(generator);
+        JsonGeneratorRecord record = new JsonGeneratorRecord(generator, rootKeyName);
         return record;
     }    
 

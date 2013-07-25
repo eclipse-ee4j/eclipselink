@@ -31,12 +31,14 @@ public class JsonGeneratorRecord extends JsonRecord {
 
     private Level position;    
     private JsonGenerator jsonGenerator;
+    private String rootKeyName;
           
-    public JsonGeneratorRecord(JsonGenerator generator){
+    public JsonGeneratorRecord(JsonGenerator generator, String rootKeyName){
         super();       
         this.jsonGenerator = generator;
+        this.rootKeyName = rootKeyName;
     }
-      
+    
     @Override
     public void startDocument(String encoding, String version) {      
         if(isRootArray){  
@@ -49,6 +51,7 @@ public class JsonGeneratorRecord extends JsonRecord {
             isLastEventStart = true;
         }else{
             Level rootLevel = new Level(false, null);
+            rootLevel.setKeyName(rootKeyName);
             position = rootLevel;
             setComplex(position, true);
         }
@@ -74,7 +77,11 @@ public class JsonGeneratorRecord extends JsonRecord {
              isRootArray = true;              
              Level rootLevel = new Level(true, null); 
              position = rootLevel;
-             jsonGenerator.writeStartArray();
+             if(rootKeyName != null){
+                jsonGenerator.writeStartArray(rootKeyName);
+             }else{
+                 jsonGenerator.writeStartArray();
+             }
         } else {            
             if(isLastEventStart){
                 setComplex(position, true);         
