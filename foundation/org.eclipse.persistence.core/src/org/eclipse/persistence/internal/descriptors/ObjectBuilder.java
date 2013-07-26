@@ -1411,8 +1411,15 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     if (this.isSimple) {
                         ((SimpleResultSetRecord)row).reset();
                     } else {
-                        if (this.shouldKeepRow && !row.hasResultSet()) {
-                            row.removeNonIndirectionValues();
+                        if (this.shouldKeepRow) {
+                            if (row.hasResultSet()) {
+                            	// ResultSet has not been fully triggered - that means the cached object was used. 
+                            	// Yet the row still may be cached in a value holder (see loadBatchReadAttributes and loadJoinedAttributes methods).
+                            	// Remove ResultSet to avoid attempt to trigger it (already closed) when pk or fk values (already extracted) accessed when the value holder is instantiated.
+                                row.removeResultSet();
+                            } else {
+                                row.removeNonIndirectionValues();
+                            }
                         }
                     }
                     hasNext = resultSet.next();
@@ -4166,6 +4173,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     }
     
     protected void loadBatchReadAttributes(ClassDescriptor concreteDescriptor, Object sourceObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean isTargetProtected){
+        boolean useOnlyMappingsExcludedFromSOP = false;
+        if (concreteDescriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+            // if true then sopObject has not been deserialized, that means sourceObject has been cached.
+            useOnlyMappingsExcludedFromSOP = databaseRow.get(concreteDescriptor.getSerializedObjectPolicy().getField()) != null;
+        }
+        boolean isUntriggeredResultSetRecord = databaseRow instanceof ResultSetRecord && ((ResultSetRecord)databaseRow).hasResultSet();
         List batchExpressions = ((ReadAllQuery)query).getBatchReadAttributeExpressions();
         int size = batchExpressions.size();
         for (int index = 0; index < size; index++) {
@@ -4177,12 +4190,22 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (mapping == null) {
                     throw ValidationException.missingMappingForAttribute(concreteDescriptor, queryKeyExpression.getName(), this.toString());
                 } else {
-                    // Bug 4230655 - do not replace instantiated valueholders.
-                    Object attributeValue = mapping.getAttributeValueFromObject(sourceObject);
-                    if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
-                        AbstractSession session = query.getExecutionSession();
-                        mapping.readFromRowIntoObject(databaseRow, joinManager, sourceObject, cacheKey, query, query.getExecutionSession(),isTargetProtected);
-                        session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(sourceObject, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);
+                    if (!useOnlyMappingsExcludedFromSOP || mapping.isOutSopObject()) {
+                        // Bug 4230655 - do not replace instantiated valueholders.
+                        Object attributeValue = mapping.getAttributeValueFromObject(sourceObject);
+                        if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
+                            if (isUntriggeredResultSetRecord && mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).isForeignKeyRelationship() && !mapping.isPrimaryKeyMapping()) {
+                            	// ResultSetRecord hasn't been triggered (still has ResultSet), but values for its primary key field(s) were already extracted from ResultSet,
+                            	// still need to extract values from ResultSet for foreign key fields.
+                                for (DatabaseField field : mapping.getFields()) {
+                                    // extract the values from ResultSet into the row
+                                    databaseRow.get(field);
+                                }
+                            }
+                            AbstractSession session = query.getExecutionSession();
+                            mapping.readFromRowIntoObject(databaseRow, joinManager, sourceObject, cacheKey, query, query.getExecutionSession(),isTargetProtected);
+                            session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(sourceObject, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);
+                        }
                     }
                 }
             }
@@ -4190,6 +4213,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     }
 
     protected void loadJoinedAttributes(ClassDescriptor concreteDescriptor, Object sourceObject, CacheKey cacheKey, AbstractRecord databaseRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, boolean isTargetProtected){
+        boolean useOnlyMappingsExcludedFromSOP = false;
+        if (concreteDescriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+            // sopObject has not been deserialized, sourceObject must be cached
+            useOnlyMappingsExcludedFromSOP = databaseRow.get(concreteDescriptor.getSerializedObjectPolicy().getField()) != null;
+        }
+        Boolean isUntriggeredResultSetRecord = null;
         List joinExpressions = joinManager.getJoinedAttributeExpressions();
         int size = joinExpressions.size();
         for (int index = 0; index < size; index++) {
@@ -4199,17 +4228,31 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             
             // Only worry about immediate (excluding aggregates) foreign reference mapping attributes.
             if (queryKeyExpression == baseExpression) {
-                //get the intermediate objects between this expression node and the base builder
-                Object intermediateValue = joinManager.getValueFromObjectForExpression(query.getExecutionSession(), sourceObject, (ObjectExpression)baseExpression.getBaseExpression());
                 if (mapping == null) {
                     throw ValidationException.missingMappingForAttribute(concreteDescriptor, queryKeyExpression.getName(), toString());
                 } else {
-                    // Bug 4230655 - do not replace instantiated valueholders.
-                    Object attributeValue = mapping.getAttributeValueFromObject(intermediateValue);
-                    if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
-                        AbstractSession session = query.getExecutionSession();
-                        mapping.readFromRowIntoObject(databaseRow, joinManager, intermediateValue, cacheKey, query, query.getExecutionSession(), isTargetProtected);
-                        session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(intermediateValue, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);                    }
+                    if (!useOnlyMappingsExcludedFromSOP || mapping.isOutSopObject()) {
+                        //get the intermediate objects between this expression node and the base builder
+                        Object intermediateValue = joinManager.getValueFromObjectForExpression(query.getExecutionSession(), sourceObject, (ObjectExpression)baseExpression.getBaseExpression());
+                        // Bug 4230655 - do not replace instantiated valueholders.
+                        Object attributeValue = mapping.getAttributeValueFromObject(intermediateValue);
+                        if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
+                            if (mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).isForeignKeyRelationship() && !mapping.isPrimaryKeyMapping()) {
+                                if (isUntriggeredResultSetRecord == null) {
+                                    isUntriggeredResultSetRecord = Boolean.valueOf(databaseRow instanceof ResultSetRecord && ((ResultSetRecord)databaseRow).hasResultSet());
+                                }
+                                if (isUntriggeredResultSetRecord) {
+                                    for (DatabaseField field : mapping.getFields()) {
+                                        // extract the values from ResultSet into the row
+                                        databaseRow.get(field);
+                                    }
+                                }
+                            }
+                            AbstractSession session = query.getExecutionSession();
+                            mapping.readFromRowIntoObject(databaseRow, joinManager, intermediateValue, cacheKey, query, query.getExecutionSession(), isTargetProtected);
+                            session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(intermediateValue, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);                    
+                        }
+                    }
                 }
             }
         }

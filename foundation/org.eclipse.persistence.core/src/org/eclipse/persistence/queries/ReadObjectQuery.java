@@ -488,8 +488,15 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                         result = buildObject(row);
                     }
                         
-                    if (!useSimple && !((ResultSetRecord)row).hasResultSet() && this.descriptor.getObjectBuilder().shouldKeepRow()) {
-                        ((ResultSetRecord)row).removeNonIndirectionValues();
+                    if (!useSimple && this.descriptor.getObjectBuilder().shouldKeepRow()) {
+                        if (((ResultSetRecord)row).hasResultSet()) {
+                        	// ResultSet has not been fully triggered - that means the cached object was used. 
+                        	// Yet the row still may be cached in a value holder (see loadBatchReadAttributes and loadJoinedAttributes methods).
+                        	// Remove ResultSet to avoid attempt to trigger it (already closed) when pk or fk values (already extracted) accessed when the value holder is instantiated.
+                            ((ResultSetRecord)row).removeResultSet();
+                        } else {
+                            ((ResultSetRecord)row).removeNonIndirectionValues();
+                        }
                     }
                 }
             } catch (SQLException exception) {

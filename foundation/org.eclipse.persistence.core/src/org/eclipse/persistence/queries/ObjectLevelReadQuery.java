@@ -2592,6 +2592,15 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setShouldIncludeData(boolean shouldIncludeData) {
         this.shouldIncludeData = shouldIncludeData;
+        if (usesResultSetAccessOptimization() && shouldIncludeData) {
+        	// shouldIncludeData==true requires full row(s), ResultSetAccessOptimization purpose is to (sometimes) deliver incomplete row(s). These setting can't be used together.  
+            if (this.isResultSetAccessOptimizedQuery != null) {
+                this.usesResultSetAccessOptimization = null;
+                throw QueryException.resultSetAccessOptimizationIsNotPossible(this);
+            } else {
+                this.usesResultSetAccessOptimization = Boolean.FALSE;
+            }
+        }
     }
 
     /**
@@ -3063,6 +3072,15 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setBatchFetchPolicy(BatchFetchPolicy batchFetchPolicy) {
         this.batchFetchPolicy = batchFetchPolicy;
+        if (usesResultSetAccessOptimization() && batchFetchPolicy != null && this.batchFetchPolicy.isIN()) {
+        	// batchFetchPolicy.isIN() requires all rows up front - not compatible with ResultSetAccessOptimization
+        	if (this.isResultSetAccessOptimizedQuery != null) {
+                this.usesResultSetAccessOptimization = null;
+                throw QueryException.resultSetAccessOptimizationIsNotPossible(this);
+            } else {
+                this.usesResultSetAccessOptimization = Boolean.FALSE;
+            }
+        }
     }
 
     /**
@@ -3239,6 +3257,15 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setBatchFetchType(BatchFetchType type) {
         getBatchFetchPolicy().setType(type);
+        if (usesResultSetAccessOptimization() && this.batchFetchPolicy.isIN()) {
+        	// batchFetchPolicy.isIN() requires all rows up front - not compatible with ResultSetAccessOptimization
+        	if (this.isResultSetAccessOptimizedQuery != null) {
+                this.usesResultSetAccessOptimization = null;
+                throw QueryException.resultSetAccessOptimizationIsNotPossible(this);
+            } else {
+                this.usesResultSetAccessOptimization = Boolean.FALSE;
+            }
+        }
     }
 
     /**
@@ -3313,7 +3340,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * so it should refer only to the attributes that can be altered without re-preparing the query.
      */
     public boolean supportsResultSetAccessOptimizationOnExecute() {
-        return !this.session.isConcurrent();
+        return !this.session.isConcurrent() && !this.shouldIncludeData && // doesn't make sense to use ResultSetAccessOptimization if the whole row is required
+        	(this.batchFetchPolicy == null || !this.batchFetchPolicy.isIN());  // batchFetchPolicy.isIN() requires all rows up front - can't support it 
     }
     
     /**
