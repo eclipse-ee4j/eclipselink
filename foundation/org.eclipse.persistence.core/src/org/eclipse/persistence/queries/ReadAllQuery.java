@@ -535,7 +535,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Add the other (already registered) results and return them.
         if (this.descriptor.hasTablePerClassPolicy()) {
             result = this.containerPolicy.concatenateContainers(
-                        result, this.descriptor.getTablePerClassPolicy().selectAllObjectsUsingMultipleTableSubclassRead(this), this.session);
+                    result, this.descriptor.getTablePerClassPolicy().selectAllObjectsUsingMultipleTableSubclassRead(this), this.session);
         }
 
         // If the results were empty, then ensure they get cached still.
@@ -983,8 +983,15 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                         cp.addInto(clone, clones, unitOfWork);
                     }
                     
-                    if (shouldKeepRow && !row.hasResultSet()) {
-                        row.removeNonIndirectionValues();
+                    if (shouldKeepRow) {
+                        if (row.hasResultSet()) {
+                        	// ResultSet has not been fully triggered - that means the cached object was used. 
+                        	// Yet the row still may be cached in a value holder (see loadBatchReadAttributes and loadJoinedAttributes methods).
+                        	// Remove ResultSet to avoid attempt to trigger it (already closed) when pk or fk values (already extracted) accessed when the value holder is instantiated.
+                            row.removeResultSet();
+                        } else {
+                            row.removeNonIndirectionValues();
+                        }
                     }
                     hasNext = resultSet.next(); 
                 }
@@ -1186,8 +1193,6 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (!super.supportsResultSetAccessOptimizationOnExecute()) {
             return false;
         }
-        return !shouldConformResultsInUnitOfWork() && // will be supported when conformResult method is adapted to use ResultSet
-            (this.batchFetchPolicy == null || !this.batchFetchPolicy.isIN()) &&  // batchFetchPolicy.isIN() requires all rows up front - can't support it 
-            !this.shouldIncludeData; // could be supported
+        return !shouldConformResultsInUnitOfWork(); // could be supported if conformResult method is adapted to use ResultSetAccessOptimization
     }
 }

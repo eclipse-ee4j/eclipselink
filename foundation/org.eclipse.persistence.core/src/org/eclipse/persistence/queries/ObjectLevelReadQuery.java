@@ -2608,6 +2608,15 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void setShouldIncludeData(boolean shouldIncludeData) {
         this.shouldIncludeData = shouldIncludeData;
+        if (usesResultSetAccessOptimization() && shouldIncludeData) {
+        	// shouldIncludeData==true requires full row(s), ResultSetAccessOptimization purpose is to (sometimes) deliver incomplete row(s). These setting can't be used together.  
+            if (this.isResultSetAccessOptimizedQuery != null) {
+                this.usesResultSetAccessOptimization = null;
+                throw QueryException.resultSetAccessOptimizationIsNotPossible(this);
+            } else {
+                this.usesResultSetAccessOptimization = Boolean.FALSE;
+            }
+        }
     }
 
     /**
@@ -3394,7 +3403,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             (!hasJoining() || !this.joinedAttributeManager.isToManyJoin()) && 
             (!this.descriptor.hasInheritance() || 
                     !this.descriptor.getInheritancePolicy().hasClassExtractor() &&  // ClassExtractor requires the whole row
-                    (shouldOuterJoinSubclasses() || !this.descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead() || this.descriptor.getInheritancePolicy().hasView())); // don't know how to handle select class type call - ResultSet optimization breaks it.
+                    (shouldOuterJoinSubclasses() || !this.descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead() || this.descriptor.getInheritancePolicy().hasView())) &&  // don't know how to handle select class type call - ResultSet optimization breaks it.
+            (this.batchFetchPolicy == null || !this.batchFetchPolicy.isIN());  // batchFetchPolicy.isIN() requires all rows up front - can't support it 
     }
 
     /**
@@ -3405,7 +3415,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * so it should refer only to the attributes that can be altered without re-preparing the query.
      */
     public boolean supportsResultSetAccessOptimizationOnExecute() {
-        return !this.session.isConcurrent();
+        return !this.session.isConcurrent() && !this.shouldIncludeData; // doesn't make sense to use ResultSetAccessOptimization if the whole row is required
     }
     
     /**
