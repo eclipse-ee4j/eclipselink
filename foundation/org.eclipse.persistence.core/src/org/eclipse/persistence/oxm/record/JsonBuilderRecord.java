@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -22,21 +20,15 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
-import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.oxm.record.JsonRecord.Level;
 
-public class JsonBuilderRecord extends JsonRecord {
-
-    private Level position;
+public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
+ 
     private JsonObjectBuilder rootJsonObjectBuilder;
     private JsonArrayBuilder rootJsonArrayBuilder;
  
-    
     public JsonBuilderRecord(){
         super();
         isLastEventStart = false;
@@ -52,217 +44,69 @@ public class JsonBuilderRecord extends JsonRecord {
         rootJsonArrayBuilder = jsonArrayBuilder;
         isRootArray = true;
     }
-      
-    @Override
-    public void startDocument(String encoding, String version) {      
-        if(isRootArray){
-            if(position == null){
-                startCollection();
+     
+    protected Level createNewLevel(boolean collection, Level parentLevel){
+      return new Level(collection, position);       
+    }
+  
+    protected void startRootObject(){
+        super.startRootObject();                
+        position.setJsonObjectBuilder(rootJsonObjectBuilder);
+        setComplex(position, true);
+    }
+       
+    protected void finishLevel(){
+        if(!(position.isCollection && position.isEmptyCollection() && position.getKeyName() == null)){
+            
+            Level parentLevel = (Level) position.parentLevel;
+    
+            if(parentLevel != null){                  
+                if(parentLevel.isCollection){
+                    if(position.isCollection){
+                        parentLevel.getJsonArrayBuilder().add(position.getJsonArrayBuilder());
+                    }else{                   
+                        parentLevel.getJsonArrayBuilder().add(position.getJsonObjectBuilder());
+                    }
+                }else{
+                    if(position.isCollection){                    
+                        parentLevel.getJsonObjectBuilder().add(position.getKeyName(), position.getJsonArrayBuilder());
+                    }else{
+                        parentLevel.getJsonObjectBuilder().add(position.getKeyName(), position.getJsonObjectBuilder());
+                    }
+                }
             }
-            position.setEmptyCollection(false);
-            
-            Level newLevel = new Level(false, position);
-            position = newLevel;
-            
-            isLastEventStart = true;
-        }else{
-            Level rootLevel = new Level(false, null);
-            position = rootLevel;
-            if(rootJsonObjectBuilder == null){
-                rootJsonObjectBuilder = Json.createObjectBuilder();
-            }  
-            
-            rootLevel.setJsonObjectBuilder(rootJsonObjectBuilder);
         }
+        super.finishLevel();      
+    }    
+    
+    protected void startRootLevelCollection(){
+        if(rootJsonArrayBuilder == null){
+            rootJsonArrayBuilder = Json.createArrayBuilder();
+       }
+       position.setJsonArrayBuilder(rootJsonArrayBuilder); 
     }
 
     @Override
-    public void endDocument() {
-        if(position != null){
-            if(position.parentLevel != null && position.parentLevel.isCollection){
-                popAndSetInParentBuilder();
-            }else{
-                //this is the root level list case
-                position = (Level) position.parentLevel;
-            }
-        }
-    }
-    
-    private void popAndSetInParentBuilder(){
-        Level removedLevel = position;
-        Level parentLevel = (Level) position.parentLevel;
-        position = (Level) position.parentLevel;
-        if(removedLevel.isCollection && removedLevel.isEmptyCollection() && removedLevel.keyName == null){
-            return;
-        }
-      
-        if(parentLevel != null){                  
-            if(parentLevel.isCollection){
-                if(removedLevel.isCollection){
-                    parentLevel.getJsonArrayBuilder().add(removedLevel.getJsonArrayBuilder());
-                }else{                   
-                    parentLevel.getJsonArrayBuilder().add(removedLevel.getJsonObjectBuilder());
-                }
-            }else{
-                if(removedLevel.isCollection){                    
-                    parentLevel.getJsonObjectBuilder().add(removedLevel.getKeyName(), removedLevel.getJsonArrayBuilder());
-                }else{
-                    parentLevel.getJsonObjectBuilder().add(removedLevel.getKeyName(), removedLevel.getJsonObjectBuilder());
-                }
-            }
-        }
-        
-    }    
-    
-    public void startCollection() {
-        if(position == null){
-             isRootArray = true;              
-             Level rootLevel = new Level(true, null);
-             if(rootJsonArrayBuilder == null){
-                  rootJsonArrayBuilder = Json.createArrayBuilder();
-             }
-             rootLevel.setJsonArrayBuilder(rootJsonArrayBuilder);
-             position = rootLevel;
-        } else {            
-            if(isLastEventStart){
-                setComplex(position, true);           
-            }            
-            Level level = new Level(true, position);            
-            position = level;
-        }      
-        isLastEventStart = false;
-    }
-    
-    @Override
     public void endCollection() {
-         popAndSetInParentBuilder();    
+        finishLevel();    
     }
     
-    private void setComplex(Level level, boolean complex){
+    protected void setComplex(Level level, boolean complex){       
         boolean isAlreadyComplex = level.isComplex;
-        level.setComplex(complex);
+        super.setComplex(level, complex);
         if(complex && !isAlreadyComplex){
-            if(complex && level.jsonObjectBuilder == null){
+            if(level.jsonObjectBuilder == null){
                 level.jsonObjectBuilder = Json.createObjectBuilder();
             }
         }
     }
     
-    @Override    
-    public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
-        super.openStartElement(xPathFragment, namespaceResolver);
-        if(position != null){
-            Level newLevel = new Level(false, position);            
-            
-            if(isLastEventStart){ 
-                //this means 2 startevents in a row so the last this is a complex object
-                setComplex(position, true);                                
-            }
-                      
-            String keyName = getKeyName(xPathFragment);
-           
-            if(position.isCollection && position.isEmptyCollection() ){
-                position.setKeyName(keyName);
-            }else{
-                newLevel.setKeyName(keyName);    
-            }
-            position = newLevel;   
-            isLastEventStart = true;
-        }
+    protected void writeEmptyCollection(Level level, String keyName){
+        level.getJsonObjectBuilder().add(keyName, Json.createArrayBuilder());
     }
-       
-    /**
-     * Handle marshal of an empty collection.  
-     * @param xPathFragment
-     * @param namespaceResolver
-     * @param openGrouping if grouping elements should be marshalled for empty collections
-     * @return
-     */    
-    public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
-
-         if(marshaller.isMarshalEmptyCollections()){
-             super.emptyCollection(xPathFragment, namespaceResolver, true);
-             
-             if (null != xPathFragment) {
-                 
-                 if(xPathFragment.isSelfFragment() || xPathFragment.nameIsText()){
-                     String keyName = position.getKeyName();
-                     setComplex(position, false);
-                     ((Level)position.parentLevel).getJsonObjectBuilder().add(keyName, Json.createArrayBuilder());                     
-                 }else{ 
-                     if(isLastEventStart){                         
-                         setComplex(position, true);
-                     }                 
-                     String keyName =  getKeyName(xPathFragment);
-                     if(keyName != null){
-                        position.getJsonObjectBuilder().add(keyName, Json.createArrayBuilder());
-                     }
-                 }
-                 isLastEventStart = false;   
-             }
-                  
-             return true;
-         }else{
-             return super.emptyCollection(xPathFragment, namespaceResolver, openGrouping);
-         }
-    }
-
-    @Override
-    public void endElement(XPathFragment xPathFragment,NamespaceResolver namespaceResolver) {
-        if(position != null){
-            if(isLastEventStart){
-                setComplex(position, true);
-            }
-            if(position.isComplex){
-                popAndSetInParentBuilder();
-            }else{
-                position = (Level) position.parentLevel;
-            }            
-            isLastEventStart = false;          
-        }
-    }
-    
-    public void writeValue(Object value, QName schemaType, boolean isAttribute) {
-        
-        if (characterEscapeHandler != null && value instanceof String) {
-            try {
-                StringWriter stringWriter = new StringWriter();
-                characterEscapeHandler.escape(((String)value).toCharArray(), 0, ((String)value).length(), isAttribute, stringWriter);
-                value = stringWriter.toString();
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
-        }
-        
-        boolean textWrapperOpened = false;                       
-        if(!isLastEventStart){
-             openStartElement(textWrapperFragment, namespaceResolver);
-             textWrapperOpened = true;
-        }
       
-        Level currentLevel = position;
-        String keyName = position.getKeyName();
-        if(!position.isComplex){           
-            currentLevel = (Level) position.parentLevel;         
-        }       
-        addValue(currentLevel, keyName, value, schemaType);
-        isLastEventStart = false;
-        if(textWrapperOpened){    
-             endElement(textWrapperFragment, namespaceResolver);
-        }    
-    }
-    
-    private void addValue(Level currentLevel, String keyName, Object value, QName schemaType){        
-        if(currentLevel.isCollection()){
-            currentLevel.setEmptyCollection(false);            
-            addValueToArrayBuilder(currentLevel.getJsonArrayBuilder(), value, schemaType);
-        } else {
-            JsonObjectBuilder builder = currentLevel.getJsonObjectBuilder();
-            addValueToObjectBuilder(builder, keyName, value, schemaType);            
-        }
-    }
-    
-    private void addValueToObjectBuilder(JsonObjectBuilder jsonObjectBuilder, String keyName, Object value, QName schemaType){
+    protected void addValueToObject(Level level, String keyName, Object value, QName schemaType){
+        JsonObjectBuilder jsonObjectBuilder = level.getJsonObjectBuilder();
         if(value == NULL){
             jsonObjectBuilder.addNull(keyName);
         }else if(value instanceof Integer){
@@ -297,7 +141,8 @@ public class JsonBuilderRecord extends JsonRecord {
         }
     }
     
-    private void addValueToArrayBuilder(JsonArrayBuilder jsonArrayBuilder, Object value, QName schemaType){
+    protected void addValueToArray(Level level, Object value, QName schemaType){
+        JsonArrayBuilder jsonArrayBuilder = level.getJsonArrayBuilder();
         if(value == NULL){
             jsonArrayBuilder.addNull();
         }else if(value instanceof Integer){
@@ -341,8 +186,8 @@ public class JsonBuilderRecord extends JsonRecord {
         private JsonObjectBuilder jsonObjectBuilder;
         private JsonArrayBuilder jsonArrayBuilder;
         
-        public Level(boolean isCollection, Level parentLevel) {
-            super(isCollection, parentLevel);
+        public Level(boolean isCollection, Level position) {
+            super(isCollection, position);
         }
      
         public void setCollection(boolean isCollection) {

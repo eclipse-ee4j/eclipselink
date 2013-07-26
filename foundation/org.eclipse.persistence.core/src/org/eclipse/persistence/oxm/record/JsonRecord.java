@@ -12,8 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 
+import javax.json.Json;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -39,8 +42,9 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
-public abstract class JsonRecord extends MarshalRecord <XMLMarshaller> {
+public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalRecord <XMLMarshaller> {
 
+    protected T position;    
     protected CharacterEscapeHandler characterEscapeHandler;
     protected String attributePrefix;
     protected boolean isRootArray;
@@ -60,6 +64,127 @@ public abstract class JsonRecord extends MarshalRecord <XMLMarshaller> {
         characterEscapeHandler = marshaller.getCharacterEscapeHandler();
     }
        
+    
+    @Override
+    public void startDocument(String encoding, String version) {      
+        if(isRootArray){
+            if(position == null){
+                startCollection();
+            }
+            position.setEmptyCollection(false);
+            
+            position = createNewLevel(false, position);
+            
+            isLastEventStart = true;
+        }else{            
+            startRootObject();            
+        }
+    }
+    
+    protected T createNewLevel(boolean collection, T parentLevel){
+        return (T)new Level(collection, position);        
+    }
+   
+    protected void startRootObject(){
+        position = createNewLevel(false, null);        
+    }
+    
+    
+    @Override    
+    public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
+        super.openStartElement(xPathFragment, namespaceResolver);
+        if(position != null){
+            T newLevel = createNewLevel(false, position);            
+            
+            if(isLastEventStart){                              
+                //this means 2 startevents in a row so the last this is a complex object
+                setComplex(position, true);
+            }
+                      
+            String keyName = getKeyName(xPathFragment);
+           
+            if(position.isCollection && position.isEmptyCollection() ){
+                position.setKeyName(keyName);                
+                startEmptyCollection();
+            }else{
+                newLevel.setKeyName(keyName);    
+            }
+            position = newLevel;   
+            isLastEventStart = true;
+        }
+    }     
+    
+    protected void startEmptyCollection(){}
+    
+    /**
+     * Handle marshal of an empty collection.  
+     * @param xPathFragment
+     * @param namespaceResolver
+     * @param openGrouping if grouping elements should be marshalled for empty collections
+     * @return
+     */    
+    public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
+
+         if(marshaller.isMarshalEmptyCollections()){
+             super.emptyCollection(xPathFragment, namespaceResolver, true);
+             
+             if (null != xPathFragment) {
+                 
+                 if(xPathFragment.isSelfFragment() || xPathFragment.nameIsText()){
+                     String keyName = position.getKeyName();
+                     setComplex(position, false);
+                     writeEmptyCollection((T)position.parentLevel, keyName);
+                 }else{ 
+                     if(isLastEventStart){                         
+                         setComplex(position, true);
+                     }                 
+                     String keyName =  getKeyName(xPathFragment);
+                     if(keyName != null){
+                         writeEmptyCollection(position, keyName);
+                     }
+                 }
+                 isLastEventStart = false;   
+             }
+                  
+             return true;
+         }else{
+             return super.emptyCollection(xPathFragment, namespaceResolver, openGrouping);
+         }
+    }
+      
+    protected abstract void writeEmptyCollection(T level, String keyName);
+    
+    @Override
+    public void endDocument() {
+        if(position != null){
+            finishLevel();          
+        }
+    }
+    
+    protected void finishLevel(){
+        position = (T)position.parentLevel; 
+    }
+    
+    public void startCollection() {
+        if(position == null){
+             isRootArray = true;              
+             position = createNewLevel(true, null);
+             startRootLevelCollection();             
+        } else {            
+            if(isLastEventStart){
+                setComplex((T)position, true);           
+            }            
+            position = createNewLevel(true, position); 
+        }      
+        isLastEventStart = false;
+    }
+    
+    protected void setComplex(T level, boolean complex){
+        level.setComplex(complex);
+    }
+    
+    protected abstract void startRootLevelCollection();
+    
     protected String getKeyName(XPathFragment xPathFragment){
         String keyName = xPathFragment.getLocalName(); 
        
@@ -82,7 +207,7 @@ public abstract class JsonRecord extends MarshalRecord <XMLMarshaller> {
 
         return keyName;
     }
-
+   
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
         if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI() == javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI){
             return;
@@ -239,8 +364,63 @@ public abstract class JsonRecord extends MarshalRecord <XMLMarshaller> {
         return false;
     }        
     
-    public abstract void writeValue(Object value, QName schemaType, boolean isAttribute);
+   public void writeValue(Object value, QName schemaType, boolean isAttribute) {
+        
+        if (characterEscapeHandler != null && value instanceof String) {
+            try {
+                StringWriter stringWriter = new StringWriter();
+                characterEscapeHandler.escape(((String)value).toCharArray(), 0, ((String)value).length(), isAttribute, stringWriter);
+                value = stringWriter.toString();
+            } catch (IOException e) {
+                throw XMLMarshalException.marshalException(e);
+            }
+        }
+        
+        boolean textWrapperOpened = false;                       
+        if(!isLastEventStart){
+             openStartElement(textWrapperFragment, namespaceResolver);
+             textWrapperOpened = true;
+        }
+      
+        T currentLevel = position;
+        String keyName = position.getKeyName();
+        if(!position.isComplex){           
+            currentLevel = (T)position.parentLevel;         
+        }
+        addValue(currentLevel, keyName, value, schemaType);
+        isLastEventStart = false;
+        if(textWrapperOpened){    
+             endElement(textWrapperFragment, namespaceResolver);
+        }    
+    }
+   
+   @Override
+   public void endElement(XPathFragment xPathFragment,NamespaceResolver namespaceResolver) {
+       if(position != null){
+           if(isLastEventStart){
+               setComplex(position, true);
+           }
+           if(position.isComplex){
+               finishLevel();
+           }else{
+               position = (T) position.parentLevel;
+           }            
+           isLastEventStart = false;          
+       }
+   }
+   
+   private void addValue(T currentLevel, String keyName, Object value, QName schemaType){        
+       if(currentLevel.isCollection()){
+           addValueToArray(currentLevel, value, schemaType);
+           currentLevel.setEmptyCollection(false);            
+       } else {            
+           addValueToObject(currentLevel, keyName, value, schemaType);            
+       }
+   }
+   protected abstract void addValueToObject(T currentLevel, String keyName, Object value, QName schemaType);
 
+   protected abstract void addValueToArray(T currentLevel,  Object value, QName schemaType);
+   
     @Override
     public void cdata(String value) {
         characters(value);        
