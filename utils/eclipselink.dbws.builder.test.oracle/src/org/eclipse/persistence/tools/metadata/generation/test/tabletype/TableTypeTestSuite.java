@@ -150,4 +150,65 @@ public class TableTypeTestSuite {
         "      </orm:attributes>\n" +
         "   </orm:entity>\n" +
         "</orm:entity-mappings>";
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void testJPATableMetadataWithCRUDOps() {
+        if (dbTables == null || dbTables.isEmpty()) {
+            fail("No types were generated.");
+        }
+        XMLEntityMappings mappings = null;
+        try {
+            JPAMetadataGenerator gen = new JPAMetadataGenerator(DEFAULT_PACKAGE_NAME, databasePlatform, true);
+            mappings = gen.generateXmlEntityMappings(dbTables);
+        } catch (Exception x) {
+            fail("An unexpected exception occurred: " + x.getMessage());
+        }
+        if (mappings == null) {
+            fail("No JPA metadata was generated");
+        }
+        ByteArrayOutputStream metadata = new ByteArrayOutputStream();
+        XMLEntityMappingsWriter.write(mappings, metadata);
+        Document testDoc = xmlParser.parse(new StringReader(metadata.toString()));
+        removeEmptyTextNodes(testDoc);
+        Document controlDoc = xmlParser.parse(new StringReader(crudtableMetadata));
+        removeEmptyTextNodes(controlDoc);
+        assertTrue("Metadata comparison failed.  Expected:\n" + documentToString(controlDoc) + "\nActual\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
+    }
+
+    static final String crudtableMetadata =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
+        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
+        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+        "   <orm:entity class=\"metadatagen.Tabletype\" access=\"VIRTUAL\">\n" +
+        "      <orm:table name=\"TABLETYPE\"/>\n" +
+        "      <orm:named-native-query name=\"findByPrimaryKey_TabletypeType\">\n" +
+        "         <orm:query>SELECT * FROM TABLETYPE WHERE (EMPNO = ?1)</orm:query>\n" +
+        "      </orm:named-native-query>\n" +
+        "      <orm:named-native-query name=\"findAll_TabletypeType\">\n" +
+        "         <orm:query>SELECT * FROM TABLETYPE</orm:query>\n" +
+        "      </orm:named-native-query>\n" +
+        "      <orm:named-native-query name=\"create_TabletypeType\">\n" +
+        "         <orm:query>INSERT INTO TABLETYPE (EMPNO, ENAME, HIREDATE) VALUES (?1, ?2, ?3)</orm:query>\n" +
+        "      </orm:named-native-query>\n" +
+        "      <orm:named-native-query name=\"update_TabletypeType\">\n" +
+        "         <orm:query>UPDATE TABLETYPE SET ENAME = ?2, HIREDATE = ?3 WHERE (EMPNO = ?1)</orm:query>\n" +
+        "      </orm:named-native-query>\n" +
+        "      <orm:named-native-query name=\"delete_TabletypeType\">\n" +
+        "         <orm:query>DELETE FROM TABLETYPE WHERE (EMPNO = ?1)</orm:query>\n" +
+        "      </orm:named-native-query>\n" +
+        "      <orm:attributes>\n" +
+        "         <orm:id name=\"empno\" attribute-type=\"java.math.BigInteger\">\n" +
+        "            <orm:column name=\"EMPNO\"/>\n" +
+        "         </orm:id>\n" +
+        "         <orm:basic name=\"ename\" attribute-type=\"java.lang.String\">\n" +
+        "            <orm:column name=\"ENAME\"/>\n" +
+        "         </orm:basic>\n" +
+        "         <orm:basic name=\"hiredate\" attribute-type=\"java.sql.Date\">\n" +
+        "            <orm:column name=\"HIREDATE\"/>\n" +
+        "         </orm:basic>\n" +
+        "      </orm:attributes>\n" +
+        "   </orm:entity>\n" +
+        "</orm:entity-mappings>";
 }

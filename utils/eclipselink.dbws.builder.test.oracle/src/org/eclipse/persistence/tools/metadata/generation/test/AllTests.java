@@ -37,6 +37,7 @@ import org.eclipse.persistence.tools.metadata.generation.test.objecttabletype.Ob
 import org.eclipse.persistence.tools.metadata.generation.test.objecttype.ObjectTypeTestSuite;
 import org.eclipse.persistence.tools.metadata.generation.test.plsqlcollectiontype.PLSQLCollectionTypeTestSuite;
 import org.eclipse.persistence.tools.metadata.generation.test.plsqlrecordtype.PLSQLRecordTypeTestSuite;
+import org.eclipse.persistence.tools.metadata.generation.test.procedureoverload.ProcedureOverloadTestSuite;
 import org.eclipse.persistence.tools.metadata.generation.test.proceduretype.ProcedureTypeTestSuite;
 import org.eclipse.persistence.tools.metadata.generation.test.tabletype.TableTypeTestSuite;
 import org.eclipse.persistence.tools.metadata.generation.test.typerowtype.TypeRowTypeTestSuite;
@@ -59,6 +60,7 @@ import org.w3c.dom.NodeList;
     ObjectTableTypeTestSuite.class,
     PLSQLCollectionTypeTestSuite.class,
     PLSQLRecordTypeTestSuite.class,
+    ProcedureOverloadTestSuite.class,
     ProcedureTypeTestSuite.class,
     TableTypeTestSuite.class,
     TypeRowTypeTestSuite.class,

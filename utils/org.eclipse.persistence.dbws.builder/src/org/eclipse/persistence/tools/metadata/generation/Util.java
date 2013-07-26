@@ -16,6 +16,10 @@ import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Clas
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
 
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -24,6 +28,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.FieldType;
 import org.eclipse.persistence.tools.oracleddl.metadata.NumericType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCursorType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
 
 /**
@@ -82,6 +87,32 @@ public class Util {
     public static final String SYS_XMLTYPE_STR = "SYS.XMLTYPE";
     public static final String XMLTYPE_STR = "XMLTYPE";
     public static final String _TYPE_STR = "_TYPE";
+    
+    public static final String COMMA = ",";
+    public static final String SINGLE_SPACE = " ";
+    public static final String COMMA_SPACE_STR = COMMA + SINGLE_SPACE;
+    
+    // for CRUD operations
+    public static final String ALL_QUERYNAME = "findAll";
+    public static final String PK_QUERYNAME = "findByPrimaryKey";
+    public static final String CREATE_OPERATION_NAME = "create";
+    public static final String UPDATE_OPERATION_NAME = "update";
+    public static final String REMOVE_OPERATION_NAME = "delete";
+    public static final String OPEN_BRACKET = "(";
+    public static final String CLOSE_BRACKET = ")";
+    public static final String TYPE_STR = "Type";
+    public static final String SELECT_FROM_STR = "SELECT * FROM ";
+    public static final String WHERE_STR = " WHERE ";
+    public static final String AND_STR = " AND ";
+    public static final String SET_STR = " SET ";
+    public static final String VALUES_STR = " VALUES ";
+    public static final String UPDATE_STR = "UPDATE ";
+    public static final String INSERT_STR = "INSERT INTO ";
+    public static final String DELETE_STR = "DELETE FROM ";
+    public static final String EQUALS_BINDING1_STR = " = ?1";
+    public static final String EQUALS_BINDING_STR = " = ?";
+    public static final String QUESTION_STR = "?";
+
 
     // SQL class names
     public static final String ARRAY_CLS_STR = "java.sql.Array";
@@ -113,14 +144,25 @@ public class Util {
     public static final int OPAQUE = 2007;
     
     /**
-     * Returns a entity class name based on a given table or type name. The returned 
-     * string will contain an upper case first char, with the remaining chars in 
-     * lower case format.
+     * Returns a unqualified entity class name based on a given table or type name. 
+     * The returned string will contain an upper case first char, with the 
+     * remaining chars in lower case format.
      */
-    public static String getEntityName(String tableName, String packageName) {
+    public static String getUnqualifiedEntityName(String tableName) {
         String first = tableName.substring(0, 1).toUpperCase();
         String rest = tableName.toLowerCase().substring(1);
-        return packageName == null ? first.concat(rest) : packageName + DOT + first.concat(rest);
+        return first.concat(rest);
+    }
+
+    /**
+     * Returns a entity class name based on a given table or type name. The returned 
+     * string will contain an upper case first char, with the remaining chars in 
+     * lower case format.  The packageName will be prepended to the Entity name
+     * if non-null.
+     */
+    public static String getEntityName(String tableName, String packageName) {
+        String entityName = getUnqualifiedEntityName(tableName);
+        return packageName == null ? entityName : packageName + DOT + entityName;
     }
     
     /**
@@ -497,5 +539,34 @@ public class Util {
             }
         }
         return typeName;
+    }
+    
+    /**
+     * Convenience method that detects multiple procedures with the same procedure
+     * name, and updates the overload value on the relevant ProcedureTypes
+     * accordingly.
+     * 
+     * The first ProcedureType will have an overload value of 0, the second 1,
+     * and so on.
+     */
+    protected static void handleOverloading(List<ProcedureType> procedures) {
+        Map<String, List<ProcedureType>> overloadMap = new HashMap<String, List<ProcedureType>>();
+        for (ProcedureType procedure : procedures) {
+            String procedureName = procedure.getProcedureName();
+            List<ProcedureType> multipleProcedures = overloadMap.get(procedureName);
+            if (multipleProcedures == null) {
+                multipleProcedures = new ArrayList<ProcedureType>();
+                overloadMap.put(procedureName, multipleProcedures);
+            }
+            multipleProcedures.add(procedure);
+        }
+        for (List<ProcedureType> procs : overloadMap.values()) {
+            if (procs.size() > 1) {
+                for (int i = 0, len = procs.size(); i < len; i++) {
+                    procs.get(i).setOverload(i);
+                }
+            }
+        }
+
     }
 }

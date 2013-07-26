@@ -13,16 +13,37 @@
 package org.eclipse.persistence.tools.metadata.generation;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
+import static org.eclipse.persistence.tools.metadata.generation.Util.ALL_QUERYNAME;
+import static org.eclipse.persistence.tools.metadata.generation.Util.AND_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.ARRAYLIST_CLS_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.CLOSE_BRACKET;
+import static org.eclipse.persistence.tools.metadata.generation.Util.COMMA_SPACE_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.CREATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.metadata.generation.Util.CURSOR_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.DELETE_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.DOT;
+import static org.eclipse.persistence.tools.metadata.generation.Util.EQUALS_BINDING_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.EQUALS_BINDING1_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.INSERT_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.ITEMS_COL_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.ITEMS_FLD_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.OPEN_BRACKET;
 import static org.eclipse.persistence.tools.metadata.generation.Util.OUT_CURSOR_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.PERCENT;
+import static org.eclipse.persistence.tools.metadata.generation.Util.PK_QUERYNAME;
+import static org.eclipse.persistence.tools.metadata.generation.Util.QUESTION_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.metadata.generation.Util.RESULT_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.ROWTYPE_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.SELECT_FROM_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.SET_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.SINGLE_SPACE;
+import static org.eclipse.persistence.tools.metadata.generation.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.UNDERSCORE;
+import static org.eclipse.persistence.tools.metadata.generation.Util.UPDATE_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.UPDATE_OPERATION_NAME;
+import static org.eclipse.persistence.tools.metadata.generation.Util.VALUES_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.WHERE_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.getAttributeTypeNameForFieldType;
 import static org.eclipse.persistence.tools.metadata.generation.Util.getClassNameFromJDBCTypeName;
 import static org.eclipse.persistence.tools.metadata.generation.Util.getEntityName;
@@ -32,12 +53,15 @@ import static org.eclipse.persistence.tools.metadata.generation.Util.getJDBCType
 import static org.eclipse.persistence.tools.metadata.generation.Util.getOraclePLSQLTypeForName;
 import static org.eclipse.persistence.tools.metadata.generation.Util.getQualifiedCompatibleTypeName;
 import static org.eclipse.persistence.tools.metadata.generation.Util.getQualifiedTypeName;
+import static org.eclipse.persistence.tools.metadata.generation.Util.getUnqualifiedEntityName;
+import static org.eclipse.persistence.tools.metadata.generation.Util.handleOverloading;
 import static org.eclipse.persistence.tools.metadata.generation.Util.isArgPLSQLScalar;
 import static org.eclipse.persistence.tools.metadata.generation.Util.processTypeName;
 
 import java.security.AccessController;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -55,6 +79,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Embedded
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
@@ -127,6 +152,7 @@ public class JPAMetadataGenerator {
     protected XMLEntityMappings xmlEntityMappings;
     protected DatabasePlatform dbPlatform;
     protected String defaultPackage;
+    protected boolean generateCRUDOps = false;
     
     // keep track of processed composite types to avoid duplicates and wasted effort
     protected List<String> processedTypes = null;
@@ -177,8 +203,24 @@ public class JPAMetadataGenerator {
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
     public JPAMetadataGenerator(String defaultPackage, DatabasePlatform dbPlatform) {
+        this(defaultPackage, dbPlatform, false);
+    }
+    
+    /**
+     * This constructor allows setting the default package name and database platform.
+     * 
+     * @param defaultPackage package name to be prepended to generated class names for artifacts
+     * not in a PL/SQL package such as an Entity (to avoid having classes in the default package)
+     * @param dbPlatform DatabasePlatform to be used to get class names for database types, i.e. 
+     * java.math.BigDecimal for DECIMAL.
+     * @param generateCRUDOps if true, CRUD operations (NamedNativeQueryMetadata) will be 
+     * generated for each Entity
+     * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
+     */
+    public JPAMetadataGenerator(String defaultPackage, DatabasePlatform dbPlatform, boolean generateCRUDOps) {
         this.defaultPackage = defaultPackage;
         this.dbPlatform = dbPlatform;
+        this.generateCRUDOps = generateCRUDOps;
         
         xmlEntityMappings = new XMLEntityMappings();
         
@@ -268,29 +310,43 @@ public class JPAMetadataGenerator {
      * @see org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType
      */
     public XMLEntityMappings generateXmlEntityMappings(List<CompositeDatabaseType> databaseTypes) {
-        // process DatabaseTypes
+        List<ProcedureType> procedures = new ArrayList<ProcedureType>();
+        List<TableType> tables = new ArrayList<TableType>();
+        
+        // populate lists of TableTypes and ProcedureTypes
         for (CompositeDatabaseType dbType : databaseTypes) {
-            if (dbType.isTableType()) {  // process TableType
-                EntityAccessor entity = processTableType((TableType) dbType);
-                xmlEntityMappings.getEntities().add(entity);
-            } else if (dbType.isProcedureType()) {  // process functions and procedures
-                ProcedureType pType = (ProcedureType) dbType;
-                // PL/SQL stored procedures and functions will have a PLSQLPackageType as its parent
-                PLSQLPackageType pkgType = pType.getParentType();
-                if (pkgType != null) {
-                    // handle PL/SQL
-                    if (pType.isFunctionType()) {
-                        xmlEntityMappings.getNamedPLSQLStoredFunctionQueries().add(processPLSQLFunctionType((FunctionType) pType, pkgType));
-                    } else {
-                        xmlEntityMappings.getNamedPLSQLStoredProcedureQueries().add(processPLSQLProcedureType(pType, pkgType));
-                    }
+            if (dbType.isTableType()) {
+                tables.add((TableType) dbType);
+            } else if (dbType.isProcedureType()) {
+                procedures.add((ProcedureType) dbType);
+            }
+        }
+        
+        // handle stored procedure overloading
+        handleOverloading(procedures);
+        
+        // process TableTypes
+        for (TableType table : tables) {
+            EntityAccessor entity = processTableType(table);
+            xmlEntityMappings.getEntities().add(entity);
+        }
+        // process ProcedureTypes
+        for (ProcedureType procedure : procedures) {
+            // PL/SQL stored procedures and functions will have a PLSQLPackageType as its parent
+            PLSQLPackageType pkgType = procedure.getParentType();
+            if (pkgType != null) {
+                // handle PL/SQL
+                if (procedure.isFunctionType()) {
+                    xmlEntityMappings.getNamedPLSQLStoredFunctionQueries().add(processPLSQLFunctionType((FunctionType) procedure, pkgType));
                 } else {
-                    // handle top-level (non-PL/SQL) functions and procedures
-                    if (pType.isFunctionType()) {
-                        xmlEntityMappings.getNamedStoredFunctionQueries().add(processFunctionType((FunctionType) pType));
-                    } else {
-                        xmlEntityMappings.getNamedStoredProcedureQueries().add(processProcedureType(pType));
-                    }
+                    xmlEntityMappings.getNamedPLSQLStoredProcedureQueries().add(processPLSQLProcedureType(procedure, pkgType));
+                }
+            } else {
+                // handle top-level (non-PL/SQL) functions and procedures
+                if (procedure.isFunctionType()) {
+                    xmlEntityMappings.getNamedStoredFunctionQueries().add(processFunctionType((FunctionType) procedure));
+                } else {
+                    xmlEntityMappings.getNamedStoredProcedureQueries().add(processProcedureType(procedure));
                 }
             }
         }
@@ -331,6 +387,9 @@ public class JPAMetadataGenerator {
             column.setName(fType.getFieldName());
             attribute.setColumn(column);
         }
+        // may need to generated NamedNativeQueryMetadata for CRUD operations
+        generateCRUDMetadata(entity);
+
         return entity;
     }
     
@@ -339,7 +398,7 @@ public class JPAMetadataGenerator {
      */
     protected NamedStoredFunctionQueryMetadata processFunctionType(FunctionType fType) {
         NamedStoredFunctionQueryMetadata storedFunc = new NamedStoredFunctionQueryMetadata();
-        storedFunc.setName(fType.getProcedureName());
+        storedFunc.setName(getQueryNameForProcedureType(fType));
         storedFunc.setProcedureName(fType.getProcedureName());
         // set the return parameter
         storedFunc.setReturnParameter(processArgument(fType.getReturnArgument()));
@@ -359,7 +418,7 @@ public class JPAMetadataGenerator {
      */
     protected NamedStoredProcedureQueryMetadata processProcedureType(ProcedureType pType) {
         NamedStoredProcedureQueryMetadata storedProc = new NamedStoredProcedureQueryMetadata();
-        storedProc.setName(pType.getProcedureName());
+        storedProc.setName(getQueryNameForProcedureType(pType));
         storedProc.setProcedureName(pType.getProcedureName());
         storedProc.setReturnsResultSet(false);
         // process the procedure's arguments
@@ -378,7 +437,7 @@ public class JPAMetadataGenerator {
      */
     protected NamedPLSQLStoredFunctionQueryMetadata processPLSQLFunctionType(FunctionType fType, PLSQLPackageType pkgType) {
         NamedPLSQLStoredFunctionQueryMetadata storedFunc = new NamedPLSQLStoredFunctionQueryMetadata();
-        storedFunc.setName(fType.getProcedureName());
+        storedFunc.setName(getQueryNameForProcedureType(fType));
         storedFunc.setProcedureName(pkgType.getPackageName() + DOT + fType.getProcedureName());
         List<PLSQLParameterMetadata> params = new ArrayList<PLSQLParameterMetadata>();
         // set the return parameter
@@ -398,7 +457,7 @@ public class JPAMetadataGenerator {
      */
     protected NamedPLSQLStoredProcedureQueryMetadata processPLSQLProcedureType(ProcedureType pType, PLSQLPackageType pkgType) {
         NamedPLSQLStoredProcedureQueryMetadata storedProc = new NamedPLSQLStoredProcedureQueryMetadata();
-        storedProc.setName(pType.getProcedureName());
+        storedProc.setName(getQueryNameForProcedureType(pType));
         storedProc.setProcedureName(pkgType.getPackageName() + DOT + pType.getProcedureName());
         // process the procedure's arguments
         if (pType.getArguments().size() > 0) {
@@ -409,6 +468,19 @@ public class JPAMetadataGenerator {
             storedProc.setParameters(params);
         }
         return storedProc;
+    }
+    
+    /**
+     * Convenience method that returns a query name  for a given ProcedureType.  
+     * The name will be the procedureName value of the ProcedureType with 
+     * "_" + overload value if the ProcedureType's overload value is > 0.
+     * 
+     * For example, if the procedureName value is "P1" and overload == 0, "P1"
+     * is returned.  If the procedureName value is "P1" and overload == 4,
+     * "P1_4" is returned.
+     */
+    protected String getQueryNameForProcedureType(ProcedureType pType) {
+        return pType.getOverload() == 0 ? pType.getProcedureName() : pType.getProcedureName() + UNDERSCORE + pType.getOverload();
     }
 
     /**
@@ -892,7 +964,119 @@ public class JPAMetadataGenerator {
         structure.setColumn(column);
         return structure;
     }
+    
+    /**
+     * Generates NamedNativeQueryMetadata for CRUD operations (create,
+     * findAll, findByPk, update and delete) for a given Entity if
+     * required, i.e. generateCRUDOps is true.
+     */
+    @SuppressWarnings("rawtypes")
+    protected void generateCRUDMetadata(EntityAccessor entity) {
+        if (generateCRUDOps) {
+            // don't blow away the Entity's query metadata
+            if (entity.getNamedNativeQueries() == null) {
+                entity.setNamedNativeQueries(new ArrayList<NamedNativeQueryMetadata>());
+            }
+            
+            String tableName = entity.getTable().getName();
+            String entityType = getUnqualifiedEntityName(tableName) + TYPE_STR;
+            
+            List<IdAccessor> ids = entity.getAttributes().getIds();
+            List<BasicAccessor> basics = entity.getAttributes().getBasics();
+            
+            // list of all mappings (ids and basics)
+            List<MappingAccessor> mappings = new ArrayList<MappingAccessor>();
+            mappings.addAll(ids);
+            mappings.addAll(basics);
+            
+            // process primary keys
+            String pks = null;
+            int pkCount = 0;
+            for (IdAccessor pk : ids) {
+                if (pkCount++ == 0) {
+                    pks = OPEN_BRACKET + pk.getName().toUpperCase() + EQUALS_BINDING1_STR;
+                } else {
+                    pks = pks.concat(AND_STR + pk.getName().toUpperCase() + EQUALS_BINDING_STR + pkCount++);
+                }
+            }
+            if (pks != null) {
+                pks = pks.concat(CLOSE_BRACKET);
+            }
+            
+            // find by PK
+            NamedNativeQueryMetadata crudQuery = new NamedNativeQueryMetadata();
+            crudQuery.setName(PK_QUERYNAME + UNDERSCORE + entityType);
+            crudQuery.setQuery(SELECT_FROM_STR + tableName + WHERE_STR + pks);
+            entity.getNamedNativeQueries().add(crudQuery);
+            
+            // find all
+            crudQuery = new NamedNativeQueryMetadata();
+            crudQuery.setName(ALL_QUERYNAME + UNDERSCORE + entityType);
+            crudQuery.setQuery(SELECT_FROM_STR + tableName);
+            entity.getNamedNativeQueries().add(crudQuery);
+            
+            // create
+            String sqlStmt = INSERT_STR + tableName + SINGLE_SPACE + OPEN_BRACKET;
+            int idx = 1;
+            String cols = "";
+            for (Iterator i = mappings.iterator(); i.hasNext(); ) {
+                MappingAccessor mapping = (MappingAccessor) i.next();
+                cols += mapping.getName().toUpperCase();
+                if (i.hasNext()) {
+                    cols += COMMA_SPACE_STR;
+                }
+                idx++;
+            }
+            sqlStmt += cols + CLOSE_BRACKET + VALUES_STR + OPEN_BRACKET;
+            String vals = "";
+            for (int k = 1; k < idx; k++) {
+                vals += QUESTION_STR + k;
+                if (k+1 < idx) {
+                    vals += COMMA_SPACE_STR;
+                }
+            }
+            sqlStmt += vals + CLOSE_BRACKET;
 
+            crudQuery = new NamedNativeQueryMetadata();
+            crudQuery.setName(CREATE_OPERATION_NAME + UNDERSCORE + entityType);
+            crudQuery.setQuery(sqlStmt);
+            entity.getNamedNativeQueries().add(crudQuery);
+            
+            // update
+            sqlStmt = UPDATE_STR + tableName + SET_STR;
+            idx = pkCount;
+            for (Iterator i = basics.iterator(); i.hasNext(); ) {
+                BasicAccessor basic = (BasicAccessor) i.next();
+                sqlStmt += basic.getName().toUpperCase() + EQUALS_BINDING_STR + (++idx);
+                if (i.hasNext()) {
+                    sqlStmt += COMMA_SPACE_STR;
+                }                            
+            }
+            sqlStmt += WHERE_STR + pks;
+            
+            crudQuery = new NamedNativeQueryMetadata();
+            crudQuery.setName(UPDATE_OPERATION_NAME + UNDERSCORE + entityType);
+            crudQuery.setQuery(sqlStmt);
+            entity.getNamedNativeQueries().add(crudQuery);
+
+            // delete
+            crudQuery = new NamedNativeQueryMetadata();
+            crudQuery.setName(REMOVE_OPERATION_NAME + UNDERSCORE + entityType);
+            crudQuery.setQuery(DELETE_STR + tableName + WHERE_STR + pks);
+            entity.getNamedNativeQueries().add(crudQuery);
+        }
+    }
+  
+    /**
+     * If set to true, NamedNativeQueryMetadata for CRUD operations (create, findAll, findByPk, 
+     * update and delete) will be generated for each Entity.  The default is false.
+     * 
+     * @param generateCRUDOps
+     */
+    protected void setGenerateCRUDOps(boolean generateCRUDOps) {
+        this.generateCRUDOps = generateCRUDOps;
+    }
+    
     /**
      * Lazy-load the List of processed composite types.
      */
@@ -927,7 +1111,7 @@ public class JPAMetadataGenerator {
     protected boolean alreadyProcessed(String typeName) {
         return processedTypes != null && processedTypes.size() > 0 && processedTypes.contains(typeName);
     }
-    
+
     /**
      * Attempt to load the DatabasePlatform using the given platform class name.  If the
      * platform cannot be loaded Oracle11Platform will be returned - if available.
