@@ -75,15 +75,13 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     protected String attributePrefix;
     protected boolean charactersAllowed = false;
     protected CharsetEncoder encoder;
-    protected String space;
     protected CharacterEscapeHandler characterEscapeHandler;
     protected String callbackName;
     protected Output writer;
     protected Level level;
 
     public JSONWriterRecord(){
-        super();
-        space = Constants.EMPTY_STRING;
+        super();        
     }
 
     public JSONWriterRecord(OutputStream outputStream) {
@@ -186,7 +184,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                      level.setFirst(false);
                  } else {
                      writer.write(',');
-                     writer.write(space);
+                     writeSpace();                     
                  }
              }else if(callbackName != null){
             	 startCallback();              
@@ -197,6 +195,9 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
          } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
+    }
+    
+    protected void writeSpace(){    	
     }
     
     /**
@@ -230,49 +231,41 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
-        	Level newLevel = null;
-            Level position = null;
-            if(null == level) {
-            	level = new Level(true, true, level);
-            	newLevel = level;
-            } else {
-                position = level;
-                level = new Level(true, true, level);
-                newLevel = level;
-                if(position.isFirst()) {
-                    position.setFirst(false);
-                } else {
-                    writer.write(',');                    
-                }
-            }
+             if(level.isFirst()) {
+                 level.setFirst(false);
+             } else {
+                 writer.write(',');                    
+             }
             if(xPathFragment.nameIsText()){
-                if(position != null && position.isCollection() && position.isEmptyCollection()) {                	
+                if(level != null && level.isCollection() && level.isEmptyCollection()) {                	
                     writer.write('[');                    
-                    position.setEmptyCollection(false);
-                    position.setNeedToOpenComplex(false);
+                    level.setEmptyCollection(false);
+                    level.setNeedToOpenComplex(false);
                     charactersAllowed = true;                    
+                    level = new Level(true, true, level);
                     return;
                 }
             }
             
-            if(position !=null && position.needToOpenComplex){
+            if(level.needToOpenComplex){
                    writer.write('{');
-                   position.needToOpenComplex = false;
-                   position.needToCloseComplex = true;
+                   level.needToOpenComplex = false;
+                   level.needToCloseComplex = true;
            }
           
            //write the key unless this is a a non-empty collection
-           if(!(position.isCollection() && !position.isEmptyCollection())){
+           if(!(level.isCollection() && !level.isEmptyCollection())){
         	   writeKey(xPathFragment);
         	   //if it is the first thing in the collection also add the [
-    		   if(position.isCollection() && position.isEmptyCollection()){
+    		   if(level.isCollection() && level.isEmptyCollection()){
                     writer.write('[');
-               	    position.setEmptyCollection(false);        		   
+               	    level.setEmptyCollection(false);        		   
         	   }
            }
      		    
             
             charactersAllowed = true;
+            level = new Level(true, true, level);
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -652,9 +645,9 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
         writer.writeLocalName(xPathFragment);
         writer.write('"');
-        writer.write(space);
+        writeSpace();
         writer.write(Constants.COLON);
-        writer.write(space);
+        writeSpace();
     }
 
     /**

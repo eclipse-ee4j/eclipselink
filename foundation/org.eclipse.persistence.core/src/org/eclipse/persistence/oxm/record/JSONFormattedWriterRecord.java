@@ -53,6 +53,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     private int numberOfTabs;
     private boolean complexType;
     private boolean isLastEventText;
+    private String space;
 
     public JSONFormattedWriterRecord() {
         numberOfTabs = 0;
@@ -195,6 +196,14 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         }
     }
 
+    protected void writeSpace(){  
+    	try {
+    		writer.write(space);
+    	} catch (IOException e) {
+    		throw XMLMarshalException.marshalException(e);
+    	}
+    }
+    
     /**
      * INTERNAL:
      */
