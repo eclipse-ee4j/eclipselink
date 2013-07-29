@@ -34,10 +34,13 @@ import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.NamespacePrefixMapper;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -56,6 +59,10 @@ public class JsonSchemaGenerator {
     Map contextProperties;
     String attributePrefix;
     Class rootClass;
+    boolean namespaceAware;
+    NamespaceResolver resolver;
+    String NAMESPACE_SEPARATOR = ".";
+    NamespacePrefixMapper prefixMapper = null;
     Property[] xopIncludeProp = null;
 
     private static String DEFINITION_PATH="#/definitions";
@@ -68,8 +75,22 @@ public class JsonSchemaGenerator {
         this.contextProperties = properties;
         if(properties != null) {
             attributePrefix = (String)properties.get(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX);
+            Object prefixMapperValue = properties.get(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER);
+            if(prefixMapperValue != null) {
+                if(prefixMapperValue instanceof Map){
+                    prefixMapper = new MapNamespacePrefixMapper((Map)prefixMapperValue);
+                }else{
+                    prefixMapper = (NamespacePrefixMapper)prefixMapperValue;
+                }
+            }
+            if(prefixMapper != null) {
+                //check for customer separator
+                String namespaceSeparator = (String) properties.get(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR);
+                if(namespaceSeparator != null) {
+                    this.NAMESPACE_SEPARATOR = namespaceSeparator;
+                }
+            }
         }
-        
     }
     
     public JsonSchema generateSchema(Class rootClass) {
@@ -166,13 +187,15 @@ public class JsonSchemaGenerator {
                 XMLDescriptor reference = (XMLDescriptor) mapping.getReferenceDescriptor();
                 for(XMLField nextField: sourceFields) {
                     XPathFragment frag = nextField.getXPathFragment();
+                    String propertyName = getNameForFragment(frag);
+
                     XMLField targetField = (XMLField) mapping.getSourceToTargetKeyFieldAssociations().get(nextField);
                     Class type = getTypeForTargetField(targetField, reference);
                     
-                    prop = properties.get(frag.getLocalName());
+                    prop = properties.get(propertyName);
                     if(prop == null) {
                         prop = new Property();
-                        prop.setName(frag.getLocalName());
+                        prop.setName(propertyName);
                     }
                     Property nestedProperty = getNestedPropertyForFragment(frag, prop);
                     nestedProperty.setType(JsonType.ARRAY);
@@ -187,11 +210,12 @@ public class JsonSchemaGenerator {
                 CompositeCollectionMapping mapping = (CompositeCollectionMapping)next;
                 XMLField field = (XMLField)mapping.getField();
                 XPathFragment frag = field.getXPathFragment();
+                String propName = getNameForFragment(frag);
                 //for paths, there may already be an existing property
-                prop = properties.get(frag.getLocalName());
+                prop = properties.get(propName);
                 if(prop == null) {
                     prop = new Property();
-                    prop.setName(frag.getLocalName());
+                    prop.setName(propName);
                 }
                 Property nestedProperty = getNestedPropertyForFragment(frag, prop);
                 nestedProperty.setType(JsonType.ARRAY);
@@ -210,7 +234,7 @@ public class JsonSchemaGenerator {
                         enumeration.add(nextValue.toString());
                     }
                 }
-                String propertyName = frag.getLocalName();
+                String propertyName = getNameForFragment(frag);
                 if(frag.nameIsText()) {
                     propertyName = (String)this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
                 }
@@ -236,7 +260,7 @@ public class JsonSchemaGenerator {
                 XMLField field = (XMLField)mapping.getField();
                 XPathFragment frag = field.getXPathFragment();
 
-                String propertyName = frag.getLocalName();
+                String propertyName = getNameForFragment(frag);
                 if(frag.nameIsText()) {
                     propertyName = (String)this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
                 }
@@ -274,7 +298,7 @@ public class JsonSchemaGenerator {
                         enumeration.add(nextValue.toString());
                     }
                 }                
-                String propertyName = frag.getLocalName();
+                String propertyName = getNameForFragment(frag);
                 if(frag.nameIsText()) {
                     propertyName = Constants.VALUE_WRAPPER;
                     if(this.contextProperties != null)  {
@@ -316,13 +340,14 @@ public class JsonSchemaGenerator {
                 XMLDescriptor reference = (XMLDescriptor) mapping.getReferenceDescriptor();
                 for(XMLField nextField: sourceFields) {
                     XPathFragment frag = nextField.getXPathFragment();
+                    String propName = getNameForFragment(frag);
                     XMLField targetField = (XMLField) mapping.getSourceToTargetKeyFieldAssociations().get(nextField);
                     Class type = getTypeForTargetField(targetField, reference);
                     
-                    prop = properties.get(frag.getLocalName());
+                    prop = properties.get(propName);
                     if(prop == null) {
                         prop = new Property();
-                        prop.setName(frag.getLocalName());
+                        prop.setName(propName);
                     }
                     Property nestedProperty = getNestedPropertyForFragment(frag, prop);
                     //nestedProperty.setType(JsonType.ARRAY);
@@ -338,13 +363,14 @@ public class JsonSchemaGenerator {
                 XMLDescriptor nextDescriptor = (XMLDescriptor)mapping.getReferenceDescriptor();
                 XMLField field = (XMLField)mapping.getField();
                 XPathFragment firstFragment = field.getXPathFragment();
-                prop = properties.get(firstFragment.getLocalName());
+                String propName = getNameForFragment(firstFragment);
+                prop = properties.get(propName);
                 if(prop == null) {
                     prop = new Property();
-                    prop.setName(firstFragment.getLocalName());
+                    prop.setName(propName);
                 }
                 //prop.setType(JsonType.OBJECT);
-                prop.setName(firstFragment.getLocalName());
+                prop.setName(propName);
                 Property nestedProperty = getNestedPropertyForFragment(firstFragment, prop);
                 nestedProperty.setRef(getReferenceForDescriptor(nextDescriptor));
                 //populateProperties(nestedProperty.getProperties(), nextDescriptor);
@@ -352,7 +378,7 @@ public class JsonSchemaGenerator {
                 BinaryDataMapping binaryMapping = (BinaryDataMapping)next;
                 XMLField field = (XMLField)binaryMapping.getField();
                 XPathFragment frag = field.getXPathFragment();
-                String propertyName = frag.getLocalName();
+                String propertyName = getNameForFragment(frag);
                 if(frag.nameIsText()) {
                     propertyName = Constants.VALUE_WRAPPER;
                     if(this.contextProperties != null)  {
@@ -384,6 +410,21 @@ public class JsonSchemaGenerator {
         }
         
         return prop;
+    }
+
+    private String getNameForFragment(XPathFragment frag) {
+        String name = frag.getLocalName();
+        
+        if(this.prefixMapper != null) {
+            String namespaceUri = frag.getNamespaceURI();
+            if(namespaceUri != null && namespaceUri.length() != 0) {
+                String prefix = prefixMapper.getPreferredPrefix(namespaceUri, null, true);
+                if(prefix != null) {
+                    name = prefix + NAMESPACE_SEPARATOR + name;
+                }
+            }
+        }
+        return name;
     }
 
     private void initXopIncludeProp() {
@@ -512,12 +553,12 @@ public class JsonSchemaGenerator {
         prop.setProperties(currentProperties);
         prop.setType(JsonType.OBJECT);
         frag = frag.getNextFragment();
-        String propertyName = frag.getLocalName();
+        String propertyName = getNameForFragment(frag);
         if(frag.isAttribute() && this.attributePrefix != null) {
             propertyName = this.attributePrefix + "propertyName";
         }
         while(frag != null && !frag.nameIsText()) {
-            Property nestedProperty = prop.getProperty(frag.getLocalName());
+            Property nestedProperty = prop.getProperty(propertyName);
             if(nestedProperty == null) {
                 nestedProperty = new Property();
                 nestedProperty.setName(propertyName);
