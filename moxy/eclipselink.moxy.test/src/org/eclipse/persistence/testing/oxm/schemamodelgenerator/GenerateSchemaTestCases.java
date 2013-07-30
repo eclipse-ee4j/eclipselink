@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.oxm.Namespace;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
@@ -57,7 +58,7 @@ public class GenerateSchemaTestCases extends TestCase {
     public GenerateSchemaTestCases(String name) throws Exception {
         super(name);
         TMP_DIR = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
-        sg = new SchemaModelGenerator();
+        sg = new SchemaModelGenerator(XMLConversionManager.getDefaultXMLManager());
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setIgnoringElementContentWhitespace(true);
         builderFactory.setNamespaceAware(true);

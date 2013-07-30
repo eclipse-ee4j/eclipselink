@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -247,7 +248,8 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     protected QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
         QName schemaType = null;
         if (xmlField.isTypedTextField()) {
-            schemaType = xmlField.getXMLType(value.getClass());
+            ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+            schemaType = xmlField.getXMLType(value.getClass(), conversionManager);
         } else if (xmlField.isUnionField()) {
             return getSingleValueToWriteForUnion((XMLUnionField) xmlField, value, session);
         } else if (xmlField.getSchemaType() != null) {
@@ -275,8 +277,9 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
             nextQName = (QName) (xmlField).getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
-                    javaClass = xmlField.getJavaClass(nextQName);
-                    value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
+                    ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+                    javaClass = xmlField.getJavaClass(nextQName, conversionManager);
+                    value = conversionManager.convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }

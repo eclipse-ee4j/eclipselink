@@ -249,9 +249,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
         Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
 
-        ConversionManager conversionManager = (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
+        ConversionManager conversionManager = unmarshalRecord.getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
-            Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
+            Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName(), conversionManager);
             value = conversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
             value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
@@ -261,9 +261,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
         if (value != null && value.getClass() == CoreClassConstants.STRING) {
             if (xmlCompositeDirectCollectionMapping.isCollapsingStringValues()) {
-                value = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)value);
+                value = conversionManager.collapseStringValue((String)value);
             } else if (xmlCompositeDirectCollectionMapping.isNormalizingStringValues()) {
-                value = XMLConversionManager.getDefaultXMLManager().normalizeStringValue((String)value);
+                value = conversionManager.normalizeStringValue((String)value);
             }
         }
         unmarshalRecord.addAttributeValue(this, value, collection);

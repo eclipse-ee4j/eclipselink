@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -41,6 +42,7 @@ public class AbstractMarshalRecordImpl<
     MARSHALLER extends Marshaller,
     NAMESPACE_RESOLVER extends NamespaceResolver> extends CoreAbstractRecord implements AbstractMarshalRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER> {
 
+    private ConversionManager conversionManager;
     protected boolean equalNamespaceResolvers;
     protected boolean hasCustomNamespaceMapper;
     private boolean isXOPPackage;
@@ -287,6 +289,17 @@ public class AbstractMarshalRecordImpl<
             qualifiedName = prefix + getNamespaceSeparator() + qualifiedName;
         }
         attribute(namespaceURI, localName, qualifiedName, value);
+    }
+
+    /**
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public ConversionManager getConversionManager() {
+        if(null == conversionManager) {
+            conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+        }
+        return conversionManager;
     }
 
     @Override

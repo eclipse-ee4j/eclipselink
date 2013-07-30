@@ -513,7 +513,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             }
             if(nextMapping.isAbstractCompositeDirectCollectionMapping()){
                 XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();                   
-                QName schemaType = (QName)xmlConversionManager.getDefaultJavaTypes().get(((AbstractCompositeDirectCollectionMapping)nextMapping).getAttributeElementClass());
+                QName schemaType = xmlConversionManager.schemaType(((AbstractCompositeDirectCollectionMapping)nextMapping).getAttributeElementClass());
                 if(schemaType != null) {
                  ((XMLField)nextMapping.getField()).setSchemaType(schemaType);
                 }   

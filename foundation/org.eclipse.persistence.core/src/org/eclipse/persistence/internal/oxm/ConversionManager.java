@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 
 public interface ConversionManager {
@@ -21,6 +23,13 @@ public interface ConversionManager {
     public String buildBase64StringFromBytes(byte[] bytes);
 
     public QName buildQNameFromString(String stringValue, AbstractUnmarshalRecord record);
+
+    /**
+     * Removes all leading and trailing whitespaces, and replaces any sequences of whitespaces
+     * that occur in the string with a single ' ' character.
+     * @since EclipseLink 2.6.0
+     */
+    public String collapseStringValue(String value);
 
     /**
      * Convert the given object to the appropriate type by invoking the appropriate
@@ -34,9 +43,34 @@ public interface ConversionManager {
     public Object convertObject(Object sourceObject, Class javaClass, QName schemaTypeQName);
 
     /**
+     * @since EclipseLink 2.6.0
+     */
+    public Object convertSchemaBase64ListToByteArrayList(Object sourceObject, CoreContainerPolicy containerPolicy, CoreAbstractSession session);
+
+    /**
      * INTERNAL:
      * Converts a String which is in Base64 format to a Byte[]
      */
     public byte[] convertSchemaBase64ToByteArray(Object sourceObject);
+
+    /**
+     * @since EclipseLink 2.6.0
+     * @param schemaType The type you want to find a corresponding Java class for.
+     * @return the Java class for the XML schema type.
+     */
+    public Class<?> javaType(QName schemaType);
+
+    /**
+     * Replaces any CR, Tab or LF characters in the string with a single ' ' character.
+     * @since EclipseLink 2.6.0
+     */
+    public String normalizeStringValue(String value);
+
+    /**
+     * @since EclipseLink 2.6.0
+     * @param javaType The type you want to find a corresponding schema type for.
+     * @return the schema type for the Java class.
+     */
+    public QName schemaType(Class<?> javaType);
 
 }

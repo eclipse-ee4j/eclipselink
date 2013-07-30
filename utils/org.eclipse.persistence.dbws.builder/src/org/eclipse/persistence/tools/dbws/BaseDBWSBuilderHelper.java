@@ -54,6 +54,7 @@ import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsWriter;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
@@ -647,7 +648,7 @@ public abstract class BaseDBWSBuilderHelper {
             xmlLogin.setPlatform(domPlatform);
             oxProjectClone.setLogin(xmlLogin);
             oxProjectClone.createDatabaseSession(); // initialize reference descriptors
-            SchemaModelGenerator schemaGenerator = new SchemaModelGenerator(true);
+            SchemaModelGenerator schemaGenerator = new SchemaModelGenerator(XMLConversionManager.getDefaultXMLManager(), true);
             SchemaModelGeneratorProperties sgProperties = new SchemaModelGeneratorProperties();
             // set element form default to qualified for target namespace
             sgProperties.addProperty(dbwsBuilder.getTargetNamespace(), ELEMENT_FORM_QUALIFIED_KEY, true);

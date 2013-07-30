@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -587,18 +588,29 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     }
 
     /**
+    * INTERNAL
     * Return the class for a given qualified XML Schema type
     * @param qname The qualified name of the XML Schema type to use as a key in the lookup
     * @return The class corresponding to the specified schema type, if no corresponding match found returns null
     */
     public Class getJavaClass(QName qname) {
+        return getJavaClass(qname, XMLConversionManager.getDefaultXMLManager());
+    }
+
+    /**
+     * INTERNAL
+     * @return the class for a given qualified XML Schema type.
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public Class getJavaClass(QName qname, ConversionManager conversionManager) {
         if (userXMLTypes != null) {
         	Class theClass = (Class)userXMLTypes.get(qname);
         	if(theClass != null){
         		return theClass;
         	}            
         }
-        return (Class)XMLConversionManager.getDefaultXMLTypes().get(qname);
+        return conversionManager.javaType(qname);
     }
 
     /**
@@ -607,6 +619,15 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
      * @return QName The qualified XML Schema type, if no corresponding match found returns null
      */
     public QName getXMLType(Class javaClass) {
+        return getXMLType(javaClass, XMLConversionManager.getDefaultXMLManager());
+    }
+
+    /**
+     * @return the XML Schema type for a given class.
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public QName getXMLType(Class javaClass, ConversionManager conversionManager) {
         if (userJavaTypes != null) {
             QName theQName = (QName)userJavaTypes.get(javaClass);
             if (theQName !=null) {
@@ -614,7 +635,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
             }
         }
 
-        return (QName)XMLConversionManager.getDefaultJavaTypes().get(javaClass);
+        return conversionManager.schemaType(javaClass);
     }
 
     /**
@@ -718,7 +739,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
         	}else{
 	            Class fieldType = getType();
 	            if (fieldType == null) {
-	                fieldType = getJavaClass(schemaType);
+	                fieldType = getJavaClass(schemaType, xmlConversionManager);
 	            }            
 	            return xmlConversionManager.convertObject(value, fieldType, schemaType);
         	}
@@ -820,9 +841,11 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
         	if (CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(value.getClass())){        	
         		return ((XMLGregorianCalendar) value).getXMLSchemaType();
         	}else if (CoreClassConstants.DURATION.isAssignableFrom(value.getClass())){
-        		return getXMLType(CoreClassConstants.DURATION);
+                ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+        		return getXMLType(CoreClassConstants.DURATION, conversionManager);
         	}
-            return getXMLType(value.getClass());
+        	ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+            return getXMLType(value.getClass(), conversionManager);
         } 
         return schemaType;        
     }

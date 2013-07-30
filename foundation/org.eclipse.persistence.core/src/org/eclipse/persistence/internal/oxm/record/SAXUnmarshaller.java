@@ -41,11 +41,11 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.UnmarshallerHandler;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
@@ -1014,7 +1014,7 @@ if(clazz == CoreClassConstants.OBJECT) {
     }
     
     private boolean isPrimitiveWrapper(Class clazz){
-	    return  XMLConversionManager.getDefaultJavaTypes().get(clazz) != null    
+	    return ((ConversionManager) xmlUnmarshaller.getContext().getSession().getDatasourcePlatform().getConversionManager()).schemaType(clazz) != null    
 	    ||CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(clazz)
 	    ||CoreClassConstants.DURATION.isAssignableFrom(clazz);
     }

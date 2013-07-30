@@ -176,7 +176,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
         QName typeQName = unmarshalRecord.getTypeQName(); 
         if (typeQName != null) {
-            Class typeClass = xmlField.getJavaClass(typeQName);
+            Class typeClass = xmlField.getJavaClass(typeQName, conversionManager);
             value = conversionManager.convertObject(value, typeClass, typeQName);
         } else {
             value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);

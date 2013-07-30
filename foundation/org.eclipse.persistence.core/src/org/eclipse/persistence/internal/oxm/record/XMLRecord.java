@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 
 public interface XMLRecord<ABSTRACT_SESSION extends CoreAbstractSession> {
 
@@ -36,6 +37,11 @@ public interface XMLRecord<ABSTRACT_SESSION extends CoreAbstractSession> {
             return true;
         }
     };    
+
+    /**
+     * @since EclipseLink 2.6.0
+     */
+    public ConversionManager getConversionManager();
 
     public char getNamespaceSeparator();
 

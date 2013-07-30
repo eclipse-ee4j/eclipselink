@@ -503,7 +503,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             } else {
                 Class fieldType = xmlField.getType();
                 if (fieldType == null) {
-                    fieldType = xmlField.getJavaClass(xmlField.getSchemaType());
+                    fieldType = xmlField.getJavaClass(xmlField.getSchemaType(), conversionManager);
                 }
                 return conversionManager.convertObject(value, fieldType, xmlField.getSchemaType());
             }

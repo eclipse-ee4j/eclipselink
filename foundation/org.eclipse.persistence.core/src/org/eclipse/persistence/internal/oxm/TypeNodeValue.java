@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
@@ -88,7 +89,8 @@ public class TypeNodeValue extends NodeValue {
     private QName getSchemaType(Field xmlField, Object value, CoreAbstractSession session) {
         QName schemaType = null;
         if (xmlField.isTypedTextField()) {
-            schemaType = xmlField.getXMLType(value.getClass());
+            ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+            schemaType = xmlField.getXMLType(value.getClass(), conversionManager);
         } else if (xmlField.isUnionField()) {
             return getSchemaTypeForUnion((UnionField) xmlField, value, session);
         } else if (xmlField.getSchemaType() != null) {
@@ -106,8 +108,9 @@ public class TypeNodeValue extends NodeValue {
             nextQName = (QName) xmlField.getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
-                    javaClass = xmlField.getJavaClass(nextQName);
-                    value = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
+                    ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+                    javaClass = xmlField.getJavaClass(nextQName, conversionManager);
+                    value = conversionManager.convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }

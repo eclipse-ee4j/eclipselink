@@ -356,7 +356,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                     descriptorsToProcess.add(xDesc);
                 }
             }
-            SchemaModelGenerator smGen = new SchemaModelGenerator();
+            SchemaModelGenerator smGen = new SchemaModelGenerator((org.eclipse.persistence.internal.oxm.ConversionManager) xmlContext.getSession().getDatasourcePlatform().getConversionManager());
             smGen.generateSchemas(descriptorsToProcess, null, new JAXBSchemaOutputResolver(outputResolver), additonalGlobalElements);
         } else {
             generator.generateSchemaFiles(outputResolver, additonalGlobalElements);

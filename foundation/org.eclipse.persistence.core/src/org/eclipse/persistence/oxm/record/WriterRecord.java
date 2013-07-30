@@ -315,7 +315,6 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
             if (getNamespaceResolver() != null) {
                 resolverPfx = this.getNamespaceResolver().resolveNamespaceURI(attr.getNamespaceURI());
             } 
-            String namespaceURI = attr.getNamespaceURI();
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {

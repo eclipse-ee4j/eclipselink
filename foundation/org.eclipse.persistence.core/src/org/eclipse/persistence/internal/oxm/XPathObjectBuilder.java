@@ -198,7 +198,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                 // Write xsi:type if onCycleDetected returned an object of a type different than the one mapped
                 if (xmlDescriptor != descriptor) {
                     if (xmlDescriptor == null) {
-                        schemaType = (QName) XMLConversionManager.getDefaultJavaTypes().get(object.getClass());
+                        schemaType = record.getConversionManager().schemaType(object.getClass());
                     } else {
                         schemaType = xmlDescriptor.getSchemaReference().getSchemaContextAsQName();
                     }

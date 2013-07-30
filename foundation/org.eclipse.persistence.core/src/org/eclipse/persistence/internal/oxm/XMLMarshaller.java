@@ -33,6 +33,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
@@ -69,12 +70,13 @@ import org.xml.sax.ext.LexicalHandler;
 public abstract class XMLMarshaller<
     ABSTRACT_SESSION extends CoreAbstractSession,
     CHARACTER_ESCAPE_HANDLER extends CharacterEscapeHandler,
-    CONTEXT extends Context<ABSTRACT_SESSION, DESCRIPTOR, ?, ?, ?, ?, ?>,
+    CONTEXT extends Context<ABSTRACT_SESSION, DESCRIPTOR, ?, ?, ?, SESSION, ?>,
     DESCRIPTOR extends Descriptor,
     MARSHALLER_LISTENER extends Marshaller.Listener,
     MEDIA_TYPE extends MediaType,
     NAMESPACE_PREFIX_MAPPER extends NamespacePrefixMapper,
-    OBJECT_BUILDER extends ObjectBuilder<?, ABSTRACT_SESSION, ?, XMLMarshaller>> extends Marshaller<CHARACTER_ESCAPE_HANDLER, CONTEXT, MARSHALLER_LISTENER, MEDIA_TYPE, NAMESPACE_PREFIX_MAPPER> {
+    OBJECT_BUILDER extends ObjectBuilder<?, ABSTRACT_SESSION, ?, XMLMarshaller>,
+    SESSION extends CoreSession> extends Marshaller<CHARACTER_ESCAPE_HANDLER, CONTEXT, MARSHALLER_LISTENER, MEDIA_TYPE, NAMESPACE_PREFIX_MAPPER> {
 
     protected final static String DEFAULT_XML_VERSION = "1.0";
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
@@ -482,7 +484,8 @@ public abstract class XMLMarshaller<
     protected boolean isSimpleXMLRoot(Root xmlRoot) {
         Class xmlRootObjectClass = xmlRoot.getObject().getClass();
 
-        if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null || CoreClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
+        ConversionManager conversionManager = (ConversionManager) context.getSession().getDatasourcePlatform().getConversionManager();
+        if (conversionManager.schemaType(xmlRootObjectClass) != null || CoreClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || CoreClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
             return true;
         } else if(xmlRoot.getObject() instanceof org.w3c.dom.Node) {
             return true;
@@ -764,7 +767,7 @@ public abstract class XMLMarshaller<
         } else if (isXMLRoot) {
              if(object != null && !isNil) {
                  if(root.getDeclaredType() != null && root.getObject() != null && root.getDeclaredType() != root.getObject().getClass()) {
-                      QName type = (QName)XMLConversionManager.getDefaultJavaTypes().get(object.getClass());
+                      QName type = marshalRecord.getConversionManager().schemaType(object.getClass());
                       if(type != null) {
                           xsiPrefix = nr.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                           if (null == xsiPrefix) {

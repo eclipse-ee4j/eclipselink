@@ -19,6 +19,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -420,6 +421,19 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
     @Override
     public void writeXsiTypeAttribute(Descriptor xmlDescriptor, XMLSchemaReference xmlRef, boolean addToNamespaceResolver) {
         abstractMarshalRecord.writeXsiTypeAttribute(xmlDescriptor, xmlRef, addToNamespaceResolver);
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public ConversionManager getConversionManager() {
+        if(null == session) {
+            return null;
+        } else {
+            return (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+        }
     }
 
 }

@@ -17,7 +17,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
 import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
@@ -121,7 +123,7 @@ public class XPathEngine <
                     if (xmlField.isTypedTextField()) {
                         XMLNodeList createdElements = new XMLNodeList();
                         createdElements.add(element);
-                        addTypeAttributes(createdElements, xmlField, value, resolveNamespacePrefixForURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, getNamespaceResolverForField(xmlField)));
+                        addTypeAttributes(createdElements, xmlField, value, resolveNamespacePrefixForURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, getNamespaceResolverForField(xmlField)), session);
                     }
                     return addText(xmlField, element, (String)textValue);
                 }
@@ -245,7 +247,7 @@ public class XPathEngine <
         }
 
         if (xmlField.isTypedTextField()) {
-            addTypeAttributes(createdElements, xmlField, value, resolveNamespacePrefixForURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, getNamespaceResolverForField(xmlField)));
+            addTypeAttributes(createdElements, xmlField, value, resolveNamespacePrefixForURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, getNamespaceResolverForField(xmlField)), session);
         }
 
         return createdElements;
@@ -262,7 +264,8 @@ public class XPathEngine <
         }else if (xmlField.isUnionField()) {
             return getValueToWriteForUnion((UnionField)xmlField, value, session);
         }else if (xmlField.isTypedTextField()) {
-            schemaType = xmlField.getXMLType(value.getClass());
+            ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+            schemaType = xmlField.getXMLType(value.getClass(), conversionManager);
         }else if (xmlField.getSchemaType() != null) {
             schemaType = xmlField.getSchemaType();
         }
@@ -326,8 +329,9 @@ public class XPathEngine <
             QName nextQName = (QName)(xmlField).getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
-                    Class javaClass = xmlField.getJavaClass(nextQName);
-                    value = ((ConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
+                    ConversionManager conversionManager = (ConversionManager)session.getDatasourcePlatform().getConversionManager();
+                    Class javaClass = xmlField.getJavaClass(nextQName, conversionManager);
+                    value = conversionManager.convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }
@@ -648,7 +652,7 @@ public class XPathEngine <
     * @param value Object to base the lookup on
     * @param schemaInstancePrefix the prefix representing the schema instance namespace
     */
-    private void addTypeAttributes(NodeList elements, Field field, Object value, String schemaInstancePrefix) {
+    private void addTypeAttributes(NodeList elements, Field field, Object value, String schemaInstancePrefix, CoreAbstractSession session) {
         NamespaceResolver namespaceResolver = getNamespaceResolverForField(field);
         if (!field.isTypedTextField()) {
             return;
@@ -675,7 +679,8 @@ public class XPathEngine <
             if (next.getNodeType() == Node.ELEMENT_NODE) {
                 Class valueClass = values.get(i).getClass();
                 if(valueClass != CoreClassConstants.STRING){
-                    QName qname = field.getXMLType(valueClass);
+                    ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+                    QName qname = field.getXMLType(valueClass, conversionManager);
                     if (qname != null) {
                         if (null == schemaInstancePrefix) {
                             schemaInstancePrefix = namespaceResolver.generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
@@ -950,7 +955,7 @@ public class XPathEngine <
         }
         if (xmlField.isTypedTextField()) {
 
-            addTypeAttributes(createdElements, xmlField, value, resolveNamespacePrefixForURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, getNamespaceResolverForField(xmlField)));
+            addTypeAttributes(createdElements, xmlField, value, resolveNamespacePrefixForURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, getNamespaceResolverForField(xmlField)), session);
         }
         return nodes;
     }

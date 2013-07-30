@@ -14,9 +14,12 @@ package org.eclipse.persistence.oxm;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.UnionField;
 import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
@@ -157,7 +160,8 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
         if(leafElementType != null){
             return leafElementType;
         }else if (isTypedTextField()) {
-            return getXMLType(value.getClass());
+            ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+            return getXMLType(value.getClass(), conversionManager);
         } 
         return getSingleValueToWriteForUnion(value, session);       
     }
@@ -169,8 +173,9 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
             QName nextQName = (QName)getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
-                    Class javaClass = getJavaClass(nextQName);
-                    value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
+                    ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+                    Class javaClass = getJavaClass(nextQName, conversionManager);
+                    value = conversionManager.convertObject(value, javaClass, nextQName);
                     schemaType = nextQName;
                     break;
                 }
@@ -199,7 +204,7 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
                 		xmlConversionManager.buildQNameFromString((String)value, record);        		                		
                 		break;
                 	}else{
-                        Class javaClass = getJavaClass(nextQName);
+                        Class javaClass = getJavaClass(nextQName, xmlConversionManager);
                         convertedValue = xmlConversionManager.convertObject(value, javaClass, nextQName);
                         break;
                 	}                	                                        
@@ -219,14 +224,25 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
       * @param qname The qualified name of the XML Schema type to use as a key in the lookup
       * @return The class associated with the specified schema type, if no corresponding match found returns null
       */
+    @Override
     public Class getJavaClass(QName qname) {
+        return getJavaClass(qname, XMLConversionManager.getDefaultXMLManager());
+    }
+
+    /**
+     * INTERNAL
+     * @return the class for a given qualified XML Schema type.
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public Class getJavaClass(QName qname, ConversionManager conversionManager) {
         if (userXMLTypes != null) {
         	Class theClass = (Class) userXMLTypes.get(qname);
         	if(theClass != null){
         		return theClass;
         	}            
         }
-        Class javaClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
+        Class javaClass = conversionManager.javaType(qname);
         return XMLConversionManager.getObjectClass(javaClass);
     }
     /**

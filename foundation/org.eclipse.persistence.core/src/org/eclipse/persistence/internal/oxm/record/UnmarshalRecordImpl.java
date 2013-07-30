@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.IDResolver;
 import org.eclipse.persistence.internal.oxm.MappingNodeValue;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -134,6 +135,8 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
     private Locator xmlLocation;
 
     protected XPathFragment textWrapperFragment;    
+
+    private ConversionManager conversionManager;
 
     protected UnmarshalRecordImpl() {
     }
@@ -1560,6 +1563,17 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
 
     public void setUnmarshalAttributeGroup(CoreAttributeGroup unmarshalAttributeGroup) {
         this.unmarshalAttributeGroup = unmarshalAttributeGroup;
+    }
+
+    /**
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public ConversionManager getConversionManager() {
+        if(null == conversionManager) {
+            conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+        }
+        return conversionManager;
     }
 
 }

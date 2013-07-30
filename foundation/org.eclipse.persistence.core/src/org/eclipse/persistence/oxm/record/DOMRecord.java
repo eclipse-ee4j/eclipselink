@@ -517,7 +517,7 @@ public class DOMRecord extends XMLRecord {
                 int index = schemaType.indexOf(XMLConstants.COLON);
                 if (index == -1) {
                     qname = new QName(schemaType);
-                    Class convertClass = key.getJavaClass(qname);
+                    Class convertClass = key.getJavaClass(qname, xmlCnvMgr);
                     return xmlCnvMgr.convertObject(value, convertClass);
                 } else {
                     String prefix = schemaType.substring(0, index);
@@ -525,7 +525,7 @@ public class DOMRecord extends XMLRecord {
                     XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
                     String url = xmlPlatform.resolveNamespacePrefix(node, prefix);
                     qname = new QName(url, localPart);
-                    Class convertClass = key.getJavaClass(qname);
+                    Class convertClass = key.getJavaClass(qname, xmlCnvMgr);
                     return xmlCnvMgr.convertObject(value, convertClass, qname);
                 }
             }
