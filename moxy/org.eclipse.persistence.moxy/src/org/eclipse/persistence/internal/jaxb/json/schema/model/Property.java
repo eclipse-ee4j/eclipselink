@@ -48,6 +48,9 @@ public class Property {
     @XmlElement(name="$ref")
     private String ref;
     
+    @XmlElement(name="anyOf")
+    private Property[] anyOf;
+    
     public void setType(JsonType type) {
         this.type = type;
     }
@@ -108,5 +111,15 @@ public class Property {
 
     public void setRef(String ref) {
         this.ref = ref;
+    }
+
+
+    public void setAnyOf(Property[] anyOf) {
+       this.anyOf = anyOf;
+    }
+
+
+    public Property[] getAnyOf() {
+        return anyOf;
     }
 }
