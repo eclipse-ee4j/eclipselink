@@ -160,7 +160,7 @@
 
     <!-- Deploy the application ear to the server. -->
     <target name="jboss-deploy">
-        <copy todir="${jboss.server}/deploy">
+        <copy todir="${jboss.deploy.dir}">
             <fileset dir="./">
                 <include name="${ear.name}"/>
             </fileset>
@@ -171,7 +171,7 @@
     <!-- Undeploy the application ear to the server. -->
     <target name="jboss-undeploy">
         <delete>
-            <fileset dir="${jboss.server}/deploy" includes="*.ear"/>
+            <fileset dir="${jboss.deploy.dir}" includes="*.ear,*.war"/>
         </delete>
     </target>
 
