@@ -183,8 +183,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                  if(level.isFirst()) {
                      level.setFirst(false);
                  } else {
-                     writer.write(',');
-                     writeSpace();                     
+                	 writeListSeparator();                     
                  }
              }else if(callbackName != null){
             	 startCallback();              
@@ -197,7 +196,12 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         }
     }
     
-    protected void writeSpace(){    	
+    protected void writeListSeparator() throws IOException{
+        writer.write(',');
+    }
+    
+    protected void writeSeparator() throws IOException{        
+        writer.write(Constants.COLON);        
     }
     
     /**
@@ -237,7 +241,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                  writer.write(',');                    
              }
             if(xPathFragment.nameIsText()){
-                if(level != null && level.isCollection() && level.isEmptyCollection()) {                	
+                if(level.isCollection() && level.isEmptyCollection()) {                	
                     writer.write('[');                    
                     level.setEmptyCollection(false);
                     level.setNeedToOpenComplex(false);
@@ -645,9 +649,8 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
         writer.writeLocalName(xPathFragment);
         writer.write('"');
-        writeSpace();
-        writer.write(Constants.COLON);
-        writeSpace();
+        
+        writeSeparator();
     }
 
     /**
