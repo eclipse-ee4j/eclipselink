@@ -33,7 +33,6 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
@@ -44,7 +43,6 @@ import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
-import org.eclipse.persistence.jpa.rs.util.MethodExitLogData;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
@@ -59,16 +57,16 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  *
  */
 public abstract class AbstractEntityResource extends AbstractResource {
-    protected Response findAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
+    protected Response findAttribute(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
         EntityManager em = null;
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
-            Object id = IdHelper.buildId(context, type, key);
+            Object entityId = IdHelper.buildId(context, type, id);
             em = context.getEmf().createEntityManager(getMatrixParameters(uriInfo, persistenceUnit));
 
             Object entity = null;
 
-            entity = em.find(context.getClass(type), id, getQueryParameters(uriInfo));
+            entity = em.find(context.getClass(type), entityId, getQueryParameters(uriInfo));
             DatabaseSession serverSession = context.getServerSession();
             ClassDescriptor descriptor = serverSession.getClassDescriptor(context.getClass(type));
             if (descriptor == null) {
@@ -77,7 +75,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
             DatabaseMapping attributeMapping = descriptor.getMappingForAttributeName(attribute);
             if ((attributeMapping == null) || (entity == null)) {
-                throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, key, persistenceUnit);
+                throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, id, persistenceUnit);
             }
 
             Object result = null;
@@ -85,15 +83,15 @@ public abstract class AbstractEntityResource extends AbstractResource {
             if (!attributeMapping.isCollectionMapping()) {
                 result = attributeMapping.getRealAttributeValueFromAttribute(attributeMapping.getAttributeValueFromObject(entity), entity, (AbstractSession) serverSession);
                 if (result == null) {
-                    JPARSLogger.warning("jpars_could_not_find_entity_for_attribute", new Object[] { attribute, type, key, persistenceUnit });
-                    throw JPARSException.attributeCouldNotBeFoundForEntity(attribute, type, key, persistenceUnit);
+                    JPARSLogger.warning("jpars_could_not_find_entity_for_attribute", new Object[] { attribute, type, id, persistenceUnit });
+                    throw JPARSException.attributeCouldNotBeFoundForEntity(attribute, type, id, persistenceUnit);
                 }
-                return findAttributeResponse(context, attribute, type, key, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+                return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
             }
 
             ReadQuery query = (ReadQuery) ((((ForeignReferenceMapping) attributeMapping).getSelectionQuery()).clone());
             if (query == null) {
-                throw JPARSException.selectionQueryForAttributeCouldNotBeFoundForEntity(attribute, type, key, persistenceUnit);
+                throw JPARSException.selectionQueryForAttributeCouldNotBeFoundForEntity(attribute, type, id, persistenceUnit);
             }
 
             FeatureSet featureSet = context.getSupportedFeatureSet();
@@ -109,11 +107,11 @@ public abstract class AbstractEntityResource extends AbstractResource {
                     // check orderBy, and generate a warning if there is none 
                     checkOrderBy(query);
                     result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
-                    return findAttributeResponse(context, attribute, type, key, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
+                    return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
                 }
             }
             result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
-            return findAttributeResponse(context, attribute, type, key, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+            return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
         } finally {
@@ -125,18 +123,18 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response find(String version, String persistenceUnit, String type, String key, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
-        JPARSLogger.entering(AbstractEntityResource.class.getName(), "find", new Object[] { version, persistenceUnit, type, key, uriInfo.getRequestUri().toASCIIString(), baseURI });
+    protected Response find(String version, String persistenceUnit, String type, String id, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
+        JPARSLogger.entering(AbstractEntityResource.class.getName(), "find", new Object[] { version, persistenceUnit, type, id, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
             Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
-            Object id = IdHelper.buildId(context, type, key);
-            Object entity = context.find(discriminators, type, id, getQueryParameters(uriInfo));
+            Object entityId = IdHelper.buildId(context, type, id);
+            Object entity = context.find(discriminators, type, entityId, getQueryParameters(uriInfo));
             if (entity == null) {
-                JPARSLogger.fine("jpars_could_not_find_entity_for_key", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, key, persistenceUnit });
-                throw JPARSException.entityNotFound(type, key, persistenceUnit);
+                JPARSLogger.fine("jpars_could_not_find_entity_for_key", new Object[] { type, id, persistenceUnit });
+                throw JPARSException.entityNotFound(type, id, persistenceUnit);
             }
-            JPARSLogger.exiting(AbstractEntityResource.class.getName(), "find", new MethodExitLogData(new Object[] { context, id, entity }));
+            JPARSLogger.exiting(AbstractEntityResource.class.getName(), "find", new Object[] { context, entityId, entity });
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
@@ -145,11 +143,12 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
     @SuppressWarnings("rawtypes")
     protected Response create(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) throws Exception {
+        JPARSLogger.entering(AbstractEntityResource.class.getName(), "create", new Object[] { version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
             ClassDescriptor descriptor = context.getDescriptor(type);
             if (descriptor == null) {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
+                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(type, persistenceUnit);
             }
 
@@ -162,7 +161,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
                 if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
                         || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
-                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
+                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
                     throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
                 }
             }
@@ -187,13 +186,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
                                                 if (holder != null) {
                                                     Object obj = holder.getValue();
                                                     if (obj != null) {
-                                                        JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
+                                                        JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
                                                         throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
                                                     }
                                                 }
                                             } else if (value instanceof Collection) {
                                                 if (!(((Collection) value).isEmpty())) {
-                                                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), type, persistenceUnit });
+                                                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
                                                     throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
                                                 }
                                             }
@@ -226,23 +225,23 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response setOrAddAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
+    protected Response setOrAddAttribute(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
-            Object id = IdHelper.buildId(context, type, key);
+            Object entityId = IdHelper.buildId(context, type, id);
             Object entity = null;
             String partner = getRelationshipPartner(getMatrixParameters(uriInfo, attribute), getQueryParameters(uriInfo));
             ClassDescriptor descriptor = context.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
-                JPARSLogger.fine("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), attribute, type, key, persistenceUnit });
-                throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, key, persistenceUnit);
+                JPARSLogger.fine("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { attribute, type, id, persistenceUnit });
+                throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, id, persistenceUnit);
             }
             entity = context.unmarshalEntity(((ForeignReferenceMapping) mapping).getReferenceDescriptor().getAlias(), mediaType(headers.getAcceptableMediaTypes()), in);
-            Object result = context.updateOrAddAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, getQueryParameters(uriInfo), attribute, entity, partner);
+            Object result = context.updateOrAddAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, entityId, getQueryParameters(uriInfo), attribute, entity, partner);
             if (result == null) {
-                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), attribute, type, key, persistenceUnit });
-                JPARSException.attributeCouldNotBeUpdated(attribute, type, key, persistenceUnit);
+                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, id, persistenceUnit });
+                JPARSException.attributeCouldNotBeUpdated(attribute, type, id, persistenceUnit);
             }
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
         } catch (Exception ex) {
@@ -250,7 +249,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders headers, UriInfo uriInfo) {
+    protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo) {
         try {
             String listItemId = null;
             Map<String, String> matrixParams = getMatrixParameters(uriInfo, attribute);
@@ -261,26 +260,26 @@ public abstract class AbstractEntityResource extends AbstractResource {
             }
 
             if ((attribute == null) && (listItemId == null)) {
-                JPARSException.invalidRemoveAttributeRequest(attribute, type, key, persistenceUnit);
+                JPARSException.invalidRemoveAttributeRequest(attribute, type, id, persistenceUnit);
             }
 
             String partner = getRelationshipPartner(matrixParams, queryParams);
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
-            Object id = IdHelper.buildId(context, type, key);
+            Object entityId = IdHelper.buildId(context, type, id);
             ClassDescriptor descriptor = context.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
-                JPARSLogger.fine("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), attribute, type, key, persistenceUnit });
-                throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, key, persistenceUnit);
+                JPARSLogger.fine("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { attribute, type, id, persistenceUnit });
+                throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, id, persistenceUnit);
             }
 
             Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
-            Object entity = context.find(discriminators, type, id, getQueryParameters(uriInfo));
-            Object result = context.removeAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, id, attribute, listItemId, entity, partner);
+            Object entity = context.find(discriminators, type, entityId, getQueryParameters(uriInfo));
+            Object result = context.removeAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, entityId, attribute, listItemId, entity, partner);
 
             if (result == null) {
-                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), attribute, type, key, persistenceUnit });
-                throw JPARSException.attributeCouldNotBeUpdated(attribute, type, key, persistenceUnit);
+                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, id, persistenceUnit });
+                throw JPARSException.attributeCouldNotBeUpdated(attribute, type, id, persistenceUnit);
             } else {
                 return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
             }
@@ -289,19 +288,19 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response delete(String version, String persistenceUnit, String type, String key, UriInfo uriInfo, URI baseURI) {
+    protected Response delete(String version, String persistenceUnit, String type, String id, UriInfo uriInfo, URI baseURI) {
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
             Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
-            Object id = IdHelper.buildId(context, type, key);
-            context.delete(discriminators, type, id);
+            Object entityId = IdHelper.buildId(context, type, id);
+            context.delete(discriminators, type, entityId);
             return Response.ok().build();
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
         }
     }
 
-    private Response findAttributeResponse(PersistenceContext context, String attribute, String entityType, String entityId, String persistenceUnit, Object queryResults, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
+    private Response findAttributeResponse(PersistenceContext context, String attribute, String entityType, String id, String persistenceUnit, Object queryResults, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
         Map<String, Object> queryParams = getQueryParameters(uriInfo);
         if (queryResults != null) {
             Object results = responseBuilder.buildAttributeResponse(context, queryParams, attribute, queryResults, uriInfo);
@@ -309,7 +308,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes())).build();
             } else {
                 // something is wrong with the descriptors
-                throw JPARSException.responseCouldNotBeBuiltForFindAttributeRequest(attribute, entityType, entityId, persistenceUnit);
+                throw JPARSException.responseCouldNotBeBuiltForFindAttributeRequest(attribute, entityType, id, persistenceUnit);
             }
         }
         return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();
@@ -321,7 +320,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             ReadAllQuery readAllQuery = (ReadAllQuery) query;
             orderBy = readAllQuery.getOrderByExpressions();
             if ((orderBy == null) || (orderBy.isEmpty())) {
-                JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), query.toString() });
+                JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { query.toString() });
             }
         }
     }

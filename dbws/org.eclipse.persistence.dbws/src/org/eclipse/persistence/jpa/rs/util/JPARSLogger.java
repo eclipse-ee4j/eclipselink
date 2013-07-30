@@ -23,14 +23,6 @@ public class JPARSLogger {
     static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars");
 
     /**
-     * INTERNAL:
-     * Logging utility method.
-     */
-    public static void log(String message, Level level, Object[] params) {
-        logger.log(level, LoggingLocalization.buildMessage(message, params));
-    }
-
-    /**
      * Entering.
      *
      * @param sourceClass the source class
@@ -53,20 +45,14 @@ public class JPARSLogger {
      *
      * @param sourceClass the source class
      * @param sourceMethod the source method
-     * @param methodExitLogData the method exit log data
+     * @param params the params
      */
-    public static void exiting(String sourceClass, String sourceMethod, MethodExitLogData methodExitLogData) {
+    public static void exiting(String sourceClass, String sourceMethod, Object[] params) {
         // Logger logs enter/exit logs when log level <= FINER. However, we want to get these logs logged only when the log level is FINEST.
         // see java.util.logging.Logger::entering and java.util.logging.Logger::exiting
         if (logger.isLoggable(Level.FINEST)) {
             try {
-                String requestId = (String) DataStorage.get(DataStorage.REQUEST_ID);
-                if (methodExitLogData == null) {
-                    methodExitLogData = new MethodExitLogData(new Object[] { requestId });
-                } else {
-                    methodExitLogData.setRequestId(requestId);
-                }
-                logger.exiting(sourceClass, sourceMethod, methodExitLogData);
+                logger.exiting(sourceClass, sourceMethod, new MethodExitLogData(getParamsWithRequestId(params)));
             } catch (Throwable throwable) {
             }
         }
@@ -79,7 +65,7 @@ public class JPARSLogger {
      * @param params the params
      */
     public static void finest(String message, Object[] params) {
-        log(message, Level.FINEST, params);
+        log(message, Level.FINEST, getParamsWithRequestId(params));
     }
 
     /**
@@ -89,7 +75,7 @@ public class JPARSLogger {
      * @param params the params
      */
     public static void fine(String message, Object[] params) {
-        log(message, Level.FINE, params);
+        log(message, Level.FINE, getParamsWithRequestId(params));
     }
 
     /**
@@ -99,7 +85,7 @@ public class JPARSLogger {
      * @param params the params
      */
     public static void warning(String message, Object[] params) {
-        log(message, Level.WARNING, params);
+        log(message, Level.WARNING, getParamsWithRequestId(params));
     }
 
     /**
@@ -109,7 +95,7 @@ public class JPARSLogger {
      * @param params the params
      */
     public static void error(String message, Object[] params) {
-        log(message, Level.SEVERE, params);
+        log(message, Level.SEVERE, getParamsWithRequestId(params));
     }
 
     /**
@@ -120,7 +106,7 @@ public class JPARSLogger {
      * @param exc the exc
      */
     public static void exception(String message, Object[] params, Exception exc) {
-        logger.log(Level.SEVERE, LoggingLocalization.buildMessage(message, params), exc);
+        logger.log(Level.SEVERE, LoggingLocalization.buildMessage(message, getParamsWithRequestId(params)), exc);
     }
 
     /**
@@ -143,5 +129,9 @@ public class JPARSLogger {
             return paramsWithRequestId;
         }
         return new Object[] { requestId };
+    }
+
+    private static void log(String message, Level level, Object[] params) {
+        logger.log(level, LoggingLocalization.buildMessage(message, params));
     }
 }
