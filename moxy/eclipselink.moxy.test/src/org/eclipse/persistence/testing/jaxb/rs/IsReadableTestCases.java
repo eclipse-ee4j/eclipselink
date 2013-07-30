@@ -52,7 +52,7 @@ public class IsReadableTestCases extends TestCase {
         assertFalse(moxyJsonProvider.isReadable(File.class, null, null, null));
     }
 
-    public void testFilSubclasseNotReadable() {
+    public void testFileSubclasseNotReadable() {
         assertFalse(moxyJsonProvider.isReadable(MyFile.class, null, null, null));
     }
 
@@ -80,6 +80,14 @@ public class IsReadableTestCases extends TestCase {
         assertFalse(moxyJsonProvider.isReadable(StringReader.class, null, null, null));
     }
 
+    public void testInvalidDomainClassNotReadable() {
+        assertFalse(moxyJsonProvider.isReadable(InvalidDomainClass.class, null, null, null));
+    }
+
+    public void testInvalidDomainClassNotWriteable() {
+        assertFalse(moxyJsonProvider.isWriteable(InvalidDomainClass.class, null, null, null));
+    }
+
     private static class TestMOXyJsonProvider extends MOXyJsonProvider {
 
         @Override
@@ -101,4 +109,11 @@ public class IsReadableTestCases extends TestCase {
         
     }
  
+    public static class InvalidDomainClass {
+
+        public InvalidDomainClass(String parameter) {
+        }
+
+    }
+
 }
