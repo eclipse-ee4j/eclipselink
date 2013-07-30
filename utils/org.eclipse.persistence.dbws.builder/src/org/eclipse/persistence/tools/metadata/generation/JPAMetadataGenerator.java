@@ -218,7 +218,7 @@ public class JPAMetadataGenerator {
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
     public JPAMetadataGenerator(String defaultPackage, DatabasePlatform dbPlatform, boolean generateCRUDOps) {
-        this.defaultPackage = defaultPackage;
+        this.defaultPackage = defaultPackage.toLowerCase();
         this.dbPlatform = dbPlatform;
         this.generateCRUDOps = generateCRUDOps;
         
@@ -1007,12 +1007,14 @@ public class JPAMetadataGenerator {
             NamedNativeQueryMetadata crudQuery = new NamedNativeQueryMetadata();
             crudQuery.setName(PK_QUERYNAME + UNDERSCORE + entityType);
             crudQuery.setQuery(SELECT_FROM_STR + tableName + WHERE_STR + pks);
+            crudQuery.setResultClassName(entity.getClassName());
             entity.getNamedNativeQueries().add(crudQuery);
             
             // find all
             crudQuery = new NamedNativeQueryMetadata();
             crudQuery.setName(ALL_QUERYNAME + UNDERSCORE + entityType);
             crudQuery.setQuery(SELECT_FROM_STR + tableName);
+            crudQuery.setResultClassName(entity.getClassName());
             entity.getNamedNativeQueries().add(crudQuery);
             
             // create
