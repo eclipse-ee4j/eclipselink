@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -51,16 +50,12 @@ import org.xml.sax.SAXException;
 public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
     private String tab;
-    private int numberOfTabs;
-    private boolean complexType;
+    private int numberOfTabs;    
     private boolean isLastEventText;
-    private String space;
-
+    
     public JSONFormattedWriterRecord() {
-        numberOfTabs = 0;
-        complexType = true;
-        isLastEventText = false;
-        space = " ";
+        numberOfTabs = 0;        
+        isLastEventText = false;    
     }
     
     public JSONFormattedWriterRecord(OutputStream outputStream){
@@ -118,41 +113,30 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try {
-        	Level newLevel = null;
-            Level position = null;
-            if(null == level) {
-                level = new Level(true, true);
+            if(level.isFirst()) {
+                level.setFirst(false);
             } else {
-                position = level;
-                level = new Level(true, true, level);
-                if(position.isFirst()) {
-                    position.setFirst(false);
-                } else {
-                    writer.write(',');
-                }
+                writer.write(',');                    
             }
             if(xPathFragment.nameIsText()){
-               if(position != null && position.isCollection() && position.isEmptyCollection()) {
-            	    if(!charactersAllowed){
-              		     throw JAXBException.jsonValuePropertyRequired("[");   
-              	    }
+                if(level.isCollection() && level.isEmptyCollection()) {           	    
                     writer.write('[');
                     writer.write(' ');
-                    position.setEmptyCollection(false);
-                    position.setNeedToOpenComplex(false);
+                    level.setEmptyCollection(false);
+                    level.setNeedToOpenComplex(false);
+                    level = new Level(true, true, level);
                     numberOfTabs++;
                     return;
                 }
             }
-
-            this.addPositionalNodes(xPathFragment, namespaceResolver);
-                if(position.isNeedToOpenComplex()){
-                    writer.write('{');
-                    position.setNeedToOpenComplex(false);
-                    position.setNeedToCloseComplex(true);
-                }
+            
+            if(level.isNeedToOpenComplex()){
+                writer.write('{');
+                level.setNeedToOpenComplex(false);
+                level.setNeedToCloseComplex(true);
+            }
             if (!isLastEventText) {
-                if(position.isCollection() && !position.isEmptyCollection()) {
+                if(level.isCollection() && !level.isEmptyCollection()) {
                     writer.write(' ');
                 } else {
                     writer.writeCR();
@@ -162,19 +146,21 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 }
             }
             
-            //write the key unless this is a a non-empty collection
-            if(!(position.isCollection() && !position.isEmptyCollection())){
+          //write the key unless this is a a non-empty collection
+            if(!(level.isCollection() && !level.isEmptyCollection())){
      		   super.writeKey(xPathFragment);
-     		   if(position.isCollection() && position.isEmptyCollection()){
-           		   writer.write('[');
-           		   writer.write(' ');
-           		  position.setEmptyCollection(false);         		
-         	   }
-     	   }
-            
+                //if it is the first thing in the collection also add the [
+                if(level.isCollection() && level.isEmptyCollection()){
+                     writer.write('[');
+                     writer.write(' ');
+                     level.setEmptyCollection(false);                   
+                }
+            }
+         
             numberOfTabs++;
             isLastEventText = false;
             charactersAllowed = true;
+            level = new Level(true, true, level);
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -198,14 +184,17 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
+    } 
+    
+    protected void writeListSeparator() throws IOException{
+        super.writeListSeparator();
+        writer.write(' ');
     }
-
-    protected void writeSpace(){  
-    	try {
-    		writer.write(space);
-    	} catch (IOException e) {
-    		throw XMLMarshalException.marshalException(e);
-    	}
+    
+    protected void writeSeparator() throws IOException{
+    	writer.write(' ');
+        writer.write(Constants.COLON);
+        writer.write(' ');
     }
     
     /**
@@ -251,7 +240,6 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     public void characters(String value) {
         super.characters(value);
         isLastEventText = true;
-        complexType = false;
     }
 
     /**
@@ -331,7 +319,6 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     isStartElementOpen = false;
                 }
                 writeComment(ch, start, length);
-                complexType = false;
             } catch (IOException e) {
                 throw XMLMarshalException.marshalException(e);
             }
