@@ -312,6 +312,19 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         }
     }
 
+    private JAXBContext getJAXBContext(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        if(null == genericType) {
+            genericType = type;
+        }
+
+        try {
+            Class<?> domainClass = getDomainClass(genericType);
+            return getJAXBContext(domainClass, annotations, mediaType, null);
+        } catch(JAXBException e) {
+            return null;
+        }
+    }
+
     /**
      * By default the JSON-binding will ignore namespace qualification. If this 
      * property is set the portion of the key before the namespace separator
@@ -415,7 +428,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             Class domainClass = getDomainClass(genericType);
             return isReadable(domainClass, null, annotations, mediaType) || String.class == domainClass;
         } else {
-            return true;
+            return null != getJAXBContext(type, genericType, annotations, mediaType);
         }
     }
 
@@ -502,7 +515,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             Class domainClass = getDomainClass(genericType);
             return isWriteable(domainClass, null, annotations, mediaType) || domainClass == String.class;
          } else {
-            return true;
+             return null != getJAXBContext(type, genericType, annotations, mediaType);
         }
     }
 
