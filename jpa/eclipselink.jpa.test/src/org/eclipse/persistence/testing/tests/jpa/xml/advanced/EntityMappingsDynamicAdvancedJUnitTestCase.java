@@ -561,12 +561,10 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
     }
     
     /**
-     * Verifies that the change tracking metadata is correctly processed.
-     * Employee has an AUTO setting, but is virtual so it should have an
-     * object change policy.
+     * Employee has EAGER collection mappings, so change tracking is not possible.
      */
     public void testEmployeeChangeTrackingPolicy() {
-        assertTrue("Employee descriptor has incorrect object change policy", getDescriptor("DynamicEmployee").getObjectChangePolicy().isAttributeChangeTrackingPolicy());
+        assertFalse("Employee descriptor has incorrect object change policy", getDescriptor("DynamicEmployee").getObjectChangePolicy().isAttributeChangeTrackingPolicy());
     }
     
     /**
