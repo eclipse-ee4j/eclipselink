@@ -37,7 +37,6 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.SessionBeanCall;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
@@ -53,7 +52,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
     protected Response getContexts(String version, HttpHeaders headers, URI baseURI) throws JAXBException {
         try {
             if (!isValidVersion(version)) {
-                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), version });
+                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
                 JPARSException.invalidServiceVersion(version);
             }
 
@@ -87,7 +86,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
     protected Response callSessionBeanInternal(String version, HttpHeaders headers, UriInfo uriInfo, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         try {
             if (!isValidVersion(version)) {
-                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), version });
+                JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
                 JPARSException.invalidServiceVersion(version);
             }
 
@@ -98,7 +97,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             javax.naming.Context ctx = new InitialContext();
             Object ans = ctx.lookup(jndiName);
             if (ans == null) {
-                JPARSLogger.fine("jpars_could_not_find_session_bean", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), jndiName });
+                JPARSLogger.fine("jpars_could_not_find_session_bean", new Object[] { jndiName });
                 throw JPARSException.sessionBeanCouldNotBeFound(jndiName);
             }
 
@@ -106,7 +105,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             if (call.getContext() != null) {
                 context = getPersistenceFactory().get(call.getContext(), uriInfo.getBaseUri(), version, null);
                 if (context == null) {
-                    JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), call.getContext() });
+                    JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { call.getContext() });
                     throw JPARSException.persistenceContextCouldNotBeBootstrapped(call.getContext());
                 }
             }

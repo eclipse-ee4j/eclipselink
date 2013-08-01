@@ -142,7 +142,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
               
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
                 marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, descriptor, (Field)xmlAnyObjectMapping.getField(), originalValue, objectValue, wasXMLRoot, false);
-                objectBuilder.buildRow(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession) childSession, marshaller, null);
+                objectBuilder.buildRow(marshalRecord, objectValue, (CoreAbstractSession) childSession, marshaller, null);
                 marshalRecord.afterContainmentMarshal(object, objectValue);
                 marshalRecord.endElement(rootFragment, namespaceResolver);
                 marshalRecord.removeExtraNamespacesFromNamespaceResolver(extraNamespaces, session);

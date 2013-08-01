@@ -32,6 +32,7 @@ import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -60,7 +61,7 @@ import org.w3c.dom.Node;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarshaller<AbstractSession, CharacterEscapeHandler, XMLContext, XMLDescriptor, XMLMarshalListener, MediaType, NamespacePrefixMapper, TreeObjectBuilder> implements Cloneable {
+public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarshaller<AbstractSession, CharacterEscapeHandler, XMLContext, XMLDescriptor, XMLMarshalListener, MediaType, NamespacePrefixMapper, TreeObjectBuilder, DatabaseSession> implements Cloneable {
 
     private Object marshalAttributeGroup;
 

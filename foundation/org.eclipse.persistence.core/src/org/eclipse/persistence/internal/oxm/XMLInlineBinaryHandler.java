@@ -106,9 +106,9 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
                        value = null;                   
                    }else{
                 	   if(field.usesSingleNode()){
-                		   value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ListToByteArrayList(valueString, cp, parent.getSession());   
+                		   value = parent.getConversionManager().convertSchemaBase64ListToByteArrayList(valueString, cp, parent.getSession());   
                 	   }else{
-                               value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(valueString);
+                           value = parent.getConversionManager().convertSchemaBase64ToByteArray(valueString);
                 	   }
                    }
                } 

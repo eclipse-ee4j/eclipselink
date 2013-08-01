@@ -34,10 +34,10 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
 import org.eclipse.persistence.internal.oxm.mappings.AnyCollectionMapping;
@@ -98,11 +98,13 @@ public class SchemaModelGenerator {
     protected static final String IDREF = "IDREF";
     protected static String SWAREF_LOCATION;
 
+    private ConversionManager conversionManager;
+
     /**
      * The default constructor.
      */
-    public SchemaModelGenerator() {
-    	this(false);
+    public SchemaModelGenerator(ConversionManager conversionManager) {
+    	this(conversionManager, false);
     }
     
     /**
@@ -112,7 +114,8 @@ public class SchemaModelGenerator {
      * to external URLs is not available.  The default value is:
      * "http://ws-i.org/profiles/basic/1.1/swaref.xsd".
      */
-    public SchemaModelGenerator(boolean customSwaRefSchema) {
+    public SchemaModelGenerator(ConversionManager conversionManager, boolean customSwaRefSchema) {
+        this.conversionManager = conversionManager;
     	if (customSwaRefSchema) {
     		SWAREF_LOCATION = Constants.SWA_REF.toLowerCase() + SCHEMA_FILE_EXT;
     	} else {
@@ -144,7 +147,7 @@ public class SchemaModelGenerator {
                     String nsKey = qname.getNamespaceURI();
                     Schema schema = schemaForNamespace.get(nsKey);
                     
-                    QName typeAsQName = (QName) XMLConversionManager.getDefaultJavaTypes().get(tClass);
+                    QName typeAsQName = conversionManager.schemaType(tClass);
                     if (typeAsQName == null) {
                         // not a built in type - need to get the type via schema reference
                     	Descriptor desc = getDescriptorByClass(tClass, descriptorsToProcess);
@@ -409,7 +412,7 @@ public class SchemaModelGenerator {
     	}
 
         CoreMapping mapping = (CoreMapping)desc.getMappings().get(0);
-        QName qname = (QName) XMLConversionManager.getDefaultJavaTypes().get(mapping.getAttributeClassification());
+        QName qname = conversionManager.schemaType(mapping.getAttributeClassification());
         String baseType = qname.getLocalPart();
 
         if (qname.getNamespaceURI() != null) {
@@ -538,7 +541,7 @@ public class SchemaModelGenerator {
             schemaTypeString = getSchemaTypeString(schemaType, workingSchema);
         } else {
             if (attrClass != null && !attrClass.equals(CoreClassConstants.STRING)) {
-                QName qName = (QName) XMLConversionManager.getDefaultJavaTypes().get(attrClass);
+                QName qName = conversionManager.schemaType(attrClass);
                 if (qName != null) {
                     schemaTypeString = getSchemaTypeString(qName, workingSchema);
                 }

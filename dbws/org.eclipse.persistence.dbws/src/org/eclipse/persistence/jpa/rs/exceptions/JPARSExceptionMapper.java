@@ -16,16 +16,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 @Provider
 public class JPARSExceptionMapper extends AbstractExceptionMapper implements ExceptionMapper<JPARSException> {
     public Response toResponse(JPARSException exception) {
         if (exception.getCause() != null) {
-            JPARSLogger.exception("jpars_caught_exception", new Object[] { DataStorage.get(DataStorage.REQUEST_ID) }, (Exception) exception.getCause());
+            JPARSLogger.exception("jpars_caught_exception", new Object[] {}, (Exception) exception.getCause());
         } else {
-            JPARSLogger.exception("jpars_caught_exception", new Object[] { DataStorage.get(DataStorage.REQUEST_ID) }, exception);
+            JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
         }
         return buildResponse(exception);
     }

@@ -1795,6 +1795,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         }
         return convertObjectToByteArray(sourceObject);
     }
+
+    @Override
     public Object convertSchemaBase64ListToByteArrayList(Object sourceObject, CoreContainerPolicy containerPolicy, CoreAbstractSession session) throws ConversionException {
     	if (sourceObject instanceof String) { 
     		StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
@@ -2103,6 +2105,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Replaces any CR, Tab or LF characters in the string with a single ' ' character.
      */
+    @Override
     public String normalizeStringValue(String value) {
         int i = 0;        
         int length = value.length();
@@ -2133,6 +2136,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * Removes all leading and trailing whitespaces, and replaces any sequences of whitespaces
      * that occur in the string with a single ' ' character.
      */
+    @Override
     public String collapseStringValue(String value) {
         int length = value.length();
         
@@ -2210,4 +2214,25 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
   			||(schemaTypeQName.equals(Constants.UNSIGNED_INT_QNAME ))
   			||(schemaTypeQName.equals(Constants.UNSIGNED_BYTE_QNAME ));  			
     }
+
+    /**
+     * @since EclipseLink 2.6.0
+     * @param schemaType The type you want to find a corresponding Java class for.
+     * @return the Java class for the XML schema type.
+     */
+    @Override
+    public Class<?> javaType(QName schemaType) {
+        return (Class<?>) getDefaultXMLTypes().get(schemaType);
+    }
+
+    /**
+     * @since EclipseLink 2.6.0
+     * @param javaType The type you want to find a corresponding schema type for.
+     * @return the schema type for the Java class.
+     */
+    @Override
+    public QName schemaType(Class<?> javaType) {
+         return (QName) getDefaultJavaTypes().get(javaType);
+    }
+
 }

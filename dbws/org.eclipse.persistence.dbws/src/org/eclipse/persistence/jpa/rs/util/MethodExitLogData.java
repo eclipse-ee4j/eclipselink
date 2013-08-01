@@ -13,42 +13,15 @@
 package org.eclipse.persistence.jpa.rs.util;
 
 public class MethodExitLogData {
-    private String requestId;
     private Object[] result;
 
+    /**
+     * Instantiates a new method exit log data.
+     *
+     * @param result the result
+     */
     public MethodExitLogData(Object[] result) {
         super();
-        this.result = result;
-    }
-
-    /**
-     * Gets the request id.
-     *
-     * @return the request id
-     */
-    public String getRequestId() {
-        return requestId;
-    }
-
-    /**
-     * Sets the request id.
-     *
-     * @param requestId the new request id
-     */
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
-    }
-
-    /**
-     * Gets the result.
-     *
-     * @return the result
-     */
-    public Object getResult() {
-        return result;
-    }
-
-    public void setResult(Object[] result) {
         this.result = result;
     }
 
@@ -58,15 +31,14 @@ public class MethodExitLogData {
     @Override
     public String toString() {
         StringBuffer message = new StringBuffer();
-        if (requestId != null) {
-            message.append(requestId);
-        }
-
         if (result != null) {
-            message.append(" ");
             for (int i = 0; i < result.length; i++) {
                 Object object = result[i];
-                message.append((object != null) ? (" " + object.toString()) : " null");
+                if (i == 0) {
+                    message.append((object != null) ? (object.toString()) : "null");
+                } else {
+                    message.append((object != null) ? (" " + object.toString()) : " null");
+                }
             }
         }
         return message.toString().trim();

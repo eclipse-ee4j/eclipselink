@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 
-import javax.json.Json;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -31,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XMLMarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
@@ -306,8 +304,9 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         else if(value.getClass() == String.class){          
             //if schemaType is set and it's a numeric or boolean type don't treat as a string
             if(schemaType != null && isNumericOrBooleanType(schemaType)){
-                Class theClass = (Class) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);
-                Object convertedValue = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, schemaType);
+                ConversionManager conversionManager = getConversionManager();
+                Class<?> theClass = conversionManager.javaType(schemaType);
+                Object convertedValue = conversionManager.convertObject(value, theClass, schemaType);
                 writeValue(convertedValue, schemaType, isAttribute);
             }else if(isCDATA){
                 cdata((String)value);
@@ -315,7 +314,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                 writeValue((String)value, null, isAttribute);                
             }
        }else{
-           Class theClass = (Class) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);          
+           Class<?> theClass = ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).javaType(schemaType);
 
            if(schemaType == null || theClass == null){
                if(value.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(value.getClass())){
@@ -435,7 +434,6 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
             if (getNamespaceResolver() != null) {
                 resolverPfx = this.getNamespaceResolver().resolveNamespaceURI(attr.getNamespaceURI());
             }
-            String namespaceURI = attr.getNamespaceURI();
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {

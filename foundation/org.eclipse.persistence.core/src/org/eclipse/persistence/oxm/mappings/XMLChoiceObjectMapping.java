@@ -441,7 +441,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                 }
                                 
                  XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();                                      
-                 QName schemaType = (QName)xmlConversionManager.getDefaultJavaTypes().get(nextMapping.getAttributeClassification());
+                 QName schemaType = xmlConversionManager.schemaType(nextMapping.getAttributeClassification());
                  if(schemaType != null && ((XMLField)nextMapping.getField()).getSchemaType() == null) {
                      ((XMLField)nextMapping.getField()).setSchemaType(schemaType);
                  }

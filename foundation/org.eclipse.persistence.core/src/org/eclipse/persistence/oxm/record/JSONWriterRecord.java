@@ -32,7 +32,6 @@ import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLMarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -485,8 +484,9 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                  characters((String)value);
              }
         }else{
-            String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
-            Class theClass = (Class) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);        	
+            ConversionManager conversionManager = getConversionManager();
+            String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
+            Class theClass = conversionManager.javaType(schemaType);
 
             if(schemaType == null || theClass == null){
                 if(value.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(value.getClass())){

@@ -156,7 +156,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                     returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
                     if(returnDescriptor == null){
                         if(policy == null || (!policy.isKeepUnknownAsElement() && !policy.isKeepAllAsElement())){
-                            Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(qname);
+                            Class theClass = unmarshalRecord.getConversionManager().javaType(qname);
                             if(theClass == null){
                                 throw XMLMarshalException.unknownXsiTypeValue(schemaType, mapping);
                             }
@@ -255,12 +255,13 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                     value = null;
                 }
             } else {
+                ConversionManager conversionManager = unmarshalRecord.getConversionManager();
                 if(qname.equals(Constants.QNAME_QNAME)) {
-                    value = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).buildQNameFromString((String)value, unmarshalRecord);
+                    value = conversionManager.buildQNameFromString((String)value, unmarshalRecord);
                 } else {
-                	Class theClass = getClassForQName(qname);
+                	Class theClass = getClassForQName(qname, conversionManager);
                     if (theClass != null) {
-                        value = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, qname);
+                        value = conversionManager.convertObject(value, theClass, qname);
                     }
                 }
             }
@@ -269,12 +270,12 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
     }
 
-    protected Class getClassForQName(QName qname){
+    protected Class getClassForQName(QName qname, ConversionManager conversionManager){
     	CoreField field = getMapping().getField();
     	if(field != null){
-    		return ((Field)field).getJavaClass(qname);
+    		return ((Field)field).getJavaClass(qname, conversionManager);
     	}
-    	return (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
+    	return conversionManager.javaType(qname);
     }
 
     

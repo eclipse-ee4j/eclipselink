@@ -20,7 +20,6 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 
 public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
 
@@ -107,8 +106,9 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         }else if(value instanceof String){
             jsonGenerator.write(keyName, (String)value);
         }else{
-            String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
-            Class theClass = (Class) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);          
+            ConversionManager conversionManager = getConversionManager();
+            String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
+            Class theClass = conversionManager.javaType(schemaType);
             if((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))){
                 //if it's still a number and falls through the cracks we dont want "" around the value
                     BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
@@ -142,8 +142,9 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         }else if(value instanceof String){
             jsonGenerator.write((String)value);            
         }else{
-            String convertedValue = ((String) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType));
-            Class theClass = (Class) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);          
+            ConversionManager conversionManager = getConversionManager();
+            String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
+            Class theClass = conversionManager.javaType(schemaType);
             if((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))){
                 //if it's still a number and falls through the cracks we dont want "" around the value
                     BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));

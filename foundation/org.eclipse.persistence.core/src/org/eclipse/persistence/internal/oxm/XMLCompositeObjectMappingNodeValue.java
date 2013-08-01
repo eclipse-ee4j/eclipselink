@@ -303,7 +303,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 		unmarshalRecord.setTypeQName(schemaType);
                 	}
                     if(schemaType != null){
-                        Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(schemaType);
+                        Class theClass = unmarshalRecord.getConversionManager().javaType(schemaType);
                         if(theClass == null){
                             setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
                             return true;
@@ -374,7 +374,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() != 0) {
 
                 if(unmarshalRecord.getTypeQName() != null){
-                    Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                    Class theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
                     if(theClass != null){
                         //handle simple text
                         endElementProcessText(unmarshalRecord, xmlCompositeObjectMapping, xPathFragment, null);
@@ -437,7 +437,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
             if ((((keepAsElementPolicy.isKeepUnknownAsElement()) || (keepAsElementPolicy.isKeepAllAsElement())))&& (builder.getNodes().size() != 0) ) {
                 if(unmarshalRecord.getTypeQName() != null){
-                    Class theClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
+                    Class theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
                     if(theClass != null){
                         //handle simple text
                         endElementProcessText(unmarshalRecord, xmlCompositeObjectMapping, null, null);
@@ -467,17 +467,19 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         }
                         String name = xsiType.substring(colonIndex + 1);
                         QName qName = new QName(namespace, xsiType.substring(colonIndex + 1));
-                        Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qName);
+                        ConversionManager conversionManager = unmarshalRecord.getConversionManager();
+                        Class theClass = conversionManager.javaType(qName);
                         if (theClass != null) {
-                            value = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(element.getTextContent(), theClass, qName);
+                            value = conversionManager.convertObject(element.getTextContent(), theClass, qName);
                         }
                     }else{
                     	if(!unmarshalRecord.isNamespaceAware()){
                             QName qName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, xsiType);
 
-                    		Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qName);
+                            ConversionManager conversionManager = unmarshalRecord.getConversionManager();
+                            Class theClass = conversionManager.javaType(qName);
                             if (theClass != null) {
-                                value = ((ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(element.getTextContent(), theClass, qName);
+                                value = conversionManager.convertObject(element.getTextContent(), theClass, qName);
                             }
                     	}
                     }

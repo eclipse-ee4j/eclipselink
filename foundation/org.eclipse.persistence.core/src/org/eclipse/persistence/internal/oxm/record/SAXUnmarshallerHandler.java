@@ -24,10 +24,10 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathQName;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
@@ -196,7 +196,11 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 		lookupQName= new QName(typeFragment.getNamespaceURI(), typeFragment.getLocalName());
                 	}
                     //check to see if type attribute represents simple type
-                    primitiveWrapperClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(lookupQName);
+                	if(null == session) {
+                	    session = (CoreAbstractSession) xmlContext.getSession();
+                	}
+                	ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
+                    primitiveWrapperClass = conversionManager.javaType(lookupQName);
                 }
             }
             

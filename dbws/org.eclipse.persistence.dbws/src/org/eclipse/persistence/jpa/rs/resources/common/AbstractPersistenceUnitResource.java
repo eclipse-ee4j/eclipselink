@@ -38,7 +38,6 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Query;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
@@ -62,7 +61,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);
             ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(descriptorAlias);
             if (descriptor == null) {
-                JPARSLogger.fine("jpars_could_not_find_entity_type", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), descriptorAlias, persistenceUnit });
+                JPARSLogger.fine("jpars_could_not_find_entity_type", new Object[] { descriptorAlias, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(descriptorAlias, persistenceUnit);
             } else {
                 String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();

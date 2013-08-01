@@ -157,12 +157,12 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                     }
                 }
             } catch (Exception e) {
-                JPARSLogger.exception("exception_creating_persistence_context", new Object[] { DataStorage.get(DataStorage.REQUEST_ID), persistenceUnitName, e.toString() }, e);
+                JPARSLogger.exception("exception_creating_persistence_context", new Object[] { persistenceUnitName, e.toString() }, e);
             }
         }
 
         if ((persistenceContext != null) && (!persistenceContext.isWeavingEnabled())) {
-            JPARSLogger.fine("weaving_required_for_relationships", new Object[] { DataStorage.get(DataStorage.REQUEST_ID) });
+            JPARSLogger.fine("weaving_required_for_relationships", new Object[] {});
             throw JPARSException.invalidConfiguration();
         }
 

@@ -36,7 +36,7 @@ public interface Field<
     * @param qname The qualified name of the XML Schema type to use as a key in the lookup
     * @return The class corresponding to the specified schema type, if no corresponding match found returns null
     */
-    public Class getJavaClass(QName qname);
+    public Class getJavaClass(QName qname, ConversionManager conversionManager);
     
 	/**
      * INTERNAL:
@@ -76,7 +76,7 @@ public interface Field<
       * @param javaClass The class to use as a key in the lookup
       * @return QName The qualified XML Schema type, if no corresponding match found returns null
       */
-     public QName getXMLType(Class javaClass);
+     public QName getXMLType(Class javaClass, ConversionManager conversionManager);
     	 
      /**
      * Returns the xpath statement associated with this XMLField

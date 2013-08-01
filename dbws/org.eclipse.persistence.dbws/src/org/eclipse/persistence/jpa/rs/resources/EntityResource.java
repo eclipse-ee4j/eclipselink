@@ -41,17 +41,17 @@ import org.eclipse.persistence.jpa.rs.resources.common.AbstractEntityResource;
 public class EntityResource extends AbstractEntityResource {
 
     @GET
-    @Path("{type}/{key}/{attribute}")
-    public Response findAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
+    @Path("{type}/{id}/{attribute}")
+    public Response findAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
         setRequestUniqueId();
-        return findAttribute(version, persistenceUnit, type, key, attribute, hh, ui, ui.getBaseUri());
+        return findAttribute(version, persistenceUnit, type, id, attribute, hh, ui, ui.getBaseUri());
     }
 
     @GET
-    @Path("{type}/{key}")
-    public Response find(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context HttpHeaders hh, @Context UriInfo ui) {
+    @Path("{type}/{id}")
+    public Response find(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @Context HttpHeaders hh, @Context UriInfo ui) {
         setRequestUniqueId();
-        return find(version, persistenceUnit, type, key, hh, ui, ui.getBaseUri());
+        return find(version, persistenceUnit, type, id, hh, ui, ui.getBaseUri());
     }
 
     @PUT
@@ -69,23 +69,23 @@ public class EntityResource extends AbstractEntityResource {
     }
 
     @POST
-    @Path("{type}/{key}/{attribute}")
-    public Response setOrAddAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
+    @Path("{type}/{id}/{attribute}")
+    public Response setOrAddAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
         setRequestUniqueId();
-        return setOrAddAttribute(version, persistenceUnit, type, key, attribute, hh, ui, ui.getBaseUri(), in);
+        return setOrAddAttribute(version, persistenceUnit, type, id, attribute, hh, ui, ui.getBaseUri(), in);
     }
 
     @DELETE
-    @Path("{type}/{key}/{attribute}")
-    public Response removeAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
+    @Path("{type}/{id}/{attribute}")
+    public Response removeAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
         setRequestUniqueId();
-        return removeAttributeInternal(version, persistenceUnit, type, key, attribute, hh, ui);
+        return removeAttributeInternal(version, persistenceUnit, type, id, attribute, hh, ui);
     }
 
     @DELETE
-    @Path("{type}/{key}")
-    public Response delete(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context UriInfo ui) {
+    @Path("{type}/{id}")
+    public Response delete(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @Context UriInfo ui) {
         setRequestUniqueId();
-        return delete(version, persistenceUnit, type, key, ui, ui.getBaseUri());
+        return delete(version, persistenceUnit, type, id, ui, ui.getBaseUri());
     }
 }

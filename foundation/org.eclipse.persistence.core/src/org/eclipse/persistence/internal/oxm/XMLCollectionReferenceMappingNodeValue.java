@@ -107,9 +107,9 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         Object value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
 
-        ConversionManager conversionManager = (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
+        ConversionManager conversionManager = unmarshalRecord.getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
-            Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
+            Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName(), conversionManager);
             value = conversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {            
             value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
