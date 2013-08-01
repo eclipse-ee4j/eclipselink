@@ -170,20 +170,6 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      * INTERNAL:
      */
     public void element(XPathFragment frag) {
-        try {
-            isLastEventText = false;
-            if (isStartElementOpen) {
-                writer.write('>');
-                isStartElementOpen = false;
-            }
-            writer.writeCR();
-            for (int x = 0; x < numberOfTabs; x++) {
-                writeValue(tab(), false);
-            }
-            super.element(frag);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
     } 
     
     protected void writeListSeparator() throws IOException{
@@ -310,19 +296,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         	JSONFormattedWriterRecord.this.endElement(xPathFragment, namespaceResolver);        
         }
 
-    // --------------------- LEXICALHANDLER METHODS --------------------- //
-    public void comment(char[] ch, int start, int length) throws SAXException {
-            try {
-                if (isStartElementOpen) {
-                    writer.write('>');
-                    writer.writeCR();
-                    isStartElementOpen = false;
-                }
-                writeComment(ch, start, length);
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
-        }
+
     }
 
 }

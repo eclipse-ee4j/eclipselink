@@ -68,7 +68,6 @@ import org.xml.sax.ext.LexicalHandler;
  */
 public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
-    protected boolean isStartElementOpen = false;
     protected boolean isProcessingCData = false;
     protected static final String NULL="null";
     protected String attributePrefix;
@@ -278,18 +277,6 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      */
     public void element(XPathFragment frag) {
-        try {
-            if (isStartElementOpen) {
-                writer.write('>');
-                isStartElementOpen = false;
-            }
-            writer.write('<');
-            writer.write(frag.getShortName());
-            writer.write('/');
-            writer.write('>');
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
     }
 
     /**
@@ -370,7 +357,6 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             level.setCollection(true);
             level.setEmptyCollection(true);
             charactersAllowed = false;
-            isStartElementOpen = false;
         }
     }
     
@@ -415,10 +401,6 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     	  boolean textWrapperOpened = false;
           if(!charactersAllowed){    
         	   if(textWrapperFragment != null){
-        	       if(!isStartElementOpen && level.isFirst()){
-        	           level.needToOpenComplex = true;
-        	           level.needToOpenComplex = true;
-        	       }
         		   openStartElement(textWrapperFragment, namespaceResolver);
         		   textWrapperOpened = true;
         	   }
@@ -459,7 +441,6 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
      }
      
      public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA, boolean isAttribute) {
-         level.setNeedToOpenComplex(false);
          if(mimeType != null) {
         	 if(value instanceof List){
          		value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesListForBinaryValues(//
@@ -626,7 +607,6 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     protected void writeKey(XPathFragment xPathFragment) throws IOException {
         super.openStartElement(xPathFragment, namespaceResolver);
-        isStartElementOpen = true;
         writer.write('"');
         if(xPathFragment.isAttribute() && attributePrefix != null){
             writer.writeAttributePrefix();
