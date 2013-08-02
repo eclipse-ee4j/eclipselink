@@ -101,7 +101,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 oos.close();
                 output.write(baos.toByteArray());
             } else {
-                JPARSLogger.fine("jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
+                JPARSLogger.error("jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
                 throw new WebApplicationException();
             }
         }

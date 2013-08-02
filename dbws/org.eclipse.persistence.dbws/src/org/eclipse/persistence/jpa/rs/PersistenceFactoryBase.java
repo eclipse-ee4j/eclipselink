@@ -162,7 +162,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
         }
 
         if ((persistenceContext != null) && (!persistenceContext.isWeavingEnabled())) {
-            JPARSLogger.fine("weaving_required_for_relationships", new Object[] {});
+            JPARSLogger.error("weaving_required_for_relationships", new Object[] {});
             throw JPARSException.invalidConfiguration();
         }
 

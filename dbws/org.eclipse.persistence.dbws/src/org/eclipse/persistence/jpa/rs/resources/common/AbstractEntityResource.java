@@ -83,7 +83,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             if (!attributeMapping.isCollectionMapping()) {
                 result = attributeMapping.getRealAttributeValueFromAttribute(attributeMapping.getAttributeValueFromObject(entity), entity, (AbstractSession) serverSession);
                 if (result == null) {
-                    JPARSLogger.warning("jpars_could_not_find_entity_for_attribute", new Object[] { attribute, type, id, persistenceUnit });
+                    JPARSLogger.error("jpars_could_not_find_entity_for_attribute", new Object[] { attribute, type, id, persistenceUnit });
                     throw JPARSException.attributeCouldNotBeFoundForEntity(attribute, type, id, persistenceUnit);
                 }
                 return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
@@ -131,7 +131,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             Object entityId = IdHelper.buildId(context, type, id);
             Object entity = context.find(discriminators, type, entityId, getQueryParameters(uriInfo));
             if (entity == null) {
-                JPARSLogger.fine("jpars_could_not_find_entity_for_key", new Object[] { type, id, persistenceUnit });
+                JPARSLogger.error("jpars_could_not_find_entity_for_key", new Object[] { type, id, persistenceUnit });
                 throw JPARSException.entityNotFound(type, id, persistenceUnit);
             }
             JPARSLogger.exiting(AbstractEntityResource.class.getName(), "find", new Object[] { context, entityId, entity });
@@ -148,7 +148,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
             ClassDescriptor descriptor = context.getDescriptor(type);
             if (descriptor == null) {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
+                JPARSLogger.error("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(type, persistenceUnit);
             }
 
@@ -161,7 +161,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
                 if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
                         || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
-                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
+                    JPARSLogger.error("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
                     throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
                 }
             }
@@ -186,13 +186,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
                                                 if (holder != null) {
                                                     Object obj = holder.getValue();
                                                     if (obj != null) {
-                                                        JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
+                                                        JPARSLogger.error("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
                                                         throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
                                                     }
                                                 }
                                             } else if (value instanceof Collection) {
                                                 if (!(((Collection) value).isEmpty())) {
-                                                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
+                                                    JPARSLogger.error("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
                                                     throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
                                                 }
                                             }
@@ -234,13 +234,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
             ClassDescriptor descriptor = context.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
-                JPARSLogger.fine("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { attribute, type, id, persistenceUnit });
+                JPARSLogger.error("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { attribute, type, id, persistenceUnit });
                 throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, id, persistenceUnit);
             }
             entity = context.unmarshalEntity(((ForeignReferenceMapping) mapping).getReferenceDescriptor().getAlias(), mediaType(headers.getAcceptableMediaTypes()), in);
             Object result = context.updateOrAddAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, entityId, getQueryParameters(uriInfo), attribute, entity, partner);
             if (result == null) {
-                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, id, persistenceUnit });
+                JPARSLogger.error("jpars_could_not_update_attribute", new Object[] { attribute, type, id, persistenceUnit });
                 JPARSException.attributeCouldNotBeUpdated(attribute, type, id, persistenceUnit);
             }
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
@@ -269,7 +269,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             ClassDescriptor descriptor = context.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
-                JPARSLogger.fine("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { attribute, type, id, persistenceUnit });
+                JPARSLogger.error("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { attribute, type, id, persistenceUnit });
                 throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, id, persistenceUnit);
             }
 
@@ -278,7 +278,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             Object result = context.removeAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, entityId, attribute, listItemId, entity, partner);
 
             if (result == null) {
-                JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, id, persistenceUnit });
+                JPARSLogger.error("jpars_could_not_update_attribute", new Object[] { attribute, type, id, persistenceUnit });
                 throw JPARSException.attributeCouldNotBeUpdated(attribute, type, id, persistenceUnit);
             } else {
                 return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();

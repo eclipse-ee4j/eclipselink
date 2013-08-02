@@ -176,18 +176,18 @@ public abstract class AbstractResource {
      */
     protected PersistenceContext getPersistenceContext(String persistenceUnit, String entityType, URI baseURI, String version, Map<String, Object> initializationProperties) {
         if (!isValidVersion(version)) {
-            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
+            JPARSLogger.error("unsupported_service_version_in_the_request", new Object[] { version });
             throw new IllegalArgumentException();
         }
 
         PersistenceContext context = getPersistenceFactory().get(persistenceUnit, baseURI, version, initializationProperties);
         if (context == null) {
-            JPARSLogger.warning("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
+            JPARSLogger.error("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             throw JPARSException.persistenceContextCouldNotBeBootstrapped(persistenceUnit);
         }
 
         if ((entityType != null) && (context.getClass(entityType) == null)) {
-            JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { entityType, persistenceUnit });
+            JPARSLogger.error("jpars_could_not_find_class_in_persistence_unit", new Object[] { entityType, persistenceUnit });
             throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(entityType, persistenceUnit);
         }
 

@@ -128,6 +128,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  */
 public class PersistenceContext {
     public static final String JPARS_CONTEXT = "eclipselink.jpars.context";
+    public static final String CLASS_NAME = PersistenceContext.class.getName();
 
     @SuppressWarnings("rawtypes")
     protected List<XmlAdapter> adapters = null;
@@ -479,10 +480,10 @@ public class PersistenceContext {
                     setMappingValueInObject(object, attributeValue, mapping, partnerMapping);
                     transaction.commitTransaction(em);
                 } catch (RollbackException e) {
-                    JPARSLogger.fine("exception_while_updating_attribute", new Object[] { entityName, getName(), e.toString() });
+                    JPARSLogger.exception("exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
                     return null;
                 } catch (Exception e) {
-                    JPARSLogger.fine("exception_while_updating_attribute", new Object[] { entityName, getName(), e.toString() });
+                    JPARSLogger.exception("exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
                     transaction.rollbackTransaction(em);
                     return null;
                 }
@@ -575,7 +576,7 @@ public class PersistenceContext {
             }
             return null;
         } catch (Exception e) {
-            JPARSLogger.fine("exception_while_removing_attribute", new Object[] { fieldName, entityName, getName(), e.toString() });
+            JPARSLogger.exception("exception_while_removing_attribute", new Object[] { fieldName, entityName, getName() }, e);
             transaction.rollbackTransaction(em);
             return null;
         } finally {
@@ -819,7 +820,7 @@ public class PersistenceContext {
                     return jaxbType.newDynamicEntity();
                 }
             }
-            JPARSLogger.fine("exception_thrown_while_creating_dynamic_entity", new Object[] { type, e.toString() });
+            JPARSLogger.exception("exception_thrown_while_creating_dynamic_entity", new Object[] { type }, e);
             throw e;
         }
         return entity;
@@ -1082,7 +1083,7 @@ public class PersistenceContext {
                 for (DatabaseMapping mapping : descriptor.getMappings()) {
                     if (mapping instanceof XMLInverseReferenceMapping) {
                         // we require Fetch groups to handle relationships
-                        JPARSLogger.fine("weaving_required_for_relationships", new Object[] {});
+                        JPARSLogger.error("weaving_required_for_relationships", new Object[] {});
                         throw JPARSException.invalidConfiguration();
                     }
                 }
@@ -1101,7 +1102,9 @@ public class PersistenceContext {
      * @throws JAXBException
      */
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output) throws JAXBException {
+        JPARSLogger.entering(CLASS_NAME, "marshallEntity", new Object[] { object, mediaType });
         marshallEntity(object, mediaType, output, true);
+        JPARSLogger.exiting(CLASS_NAME, "marshallEntity", this, object, mediaType);
     }
 
     /**

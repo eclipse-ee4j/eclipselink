@@ -107,6 +107,6 @@ public class Traveler {
     }
 
     public String toString() {
-        return "Employee(" + getId() + ": " + getLastName() + ", " + getFirstName() + ")";
+        return "Traveler(" + id + ": " + firstName + ", " + lastName + ")";
     }
 }
