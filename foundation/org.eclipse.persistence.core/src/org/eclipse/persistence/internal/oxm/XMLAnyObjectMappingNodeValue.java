@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -116,7 +115,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
              */
             String defaultRootElementString = descriptor.getDefaultRootElement();
             if (!wasXMLRoot && (defaultRootElementString == null)) {
-                throw XMLMarshalException.defaultRootElementNotSpecified((XMLDescriptor) descriptor);
+                throw XMLMarshalException.defaultRootElementNotSpecified(descriptor);
             } else {
                 marshalRecord.beforeContainmentMarshal(objectValue);
 

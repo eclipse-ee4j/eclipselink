@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.w3c.dom.Attr;
@@ -401,7 +400,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             String defaultRootElementString = descriptor.getDefaultRootElement();
 
             if (!wasXMLRoot && (defaultRootElementString == null)) {
-                throw XMLMarshalException.defaultRootElementNotSpecified((XMLDescriptor) descriptor);
+                throw XMLMarshalException.defaultRootElementNotSpecified(descriptor);
             } else {
                 marshalRecord.beforeContainmentMarshal(value);
 

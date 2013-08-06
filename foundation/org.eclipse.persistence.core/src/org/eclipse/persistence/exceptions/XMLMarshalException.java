@@ -16,6 +16,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 
 /**
@@ -123,6 +124,14 @@ public class XMLMarshalException extends ValidationException {
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, VALIDATE_EXCEPTION, args), nestedException);
         exception.setErrorCode(VALIDATE_EXCEPTION);
         exception.setInternalException(nestedException);
+        return exception;
+    }
+
+    public static XMLMarshalException defaultRootElementNotSpecified(Descriptor descriptor) {
+        Object[] args = { descriptor.getJavaClassName() };
+
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, DEFAULT_ROOT_ELEMENT_NOT_SPECIFIED, args));
+        exception.setErrorCode(DEFAULT_ROOT_ELEMENT_NOT_SPECIFIED);
         return exception;
     }
 

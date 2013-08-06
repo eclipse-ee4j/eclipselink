@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.oxm.XMLUnmarshaller;
 
-public abstract class XMLPlatform<XML_UNMARSHALLER extends XMLUnmarshaller> extends DatasourcePlatform {
+public abstract class XMLPlatform<XML_UNMARSHALLER extends XMLUnmarshaller> extends DatasourcePlatform implements org.eclipse.persistence.internal.oxm.record.XMLPlatform<XML_UNMARSHALLER> {
     public ConversionManager getConversionManager() {
         // Lazy init for serialization.
         if (conversionManager == null) {
@@ -38,6 +38,7 @@ public abstract class XMLPlatform<XML_UNMARSHALLER extends XMLUnmarshaller> exte
     /**
      * INTERNAL:
      */
+    @Override
     public abstract PlatformUnmarshaller newPlatformUnmarshaller(XML_UNMARSHALLER xmlUnmarshaller, Map<String, Boolean> parserFeatures);
 
 }
