@@ -878,7 +878,7 @@ public class XPathEngine <
     * @return <code>NodeList</code> containing the nodes that were replaced.
     */
     public NodeList replaceValue(Field xmlField, Node parent, Object value, CoreAbstractSession session) throws XMLMarshalException {
-        NodeList nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, getNamespaceResolverForField(xmlField));
+        NodeList nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, getNamespaceResolverForField(xmlField), null, false, false);
         int numberOfNodes = nodes.getLength();
         if(numberOfNodes == 0 && xmlField.getLastXPathFragment().nameIsText()) {
             nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, getNamespaceResolverForField(xmlField), null, true);
@@ -890,6 +890,7 @@ public class XPathEngine <
                 textNodes.add(text);
             }
             numberOfNodes = textNodes.getLength();
+            nodes = textNodes;
         }
         XMLNodeList createdElements = new XMLNodeList();
         for (int i = 0; i < numberOfNodes; i++) {
@@ -898,9 +899,23 @@ public class XPathEngine <
             // Handle Attributes and Text
             if (node.getNodeType() != Node.ELEMENT_NODE) {
                 if (((node.getNodeType() == Node.TEXT_NODE) || (node.getNodeType() == Node.CDATA_SECTION_NODE)) && (value == null)) {
+                    //if parent has only text children, remove parent. If parent has non-text children, 
+                    //remove all text children.
                     Node parentNode = node.getParentNode();
-                    Node grandParentNode = parentNode.getParentNode();
-                    grandParentNode.removeChild(parentNode);
+                    if(parentNode != null) {
+                        Node grandParentNode = parentNode.getParentNode();
+                        NodeList childNodes = parentNode.getChildNodes();
+                        if(childNodes.getLength() == numberOfNodes) {
+                            grandParentNode.removeChild(parentNode);
+                        } else {
+                            for(int x = 0; x < childNodes.getLength(); x++) {
+                                Node next = childNodes.item(x);
+                                if(next.getNodeType() == Node.TEXT_NODE || next.getNodeType() == Node.CDATA_SECTION_NODE) {
+                                    parentNode.removeChild(next);
+                                }
+                            }
+                        }
+                    }
                 } else {
                     if(value == null) {
                         ((Attr)node).getOwnerElement().removeAttributeNode((Attr)node);
