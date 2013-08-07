@@ -264,7 +264,7 @@ public class JSONReader extends XMLReaderAdapter {
                         }else{
                             localName = localName.substring(nsIndex + 1);
                         }
-                        if(localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)){
+                        if(localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && uri != null && uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)){
                             break;
                         }   
                     }else{

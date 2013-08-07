@@ -18,6 +18,7 @@ import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeNSTestCases;
 import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeNoWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.override.InheritanceOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.inheritance.typeElem.InheritanceTypeElementTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbfragment.JAXBFragmentTestCases;
 import org.eclipse.persistence.testing.jaxb.map.MapElementWrapperExternalTestCases;
 import org.eclipse.persistence.testing.jaxb.map.MapElementWrapperTestCases;
@@ -71,6 +72,7 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(XmlElementRefsAdapterTestCases.class);
         suite.addTest(AllVariableElementTestCases.suite());
         suite.addTestSuite(InheritanceOverrideTestCases.class);
+        suite.addTestSuite(InheritanceTypeElementTestCases.class);
 	    
 	    return suite;
 	}

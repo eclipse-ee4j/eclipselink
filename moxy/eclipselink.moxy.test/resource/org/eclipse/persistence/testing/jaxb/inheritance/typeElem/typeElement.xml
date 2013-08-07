@@ -1,0 +1,6 @@
+<root xmlns:ns0="theNamespace">
+<thing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:child">
+  <foo>aaa</foo>
+  <type>bbb</type>
+</thing>
+</root>

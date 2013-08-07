@@ -1,0 +1,7 @@
+{"root":{
+   "thing":{
+       "xsi.type":"ns0.child",
+      "foo":"aaa",
+      "type":"bbb"
+      }
+}}
