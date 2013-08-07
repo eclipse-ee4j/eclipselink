@@ -143,6 +143,10 @@ public class UnmarshalXPathEngine <
         return selectNodes(contextNode, xmlField, xmlNamespaceResolver, nullPolicy, false);
     }
     public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy, boolean omitText) throws XMLMarshalException {
+        return selectNodes(contextNode, xmlField, xmlNamespaceResolver, nullPolicy, omitText, true);
+    }
+    
+    public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy, boolean omitText, boolean concatinateTextNodes) {
         try {
             if (contextNode == null) {
                 return null;
@@ -154,7 +158,7 @@ public class UnmarshalXPathEngine <
             if (xPathFragment.shouldExecuteSelectNodes()) {
                 return xmlPlatform.selectNodesAdvanced(contextNode, xmlField.getXPath(), xmlNamespaceResolver);
             }
-            return selectNodes(contextNode, xPathFragment, xmlNamespaceResolver, nullPolicy, omitText);
+            return selectNodes(contextNode, xPathFragment, xmlNamespaceResolver, nullPolicy, omitText, concatinateTextNodes);
         } catch (Exception x) {
             throw XMLMarshalException.invalidXPathString(xmlField.getXPath(), x);
         }
@@ -213,8 +217,8 @@ public class UnmarshalXPathEngine <
         entries.add(entry);
     }
 
-    private NodeList selectNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy, boolean omitText) {
-        NodeList resultNodes = getNodes(contextNode, xPathFragment, xmlNamespaceResolver, nullPolicy);
+    private NodeList selectNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy, boolean omitText, boolean concatText) {
+        NodeList resultNodes = getNodes(contextNode, xPathFragment, xmlNamespaceResolver, nullPolicy, concatText);
 
         if (xPathFragment.getNextFragment() != null && !(omitText && xPathFragment.getNextFragment().nameIsText())) {
             Node resultNode;
@@ -222,7 +226,7 @@ public class UnmarshalXPathEngine <
             int numberOfResultNodes = resultNodes.getLength();
             for (int x = 0; x < numberOfResultNodes; x++) {
                 resultNode = resultNodes.item(x);
-                result.addAll(selectNodes(resultNode, xPathFragment.getNextFragment(), xmlNamespaceResolver, nullPolicy, omitText));
+                result.addAll(selectNodes(resultNode, xPathFragment.getNextFragment(), xmlNamespaceResolver, nullPolicy, omitText, concatText));
             }
             return result;
         }
@@ -245,11 +249,11 @@ public class UnmarshalXPathEngine <
         return selectSingleElement(contextNode, xPathFragment, xmlNamespaceResolver);
     }
 
-    private NodeList getNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy) {
+    private NodeList getNodes(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy, boolean concatText) {
         if (xPathFragment.isAttribute()) {
             return selectAttributeNodes(contextNode, xPathFragment, xmlNamespaceResolver);
         } else if (xPathFragment.nameIsText()) {
-            return selectTextNodes(contextNode, nullPolicy);
+            return selectTextNodes(contextNode, nullPolicy, concatText);
         } else if (xPathFragment.isSelfFragment()) {
             XMLNodeList xmlNodeList = new XMLNodeList(1);
             xmlNodeList.add(contextNode);
@@ -404,7 +408,11 @@ public class UnmarshalXPathEngine <
         return null;
     }
 
-    private NodeList selectTextNodes(Node contextNode, AbstractNullPolicy nullPolicy) {
+    private NodeList selectTextNodes(Node contextNode, AbstractNullPolicy nullPolicy, boolean concatText) {
+        if(!concatText) {
+            return selectAllText(contextNode);
+        }
+        
         Node n = selectSingleText(contextNode);
 
         XMLNodeList xmlNodeList = new XMLNodeList();
@@ -428,6 +436,18 @@ public class UnmarshalXPathEngine <
         return xmlNodeList;
     }
 
+    private NodeList selectAllText(Node contextNode) {
+       XMLNodeList nodes = new XMLNodeList();
+       NodeList children = contextNode.getChildNodes();
+       
+       for(int i = 0; i < children.getLength(); i++) {
+           Node next = children.item(i);
+           if (next.getNodeType() == Node.TEXT_NODE || next.getNodeType() == Node.CDATA_SECTION_NODE) {
+               nodes.add(next);
+           }
+       }
+       return nodes;
+    }
     private boolean sameNamespaceURI(Node node, String namespaceURI) {
         // HANDLE THE NULL CASE
         String nodeNamespaceURI = node.getNamespaceURI();
