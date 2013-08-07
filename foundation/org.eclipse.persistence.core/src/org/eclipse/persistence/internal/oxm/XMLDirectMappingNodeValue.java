@@ -81,8 +81,15 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             if (xPathFragment.hasAttribute) {
             	marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
-            } else {
-                marshalRecord.closeStartGroupingElements(groupingFragment);                             
+            } else {                
+                if(((Field) xmlDirectMapping.getField()).getXPathFragment().nameIsText ){
+                    XPathNode parentNode = xPathNode.getParent();                  
+                    if(parentNode.getAttributeChildren() != null){
+                        marshalRecord.forceValueWrapper();
+                    }
+                }
+                
+                marshalRecord.closeStartGroupingElements(groupingFragment);           
                 marshalRecord.characters(schemaType, fieldValue, null, xmlDirectMapping.isCDATA());                
             }
             if(isQName) {

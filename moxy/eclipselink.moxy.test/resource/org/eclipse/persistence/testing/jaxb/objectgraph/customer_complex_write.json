@@ -6,6 +6,8 @@
      "street":"123 Fake Street"
    },
    "phone-numbers":{
-      "phone-number":["123-4567", "345-6789"]
+      "phone-number":[ {
+         "value":"123-4567"} , {
+         "value":"345-6789"}]
    }
 }} 

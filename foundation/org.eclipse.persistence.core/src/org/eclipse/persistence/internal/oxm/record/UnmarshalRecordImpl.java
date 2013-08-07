@@ -820,6 +820,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
                     return;
                 }
             } else {
+                
                 xPathNode = node;
                 unmarshalContext.startElement(this);
                 levelIndex++;
@@ -827,6 +828,10 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
                 String xsiNilValue = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
                 if(xsiNilValue != null){
                     isXsiNil = xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
+                }
+                
+                if(node.getNullCapableValue() != null){
+                    getNullCapableValues().add(node.getNullCapableValue());
                 }
                 
                 NodeValue nodeValue = node.getUnmarshalNodeValue();
