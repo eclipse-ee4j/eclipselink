@@ -78,6 +78,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         super(null);
         namespaceResolver = new NamespaceResolver();
     }
+    
+    public void forceValueWrapper(){};
 
     public HashMap getPositionalNodes() {
         if (positionalNodes == null) {

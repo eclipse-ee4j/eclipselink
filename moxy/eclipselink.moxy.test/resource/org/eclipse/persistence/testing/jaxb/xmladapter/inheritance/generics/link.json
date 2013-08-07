@@ -5,6 +5,7 @@
       },
       "phoneNumber" : [ {
          "href" : "http://www.example.com/phoneNumber/1"
-      }, "555-1111" ]
+      }, 
+      {"value":"555-1111"} ]
    }
 }

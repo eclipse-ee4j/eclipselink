@@ -63,9 +63,9 @@ public class XPathNode {
     private boolean hasTypeChild;
     private boolean hasPredicateSiblings;
     private boolean hasPredicateChildren;
-
-
-	public XPathFragment getXPathFragment() {
+    private NullCapableValue nullCapableValue;
+	
+    public XPathFragment getXPathFragment() {
         return xPathFragment;
     }
 
@@ -107,6 +107,14 @@ public class XPathNode {
         }
         this.marshalNodeValue = nodeValue;
         isMarshalOnlyNodeValue =  marshalNodeValue.isMarshalOnlyNodeValue();
+    }
+    
+    public NullCapableValue getNullCapableValue() {
+        return nullCapableValue;
+    }
+
+    public void setNullCapableValue(NullCapableValue nullCapableValue) {
+        this.nullCapableValue = nullCapableValue;
     }
     
     public XPathNode getParent() {

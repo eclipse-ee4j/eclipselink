@@ -32,7 +32,7 @@ public class PhoneNumberWithAtts {
         if(!(o instanceof PhoneNumberWithAtts) || o == null) {
             return false;
         } else {
-            return ((PhoneNumberWithAtts)o).number.equals(this.number) && ((PhoneNumberWithAtts)o).areaCode.equals(this.areaCode);
+            return ((PhoneNumberWithAtts)o).number.equals(this.number) &&  ((this.areaCode == null && ((PhoneNumberWithAtts)o).areaCode == null) || ((PhoneNumberWithAtts)o).areaCode.equals(this.areaCode));
         }
     }
     

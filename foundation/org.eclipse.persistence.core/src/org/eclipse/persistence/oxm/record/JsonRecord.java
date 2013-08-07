@@ -62,6 +62,10 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         characterEscapeHandler = marshaller.getCharacterEscapeHandler();
     }
        
+    public void forceValueWrapper(){
+        setComplex(position, true);
+        isLastEventStart = false;
+    }
     
     @Override
     public void startDocument(String encoding, String version) {      

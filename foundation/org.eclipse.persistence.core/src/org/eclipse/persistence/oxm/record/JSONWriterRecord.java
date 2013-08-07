@@ -150,6 +150,10 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     	 }
     }
     
+    public void forceValueWrapper(){
+        charactersAllowed = false;
+    }
+    
     /**
      * Return the Writer that the object will be marshalled to.
      * @return The marshal target.

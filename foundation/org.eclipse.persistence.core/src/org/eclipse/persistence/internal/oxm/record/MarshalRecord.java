@@ -90,6 +90,8 @@ public interface MarshalRecord<
     public void endPrefixMapping(String prefix);
 
     public void flush();
+    
+    public void forceValueWrapper();
 
     public CoreAttributeGroup getCurrentAttributeGroup();
 

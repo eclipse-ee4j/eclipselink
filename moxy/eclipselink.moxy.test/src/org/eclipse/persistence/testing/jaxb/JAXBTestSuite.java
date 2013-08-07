@@ -29,6 +29,7 @@ import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesXpathTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithNullAttrTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.none.InvalidTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.none.ValidTestCases;
 
@@ -59,6 +60,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XmlValueByteArrayWithIdTestCases.class);
         suite.addTestSuite(XmlValueWithAttributesTestCases.class);
         suite.addTestSuite(XmlValueWithAttributesXpathTestCases.class);
+        suite.addTestSuite(XmlValueWithNullAttrTestCases.class);
         suite.addTestSuite(XmlValueListTestCases.class);
         suite.addTestSuite(InvalidTestCases.class);
         suite.addTestSuite(ValidTestCases.class);
