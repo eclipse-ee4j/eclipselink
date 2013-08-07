@@ -47,13 +47,15 @@ public class JsonSchema {
     @XmlVariableNode("name")
     @XmlElementWrapper(name="properties")
     private Map<String, Property> properties;
-    
+
+    @XmlElement(name="items")
+    private Property items;   
+
     @XmlVariableNode("name")
     @XmlElementWrapper(name="definitions")
     private Map<String, Property> definitions;
     
-    @XmlElement(name="item")
-    private JsonSchema item;
+
     
     private List<String> required;
     
@@ -93,5 +95,11 @@ public class JsonSchema {
         return properties.get(name);
     }
 
+    public Property getItems() {
+        return items;
+    }
 
+    public void setItems(Property items) {
+        this.items = items;
+    }
 }

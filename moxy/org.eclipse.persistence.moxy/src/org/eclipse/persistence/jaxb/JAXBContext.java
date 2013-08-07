@@ -307,7 +307,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     public void generateJsonSchema(SchemaOutputResolver outputResolver, Class rootClass) throws JAXBException, javax.xml.bind.JAXBException, IOException {
-        JsonSchemaGenerator generator = new JsonSchemaGenerator(this.contextState.getXMLContext().getSession(rootClass).getProject(), this.contextState.properties);
+        JsonSchemaGenerator generator = new JsonSchemaGenerator(this.contextState.getXMLContext(), this.contextState.properties);
         JsonSchema schema = generator.generateSchema(rootClass);
 
         Marshaller m = getJsonSchemaMarshaller();
