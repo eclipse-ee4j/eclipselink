@@ -17,8 +17,7 @@ public class Attribute extends SimpleComponent {
     public static final String REQUIRED = "required";
     public static final String PROHIBITED = "prohibited";
     private String use;
-    private String ref;
-
+  
     public Attribute() {
     }
 
@@ -29,12 +28,5 @@ public class Attribute extends SimpleComponent {
     public String getUse() {
         return use;
     }
-
-    public void setRef(String ref) {
-        this.ref = ref;
-    }
-
-    public String getRef() {
-        return ref;
-    }
+   
 }

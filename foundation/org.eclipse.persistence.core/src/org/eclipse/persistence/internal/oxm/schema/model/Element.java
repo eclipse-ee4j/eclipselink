@@ -18,7 +18,6 @@ public class Element extends SimpleComponent {
     private String maxOccurs;
     private boolean nillable;
     private boolean abstractValue;
-    private String ref;
     private String substitutionGroup;
 
     public Element() {
@@ -67,13 +66,6 @@ public class Element extends SimpleComponent {
         return maxOccurs;
     }
 
-    public void setRef(String ref) {
-        this.ref = ref;
-    }
-
-    public String getRef() {
-        return ref;
-    }
     
     public String getSubstitutionGroup() {
         return substitutionGroup;
