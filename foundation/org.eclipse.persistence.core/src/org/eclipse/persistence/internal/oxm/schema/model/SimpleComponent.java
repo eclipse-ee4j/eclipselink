@@ -25,6 +25,7 @@ public abstract class SimpleComponent {
     private Map attributesMap;
     private Annotation annotation;
     private String form;
+    private String ref;
 
     public SimpleComponent() {
         attributesMap = new HashMap();
@@ -98,5 +99,13 @@ public abstract class SimpleComponent {
 
     public String getForm() {
         return form;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
+    }
+
+    public String getRef() {
+        return ref;
     }
 }

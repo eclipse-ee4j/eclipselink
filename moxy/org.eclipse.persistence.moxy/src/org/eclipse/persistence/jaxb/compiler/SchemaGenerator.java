@@ -1730,6 +1730,9 @@ public class SchemaGenerator {
     }
     
     private boolean shouldAddRefAndSetForm(SimpleComponent sc, String simpleComponentNamespace, String lookupNamespace, boolean formQualified, boolean isElement){    
+        if(sc.getRef() != null){
+           return true;
+        }
         boolean addRef = false;
         boolean sameNamespace = simpleComponentNamespace.equals(lookupNamespace);
 
