@@ -19,6 +19,8 @@ import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.record.TransformationRecord;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 
 public interface TransformationMapping<
@@ -27,6 +29,7 @@ public interface TransformationMapping<
     CONTAINER_POLICY extends CoreContainerPolicy,
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
+    TRANSFORMATION_RECORD extends TransformationRecord,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD> {
     /**
      * Add the name of field and the name of the method
@@ -54,6 +57,13 @@ public interface TransformationMapping<
     public List<Object[]> getFieldToTransformers();
 
     /**
+     * INTERNAL:
+     * Extract value from the row and set the attribute to the value in the object.
+     * @since EclipseLink 2.6.0
+     */
+    public Object readFromRowIntoObject(XML_RECORD row, Object object, ABSTRACT_SESSION executionSession, boolean isTargetProtected);
+
+    /**
      * To set the attribute method name. The method is invoked internally by TopLink
      * to retrieve the value to store in the domain object. The method receives Record
      * as its parameter and optionally Session, and should extract the value from the
@@ -73,4 +83,12 @@ public interface TransformationMapping<
      * This is used when generating DDL.
      */
     public void setIsOptional(boolean isOptional);
+
+    /**
+     * INTERNAL:
+     * Put value into a record keyed on field.
+     * @since EclipseLink 2.6.0
+     */
+    public void writeFromAttributeIntoRow(UnmarshalRecord unmarshalRecord, Field field, Object value, boolean isElement);
+
 }

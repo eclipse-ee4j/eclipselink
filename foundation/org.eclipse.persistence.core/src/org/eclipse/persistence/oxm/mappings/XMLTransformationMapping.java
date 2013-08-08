@@ -14,10 +14,15 @@ package org.eclipse.persistence.oxm.mappings;
 
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.TransformationMapping;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.XMLTransformationRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
@@ -126,7 +131,7 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
- public class XMLTransformationMapping extends AbstractTransformationMapping implements TransformationMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLRecord>, XMLMapping {
+ public class XMLTransformationMapping extends AbstractTransformationMapping implements TransformationMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLTransformationRecord, XMLRecord>, XMLMapping {
     public XMLTransformationMapping() {
         super();
     }
@@ -163,4 +168,39 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
     }
+
+    /**
+     * INTERNAL:
+     * Put value into a record keyed on field.
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public void writeFromAttributeIntoRow(UnmarshalRecord unmarshalRecord, Field field, Object value, boolean isElement) {
+        if (null == unmarshalRecord.getTransformationRecord()) {
+            unmarshalRecord.setTransformationRecord(new XMLTransformationRecord("ROOT", unmarshalRecord));
+        }
+        Field toWrite = field;
+        if(isElement) {
+            boolean isCDATA = unmarshalRecord.isBufferCDATA();
+            if(field.isCDATA() != isCDATA) {
+                toWrite = new XMLField(field.getName());
+                toWrite.setNamespaceResolver(field.getNamespaceResolver());
+                toWrite.setIsCDATA(isCDATA);
+            }
+        }
+        unmarshalRecord.getTransformationRecord().put(toWrite, value);
+     }
+
+    /**
+     * INTERNAL:
+     * Extract value from the row and set the attribute to the value in the object.
+     * @since EclipseLink 2.6.0
+     */
+    @Override
+    public Object readFromRowIntoObject(XMLRecord row, Object object, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+        ReadObjectQuery query = new ReadObjectQuery();
+        query.setSession(executionSession);
+        return readFromRowIntoObject(row, null, object, null, query, executionSession, isTargetProtected);
+    }
+
 }

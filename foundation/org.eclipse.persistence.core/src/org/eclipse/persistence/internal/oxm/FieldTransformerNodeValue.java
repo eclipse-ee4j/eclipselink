@@ -12,16 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.core.mappings.transformers.CoreFieldTransformer;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.TransformationMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.internal.oxm.record.XMLTransformationRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.transformers.FieldTransformer;
-import org.eclipse.persistence.oxm.XMLField;
 
 /**
  * INTERNAL:
@@ -31,14 +29,19 @@ import org.eclipse.persistence.oxm.XMLField;
  */
 
 public class FieldTransformerNodeValue extends NodeValue {
-    private FieldTransformer fieldTransformer;
+    private CoreFieldTransformer fieldTransformer;
+    private TransformationMapping transformationMapping;
     private Field xmlField;
 
-    public FieldTransformer getFieldTransformer() {
+    public FieldTransformerNodeValue(TransformationMapping transformationMapping) {
+        this.transformationMapping = transformationMapping;
+    }
+
+    public CoreFieldTransformer getFieldTransformer() {
         return fieldTransformer;
     }
 
-    public void setFieldTransformer(FieldTransformer fieldTransformer) {
+    public void setFieldTransformer(CoreFieldTransformer fieldTransformer) {
         this.fieldTransformer = fieldTransformer;
     }
 
@@ -55,7 +58,7 @@ public class FieldTransformerNodeValue extends NodeValue {
     }
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Object value = fieldTransformer.buildFieldValue(object, getXMLField().getXPath(), (AbstractSession) session);
+        Object value = fieldTransformer.buildFieldValue(object, getXMLField().getXPath(), session);
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
     }
 
@@ -77,24 +80,12 @@ public class FieldTransformerNodeValue extends NodeValue {
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         ConversionManager conversionManager = (ConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();        
         Object objectValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
-        // PUT VALUE INTO A RECORD KEYED ON XMLFIELD
-        if (null == unmarshalRecord.getTransformationRecord()) {
-            unmarshalRecord.setTransformationRecord(new XMLTransformationRecord("ROOT", unmarshalRecord));
-        }
-        unmarshalRecord.getTransformationRecord().put(xmlField, objectValue);
-    }    
-    
+        transformationMapping.writeFromAttributeIntoRow(unmarshalRecord, xmlField, objectValue, false);
+    }
+
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         Object value = unmarshalRecord.getCharacters().toString();
-        boolean isCDATA = unmarshalRecord.isBufferCDATA();
         unmarshalRecord.resetStringBuffer();
-        Field toWrite = xmlField;
-        if(xmlField.isCDATA() != isCDATA) {
-            toWrite = new XMLField(xmlField.getName());
-            toWrite.setNamespaceResolver(xmlField.getNamespaceResolver());
-            toWrite.setIsCDATA(isCDATA);
-        }
-        //xmlField.setIsCDATA(isCDATA);
         ConversionManager conversionManager = unmarshalRecord.getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName(), conversionManager);
@@ -102,11 +93,6 @@ public class FieldTransformerNodeValue extends NodeValue {
         } else {
             value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, conversionManager, unmarshalRecord);
         }
-
-        // PUT VALUE INTO A RECORD KEYED ON XMLFIELD
-        if (null == unmarshalRecord.getTransformationRecord()) {
-            unmarshalRecord.setTransformationRecord(new XMLTransformationRecord("ROOT", unmarshalRecord));
-        }
-        unmarshalRecord.getTransformationRecord().put(toWrite, value);
+        transformationMapping.writeFromAttributeIntoRow(unmarshalRecord, xmlField, value, true);
     }
 }

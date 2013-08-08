@@ -38,7 +38,6 @@ import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.unmapped.DefaultUnmappedContentHandler;
 import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
-import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
@@ -51,7 +50,8 @@ public interface UnmarshalRecord<
     ABSTRACT_SESSION extends CoreAbstractSession,
     FIELD extends CoreField,
     ID_RESOLVER extends IDResolver,
-    TREE_OBJECT_BUILDER extends ObjectBuilder,
+    OBJECT_BUILDER extends ObjectBuilder,
+    TRANSFORMATION_RECORD extends TransformationRecord,
     UNMARSHALLER extends Unmarshaller> extends AbstractUnmarshalRecord<ABSTRACT_SESSION, FIELD, UNMARSHALLER>, ExtendedContentHandler, LexicalHandler {
 
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
@@ -72,7 +72,7 @@ public interface UnmarshalRecord<
 
     public  UnmarshalRecord getChildRecord();
 
-    public UnmarshalRecord getChildUnmarshalRecord(TREE_OBJECT_BUILDER targetObjectBuilder);
+    public UnmarshalRecord getChildUnmarshalRecord(OBJECT_BUILDER targetObjectBuilder);
 
     public Object getContainerInstance(ContainerValue containerValue);
 
@@ -116,7 +116,7 @@ public interface UnmarshalRecord<
 
     public XPathFragment getTextWrapperFragment();
 
-    public DOMRecord getTransformationRecord();
+    public TRANSFORMATION_RECORD getTransformationRecord();
 
     public QName getTypeQName();
 
@@ -136,7 +136,7 @@ public interface UnmarshalRecord<
 
     public XPathNode getXPathNode();
 
-    public UnmarshalRecord initialize(TREE_OBJECT_BUILDER objectBuilder);
+    public UnmarshalRecord initialize(OBJECT_BUILDER objectBuilder);
 
     public void initializeRecord(Mapping mapping) throws SAXException;
 
@@ -190,7 +190,7 @@ public interface UnmarshalRecord<
 
     public void setTextWrapperFragment(XPathFragment textWrapperFragment);
 
-    public void setTransformationRecord(DOMRecord transformationRecord);
+    public void setTransformationRecord(TRANSFORMATION_RECORD transformationRecord);
 
     public void setTypeQName(QName qname);
 

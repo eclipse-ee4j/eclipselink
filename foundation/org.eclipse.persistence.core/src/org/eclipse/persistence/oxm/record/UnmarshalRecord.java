@@ -44,9 +44,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, IDResolver, TreeObjectBuilder, XMLUnmarshaller> {
+public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, IDResolver, TreeObjectBuilder, DOMRecord, XMLUnmarshaller> {
 
-    private org.eclipse.persistence.internal.oxm.record.UnmarshalRecord unmarshalRecord;
+    private org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, IDResolver, TreeObjectBuilder, DOMRecord, XMLUnmarshaller> unmarshalRecord;
 
     public UnmarshalRecord(org.eclipse.persistence.internal.oxm.record.UnmarshalRecord unmarshalRecord) {
         this.unmarshalRecord = unmarshalRecord;

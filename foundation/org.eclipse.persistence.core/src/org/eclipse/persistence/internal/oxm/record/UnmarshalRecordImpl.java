@@ -54,14 +54,12 @@ import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.TransformationMapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.oxm.record.DOMRecord;
-import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.ErrorHandler;
@@ -86,7 +84,7 @@ import org.xml.sax.ext.Locator2Impl;
  * @author bdoughan
  *
  */
-public class UnmarshalRecordImpl extends CoreAbstractRecord implements UnmarshalRecord<CoreAbstractSession, CoreField, IDResolver, ObjectBuilder, Unmarshaller> {
+public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRecord> extends CoreAbstractRecord implements UnmarshalRecord<CoreAbstractSession, CoreField, IDResolver, ObjectBuilder, TRANSFORMATION_RECORD, Unmarshaller> {
     protected XMLReader xmlReader;
     private ObjectBuilder treeObjectBuilder;
     private XPathFragment xPathFragment;
@@ -94,7 +92,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
     private int levelIndex;
     private UnmarshalRecord childRecord;
     protected UnmarshalRecord parentRecord;
-    private DOMRecord transformationRecord;
+    private TRANSFORMATION_RECORD transformationRecord;
     private List<UnmarshalRecord> selfRecords;
     private Map<XPathFragment, Integer> indexMap;
     private List<NullCapableValue> nullCapableValues;
@@ -289,11 +287,13 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
         this.parentRecord = parentRecord;
     }
 
-    public DOMRecord getTransformationRecord() {
+    @Override
+    public TRANSFORMATION_RECORD getTransformationRecord() {
         return this.transformationRecord;
     }
 
-    public void setTransformationRecord(DOMRecord transformationRecord) {
+    @Override
+    public void setTransformationRecord(TRANSFORMATION_RECORD transformationRecord) {
         this.transformationRecord = transformationRecord;
     }
 
@@ -639,13 +639,11 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
             }
 
             // PROCESS TRANSFORMATION MAPPINGS
-            List transformationMappings = treeObjectBuilder.getTransformationMappings();
+            List<TransformationMapping> transformationMappings = treeObjectBuilder.getTransformationMappings();
             if (null != transformationMappings) {
-                ReadObjectQuery query = new ReadObjectQuery();
-                query.setSession((AbstractSession) session);
                 for (int x = 0, transformationMappingsSize = transformationMappings.size(); x < transformationMappingsSize; x++) {
-                    AbstractTransformationMapping transformationMapping = (AbstractTransformationMapping)transformationMappings.get(x);
-                    transformationMapping.readFromRowIntoObject(transformationRecord, null, currentObject, null, query, (AbstractSession) session, true);
+                    TransformationMapping transformationMapping = transformationMappings.get(x);
+                    transformationMapping.readFromRowIntoObject((XMLRecord) transformationRecord, currentObject, session, true);
                 }
             }
 

@@ -12,8 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.transformers;
 
-import java.io.*;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.core.mappings.transformers.CoreFieldTransformer;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 
 /**
@@ -24,7 +24,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
  * @author  mmacivor
  * @since   10.1.3
  */
-public interface FieldTransformer extends Serializable {
+public interface FieldTransformer extends CoreFieldTransformer<Session> {
 
     /**
      * Initialize this transformer. Only required if the user needs some special
@@ -39,5 +39,6 @@ public interface FieldTransformer extends Serializable {
      * @param fieldName - the name of the field being transformed. Used if the user wants to use this transformer for multiple fields.
      * @return - The value to be written for the field associated with this transformer
      */
+    @Override
     public Object buildFieldValue(Object instance, String fieldName, Session session);
 }

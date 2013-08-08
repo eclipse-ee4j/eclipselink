@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -38,6 +39,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.TransformationRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -59,7 +61,7 @@ import org.w3c.dom.NodeList;
  * PUBLIC:
  * Provides a Record/Map API on an XML DOM element.
  */
-public class DOMRecord extends XMLRecord {
+public class DOMRecord extends XMLRecord implements TransformationRecord {
     private Node dom;
     private Node currentNode;
     private XMLField lastUpdatedField;
