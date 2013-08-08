@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jaxb.json.schema;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +43,7 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -64,14 +67,16 @@ public class JsonSchemaGenerator {
     String NAMESPACE_SEPARATOR = ".";
     NamespacePrefixMapper prefixMapper = null;
     Property[] xopIncludeProp = null;
+    XMLContext xmlContext;
 
     private static String DEFINITION_PATH="#/definitions";
     
     private static HashMap<Class, JsonType> javaTypeToJsonType;
     
     
-    public JsonSchemaGenerator(Project project, Map properties) {
-        this.project = project;
+    public JsonSchemaGenerator(XMLContext context, Map properties) {
+        //this.project = project;
+        this.xmlContext = context;
         this.contextProperties = properties;
         if(properties != null) {
             attributePrefix = (String)properties.get(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX);
@@ -97,10 +102,45 @@ public class JsonSchemaGenerator {
         this.rootClass = rootClass;
         schema = new JsonSchema();
         schema.setTitle(rootClass.getName());
+        
+        //Check for simple type
+        JsonType rootType = getJsonTypeForJavaType(rootClass);
+        if(rootType != JsonType.OBJECT) {
+            schema.setType(rootType);
+            return schema;
+        }
+        
+        Map<String, Property> properties = null;        
+        //Check for root level list or array
+        if(rootClass.isArray() || isCollection(rootClass)) {
+            schema.setType(JsonType.ARRAY);
+            schema.setItems(new Property());
+            Class itemType = Object.class; 
+            
+            if(rootClass.isArray()) {
+                itemType = rootClass.getComponentType();
+            } else {
+                Type pType = rootClass.getGenericSuperclass();
+                if(pType instanceof ParameterizedType) {
+                    itemType = (Class)((ParameterizedType)pType).getActualTypeArguments()[0];
+                }
+            }
+            rootType = getJsonTypeForJavaType(itemType);
+            schema.getItems().setType(rootType);
+            if(rootType != JsonType.OBJECT) {
+                return schema;
+            }
+            rootClass = itemType;
+            properties = schema.getItems().getProperties();
+            
+        } else {
+            schema.setType(JsonType.OBJECT);
+            properties = schema.getProperties();
+        }
+        this.project = this.xmlContext.getSession(rootClass).getProject();
+        
         XMLDescriptor descriptor = (XMLDescriptor)project.getDescriptor(rootClass);
-        schema.setType(JsonType.OBJECT);
         Property rootProperty = null;
-        Map<String, Property> properties = schema.getProperties();
         if(contextProperties != null && Boolean.TRUE.equals(this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT))) {
             XMLField field = descriptor.getDefaultRootElementField();
             if(field != null) {
@@ -581,6 +621,15 @@ public class JsonSchemaGenerator {
             this.initXopIncludeProp();
         }
         return this.xopIncludeProp;
+    }
+    
+    private boolean isCollection(Class type) {
+        if (CoreClassConstants.Collection_Class.isAssignableFrom(type) 
+                || CoreClassConstants.List_Class.isAssignableFrom(type) 
+                || CoreClassConstants.Set_Class.isAssignableFrom(type)) {
+            return true;
+        }
+        return false;        
     }
 
 }
