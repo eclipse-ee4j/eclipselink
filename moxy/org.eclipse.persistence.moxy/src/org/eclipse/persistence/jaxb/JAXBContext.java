@@ -76,6 +76,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
@@ -302,16 +303,22 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      *
      * @param outputResolver Class that decides where the schema file (of the given namespace URI) will be written
      */
-    public void generateSchema(SchemaOutputResolver outputResolver) {
-        generateSchema(outputResolver, null);
+    public void generateSchema(SchemaOutputResolver outputResolver)  {
+        if(outputResolver instanceof JsonSchemaOutputResolver) {
+            generateJsonSchema(outputResolver, ((JsonSchemaOutputResolver)outputResolver).getRootClass());
+        } else {
+            generateSchema(outputResolver, null);
+        }
     }
 
-    public void generateJsonSchema(SchemaOutputResolver outputResolver, Class rootClass) throws JAXBException, javax.xml.bind.JAXBException, IOException {
+    public void generateJsonSchema(SchemaOutputResolver outputResolver, Class rootClass) {
         JsonSchemaGenerator generator = new JsonSchemaGenerator(this.contextState.getXMLContext(), this.contextState.properties);
         JsonSchema schema = generator.generateSchema(rootClass);
-
-        Marshaller m = getJsonSchemaMarshaller();
-        m.marshal(schema, outputResolver.createOutput(null, rootClass.getName() + ".json"));
+        try {
+            Marshaller m = getJsonSchemaMarshaller();
+            m.marshal(schema, outputResolver.createOutput(null, rootClass.getName() + ".json"));
+        } catch (Exception ex) {
+        }
     }
 
     private Marshaller getJsonSchemaMarshaller() throws javax.xml.bind.JAXBException {
