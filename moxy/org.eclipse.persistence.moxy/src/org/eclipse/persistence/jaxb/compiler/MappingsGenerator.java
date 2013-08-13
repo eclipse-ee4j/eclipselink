@@ -3119,6 +3119,7 @@ public class MappingsGenerator {
 	  				} else {
 	  				    desc.setDefaultRootElement("");
 	  				    desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+	  				    desc.setResultAlwaysXMLRoot(true);
 	  				}
 	              } else {
 	                  if(namespaceUri.equals("")) {
@@ -3133,6 +3134,7 @@ public class MappingsGenerator {
                           } else {
                               desc.setDefaultRootElement("");
                               desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+                              desc.setResultAlwaysXMLRoot(true);
                           }
 	  				}
 	  			}

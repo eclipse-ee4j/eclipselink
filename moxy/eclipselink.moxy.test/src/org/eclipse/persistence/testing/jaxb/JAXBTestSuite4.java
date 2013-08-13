@@ -36,6 +36,9 @@ import org.eclipse.persistence.testing.jaxb.xmlgregoriancalendar.XMLGregorianCal
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.XmlInverseRefBidirectionalTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlschematype.XSDSchemaTypesTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvariablenode.AllVariableElementTestCases;
+import org.eclipse.persistence.testing.jaxb.xsitype.OtherRootTestCases;
+import org.eclipse.persistence.testing.jaxb.xsitype.TypeAttributeInheritanceTestCases;
+import org.eclipse.persistence.testing.jaxb.xsitype.TypeAttributeTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -73,6 +76,9 @@ public class JAXBTestSuite4 {
         suite.addTest(AllVariableElementTestCases.suite());
         suite.addTestSuite(InheritanceOverrideTestCases.class);
         suite.addTestSuite(InheritanceTypeElementTestCases.class);
+        suite.addTestSuite(TypeAttributeTestCases.class);
+        suite.addTestSuite(TypeAttributeInheritanceTestCases.class);
+        suite.addTestSuite(OtherRootTestCases.class);
 	    
 	    return suite;
 	}

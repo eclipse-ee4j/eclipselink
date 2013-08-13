@@ -65,8 +65,7 @@ public class RootElementIdentifiedByNameTestCases extends OXTestCase {
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_XSITYPE);
             Object testObject = xmlUnmarshaller.unmarshal(inputStream);
-            assertTrue(testObject instanceof XMLRoot);
-            assertTrue(((XMLRoot)testObject).getObject().getClass().equals(EmailAddress.class));
+            assertTrue(testObject instanceof MailingAddress);
         } catch (XMLMarshalException e) {
         	fail();
         }

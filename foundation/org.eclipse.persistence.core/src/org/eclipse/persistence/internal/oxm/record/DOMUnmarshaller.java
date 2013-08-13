@@ -28,7 +28,6 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
@@ -391,33 +390,6 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     }
 
     /**
-     * INTERNAL: Return the descriptor for the document.
-     */
-    protected Descriptor getDescriptor(DOMRecord xmlRecord) throws XMLMarshalException {
-    	Descriptor xmlDescriptor = null;
-    	
-    	Context xmlContext = xmlUnmarshaller.getXMLContext();        
-        // Try to find a descriptor based on the schema type
-        String type = ((Element) xmlRecord.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "type");
-        if (null != type) {
-            XPathFragment typeFragment = new XPathFragment(type);
-            String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
-            typeFragment.setNamespaceURI(namespaceURI);
-            xmlDescriptor =xmlContext.getDescriptorByGlobalType(typeFragment);
-        }
-                    
-        if (null == xmlDescriptor) {
-        	QName rootQName = new QName(xmlRecord.getNamespaceURI(), xmlRecord.getLocalName());
-        	xmlDescriptor = xmlContext.getDescriptor(rootQName);
-        	if (null == xmlDescriptor) {
-                throw XMLMarshalException.noDescriptorWithMatchingRootElement(rootQName.toString());
-            }
-        }
-        
-        return xmlDescriptor;
-    }
-
-    /**
      * INTERNAL: Find the Descriptor corresponding to the context node of the
      * XMLRecord, and then convert the XMLRecord to an instance of the
      * corresponding object.
@@ -428,9 +400,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      * @throws XMLMarshalException
      *             if an error occurred during unmarshalling
      */
-    public Object xmlToObject(DOMRecord xmlRecord) throws XMLMarshalException {
-        Descriptor xmlDescriptor = getDescriptor(xmlRecord);
-        return xmlToObject(xmlRecord, xmlDescriptor.getJavaClass());
+    public Object xmlToObject(DOMRecord xmlRecord) throws XMLMarshalException {   
+    	 return xmlToObject(xmlRecord, null);
     }
 
     /**
@@ -457,8 +428,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	        // this case, we need to use the conversion manager to convert the 
 	        // node's value to the primitive wrapper class, then create, 
 	        // populate and return an XMLRoot
-	        if (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null ||CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(referenceClass)
-	        	    ||CoreClassConstants.DURATION.isAssignableFrom(referenceClass)){
+	        if (referenceClass != null && (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null ||CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(referenceClass)
+	        	    ||CoreClassConstants.DURATION.isAssignableFrom(referenceClass))){
 	            // we're assuming that since we're unmarshalling to a primitive
 	            // wrapper, the root element has a single text node
 	            Object nodeVal;
@@ -485,16 +456,38 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	            xmlRoot.setVersion(xmlVersion);
 	            return xmlRoot;
 	        }
-	
-	        // for XMLObjectReferenceMappings we need a non-shared cache, so
-	        // try and get a Unit Of Work from the XMLContext
-	        CoreAbstractSession readSession = xmlContext.getSession(referenceClass);
-	
-	        Descriptor descriptor = (Descriptor)readSession.getDescriptor(referenceClass);
-	        if (descriptor == null) {
-	            throw XMLMarshalException.descriptorNotFoundInProject(referenceClass.getName());
-	        }
-	
+            Descriptor descriptor = null;
+            CoreAbstractSession readSession = null;
+            boolean shouldWrap = true;            
+            if(referenceClass == null){
+                QName rootQName = new QName(xmlRow.getNamespaceURI(), xmlRow.getLocalName());
+                descriptor = xmlContext.getDescriptor(rootQName);   
+                if (null == descriptor) {
+                    String type = ((Element) xmlRow.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "type");
+                    if (null != type) {
+     	                XPathFragment typeFragment = new XPathFragment(type);
+     	                String namespaceURI = xmlRow.resolveNamespacePrefix(typeFragment.getPrefix());
+     	                typeFragment.setNamespaceURI(namespaceURI);
+     	                descriptor = xmlContext.getDescriptorByGlobalType(typeFragment);    	               
+     	            }
+                 } else if(descriptor.getTables().size() == 1){
+                     shouldWrap = false;
+                 }                 	    		
+                 if (null == descriptor) {
+                     throw XMLMarshalException.noDescriptorWithMatchingRootElement(rootQName.toString());
+                 }else{
+                     readSession = xmlContext.getSession(descriptor.getJavaClass());
+                 }
+            } else {
+                // for XMLObjectReferenceMappings we need a non-shared cache, so
+                // try and get a Unit Of Work from the XMLContext
+                readSession = xmlContext.getSession(referenceClass);
+                descriptor = (Descriptor)readSession.getDescriptor(referenceClass);
+                if (descriptor == null) {
+                    throw XMLMarshalException.descriptorNotFoundInProject(referenceClass.getName());
+                } 
+            }
+	    		
 	        Object object = null;
 	        if(null == xmlRow.getDOM().getAttributes().getNamedItemNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE)) {
 	            xmlRow.setUnmarshaller(xmlUnmarshaller);
@@ -516,7 +509,11 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	            elementLocalName = xmlRow.getDOM().getNodeName();
 	        }
 	        String elementPrefix = xmlRow.getDOM().getPrefix();
-	        return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot, true, xmlUnmarshaller);
+	        if(shouldWrap || descriptor.isResultAlwaysXMLRoot() || isResultAlwaysXMLRoot){
+	            return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot, true, xmlUnmarshaller);
+	        }else{
+	        	return object;
+	        }
     	}finally{    		
             xmlUnmarshaller.getStringBuffer().reset();           
     	}

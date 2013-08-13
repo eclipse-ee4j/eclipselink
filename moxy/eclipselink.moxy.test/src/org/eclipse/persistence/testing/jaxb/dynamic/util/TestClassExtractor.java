@@ -19,8 +19,8 @@ import org.eclipse.persistence.sessions.Session;
 public class TestClassExtractor extends ClassExtractor {
 
     public Class extractClassFromRow(Record databaseRow, Session session) {
-        Class personClass = session.getProject().getDescriptorForAlias("Person").getJavaClass();
-        return personClass;
+        Class empClass = session.getProject().getDescriptorForAlias("Employee").getJavaClass();
+        return empClass;
     }
 
 }

@@ -38,5 +38,15 @@ public class XmlSeeAlsoTest2 extends JAXBWithJSONTestCases {
         exampleC.sleephours = 10;
         return new JAXBElement<Animal>(new QName("animal"), Animal.class, exampleC);
     }
+    
+    public Object getReadControlObject() {
+        Cat exampleC = new Cat();
+        exampleC.owner = "JANE DOE";
+        exampleC.name = "meow";
+        exampleC.sleephours = 10;
+        return exampleC;
+    }
+    
+    public void testRoundTrip(){};
 
 }
