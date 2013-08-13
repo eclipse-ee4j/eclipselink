@@ -94,6 +94,11 @@ public class PhoneNumber implements Serializable {
         this.id = employee.getId();
     }
 
+    @Override
+    public String toString() {
+        return "id=" + id + ", type=" + type + ", areaCode=" + areaCode + ", number=" + number;
+    }
+
     public static class ID implements Serializable {
         private static final long serialVersionUID = 1L;
 

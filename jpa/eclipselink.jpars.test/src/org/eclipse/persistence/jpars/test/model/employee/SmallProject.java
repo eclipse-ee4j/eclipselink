@@ -28,5 +28,4 @@ public class SmallProject extends Project {
         setName(name);
         setDescription(description);
     }
-
 }

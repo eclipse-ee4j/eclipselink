@@ -11,7 +11,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
 
-import java.net.URI;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -29,6 +28,7 @@ import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -39,6 +39,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *
  */
 public abstract class AbstractSingleResultQueryResource extends AbstractResource {
+    private static final String CLASS_NAME = AbstractSingleResultQueryResource.class.getName();
 
     /**
      * Named query single result.
@@ -52,10 +53,11 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
      * @return the response
      */
     @SuppressWarnings("rawtypes")
-    protected Response namedQuerySingleResult(String version, String persistenceUnit, String name, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
+    protected Response namedQuerySingleResultInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "namedQuerySingleResultInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);
-            Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), name, getMatrixParameters(uriInfo, name), getQueryParameters(uriInfo));
+            PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
+            Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), queryName, getMatrixParameters(uriInfo, queryName), getQueryParameters(uriInfo));
             DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
             if (dbQuery instanceof ReportQuery) {
                 List<ReportItem> reportItems = ((ReportQuery) dbQuery).getItems();
@@ -79,7 +81,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
                     return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes())).build();
                 } else {
                     // something went wrong with the descriptors, return error
-                    throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(name, context.getName());
+                    throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
                 }
             }
 

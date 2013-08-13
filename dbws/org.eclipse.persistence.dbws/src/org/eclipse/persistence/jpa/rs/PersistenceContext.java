@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.rs;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -187,6 +188,11 @@ public class PersistenceContext {
         setBaseURI(defaultURI);
     }
 
+    /**
+     * Checks if is weaving enabled.
+     *
+     * @return true, if is weaving enabled
+     */
     public boolean isWeavingEnabled() {
         if (this.weavingEnabled == null) {
             this.weavingEnabled = getWeavingProperty();
@@ -194,10 +200,20 @@ public class PersistenceContext {
         return this.weavingEnabled;
     }
 
+    /**
+     * Gets the version.
+     *
+     * @return the version
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     * Sets the version.
+     *
+     * @param version the new version
+     */
     public void setVersion(String version) {
         this.version = version;
     }
@@ -901,6 +917,15 @@ public class PersistenceContext {
         return query;
     }
 
+    /**
+     * Builds the query.
+     *
+     * @param tenantId the tenant id
+     * @param name the name
+     * @param parameters the parameters
+     * @param hints the hints
+     * @return the query
+     */
     @SuppressWarnings("rawtypes")
     public Query buildQuery(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
         EntityManager em = getEmf().createEntityManager(tenantId);
@@ -975,32 +1000,37 @@ public class PersistenceContext {
     }
 
     /**
-     * Marshall an entity to either JSON or XML
-     * Calling this method, will treat relationships as unfetched in the XML/JSON and marshall them as links
-     * rather than attempting to marshall the data in those relationships
-     * @param object
-     * @param mediaType
-     * @param output
-     * @throws JAXBException
+     * Unmarshal entity.
+     *
+     * @param type the type of the entity to unmarshal
+     * @param acceptedMediaType the accepted media type
+     * @param in the input stream to unmarshal
+     * @return the object
+     * @throws JAXBException the JAXB exception
      */
-    public Object unmarshalEntity(String type, MediaType acceptedMedia, InputStream in) throws JAXBException {
-        return unmarshalEntity(getClass(type), acceptedMedia, in);
+    public Object unmarshalEntity(String type, MediaType acceptedMediaType, InputStream in) throws JAXBException {
+        in = in.markSupported() ? in : new BufferedInputStream(in);
+        in.mark(1024 * 1024 * 1024); // make sure the readlimit is large enough
+        JPARSLogger.entering(CLASS_NAME, "unmarshalEntity", in);
+        Object unmarshalled = unmarshal(getClass(type), acceptedMediaType, in);
+        JPARSLogger.exiting(CLASS_NAME, "unmarshalEntity", new Object[] { unmarshalled.getClass().getName(), unmarshalled });
+        return unmarshalled;
     }
 
     /**
-     * Marshall an entity to either JSON or XML
-     * @param object
-     * @param mediaType
-     * @param output
-     * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending 
-     * the actual objects in the relationships
-     * @throws JAXBException
+     * Unmarshal.
+     *
+     * @param type the type of the entity to unmarshal
+     * @param acceptedMediaType the accepted media type
+     * @param in the input stream to unmarshal
+     * @return the object
+     * @throws JAXBException the JAXB exception
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Object unmarshalEntity(Class type, MediaType acceptedMedia, InputStream in) throws JAXBException {
+    public Object unmarshal(Class type, MediaType acceptedMediaType, InputStream in) throws JAXBException {
         Unmarshaller unmarshaller = getJAXBContext().createUnmarshaller();
         unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
-        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, acceptedMedia.toString());
+        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, acceptedMediaType.toString());
         unmarshaller.setAdapter(new LinkAdapter(getBaseURI().toString(), this));
         unmarshaller.setEventHandler(new ValidationEventHandler() {
             @Override
@@ -1027,7 +1057,7 @@ public class PersistenceContext {
             unmarshaller.setAdapter(adapter);
         }
 
-        if (acceptedMedia == MediaType.APPLICATION_JSON_TYPE) {
+        if (acceptedMediaType == MediaType.APPLICATION_JSON_TYPE) {
             // Part of the fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=394059
             // This issue happens when request has objects derived from an abstract class. 
             // JSON_INCLUDE_ROOT is set to false for  JPA-RS. This means JSON requests won't have root tag.
@@ -1103,7 +1133,7 @@ public class PersistenceContext {
      */
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output) throws JAXBException {
         JPARSLogger.entering(CLASS_NAME, "marshallEntity", new Object[] { object, mediaType });
-        marshallEntity(object, mediaType, output, true);
+        marshall(object, mediaType, output, true);
         JPARSLogger.exiting(CLASS_NAME, "marshallEntity", this, object, mediaType);
     }
 
@@ -1117,7 +1147,7 @@ public class PersistenceContext {
      * @throws JAXBException
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void marshallEntity(Object object, MediaType mediaType, OutputStream output, boolean sendRelationships) throws JAXBException {
+    public void marshall(Object object, MediaType mediaType, OutputStream output, boolean sendRelationships) throws JAXBException {
         if (sendRelationships) {
             preMarshallEntity(object);
         }
@@ -1382,6 +1412,9 @@ public class PersistenceContext {
         this.supportedFeatureSet = supportedFeatureSet;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -1391,6 +1424,9 @@ public class PersistenceContext {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {

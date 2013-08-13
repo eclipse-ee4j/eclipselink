@@ -15,7 +15,6 @@ package org.eclipse.persistence.jpa.rs.resources.common;
 import static org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller.mediaType;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -57,10 +56,14 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  *
  */
 public abstract class AbstractEntityResource extends AbstractResource {
-    protected Response findAttribute(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
+    private static final String CLASS_NAME = AbstractEntityResource.class.getName();
+
+    protected Response findAttributeInternal(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "findAttributeInternal", new Object[] { "GET", version, persistenceUnit, type, id, attribute, uriInfo.getRequestUri().toASCIIString() });
+
         EntityManager em = null;
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
+            PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Object entityId = IdHelper.buildId(context, type, id);
             em = context.getEmf().createEntityManager(getMatrixParameters(uriInfo, persistenceUnit));
 
@@ -123,10 +126,11 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response find(String version, String persistenceUnit, String type, String id, HttpHeaders headers, UriInfo uriInfo, URI baseURI) {
-        JPARSLogger.entering(AbstractEntityResource.class.getName(), "find", new Object[] { version, persistenceUnit, type, id, uriInfo.getRequestUri().toASCIIString() });
+    protected Response findInternal(String version, String persistenceUnit, String type, String id, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "findInternal", new Object[] { "GET", version, persistenceUnit, type, id, uriInfo.getRequestUri().toASCIIString() });
+
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
+            PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
             Object entityId = IdHelper.buildId(context, type, id);
             Object entity = context.find(discriminators, type, entityId, getQueryParameters(uriInfo));
@@ -134,7 +138,6 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 JPARSLogger.error("jpars_could_not_find_entity_for_key", new Object[] { type, id, persistenceUnit });
                 throw JPARSException.entityNotFound(type, id, persistenceUnit);
             }
-            JPARSLogger.exiting(AbstractEntityResource.class.getName(), "find", new Object[] { context, entityId, entity });
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
@@ -142,10 +145,10 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     @SuppressWarnings("rawtypes")
-    protected Response create(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) throws Exception {
-        JPARSLogger.entering(AbstractEntityResource.class.getName(), "create", new Object[] { version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
+    protected Response createInternal(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, InputStream in) throws Exception {
+        JPARSLogger.entering(CLASS_NAME, "createInternal", new Object[] { "PUT", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
+            PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             ClassDescriptor descriptor = context.getDescriptor(type);
             if (descriptor == null) {
                 JPARSLogger.error("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
@@ -213,9 +216,10 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response update(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
+    protected Response updateInternal(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, InputStream in) {
+        JPARSLogger.entering(CLASS_NAME, "updateInternal", new Object[] { "POST", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
+            PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Object entity = null;
             entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
             entity = context.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
@@ -225,9 +229,10 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response setOrAddAttribute(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo, URI baseURI, InputStream in) {
+    protected Response setOrAddAttributeInternal(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo, InputStream in) {
+        JPARSLogger.entering(CLASS_NAME, "setOrAddAttributeInternal", new Object[] { "POST", headers.getMediaType(), version, persistenceUnit, type, id, attribute, uriInfo.getRequestUri().toASCIIString() });
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
+            PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Object entityId = IdHelper.buildId(context, type, id);
             Object entity = null;
             String partner = getRelationshipPartner(getMatrixParameters(uriInfo, attribute), getQueryParameters(uriInfo));
@@ -250,6 +255,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "removeAttributeInternal", new Object[] { "DELETE", headers.getMediaType(), version, persistenceUnit, type, id, attribute, uriInfo.getRequestUri().toASCIIString() });
         try {
             String listItemId = null;
             Map<String, String> matrixParams = getMatrixParameters(uriInfo, attribute);
@@ -288,9 +294,10 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response delete(String version, String persistenceUnit, String type, String id, UriInfo uriInfo, URI baseURI) {
+    protected Response deleteInternal(String version, String persistenceUnit, String type, String id, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "deleteInternal", new Object[] { "DELETE", headers.getMediaType(), version, persistenceUnit, type, id, uriInfo.getRequestUri().toASCIIString() });
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, type, baseURI, version, null);
+            PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
             Object entityId = IdHelper.buildId(context, type, id);
             context.delete(discriminators, type, entityId);

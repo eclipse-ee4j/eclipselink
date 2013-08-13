@@ -39,26 +39,26 @@ public class PersistenceUnitResource extends AbstractPersistenceUnitResource {
     @Path("entity/{descriptorAlias}")
     public Response getDescriptorMetadata(@PathParam("context") String persistenceUnit, @PathParam("descriptorAlias") String descriptorAlias, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
         setRequestUniqueId();
-        return getDescriptorMetadata(null, persistenceUnit, descriptorAlias, hh, uriInfo.getBaseUri());
+        return getDescriptorMetadataInternal(null, persistenceUnit, descriptorAlias, hh, uriInfo);
     }
 
     @GET
     public Response getTypes(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
         setRequestUniqueId();
-        return getTypes(null, persistenceUnit, hh, uriInfo.getBaseUri());
+        return getTypesInternal(null, persistenceUnit, hh, uriInfo);
     }
 
     @GET
     @Path("query")
     public Response getQueriesMetadata(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
         setRequestUniqueId();
-        return getQueriesMetadata(null, persistenceUnit, hh, uriInfo.getBaseUri());
+        return getQueriesMetadataInternal(null, persistenceUnit, hh, uriInfo);
     }
 
     @GET
     @Path("query/{queryName}")
     public Response getQueryMetadata(@PathParam("context") String persistenceUnit, @PathParam("queryName") String queryName, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
         setRequestUniqueId();
-        return getQueryMetadata(null, persistenceUnit, queryName, hh, uriInfo.getBaseUri());
+        return getQueryMetadataInternal(null, persistenceUnit, queryName, hh, uriInfo);
     }
 }

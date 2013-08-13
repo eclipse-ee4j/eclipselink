@@ -44,4 +44,9 @@ public class Certification {
     public void setIssueDate(Calendar issueDate) {
         this.issueDate = issueDate;
     }
+
+    @Override
+    public String toString() {
+        return "name=" + name + ", issueDate=" + issueDate;
+    }
 }

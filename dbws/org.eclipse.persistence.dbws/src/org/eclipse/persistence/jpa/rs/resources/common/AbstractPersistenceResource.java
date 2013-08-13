@@ -49,7 +49,10 @@ import org.eclipse.persistence.jpa.rs.util.list.LinkList;
  */
 public abstract class AbstractPersistenceResource extends AbstractResource {
 
-    protected Response getContexts(String version, HttpHeaders headers, URI baseURI) throws JAXBException {
+    private static final String CLASS_NAME = AbstractPersistenceResource.class.getName();
+
+    protected Response getContextsInternal(String version, HttpHeaders headers, UriInfo uriInfo) throws JAXBException {
+        JPARSLogger.entering(CLASS_NAME, "getContextsInternal", new Object[] { "GET", version, uriInfo.getRequestUri().toASCIIString() });
         try {
             if (!isValidVersion(version)) {
                 JPARSLogger.error("unsupported_service_version_in_the_request", new Object[] { version });
@@ -60,6 +63,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             Iterator<String> contextIterator = contexts.iterator();
             List<Link> links = new ArrayList<Link>();
             String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
+            URI baseURI = uriInfo.getBaseUri();
             while (contextIterator.hasNext()) {
                 String context = contextIterator.next();
                 if (version != null) {
@@ -84,6 +88,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
 
     @SuppressWarnings("rawtypes")
     protected Response callSessionBeanInternal(String version, HttpHeaders headers, UriInfo uriInfo, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        JPARSLogger.entering(CLASS_NAME, "callSessionBeanInternal", new Object[] { "POST", headers.getMediaType(), version, uriInfo.getRequestUri().toASCIIString() });
         try {
             if (!isValidVersion(version)) {
                 JPARSLogger.error("unsupported_service_version_in_the_request", new Object[] { version });
@@ -137,7 +142,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
         }
     }
 
-    protected SessionBeanCall unmarshallSessionBeanCall(InputStream data) throws JAXBException {
+    private SessionBeanCall unmarshallSessionBeanCall(InputStream data) throws JAXBException {
         Class<?>[] jaxbClasses = new Class[] { SessionBeanCall.class };
         JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
         Unmarshaller unmarshaller = context.createUnmarshaller();

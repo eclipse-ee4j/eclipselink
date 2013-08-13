@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
@@ -55,9 +56,14 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  *
  */
 public class AbstractPersistenceUnitResource extends AbstractResource {
-    protected Response getDescriptorMetadata(String version, String persistenceUnit, String descriptorAlias, HttpHeaders headers, URI baseURI) {
+    private static final String CLASS_NAME = AbstractPersistenceUnitResource.class.getName();
+
+    protected Response getDescriptorMetadataInternal(String version, String persistenceUnit, String descriptorAlias, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "getDescriptorMetadataInternal", new Object[] { "GET", version, persistenceUnit, descriptorAlias, uriInfo.getRequestUri().toASCIIString() });
+
         String result = null;
         try {
+            URI baseURI = uriInfo.getBaseUri();
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);
             ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(descriptorAlias);
             if (descriptor == null) {
@@ -74,9 +80,11 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
     }
 
-    protected Response getQueriesMetadata(String version, String persistenceUnit, HttpHeaders headers, URI baseURI) {
+    protected Response getQueriesMetadataInternal(String version, String persistenceUnit, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "getQueriesMetadataInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
+
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);
+            PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             List<Query> queries = new ArrayList<Query>();
             addQueries(queries, context, null);
             String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
@@ -94,9 +102,10 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         }
     }
 
-    protected Response getQueryMetadata(String version, String persistenceUnit, String queryName, HttpHeaders headers, URI baseURI) {
+    protected Response getQueryMetadataInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "getQueryMetadataInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);
+            PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             List<Query> returnQueries = new ArrayList<Query>();
             Map<String, List<DatabaseQuery>> queries = context.getServerSession().getQueries();
             if (queries.get(queryName) != null) {
@@ -121,8 +130,10 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     @SuppressWarnings("rawtypes")
-    public Response getTypes(String version, String persistenceUnit, HttpHeaders headers, URI baseURI) {
+    protected Response getTypesInternal(String version, String persistenceUnit, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "getTypesInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
         try {
+            URI baseURI = uriInfo.getBaseUri();
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);
             PersistenceUnit pu = new PersistenceUnit();
             pu.setPersistenceUnitName(persistenceUnit);
@@ -150,7 +161,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     @SuppressWarnings("rawtypes")
-    protected void addMapping(Descriptor descriptor, DatabaseMapping mapping) {
+    private void addMapping(Descriptor descriptor, DatabaseMapping mapping) {
         String target = null;
         String collectionName = null;
         if (mapping.isCollectionMapping()) {
@@ -204,7 +215,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         descriptor.getAttributes().add(new Attribute(mapping.getAttributeName(), target));
     }
 
-    protected void addQueries(List<Query> queryList, PersistenceContext context, String javaClassName) {
+    private void addQueries(List<Query> queryList, PersistenceContext context, String javaClassName) {
         Map<String, List<DatabaseQuery>> queries = context.getServerSession().getQueries();
         List<DatabaseQuery> returnQueries = new ArrayList<DatabaseQuery>();
         for (String key : queries.keySet()) {
@@ -223,7 +234,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         }
     }
 
-    protected Descriptor buildDescriptor(PersistenceContext context, String persistenceUnit, ClassDescriptor descriptor, String baseUri) {
+    private Descriptor buildDescriptor(PersistenceContext context, String persistenceUnit, ClassDescriptor descriptor, String baseUri) {
         Descriptor returnDescriptor = new Descriptor();
         String name = descriptor.getAlias();
         returnDescriptor.setName(name);
@@ -252,7 +263,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         return returnDescriptor;
     }
 
-    protected Query getQuery(DatabaseQuery query, PersistenceContext context) {
+    private Query getQuery(DatabaseQuery query, PersistenceContext context) {
         String method = query.isReadQuery() ? "get" : "post";
         String jpql = query.getJPQLString() == null ? "" : query.getJPQLString();
         StringBuffer parameterString = new StringBuffer();

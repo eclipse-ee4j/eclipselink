@@ -32,6 +32,7 @@ import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *
  */
 public abstract class AbstractQueryResource extends AbstractResource {
+    private static final String CLASS_NAME = AbstractQueryResource.class.getName();
 
     /**
      * Named query update internal.
@@ -53,10 +55,11 @@ public abstract class AbstractQueryResource extends AbstractResource {
      * @return the response
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected Response namedQueryUpdateInternal(String version, String persistenceUnit, String name, HttpHeaders headers, UriInfo uriInfo) {
+    protected Response namedQueryUpdateInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "namedQueryUpdateInternal", new Object[] { "POST", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
-            int result = context.queryExecuteUpdate(getMatrixParameters(uriInfo, persistenceUnit), name, getMatrixParameters(uriInfo, name), getQueryParameters(uriInfo));
+            int result = context.queryExecuteUpdate(getMatrixParameters(uriInfo, persistenceUnit), queryName, getMatrixParameters(uriInfo, queryName), getQueryParameters(uriInfo));
             JAXBElement jaxbElement = new JAXBElement(new QName(ReservedWords.NO_ROUTE_JAXB_ELEMENT_LABEL), Integer.class, result);
             return Response.ok(new StreamingOutputMarshaller(context, jaxbElement, headers.getAcceptableMediaTypes())).build();
         } catch (Exception ex) {
@@ -74,10 +77,11 @@ public abstract class AbstractQueryResource extends AbstractResource {
      * @param uriInfo the uri info
      * @return the response
      */
-    protected Response namedQueryInternal(String version, String persistenceUnit, String name, HttpHeaders headers, UriInfo uriInfo) {
+    protected Response namedQueryInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "namedQueryInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
-            Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), name, getMatrixParameters(uriInfo, name), getQueryParameters(uriInfo));
+            Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), queryName, getMatrixParameters(uriInfo, queryName), getQueryParameters(uriInfo));
             DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
 
             FeatureSet featureSet = context.getSupportedFeatureSet();
@@ -91,10 +95,10 @@ public abstract class AbstractQueryResource extends AbstractResource {
                         // some query parameters for paging are invalid 
                         throw JPARSException.invalidPagingRequest();
                     }
-                    return namedQueryResponse(context, name, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.PAGING));
+                    return namedQueryResponse(context, queryName, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.PAGING));
                 }
             }
-            return namedQueryResponse(context, name, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.NO_PAGING));
+            return namedQueryResponse(context, queryName, dbQuery, query, headers, uriInfo, featureSet.getResponseBuilder(Feature.NO_PAGING));
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
         }

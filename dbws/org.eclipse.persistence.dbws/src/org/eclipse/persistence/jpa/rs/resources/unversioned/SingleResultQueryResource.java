@@ -37,6 +37,6 @@ public class SingleResultQueryResource extends AbstractSingleResultQueryResource
     @Path("{name}")
     public Response namedQuerySingleResult(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
         setRequestUniqueId();
-        return namedQuerySingleResult(null, persistenceUnit, name, hh, ui, ui.getBaseUri());
+        return namedQuerySingleResultInternal(null, persistenceUnit, name, hh, ui);
     }
 }

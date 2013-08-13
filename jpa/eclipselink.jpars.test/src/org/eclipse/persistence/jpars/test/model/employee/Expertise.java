@@ -27,11 +27,11 @@ public class Expertise {
     @Id
     @GeneratedValue
     private int id;
-    
+
     @Basic
     private String subject;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private Employee employee;
 
     public int getId() {
@@ -56,5 +56,10 @@ public class Expertise {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    @Override
+    public String toString() {
+        return "id=" + id + ", subject=" + subject;
     }
 }

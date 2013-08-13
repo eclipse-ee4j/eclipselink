@@ -30,10 +30,10 @@ public class Office {
     @Id
     @GeneratedValue
     private int id;
-    
+
     @Basic
     private String location;
-    
+
     @OneToMany(mappedBy = "office", cascade = PERSIST)
     private List<Employee> employees;
 
@@ -59,5 +59,10 @@ public class Office {
 
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
+    }
+
+    @Override
+    public String toString() {
+        return "id=" + id + ", location=" + location;
     }
 }

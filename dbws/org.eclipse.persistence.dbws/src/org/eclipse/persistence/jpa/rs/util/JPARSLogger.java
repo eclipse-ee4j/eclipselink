@@ -12,7 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,10 +41,36 @@ public class JPARSLogger {
      * {@link java.util.logging.Logger#entering(String sourceClass, String sourceMethod)}
      */
     public static void entering(String sourceClass, String sourceMethod, Object[] params) {
-        // Logger logs enter logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
+        // Logger logs entering logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
         if (logger.isLoggable(Level.FINEST)) {
             try {
                 logger.entering(sourceClass, sourceMethod, getParamsWithAdditionalInfo(params));
+            } catch (Throwable throwable) {
+            }
+        }
+    }
+
+    /**
+     * Entering
+     * 
+     * @param sourceClass the source class
+     * @param sourceMethod the source method
+     * @param in the input stream
+     * {@link java.util.logging.Logger#entering(String sourceClass, String sourceMethod)}
+     */
+    public static void entering(String sourceClass, String sourceMethod, InputStream in) {
+        // Logger logs entering logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
+
+        // make sure input stream supports mark so that the or create a new BufferedInputStream which supports mark.
+        // when mark is supported, the stream remembers all the bytes read after the call to mark and
+        // stands ready to supply those same bytes again if and whenever the method reset is called. 
+        if (logger.isLoggable(Level.FINEST) && (in.markSupported())) {
+            try {
+                String data = readData(in);
+                in.reset();
+                if (data != null) {
+                    logger.entering(sourceClass, sourceMethod, getParamsWithAdditionalInfo(new Object[] { data }));
+                }
             } catch (Throwable throwable) {
             }
         }
@@ -54,7 +85,7 @@ public class JPARSLogger {
      * {@link java.util.logging.Logger#exiting(String sourceClass, String sourceMethod)}
      */
     public static void exiting(String sourceClass, String sourceMethod, Object[] params) {
-        // Logger logs exit logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
+        // Logger logs exiting logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
         if (logger.isLoggable(Level.FINEST)) {
             try {
                 logger.exiting(sourceClass, sourceMethod, new MethodExitLogData(getParamsWithAdditionalInfo(params)));
@@ -77,7 +108,7 @@ public class JPARSLogger {
         if (logger.isLoggable(Level.FINEST) && (context != null) && (object != null) && (mediaType != null)) {
             try {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                context.marshallEntity(object, mediaType, outputStream, true);
+                context.marshall(object, mediaType, outputStream, true);
                 if (object instanceof PersistenceWeavedRest) {
                     exiting(sourceClass, sourceMethod, new Object[] { object.getClass().getName(), outputStream.toString("UTF-8") });
                 } else {
@@ -163,5 +194,47 @@ public class JPARSLogger {
 
     private static void log(String message, Level level, Object[] params) {
         logger.log(level, LoggingLocalization.buildMessage(message, params));
+    }
+
+    private static String readData(InputStream is) {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        ByteArrayInputStream bais = null;
+        int nRead;
+        byte[] data = new byte[16384];
+        try {
+            while ((nRead = is.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            buffer.flush();
+            byte[] bytes = buffer.toByteArray();
+            bais = new ByteArrayInputStream(bytes);
+        } catch (IOException e) {
+        }
+        return getDataFromInputStream(bais);
+    }
+
+    private static String getDataFromInputStream(InputStream is) {
+        BufferedReader br = null;
+        StringBuilder sb = new StringBuilder();
+        try {
+            String line;
+            br = new BufferedReader(new InputStreamReader(is));
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (IOException e) {
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+                if (is != null) {
+                    is.close();
+                }
+            } catch (Exception ex) {
+
+            }
+        }
+        return sb.toString();
     }
 }

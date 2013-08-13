@@ -43,7 +43,6 @@ import javax.persistence.Table;
                 query = "SELECT u.areaPicture FROM EmployeeAddress u where u.id = :id"
         )
 })
-
 @Entity
 @Table(name = "JPARS_EMPLOYEEADDRESS")
 public class EmployeeAddress {
@@ -140,4 +139,10 @@ public class EmployeeAddress {
     public void setAreaPicture(byte[] areaPicture) {
         this.areaPicture = areaPicture;
     }
+
+    @Override
+    public String toString() {
+        return "id=" + id + ", city=" + city + ", country=" + country + ", province=" + province + ", postalCode=" + postalCode + ", street=" + street;
+    }
+
 }

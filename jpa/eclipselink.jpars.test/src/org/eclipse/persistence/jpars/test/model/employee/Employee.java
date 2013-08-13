@@ -325,8 +325,9 @@ public class Employee {
         this.certifications = certifications;
     }
 
+    @Override
     public String toString() {
-        return "Employee(" + getId() + ": " + getLastName() + ", "
-                + getFirstName() + ")";
+        return "id=" + id + ", firstName=" + firstName + ", lastName=" + lastName;
     }
+
 }

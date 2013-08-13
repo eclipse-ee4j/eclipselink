@@ -997,7 +997,7 @@ public class ServerCrudTest {
     private static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            context.marshallEntity(object, inputMediaType, os, false);
+            context.marshall(object, inputMediaType, os, false);
         } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
@@ -1154,7 +1154,7 @@ public class ServerCrudTest {
             if (sendLinks) {
                 context.marshallEntity(object, inputMediaType, os);
             } else {
-                context.marshallEntity(object, inputMediaType, os, false);
+                context.marshall(object, inputMediaType, os, false);
             }
         } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
@@ -1242,7 +1242,7 @@ public class ServerCrudTest {
 
         WebResource webResource = client.resource(url);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        context.marshallEntity(newValue, inputMediaType, os, sendLinks);
+        context.marshall(newValue, inputMediaType, os, sendLinks);
         ClientResponse response = webResource.type(inputMediaType)
                 .accept(outputMediaType)
                 .post(ClientResponse.class, os.toString());

@@ -80,7 +80,7 @@ public class RestUtils {
      */
     public static <T> String marshal(PersistenceContext context, Object object, MediaType mediaType) throws RestCallFailedException, JAXBException, UnsupportedEncodingException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        context.marshallEntity(object, mediaType, os, true);
+        context.marshall(object, mediaType, os, true);
         return os.toString("UTF-8");
     }
 
@@ -196,7 +196,7 @@ public class RestUtils {
             if (sendLinks) {
                 context.marshallEntity(object, mediaType, os);
             } else {
-                context.marshallEntity(object, mediaType, os, false);
+                context.marshall(object, mediaType, os, false);
             }
         } catch (JAXBException e) {
             fail("Exception thrown marshalling: " + e);
@@ -279,9 +279,9 @@ public class RestUtils {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             if (sendLinks) {
-                context.marshallEntity(object, mediaType, os, true);
+                context.marshall(object, mediaType, os, true);
             } else {
-                context.marshallEntity(object, mediaType, os, false);
+                context.marshall(object, mediaType, os, false);
             }
         } catch (JAXBException e) {
             fail("Exception thrown marshalling: " + e);
@@ -616,7 +616,7 @@ public class RestUtils {
         }
         WebResource webResource = client.resource(url);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        context.marshallEntity(newValue, mediaType, os, sendLinks);
+        context.marshall(newValue, mediaType, os, sendLinks);
         ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
         String result = response.getEntity(String.class);

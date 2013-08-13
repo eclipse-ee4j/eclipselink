@@ -448,7 +448,7 @@ public class TestService {
         context.create(null, entity1);
 
         TestURIInfo ui = new TestURIInfo();
-        resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), ui);
+        resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
 
         entity1 = (DynamicEntity) context.find("Auction", entity1.get("id"));
 
@@ -642,12 +642,12 @@ public class TestService {
 
         String result = stringifyResults(output);
 
-        account = (Account) context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
+        account = (Account) context.unmarshal(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
 
         output = (StreamingOutput) resource.find("jpars_auction-static-local", "Account", String.valueOf(account.getId()),
                 generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui).getEntity();
         result = stringifyResults(output);
-        account = (Account) context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
+        account = (Account) context.unmarshal(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
 
         assertTrue("account is null", account != null);
         TestURIInfo ui2 = new TestURIInfo();

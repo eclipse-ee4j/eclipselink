@@ -49,4 +49,9 @@ public class LargeProject extends Project {
     public void setMilestone(Calendar milestone) {
         this.milestone = milestone;
     }
+
+    @Override
+    public String toString() {
+        return "budget=" + budget + ", milestone=" + milestone;
+    }
 }

@@ -43,49 +43,48 @@ public class EntityResource extends AbstractEntityResource {
     @Path("{type}/{id}/{attribute}")
     public Response findAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
         setRequestUniqueId();
-        return findAttribute(null, persistenceUnit, type, id, attribute, hh, ui, ui.getBaseUri());
+        return findAttributeInternal(null, persistenceUnit, type, id, attribute, hh, ui);
     }
 
     @GET
     @Path("{type}/{id}")
     public Response find(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @Context HttpHeaders hh, @Context UriInfo ui) {
         setRequestUniqueId();
-        return find(null, persistenceUnit, type, id, hh, ui, ui.getBaseUri());
+        return findInternal(null, persistenceUnit, type, id, hh, ui);
     }
 
     @PUT
     @Path("{type}")
     public Response create(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) throws Exception {
         setRequestUniqueId();
-        return create(null, persistenceUnit, type, hh, uriInfo, uriInfo.getBaseUri(), in);
+        return createInternal(null, persistenceUnit, type, hh, uriInfo, in);
     }
 
     @POST
     @Path("{type}")
     public Response update(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) {
         setRequestUniqueId();
-        return update(null, persistenceUnit, type, hh, uriInfo, uriInfo.getBaseUri(), in);
+        return updateInternal(null, persistenceUnit, type, hh, uriInfo, in);
     }
 
     @POST
     @Path("{type}/{id}/{attribute}")
     public Response setOrAddAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
         setRequestUniqueId();
-        return setOrAddAttribute(null, persistenceUnit, type, id, attribute, hh, ui, ui.getBaseUri(), in);
+        return setOrAddAttributeInternal(null, persistenceUnit, type, id, attribute, hh, ui, in);
     }
 
     @DELETE
     @Path("{type}/{id}/{attribute}")
-    public Response removeAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @PathParam("attribute") String attribute,
-            @Context HttpHeaders hh, @Context UriInfo ui) {
+    public Response removeAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
         setRequestUniqueId();
         return removeAttributeInternal(null, persistenceUnit, type, id, attribute, hh, ui);
     }
 
     @DELETE
     @Path("{type}/{id}")
-    public Response delete(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @Context UriInfo ui) {
+    public Response delete(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("id") String id, @Context HttpHeaders hh, @Context UriInfo ui) {
         setRequestUniqueId();
-        return delete(null, persistenceUnit, type, id, ui, ui.getBaseUri());
+        return deleteInternal(null, persistenceUnit, type, id, hh, ui);
     }
 }

@@ -45,7 +45,7 @@ public class PersistenceResource extends AbstractPersistenceResource {
     @GET
     public Response getContexts(@PathParam("version") String version, @Context HttpHeaders hh, @Context UriInfo uriInfo) throws JAXBException {
         setRequestUniqueId();
-        return getContexts(version, hh, uriInfo.getBaseUri());
+        return getContextsInternal(version, hh, uriInfo);
     }
 
     @POST

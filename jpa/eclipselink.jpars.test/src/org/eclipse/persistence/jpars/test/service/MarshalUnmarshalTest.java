@@ -159,7 +159,7 @@ public class MarshalUnmarshalTest {
      */
     @Test
     public void testMarshal() throws RestCallFailedException,
-    UnsupportedEncodingException, JAXBException {
+            UnsupportedEncodingException, JAXBException {
         StaticBid bid = new StaticBid();
         bid.setId(20);
         bid.setAmount(100.0);
@@ -237,8 +237,7 @@ public class MarshalUnmarshalTest {
             throws RestCallFailedException, JAXBException,
             UnsupportedEncodingException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        context.marshallEntity(object, MediaType.APPLICATION_JSON_TYPE, os,
-                false);
+        context.marshall(object, MediaType.APPLICATION_JSON_TYPE, os, false);
         return os.toString("UTF-8");
     }
 

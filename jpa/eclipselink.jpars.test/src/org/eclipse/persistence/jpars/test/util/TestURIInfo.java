@@ -164,4 +164,12 @@ public class TestURIInfo implements UriInfo {
             return matrixParameters;
         }
     }
+
+    public URI relativize(URI arg0) {
+        return null;
+    }
+
+    public URI resolve(URI arg0) {
+        return null;
+    }
 }
