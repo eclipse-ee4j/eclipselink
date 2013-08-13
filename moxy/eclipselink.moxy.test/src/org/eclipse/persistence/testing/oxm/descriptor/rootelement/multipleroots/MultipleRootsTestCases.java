@@ -35,7 +35,7 @@ public class MultipleRootsTestCases extends XMLMappingTestCases {
 
     protected Object getControlObject() {
         MailingAddress address = new MailingAddress();
-        XMLRoot xmlRoot = new XMLRoot();
+        XMLRoot xmlRoot = new XMLRoot();        
         xmlRoot.setLocalName("mailing-address");
         xmlRoot.setObject(address);
         return xmlRoot;

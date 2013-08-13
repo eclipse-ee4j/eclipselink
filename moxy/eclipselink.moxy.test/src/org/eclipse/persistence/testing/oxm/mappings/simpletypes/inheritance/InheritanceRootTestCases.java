@@ -47,5 +47,12 @@ public class InheritanceRootTestCases extends XMLMappingTestCases {
 		
 		return theRoot;
 	}
+	public Object getReadControlObject() {		
+		Employee employee = new Employee();
+		employee.setFirstName(CONTROL_EMPLOYEE_FIRST_NAME);
+		employee.setLastName(CONTROL_EMPLOYEE_LAST_NAME);		
+		employee.setJobTitle(CONTROL_EMPLOYEE_TITLE);
+		return employee;
+	}
 	
 }

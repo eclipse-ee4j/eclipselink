@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass;
 
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.sessions.Project;
@@ -31,7 +30,7 @@ public class CompositeObjectSelfComplexXsiTypeTestCases extends XMLMappingTestCa
         setProject(p);
     }
     
-    public Object getWriteControlObject() {    
+    public Object getControlObject() {    
      	Root theRoot = new Root();
     	
     	Address address = new Address();
@@ -40,20 +39,7 @@ public class CompositeObjectSelfComplexXsiTypeTestCases extends XMLMappingTestCa
     	
     	return theRoot;
     }
-
-    
-    protected Object getControlObject() {
-    	XMLRoot xmlRoot = new XMLRoot();
-    	xmlRoot.setLocalName("root");
-    	xmlRoot.setNamespaceURI("namespace1");
-    	Address address = new Address();
-    	address.setStreet("myStreet");
-    	xmlRoot.setObject(address);
-    	    
-    	return xmlRoot;
-    		
-    }
-    
+       
     public static void main(String[] args) {
         junit.textui.TestRunner.main(new String[] { "-c", "org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfComplexXsiTypeTestCases" });
     }

@@ -40,4 +40,16 @@ public class XmlDiscriminatorTestCases extends JAXBWithJSONTestCases {
         car.topSpeed = 354;
         return new JAXBElement(new QName("vehicle-data"), Vehicle.class, car);
     }
+    
+    public Object getReadControlObject() {
+    	   Car car = new Car();
+           car.numberOfDoors = 2;
+           car.milesPerGallon = 26;
+           car.model = "Mustang GT";
+           car.manufacturer = "Ford";
+           car.topSpeed = 354;
+           return car;
+    }
+    public void testRoundTrip() throws Exception{}
+
 }

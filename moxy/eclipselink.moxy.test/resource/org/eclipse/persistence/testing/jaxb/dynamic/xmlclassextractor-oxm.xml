@@ -10,14 +10,14 @@
     <java-types>
         <java-type name="mynamespace.Person">
             <xml-root-element name="person"/>
+            <xml-class-extractor class="org.eclipse.persistence.testing.jaxb.dynamic.util.TestClassExtractor"/>
             <java-attributes>
                 <xml-element java-attribute="name" type="java.lang.String"/>
             </java-attributes>
         </java-type>
 
-        <java-type name="mynamespace.Employee">
+        <java-type name="mynamespace.Employee" super-type="mynamespace.Person">
             <xml-root-element name="employee"/>
-            <xml-class-extractor class="org.eclipse.persistence.testing.jaxb.dynamic.util.TestClassExtractor"/>
             <java-attributes>
                 <xml-element java-attribute="name" type="java.lang.String"/>
             </java-attributes>

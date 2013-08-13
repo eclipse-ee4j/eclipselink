@@ -1051,10 +1051,10 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         // ClassExtractor is returning), we will get a JAXBElement from the unmarshal.
 
         InputStream is = ClassLoader.getSystemResourceAsStream(XMLCLASSEXTRACTOR_INSTANCE);
-        JAXBElement<DynamicEntity> person = (JAXBElement<DynamicEntity>) jaxbContext.createUnmarshaller().unmarshal(is);
+        DynamicEntity emp = (DynamicEntity )jaxbContext.createUnmarshaller().unmarshal(is);
 
         // Ensure that the JAXBElement's value's type is Person (as specified by the ClassExtractor)
-        assertEquals("JAXBElement's declaredClass", "mynamespace.Person", person.getValue().getClass().getName());
+        assertEquals("JAXBElement's declaredClass", "mynamespace.Employee", emp.getClass().getName());
     }
 
     public void testXmlCustomizer() throws Exception {
