@@ -360,10 +360,11 @@ public class ServerCrudTest {
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
         newUser = bid.getUser();
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", user, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
-                MediaType.APPLICATION_JSON_TYPE);
-        bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
-        assertTrue("Wrong user.", bid.getUser().getName().equals(bid.getUser().getName()));
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", user, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+
+        StaticBid dbBid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
+        assertTrue("Wrong user.", dbBid.getUser().getName().equals(bid.getUser().getName()));
+
         dbDelete(newUser);
     }
 
@@ -933,6 +934,8 @@ public class ServerCrudTest {
     @Test
     public void testRemoveRelationshipNonCollection() throws RestCallFailedException, URISyntaxException, JAXBException {
         StaticBid bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
+        StaticUser origUser = bid.getUser();
+
         StaticUser newUser = new StaticUser();
         newUser.setName("Mark");
 
@@ -942,11 +945,13 @@ public class ServerCrudTest {
         assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
 
         // remove relationship between bid and the new user
-        String removedUser = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(bid.getId()), StaticBid.class.getSimpleName(), "user", MediaType.APPLICATION_JSON_TYPE, null, null);
-        if (removedUser != null) {
-            System.out.println(removedUser);
-        }
+        String userRemoved = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(bid.getId()), StaticBid.class.getSimpleName(), "user", MediaType.APPLICATION_JSON_TYPE, null, null);
+        assertTrue(userRemoved != null);
         dbDelete(newUser);
+
+        // Put the original user back
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", origUser, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        assertTrue("Wrong user.", bid.getUser().getName().equals("user1"));
     }
 
     /**
