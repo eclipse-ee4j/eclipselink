@@ -110,6 +110,9 @@ public class ReportQueryTestSuite extends TestSuite {
         
         // bug 372526
         addTest(new ReportQueryRetrievePrimaryKeysCursorTest());
+        
+        // bug 415010
+        addTest(new ParameterizedSubqueryTest());
     }
 
     private void addCountDirectCollectionTest() {

@@ -401,6 +401,8 @@ public class ParameterExpression extends BaseExpression {
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         if (isProperty()) {
             return context.getProperty(getField());
+        } else if (newBase == oldBase) {
+            return this;
         } else {
             return context.getField(getField());
         }

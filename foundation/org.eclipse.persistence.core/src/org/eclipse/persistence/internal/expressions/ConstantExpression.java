@@ -199,7 +199,7 @@ public class ConstantExpression extends Expression {
      */
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
-        return (Expression)this.clone();
+        return this;
     }
 
     /**
