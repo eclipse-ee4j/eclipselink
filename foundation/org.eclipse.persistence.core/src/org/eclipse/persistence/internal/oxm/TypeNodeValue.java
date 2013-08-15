@@ -12,115 +12,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.List;
-
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.oxm.mappings.UnionField;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
-import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 
 public class TypeNodeValue extends NodeValue {
-    private DirectMapping directMapping;
-
-    public boolean isOwningNode(XPathFragment xPathFragment) {
-        return (null != xPathFragment) && xPathFragment.isAttribute();
-    }
-
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
-        return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
-    }
-
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Object objectValue = directMapping.getAttributeValueFromObject(object);
-        return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
-    }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Object fieldValue = directMapping.getFieldValue(objectValue, session, marshalRecord);
-        if ((null == fieldValue) || (null == namespaceResolver)) {
-            return false;
-        }
-        Field xmlField = (Field) directMapping.getField();
-        QName schemaType = getSchemaType(xmlField, fieldValue, session);
-        if (null == schemaType) {
-            return false;
-        }
-        if(xmlField.getSchemaType() == null){
-            if(schemaType.equals(Constants.STRING_QNAME)){
-                return false;
-            }
-        }else{
-            if(xmlField.isSchemaType(schemaType)){
-                return false;
-            }
-        }
-
-        XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-        String typeQName = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI) + Constants.COLON + Constants.SCHEMA_TYPE_ATTRIBUTE;
-        String schemaTypePrefix = namespaceResolver.resolveNamespaceURI(schemaType.getNamespaceURI());
-        if(schemaTypePrefix == null){
-            if(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(schemaType.getNamespaceURI())){
-                schemaTypePrefix = namespaceResolver.generatePrefix(Constants.SCHEMA_PREFIX);	
-            }else{
-                schemaTypePrefix = namespaceResolver.generatePrefix();
-            }            
-            marshalRecord.namespaceDeclaration(schemaTypePrefix, schemaType.getNamespaceURI());
-        }
-        marshalRecord.attribute(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE, typeQName, schemaTypePrefix + Constants.COLON + schemaType.getLocalPart());
-        marshalRecord.closeStartGroupingElements(groupingFragment);
-        return true;
+        return false;
     }
 
-    public DirectMapping getDirectMapping() {
-        return directMapping;
-    }
-
-    public void setDirectMapping(DirectMapping directMapping) {
-        this.directMapping = directMapping;
-    }
-
-    private QName getSchemaType(Field xmlField, Object value, CoreAbstractSession session) {
-        QName schemaType = null;
-        if (xmlField.isTypedTextField()) {
-            ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
-            schemaType = xmlField.getXMLType(value.getClass(), conversionManager);
-        } else if (xmlField.isUnionField()) {
-            return getSchemaTypeForUnion((UnionField) xmlField, value, session);
-        } else if (xmlField.getSchemaType() != null) {
-            schemaType = xmlField.getSchemaType();
-        }
-        return schemaType;
-    }
-
-    private QName getSchemaTypeForUnion(UnionField xmlField, Object value, CoreAbstractSession session) {
-        List schemaTypes = xmlField.getSchemaTypes();
-        QName schemaType = null;
-        QName nextQName;
-        Class javaClass;
-        for (int i = 0; i < schemaTypes.size(); i++) {
-            nextQName = (QName) xmlField.getSchemaTypes().get(i);
-            try {
-                if (nextQName != null) {
-                    ConversionManager conversionManager = (ConversionManager) session.getDatasourcePlatform().getConversionManager();
-                    javaClass = xmlField.getJavaClass(nextQName, conversionManager);
-                    value = conversionManager.convertObject(value, javaClass, nextQName);
-                    schemaType = nextQName;
-                    break;
-                }
-            } catch (ConversionException ce) {
-                if (i == (schemaTypes.size() - 1)) {
-                    schemaType = nextQName;
-                }
-            }
-        }
-        return schemaType;
+    @Override
+    public boolean isMarshalNodeValue() {
+        return false;
     }
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
@@ -135,6 +42,11 @@ public class TypeNodeValue extends NodeValue {
             }
             unmarshalRecord.setTypeQName(new QName(namespace, value));
         }
+    }
+
+    @Override
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
+        return false;
     }
 
 }
