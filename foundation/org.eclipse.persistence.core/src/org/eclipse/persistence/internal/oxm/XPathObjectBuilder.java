@@ -500,6 +500,17 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                                 nodeValue.setIsMixedNodeValue(true);
                             }
                         }
+                        if(xmlChoiceMapping.isAny()) {
+                            XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, null, xmlChoiceMapping.getAnyMapping());
+                             nodeValue.setContainerNodeValue(unmarshalValue);
+                             nodeValue.setIndex(unmarshalValue.getIndex());
+                             ((ContainerValue)nodeValue.getChoiceElementNodeValue()).setIndex(unmarshalValue.getIndex());
+                             addChild(null, nodeValue, xmlDescriptor.getNamespaceResolver());
+                             fieldToNodeValues.put(null, nodeValue);
+                             if(xmlChoiceMapping.isMixedContent()) {
+                                 nodeValue.setIsMixedNodeValue(true);
+                             }
+                        }
                         marshalValue.setFieldToNodeValues(fieldToNodeValues);
                         continue;
                     }

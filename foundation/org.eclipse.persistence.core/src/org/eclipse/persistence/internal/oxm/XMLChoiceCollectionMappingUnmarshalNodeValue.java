@@ -18,6 +18,7 @@ import java.util.Map;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.AnyCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
@@ -47,12 +48,17 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
     private Field xmlField;
     private ContainerValue containerNodeValue;
     private boolean isMixedNodeValue;
+    private boolean isAny;
     private int index = -1;
 
     public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, Field xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
-        this.nestedMapping = (Mapping) mapping.getChoiceElementMappings().get(xmlField);
+        if(xmlField == null && mapping.isAny()){
+        	isAny = true;
+        }else{
+          this.nestedMapping = (Mapping)mapping.getChoiceElementMappings().get(xmlField);
+        }
         initializeNodeValue();
     }
     
@@ -75,6 +81,9 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
     }
     
     private void initializeNodeValue() {
+        if(nestedMapping == null && isAny){
+            nestedMapping = xmlChoiceCollectionMapping.getAnyMapping();	
+        }
         Mapping xmlMapping = this.nestedMapping;
         if(xmlMapping instanceof BinaryDataCollectionMapping) {
             choiceElementNodeValue = new XMLBinaryDataCollectionMappingNodeValue((BinaryDataCollectionMapping)xmlMapping);
@@ -84,6 +93,9 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
             choiceElementMarshalNodeValue = choiceElementNodeValue;
         } else if(xmlMapping instanceof CompositeCollectionMapping){
             choiceElementNodeValue = new XMLCompositeCollectionMappingNodeValue((CompositeCollectionMapping)xmlMapping);
+            choiceElementMarshalNodeValue = choiceElementNodeValue;
+        }else if(xmlMapping instanceof AnyCollectionMapping){
+            choiceElementNodeValue = new XMLAnyCollectionMappingNodeValue((AnyCollectionMapping)xmlMapping);
             choiceElementMarshalNodeValue = choiceElementNodeValue;
         } else {
             choiceElementNodeValue = new XMLCollectionReferenceMappingNodeValue((CollectionReferenceMapping)xmlMapping, xmlField);
