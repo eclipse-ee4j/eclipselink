@@ -263,7 +263,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                          throw DescriptorException.missingClassIndicatorField((XMLRecord) tmpUnmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                      }
                  }
-            } else if(xmlDescriptor.getTables().size() == 1){
+            } else if(null != xmlDescriptor.getTables() && xmlDescriptor.getTables().size() == 1){
             	//found a descriptor based on root element and no inheritance then know we won't need to wrap in an XMLRoot
             	shouldWrap = false;
             }
