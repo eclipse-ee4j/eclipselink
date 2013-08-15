@@ -207,10 +207,10 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                     if (xopPrefix == null || namespaceResolver == null) {
                         addDeclaration = true;
                         xopPrefix = Constants.XOP_PREFIX;
-                        namespaceResolver = new org.eclipse.persistence.oxm.NamespaceResolver();
-                        namespaceResolver.put(xopPrefix, Constants.XOP_URL);
                     }
-                    XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");
+                    XPathFragment xopInclude = new XPathFragment();
+                    xopInclude.setLocalName("Include");
+                    xopInclude.setPrefix(xopPrefix);
                     xopInclude.setNamespaceURI(Constants.XOP_URL);
                     marshalRecord.openStartElement(xopInclude, namespaceResolver);
                     marshalRecord.attribute(Constants.EMPTY_STRING, "href", "href", c_id);
