@@ -99,5 +99,9 @@ public interface ChoiceCollectionMapping<
     public void setMixedContent(String groupingElement);
     
     public void useCollectionClassName(String concreteContainerClassName);
+    
+    public boolean isAny();
+
+    public AnyCollectionMapping getAnyMapping();
 
 }

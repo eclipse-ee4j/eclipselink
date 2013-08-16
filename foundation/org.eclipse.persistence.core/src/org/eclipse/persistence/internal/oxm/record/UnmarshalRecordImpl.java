@@ -788,12 +788,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
 
             XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName, atts);            
 
-            if(null == node && xPathNode.getTextNode() != null){
-            	XPathFragment textWrapperFragment = getTextWrapperFragment();
-                if(textWrapperFragment != null && localName.equals(textWrapperFragment.getLocalName())){
-                   node = xPathNode.getTextNode();
-                }
-            }
+
             if (null == node) {
                 NodeValue parentNodeValue = xPathNode.getUnmarshalNodeValue();
                 if ((null == xPathNode.getXPathFragment()) && (parentNodeValue != null)) {
@@ -1256,6 +1251,13 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
                             }
                         }
                     }
+                    //if json, check for text wrapper before handing off to the any
+                    if(null == resultNode && xPathNode.getTextNode() != null){
+                        XPathFragment textWrapperFragment = getTextWrapperFragment();
+                        if(textWrapperFragment != null && localName.equals(textWrapperFragment.getLocalName())){
+                           resultNode = xPathNode.getTextNode();
+                        }
+                    }                    
                     if(null == resultNode && null == nonPredicateNode) {
                         // ANY MAPPING
                         resultNode = xPathNode.getAnyNode();

@@ -110,13 +110,16 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     private ContainerPolicy containerPolicy;
     private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isMixedContent;
+    private String mixedGroupingElement;
     private AbstractNullPolicy wrapperNullPolicy;
 
+    private boolean isAny;
     private boolean isWriteOnly;
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
     private boolean reuseContainer;
     private Converter converter;
     private XMLCompositeDirectCollectionMapping mixedContentMapping;
+    private XMLAnyCollectionMapping anyMapping;
     
     private static final String DATA_HANDLER = "javax.activation.DataHandler";
     private static final String MIME_MULTIPART = "javax.mail.MimeMultipart";
@@ -503,7 +506,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             if(!(mappingsList.contains(next))) {
                 mappingsList.add(next);
             }
-        }        
+        }      
+        
+        if(isAny){
+        	//anyMapping = new XMLAnyCollectionMapping();
+        	mappingsList.add(anyMapping);
+        }
         Iterator<XMLMapping> mappings = mappingsList.iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
@@ -532,7 +540,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 if(converter != null) {
                     ((XMLBinaryDataCollectionMapping)nextMapping).setValueConverter(converter);
                 }
-            } else {
+            } else if (nextMapping instanceof XMLAnyCollectionMapping){ 
+            	((XMLAnyCollectionMapping)nextMapping).setContainerPolicy(getContainerPolicy());
+            	if(converter != null && converter instanceof XMLConverter) {                        		 
+                    ((XMLAnyCollectionMapping)nextMapping).setConverter((XMLConverter)converter);
+                }
+            }else{
                 ((XMLCollectionReferenceMapping)nextMapping).setContainerPolicy(getContainerPolicy());
                 ((XMLCollectionReferenceMapping)nextMapping).setReuseContainer(true);
             }
@@ -784,6 +797,14 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         this.isWriteOnly = b;
     }
     
+    public boolean isAny() {
+        return this.isAny;
+    }
+    
+    public void setIsAny(boolean b) {
+        this.isAny = b;
+    }
+    
     public void preInitialize(AbstractSession session) throws DescriptorException {
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
@@ -791,6 +812,15 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         //Collection<XMLMapping> allMappings = new ArrayList<XMLMapping>();
         ArrayList<XMLMapping> mappingsList = new ArrayList<XMLMapping>();
         mappingsList.addAll(getChoiceElementMappings().values());
+        if(isAny){        	
+        	anyMapping = new XMLAnyCollectionMapping();
+        	//if(mixedGroupingElement != null){
+        	//	anyMapping.setField(new XMLField(mixedGroupingElement));
+        	//}
+        	anyMapping.setMixedContent(false);
+        	anyMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+        	mappingsList.add(anyMapping);        	
+        }
         for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
             if(!(mappingsList.contains(next))) {
                 mappingsList.add(next);
@@ -878,7 +908,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     } 
     
     public boolean isMixedContent() {
-        return this.mixedContentMapping != null;
+       // return this.mixedContentMapping != null;
+    	return isMixedContent;
     }
     
     /**
@@ -890,6 +921,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
      * @since EclipseLink 2.3.1
      */
     public void setMixedContent(String groupingElement) {
+    	isMixedContent = true;
+    	
         String xpath = groupingElement;
         if(groupingElement.length() == 0) {
             xpath = XMLConstants.TEXT;
@@ -918,10 +951,15 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         } else {
             setMixedContent("");
         }
+    	isMixedContent = mixed;
     }
     
     public XMLCompositeDirectCollectionMapping getMixedContentMapping() {
         return this.mixedContentMapping;
+    }
+
+    public XMLAnyCollectionMapping getAnyMapping(){
+    	return anyMapping;
     }
 
     /**

@@ -781,15 +781,16 @@ public class MappingsGenerator {
         if (property.isInverseReference()) {
             return generateInverseReferenceMapping(property, descriptor, namespaceInfo);
         } 
+        if (property.isReference()) {
+            return generateMappingForReferenceProperty(property, descriptor, namespaceInfo);
+        }
         if (property.isAny()) {
             if (helper.isCollectionType(property.getType()) || property.getType().isArray()){
                 return generateAnyCollectionMapping(property, descriptor, namespaceInfo, property.isMixedContent());
             }
             return generateAnyObjectMapping(property, descriptor, namespaceInfo);
         }
-        if (property.isReference()) {
-            return generateMappingForReferenceProperty(property, descriptor, namespaceInfo);
-        }
+
         if (property.isMap()){
         	if (property.isAnyAttribute()) {
         		return generateAnyAttributeMapping(property, descriptor, namespaceInfo);
@@ -1306,9 +1307,7 @@ public class MappingsGenerator {
 
     public Mapping generateMappingForReferenceProperty(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo)  {
         boolean isCollection = helper.isCollectionType(property.getType()) || property.getType().isArray();
-        if (property.isAny()) {
-            return generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
-        }
+
         Mapping mapping;
         if (isCollection) {
             mapping = new XMLChoiceCollectionMapping();
@@ -1487,6 +1486,15 @@ public class MappingsGenerator {
                 }
             }
         }
+        if(property.isAny()){
+        	if(isCollection){
+                XMLChoiceCollectionMapping xmlChoiceCollectionMapping = (XMLChoiceCollectionMapping) mapping;
+                xmlChoiceCollectionMapping.setIsAny(true);
+        	}else{
+        		XMLChoiceObjectMapping xmlChoiceObjectMapping = (XMLChoiceObjectMapping) mapping;
+        	}
+        }
+        
         return mapping;
     }
 
