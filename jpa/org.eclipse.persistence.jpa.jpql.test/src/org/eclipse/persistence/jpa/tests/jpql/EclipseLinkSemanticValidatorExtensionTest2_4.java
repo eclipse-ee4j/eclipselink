@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.tests.jpql.tools.AbstractSemanticValidatorTest;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator;
@@ -22,6 +21,7 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.tools.EclipseLinkJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.tools.EclipseLinkSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.tools.JPQLQueryContext;
+import org.eclipse.persistence.jpa.tests.jpql.tools.AbstractSemanticValidatorTest;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 

@@ -35,8 +35,8 @@ import org.eclipse.persistence.jpa.jpql.tools.resolver.Resolver;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.StateFieldResolver;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
-import org.eclipse.persistence.jpa.jpql.tools.spi.java.JavaQuery;
 
 /**
  * The abstract implementation providing refactoring support for JPQL queries. This version does not
@@ -52,10 +52,11 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.java.JavaQuery;
  * @see DefaultBasicRefactoringTool
  * @see EclipseLinkBasicRefactoringTool
  *
- * @version 2.4
+ * @version 2.6
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 
 	/**
@@ -798,6 +799,69 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 		@Override
 		public void visit(StateFieldPathExpression expression) {
 			renameEnumConstant(expression);
+		}
+	}
+
+	/**
+	 * A simple implementation of {@link IQuery}.
+	 */
+	protected static class JavaQuery implements IQuery {
+
+		/**
+		 * The string representation of the JPQL query.
+		 */
+		private String jpqlQuery;
+
+		/**
+		 * The provider of JPA managed types.
+		 */
+		private IManagedTypeProvider provider;
+
+		/**
+		 * Creates a new <code>JavaQuery</code>.
+		 *
+		 * @param provider The provider of JPA managed types
+		 * @param jpqlQuery The string representation of the JPQL query
+		 */
+		public JavaQuery(IManagedTypeProvider provider, CharSequence jpqlQuery) {
+			super();
+			this.provider = provider;
+			setExpression(jpqlQuery);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public String getExpression() {
+			return jpqlQuery;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public IManagedTypeProvider getProvider() {
+			return provider;
+		}
+
+		/**
+		 * Sets the string representation of the JPQL query.
+		 *
+		 * @param jpqlQuery The string representation of the JPQL query
+		 */
+		public void setExpression(CharSequence jpqlQuery) {
+			this.jpqlQuery = (jpqlQuery != null) ? jpqlQuery.toString() : ExpressionTools.EMPTY_STRING;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("JPQL query=[");
+			sb.append(jpqlQuery);
+			sb.append("]");
+			return sb.toString();
 		}
 	}
 

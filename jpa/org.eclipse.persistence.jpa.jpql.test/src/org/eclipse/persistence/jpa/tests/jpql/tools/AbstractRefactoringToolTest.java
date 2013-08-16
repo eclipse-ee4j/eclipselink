@@ -13,10 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.tools;
 
-import org.eclipse.persistence.jpa.tests.jpql.JPQLCoreTest;
-import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestHelper;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryBuilder;
+import org.eclipse.persistence.jpa.tests.jpql.JPQLCoreTest;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestHelper;
 
 /**
  * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.

@@ -15,7 +15,7 @@ package org.eclipse.persistence.jpa.tests.jpql;
 
 import java.lang.reflect.Member;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IMappingBuilder;
-import org.eclipse.persistence.jpa.jpql.tools.spi.java.JavaMappingBuilder;
+import org.eclipse.persistence.jpa.tests.jpql.tools.spi.java.JavaMappingBuilder;
 
 /**
  * @version 2.5

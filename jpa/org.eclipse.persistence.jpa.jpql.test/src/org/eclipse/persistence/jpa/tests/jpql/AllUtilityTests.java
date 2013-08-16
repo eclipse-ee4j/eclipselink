@@ -13,9 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.tests.jpql.tools.utility.XmlEscapeCharacterConverterTest;
-import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultContentAssistProposalsTest;
 import org.eclipse.persistence.jpa.tests.jpql.parser.WordParserTest;
+import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultContentAssistProposalsTest;
+import org.eclipse.persistence.jpa.tests.jpql.tools.utility.XmlEscapeCharacterConverterTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 

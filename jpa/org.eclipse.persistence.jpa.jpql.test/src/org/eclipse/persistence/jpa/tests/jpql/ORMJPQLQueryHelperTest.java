@@ -13,8 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.tests.jpql.tools.AbstractJPQLQueryHelperTest;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
+import org.eclipse.persistence.jpa.tests.jpql.tools.AbstractJPQLQueryHelperTest;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 

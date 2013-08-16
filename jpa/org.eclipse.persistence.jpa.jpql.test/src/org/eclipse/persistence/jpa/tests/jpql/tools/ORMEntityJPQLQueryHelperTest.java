@@ -13,9 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.tools;
 
-import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
+import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 

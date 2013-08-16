@@ -70,7 +70,8 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     protected Project project;
     protected String controlDocumentLocation;
     protected String writeControlDocumentLocation;
-
+    protected boolean expectsMarshalException;
+        
     private boolean shouldRemoveEmptyTextNodesFromControlDoc = true;
     
     public XMLMappingTestCases(String name) throws Exception {
@@ -307,7 +308,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        }
+        } 
+        if(expectsMarshalException){
+    		fail("An exception should have occurred but didn't.");
+    		return;
+    	}
         int sizeAfter = getNamespaceResolverSize(desc);
         assertEquals(sizeBefore, sizeAfter);
         objectToXMLDocumentTest(testDocument);
@@ -333,7 +338,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        }
+        } 
+        if(expectsMarshalException){
+    		fail("An exception should have occurred but didn't.");
+    		return;
+    	}
 
         int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -370,7 +379,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        }
+        } 
+        if(expectsMarshalException){
+    		fail("An exception should have occurred but didn't.");
+    		return;
+    	}
+
 
         StringReader reader = new StringReader(writer.toString());
         InputSource inputSource = new InputSource(reader);
@@ -402,7 +416,10 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             assertMarshalException(e);
             return;
         }
-
+        if(expectsMarshalException){
+    		fail("An exception should have occurred but didn't.");
+    		return;
+    	}
         int sizeAfter = getNamespaceResolverSize(desc);
 
         assertEquals(sizeBefore, sizeAfter);
@@ -437,7 +454,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        }
+        } 
+        if(expectsMarshalException){
+    		fail("An exception should have occurred but didn't.");
+    		return;
+    	}
+
        
         int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -477,7 +499,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            }
+            } 
+            if(expectsMarshalException){
+        		fail("An exception should have occurred but didn't.");
+        		return;
+        	}
+
 
             streamWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
@@ -517,7 +544,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            }
+            } 
+            if(expectsMarshalException){
+        		fail("An exception should have occurred but didn't.");
+        		return;
+        	}
+
 
             eventWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
@@ -563,7 +595,12 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        }
+        } 
+        if(expectsMarshalException){
+    		fail("An exception should have occurred but didn't.");
+    		return;
+    	}
+
 
         int sizeAfter = getNamespaceResolverSize(desc);
 

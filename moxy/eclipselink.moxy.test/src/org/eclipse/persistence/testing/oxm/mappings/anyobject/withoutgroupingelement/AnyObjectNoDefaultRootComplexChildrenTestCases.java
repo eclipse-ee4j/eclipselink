@@ -34,6 +34,7 @@ public class AnyObjectNoDefaultRootComplexChildrenTestCases extends XMLWithJSONM
         setProject(p);
         setControlDocument(XML_RESOURCE_PATH);
         setControlJSON(JSON_RESOURCE_PATH);
+        expectsMarshalException = true;
     }
 
     public boolean isUnmarshalTest() {

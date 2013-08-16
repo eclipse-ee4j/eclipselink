@@ -37,11 +37,11 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
-import org.eclipse.persistence.jpa.jpql.tools.spi.java.JavaQuery;
 import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLCoreTest;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLQueryHelperTestHelper;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBNFAccessor;
+import org.eclipse.persistence.jpa.tests.jpql.tools.spi.java.JavaQuery;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.junit.Assert.*;
 

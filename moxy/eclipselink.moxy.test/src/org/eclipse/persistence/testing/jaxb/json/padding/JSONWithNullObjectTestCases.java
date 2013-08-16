@@ -30,6 +30,7 @@ public class JSONWithNullObjectTestCases extends JAXBWithJSONTestCases{
 		setClasses(new Class[]{Simple.class});
 		setControlJSON(JSON_RESOURCE);		
 		setControlDocument(XML_RESOURCE);
+		expectsMarshalException = true;
 	}
 
 	@Override

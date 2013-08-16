@@ -331,6 +331,10 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected PathType validPathExpressionTypeForInItem() {
 		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
 	}
