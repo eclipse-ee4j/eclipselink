@@ -252,6 +252,11 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
+        endElement(xPathFragment, unmarshalRecord, null);
+    }
+
+
+    public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
         UnmarshalRecord childRecord = unmarshalRecord.getChildRecord();
         if (null != childRecord) {
             // OBJECT VALUE
@@ -281,7 +286,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             }
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
             if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() > 1) {
-                setOrAddAttributeValueForKeepAsElement(builder, xmlAnyCollectionMapping, xmlAnyCollectionMapping, unmarshalRecord, true, null);
+            	setOrAddAttributeValueForKeepAsElement(builder, xmlAnyCollectionMapping, xmlAnyCollectionMapping, unmarshalRecord, true, collection);
             } else {
                 //TEXT VALUE
                 if(xmlAnyCollectionMapping.isMixedContent()) {
