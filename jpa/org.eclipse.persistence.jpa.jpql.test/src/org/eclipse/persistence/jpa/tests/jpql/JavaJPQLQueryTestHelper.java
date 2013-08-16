@@ -34,7 +34,7 @@ import jpql.query.SmallProject;
 import jpql.query.ZipCode;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IMappingBuilder;
-import org.eclipse.persistence.jpa.jpql.tools.spi.java.JavaManagedTypeProvider;
+import org.eclipse.persistence.jpa.tests.jpql.tools.spi.java.JavaManagedTypeProvider;
 
 /**
  * The default implementation of {@link JPQLQueryTestHelper} used by the unit-tests.

@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.jpql.tools.spi.java;
+package org.eclipse.persistence.jpa.tests.jpql.tools.spi.java;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -22,19 +22,18 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IMappingBuilder;
 
 /**
  * A {@link IMappingBuilder} that creates the right instance of {@link IMappingBuilder} for a class'
- * {@link Member members}, which are either a persistent attribute or a property and adds support
- * for the EclipseLink specific mapping types.
+ * {@link Member members}, which are either a persistent attribute or a property.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
-public class EclipseLinkMappingBuilder implements IMappingBuilder<Member> {
+public class JavaMappingBuilder implements IMappingBuilder<Member> {
 
 	/**
-	 * Creates a new <code>EclipseLinkMappingBuilder</code>.
+	 * Creates a new <code>JavaMappingBuilder</code>.
 	 */
-	public EclipseLinkMappingBuilder() {
+	public JavaMappingBuilder() {
 		super();
 	}
 
@@ -44,9 +43,9 @@ public class EclipseLinkMappingBuilder implements IMappingBuilder<Member> {
 	public IMapping buildMapping(IManagedType parent, Member value) {
 
 		if (value instanceof Field) {
-			return new EclipseLinkFieldMapping(parent, (Field) value);
+			return new JavaFieldMapping(parent, (Field) value);
 		}
 
-		return new EclipseLinkPropertyMapping(parent, (Method) value);
+		return new JavaPropertyMapping(parent, (Method) value);
 	}
 }

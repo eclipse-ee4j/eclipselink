@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.jpql.tools.spi.java;
+package org.eclipse.persistence.jpa.tests.jpql.tools.spi.java;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;

@@ -7,6 +7,7 @@ Export-Package: jpql.query,
  org.eclipse.persistence.jpa.tests.jpql,
  org.eclipse.persistence.jpa.tests.jpql.parser,
  org.eclipse.persistence.jpa.tests.jpql.tools.model,
+ org.eclipse.persistence.jpa.tests.jpql.tools.spi.java,
  org.eclipse.persistence.jpa.tests.jpql.tools.utility
 Require-Bundle: org.eclipse.persistence.jpa.jpql;bundle-version="[2.1.0,3.0.0)",
  org.junit;bundle-version="[4.8.1,5.0.0)"
