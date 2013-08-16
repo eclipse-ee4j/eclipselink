@@ -553,6 +553,10 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 } else {
                     result = buildObject(row);
                 }
+                if (sopObject != null) {
+                	// remove sopObject so it's not stuck in a value holder.
+                    row.setSopObject(null);
+                }
             }
         }
         if ((result == null) && shouldCacheQueryResults()) {

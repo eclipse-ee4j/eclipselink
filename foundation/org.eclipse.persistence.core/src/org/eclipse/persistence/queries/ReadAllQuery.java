@@ -523,11 +523,20 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
                 }
         
-                if (this.shouldIncludeData && (sopObject == null)) {
-                    ComplexQueryResult complexResult = new ComplexQueryResult();
-                    complexResult.setResult(result);
-                    complexResult.setData(rows);
-                    result = complexResult;
+                if (sopObject != null) {
+                	if (!this.descriptor.getObjectBuilder().isSimple()) {
+	                	// remove sopObject so it's not stuck in any value holder.
+	                	for (AbstractRecord row : rows) {
+	                		row.setSopObject(null);
+	                	}
+                	}
+                } else {
+	                if (this.shouldIncludeData) {
+	                    ComplexQueryResult complexResult = new ComplexQueryResult();
+	                    complexResult.setResult(result);
+	                    complexResult.setData(rows);
+	                    result = complexResult;
+	                }
                 }
             }
         }

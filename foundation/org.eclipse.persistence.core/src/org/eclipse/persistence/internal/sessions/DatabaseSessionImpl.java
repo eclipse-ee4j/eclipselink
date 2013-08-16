@@ -566,6 +566,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     public void initializeDescriptors() {
         // Must clone to avoid modification of the map while enumerating.
         initializeDescriptors((Map)((HashMap)getDescriptors()).clone(), true);
+        // Initialize serializer
+        if (this.serializer != null) {
+        	this.serializer.initialize(null, null, this);
+        }
         // Initialize partitioning policies.
         for (PartitioningPolicy policy : getProject().getPartitioningPolicies().values()) {
             policy.initialize(this);
