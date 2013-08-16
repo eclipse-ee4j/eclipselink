@@ -107,6 +107,10 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
+            } 
+            if(expectsMarshalException){
+            	fail("An exception should have occurred but didn't.");
+            	return;
             }
             compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
             os.close();
@@ -126,7 +130,12 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
+            } 
+            if(expectsMarshalException){
+            	fail("An exception should have occurred but didn't.");
+            	return;
             }
+
             compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
             os.close();
     	}
@@ -145,7 +154,12 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            }
+            } 
+            if(expectsMarshalException){
+            	fail("An exception should have occurred but didn't.");
+            	return;
+            }            
+
             compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     	}
     }
@@ -165,7 +179,12 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
+            } 
+            if(expectsMarshalException){
+            	fail("An exception should have occurred but didn't.");
+            	return;
             }
+
             compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     	}
     }

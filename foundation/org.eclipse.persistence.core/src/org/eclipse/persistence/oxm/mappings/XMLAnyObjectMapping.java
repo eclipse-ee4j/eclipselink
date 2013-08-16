@@ -457,8 +457,16 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     }
 
     protected AbstractRecord buildCompositeRow(Object attributeValue, AbstractSession session, XMLDescriptor referenceDescriptor, AbstractRecord parentRow, DatabaseField field, Object originalObject, boolean wasXMLRoot) {
-        if ((field == null) && (referenceDescriptor != null) && (referenceDescriptor.getDefaultRootElement() != null)) {
-            field = referenceDescriptor.buildField(referenceDescriptor.getDefaultRootElement());
+    	String defaultRootElementString = null;
+    	if(referenceDescriptor != null){
+	    	defaultRootElementString = referenceDescriptor.getDefaultRootElement();
+	    	if (!wasXMLRoot && defaultRootElementString == null) {
+	            throw XMLMarshalException.defaultRootElementNotSpecified((XMLDescriptor) descriptor);
+	        }
+    	}    	
+
+        if ((field == null) && (referenceDescriptor != null) && (defaultRootElementString != null)) {
+            field = referenceDescriptor.buildField(defaultRootElementString);
         }
 
         if ((field != null) && (referenceDescriptor != null)) {

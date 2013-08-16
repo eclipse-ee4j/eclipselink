@@ -268,7 +268,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
+        } 
+        if(expectsMarshalException){
+        	fail("An exception should have occurred but didn't.");
+        	return;        
         }
+
         compareStringToControlFile("testJSONMarshalToOutputStream", new String(os.toByteArray()));
         os.close();
     }
@@ -284,6 +289,11 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             assertMarshalException(e);
             return;
         }
+        if(expectsMarshalException){
+        	fail("An exception should have occurred but didn't.");
+        	return;        
+        }
+
         compareStringToControlFile("testJSONMarshalToOutputStream_FORMATTED", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
         os.close();
     }
@@ -297,7 +307,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
+        } 
+        if(expectsMarshalException){
+            fail("An exception should have occurred but didn't.");
+        	return;        	
         }
+
         log(sw.toString());
         compareStringToControlFile("**testJSONMarshalToStringWriter**", sw.toString());
     }
@@ -312,7 +327,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
+        } 
+        if(expectsMarshalException){
+            fail("An exception should have occurred but didn't.");
+        	return;        	
         }
+
         log(sw.toString());
         compareStringToControlFile("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted(),shouldRemoveWhitespaceFromControlDocJSON());
     }
@@ -327,7 +347,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
+        } 
+        if(expectsMarshalException){
+            fail("An exception should have occurred but didn't.");
+        	return;        	
         }
+
         JsonObject jsonObject = jsonObjectBuilder.build();
         
         StringWriter sw = new StringWriter();
@@ -350,7 +375,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
+        } 
+        if(expectsMarshalException){
+            fail("An exception should have occurred but didn't.");
+        	return;        	
         }
+
         generator.flush();
         log(sw.toString());
         compareStringToControlFile("**testJSONMarshalToGeneratorResult**", sw.toString());

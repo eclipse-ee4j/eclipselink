@@ -126,6 +126,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         super();
         validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
         xmlMarshaller = newXMLMarshaller;
+        xmlMarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
         xmlMarshaller.setEncoding("UTF-8");
         xmlMarshaller.setFormattedOutput(false);
         xmlMarshaller.getProperties().put(Constants.JAXB_MARSHALLER, this);

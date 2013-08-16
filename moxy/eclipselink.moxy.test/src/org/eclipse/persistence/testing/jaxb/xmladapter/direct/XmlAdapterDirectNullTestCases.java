@@ -12,19 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmladapter.direct;
 
-import javax.xml.bind.MarshalException;
-
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/direct_null.xml";
 	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/direct_null.json";
-    private final static int DAY = 12; 
-    private final static int MONTH = 4; 
-    private final static int YEAR = 1997; 
-
+    
     public XmlAdapterDirectNullTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);      
@@ -40,12 +33,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
         return myCal;
     }
 
-    @Override
-    public void assertMarshalException(Exception exception) throws Exception {
-        Throwable nestedException = exception.getCause();
-        assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
-    }
-
+  
     public void testRoundTrip(){
         //no need to perform this test 
     }

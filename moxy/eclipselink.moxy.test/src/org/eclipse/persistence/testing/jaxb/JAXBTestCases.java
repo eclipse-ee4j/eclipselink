@@ -436,7 +436,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        }
+        } 
+        if(expectsMarshalException){
+        	fail("An exception should have occurred but didn't.");
+        	return;
+       	}
+        
         int sizeAfter = getNamespaceResolverSize(desc);
 
         assertEquals(sizeBefore, sizeAfter);
@@ -492,7 +497,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
+        } 
+        if(expectsMarshalException){
+        	fail("An exception should have occurred but didn't.");
+        	return;        
         }
+
         jaxbMarshaller.setProperty(Marshaller.JAXB_ENCODING, originalEncoding);
         int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -545,7 +555,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        }
+        } 
+        if(expectsMarshalException){
+    		fail("An exception should have occurred but didn't.");
+    		return;
+    	}
+
         int sizeAfter = getNamespaceResolverSize(desc);
 
         assertEquals(sizeBefore, sizeAfter);
@@ -580,7 +595,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            }
+            } 
+            if(expectsMarshalException){
+        		fail("An exception should have occurred but didn't.");
+        		return;
+        	}
+
             streamWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -616,7 +636,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            }
+            } 
+            if(expectsMarshalException){
+        		fail("An exception should have occurred but didn't.");
+        		return;
+        	}
+
             streamWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -652,7 +677,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             } catch(Exception e) {
                 assertMarshalException(e);
                 return;
-            }
+            } 
+            if(expectsMarshalException){
+        		fail("An exception should have occurred but didn't.");
+        		return;
+        	}
+
             eventWriter.flush();
             int sizeAfter = getNamespaceResolverSize(desc);
 
@@ -680,7 +710,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        }
+        } 
+        if(expectsMarshalException){
+    		fail("An exception should have occurred but didn't.");
+    		return;
+    	}
+
         int sizeAfter = getNamespaceResolverSize(desc);
 
         assertEquals(sizeBefore, sizeAfter);
@@ -802,7 +837,12 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         } catch(Exception e) {
             assertMarshalException(e);
             return;
-        }
+        } 
+        if(expectsMarshalException){
+    		fail("An exception should have occurred but didn't.");
+    		return;
+    	}
+
         int sizeAfter = getNamespaceResolverSize(desc);
         assertEquals(sizeBefore, sizeAfter);
         objectToXMLDocumentTest(testDocument);

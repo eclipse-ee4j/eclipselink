@@ -35,6 +35,7 @@ public class XmlVariableNodeNullValueTestCases extends JAXBWithJSONTestCases{
 		setControlDocument(XML_RESOURCE);
 	    setControlJSON(JSON_RESOURCE);
 	    setClasses(new Class[]{Root.class});
+	    expectsMarshalException = true;
 	}
 	
 	public boolean isUnmarshalTest(){

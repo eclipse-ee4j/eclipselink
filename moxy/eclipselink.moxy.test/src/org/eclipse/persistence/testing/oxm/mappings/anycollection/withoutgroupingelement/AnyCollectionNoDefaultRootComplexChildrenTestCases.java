@@ -32,6 +32,7 @@ public class AnyCollectionNoDefaultRootComplexChildrenTestCases extends XMLMappi
         ((XMLAnyCollectionMapping)p.getDescriptor(Root.class).getMappingForAttributeName("any")).useCollectionClass(java.util.ArrayList.class);
         setProject(p);
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withoutgroupingelement/no_default_root_element_children.xml");
+        expectsMarshalException = true;
     }
 
     public boolean isUnmarshalTest() {
