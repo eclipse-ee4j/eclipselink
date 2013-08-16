@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.tools;
 
-import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestHelper;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
@@ -27,6 +26,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.JPQLQueryBuilder1_0;
 import org.eclipse.persistence.jpa.jpql.tools.model.JPQLQueryBuilder2_0;
 import org.eclipse.persistence.jpa.jpql.tools.model.JPQLQueryBuilder2_1;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestHelper;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 

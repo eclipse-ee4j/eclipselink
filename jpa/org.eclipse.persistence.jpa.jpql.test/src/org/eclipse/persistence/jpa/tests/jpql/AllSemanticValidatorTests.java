@@ -13,13 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultSemanticValidatorTest2_0;
-import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultSemanticValidatorTest2_1;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTools;
+import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultSemanticValidatorTest2_0;
+import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultSemanticValidatorTest2_1;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 

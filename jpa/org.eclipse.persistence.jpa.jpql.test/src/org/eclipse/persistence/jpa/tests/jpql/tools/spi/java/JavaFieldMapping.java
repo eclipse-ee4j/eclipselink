@@ -11,24 +11,28 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.tests.jpql;
+package org.eclipse.persistence.jpa.tests.jpql.tools.spi.java;
 
-import org.eclipse.persistence.jpa.tests.jpql.parser.WordParserTest;
-import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultContentAssistProposalsTest;
-import org.eclipse.persistence.jpa.tests.jpql.tools.utility.XmlEscapeCharacterConverterTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite.SuiteClasses;
+import java.lang.reflect.Field;
+import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
 
-@SuiteClasses({
-	WordParserTest.class,
-	ExpressionToolsTest.class,
-	DefaultContentAssistProposalsTest.class,
-	XmlEscapeCharacterConverterTest.class
-})
-@RunWith(JPQLTestRunner.class)
-public final class AllUtilityTests {
+/**
+ * The concrete implementation of {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}
+ * that is wrapping the runtime representation of a persistent attribute.
+ *
+ * @version 2.4
+ * @since 2.3
+ * @author Pascal Filion
+ */
+public class JavaFieldMapping extends AbstractFieldMapping {
 
-	private AllUtilityTests() {
-		super();
+	/**
+	 * Creates a new <code>JavaFieldMapping</code>.
+	 *
+	 * @param parent The parent of this mapping
+	 * @param field The Java field wrapped by this mapping
+	 */
+	public JavaFieldMapping(IManagedType parent, Field field) {
+		super(parent, field);
 	}
 }

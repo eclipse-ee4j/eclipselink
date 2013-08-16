@@ -11,31 +11,28 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.tests.jpql.tools;
+package org.eclipse.persistence.jpa.tests.jpql.tools.spi.java;
 
-import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.tests.jpql.JPQLCoreTest;
-import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestHelper;
+import java.lang.reflect.Method;
+import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
 
 /**
- * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
- * RefactoringTool RefactoringTool}.
+ * The concrete implementation of {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}
+ * that is wrapping the runtime representation of a property.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
-public abstract class AbstractRefactoringToolTest extends JPQLCoreTest {
+public class JavaPropertyMapping extends AbstractMethodMapping {
 
-	@IJPQLQueryBuilderTestHelper
-	private IJPQLQueryBuilder jpqlQueryBuilder;
-
-	protected JPQLGrammar getGrammar() {
-		return jpqlQueryBuilder.getGrammar();
-	}
-
-	protected IJPQLQueryBuilder getJPQLQueryBuilder() {
-		return jpqlQueryBuilder;
+	/**
+	 * Creates a new <code>JavaPropertyMapping</code>.
+	 *
+	 * @param parent The parent of this mapping
+	 * @param method The Java {@link Method} wrapped by this mapping
+	 */
+	public JavaPropertyMapping(IManagedType parent, Method method) {
+		super(parent, method);
 	}
 }
