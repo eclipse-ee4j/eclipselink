@@ -35,6 +35,8 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.sessions.Session;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -149,8 +151,16 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                 }
             }
             return adapter.unmarshal(toConvert);
-        } catch (Exception ex) {
-            throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
+        } catch (Exception ex) {            
+            if(unmarshaller.getErrorHandler() == null){
+            	throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
+            }
+            try {
+            	unmarshaller.getErrorHandler().warning(new SAXParseException(null, null, ex));
+                return null;
+            } catch (SAXException e) {
+            	throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
+            }	            
         }
     }
 
@@ -175,7 +185,15 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             }
             return dataValue;
         } catch (Exception ex) {
-            throw ConversionException.couldNotBeConverted(objectValue, valueType, ex);
+            if(marshaller.getErrorHandler() == null){
+                throw ConversionException.couldNotBeConverted(objectValue, valueType, ex);
+            }
+            try {
+                marshaller.getErrorHandler().warning(new SAXParseException(null, null, ex));
+                return null;
+            } catch (SAXException e) {
+                throw ConversionException.couldNotBeConverted(objectValue, valueType, ex);
+            }			
         }
     }
 

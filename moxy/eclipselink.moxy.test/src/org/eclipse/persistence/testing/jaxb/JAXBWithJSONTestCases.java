@@ -324,7 +324,6 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     	generateJSONSchema(controlSchemas);
     }
     
-    
     public void generateJSONSchema(List<InputStream> controlSchemas) throws Exception {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
 
