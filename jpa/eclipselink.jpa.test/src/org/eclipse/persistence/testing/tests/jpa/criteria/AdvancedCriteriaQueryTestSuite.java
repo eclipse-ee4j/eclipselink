@@ -165,6 +165,8 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testIsMemberEntity"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testNullRestrictionGetRestriction"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testFromToExpression"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testUnusedJoinDoesNotAffectOtherJoins"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testUnusedJoinDoesNotAffectFetchJoin"));
         
         return suite;
     }
@@ -1750,4 +1752,55 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+
+    /**
+     * bug 413892: tests that unused inner join expressions from root.get("manager") do not affect explicit out joins
+     * created from root.join("manager").   
+     */
+    public void testUnusedJoinDoesNotAffectOtherJoins() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            Path pathToIgnore = customer.get("manager").get("address");
+            Join manager = customer.join("manager", JoinType.LEFT);
+
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            List<Employee> result = tquery.getResultList();
+            assertFalse ("No results found", result.isEmpty());
+            long count = (Long)em.createQuery("Select count(e) from Employee e ").getSingleResult();
+            assertTrue("Incorrect number of results returned", result.size() == count);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * bug 413892: tests that unused inner join expressions from root.get("manager") do not affect explicit outer joins
+     * created from root.fetch("manager").   
+     */
+    public void testUnusedJoinDoesNotAffectFetchJoin() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            Path pathToIgnore = customer.get("manager").get("address");
+            customer.fetch("manager", JoinType.LEFT);
+
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            List<Employee> result = tquery.getResultList();
+            assertFalse ("No results found", result.isEmpty());
+            long count = (Long)em.createQuery("Select count(e) from Employee e ").getSingleResult();
+            assertTrue("Incorrect number of results returned", result.size() == count);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
 }
