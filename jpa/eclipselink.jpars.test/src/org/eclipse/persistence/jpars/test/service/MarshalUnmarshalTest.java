@@ -32,9 +32,10 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.JPARSErrorCodes;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
@@ -139,15 +140,18 @@ public class MarshalUnmarshalTest {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws JAXBException the jAXB exception
      */
-    @Test(expected = ConversionException.class)
+    @Test
     public void testUnmarshalByReferenceNonExistingNestedObject()
             throws IOException, JAXBException {
         // Send a JSON message with links where the links point to non-existing
         // objects
         String jsonMessage = RestUtils.getJSONMessage("auction-bidsByRef.json");
         assertTrue(jsonMessage != null);
-        // unmarshall should raise ConversionException
-        unmarshal(jsonMessage, StaticAuction.class.getSimpleName());
+        try {
+            unmarshal(jsonMessage, StaticAuction.class.getSimpleName());
+        } catch (JPARSException ex) {
+            assertTrue(ex.getErrorCode() == JPARSErrorCodes.OBJECT_REFERRED_BY_LINK_DOES_NOT_EXIST);
+        }
     }
 
     /**
