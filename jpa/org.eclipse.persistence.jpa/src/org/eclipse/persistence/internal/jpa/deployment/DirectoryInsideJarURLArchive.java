@@ -99,8 +99,9 @@ public class DirectoryInsideJarURLArchive extends ArchiveBase implements Archive
     }
 
     public URL getEntryAsURL(String entryPath) throws IOException {
+        rootURL = rootURL.toString().startsWith("jar:") ? rootURL : new URL("jar:"+rootURL);
         URL result = entries.contains(entryPath) ?
-            new URL("jar:"+rootURL+"!/"+ relativeRootPath + entryPath) : null; // NOI18N
+            new URL(rootURL + entryPath) : null; // NOI18N
         return result;
     }
 
