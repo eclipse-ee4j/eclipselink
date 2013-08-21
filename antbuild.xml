@@ -369,7 +369,7 @@
             </fileset>
         </copy>
         <!-- temporarily force dbws.builder build from ant -->
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"           target="build"/>
+        <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"           target="build"/ -->
         <!-- build rest of core -->
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"               target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"        target="build"/>
