@@ -26,6 +26,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Bicycle;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
 import org.eclipse.persistence.testing.models.jpa.inheritance.CitrusFruit;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
@@ -82,6 +83,8 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestCase("testCacheExpiryInitializationForInheritance"));
         // Bug 404071
         suite.addTest(new EntityManagerJUnitTestCase("testJoinedInheritanceOneToManyJoinFetch"));
+        // Bug 415526
+        suite.addTest(new EntityManagerJUnitTestCase("testCascadeMergeWithTargetInheritance"));
         
         return suite;
     }
@@ -572,6 +575,35 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             assertNotNull("Fruit's seeds should not be null", fruitRead.getSeeds());
             assertTrue("Fruit's seeds should contain 4 elements", fruitRead.getSeeds().size() == 4);
         } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    // Bug 415526
+    public void testCascadeMergeWithTargetInheritance() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Company company = new Company();
+            company.setName("CascadeMerge, Inc");
+            em.persist(company);            
+            em.flush();
+            
+            Bicycle bicycle = new Bicycle();
+            bicycle.setDescription("road bike");
+            company.getVehicles().add(bicycle);
+            bicycle.setOwner(company);
+            company = em.merge(company);
+            em.flush();
+            
+            Number bicycleId = company.getVehicles().iterator().next().getId();
+            String classDiscriminatorValue = (String)em.createNativeQuery("SELECT VEH_TYPE FROM CMP3_VEHICLE WHERE ID = " + bicycleId).getSingleResult();
+            
+            if (classDiscriminatorValue == null) {
+            	fail("Class discriminator value written into the db for the merged Bicycle is null");
+            }
+        } finally {
+        	rollbackTransaction(em);
             closeEntityManager(em);
         }
     }

@@ -242,6 +242,9 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     public ObjectChangeSet findOrCreateLocalObjectChangeSet(Object entityClone, ClassDescriptor descriptor, boolean isNew){
         ObjectChangeSet changes = (ObjectChangeSet)this.getObjectChangeSetForClone(entityClone);
         if (changes == null) {
+        	if (descriptor.hasInheritance() && descriptor.getJavaClass() != entityClone.getClass()) {
+    			descriptor = descriptor.getInheritancePolicy().getSubclassDescriptor(entityClone.getClass());
+        	}
             if (descriptor.isAggregateDescriptor()) {
                 changes = new AggregateObjectChangeSet(CacheId.EMPTY, descriptor, entityClone, this, isNew);
             } else {
