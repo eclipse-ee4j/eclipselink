@@ -1,0 +1,9 @@
+#Thu Jan 22 13:48:15 EST 2009
+eclipse.preferences.version=1
+formatter_profile=_EclipseLink
+formatter_settings_version=11
+org.eclipse.jdt.ui.ignorelowercasenames=false
+org.eclipse.jdt.ui.importorder=java;javax;org;com;
+org.eclipse.jdt.ui.ondemandthreshold=99
+org.eclipse.jdt.ui.staticondemandthreshold=99
+org.eclipse.jdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
