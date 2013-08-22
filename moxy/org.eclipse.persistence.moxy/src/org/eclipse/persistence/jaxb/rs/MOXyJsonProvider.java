@@ -642,7 +642,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             }
         } catch(UnmarshalException unmarshalException) {
             ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
-            throw new WebApplicationException(builder.build());
+            throw new WebApplicationException(unmarshalException, builder.build());
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
         }
