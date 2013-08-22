@@ -321,6 +321,13 @@
 
     <!-- Testing -->
 
+    <!-- Test target to initialize a clean database (needed before a nighlty run of the LRG or a continuous build SRG run) -->
+    <target name="clear-database">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest"/>
+        </antcall>
+    </target>
+
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
     <target name="test">
         <antcall target="run-test" inheritRefs="true">
