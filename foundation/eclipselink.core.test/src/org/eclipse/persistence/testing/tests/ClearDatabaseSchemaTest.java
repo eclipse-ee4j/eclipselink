@@ -15,6 +15,11 @@ package org.eclipse.persistence.testing.tests;
 import org.eclipse.persistence.internal.sessions.ArrayRecord;
 import org.eclipse.persistence.testing.framework.*;
 
+/**
+ * This test is used to allow clearing the schema before running automated tests.  
+ * It is not intended to test behavior, but might be included in test runs where problems can be recorded.
+ *
+ */
 public class ClearDatabaseSchemaTest extends TestCase {
     
     public ClearDatabaseSchemaTest() {
@@ -24,9 +29,11 @@ public class ClearDatabaseSchemaTest extends TestCase {
     public void test() {
         if (getSession().getDatasourcePlatform().isMySQL()) {
             //for now, only MySQL is targeted
-            ArrayRecord o = (ArrayRecord)getSession().executeSQL("select DATABASE()").get(0);
-            getSession().executeNonSelectingSQL("drop database "+o.get("DATABASE()"));
-            getSession().executeNonSelectingSQL("create database "+o.get("DATABASE()"));
+            ArrayRecord record = (ArrayRecord)getSession().executeSQL("select DATABASE()").get(0);
+            getSession().executeNonSelectingSQL("drop database "+record.get("DATABASE()"));
+            getSession().executeNonSelectingSQL("create database "+record.get("DATABASE()"));
+            getDatabaseSession().logout();
+            getDatabaseSession().login();
         }
     }
 }

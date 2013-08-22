@@ -20,7 +20,6 @@ public class SRGTestModel extends TestModel {
     public SRGTestModel() {
         setDescription("This model is a basic set of tests run by developers before checking in code.");
         boolean isSRG = true;
-        addTest(new org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest());
         addTest(new org.eclipse.persistence.testing.tests.feature.FeatureTestModel(isSRG));
         addTest(new EmployeeBasicTestModel(isSRG));
         addTest(new org.eclipse.persistence.testing.tests.writing.ComplexUpdateAndUnitOfWorkTestModel(isSRG));

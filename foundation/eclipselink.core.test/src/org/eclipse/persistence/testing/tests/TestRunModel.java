@@ -174,12 +174,6 @@ public class TestRunModel extends TestModel {
                 }
             }
         );
-
-        //add ClearDatabaseSchemaTest to clear the schema before running other tests.
-        TestEntity test = new org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest();
-        test.setContainer(this);
-        tests.add(0, test);
-
         testList = tests;
     }
 
