@@ -368,8 +368,6 @@
                 <exclude name="**/*parent*.jar"/>
             </fileset>
         </copy>
-        <!-- temporarily force dbws.builder build from ant -->
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"           target="build"/>
         <!-- build rest of core -->
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"               target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"        target="build"/>
@@ -1329,12 +1327,16 @@
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
-            depends="test-core-srg, test-jpa21-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
+            depends="clear-db, test-core-srg, test-jpa21-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="test-core, test-jpa21, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder"
+            depends="clear-db, test-core, test-jpa21, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder"
             />
 
+    <!-- Run clear-db -->
+    <target name="clear-db" description="run the core tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.core.test}" target="clear-database"/>
+    </target>
     <!-- Run core LRG. -->
     <target name="test-core" description="run the core tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}" target="test"/>
