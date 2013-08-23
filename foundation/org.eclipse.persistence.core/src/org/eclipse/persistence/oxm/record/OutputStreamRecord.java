@@ -76,6 +76,8 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
     protected static final byte[] LT = "&lt;".getBytes(Constants.DEFAULT_CHARSET);
     protected static final byte[] QUOT = "&quot;".getBytes(Constants.DEFAULT_CHARSET);
     protected static final byte[] ENCODING = Constants.DEFAULT_XML_ENCODING.getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] SLASH_N = "&#xa;".getBytes(Constants.DEFAULT_CHARSET);
+    protected static final byte[] SLASH_R = "&#xd;".getBytes(Constants.DEFAULT_CHARSET);
 
     protected OutputStream outputStream;
     protected boolean isStartElementOpen = false;
@@ -327,6 +329,18 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
                     }
                     case '"': {
                         outputStreamWrite(QUOT, os);
+                        break;
+                    }
+                    case '\n' : {
+                        if(isAttribute) {
+                            outputStreamWrite(SLASH_N, os);
+                        } else {
+                            outputStreamWrite((byte) character, os);
+                        }
+                        break;
+                    }
+                    case '\r': {
+                        outputStreamWrite(SLASH_R, os);
                         break;
                     }
                     default:
