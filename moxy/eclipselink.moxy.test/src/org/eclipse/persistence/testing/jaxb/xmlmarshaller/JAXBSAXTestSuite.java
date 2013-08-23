@@ -45,6 +45,7 @@ public class JAXBSAXTestSuite extends TestCase {
         suite.addTestSuite(NonELCharacterEscapeHandlerTestCases.class);
         suite.addTestSuite(ListenerTestCases.class);
         suite.addTestSuite(FlushTestCases.class);
+        suite.addTestSuite(CrNewLineTestCases.class);
 
         return suite;
     }

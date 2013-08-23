@@ -267,7 +267,7 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
         }
 
         try {
-            if((null != encoder && encoder.maxBytesPerChar() < 4) || value.indexOf('"') > -1 || value.indexOf('&') > -1 || value.indexOf('<') > -1) {
+            if((null != encoder && encoder.maxBytesPerChar() < 4) || value.indexOf('"') > -1 || value.indexOf('&') > -1 || value.indexOf('<') > -1 || value.indexOf('\n') > -1 || value.indexOf('\r') > -1) {
                   char[] chars = value.toCharArray();
                   for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
                       char character = chars[x];
@@ -284,7 +284,22 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
                           writer.write("&quot;");
                           break;
                       }
+                      case '\n' : {
+                          if(isAttribute) {
+                              writer.write("&#xa;");
+                          } else {
+                              writer.write('\n');
+                          }
+                          break;
+                      }
+                      case '\r': {
+                          writer.write("&#xd;");
+                          break;
+                      }
                       default:
+                          if(null == encoder) {
+                              encoder = Constants.DEFAULT_CHARSET.newEncoder();
+                          }
                           if(encoder.canEncode(character)) {
                               writer.write(character);
                           } else {

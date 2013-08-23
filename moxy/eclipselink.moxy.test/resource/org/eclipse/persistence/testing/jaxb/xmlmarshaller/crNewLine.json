@@ -1,0 +1,12 @@
+{
+    "root":{
+        "slashNAttribute":"Hello\nWorld",
+        "slashRAttribute":"Hello\rWorld",
+        "slashRslashNAttribute":"Hello\r\nWorld",
+        "slashNslashRAttribute":"Hello\n\rWorld",
+        "slashNElement":"Hello\nWorld",
+        "slashRElement":"Hello\rWorld",
+        "slashRslashNElement":"Hello\r\nWorld",
+        "slashNslashRElement":"Hello\n\rWorld"
+    }
+}
