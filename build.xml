@@ -787,12 +787,16 @@
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
-            depends="test-core-srg, test-jpa-srg, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
+            depends="clear-db, test-core-srg, test-jpa-srg, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="test-core, test-jpa, test-wdf, test-moxy, test-sdo, test-dbws, test-dbws-builder"
+            depends="clear-db, test-core, test-jpa, test-wdf, test-moxy, test-sdo, test-dbws, test-dbws-builder"
             />
 
+    <!-- Run clear-db -->
+    <target name="clear-db" description="run the core tests">
+        <ant antfile="build.xml" dir="${eclipselink.core.test}" target="clear-database"/>
+    </target>
     <!-- Run core LRG. -->
     <target name="test-core" description="run the core tests">
         <ant antfile="build.xml" dir="${eclipselink.core.test}" target="test"/>

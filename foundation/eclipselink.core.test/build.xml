@@ -269,20 +269,48 @@
         <filter token="loglevel" value="${logging.level}"/>
         <filter token="boolvalue" value="${logging.boolvalue}"/>
         <filter token="dbPlatform" value="${db.platform}"/>
+        <echo message="Setup filtering values:"/>
+        <echo message="dbUser:      '${db.user}'"/>
+        <echo message="dbPassword:  ********"/>
+        <echo message="driverClass: '${db.driver}'"/>
+        <echo message="dbURL        '${db.url}'"/>
+        <echo message="loglevel:    '${logging.level}'"/>
+        <echo message="boolvalue:   '${logging.boolvalue}'"/>
+        <echo message="dbPlatform:  '${db.platform}'"/>
+        <echo message=" "/>
+
+        <echo message="Filter copying Resources (all but below) (default encoding):"/>
+        <echo message="   from '${core_test.resource.dir}'"/>
+        <echo message="     to '${core_test.run.dir}'"/>
         <copy todir="${core_test.run.dir}" filtering="true" overwrite="true">
             <fileset dir="${core_test.resource.dir}"
                 excludes="**/Employee_utf16.xml, **/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
-         </copy>
-         <copy todir="${core_test.run.dir}" filtering="true" overwrite="true" encoding="UTF-16">
+        </copy>
+
+        <echo message="Filter copying Resources '**/Employee_utf16.xml' (UTF-16 encoding)"/>
+        <echo message="   from '${core_test.resource.dir}'"/>
+        <echo message="     to '${core_test.run.dir}'"/>
+        <copy todir="${core_test.run.dir}" filtering="true" overwrite="true" encoding="UTF-16">
             <fileset dir="${core_test.resource.dir}" includes="**/Employee_utf16.xml"/>
-         </copy>
-          <copy todir="${core_test.run.dir}" filtering="true" overwrite="true" encoding="Shift_JIS">
+        </copy>
+
+        <echo message="Filter copying Resources '**/NLSJapaneseMWIntegrationTestEmployeeProject.xml' (Shift_JIS encoding)"/>
+        <echo message="   from '${core_test.resource.dir}'"/>
+        <echo message="     to '${core_test.run.dir}'"/>
+        <copy todir="${core_test.run.dir}" filtering="true" overwrite="true" encoding="Shift_JIS">
             <fileset dir="${core_test.resource.dir}" includes="**/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
-         </copy>
+        </copy>
     </target>
 
 
     <!-- Testing -->
+
+    <!-- Test target to initialize a clean database (needed before a nighlty run of the LRG or a continuous build SRG run) -->
+    <target name="clear-database">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest"/>
+        </antcall>
+    </target>
 
     <!-- Default test target, runs test.class from test.properties (default is LRG). -->
     <target name="test">
@@ -356,8 +384,8 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel"/>
         </antcall>
 
-		<!--PLSQL -->
-		<antcall target="run-test-prompt" inheritRefs="true">
+        <!--PLSQL -->
+        <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel"/>
         </antcall>
         <antcall target="run-test-prompt" inheritRefs="true">
@@ -419,9 +447,9 @@
         <echo>Running test on ${db.url}</echo>
         <mkdir dir="${core_test.run.dir}"/>
         <mkdir dir="${core_test.report.dir}"/>
-		<!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
-		<!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
-		<junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
+        <!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
+        <!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
+        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>
