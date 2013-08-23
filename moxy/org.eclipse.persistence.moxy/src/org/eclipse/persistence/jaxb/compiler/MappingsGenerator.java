@@ -1490,8 +1490,6 @@ public class MappingsGenerator {
         	if(isCollection){
                 XMLChoiceCollectionMapping xmlChoiceCollectionMapping = (XMLChoiceCollectionMapping) mapping;
                 xmlChoiceCollectionMapping.setIsAny(true);
-        	}else{
-        		XMLChoiceObjectMapping xmlChoiceObjectMapping = (XMLChoiceObjectMapping) mapping;
         	}
         }
         
@@ -2421,23 +2419,23 @@ public class MappingsGenerator {
             Descriptor descriptor = info.getDescriptor();
             if (descriptor != null) {
                 generateMappings(info, descriptor, javaClass, namespaceInfo);
-            }
-            // set primary key fields (if necessary)
-            CoreMapping mapping;
-            // handle XmlID
-            if (info.isIDSet()) {
-                mapping = descriptor.getMappingForAttributeName(info.getIDProperty().getPropertyName());
-                if (mapping != null) {
-                    descriptor.addPrimaryKeyField(mapping.getField());
-                }
-            }
-            // handle XmlKey
-            if (info.hasXmlKeyProperties()) {
-                for (Property keyProp : info.getXmlKeyProperties()) {
-                    mapping = descriptor.getMappingForAttributeName(keyProp.getPropertyName());
+                // set primary key fields (if necessary)
+                CoreMapping mapping;
+                // handle XmlID
+                if (info.isIDSet()) {
+                    mapping = descriptor.getMappingForAttributeName(info.getIDProperty().getPropertyName());
                     if (mapping != null) {
                         descriptor.addPrimaryKeyField(mapping.getField());
-                    }                    
+                    }
+                }
+                // handle XmlKey
+                if (info.hasXmlKeyProperties()) {
+                    for (Property keyProp : info.getXmlKeyProperties()) {
+                        mapping = descriptor.getMappingForAttributeName(keyProp.getPropertyName());
+                        if (mapping != null) {
+                            descriptor.addPrimaryKeyField(mapping.getField());
+                        }                    
+                    }
                 }
             }
             info.postInitialize();
