@@ -32,9 +32,9 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
@@ -139,7 +139,7 @@ public class MarshalUnmarshalTest {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws JAXBException the jAXB exception
      */
-    @Test(expected = ConversionException.class)
+    @Test(expected = JPARSException.class)
     public void testUnmarshalByReferenceNonExistingNestedObject()
             throws IOException, JAXBException {
         // Send a JSON message with links where the links point to non-existing
@@ -159,7 +159,7 @@ public class MarshalUnmarshalTest {
      */
     @Test
     public void testMarshal() throws RestCallFailedException,
-    UnsupportedEncodingException, JAXBException {
+            UnsupportedEncodingException, JAXBException {
         StaticBid bid = new StaticBid();
         bid.setId(20);
         bid.setAmount(100.0);
