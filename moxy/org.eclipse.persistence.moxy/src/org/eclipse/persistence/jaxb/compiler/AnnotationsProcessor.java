@@ -527,22 +527,17 @@ public class AnnotationsProcessor {
      */
     public Map<String, TypeInfo> preBuildTypeInfo(JavaClass[] javaClasses) {
         for (JavaClass javaClass : javaClasses) {
-            if (javaClass == null || !shouldGenerateTypeInfo(javaClass) || isXmlRegistry(javaClass) || javaClass.isArray()) {
+            String qualifiedName = javaClass.getQualifiedName();
+            TypeInfo info = typeInfo.get(qualifiedName);
+            if (javaClass == null || javaClass.isArray()|| (info!=null && info.isPreBuilt()) || !shouldGenerateTypeInfo(javaClass) || isXmlRegistry(javaClass) ) {
                 continue;
             }
 
-            String qualifiedName = javaClass.getQualifiedName();
-            TypeInfo info = typeInfo.get(qualifiedName);
-            if (info != null) {
-                if (info.isPreBuilt()) {
-                    continue;
-                }
-            }
 
             if (javaClass.isEnum()) {
-                info = new EnumTypeInfo(helper);
+                info = new EnumTypeInfo(helper, javaClass);
             } else {
-                info = new TypeInfo(helper);
+                info = new TypeInfo(helper, javaClass);
             }
             info.setJavaClassName(qualifiedName);
             info.setPreBuilt(true);
@@ -813,7 +808,7 @@ public class AnnotationsProcessor {
 
             // handle superclass if necessary
             JavaClass superClass = (JavaClass) javaClass.getSuperclass();
-            if (shouldGenerateTypeInfo(superClass)) {
+            if (shouldGenerateTypeInfo(superClass) && typeInfo.get(superClass.getQualifiedName()) == null) {
                 JavaClass[] jClassArray = new JavaClass[] { superClass };
                 buildNewTypeInfo(jClassArray);
             }
@@ -861,13 +856,13 @@ public class AnnotationsProcessor {
      * 
      */
     public void finalizeProperties() {    
-        ArrayList<JavaClass> jClasses = getTypeInfoClasses();
-        for (JavaClass jClass : jClasses) {
-            TypeInfo tInfo = getTypeInfo().get(jClass.getQualifiedName());
+    	
+        for (TypeInfo tInfo: getTypeInfo().values()) {
             // don't need to validate props on a transient class at this point
             if (tInfo.isTransient()) {
                 continue;
             }
+            JavaClass jClass = tInfo.getJavaClass();
             String[] propOrder = tInfo.getPropOrder();
             boolean hasPropOrder = propOrder.length > 0 && !(propOrder.length == 1 && propOrder[0].equals(Constants.EMPTY_STRING));                               
             // If a property is marked transient, ensure it doesn't exist in the propOrder
@@ -1047,13 +1042,13 @@ public class AnnotationsProcessor {
 
             if (property.isMap()){
                 JavaClass keyType = property.getKeyType();
-                if (shouldGenerateTypeInfo(keyType)) {
+                if (shouldGenerateTypeInfo(keyType) && typeInfo.get(keyType.getQualifiedName()) == null) {
                     JavaClass[] jClassArray = new JavaClass[] { keyType };
                     buildNewTypeInfo(jClassArray);
                 }
 
                 JavaClass valueType = property.getValueType();
-                if (shouldGenerateTypeInfo(valueType)) {
+                if (shouldGenerateTypeInfo(valueType) && typeInfo.get(valueType.getQualifiedName()) == null) {
                     JavaClass[] jClassArray = new JavaClass[] { valueType };
                     buildNewTypeInfo(jClassArray);
                 }
@@ -1357,7 +1352,7 @@ public class AnnotationsProcessor {
             if (paramTypes != null && paramTypes.length > 0) {
                 String[] paramTypeNames = new String[paramTypes.length];
                 for (int i = 0; i < paramTypes.length; i++) {
-                	if(shouldGenerateTypeInfo(paramTypes[i])){
+                	if(shouldGenerateTypeInfo(paramTypes[i]) && typeInfo.get(paramTypes[i].getQualifiedName()) == null){
                            JavaClass[] jClassArray = new JavaClass[] { paramTypes[i] };
                            buildNewTypeInfo(jClassArray);
                 	}
@@ -1612,7 +1607,7 @@ public class AnnotationsProcessor {
             while (next != null && !(next.getName().equals(JAVA_LANG_OBJECT))) {
                 TypeInfo parentInfo = this.typeInfo.get(next.getName());
                 // If parentInfo is null, hasn't been processed yet
-                if (shouldGenerateTypeInfo(next)) {
+                if (shouldGenerateTypeInfo(next)  && typeInfo.get(next.getQualifiedName()) == null) {
                     buildNewTypeInfo(new JavaClass[] { next });
                     parentInfo = this.typeInfo.get(next.getName());
                 }
@@ -2322,7 +2317,7 @@ public class AnnotationsProcessor {
             	 TypeInfo tInfo = typeInfo.get(next.getType());
                  if(tInfo == null){
                 	 JavaClass nextCls =  helper.getJavaClass(next.getType());
-                	 if(shouldGenerateTypeInfo(nextCls)) {
+                	 if(shouldGenerateTypeInfo(nextCls) && typeInfo.get(nextCls.getQualifiedName()) == null) {
                 		 buildNewTypeInfo(new JavaClass[]{nextCls});
                          tInfo = typeInfo.get(next.getType());
                      }                     
@@ -3563,16 +3558,17 @@ public class AnnotationsProcessor {
     }
 
     private void checkForCallbackMethods() {
+        JavaClass unmarshallerCls = helper.getJavaClass(Unmarshaller.class);
+        JavaClass marshallerCls = helper.getJavaClass(Marshaller.class);
+        JavaClass objectCls = helper.getJavaClass(Object.class);
+        JavaClass[] unmarshalParams = new JavaClass[] { unmarshallerCls, objectCls };
+        JavaClass[] marshalParams = new JavaClass[] { marshallerCls };
+
         for (JavaClass next : typeInfoClasses) {
             if (next == null) {
                 continue;
             }
 
-            JavaClass unmarshallerCls = helper.getJavaClass(Unmarshaller.class);
-            JavaClass marshallerCls = helper.getJavaClass(Marshaller.class);
-            JavaClass objectCls = helper.getJavaClass(Object.class);
-            JavaClass[] unmarshalParams = new JavaClass[] { unmarshallerCls, objectCls };
-            JavaClass[] marshalParams = new JavaClass[] { marshallerCls };
             UnmarshalCallback unmarshalCallback = null;
             MarshalCallback marshalCallback = null;
             // look for before unmarshal callback
