@@ -437,6 +437,9 @@ public class JavaClassImpl implements JavaClass {
         if(arg0 == null) {
             return false;
         }
+        if(!this.javaModelImpl.hasXmlBindings()) {
+        	return false;
+        }
         if(!(arg0.getClass() == this.getClass())) { 
             return false;
         }
