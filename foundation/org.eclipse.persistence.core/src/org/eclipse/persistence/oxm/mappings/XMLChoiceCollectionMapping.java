@@ -819,6 +819,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         	//}
         	anyMapping.setMixedContent(false);
         	anyMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+        	anyMapping.setUseXMLRoot(true);
         	mappingsList.add(anyMapping);        	
         }
         for(XMLMapping next:getChoiceElementMappingsByClass().values()) {

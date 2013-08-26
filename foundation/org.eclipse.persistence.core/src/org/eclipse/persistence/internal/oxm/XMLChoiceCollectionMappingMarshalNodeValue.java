@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 
@@ -235,7 +236,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
     private boolean marshalSingleValueWithNodeValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, NodeValue unwrappedNodeValue) {        
         
     	Object fieldValue = value;
-    	if(value instanceof Root){
+    	if(value instanceof Root && !unwrappedNodeValue.isAnyMappingNodeValue()){
     		fieldValue = ((Root)value).getObject();
     	}
     	if(unwrappedNodeValue != null){
@@ -283,6 +284,9 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
     		Object fieldValue = rootValue.getObject();
     		associatedField = getFieldForName(localName, namespaceUri);
     		if(associatedField == null) {
+    		    if(xmlChoiceCollectionMapping.isAny()) {
+    		        return this.anyNodeValue;
+    		    }
     		    Class theClass = fieldValue.getClass();
     		    while(associatedField == null) {
                     associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
