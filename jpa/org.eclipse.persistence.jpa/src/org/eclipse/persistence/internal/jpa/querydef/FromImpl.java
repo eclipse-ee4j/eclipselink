@@ -144,7 +144,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
         Class clazz = assoc.getBindableJavaType();
         Fetch<X, Y> join = null;
-        ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(this.currentNode.getName());
+        ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(assoc.getName());
         if (jt.equals(JoinType.LEFT)){
             exp.doUseOuterJoin();
         }else if(jt.equals(JoinType.RIGHT)){

@@ -166,7 +166,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testNullRestrictionGetRestriction"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testFromToExpression"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testUnusedJoinDoesNotAffectOtherJoins"));
-        //suite.addTest(new AdvancedCriteriaQueryTestSuite("testUnusedJoinDoesNotAffectFetchJoin"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testUnusedJoinDoesNotAffectFetchJoin"));
         
         return suite;
     }
