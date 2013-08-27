@@ -30,10 +30,10 @@
 		<hex-element>323232</hex-element>
 		<hex-element>333333</hex-element>
 	</hex-vector>
-	<untyped-date>1978-08-02T01:00:00</untyped-date>
+	<untyped-date>1978-08-02T01:00:00-04:00</untyped-date>
 	<typed-date>1978-08-02</typed-date>
 	<untyped-sql-date>1978-08-02</untyped-sql-date>
 	<typed-sql-date>1978-08-02</typed-sql-date>
-	<untyped-timestamp>1978-08-02T01:00:00</untyped-timestamp>
-	<typed-timestamp>01:00:00</typed-timestamp>
+	<untyped-timestamp>1978-08-02T01:00:00-04:00</untyped-timestamp>
+	<typed-timestamp>01:00:00-05:00</typed-timestamp>
 </test-object>

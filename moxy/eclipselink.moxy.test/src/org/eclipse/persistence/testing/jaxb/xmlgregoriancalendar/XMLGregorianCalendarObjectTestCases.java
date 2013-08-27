@@ -85,7 +85,7 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
 		DatatypeFactory factory;		
 		try {		 
 			factory = DatatypeFactory.newInstance();					
-		    XMLGregorianCalendar xmlGrelCal = factory.newXMLGregorianCalendar(2013, DatatypeConstants.FEBRUARY,20, 10,29, 58, 0, DatatypeConstants.FIELD_UNDEFINED);
+            XMLGregorianCalendar xmlGrelCal = factory.newXMLGregorianCalendar("2013-02-20T10:29:58-05:00");
 		    holder.things.add(xmlGrelCal);
 		} catch (DatatypeConfigurationException e) {			
 			e.printStackTrace();
