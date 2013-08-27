@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -99,6 +100,14 @@ public class JavaClassImpl implements JavaClass {
                     Class genericTypeClass = (Class)((GenericArrayType)type).getGenericComponentType();
                     genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
                     argCollection.add(javaModelImpl.getClass(genericTypeClass));
+                } else if(type instanceof TypeVariable) {
+                    Type[] boundTypes = ((TypeVariable) type).getBounds();
+                    if(boundTypes.length > 0) {
+                        Type boundType = boundTypes[0];
+                        if(boundType instanceof Class) {
+                            argCollection.add(javaModelImpl.getClass((Class) boundType));
+                        }
+                    }
                 }
             }
         }
