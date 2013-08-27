@@ -84,6 +84,9 @@ public class DOMReader extends XMLReaderAdapter {
         }  else {
             rootNode = (Element)node;
         }
+        if(rootNode == null) {
+            return;
+        }
         processParentNamespaces(rootNode);
         startDocument();
         setupLocator(rootNode.getOwnerDocument());
