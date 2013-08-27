@@ -39,7 +39,7 @@ import java.sql.Timestamp;
 
 @MappedSuperclass
 @ExistenceChecking(CHECK_CACHE)
-public class Beer<PK, ALCOHOL_CONTENT_TYPE, BeerDoubleType> extends Beverage<PK> {
+public class Beer<PK, ALCOHOL_CONTENT_TYPE, BeerDoubleType> extends Beverage<BeerDoubleType, PK> {
     private Timestamp version;
     private ALCOHOL_CONTENT_TYPE alcoholContent;
     private BeerConsumer beerConsumer;
