@@ -145,28 +145,28 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testUtilDateToString_default_0ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class);
         this.assertEquals(control, test);
     }
 
     public void testUtilDateToString_default_1ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_1MS);
-        String control = "1975-02-21T07:47:15.001";
+        String control = "1975-02-21T07:47:15.001-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class);
         this.assertEquals(control, test);
     }
 
     public void testUtilDateToString_default_10ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_10MS);
-        String control = "1975-02-21T07:47:15.01";
+        String control = "1975-02-21T07:47:15.01-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class);
         this.assertEquals(control, test);
     }
 
     public void testUtilDateToString_default_100ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_100MS);
-        String control = "1975-02-21T07:47:15.1";
+        String control = "1975-02-21T07:47:15.1-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class);
         this.assertEquals(control, test);
     }
@@ -181,7 +181,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testUtilDateToString_dateTime_before_epoch() {
         // the default timezone will be applied such that the returned datetime
         // should be 5 hours earlier
-        String control = "1965-01-01T00:00:00.001";
+        String control = "1965-01-01T00:00:00.001-05:00";
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -198,7 +198,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testUtilDateToString_dateTime_negative_year() throws Exception{
         // the default timezone will be applied such that the returned datetime
         // should be 5 hours earlier
-        String control = "-2006-01-01T00:00:00.001";
+        String control = "-2006-01-01T00:00:00.001-05:00";
 
         GregorianCalendar cal = new GregorianCalendar();
         cal.clear();
@@ -232,28 +232,28 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testUtilDateToString_dateTime_0ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testUtilDateToString_dateTime_1ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_1MS);
-        String control = "1975-02-21T07:47:15.001";
+        String control = "1975-02-21T07:47:15.001-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testUtilDateToString_dateTime_10ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_10MS);
-        String control = "1975-02-21T07:47:15.01";
+        String control = "1975-02-21T07:47:15.01-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testUtilDateToString_dateTime_100ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_100MS);
-        String control = "1975-02-21T07:47:15.1";
+        String control = "1975-02-21T07:47:15.1-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -267,28 +267,28 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testUtilDateToString_time_0ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15";
+        String control = "07:47:15-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testUtilDateToString_time_1ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_1MS);
-        String control = "07:47:15.001";
+        String control = "07:47:15.001-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testUtilDateToString_time_10ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_10MS);
-        String control = "07:47:15.01";
+        String control = "07:47:15.01-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testUtilDateToString_time_100ms() {
         java.util.Date utilDate = new java.util.Date(CONTROL_DATE_TIME_100MS);
-        String control = "07:47:15.1";
+        String control = "07:47:15.1-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -873,28 +873,28 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlDateToString_dateTime_0ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15-05:00";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlDateToString_dateTime_1ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_1MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15.001-05:00";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlDateToString_dateTime_10ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_10MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15.01-05:00";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlDateToString_dateTime_100ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_100MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15.1-05:00";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -908,28 +908,28 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlDateToString_time_0ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15";
+        String control = "07:47:15-05:00";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlDateToString_time_1ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_1MS);
-        String control = "07:47:15";
+        String control = "07:47:15.001-05:00";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlDateToString_time_10ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_10MS);
-        String control = "07:47:15";
+        String control = "07:47:15.01-05:00";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlDateToString_time_100ms() {
         java.sql.Date sqlDate = new java.sql.Date(CONTROL_DATE_TIME_100MS);
-        String control = "07:47:15";
+        String control = "07:47:15.1-05:00";
         String test = (String)xcm.convertObject(sqlDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -1410,35 +1410,35 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_default() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_TIME_0MS);
-        String control = "07:47:15";
+        String control = "07:47:15-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_default_0ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_TIME_0MS);
-        String control = "07:47:15";
+        String control = "07:47:15-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_default_1ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_TIME_1MS);
-        String control = "07:47:15";
+        String control = "07:47:15.001-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_default_10ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_TIME_10MS);
-        String control = "07:47:15";
+        String control = "07:47:15.01-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_default_100ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_TIME_100MS);
-        String control = "07:47:15";
+        String control = "07:47:15.1-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class);
         this.assertEquals(control, test);
     }
@@ -1466,35 +1466,35 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_dateTime() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_dateTime_0ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_dateTime_1ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_1MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15.001-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_dateTime_10ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_10MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15.01-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_dateTime_100ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_100MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15.1-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -1508,35 +1508,35 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testSqlTimeToString_time() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15";
+        String control = "07:47:15-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_time_0ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15";
+        String control = "07:47:15-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_time_1ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_1MS);
-        String control = "07:47:15";
+        String control = "07:47:15.001-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_time_10ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_10MS);
-        String control = "07:47:15";
+        String control = "07:47:15.01-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testSqlTimeToString_time_100ms() {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_DATE_TIME_100MS);
-        String control = "07:47:15";
+        String control = "07:47:15.1-05:00";
         String test = (String)xcm.convertObject(sqlTime, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -2054,28 +2054,28 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testTimestampToString_default_0ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_default_1ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_1MS);
-        String control = "1975-02-21T07:47:15.001";
+        String control = "1975-02-21T07:47:15.001-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_default_10ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_10MS);
-        String control = "1975-02-21T07:47:15.01";
+        String control = "1975-02-21T07:47:15.01-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_default_100ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_100MS);
-        String control = "1975-02-21T07:47:15.1";
+        String control = "1975-02-21T07:47:15.1-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class);
         this.assertEquals(control, test);
     }
@@ -2083,7 +2083,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testTimestampToString_default_123456789ns() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
         timestamp.setNanos(123456789);
-        String control = "1975-02-21T07:47:15.123456789";
+        String control = "1975-02-21T07:47:15.123456789-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class);
         this.assertEquals(control, test);
     }
@@ -2111,28 +2111,28 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testTimestampToString_dateTime_0ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
-        String control = "1975-02-21T07:47:15";
+        String control = "1975-02-21T07:47:15-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_dateTime_1ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_1MS);
-        String control = "1975-02-21T07:47:15.001";
+        String control = "1975-02-21T07:47:15.001-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_dateTime_10ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_10MS);
-        String control = "1975-02-21T07:47:15.01";
+        String control = "1975-02-21T07:47:15.01-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_dateTime_100ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_100MS);
-        String control = "1975-02-21T07:47:15.1";
+        String control = "1975-02-21T07:47:15.1-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -2140,7 +2140,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testTimestampToString_dateTime_123456789ns() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
         timestamp.setNanos(123456789);
-        String control = "1975-02-21T07:47:15.123456789";
+        String control = "1975-02-21T07:47:15.123456789-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -2148,7 +2148,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testTimestampToString_dateTime_negative_year_123456789ns() {
         // the default timezone will be applied such that the returned timestamp
         // should be 5 hours earlier
-        String control = "-2006-01-01T00:00:00.123456789";
+        String control = "-2006-01-01T00:00:00.123456789-05:00";
 
         GregorianCalendar cal = new GregorianCalendar();
         cal.setGregorianChange(new java.util.Date(Long.MIN_VALUE));
@@ -2173,7 +2173,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testTimestampToString_dateTime_before_epoch_123456789ns() {
         // the default timezone will be applied such that the returned timestamp
         // should be 5 hours earlier
-        String control = "1965-01-01T00:00:00.123456789";
+        String control = "1965-01-01T00:00:00.123456789-05:00";
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -2199,28 +2199,28 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testTimestampToString_time_0ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
-        String control = "07:47:15";
+        String control = "07:47:15-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_time_1ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_1MS);
-        String control = "07:47:15.001";
+        String control = "07:47:15.001-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_time_10ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_10MS);
-        String control = "07:47:15.01";
+        String control = "07:47:15.01-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testTimestampToString_time_100ms() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_100MS);
-        String control = "07:47:15.1";
+        String control = "07:47:15.1-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -2228,7 +2228,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testTimestampToString_time_123456789ns() {
         java.sql.Timestamp timestamp = new java.sql.Timestamp(CONTROL_DATE_TIME_0MS);
         timestamp.setNanos(123456789);
-        String control = "07:47:15.123456789";
+        String control = "07:47:15.123456789-05:00";
         String test = (String)xcm.convertObject(timestamp, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
@@ -3618,7 +3618,7 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testExtendedUtilDateToString_default_100ms() {
         java.util.Date utilDate = new ExtendedUtilDate(CONTROL_DATE_TIME_100MS);
-        String control = "1975-02-21T07:47:15.1";
+        String control = "1975-02-21T07:47:15.1-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class);
         this.assertEquals(control, test);
     }
@@ -3632,14 +3632,14 @@ public class DateAndTimeTestCases extends OXTestCase {
 
     public void testExtendedUtilDateToString_time_10ms() {
         java.util.Date utilDate = new ExtendedUtilDate(CONTROL_DATE_TIME_10MS);
-        String control = "07:47:15.01";
+        String control = "07:47:15.01-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.TIME_QNAME);
         this.assertEquals(control, test);
     }
 
     public void testExtendedUtilDateToString_dateTime_1ms() {
         java.util.Date utilDate = new ExtendedUtilDate(CONTROL_DATE_TIME_1MS);
-        String control = "1975-02-21T07:47:15.001";
+        String control = "1975-02-21T07:47:15.001-05:00";
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
         this.assertEquals(control, test);
     }

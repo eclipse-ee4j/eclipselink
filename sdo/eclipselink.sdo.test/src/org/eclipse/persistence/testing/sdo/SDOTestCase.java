@@ -60,6 +60,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class SDOTestCase extends junit.framework.TestCase {
+
+    static {
+        System.setProperty("user.timezone", "Canada/Eastern");
+    }
+
     public boolean useLogging = false;
     public boolean ignoreCRLF = false;
     public boolean customContext = false;

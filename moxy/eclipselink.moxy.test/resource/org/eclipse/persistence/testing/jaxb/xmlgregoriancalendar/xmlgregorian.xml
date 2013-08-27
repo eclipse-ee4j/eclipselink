@@ -7,7 +7,7 @@
    <things xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:dateTime">1985-09-23T10:33:05.001</things>
    <things xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:dateTime">1977-02-13T08:30:02.000</things>
    <things xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:dateTime">1977-02-13T08:30:02</things>
-   <things xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:dateTime">2013-02-20T10:29:58</things>
+   <things xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:dateTime">2013-02-20T10:29:58-05:00</things>
    <gregCal>1985-09-23T10:33:05.001</gregCal>
    <gregCalTime>09:30:05</gregCalTime>
 </root>

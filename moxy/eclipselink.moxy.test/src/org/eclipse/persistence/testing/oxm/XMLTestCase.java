@@ -19,6 +19,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class XMLTestCase extends junit.framework.TestCase {
+
+    static {
+        System.setProperty("user.timezone", "Canada/Eastern");
+    }
+
     private XMLComparer xmlComparer;
     
     public XMLTestCase(String name) {
