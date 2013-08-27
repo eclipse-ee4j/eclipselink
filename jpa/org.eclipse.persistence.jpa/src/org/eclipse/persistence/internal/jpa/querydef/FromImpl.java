@@ -43,6 +43,7 @@ import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
@@ -143,13 +144,15 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
         Class clazz = assoc.getBindableJavaType();
         Fetch<X, Y> join = null;
+        ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(assoc.getName());
         if (jt.equals(JoinType.LEFT)){
-            join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, this.currentNode.getAllowingNull(assoc.getName()), assoc, jt);
+            exp.doUseOuterJoin();
         }else if(jt.equals(JoinType.RIGHT)){
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
         }else{
-            join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, this.currentNode.get(assoc.getName()), assoc, jt);
+            exp.doNotUseOuterJoin();
         }
+        join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, assoc, jt);
         this.fetches.add(join);
         ((FromImpl)join).isFetch = true;
         return join;
@@ -352,13 +355,15 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
         Class clazz = attribute.getBindableJavaType();
         Join<X, Y> join = null;
+        ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(attribute.getName());
         if (jt.equals(JoinType.LEFT)){
-            join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, this.currentNode.getAllowingNull(attribute.getName()), attribute, jt);
+            exp.doUseOuterJoin();
         }else if(jt.equals(JoinType.RIGHT)){
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
         }else{
-            join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, this.currentNode.get(attribute.getName()), attribute, jt);
+            exp.doNotUseOuterJoin();
         }
+        join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, attribute, jt);
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
         return join;
