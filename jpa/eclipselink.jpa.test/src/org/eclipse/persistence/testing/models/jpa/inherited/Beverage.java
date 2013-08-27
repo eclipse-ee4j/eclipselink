@@ -23,10 +23,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.PostPersist;
 import javax.persistence.TableGenerator;
 import javax.persistence.MappedSuperclass;
+
+import org.eclipse.persistence.testing.models.jpa.inheritance.GenericTestInterface2;
+
 import static javax.persistence.GenerationType.*;
 
 @MappedSuperclass
-public class Beverage<PK> {
+// The reference to GenericTestInterface2 is added as a test for the fix for bug 411560
+public class Beverage<U, PK> extends Consumable<PK> implements GenericTestInterface2<U, PK> {
     public static int BEVERAGE_POST_PERSIST_COUNT = 0;
     
     private PK id;

@@ -173,6 +173,12 @@ public class MetadataAsmFactory extends MetadataFactory {
                         break;
                     }
                     String variable = parentGenericTypes.get(parentIndex);
+                    
+                    // if we get as far as the superclass name in the parent generic type list,
+                    // there is nothing more to process.  We have processed all the generics in the type definition
+                    if (variable.equals(parent.getSuperclassName())){
+                        break;
+                    }
                     parentIndex = parentIndex + 3;
 
                     // We are building bottom up and need to link up any
