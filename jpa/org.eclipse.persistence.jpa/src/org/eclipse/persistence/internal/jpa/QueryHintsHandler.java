@@ -287,6 +287,7 @@ public class QueryHintsHandler {
             addHint(new IndirectionPolicyHint());
             addHint(new QueryCacheTypeHint());
             addHint(new QueryCacheIgnoreNullHint());
+            addHint(new QueryCacheInvalidateOnChangeHint());            
             addHint(new QueryCacheRandomizedExpiryHint());
             // 325167: Make reserved # bind parameter char generic to enable native SQL pass through
             addHint(new ParameterDelimiterHint());
@@ -1236,6 +1237,32 @@ public class QueryHintsHandler {
     }
 
     /**
+     * Define the query cache ignore null hint.
+     * Only reset the query cache if unset (as other query cache properties may be set first).
+     */
+    protected static class QueryCacheInvalidateOnChangeHint extends Hint {
+        QueryCacheInvalidateOnChangeHint() {
+            super(QueryHints.QUERY_RESULTS_CACHE_INVALIDATE, HintValues.TRUE);
+            valueArray = new Object[][] { 
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isReadQuery()) {
+                if (((ReadQuery)query).getQueryResultsCachePolicy() == null) {
+                    ((ReadQuery)query).cacheQueryResults();
+                }
+                ((ReadQuery)query).getQueryResultsCachePolicy().setInvalidateOnChange(((Boolean)valueToApply).booleanValue());
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    /**
      * Define the query cache randomized expiry hint.
      * Only reset the query cache if unset (as other query cache properties may be set first).
      */
@@ -1420,7 +1447,7 @@ public class QueryHintsHandler {
                     } else if (!mapping.isForeignReferenceMapping() && !mapping.isAggregateObjectMapping()) {
                         throw QueryException.queryHintNavigatedIllegalRelationship(query, QueryHints.BATCH, valueToApply, previousToken + "." + token);
                     }
-                    expression = expression.get(token);
+                    expression = expression.get(token, false);
                     previousToken = token;
                     if (mapping != null){
                         descriptor = mapping.getReferenceDescriptor();

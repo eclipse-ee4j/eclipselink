@@ -553,6 +553,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             // In case of IN the batch including this row may not have been executed yet.
             if (result == null) {
                 AbstractRecord translationRow = originalQuery.getTranslationRow();
+                if (translationRow == null) {
+                    translationRow = new DatabaseRecord();
+                }
                 // Execute query and index resulting object sets by key.
                 if (originalPolicy.isIN()) {
                     // Need to extract all foreign key values from all parent rows for IN parameter.
@@ -753,6 +756,35 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         nestedQuery.setShouldMaintainCache(baseQuery.shouldMaintainCache());
         nestedQuery.setShouldRefreshIdentityMapResult(baseQuery.shouldRefreshIdentityMapResult());
 
+
+        // Bug 385700 - Populate session & query class if not initialized by 
+        // ObjectLevelReadQuery.computeBatchReadMappingQueries() in case batch query
+        // has been using inheritance and child descriptors can have different mappings.
+        // Code below will add nested batch IN support to joining, not currently enabled as JOIN and EXISTS batch types not supported yet.
+        /*if (baseQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)baseQuery).hasBatchReadAttributes()) {
+            ObjectLevelReadQuery baseObjectQuery = (ObjectLevelReadQuery) baseQuery;
+            for (Expression expression : baseObjectQuery.getBatchReadAttributeExpressions()) {
+                ObjectExpression batchReadExpression = (ObjectExpression) expression;
+                
+                // Batch Read Attribute Expressions may not have initialized.
+                ExpressionBuilder expressionBuilder = batchReadExpression.getBuilder();
+                if (expressionBuilder.getQueryClass() == null) {
+                    expressionBuilder.setQueryClass(baseQuery.getReferenceClass());
+                }
+                if (expressionBuilder.getSession() == null) {
+                    expressionBuilder.setSession(baseQuery.getSession().getRootSession(null));
+                }
+            }
+            
+            // Computed nested batch attribute expressions, and add them to batch query.
+            List<Expression> nestedExpressions = extractNestedExpressions(baseObjectQuery.getBatchReadAttributeExpressions(), nestedQuery.getExpressionBuilder());
+            nestedQuery.getBatchReadAttributeExpressions().addAll(nestedExpressions);
+            
+            nestedQuery.setBatchFetchType(baseObjectQuery.getBatchFetchPolicy().getType());
+            nestedQuery.setBatchFetchSize(baseObjectQuery.getBatchFetchPolicy().getSize());
+        }*/
+
+        
         // For flashback: Must still propagate all properties, as the
         // attributes of this joined attribute may be read later too.
         if (baseQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)baseQuery).hasAsOfClause()) {
@@ -2134,14 +2166,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
         }
         // PERF: Direct variable access.
+        if (shouldUseValueFromRowWithJoin(joinManager, sourceQuery)) {
+            return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected);
+        }
         // If the query uses batch reading, return a special value holder
         // or retrieve the object from the query property.
         if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
                 || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
             return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery, cacheKey);
-        }
-        if (shouldUseValueFromRowWithJoin(joinManager, sourceQuery)) {
-            return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected);
         } else {
             return valueFromRowInternal(row, joinManager, sourceQuery, executionSession, false);
         }
@@ -2413,6 +2445,21 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             nestedQuery.getJoinedAttributeManager().setDataResults(nestedDataResults, executionSession);
         }
+        // Must also set data results to the nested query if it uses nested IN batch fetching.
+        /*if (nestedQuery.hasBatchReadAttributes() && nestedQuery.getBatchFetchPolicy().isIN()) {
+            List sourceDataResults = ((ObjectLevelReadQuery)sourceQuery).getBatchFetchPolicy().getAllDataResults();
+            // The data results only of the child object are required, they must also be trimmed.
+            List nestedDataResults = new ArrayList(sourceDataResults.size());
+            Object indexObject = joinManager.getJoinedMappingIndexes_().get(this);
+            // Trim results to start at nested row index.
+            for (int index = 0; index < sourceDataResults.size(); index++) {
+                AbstractRecord sourceRow = (AbstractRecord)sourceDataResults.get(index);
+                if (sourceRow != null) {
+                    nestedDataResults.add(trimRowForJoin(sourceRow, indexObject, executionSession));
+                }
+            }
+            nestedQuery.getBatchFetchPolicy().setDataResults(nestedDataResults);
+        }*/
         nestedQuery.setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
         return nestedQuery;
     }

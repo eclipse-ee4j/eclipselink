@@ -375,9 +375,11 @@ public abstract class ObjectExpression extends DataExpression {
      * Return the expression from the attribute dervied from this expression.
      */
     @Override
-    public Expression get(String attributeName) {
+    public Expression get(String attributeName, boolean forceInnerJoin) {
         ObjectExpression result = derivedExpressionNamed(attributeName);
-        result.doNotUseOuterJoin();
+        if (forceInnerJoin) {
+            result.doNotUseOuterJoin();
+        }
         return result;
     }
 

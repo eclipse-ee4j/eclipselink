@@ -280,6 +280,15 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
      * Return temporary list of rows from parent batch query per batched mapping.
      * This is used for IN batching in batches.
      */
+    public List<AbstractRecord> getAllDataResults() {
+        return this.dataResults.get(this);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return temporary list of rows from parent batch query per batched mapping.
+     * This is used for IN batching in batches.
+     */
     public Map<Object, List<AbstractRecord>> getDataResults() {
         return this.dataResults;
     }

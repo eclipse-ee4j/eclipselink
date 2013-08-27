@@ -147,6 +147,15 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setIsNullIgnored(boolean)
      */
     public static final String QUERY_RESULTS_CACHE_IGNORE_NULL = "eclipselink.query-results-cache.ignore-null";
+
+    /**
+     * "eclipselink.query-results-cache.invalidate-on-change"
+     * <p>Configures if the query cache results should be invalidated if any object of any class used in the query if modified.
+     * 
+     * Valid values are "true" and "false", true is the default.
+     * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setInvalidateOnChange(boolean)
+     */
+    public static final String QUERY_RESULTS_CACHE_INVALIDATE = "eclipselink.query-results-cache.invalidate-on-change";
     
     /**
      * "eclipselink.query-results-cache.type"

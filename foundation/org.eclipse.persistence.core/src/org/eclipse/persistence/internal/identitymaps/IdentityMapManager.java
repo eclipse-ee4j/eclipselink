@@ -61,7 +61,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     protected Map<Object, IdentityMap> queryResults;
     
     /** A map of class to list of queries that need to be invalidated when that class changes. */
-    protected Map<Class, List> queryResultsInvalidationsByClass;
+    protected Map<Class, Set> queryResultsInvalidationsByClass;
     
     /** A map of indexes on the cache. */
     protected Map<CacheIndex, IdentityMap> cacheIndexes;
@@ -458,10 +458,10 @@ public class IdentityMapManager implements Serializable, Cloneable {
         if (this.queryResultsInvalidationsByClass == null) {
             return;
         }
-        List invalidations = this.queryResultsInvalidationsByClass.get(classThatChanged);
+        Set invalidations = this.queryResultsInvalidationsByClass.get(classThatChanged);
         if (invalidations != null) {
             for (Object queryKey : invalidations) {
-                this.queryResults.remove(queryKey);                
+                this.queryResults.remove(queryKey);
             }
         }
         Class superClass = classThatChanged.getSuperclass();
@@ -1416,9 +1416,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     // Mark the query to be invalidated for the query classes.
                     if (query.getQueryResultsCachePolicy().getInvalidateOnChange()) {
                         for (Class queryClass : query.getQueryResultsCachePolicy().getInvalidationClasses()) {
-                            List invalidations = this.queryResultsInvalidationsByClass.get(queryClass);
+                            Set invalidations = this.queryResultsInvalidationsByClass.get(queryClass);
                             if (invalidations == null) {
-                                invalidations = new ArrayList();
+                                invalidations = new HashSet();
                                 this.queryResultsInvalidationsByClass.put(queryClass, invalidations);
                             }
                             invalidations.add(queryKey);

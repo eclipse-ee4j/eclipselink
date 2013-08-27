@@ -1655,9 +1655,23 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression get(String attributeName) {
-        throw new UnsupportedOperationException("get");
+        return get(attributeName, true);
     }
 
+    /**
+     * PUBLIC:
+     * Return an expression that wraps the attribute or query key name.
+     * This method is used to construct user-defined queries containing joins.
+     * <p>Example:
+     * <pre><blockquote>
+     *  builder.get("address", false).get("city").equal("Ottawa");
+     * </blockquote></pre>
+     * @param forceInnerJoin - allows the get to not force an inner-join (if getAllowingNull was used elsewhere).
+     */
+    public Expression get(String attributeName, boolean forceInnerJoin) {
+        throw new UnsupportedOperationException("get");
+    }
+    
     /**
      * ADVANCED:
      * Return an expression that wraps the attribute or query key name.

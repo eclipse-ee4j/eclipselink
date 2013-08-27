@@ -145,6 +145,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testBatchFetchingINCache"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testBasicMapLeftJoinFetching"));
+        suite.addTest(new AdvancedQueryTestSuite("testBatchFetchOuterJoin"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testMapJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testJoinFetchingCursor"));
@@ -2364,6 +2365,44 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             clearCache();
             verifyObject(result);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+    
+    /**
+     * Test batch fetching with outer joins.
+     */
+    public void testBatchFetchOuterJoin() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select p from Person p left join p.bestFriend f order by f.title");
+            query.setHint(QueryHints.BATCH, "p.bestFriend");
+            List<Person> result = query.getResultList();
+            if (result.size() != 8) {
+                fail("Should have been 8 results but was: " + result.size());
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() != 2) {
+                fail("Should have been 2 query but was: " + counter.getSqlStatements().size());
+            }
+            for (Person person : result) {
+                person.getBestFriend();
+            }
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 2) {
+                fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Person person : result) {
+                verifyObject(person);
+            }
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

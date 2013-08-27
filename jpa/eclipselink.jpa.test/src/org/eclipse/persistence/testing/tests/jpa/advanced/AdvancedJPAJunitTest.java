@@ -82,6 +82,7 @@ import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
@@ -2606,7 +2607,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
      * Test batch fetch with join fetch with batching on a M:M
      */
     public void testProjectToEmployeeWithBatchFetchJoinFetch() {
-        EntityManager em = createEntityManager();        
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
         try {
             Query query = em.createQuery("SELECT p FROM Project p", Project.class);
             query.setHint(QueryHints.BATCH, "p.teamMembers");
@@ -2615,17 +2620,30 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
             query.setHint(QueryHints.FETCH, "p.teamMembers.address");
             query.setHint(QueryHints.FETCH, "p.teamMembers.phoneNumbers");
-
+            
             List<Project> results = query.getResultList();
+
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 8) {
+                fail("Should have been 6 queries but was: " + counter.getSqlStatements().size());
+            }
+            
             for (Project project : results) {
                 assertNotNull("Project cannot be null", project);
-                Collection<Employee> employees = project.getTeamMembers();
-                for (Employee employee : employees) {
-                    assertNotNull("Employee cannot be null", employee);
+                Employee employee = project.getTeamLeader();
+                if (employee != null) {
+                    employee.getProjects().size();
                 }
             }
+
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 17) {
+                fail("Should have been 17 queries but was: " + counter.getSqlStatements().size());
+            }
         } finally {
+            rollbackTransaction(em);
             closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
         }
     }
     
