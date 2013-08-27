@@ -31,6 +31,7 @@ import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphDynamicTestCa
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphRefSubTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
+import org.eclipse.persistence.testing.jaxb.typevariable.TypeVariableTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlelementrefs.adapter.XmlElementRefsAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlgregoriancalendar.XMLGregorianCalendarObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.XmlInverseRefBidirectionalTestSuite;
@@ -79,6 +80,7 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(TypeAttributeTestCases.class);
         suite.addTestSuite(TypeAttributeInheritanceTestCases.class);
         suite.addTestSuite(OtherRootTestCases.class);
+        suite.addTest(TypeVariableTestSuite.suite());
 	    
 	    return suite;
 	}
