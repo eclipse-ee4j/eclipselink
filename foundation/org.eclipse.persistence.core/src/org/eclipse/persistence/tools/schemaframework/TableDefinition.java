@@ -951,12 +951,38 @@ public class TableDefinition extends DatabaseObjectDefinition {
             // indices for columns in foreign key constraint declarations
             for (ForeignKeyConstraint foreignKey : getForeignKeys()) {
                 if (!foreignKey.isDisableForeignKey()) {
-                    IndexDefinition index = buildIndex(session, foreignKey.getName(), foreignKey.getSourceFields(), false);
-                    if (writer == null) {
-                        index.createOnDatabase(session);
-                    } else {
-                        index.buildCreationWriter(session, writer);
-                        writeLineSeperator(session, writer);
+                    // Do not re-index pk.
+                    boolean alreadyIndexed = false;
+                    List<String> primaryKeys = getPrimaryKeyFieldNames();
+                    if ((primaryKeys.size() == foreignKey.getSourceFields().size())
+                            && primaryKeys.containsAll(foreignKey.getSourceFields())) {
+                        alreadyIndexed = true;
+                    }
+                    // Also check unique fields.
+                    if (foreignKey.getSourceFields().size() == 1) {
+                        FieldDefinition field = getField(foreignKey.getSourceFields().get(0));
+                        if ((field != null) && field.isUnique()) {
+                            alreadyIndexed = true;
+                        }
+                    }
+                    for (UniqueKeyConstraint uniqueConstraint : getUniqueKeys()) {
+                        if ((uniqueConstraint.getSourceFields().size() == foreignKey.getSourceFields().size())
+                                && uniqueConstraint.getSourceFields().containsAll(foreignKey.getSourceFields())) {
+                            alreadyIndexed = true;
+                        }
+                    }
+                    if (!alreadyIndexed) {
+                        IndexDefinition index = buildIndex(session, foreignKey.getName(), foreignKey.getSourceFields(), false);
+                        if (writer == null) {
+                            try {
+                                index.createOnDatabase(session);
+                            } catch (Exception failed) {
+                                //ignore
+                            }
+                        } else {
+                            index.buildCreationWriter(session, writer);
+                            writeLineSeperator(session, writer);
+                        }
                     }
                 }
             }
@@ -1139,16 +1165,40 @@ public class TableDefinition extends DatabaseObjectDefinition {
             // indices for columns in foreign key constraint declarations
             for (ForeignKeyConstraint foreignKey : getForeignKeys()) {
                 if (!foreignKey.isDisableForeignKey()) {
-                    IndexDefinition index = buildIndex(session, foreignKey.getName(), foreignKey.getSourceFields(), false);
-                    if (writer == null) {
-                        try {
-                            index.dropFromDatabase(session);
-                        } catch (Exception notThere) {
-                            //ignore
+                    if (!foreignKey.isDisableForeignKey()) {
+                        // Do not re-index pk.
+                        boolean alreadyIndexed = false;
+                        List<String> primaryKeys = getPrimaryKeyFieldNames();
+                        if ((primaryKeys.size() == foreignKey.getSourceFields().size())
+                                && primaryKeys.containsAll(foreignKey.getSourceFields())) {
+                            alreadyIndexed = true;
                         }
-                    } else {
-                        index.buildDeletionWriter(session, writer);
-                        writeLineSeperator(session, writer);
+                        // Also check unique fields.
+                        if (foreignKey.getSourceFields().size() == 1) {
+                            FieldDefinition field = getField(foreignKey.getSourceFields().get(0));
+                            if ((field != null) && field.isUnique()) {
+                                alreadyIndexed = true;
+                            }
+                        }
+                        for (UniqueKeyConstraint uniqueConstraint : getUniqueKeys()) {
+                            if ((uniqueConstraint.getSourceFields().size() == foreignKey.getSourceFields().size())
+                                    && uniqueConstraint.getSourceFields().containsAll(foreignKey.getSourceFields())) {
+                                alreadyIndexed = true;
+                            }
+                        }
+                        if (!alreadyIndexed) {
+                            IndexDefinition index = buildIndex(session, foreignKey.getName(), foreignKey.getSourceFields(), false);
+                            if (writer == null) {
+                                try {
+                                    index.dropFromDatabase(session);
+                                } catch (Exception notThere) {
+                                    //ignore
+                                }
+                            } else {
+                                index.buildDeletionWriter(session, writer);
+                                writeLineSeperator(session, writer);
+                            }
+                        }
                     }
                 }
             }
@@ -1180,6 +1230,19 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public void setForeignKeyMap(Map<String, ForeignKeyConstraint> foreignKeyMap) {
         this.foreignKeyMap = foreignKeyMap;
+    }
+
+    /**
+     * PUBLIC:
+     * Return the field the corresponds to the name.
+     */
+    public FieldDefinition getField(String fieldName) {
+        for (FieldDefinition field : getFields()) {
+            if (field.getName().equals(fieldName)) {
+                return field;
+            }
+        }
+        return null;
     }
 
     /**

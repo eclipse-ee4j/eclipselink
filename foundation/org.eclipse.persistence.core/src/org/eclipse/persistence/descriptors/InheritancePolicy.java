@@ -1363,7 +1363,6 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             if (!uniqueClasses.contains(concreteClass)) {
                 continue;
             }
-            query.getSession().logMessage("" + concreteClass);
             Set<Class> subclasses = new HashSet<Class>();
             uniqueClasses.remove(concreteClass);
             subclasses.add(concreteClass);
@@ -1382,7 +1381,6 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                 subclasses.add(concreteClass);
                 concretePolicy = concreteDescriptor.getInheritancePolicy();
                 parentDescriptor = concretePolicy.getParentDescriptor();
-                query.getSession().logMessage("Parent:" + concreteClass);
             }
             // If this class has children select them all.
             if (concretePolicy.hasChildren() && !concretePolicy.hasMultipleTableChild()) {
