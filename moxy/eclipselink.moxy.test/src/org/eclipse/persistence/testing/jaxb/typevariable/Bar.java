@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
-public class PropertyFoo {
+public class Bar {
 
     @Override
     public boolean equals(Object obj) {

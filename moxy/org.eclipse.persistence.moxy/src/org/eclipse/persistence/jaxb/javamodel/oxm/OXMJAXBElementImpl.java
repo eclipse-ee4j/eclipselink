@@ -136,6 +136,11 @@ public class OXMJAXBElementImpl implements JavaClass {
         return null;
     }
 
+    @Override
+    public Type[] getGenericInterfaces() {
+        return new Type[0];
+    }
+
     public Type getGenericSuperclass() {
         return null;
     }

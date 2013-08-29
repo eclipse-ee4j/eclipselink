@@ -373,6 +373,11 @@ public class JavaClassImpl implements JavaClass {
         return javaModelImpl.getClass(jClass.getSuperclass());
     }
 
+    @Override
+    public Type[] getGenericInterfaces() {
+        return jClass.getGenericInterfaces();
+    }
+
     public Type getGenericSuperclass() {
         return jClass.getGenericSuperclass();
     }

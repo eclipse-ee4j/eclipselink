@@ -14,24 +14,24 @@ package org.eclipse.persistence.testing.jaxb.typevariable;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class PropertyTestCases extends JAXBWithJSONTestCases {
+public class ExtendedList3TestCases extends JAXBWithJSONTestCases {
 
-    private static final String XML = "org/eclipse/persistence/testing/jaxb/typevariable/property.xml";
-    private static final String JSON = "org/eclipse/persistence/testing/jaxb/typevariable/property.json";
+    private static final String XML = "org/eclipse/persistence/testing/jaxb/typevariable/extendedList.xml";
+    private static final String JSON = "org/eclipse/persistence/testing/jaxb/typevariable/extendedList.json";
 
-    public PropertyTestCases(String name) throws Exception {
+    public ExtendedList3TestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML);
         setControlJSON(JSON);
-        setClasses(new Class[] {PropertyRoot.class});
+        setClasses(new Class[] {ExtendedList3Root.class});
     }
 
     @Override
-    protected PropertyRoot getControlObject() {
-        PropertyRoot<Foo, Bar> control = new PropertyRoot<Foo, Bar>();
-        control.foo = new Foo();
-        control.bar.add(new Bar());
-        control.bar.add(new Bar());
+    protected ExtendedList3Root getControlObject() {
+        ExtendedList3Root control = new ExtendedList3Root();
+        control.foo = new ExtendedList3();
+        control.foo.add(new Foo());
+        control.foo.add(new Foo());
         return control;
     }
 

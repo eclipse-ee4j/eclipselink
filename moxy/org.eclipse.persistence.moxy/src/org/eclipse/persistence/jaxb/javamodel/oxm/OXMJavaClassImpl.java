@@ -435,6 +435,11 @@ public class OXMJavaClassImpl implements JavaClass {
         return this.javaModel.getClass(JAVA_LANG_OBJECT);
     }
 
+    @Override
+    public Type[] getGenericInterfaces() {
+        return new Type[0];
+    }
+
     public Type getGenericSuperclass() {
         return null;
     }

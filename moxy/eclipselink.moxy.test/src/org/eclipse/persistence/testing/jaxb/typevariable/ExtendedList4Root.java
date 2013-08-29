@@ -12,11 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
-public class PropertyBar {
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name="root")
+public class ExtendedList4Root {
+
+    public ExtendedList4 foo;
 
     @Override
     public boolean equals(Object obj) {
         if(null == obj || obj.getClass() != this.getClass()) {
+            return false;
+        }
+        ExtendedList4Root test = (ExtendedList4Root) obj;
+        if(!foo.equals(test.foo)) {
             return false;
         }
         return true;

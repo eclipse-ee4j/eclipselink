@@ -177,6 +177,10 @@ public class OXMObjectFactoryImpl implements JavaClass {
         return this.javaModel.getClass(JAVA_LANG_OBJECT);
     }
 
+    public Type[] getGenericInterfaces() {
+        return new Type[0];
+    }
+
     public Type getGenericSuperclass() {
         return null;
     }
