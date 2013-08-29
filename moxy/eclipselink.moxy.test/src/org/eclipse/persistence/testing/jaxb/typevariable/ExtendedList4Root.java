@@ -12,50 +12,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
-public class PropertyRoot<FOO extends Foo, BAR extends Bar> {
+public class ExtendedList4Root {
 
-    public FOO foo;
-    public List<BAR> bar = new ArrayList<BAR>();
+    public ExtendedList4 foo;
 
     @Override
     public boolean equals(Object obj) {
         if(null == obj || obj.getClass() != this.getClass()) {
             return false;
         }
-        
-        PropertyRoot test = (PropertyRoot) obj;
-        if(null == foo) {
-            if(null != test.foo) {
-                return false;
-            }
-        } else {
-            if(!foo.equals(test.foo)) {
-                return false;
-            }
-        }
-        return equals(bar, test.bar);
-    }
-
-    private boolean equals(List<BAR> control, List<BAR> test) {
-        if(control == test) {
-            return true;
-        }
-        if(null == control || null == test) {
+        ExtendedList4Root test = (ExtendedList4Root) obj;
+        if(!foo.equals(test.foo)) {
             return false;
-        }
-        if(control.size() != test.size()) {
-            return false;
-        }
-        for(int x=0; x<control.size(); x++) {
-            if(!control.get(x).equals(test.get(x))) {
-                return false;
-            }
         }
         return true;
     }

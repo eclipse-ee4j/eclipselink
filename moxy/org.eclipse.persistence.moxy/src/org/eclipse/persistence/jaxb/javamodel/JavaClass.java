@@ -50,6 +50,7 @@ public interface JavaClass extends JavaHasAnnotations {
     public JavaPackage getPackage();
     public String getPackageName();
     public JavaClass getSuperclass();
+    public Type[] getGenericInterfaces();
     public Type getGenericSuperclass();
     public boolean isAbstract();
     public boolean isAnnotation();

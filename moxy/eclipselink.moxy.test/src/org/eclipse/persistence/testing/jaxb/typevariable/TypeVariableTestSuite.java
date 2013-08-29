@@ -27,6 +27,13 @@ public class TypeVariableTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("Type Variable Test Suite");
         suite.addTestSuite(PropertyTestCases.class);
+        suite.addTestSuite(ExtendedList1TestCases.class);
+        suite.addTestSuite(ExtendedList2TestCases.class);
+        suite.addTestSuite(ExtendedList3TestCases.class);
+        suite.addTestSuite(ExtendedList4TestCases.class);
+        suite.addTestSuite(ExtendedList5TestCases.class);
+        suite.addTestSuite(ExtendedList6TestCases.class);
+        suite.addTestSuite(ExtendedList7TestCases.class);
         return suite;
     }
 

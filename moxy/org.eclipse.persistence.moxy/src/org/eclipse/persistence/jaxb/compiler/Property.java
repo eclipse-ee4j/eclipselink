@@ -318,12 +318,43 @@ public class Property implements Cloneable {
         }
     	String clsName= cls.getRawName();
         if(helper.isCollectionType(cls)){
-            Collection typeArgs =  cls.getActualTypeArguments();
-        	if(typeArgs.size() > 0){
-      		    genericType = (JavaClass) typeArgs.iterator().next();
-        	} else {
-       		    genericType = helper.getJavaClass(Object.class);
-        	}        	
+            if(cls.getPackageName().startsWith("java.")) {
+                Collection typeArgs =  cls.getActualTypeArguments();
+                if(typeArgs.size() > 0){
+                    genericType = (JavaClass) typeArgs.iterator().next();
+                } else {
+                    genericType = helper.getJavaClass(Object.class);
+                }           
+            } else {
+                Type genericTypeType = getGenericType(cls.getGenericSuperclass());
+                if(null == genericTypeType) {
+                    for(Type genericInterface : cls.getGenericInterfaces()) {
+                        genericTypeType = getGenericType(genericInterface);
+                        if(null != genericTypeType) {
+                            break;
+                        }
+                    }
+                }
+                if(genericTypeType instanceof TypeVariable) {
+                    TypeVariable typeVariable = (TypeVariable) genericTypeType;
+                    Type[] typeVariableBounds = typeVariable.getBounds();
+                    if(typeVariableBounds.length > 0) {
+                        genericTypeType = typeVariableBounds[0];
+                    }
+                } 
+                if(genericTypeType instanceof Class) {
+                    genericType = helper.getJavaClass((Class) genericTypeType);
+                }
+                if(null == genericType || genericTypeType == Object.class) {
+                    Collection typeArgs =  cls.getActualTypeArguments();
+                    if(typeArgs.size() > 0){
+                        genericType = (JavaClass) typeArgs.iterator().next();
+                    } else {
+                        genericType = helper.getJavaClass(Object.class);
+                    }
+                }
+
+            }
             type = cls;                  
         }else if(cls.isArray()  && !clsName.equals("byte[]") ){
         	type = cls;
@@ -349,7 +380,46 @@ public class Property implements Cloneable {
         }
        
     }
-    
+
+    private Type getGenericType(Type type) {
+        if(type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            Type rawType = parameterizedType.getRawType();
+            if(rawType instanceof Class) {
+                Class rawTypeClass = (Class) rawType;
+                if(rawTypeClass.getPackage().getName().startsWith("java.")) {
+                    Type actualType = parameterizedType.getActualTypeArguments()[0];
+                    if(actualType instanceof TypeVariable) {
+                        TypeVariable typeVariable = (TypeVariable) actualType;
+                        Type[] typeVariableBounds = typeVariable.getBounds();
+                        if(typeVariableBounds.length > 0) {
+                            return typeVariableBounds[0];
+                        }
+                    }
+                    return actualType;
+                }
+                Type genericType = getGenericType(rawType);
+                if(genericType != null) {
+                    return genericType;
+                } else {
+                    return parameterizedType.getActualTypeArguments()[0];
+                }
+            } else {
+                return getGenericType(parameterizedType.getRawType());
+            }
+        } else if(type instanceof Class) {
+            Class clazz = (Class) type;
+            for(Type genericInterface : clazz.getGenericInterfaces()) {
+                Type genericType = getGenericType(genericInterface);
+                if(null != genericType) {
+                    return genericType;
+                }
+            }
+            return getGenericType(clazz.getGenericSuperclass());
+        }
+        return null;
+    }
+
     public JavaClass getType() {
         return type;
     }
