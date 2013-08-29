@@ -3680,18 +3680,18 @@ public class AnnotationsProcessor {
             if (next.getName().startsWith(CREATE)) {
                 JavaClass type = next.getReturnType();
                 if (JAVAX_XML_BIND_JAXBELEMENT.equals(type.getName())) {
-                	Object[] actutalTypeArguments = type.getActualTypeArguments().toArray();
-                    if (actutalTypeArguments.length == 0) {
-                        type = helper.getJavaClass(Object.class);
+                	Object[] actualTypeArguments = type.getActualTypeArguments().toArray();
+                    if (actualTypeArguments.length == 0) {
+                        type = helper.OBJECT_CLASS;
                     } else {
-                        type = (JavaClass) next.getReturnType().getActualTypeArguments().toArray()[0];
+                        type = (JavaClass) actualTypeArguments[0];
                     } 
                     processXmlElementDecl(type, next, packageInfo, elemDecls);
-                }else if (helper.getJavaClass(JAXBElement.class).isAssignableFrom(type)) {                                   
-                	this.factoryMethods.put(next.getReturnType().getRawName(), next);
+                }else if (helper.JAXBELEMENT_CLASS.isAssignableFrom(type)) {                                   
+                	this.factoryMethods.put(type.getRawName(), next);
                 	processXmlElementDecl(type, next, packageInfo, elemDecls);
                 } else {
-                    this.factoryMethods.put(next.getReturnType().getRawName(), next);
+                    this.factoryMethods.put(type.getRawName(), next);                    
                 }
                 if (!helper.isBuiltInJavaType(type) && !helper.classExistsInArray(type, classes)) {
                     classes.add(type);
