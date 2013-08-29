@@ -34,6 +34,13 @@ public class TypeVariableTestSuite extends TestCase {
         suite.addTestSuite(ExtendedList5TestCases.class);
         suite.addTestSuite(ExtendedList6TestCases.class);
         suite.addTestSuite(ExtendedList7TestCases.class);
+        suite.addTestSuite(ExtendedMap1TestCases.class);
+        suite.addTestSuite(ExtendedMap2TestCases.class);
+        suite.addTestSuite(ExtendedMap3TestCases.class);
+        suite.addTestSuite(ExtendedMap4TestCases.class);
+        suite.addTestSuite(ExtendedMap5TestCases.class);
+        suite.addTestSuite(ExtendedMap6TestCases.class);
+        suite.addTestSuite(ExtendedMap7TestCases.class);
         return suite;
     }
 

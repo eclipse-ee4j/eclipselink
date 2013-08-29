@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <foo>
+        <entry>
+            <key>
+                <id>1</id>
+            </key>
+            <value/>
+        </entry>
+        <entry>
+            <key>
+                <id>2</id>
+            </key>
+            <value/>
+        </entry>
+    </foo>
+</root>

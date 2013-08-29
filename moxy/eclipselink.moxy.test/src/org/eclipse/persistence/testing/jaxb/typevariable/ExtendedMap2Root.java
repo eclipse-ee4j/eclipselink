@@ -12,29 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
-public class Foo {
+import javax.xml.bind.annotation.XmlRootElement;
 
-    public Integer id;
+@XmlRootElement(name="root")
+public class ExtendedMap2Root {
 
-    public Foo() {
-    }
-
-    public Foo(Integer id) {
-        this.id = id;
-    }
+    public ExtendedMap2 foo;
 
     @Override
     public boolean equals(Object obj) {
         if(null == obj || obj.getClass() != this.getClass()) {
             return false;
         }
-        Foo test = (Foo) obj;
-        return id == test.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return 7;
+        ExtendedMap2Root test = (ExtendedMap2Root) obj;
+        if(!foo.equals(test.foo)) {
+            return false;
+        }
+        return true;
     }
 
 }
