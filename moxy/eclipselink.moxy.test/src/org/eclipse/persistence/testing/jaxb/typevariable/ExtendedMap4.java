@@ -12,29 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
-public class Foo {
-
-    public Integer id;
-
-    public Foo() {
-    }
-
-    public Foo(Integer id) {
-        this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(null == obj || obj.getClass() != this.getClass()) {
-            return false;
-        }
-        Foo test = (Foo) obj;
-        return id == test.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return 7;
-    }
+public class ExtendedMap4 extends ExtendedMap3 {
 
 }

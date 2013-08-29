@@ -12,29 +12,26 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
-public class Foo {
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-    public Integer id;
-
-    public Foo() {
-    }
-
-    public Foo(Integer id) {
-        this.id = id;
-    }
+public class ExtendedMap1<FAKE_KEY, FAKE_VALUE> extends LinkedHashMap<Foo, Bar>{
 
     @Override
     public boolean equals(Object obj) {
         if(null == obj || obj.getClass() != this.getClass()) {
             return false;
         }
-        Foo test = (Foo) obj;
-        return id == test.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return 7;
+        Map<Foo, Bar >test = (Map<Foo, Bar>) obj;
+        if(size() != test.size()) {
+            return false;
+        }
+        for(Map.Entry<Foo, Bar> entry : entrySet()) {
+            if(!entry.getValue().equals(test.get(entry.getKey()))) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
