@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
 import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.Query;
 
@@ -136,6 +137,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         if (!isJPA10()) {
             // This test runs only on a JEE6 / JPA 2.0 capable server
             suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
+            suite.addTest(new AdvancedCompositePKJunitTest("testFailedGetIdenitifier"));
         }
         return suite;
     }
@@ -991,5 +993,20 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         if (!competency.description.equals(copmetencyCopy.description)) {
             fail("competency.descripton = " + competency.description +"; but copmetencyCopy.description = " + copmetencyCopy.description);
         }
+    }
+    
+    
+    // bug 409579
+    public void testFailedGetIdenitifier(){
+        EntityManagerFactory factory = (EntityManagerFactory)JpaHelper.getEntityManagerFactory(createEntityManager());
+        Cubicle cube = new Cubicle();
+        cube.setId(1);
+        cube.setCode("a");
+        try{
+            factory.getPersistenceUnitUtil().getIdentifier(cube);
+        } catch (PersistenceException e){
+            return;
+        }
+        fail("Exception not thrown for call to getIdentifier when empty constructor not available.");
     }
 }

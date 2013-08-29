@@ -431,12 +431,12 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * This is the second phase of metamodel initialization.  It causes preindexed classes to have their 
      * attributes populated.
      */
-    public void initialize() {
+    public void initialize(ClassLoader classLoader) {
 
         // Handle all IdentifiableTypes (after all ManagedTypes have been created)
         // Assign all superType fields on all IdentifiableTypes (only after all managedType objects have been created)
         for(ManagedTypeImpl<?> potentialIdentifiableType : managedTypes.values()) {
-            Class aClass = potentialIdentifiableType.getJavaType();
+            Class aClass = potentialIdentifiableType.getJavaType(classLoader);
             /**
              * The superclass for top-level types is Object - however we set [null] as the supertype for root types.
              * 1) We are constrained by the fact that the spec requires that a superType be an IdentifiableType.

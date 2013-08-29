@@ -18,10 +18,15 @@
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.io.Serializable;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 import javax.persistence.metamodel.Type;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -60,6 +65,29 @@ public abstract class TypeImpl<X> implements Type<X>, Serializable {
             this.javaClassName = javaClassName;
             this.javaClass = javaClass;
         }
+    }
+    
+    /**
+     *  Return the represented Java type.
+     *  @return Java type
+     */
+    public Class<X> getJavaType(ClassLoader classLoader) {
+        if (javaClass == null){
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        javaClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(javaClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(javaClassName, exception.getException());
+                    }
+                } else {
+                    javaClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(javaClassName, true, classLoader);
+                }
+            } catch (ClassNotFoundException exc){
+                throw ValidationException.classNotFoundWhileConvertingClassNames(javaClassName, exc);
+            }
+        }
+        return this.javaClass;
     }
     
     /**

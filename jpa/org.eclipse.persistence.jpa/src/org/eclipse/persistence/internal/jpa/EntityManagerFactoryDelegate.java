@@ -644,7 +644,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
          * implementations that use the metamodel before the 1st EntityManager creation.
          */        
         getAbstractSession();
-        return this.setupImpl.getMetamodel();
+        return this.setupImpl.getMetamodel(session.getLoader());
     }
 
     /**
@@ -720,7 +720,11 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      *             if the entity is found not to be an entity.
      */
     public Object getIdentifier(Object entity) {
-        return EntityManagerFactoryImpl.getIdentifier(entity, session);
+        try{
+            return EntityManagerFactoryImpl.getIdentifier(entity, session);
+        } catch (Exception e){
+            throw new PersistenceException(e);
+        }
     }
 
     /**
