@@ -232,7 +232,8 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "218", "A NullPointerException would have occurred accessing a non-existent weaved _vh_ method [{0}].  The class was not weaved properly - for EE deployments, check the module order in the application.xml deployment descriptor and verify that the module containing the persistence unit is ahead of any other module that uses it."},
                                            { "219", "The additional criteria from [{1}] is not allowed within an inheritance hierarchy using views."},
                                            { "220", "Missing partitioning policy for name [{0}]."},
-                                           { "221", "SerializedObjectPolicy field is not set."}
+                                           { "221", "SerializedObjectPolicy field is not set."},
+                                           { "222", "An exception was thrown when trying to get a primary key class instance."}
 
     };
 
