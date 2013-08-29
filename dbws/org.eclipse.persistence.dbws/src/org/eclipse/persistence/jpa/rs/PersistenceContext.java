@@ -1010,7 +1010,7 @@ public class PersistenceContext {
      */
     public Object unmarshalEntity(String type, MediaType acceptedMediaType, InputStream in) throws JAXBException {
         in = in.markSupported() ? in : new BufferedInputStream(in);
-        in.mark(1024 * 1024 * 1024); // make sure the readlimit is large enough
+        in.mark(1024 * 1024); // make sure the readlimit is large enough
         JPARSLogger.entering(CLASS_NAME, "unmarshalEntity", in);
         Object unmarshalled = unmarshal(getClass(type), acceptedMediaType, in);
         JPARSLogger.exiting(CLASS_NAME, "unmarshalEntity", new Object[] { unmarshalled.getClass().getName(), unmarshalled });
