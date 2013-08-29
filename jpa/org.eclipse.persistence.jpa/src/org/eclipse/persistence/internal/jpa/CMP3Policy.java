@@ -199,9 +199,10 @@ public class CMP3Policy extends CMPPolicy {
     public Object getPKClassInstance() {
         try {
             return getPKClass().newInstance();
-        } catch (Exception ex) {
-            return null;
-            // WIP - this should throw an exception
+        } catch (IllegalAccessException ex) {
+            throw DescriptorException.exceptionAccessingPrimaryKeyInstance(this.getDescriptor(), ex);
+        } catch (InstantiationException ex){
+            throw DescriptorException.exceptionAccessingPrimaryKeyInstance(this.getDescriptor(), ex);
         }
     }
     

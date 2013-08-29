@@ -243,6 +243,7 @@ public class DescriptorException extends ValidationException {
     public final static int ADDITIONAL_CRITERIA_NOT_SUPPORTED_WITH_INHERITANCE_VIEWS = 219;
     public final static int MISSING_PARTITION_POLICY = 220;
     public final static int SERIALIZED_OBJECT_POLICY_FIELD_NOT_SET = 221;
+    public final static int EXCEPTION_ACCESSING_PRIMARY_KEY_INSTANCE = 222;
 
     /**
      * INTERNAL:
@@ -2076,5 +2077,12 @@ public class DescriptorException extends ValidationException {
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, SERIALIZED_OBJECT_POLICY_FIELD_NOT_SET, args), descriptor);
         descriptorException.setErrorCode(SERIALIZED_OBJECT_POLICY_FIELD_NOT_SET);
         return descriptorException;
+    }
+    
+    public static DescriptorException exceptionAccessingPrimaryKeyInstance(ClassDescriptor descriptor, Exception underlying) {
+        Object[] args = { };
+        DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, EXCEPTION_ACCESSING_PRIMARY_KEY_INSTANCE, args), descriptor, underlying);
+        exception.setErrorCode(EXCEPTION_ACCESSING_PRIMARY_KEY_INSTANCE);
+        return exception;
     }
 }
