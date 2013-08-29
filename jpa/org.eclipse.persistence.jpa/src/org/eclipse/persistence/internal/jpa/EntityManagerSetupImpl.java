@@ -751,7 +751,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
                 // 266912: Initialize the Metamodel, a login should have already occurred.
                 try {
-                    this.getMetamodel();
+                    this.getMetamodel(classLoaderToUse);
                 } catch (Exception e) {
                     this.session.log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_init_failed", new Object[]{e.getMessage()});
                 }
@@ -3470,10 +3470,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * @return Metamodel instance
      * @since Java Persistence 2.0
      */
-    public Metamodel getMetamodel() {
+    public Metamodel getMetamodel(ClassLoader classLoader) {
         preInitializeMetamodel();
         if (!((MetamodelImpl)metaModel).isInitialized()){
-            ((MetamodelImpl)metaModel).initialize();
+            ((MetamodelImpl)metaModel).initialize(classLoader);
             // If the canonical metamodel classes exist, initialize them
             initializeCanonicalMetamodel(metaModel);
         }

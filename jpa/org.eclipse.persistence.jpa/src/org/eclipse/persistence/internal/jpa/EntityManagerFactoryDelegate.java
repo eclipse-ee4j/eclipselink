@@ -644,7 +644,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
          * implementations that use the metamodel before the 1st EntityManager creation.
          */        
         getAbstractSession();
-        return this.setupImpl.getMetamodel();
+        return this.setupImpl.getMetamodel(session.getLoader());
     }
 
     /**
