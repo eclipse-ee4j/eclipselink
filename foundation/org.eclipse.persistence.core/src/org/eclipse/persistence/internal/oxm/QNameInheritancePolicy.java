@@ -157,43 +157,40 @@ public class QNameInheritancePolicy extends InheritancePolicy {
 
         // If we have a namespace resolver, check any of the class-indicator values
         // for prefixed type names and resolve the namespaces.
-        if (!this.shouldUseClassNameAsIndicator()){
+        if (!this.shouldUseClassNameAsIndicator()){ 
             if(classIndicatorField != null){
                 XPathFragment frag = ((XMLField) classIndicatorField).getXPathFragment();
                 if (frag.getLocalName().equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(frag.getNamespaceURI())) {
-                    usesXsiType = true;
-                 }
-             }
-            if(!isChildDescriptor()){ 
-         
-                // Must first clone the map to avoid concurrent modification.
-                Iterator<Map.Entry> entries = new HashMap(getClassIndicatorMapping()).entrySet().iterator();
-                while (entries.hasNext()) {
-                    Map.Entry entry = entries.next();
-                    Object key = entry.getKey();
-                  
-                    if (key instanceof String) {
-                        XPathQName qname;
-    
-                        String indicatorValue = (String) key;
-                        if (!usesXsiType || namespaceResolver == null) {
-                            qname = new XPathQName(indicatorValue, true);
+                   usesXsiType = true;
+                }
+            }
+
+            // Must first clone the map to avoid concurrent modification.
+            Iterator<Map.Entry> entries = new HashMap(getClassIndicatorMapping()).entrySet().iterator();
+            while (entries.hasNext()) {
+                Map.Entry entry = entries.next();
+                Object key = entry.getKey();                
+                if (key instanceof String) {
+                    XPathQName qname;
+
+                    String indicatorValue = (String) key;
+                    if (!usesXsiType || namespaceResolver == null) {
+                        qname = new XPathQName(indicatorValue, true);
+                    } else {
+                        int index = indicatorValue.indexOf(Constants.COLON);
+                        if (index != -1 && namespaceResolver != null) {
+                            String prefix = indicatorValue.substring(0, index);
+                            String localPart = indicatorValue.substring(index + 1);
+                            String uri = namespaceResolver.resolveNamespacePrefix(prefix);
+                            qname = new XPathQName(uri, localPart, true);
                         } else {
-                            int index = indicatorValue.indexOf(Constants.COLON);
-                            if (index != -1 && namespaceResolver != null) {
-                                String prefix = indicatorValue.substring(0, index);
-                                String localPart = indicatorValue.substring(index + 1);
-                                String uri = namespaceResolver.resolveNamespacePrefix(prefix);
-                                qname = new XPathQName(uri, localPart, true);
-                            } else {
-                                qname = new XPathQName(namespaceResolver.getDefaultNamespaceURI(), indicatorValue, true);
-                            }
+                            qname = new XPathQName(namespaceResolver.getDefaultNamespaceURI(), indicatorValue, true);
                         }
-                        getClassIndicatorMapping().put(qname, entry.getValue());
-                    } else if (key instanceof QName) {
-                        XPathQName xpathQName = new XPathQName((QName) key, true);
-                        getClassIndicatorMapping().put(xpathQName, entry.getValue());
                     }
+                    getClassIndicatorMapping().put(qname, entry.getValue());
+                } else if (key instanceof QName) {
+                    XPathQName xpathQName = new XPathQName((QName) key, true);
+                    getClassIndicatorMapping().put(xpathQName, entry.getValue());
                 }
             }
         }
@@ -215,6 +212,8 @@ public class QNameInheritancePolicy extends InheritancePolicy {
           }          
         }
     }
+
+
 
     /**
      * INTERNAL:
