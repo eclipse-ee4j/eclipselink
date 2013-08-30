@@ -13,14 +13,15 @@
 package org.eclipse.persistence.internal.oxm;
 
 import org.xml.sax.SAXException;
-
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 
 public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl {
@@ -65,6 +66,8 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
        //text.
        Field field = null;
        Object value = this.getCharacters();
+       
+       boolean isHex = Constants.HEX_BINARY_QNAME.equals(((XMLField)this.mapping.getField()).getSchemaType());
 
        Class attributeClassification = null;
        AbstractNullPolicy nullPolicy;
@@ -106,9 +109,17 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
                        value = null;                   
                    }else{
                 	   if(field.usesSingleNode()){
-                		   value = parent.getConversionManager().convertSchemaBase64ListToByteArrayList(valueString, cp, parent.getSession());   
+                	       if(isHex) {
+                	           value = parent.getConversionManager().convertHexBinaryListToByteArrayList(valueString, cp, parent.getSession());
+                	       } else {
+                	           value = parent.getConversionManager().convertSchemaBase64ListToByteArrayList(valueString, cp, parent.getSession());
+                	       }
                 	   }else{
-                           value = parent.getConversionManager().convertSchemaBase64ToByteArray(valueString);
+                	       if(isHex) {
+                	           value = parent.getConversionManager().convertObject(valueString, ClassConstants.APBYTE, Constants.HEX_BINARY_QNAME);
+                	       } else {
+                	           value = parent.getConversionManager().convertSchemaBase64ToByteArray(valueString);
+                	       }
                 	   }
                    }
                } 

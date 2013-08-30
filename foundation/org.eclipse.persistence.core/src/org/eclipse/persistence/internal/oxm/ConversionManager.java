@@ -47,6 +47,7 @@ public interface ConversionManager {
      */
     public Object convertSchemaBase64ListToByteArrayList(Object sourceObject, CoreContainerPolicy containerPolicy, CoreAbstractSession session);
 
+    public Object convertHexBinaryListToByteArrayList(Object sourceObject, CoreContainerPolicy containerPolicy, CoreAbstractSession session);
     /**
      * INTERNAL:
      * Converts a String which is in Base64 format to a Byte[]

@@ -1758,7 +1758,10 @@ public class MappingsGenerator {
             ((Field) mapping.getField()).setSchemaType(Constants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
         } else if (property.isMtomAttachment()) {
-            ((Field) mapping.getField()).setSchemaType(Constants.BASE_64_BINARY_QNAME);
+            Field f = (Field) mapping.getField();
+            if (!f.getSchemaType().equals(Constants.HEX_BINARY_QNAME)) {
+                f.setSchemaType(Constants.BASE_64_BINARY_QNAME);
+            }            
         }
         if (property.isInlineBinaryData()) {
             mapping.setShouldInlineBinaryData(true);
