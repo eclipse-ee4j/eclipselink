@@ -2007,4 +2007,18 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
   			||(schemaTypeQName.equals(Constants.UNSIGNED_INT_QNAME ))
   			||(schemaTypeQName.equals(Constants.UNSIGNED_BYTE_QNAME ));  			
     }
+    public Object convertHexBinaryListToByteArrayList(Object sourceObject,
+            CoreContainerPolicy containerPolicy, CoreAbstractSession session) {
+        if (sourceObject instanceof String) { 
+            StringTokenizer tokenizer = new StringTokenizer((String) sourceObject, " ");
+            Object container = containerPolicy.containerInstance();
+            while (tokenizer.hasMoreElements()) {
+                String token = tokenizer.nextToken();
+                byte[] bytes = Helper.buildBytesFromHexString(token);
+                containerPolicy.addInto(bytes, container, session);
+            }
+            return container;
+        }       
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.ABYTE);
+    }
 }
