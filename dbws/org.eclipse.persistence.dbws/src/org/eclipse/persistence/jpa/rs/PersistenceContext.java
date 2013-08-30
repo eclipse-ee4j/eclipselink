@@ -1009,9 +1009,14 @@ public class PersistenceContext {
      * @throws JAXBException the JAXB exception
      */
     public Object unmarshalEntity(String type, MediaType acceptedMediaType, InputStream in) throws JAXBException {
-        in = in.markSupported() ? in : new BufferedInputStream(in);
-        in.mark(1024 * 1024); // make sure the readlimit is large enough
-        JPARSLogger.entering(CLASS_NAME, "unmarshalEntity", in);
+        if (JPARSLogger.isLoggableFinest()) {
+            in = in.markSupported() ? in : new BufferedInputStream(in);
+            // TODO: Make readlimit configurable. Some http servers allow http post size to be unlimited.
+            // If this is the case and if an application is sending huge post requests while jpars log 
+            // level configured to finest, this readlimit might not be sufficient.
+            in.mark(52428800); // (~50MB)
+            JPARSLogger.entering(CLASS_NAME, "unmarshalEntity", in);
+        }
         Object unmarshalled = unmarshal(getClass(type), acceptedMediaType, in);
         JPARSLogger.exiting(CLASS_NAME, "unmarshalEntity", new Object[] { unmarshalled.getClass().getName(), unmarshalled });
         return unmarshalled;

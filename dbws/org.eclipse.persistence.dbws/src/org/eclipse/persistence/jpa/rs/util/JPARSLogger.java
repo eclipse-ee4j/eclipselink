@@ -179,6 +179,10 @@ public class JPARSLogger {
         logger.setLevel(level);
     }
 
+    public static boolean isLoggableFinest() {
+        return logger.isLoggable(Level.FINEST);
+    }
+
     private static Object[] getParamsWithAdditionalInfo(Object[] params) {
         String requestId = (String) DataStorage.get(DataStorage.REQUEST_ID);
         if (params != null) {
