@@ -1355,17 +1355,16 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                                     // Note that this doesn't work in case LargeProject descriptor was set not to read subclasses:
                                     // in that case the selection expression will have (PROJ_TYPE = 'L') AND (PROJ_TYPE = 'V')
                                     // 
-                                    SQLSelectStatement inheritanceSelectStatementForExist = createSQLSelectStatementForModifyAll(null, inheritanceExpression, desc, true, true);
-                                    SQLCall inheritanceSelectCallForExist = (SQLCall)inheritanceSelectStatementForExist.buildCall(getSession());
-
                                     if(isLastTable) {
                                         // In extended Employee example:
                                         //   Query with reference class VeryVeryLargeProject calls this for VLPROJECT table.
-                                        deleteStatement = buildDeleteAllStatement(table, null, inheritanceSelectCallForExist, inheritanceSelectStatementForExist, null, null, primaryKeyFields);
+                                        deleteStatement = buildDeleteAllStatement(table, null, selectCallForExist, selectStatementForExist, null, null, primaryKeyFields);
                                     } else {
                                         // In extended Employee example:
                                         //   Query with reference class VeryLargeProject calls this for LPROJECT table.
                                         // Note that both EXISTS and NOT EXISTS clauses created.
+                                        SQLSelectStatement inheritanceSelectStatementForExist = createSQLSelectStatementForModifyAll(null, inheritanceExpression, desc, true, true);
+                                        SQLCall inheritanceSelectCallForExist = (SQLCall)inheritanceSelectStatementForExist.buildCall(getSession());
                                         deleteStatement = buildDeleteAllStatement(table, null, inheritanceSelectCallForExist, inheritanceSelectStatementForExist, selectCallForNotExist, selectStatementForNotExist, primaryKeyFields);
                                     }
                                 }

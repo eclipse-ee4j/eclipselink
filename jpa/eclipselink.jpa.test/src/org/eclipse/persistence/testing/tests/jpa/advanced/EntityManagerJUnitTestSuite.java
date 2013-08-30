@@ -220,13 +220,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testUpdateAllProjectsWithNullTeamLeader");
         tests.add("testUpdateAllLargeProjectsWithNullTeamLeader");
         tests.add("testUpdateAllSmallProjectsWithNullTeamLeader");
+        tests.add("testUpdateAllSpecialHugeProjectsWithNullTeamLeader");
         tests.add("testUpdateAllProjectsWithName");
         tests.add("testUpdateAllLargeProjectsWithName");
         tests.add("testUpdateAllSmallProjectsWithName");
+        tests.add("testUpdateAllHugeProjectsWithName");
+        tests.add("testUpdateAllSpecialHugeProjectsWithName");
         tests.add("testUpdateAllLargeProjects");
         tests.add("testUpdateAllSmallProjects");
+        tests.add("testUpdateAllHugeProjects");
+        tests.add("testUpdateAllSpecialHugeProjects");
         tests.add("testUpdateUsingTempStorageWithParameter");
         tests.add("testDeleteAllLargeProjectsWithNullTeamLeader");
+        tests.add("testDeleteAllHugeProjectsWithNullTeamLeader");
+        tests.add("testDeleteAllSpecialHugeProjectsWithNullTeamLeader");
         tests.add("testDeleteAllSmallProjectsWithNullTeamLeader");
         tests.add("testDeleteAllProjectsWithNullTeamLeader");
         tests.add("testDeleteAllPhonesWithNullOwner");
@@ -7434,10 +7441,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                      + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
              return;
          }
-         internalDeleteAllProjectsWithNullTeamLeader("Project");
+         internalDeleteAllProjectsWithNullTeamLeader(Project.class);
      }
      public void testDeleteAllSmallProjectsWithNullTeamLeader() {
-         internalDeleteAllProjectsWithNullTeamLeader("SmallProject");
+         internalDeleteAllProjectsWithNullTeamLeader(SmallProject.class);
      }
      public void testDeleteAllLargeProjectsWithNullTeamLeader() {
          if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
@@ -7445,84 +7452,88 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                      + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
              return;
          }
-         internalDeleteAllProjectsWithNullTeamLeader("LargeProject");
+         internalDeleteAllProjectsWithNullTeamLeader(LargeProject.class);
      }
-     protected void internalDeleteAllProjectsWithNullTeamLeader(String className) {
+     
+     public void testDeleteAllHugeProjectsWithNullTeamLeader() {
+         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+             getServerSession().logMessage("Test testDeleteAllLargeProjectsWithNullTeamLeader skipped for this platform, "
+                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+             return;
+         }
+         internalDeleteAllProjectsWithNullTeamLeader(HugeProject.class);
+     }
+     
+     public void testDeleteAllSpecialHugeProjectsWithNullTeamLeader() {
+         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+             getServerSession().logMessage("Test testDeleteAllSpecialHugeProjectsWithNullTeamLeader skipped for this platform, "
+                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+             return;
+         }
+         internalDeleteAllProjectsWithNullTeamLeader(SpecialHugeProject.class);
+     }
+     
+     protected void internalDeleteAllProjectsWithNullTeamLeader(Class cls) {
          String name = "testDeleteAllProjectsWithNull";
+         Collection<Project> projectsToRemove = null;
+         String className = cls.getSimpleName();
          
          // setup
-         SmallProject sp = new SmallProject();
-         sp.setName(name);
-         LargeProject lp = new LargeProject();
-         lp.setName(name);
-         EntityManager em = createEntityManager();
-         try {
-             beginTransaction(em);
-             // make sure there are no pre-existing objects with this name
-             em.createQuery("DELETE FROM "+className+" p WHERE p.name = '"+name+"'").executeUpdate();
-             em.persist(sp);
-             em.persist(lp);
-             commitTransaction(em);
-         } catch (RuntimeException ex){
-            if (isTransactionActive(em)){
-                 rollbackTransaction(em);
-            }
-             throw ex;
-         } finally {
-             closeEntityManager(em);
-         }
-                 
-         // test
-         em = createEntityManager();
+
+         //create projects with a teamLeader to verify they don't get deleted as well
+         Employee teamLead = new Employee();
+         teamLead.setLastName(name);
+         
+         EntityManager em = this.createEntityManager();
          beginTransaction(em);
          try {
-             em.createQuery("DELETE FROM "+className+" p WHERE p.name = '"+name+"' AND p.teamLeader IS NULL").executeUpdate();
-             commitTransaction(em);
-         } catch (RuntimeException e) {
-            if (isTransactionActive(em)){
-                 rollbackTransaction(em);
-            }
-            throw e;
-         } finally {
-             closeEntityManager(em);
-         }
+             // make sure there are no pre-existing Projects with this name
+             em.createQuery("DELETE FROM Project p WHERE p.name = '"+name+"'").executeUpdate();
+             em.flush();
+             em.persist(teamLead);
+             //this creates project types both with and without a teamLeader
+             int projectTypes = createProjectsWithName(name, teamLead, em);
+             em.flush();
+             
+             projectsToRemove = em.createQuery("SELECT p FROM "+className+" p WHERE p.name = '"+name+"' AND p.teamLeader IS NULL").getResultList();
+             //expected number of projects left over where (teamLeader=null)
+             int leftOverWOTL = projectTypes-projectsToRemove.size();
 
-         // verify
-         String error = null;
-         em = createEntityManager();
-         List result = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+name+"'").getResultList();
-         if(result.isEmpty()) {
-             if(!className.equals("Project")) {
-                 error = "Target Class " + className +": no objects left";
-             }
-         } else {
-             if(result.size() > 1) {
-                 error = "Target Class " + className +": too many objects left: " + result.size();
-             } else {
-                 Project p = (Project)result.get(0);
-                 if(p.getClass().getName().endsWith(className)) {
-                     error = "Target Class " + className +": object of wrong type left: " + p.getClass().getName();
+             em.clear();
+         
+
+             // test
+             em.createQuery("DELETE FROM "+className+" p WHERE p.name = '"+name+"' AND p.teamLeader IS NULL").executeUpdate();
+
+             // verify the correct projects with TeamLeaders=null were deleted
+             List<Project> result = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+name+"'AND p.teamLeader IS NULL").getResultList();
+
+             for (Project proj: result) {
+                 if(cls.isInstance(proj)) {
+                     fail("Target Class " + className +": object with null teamLeader of wrong type left: " + proj.getClass().getName());
                  }
              }
-         }
-
-         // clean up
-         try {
-             beginTransaction(em);
-             // make sure there are no pre-existing objects with this name
-               em.createQuery("DELETE FROM "+className+" p WHERE p.name = '"+name+"'").executeUpdate();
-             commitTransaction(em);
-         } catch (RuntimeException ex){
-            if (isTransactionActive(em)){
-                 rollbackTransaction(em);
-            }
-             throw ex;
+             assertEquals("Target Class " + className +
+                     ": wrong number of projects left.  ", leftOverWOTL, result.size());
+             
+             //verify projects with teamLeaders weren't also deleted
+             result = em.createQuery("SELECT OBJECT(p) FROM "+className+" p WHERE p.name = '"+name+"'").getResultList();
+             if (result.isEmpty()) {
+                 fail("Target Class " + className +": all objects were removed instead of just ones with null teamLeaders.");
+             }
+             boolean foundClasses  = true;
+             if(result.size() != projectsToRemove.size()) {
+                 fail("Target Class " + className +": objects left does not match expected result size: " + result.size());
+             } else {
+                 for (Project proj: result) {
+                     if(cls.isInstance(proj) && proj.getTeamLeader()==null) {
+                         fail("Target Class " + cls +": " + proj.getClass().getName()+" left with null TeamLeader");
+                     }
+                 }
+             }
+             
          } finally {
-             closeEntityManager(em);
-         }
-         
-         if(error != null) {
-             fail(error);
+             closeEntityManagerAndTransaction(em);
          }
      }
 
@@ -7667,42 +7678,51 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
-    protected void createProjectsWithName(String name, Employee teamLeader) {
-        EntityManager em = createEntityManager();
-        try {
-            beginTransaction(em);
-
-            SmallProject sp = new SmallProject();
-            sp.setName(name);
-
-            LargeProject lp = new LargeProject();
-            lp.setName(name);
-
-            em.persist(sp);
-            em.persist(lp);
-            
-            if(teamLeader != null) {
-                SmallProject sp2 = new SmallProject();
-                sp2.setName(name);
-                sp2.setTeamLeader(teamLeader);
-    
-                LargeProject lp2 = new LargeProject();
-                lp2.setName(name);
-                lp2.setTeamLeader(teamLeader);
-    
-                em.persist(sp2);
-                em.persist(lp2);   
-            }
-
-            commitTransaction(em);
-        } catch (RuntimeException ex) {
-            if(isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            throw ex;
-        } finally {
-            closeEntityManager(em);
+  /*this creates project types both with and without a teamLeader if one is passed in, and 
+   * returns the number of project types created (2x the number of project instances will have been created if a team lead is specified)
+   */
+    protected int createProjectsWithName(String name, Employee teamLeader, EntityManager em) {
+        
+        Project p = new Project();
+        p.setName(name);
+        em.persist(p);
+        SmallProject sp = new SmallProject();
+        sp.setName(name);
+        em.persist(sp);
+        LargeProject lp = new LargeProject();
+        lp.setName(name);
+        em.persist(lp);
+        HugeProject hp = new HugeProject();
+        hp.setName(name);
+        em.persist(hp);
+        SpecialHugeProject shp = new SpecialHugeProject();
+        shp.setName(name);
+        em.persist(shp);
+        
+        if(teamLeader != null) {
+            Project pWTL = new Project();
+            pWTL.setName(name);
+            pWTL.setTeamLeader(teamLeader);
+            em.persist(pWTL);
+            SmallProject spWTL = new SmallProject();
+            spWTL.setName(name);
+            spWTL.setTeamLeader(teamLeader);
+            em.persist(spWTL);
+            LargeProject lpWTL = new LargeProject();
+            lpWTL.setName(name);
+            lpWTL.setTeamLeader(teamLeader);
+            em.persist(lpWTL);
+            HugeProject hpWTL = new HugeProject();
+            hpWTL.setName(name);
+            hpWTL.setTeamLeader(teamLeader);
+            em.persist(hpWTL);
+            SpecialHugeProject shpWTL = new SpecialHugeProject();
+            shpWTL.setName(name);
+            shpWTL.setTeamLeader(teamLeader);
+            em.persist(shpWTL);
         }
+        //change this if this method creates a new project subclass type.
+        return 5;
     }
 
     protected void deleteProjectsWithName(String name) {
@@ -7713,13 +7733,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.createQuery("DELETE FROM Project p WHERE p.name = '"+name+"'").executeUpdate();
             
             commitTransaction(em);
-        } catch (RuntimeException ex) {
-            if(isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            throw ex;
         } finally {
-            closeEntityManager(em);
+            closeEntityManagerAndTransaction(em);
         }
     }
 
@@ -7728,6 +7743,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     public void testUpdateAllLargeProjects() {
         internalTestUpdateAllProjects(LargeProject.class);
+    }
+    public void testUpdateAllHugeProjects() {
+        internalTestUpdateAllProjects(HugeProject.class);
+    }
+    public void testUpdateAllSpecialHugeProjects() {
+        internalTestUpdateAllProjects(SpecialHugeProject.class);
     }
     public void testUpdateAllProjects() {
         internalTestUpdateAllProjects(Project.class);
@@ -7747,8 +7768,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         try {
             // setup
-            // populate Projects - necessary only if no SmallProject and/or LargeProject objects already exist.
-            createProjectsWithName(name, null);
+            
             // save the original names of projects: will set them back in cleanup
             // to restore the original state.
             EntityManager em = createEntityManager();
@@ -7757,20 +7777,25 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             for(int i=0; i<projects.size(); i++) {
                 Project p = (Project)projects.get(i);
                 map.put(p.getId(), p.getName());
-            }        
+            }    
+            
+            // populate Projects - necessary only if no SmallProject and/or LargeProject objects already exist.
+            beginTransaction(em);
+            try{ 
+                createProjectsWithName(name, null, em);
+                commitTransaction(em);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
     
             // test
+            em = createEntityManager();
             beginTransaction(em);
             try {
                 em.createQuery("UPDATE "+className+" p set p.name = '"+newName+"'").executeUpdate();
                 commitTransaction(em);
-            } catch (RuntimeException ex) {
-                if(isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                throw ex;
             } finally {
-                closeEntityManager(em);
+                closeEntityManagerAndTransaction(em);
             }
             
             // verify
@@ -7833,17 +7858,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             p.setName(oldName);
                         }
                         commitTransaction(em);
-                    } catch (RuntimeException ex) {
-                        if(isTransactionActive(em)) {
-                            rollbackTransaction(em);
-                        }
-                        throw ex;
                     } finally {
-                        closeEntityManager(em);
+                        closeEntityManagerAndTransaction(em);
                     }
                 }
-                // delete projects that createProjectsWithName has created in setup
-                deleteProjectsWithName(name);
+                // delete projects that createProjectsWithName has created in setup.  
+                //these will be left over under the newName 
+                deleteProjectsWithName(newName);
             } catch (RuntimeException ex) {
                 // eat clean-up exception in case the test failed
                 if(ok) {
@@ -7858,6 +7879,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     public void testUpdateAllLargeProjectsWithName() {
         internalTestUpdateAllProjectsWithName(LargeProject.class);
+    }
+    public void testUpdateAllHugeProjectsWithName() {
+        internalTestUpdateAllProjectsWithName(HugeProject.class);
+    }
+    public void testUpdateAllSpecialHugeProjectsWithName() {
+        internalTestUpdateAllProjectsWithName(SpecialHugeProject.class);
     }
     public void testUpdateAllProjectsWithName() {
         internalTestUpdateAllProjectsWithName(Project.class);
@@ -7879,21 +7906,23 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             deleteProjectsWithName(name);
             deleteProjectsWithName(newName);
             // populate Projects
-            createProjectsWithName(name, null);
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            try {
+                createProjectsWithName(name, null, em);
+                commitTransaction(em);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
     
             // test
-            EntityManager em = createEntityManager();
+            em = createEntityManager();
             beginTransaction(em);
             try {
                 em.createQuery("UPDATE "+className+" p set p.name = '"+newName+"' WHERE p.name = '"+name+"'").executeUpdate();
                 commitTransaction(em);
-            } catch (RuntimeException ex) {
-                if(isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                throw ex;
             } finally {
-                closeEntityManager(em);
+                closeEntityManagerAndTransaction(em);
             }
             
             // verify
@@ -7961,6 +7990,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testUpdateAllProjectsWithNullTeamLeader() {
         internalTestUpdateAllProjectsWithNullTeamLeader(Project.class);
     }
+    public void testUpdateAllSpecialHugeProjectsWithNullTeamLeader() {
+        internalTestUpdateAllProjectsWithNullTeamLeader(SpecialHugeProject.class);
+    }
     protected void internalTestUpdateAllProjectsWithNullTeamLeader(Class cls) {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform, "
@@ -7995,17 +8027,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     em.persist(emp);
                     commitTransaction(em);
                     empTemp = emp;
-                } catch (RuntimeException ex) {
-                    if(isTransactionActive(em)) {
-                        rollbackTransaction(em);
-                    }
-                    closeEntityManager(em);
-                    throw ex;
+                } finally {
+                    closeEntityManagerAndTransaction(em);
                 }
             }
-            closeEntityManager(em);
+            em = createEntityManager();
+            beginTransaction(em);
             // populate Projects
-            createProjectsWithName(name, emp);
+            try {
+                createProjectsWithName(name, emp, em);
+                commitTransaction(em);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
     
             // test
             em = createEntityManager();
@@ -8013,13 +8047,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             try {
                 em.createQuery("UPDATE "+className+" p set p.name = '"+newName+"' WHERE p.name = '"+name+"' AND p.teamLeader IS NULL").executeUpdate();
                 commitTransaction(em);
-            } catch (RuntimeException ex) {
-                if(isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                throw ex;
             } finally {
-                closeEntityManager(em);
+                closeEntityManagerAndTransaction(em);
             }
             
             // verify
@@ -8075,13 +8104,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     try {
                         em.createQuery("DELETE FROM Employee e WHERE e.id = '"+empTemp.getId()+"'").executeUpdate();
                         commitTransaction(em);
-                    } catch (RuntimeException ex) {
-                        if(isTransactionActive(em)) {
-                            rollbackTransaction(em);
-                        }
-                        throw ex;
-                    } finally {
-                        closeEntityManager(em);
+                    }  finally {
+                        closeEntityManagerAndTransaction(em);
                     }
                 }
             } catch (RuntimeException ex) {
@@ -12031,10 +12055,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         SmallProject sp = null;
         LargeProject lp = null;
         HugeProject hp = null;
+        SpecialHugeProject slp = null;
 
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        String[] classesToDelete = {"Project", "SmallProject", "LargeProject", "HugeProject"};
+        String[] classesToDelete = {"Project", "SmallProject", "LargeProject", "HugeProject", "SpecialHugeProject"};
         try {
             for (int i=0; i < classesToDelete.length; i++) {
                 if (sp == null) {
@@ -12049,6 +12074,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     hp = new HugeProject();
                     em.persist(hp);
                 }
+                if (slp == null) {
+                    slp = new SpecialHugeProject();
+                    em.persist(slp);
+                }
                 em.flush();
                 
                 String classToDelete = classesToDelete[i];
@@ -12059,11 +12088,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 sp = em.find(SmallProject.class, sp.getId());
                 lp = em.find(LargeProject.class, lp.getId());
                 hp = em.find(HugeProject.class, hp.getId());
+                slp = em.find(SpecialHugeProject.class, slp.getId());
                 
                 String unexpectedlyDeleted = "";
                 String unexpectedlyNotDeleted = "";
                 if (sp == null) {
-                    if (classToDelete.equals("LargeProject") || classToDelete.equals("HugeProject")) {
+                    if (classToDelete.equals("LargeProject") || classToDelete.equals("HugeProject") || classToDelete.equals("SpecialHugeProject")) {
                         unexpectedlyDeleted += "SmallProject; ";
                     }
                 } else {
@@ -12072,7 +12102,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     }
                 }
                 if (lp == null) {
-                    if (classToDelete.equals("SmallProject") || classToDelete.equals("HugeProject")) {
+                    if (classToDelete.equals("SmallProject") || classToDelete.equals("HugeProject") || classToDelete.equals("SpecialHugeProject")) {
                         unexpectedlyDeleted += "LargeProject; ";
                     }
                 } else {
@@ -12081,12 +12111,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     }
                 }
                 if (hp == null) {
-                    if (classToDelete.equals("SmallProject")) {
+                    if (classToDelete.equals("SmallProject") || classToDelete.equals("SpecialHugeProject")) {
                         unexpectedlyDeleted += "HugeProject; ";
                     }
                 } else {
                     if (classToDelete.equals("Project") || classToDelete.equals("LargeProject") || classToDelete.equals("HugeProject")) {
                         unexpectedlyNotDeleted += "HugeProject; ";
+                    }
+                }
+                if (slp == null) {
+                    if (classToDelete.equals("SmallProject")) {
+                        unexpectedlyDeleted += "SpecialHugeProject; ";
+                    }
+                } else {
+                    if (classToDelete.equals("Project") || classToDelete.equals("LargeProject") 
+                            || classToDelete.equals("HugeProject") || classToDelete.equals("SpecialHugeProject")) {
+                        unexpectedlyNotDeleted += "SpecialHugeProject; ";
                     }
                 }
                 String localErrorMsg = "";
@@ -12101,8 +12141,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
             }
         } finally {
-            rollbackTransaction(em);
-            closeEntityManager(em);
+            closeEntityManagerAndTransaction(em);
         }
         if (errorMsg.length() > 0) {
             fail(errorMsg);
