@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.jaxb.events.ExternalMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.events.JAXBElementTestCases;
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.JAXBInheritanceTestCases;
+import org.eclipse.persistence.testing.jaxb.inheritance.id.JAXBInheritanceIdTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceNSSeparatorTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceNSTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceSubTypeNoParentRootTestCases;
@@ -124,6 +125,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(JAXBInheritanceSubTypeNoParentRootTestCases.class);
         suite.addTestSuite(JAXBInheritanceSubTypeParentRootOnlyTestCases.class);
         suite.addTestSuite(JAXBInheritanceNSSeparatorTestCases.class);
+        suite.addTestSuite(JAXBInheritanceIdTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.ClassLoaderTestCases.class);
         suite.addTestSuite(ExternalMetadataTestCases.class);
