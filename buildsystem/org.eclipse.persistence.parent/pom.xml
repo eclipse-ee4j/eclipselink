@@ -33,7 +33,8 @@
         <svn.revision>NA</svn.revision>
         <src>./src</src>
         <!-- BUILD Properties -->
-        <orbit.drop>R20130517111416</orbit.drop>
+        <orbit.drop>R20130827064939</orbit.drop>
+        <!-- orbit.drop>R20130517111416</orbit.drop -->
         <eclipse.drop>kepler</eclipse.drop>
     </properties>
 
