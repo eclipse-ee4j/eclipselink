@@ -65,6 +65,9 @@ import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
 import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
 
 public class RelationshipsTestSuite {
+    static {
+        System.setProperty("user.timezone", "Canada/Eastern");
+    }
 
     static final String CREATE_DDL =
         "CREATE TABLE IF NOT EXISTS XR_ADDRESS (" +
