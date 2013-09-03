@@ -65,6 +65,9 @@ import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
 import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
 
 public class RelationshipsTestSuite {
+    static {
+        System.setProperty("user.timezone", "Canada/Eastern");
+    }
 
     static final String CREATE_DDL =
         "CREATE TABLE IF NOT EXISTS XR_ADDRESS (" +
@@ -871,10 +874,10 @@ public class RelationshipsTestSuite {
                   "<type>Work</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1995-01-01</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>F</gender>" +
             "<salary>500001</salary>" +
             "<version>1</version>" +
@@ -909,10 +912,10 @@ public class RelationshipsTestSuite {
             "<responsibilities>" +
                "<responsibility>Write code documentation.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1995-05-01</start-date>" +
             "<end-date>2001-07-31</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>F</gender>" +
             "<salary>87000</salary>" +
             "<version>1</version>" +
@@ -952,10 +955,10 @@ public class RelationshipsTestSuite {
             "<responsibilities>" +
                "<responsibility>Have to fix the Database problem.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1995-01-01</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>M</gender>" +
             "<salary>49631</salary>" +
             "<version>1</version>" +
@@ -985,10 +988,10 @@ public class RelationshipsTestSuite {
             "<responsibilities>" +
                "<responsibility>Write user specifications.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1995-01-12</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>M</gender>" +
             "<salary>54300</salary>" +
             "<version>1</version>" +
@@ -1020,10 +1023,10 @@ public class RelationshipsTestSuite {
                   "<type>Work Fax</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1993-01-01</start-date>" +
             "<end-date>1996-01-01</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>F</gender>" +
             "<salary>75000</salary>" +
             "<version>1</version>" +
@@ -1045,10 +1048,10 @@ public class RelationshipsTestSuite {
                   "<type>Home</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1993-01-01</start-date>" +
             "<end-date>1996-01-01</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>F</gender>" +
             "<salary>31000</salary>" +
             "<version>1</version>" +
@@ -1075,10 +1078,10 @@ public class RelationshipsTestSuite {
                   "<type>Work Fax</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1991-11-11</start-date>" +
             "<end-date>2006-08-31</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>F</gender>" +
             "<salary>56232</salary>" +
             "<version>1</version>" +
@@ -1108,10 +1111,10 @@ public class RelationshipsTestSuite {
             "<responsibilities>" +
                "<responsibility>Write lots of Java code.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1995-01-01</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>M</gender>" +
             "<salary>43000</salary>" +
             "<version>1</version>" +
@@ -1138,10 +1141,10 @@ public class RelationshipsTestSuite {
                   "<type>ISDN</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1995-01-01</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>M</gender>" +
             "<salary>500000</salary>" +
             "<version>1</version>" +
@@ -1167,10 +1170,10 @@ public class RelationshipsTestSuite {
                "<responsibility>Clean the kitchen.</responsibility>" +
                "<responsibility>Make the coffee.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1993-01-01</start-date>" +
             "<end-date>1996-01-01</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>M</gender>" +
             "<salary>35000</salary>" +
             "<version>1</version>" +
@@ -1201,10 +1204,10 @@ public class RelationshipsTestSuite {
                "<responsibility>Fire people for goofing off.</responsibility>" +
                "<responsibility>Hire people when more people are required.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1991-11-11</start-date>" +
             "<end-date>2006-08-31</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>M</gender>" +
             "<salary>53000</salary>" +
             "<version>1</version>" +
@@ -1231,10 +1234,10 @@ public class RelationshipsTestSuite {
                   "<type>Home</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00</start-time>" +
+            "<start-time>00:00:00-05:00</start-time>" +
             "<start-date>1995-01-12</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00</end-time>" +
+            "<end-time>00:00:00-05:00</end-time>" +
             "<gender>M</gender>" +
             "<salary>50000</salary>" +
             "<version>1</version>" +
