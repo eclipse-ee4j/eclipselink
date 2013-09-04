@@ -998,7 +998,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     
     // bug 409579
     public void testFailedGetIdenitifier(){
-        EntityManagerFactory factory = (EntityManagerFactory)JpaHelper.getEntityManagerFactory(createEntityManager());
+        EntityManagerFactory factory = getEntityManagerFactory();
         Cubicle cube = new Cubicle();
         cube.setId(1);
         cube.setCode("a");
