@@ -159,15 +159,18 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         // If we have a namespace resolver, check any of the class-indicator values
         // for prefixed type names and resolve the namespaces.
         if (!this.shouldUseClassNameAsIndicator()){ 
+        	if(classIndicatorField != null){
+                XPathFragment frag = ((XMLField) classIndicatorField).getXPathFragment();
+	            if (frag.getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && XMLConstants.SCHEMA_INSTANCE_URL.equals(frag.getNamespaceURI())) {
+	                usesXsiType = true;
+	            }
+        	}
             // Must first clone the map to avoid concurrent modification.
             Iterator<Map.Entry> entries = new HashMap(getClassIndicatorMapping()).entrySet().iterator();
             while (entries.hasNext()) {
                 Map.Entry entry = entries.next();
                 Object key = entry.getKey();
-                XPathFragment frag = ((XMLField) getClassIndicatorField()).getXPathFragment();
-                if (frag.getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && frag.getNamespaceURI() != null && frag.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
-                    usesXsiType = true;
-                }
+                  
                 if (key instanceof String) {
                     XPathQName qname;
 

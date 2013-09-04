@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
 /**
  * INTERNAL:
@@ -38,8 +39,8 @@ public class EnumTypeInfo extends TypeInfo {
     private List<String> m_fieldNames;
     private List<Object> m_xmlEnumValues;
     
-    public EnumTypeInfo(Helper helper) {
-        super(helper);
+    public EnumTypeInfo(Helper helper, JavaClass javaClass) {
+        super(helper, javaClass);
         m_fieldNames = new ArrayList<String>();
         m_xmlEnumValues = new ArrayList<Object>();
     }

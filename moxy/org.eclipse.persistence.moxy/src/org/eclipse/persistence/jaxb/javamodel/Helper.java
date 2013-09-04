@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.xml.bind.JAXBElement;
+
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
@@ -98,7 +100,9 @@ public class Helper {
     private static JavaClass COLLECTION_CLASS;
     private static JavaClass SET_CLASS; 
     private static JavaClass LIST_CLASS;
-    private static JavaClass MAP_CLASS; 
+    private static JavaClass MAP_CLASS;
+    public static JavaClass JAXBELEMENT_CLASS;
+    public static JavaClass OBJECT_CLASS;
     
     /**
      * INTERNAL:
@@ -116,7 +120,9 @@ public class Helper {
         COLLECTION_CLASS = getJavaClass(ClassConstants.Collection_Class);
         LIST_CLASS = getJavaClass(ClassConstants.List_Class);
         SET_CLASS = getJavaClass(ClassConstants.Set_Class);
-        MAP_CLASS = getJavaClass(ClassConstants.Map_Class);
+        MAP_CLASS = getJavaClass(ClassConstants.Map_Class);     
+        JAXBELEMENT_CLASS = getJavaClass(JAXBElement.class);
+        OBJECT_CLASS = getJavaClass(ClassConstants.Object_Class);
     }
 
     /**

@@ -43,6 +43,7 @@ public class JavaModelImpl implements JavaModel {
     private AnnotationHelper annotationHelper;
     private Map<String, Boolean> metadataCompletePackages;
     private Map<String, JavaClassImpl> cachedJavaClasses;
+    private boolean hasXmlBindings = false;
     
     public JavaModelImpl(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -121,4 +122,12 @@ public class JavaModelImpl implements JavaModel {
         }
         return this.cachedJavaClasses;
     }
+
+	public boolean hasXmlBindings() {
+		return hasXmlBindings;
+	}
+
+	public void setHasXmlBindings(boolean hasXmlBindings) {
+		this.hasXmlBindings = hasXmlBindings;
+	}
 }

@@ -850,6 +850,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 jModel.setMetadataCompletePackageMap(metadataComplete);
             }
 
+            jModel.setHasXmlBindings(xmlBindings != null || !xmlBindings.isEmpty());
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(classesToBeBound, jModel);
             try {
                 Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace, enableXmlAccessorFactory);
@@ -981,6 +982,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 jModel = new JavaModelImpl(loader);
             }
 
+            jModel.setHasXmlBindings(xmlBindings != null || !xmlBindings.isEmpty());
             // create Map of package names to metadata complete indicators
             Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
             for (String packageName : xmlBindings.keySet()) {
