@@ -499,24 +499,18 @@ public class AnnotationsProcessor {
      */
     public Map<String, TypeInfo> preBuildTypeInfo(JavaClass[] javaClasses) {
         for (JavaClass javaClass : javaClasses) {
-            if (javaClass == null || !shouldGenerateTypeInfo(javaClass) || isXmlRegistry(javaClass) || javaClass.isArray()) {
+            TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
+
+            if (javaClass == null || javaClass.isArray() || (info!=null && info.isPreBuilt()) || !shouldGenerateTypeInfo(javaClass) || isXmlRegistry(javaClass) ) {
                 continue;
             }
 
-            String qualifiedName = javaClass.getQualifiedName();
-            TypeInfo info = typeInfo.get(qualifiedName);
-            if (info != null) {
-                if (info.isPreBuilt()) {
-                    continue;
-                }
-            }
-
             if (javaClass.isEnum()) {
-                info = new EnumTypeInfo(helper);
+                info = new EnumTypeInfo(helper, javaClass);
             } else {
-                info = new TypeInfo(helper);
+                info = new TypeInfo(helper, javaClass);
             }
-            info.setJavaClassName(qualifiedName);
+            info.setJavaClassName(javaClass.getQualifiedName());
             info.setPreBuilt(true);
 
             // handle @XmlTransient
@@ -699,10 +693,7 @@ public class AnnotationsProcessor {
 
             // handle superclass if necessary
             JavaClass superClass = (JavaClass) javaClass.getSuperclass();
-            if (shouldGenerateTypeInfo(superClass)) {
-                JavaClass[] jClassArray = new JavaClass[] { superClass };
-                buildNewTypeInfo(jClassArray);
-            }
+            processReferencedClass(superClass);
             
             processPropertiesSuperClass(javaClass, info);
 
@@ -719,6 +710,30 @@ public class AnnotationsProcessor {
         }
         return typeInfo;
     }
+
+    private TypeInfo processReferencedClass(JavaClass referencedClass){
+        if (shouldGenerateTypeInfo(referencedClass)) {            
+            TypeInfo existingInfo = typeInfo.get(referencedClass.getQualifiedName());
+            if(existingInfo == null || !existingInfo.isPreBuilt()){
+                CompilerHelper.addClassToClassLoader(referencedClass, helper.getClassLoader());
+                JavaClass[] jClassArray = new JavaClass[] { referencedClass };
+                buildNewTypeInfo(jClassArray);
+                return typeInfo.get(referencedClass.getQualifiedName());
+            }else{
+                if(existingInfo !=null && !existingInfo.isPostBuilt()){
+                    CompilerHelper.addClassToClassLoader(referencedClass, helper.getClassLoader());
+                    JavaClass[] javaClasses = new JavaClass[] { referencedClass };
+                    javaClasses = postBuildTypeInfo(javaClasses);
+                    for(JavaClass next:javaClasses) {
+                        processPropertyTypes(next);
+                    }
+                }
+                return existingInfo;
+            }
+        }
+        return null;
+     }
+    
 
     /*
      * Get virtual property and XmlID information from parent and set it on info if available
@@ -747,14 +762,13 @@ public class AnnotationsProcessor {
      * 
      */
     public void finalizeProperties() {
-        ArrayList<JavaClass> jClasses = getTypeInfoClasses();
-        for (JavaClass jClass : jClasses) {
-            TypeInfo tInfo = getTypeInfo().get(jClass.getQualifiedName());
+        for (TypeInfo tInfo: getTypeInfo().values()) {        
             // don't need to validate props on a transient class at this point
             if (tInfo.isTransient()) {
                 continue;
             }
 
+            JavaClass jClass = tInfo.getJavaClass();
             if (!jClass.isInterface() && !tInfo.isEnumerationType() && !jClass.isAbstract()) {
                 if (tInfo.getFactoryMethodName() == null && tInfo.getObjectFactoryClassName() == null) {
                     JavaConstructor zeroArgConstructor = jClass.getDeclaredConstructor(new JavaClass[] {});
@@ -873,17 +887,8 @@ public class AnnotationsProcessor {
             processXmlIDREF(property);
 
             if (property.isMap()) {
-                JavaClass keyType = property.getKeyType();
-                if (shouldGenerateTypeInfo(keyType)) {
-                    JavaClass[] jClassArray = new JavaClass[] { keyType };
-                    buildNewTypeInfo(jClassArray);
-                }
-
-                JavaClass valueType = property.getValueType();
-                if (shouldGenerateTypeInfo(valueType)) {
-                    JavaClass[] jClassArray = new JavaClass[] { valueType };
-                    buildNewTypeInfo(jClassArray);
-                }
+                processReferencedClass(property.getKeyType());
+                processReferencedClass(property.getValueType());
             }
         }
     }
@@ -934,11 +939,7 @@ public class AnnotationsProcessor {
                     processChoiceProperty(property, info, next, type);
                     for (Property choiceProp : property.getChoiceProperties()) {
                         type = choiceProp.getActualType();
-                        if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
-                            CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
-                            JavaClass[] jClassArray = new JavaClass[] { type };
-                            buildNewTypeInfo(jClassArray);
-                        }
+                        processReferencedClass(type);
                     }
                 }
                 
@@ -1164,10 +1165,7 @@ public class AnnotationsProcessor {
             if (paramTypes != null && paramTypes.length > 0) {
                 String[] paramTypeNames = new String[paramTypes.length];
                 for (int i = 0; i < paramTypes.length; i++) {
-                	if(shouldGenerateTypeInfo(paramTypes[i])){
-                           JavaClass[] jClassArray = new JavaClass[] { paramTypes[i] };
-                           buildNewTypeInfo(jClassArray);
-                	}
+                    processReferencedClass(paramTypes[i]);
                     paramTypeNames[i] = paramTypes[i].getQualifiedName();
                 }
                 info.setFactoryMethodParamTypes(paramTypeNames);
@@ -1815,11 +1813,9 @@ public class AnnotationsProcessor {
                     if(fragment.getNextFragment() == null) {
                         //if this is the last fragment, and there's no text after, then this is
                         //complex. May need to add the attribute property to the target type.
+                        processReferencedClass(ptype);
+
                         TypeInfo predicateTypeInfo = typeInfo.get(ptype.getQualifiedName());
-                        if(predicateTypeInfo == null && shouldGenerateTypeInfo(ptype)) {
-                            buildNewTypeInfo(new JavaClass[]{ptype});
-                            predicateTypeInfo = typeInfo.get(ptype.getQualifiedName());
-                        }
                         if(predicateTypeInfo != null) {
                             targetInfo = predicateTypeInfo;
                             predicatePath = "";
@@ -2108,14 +2104,7 @@ public class AnnotationsProcessor {
             choiceProp.setIsXmlIdRef(choiceProperty.isXmlIdRef());
             choiceProp.setXmlElementWrapper(choiceProperty.getXmlElementWrapper());
             choiceProperties.add(choiceProp);
-            if (!(this.typeInfo.containsKey(choiceProp.getType().getQualifiedName())) && shouldGenerateTypeInfo(choiceProp.getType())) {
-                JavaClass[] jClassArray = new JavaClass[] { choiceProp.getType() };
-                buildNewTypeInfo(jClassArray);
-                TypeInfo newInfo = typeInfo.get(choiceProp.getType().getQualifiedName());
-                if (newInfo != null && newInfo.isTransient()) {
-                    throw JAXBException.invalidReferenceToTransientClass(info.getJavaClassName(), choiceProperty.getPropertyName(), newInfo.getJavaClassName());
-                }
-            }
+            processReferencedClass(choiceProp.getType());
         }
         choiceProperty.setChoiceProperties(choiceProperties);
     }
@@ -2242,11 +2231,7 @@ public class AnnotationsProcessor {
             
             if(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName) && type.getActualTypeArguments().size() >0){
             	JavaClass theType = (JavaClass) type.getActualTypeArguments().iterator().next();
-                TypeInfo refTypeInfo = typeInfo.get(theType.getQualifiedName());
-                if (refTypeInfo==null && shouldGenerateTypeInfo(theType)) {
-                    JavaClass[] jClassArray = new JavaClass[] { theType };
-                    buildNewTypeInfo(jClassArray);            
-                }
+                processReferencedClass(theType);
             }
 
             // for DEFAULT, if from XML the type will be
@@ -2256,11 +2241,7 @@ public class AnnotationsProcessor {
                 typeName = nextRef.getType();
                 type = helper.getJavaClass(typeName);
             }
-            TypeInfo refTypeInfo = typeInfo.get(type.getQualifiedName());
-            if (refTypeInfo==null && shouldGenerateTypeInfo(type)) {
-                JavaClass[] jClassArray = new JavaClass[] { type };
-                buildNewTypeInfo(jClassArray);
-            }
+            processReferencedClass(type);
         }
     }
 
@@ -3156,16 +3137,17 @@ public class AnnotationsProcessor {
     }
 
     private void checkForCallbackMethods() {
-        for (JavaClass next : typeInfoClasses) {
+        JavaClass unmarshallerCls = helper.getJavaClass(Unmarshaller.class);
+        JavaClass marshallerCls = helper.getJavaClass(Marshaller.class);
+        JavaClass objectCls = helper.getJavaClass(Object.class);
+        JavaClass[] unmarshalParams = new JavaClass[] { unmarshallerCls, objectCls };
+        JavaClass[] marshalParams = new JavaClass[] { marshallerCls };
+
+	for (JavaClass next : typeInfoClasses) {
             if (next == null) {
                 continue;
             }
 
-            JavaClass unmarshallerCls = helper.getJavaClass(Unmarshaller.class);
-            JavaClass marshallerCls = helper.getJavaClass(Marshaller.class);
-            JavaClass objectCls = helper.getJavaClass(Object.class);
-            JavaClass[] unmarshalParams = new JavaClass[] { unmarshallerCls, objectCls };
-            JavaClass[] marshalParams = new JavaClass[] { marshallerCls };
             UnmarshalCallback unmarshalCallback = null;
             MarshalCallback marshalCallback = null;
             // look for before unmarshal callback
@@ -3275,14 +3257,14 @@ public class AnnotationsProcessor {
             if (next.getName().startsWith(CREATE)) {
                 JavaClass type = next.getReturnType();
                 if (JAVAX_XML_BIND_JAXBELEMENT.equals(type.getName())) {
-                    Object[] actutalTypeArguments = next.getReturnType().getActualTypeArguments().toArray();
-                    if (actutalTypeArguments.length == 0) {
-                        type = helper.getJavaClass(Object.class);
+                    Object[] actualTypeArguments = type.getActualTypeArguments().toArray();
+                    if (actualTypeArguments.length == 0) {
+                        type = helper.OBJECT_CLASS;
                     } else {
-                        type = (JavaClass) next.getReturnType().getActualTypeArguments().toArray()[0];
+                        type = (JavaClass) actualTypeArguments[0];
                     }
                 } else {
-                    this.factoryMethods.put(next.getReturnType().getRawName(), next);
+                    this.factoryMethods.put(type.getRawName(), next);
                 }
                 // if there's an XmlElementDecl for this method from XML, use it
                 // - otherwise look for an annotation
@@ -3548,16 +3530,7 @@ public class AnnotationsProcessor {
 
         QName schemaQName = getSchemaTypeOrNullFor(ptype);
         if (schemaQName == null) {
-            TypeInfo refInfo = typeInfo.get(ptype.getQualifiedName());
-            if (refInfo != null) {
-                if (!refInfo.isPostBuilt()) {
-                    postBuildTypeInfo(new JavaClass[] { ptype });
-                }
-            } else if (shouldGenerateTypeInfo(ptype)) {
-                JavaClass[] jClasses = new JavaClass[] { ptype };
-                buildNewTypeInfo(jClasses);
-                refInfo = typeInfo.get(ptype.getQualifiedName());
-            }
+            TypeInfo refInfo = processReferencedClass(ptype);
             if (refInfo != null && !refInfo.isEnumerationType() && refInfo.getXmlValueProperty() == null) {
                 throw JAXBException.invalidTypeForXmlValueField(propName);
             }

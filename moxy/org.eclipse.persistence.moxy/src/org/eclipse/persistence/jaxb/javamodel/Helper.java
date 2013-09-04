@@ -88,6 +88,7 @@ public class Helper {
     protected final static String JAVA_PKG = "java.";
     protected final static String JAVAX_PKG = "javax.";
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
+    public static JavaClass OBJECT_CLASS;
     
     /**
      * INTERNAL:
@@ -102,6 +103,7 @@ public class Helper {
         buildXMLToJavaTypeMap();
         setJavaModel(model);
         setClassLoader(model.getClassLoader());
+        OBJECT_CLASS = getJavaClass(ClassConstants.Object_Class);
     }
 
     /**

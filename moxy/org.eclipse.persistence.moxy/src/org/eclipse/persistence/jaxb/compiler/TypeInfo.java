@@ -115,6 +115,7 @@ public class TypeInfo {
     
     private XMLNameTransformer xmlNameTransformer;
     
+    private JavaClass javaClass;
     public static XMLNameTransformer DEFAULT_NAME_TRANSFORMER = new DefaultXMLNameTransformer();
  
 	/**
@@ -123,7 +124,7 @@ public class TypeInfo {
      * 
      * @param helper
      */
-    public TypeInfo(Helper helper) {
+    public TypeInfo(Helper helper, JavaClass javaClass) {
         propertyNames = new ArrayList<String>();
         properties = new HashMap<String, Property>();
         originalProperties = new HashMap<String, Property>();
@@ -132,6 +133,7 @@ public class TypeInfo {
         isSetXmlTransient = false;
         isPreBuilt = false;
         isPostBuilt = false;
+        this.javaClass = javaClass;
     }
 
     /**
@@ -1172,6 +1174,14 @@ public class TypeInfo {
      */
     void postInitialize() {
         this.originalProperties = null;
+    }
+
+    public JavaClass getJavaClass() {
+        return javaClass;
+    }
+
+    public void setJavaClass(JavaClass javaClass) {
+        this.javaClass = javaClass;
     }
 
 }
