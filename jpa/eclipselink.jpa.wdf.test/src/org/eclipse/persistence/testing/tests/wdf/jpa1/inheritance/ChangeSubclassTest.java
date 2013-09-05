@@ -32,14 +32,14 @@ public class ChangeSubclassTest extends JPA1Base {
         clearAllTables();
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
-        final Short id = Short.valueOf((short) 99);
         
         try {
             env.beginTransaction(em);
             Vehicle vehicle = new Car();
-            vehicle.setId(id);
+
             em.persist(vehicle);
             env.commitTransactionAndClear(em);
+            Short id = vehicle.getId();
             
             env.beginTransaction(em);
             vehicle = em.find(Vehicle.class, id);
