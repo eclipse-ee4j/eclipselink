@@ -53,7 +53,7 @@ public class TableGeneratorMetadata extends TableMetadata {
      * INTERNAL:
      * Used for XML loading.
      */
-    protected TableGeneratorMetadata() {
+    public TableGeneratorMetadata() {
         super("<table-generator>");
     }
     

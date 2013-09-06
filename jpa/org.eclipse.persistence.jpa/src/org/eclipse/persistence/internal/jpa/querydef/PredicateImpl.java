@@ -18,7 +18,6 @@ import java.util.List;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.Metamodel;
 
 /**

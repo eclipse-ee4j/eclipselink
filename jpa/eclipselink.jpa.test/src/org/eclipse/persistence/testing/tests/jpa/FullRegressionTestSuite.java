@@ -46,6 +46,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMu
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.complexaggregate.ComplexAggregateTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.config.ConfigPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationExtendTablesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
@@ -134,6 +135,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(ComplexAggregateTestSuite.suite());
         suite.addTest(MetadataCachingTestSuite.suite());
         suite.addTest(OptimisticLockForceIncrementTestSuite.suite());
+        suite.addTest(ConfigPUTestSuite.suite());
         fullSuite.addTest(suite);
 
         // FieldAccess advanced model

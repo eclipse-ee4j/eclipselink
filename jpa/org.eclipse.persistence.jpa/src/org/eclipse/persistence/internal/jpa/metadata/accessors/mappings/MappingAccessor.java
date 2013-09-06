@@ -98,7 +98,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
@@ -1486,16 +1485,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 addFieldNameTranslation(aggregateObjectMapping, attributeName, attributeOverride.getColumn().getDatabaseField(), mappingAccessor);
             }
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Set the batch fetch type on the collection mapping.
-     */
-    protected void processBatchFetch(String batchFetch, ForeignReferenceMapping mapping) {
-        if (batchFetch != null) {
-            mapping.setBatchFetchType(BatchFetchType.valueOf(batchFetch));
-        }   
     }
     
     /**

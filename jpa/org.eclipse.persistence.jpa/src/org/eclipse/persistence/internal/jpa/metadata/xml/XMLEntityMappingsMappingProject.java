@@ -161,6 +161,7 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
 import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.BatchFetchMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.OrderByMetadata;
@@ -338,6 +339,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildBasicMapDescriptor());
         addDescriptor(buildVariableOneToOneDescriptor());
         addDescriptor(buildMapKeyDescriptor());
+        addDescriptor(buildBatchFetchDescriptor());
         
         addDescriptor(buildGeneratedValueDescriptor());
         addDescriptor(buildSequenceGeneratorDescriptor());
@@ -648,7 +650,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
-        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
@@ -737,7 +738,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
-        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
@@ -746,6 +746,20 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getFetchAttributeMapping());
         descriptor.addMapping(getAccessAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: batch-fetch
+     */
+    protected ClassDescriptor buildBatchFetchDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(BatchFetchMetadata.class);
+        
+        descriptor.addMapping(getTypeAttributeMapping());
+        descriptor.addMapping(getSizeAttributeMapping());
         
         return descriptor;
     }
@@ -773,12 +787,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         expiryTimeOfDayMapping.setXPath("orm:time-of-day");
         descriptor.addMapping(expiryTimeOfDayMapping);
         
-        XMLDirectMapping sizeMapping = new XMLDirectMapping();
-        sizeMapping.setAttributeName("m_size");
-        sizeMapping.setGetMethodName("getSize");
-        sizeMapping.setSetMethodName("setSize");
-        sizeMapping.setXPath("@size");
-        descriptor.addMapping(sizeMapping);
+        descriptor.addMapping(getSizeAttributeMapping());
         
         XMLDirectMapping sharedMapping = new XMLDirectMapping();
         sharedMapping.setAttributeName("m_shared");
@@ -1249,7 +1258,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
-        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
@@ -1322,6 +1330,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCustomCopyPolicyMapping());
         descriptor.addMapping(getInstantiationCopyPolicyMapping());
         descriptor.addMapping(getCloneCopyPolicyMapping());
+        descriptor.addMapping(getOracleObjectTypeMapping());
+        descriptor.addMapping(getOracleArrayTypeMapping());
+        descriptor.addMapping(getPLSQLRecordMapping());
+        descriptor.addMapping(getPLSQLTableMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAttributeOverrideMapping());
         descriptor.addMapping(getAssociationOverrideMapping());
@@ -1606,6 +1618,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         tableGeneratorsMapping.setReferenceClass(TableGeneratorMetadata.class);
         tableGeneratorsMapping.setXPath("orm:table-generator");
         descriptor.addMapping(tableGeneratorsMapping);
+        
+        XMLCompositeCollectionMapping uuidGeneratorsMapping = new XMLCompositeCollectionMapping();
+        uuidGeneratorsMapping.setAttributeName("m_uuidGenerators");
+        uuidGeneratorsMapping.setGetMethodName("getUuidGenerators");
+        uuidGeneratorsMapping.setSetMethodName("setUuidGenerators");
+        uuidGeneratorsMapping.setReferenceClass(UuidGeneratorMetadata.class);
+        uuidGeneratorsMapping.setXPath("orm:uuid-generator");
+        descriptor.addMapping(uuidGeneratorsMapping);
         
         XMLCompositeCollectionMapping partitioningMapping = new XMLCompositeCollectionMapping();
         partitioningMapping.setAttributeName("m_partitioning");
@@ -2113,7 +2133,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
-        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
@@ -2156,7 +2175,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
-        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
@@ -2601,7 +2619,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
-        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
@@ -2648,7 +2665,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPrivateOwnedMapping());
         descriptor.addMapping(getJoinFetchMapping());
         descriptor.addMapping(getBatchFetchMapping());
-        descriptor.addMapping(getBatchFetchSizeMapping());
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
@@ -3888,24 +3904,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getBatchFetchMapping() {
-        XMLDirectMapping mapping = new XMLDirectMapping();
+    protected XMLCompositeObjectMapping getBatchFetchMapping() {
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setAttributeName("m_batchFetch");
         mapping.setGetMethodName("getBatchFetch");
         mapping.setSetMethodName("setBatchFetch");
-        mapping.setXPath("orm:batch-fetch/@type");
-        return mapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLDirectMapping getBatchFetchSizeMapping() {
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("m_batchFetchSize");
-        mapping.setGetMethodName("getBatchFetchSize");
-        mapping.setSetMethodName("setBatchFetchSize");
-        mapping.setXPath("orm:batch-fetch-size/@size");
+        mapping.setReferenceClass(BatchFetchMetadata.class);
+        mapping.setXPath("orm:batch-fetch");
         return mapping;
     }
     
@@ -5422,6 +5427,32 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeCollectionMapping getOracleArrayTypeMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_oracleArrayTypes");
+        mapping.setGetMethodName("getOracleArrayTypes");
+        mapping.setSetMethodName("setOracleArrayTypes");
+        mapping.setReferenceClass(OracleArrayTypeMetadata.class);
+        mapping.setXPath("orm:oracle-array");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getOracleObjectTypeMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_oracleObjectTypes");
+        mapping.setGetMethodName("getOracleObjectTypes");
+        mapping.setSetMethodName("setOracleObjectTypes");
+        mapping.setReferenceClass(OracleObjectTypeMetadata.class);
+        mapping.setXPath("orm:oracle-object");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeObjectMapping getOrderByMapping() {
         XMLCompositeObjectMapping orderByMapping = new XMLCompositeObjectMapping();
         orderByMapping.setAttributeName("m_orderBy");
@@ -5569,32 +5600,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         parametersMapping.setReferenceClass(PLSQLParameterMetadata.class);
         parametersMapping.setXPath("orm:parameter");
         return parametersMapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLCompositeCollectionMapping getOracleArrayTypeMapping() {
-        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
-        mapping.setAttributeName("m_oracleArrayTypes");
-        mapping.setGetMethodName("getOracleArrayTypes");
-        mapping.setSetMethodName("setOracleArrayTypes");
-        mapping.setReferenceClass(OracleArrayTypeMetadata.class);
-        mapping.setXPath("orm:oracle-array");
-        return mapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLCompositeCollectionMapping getOracleObjectTypeMapping() {
-        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
-        mapping.setAttributeName("m_oracleObjectTypes");
-        mapping.setGetMethodName("getOracleObjectTypes");
-        mapping.setSetMethodName("setOracleObjectTypes");
-        mapping.setReferenceClass(OracleObjectTypeMetadata.class);
-        mapping.setXPath("orm:oracle-object");
-        return mapping;
     }
     
     /**
@@ -6071,6 +6076,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         serializedObjectPolicyMapping.setReferenceClass(SerializedObjectPolicyMetadata.class);
         serializedObjectPolicyMapping.setXPath("orm:serialized-object");
         return serializedObjectPolicyMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getSizeAttributeMapping() {
+        XMLDirectMapping sizeMapping = new XMLDirectMapping();
+        sizeMapping.setAttributeName("m_size");
+        sizeMapping.setGetMethodName("getSize");
+        sizeMapping.setSetMethodName("setSize");
+        sizeMapping.setXPath("@size");
+        return sizeMapping;
     }
     
     /**

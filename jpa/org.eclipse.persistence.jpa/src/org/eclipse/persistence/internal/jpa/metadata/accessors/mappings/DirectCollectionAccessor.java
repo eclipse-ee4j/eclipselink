@@ -53,6 +53,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.BatchFetchMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -63,6 +64,7 @@ import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
@@ -86,11 +88,10 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * @since EclipseLink 1.2
  */
 public abstract class DirectCollectionAccessor extends DirectAccessor {
+    private BatchFetchMetadata m_batchFetch;
     private Boolean m_cascadeOnDelete;
     private Boolean m_nonCacheable;
     private String m_joinFetch;
-    private String m_batchFetch;
-    private Integer m_batchFetchSize;
     private CollectionTableMetadata m_collectionTable;
     
     /**
@@ -108,26 +109,17 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         
         // Set the fetch type. A basic map may have no annotation (will default).
         if (annotation != null) {
-            // Set the fetch type.
             setFetch(annotation.getAttributeString("fetch"));
         }
         
         // Set the join fetch if one is present.
-        // TODO: should make this into its own JoinFetchMetadata and call it in process.
-        // Duplicating the work with RelationshipAccessor
-        MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);
-        if (joinFetch != null) {
-            m_joinFetch = joinFetch.getAttributeString("value");
+        if (isAnnotationPresent(JoinFetch.class)) {
+            m_joinFetch = getAnnotation(JoinFetch.class).getAttributeString("value");
         }
         
-        // Set the batch fetch if one is present.
-        // TODO: should make this into its own BatchFetchMetadata and call it in process.
-        // Duplicating the work with RelationshipAccessor
-        MetadataAnnotation batchFetch = getAnnotation(BatchFetch.class);
-        if (batchFetch != null) {
-            // Get attribute string will return the default ""
-            m_batchFetch = batchFetch.getAttributeString("value");
-            m_batchFetchSize = batchFetch.getAttributeInteger("size");
+        // Set the batch fetch if one is present. 
+        if (isAnnotationPresent(BatchFetch.class)) {
+            m_batchFetch = new BatchFetchMetadata(getAnnotation(BatchFetch.class), this);
         }
         
         // Set the cascade on delete if specified.
@@ -157,10 +149,6 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
                 return false;
             }
             
-            if (! valuesMatch(m_batchFetchSize, directCollectionAccessor.getBatchFetchSize())) {
-                return false;
-            }
-            
             if (! valuesMatch(m_cascadeOnDelete, directCollectionAccessor.getCascadeOnDelete())) {
                 return false;
             }
@@ -179,7 +167,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public String getBatchFetch() {
+    public BatchFetchMetadata getBatchFetch() {
         return m_batchFetch;
     }
     
@@ -189,22 +177,6 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      */
     public Boolean getCascadeOnDelete() {
         return m_cascadeOnDelete;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public Integer getBatchFetchSize() {
-        return m_batchFetchSize;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setBatchFetchSize(Integer batchFetchSize) {
-        m_batchFetchSize = batchFetchSize;
     }
     
     /**
@@ -380,7 +352,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
             processJoinFetch(getJoinFetch(), collectionMapping);
             
             // Process the batch fetch if specified.
-            processBatchFetch(getBatchFetch(), collectionMapping);
+            processBatchFetch(collectionMapping);
             
             // Process the collection table.
             processCollectionTable(collectionMapping);
@@ -405,6 +377,16 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
 
         // Process any partitioning policies.
         processPartitioning();
+    }
+    
+    /**
+     * INTERNAL:
+     * Set the batch fetch type on the foreign reference mapping.
+     */
+    protected void processBatchFetch(ForeignReferenceMapping mapping) {
+        if (m_batchFetch != null) {
+            m_batchFetch.process(mapping);
+        }   
     }
     
     /**
@@ -519,7 +501,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setBatchFetch(String batchFetch) {
+    public void setBatchFetch(BatchFetchMetadata batchFetch) {
         m_batchFetch = batchFetch;
     }
     

@@ -188,7 +188,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    protected void setResultSetMapping(String resultSetMapping) {
+    public void setResultSetMapping(String resultSetMapping) {
         m_resultSetMapping = resultSetMapping;
     }
 }

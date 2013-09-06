@@ -1819,6 +1819,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setPrimaryKey(PrimaryKeyMetadata primaryKey) {
+        m_primaryKey = primaryKey;
+    }
+        
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setQueryRedirectors(QueryRedirectorsMetadata redirectors) {
         m_queryRedirectors = redirectors;
     }
