@@ -293,7 +293,7 @@ public final class WordParser {
 	 *
 	 * @param word The word used to determine how much to move the position forward
 	 * @return The actual portion of the text that was skipped
-	 * @since 2.4.2
+	 * @since 2.4.3
 	 */
 	public String moveForwardIgnoreWhitespace(CharSequence word) {
 

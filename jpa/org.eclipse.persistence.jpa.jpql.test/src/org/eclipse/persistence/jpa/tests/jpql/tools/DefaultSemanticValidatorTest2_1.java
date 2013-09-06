@@ -25,7 +25,7 @@ import org.junit.Test;
 /**
  * The unit-test class used for testing a JPQL query semantically when the JPA version is 2.1.
  *
- * @version 2.4
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -52,8 +52,32 @@ public final class DefaultSemanticValidatorTest2_1 extends AbstractSemanticValid
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected boolean isComparisonTypeChecked() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected boolean isPathExpressionToCollectionMappingAllowed() {
 		return false;
+	}
+
+	@Test
+	public final void test_ComplextPathExpression_01() throws Exception {
+
+		String jpqlQuery = "SELECT TREAT(p.project LargeProject) FROM Product p";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_ComplextPathExpression_02() throws Exception {
+
+		String jpqlQuery = "SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate FROM Product p";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
 	}
 
 	@Test
@@ -83,21 +107,5 @@ public final class DefaultSemanticValidatorTest2_1 extends AbstractSemanticValid
 			startPosition,
 			endPosition
 		);
-	}
-
-	@Test
-	public final void test_ComplextPathExpression_01() throws Exception {
-
-		String jpqlQuery = "SELECT TREAT(p.project LargeProject) FROM Product p";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
-	}
-
-	@Test
-	public final void test_ComplextPathExpression_02() throws Exception {
-
-		String jpqlQuery = "SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate FROM Product p";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testHasNoProblems(problems);
 	}
 }
