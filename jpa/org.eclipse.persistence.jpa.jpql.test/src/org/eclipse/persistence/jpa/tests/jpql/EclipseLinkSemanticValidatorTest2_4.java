@@ -28,7 +28,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  * The unit-test class used for testing a JPQL query semantically when the JPA version is 1.0 and 2.0
  * and EclipseLink is the persistence provider. The EclipseLink version supported is 2.4 only.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -52,6 +52,14 @@ public final class EclipseLinkSemanticValidatorTest2_4 extends AbstractSemanticV
 			buildSemanticValidatorHelper(),
 			EclipseLinkSemanticValidatorExtension.NULL_EXTENSION
 		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isComparisonTypeChecked() {
+		return false;
 	}
 
 	/**

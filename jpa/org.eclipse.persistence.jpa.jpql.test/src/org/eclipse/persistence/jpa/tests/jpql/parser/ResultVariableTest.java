@@ -14,7 +14,9 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
+import org.eclipse.persistence.jpa.tests.jpql.EclipseLinkVersionTools;
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
@@ -319,10 +321,11 @@ public final class ResultVariableTest extends JPQLParserTest {
 				)
 			)
 		);
-		
+
 		testQuery(jpqlQuery, selectStatement);
 	}
 
+	@Test
 	public void test_JPQLQuery_19() {
 		
 		String jpqlQuery = "select f.id as id, f.name as name, f.description as description from Foo f";
@@ -336,6 +339,44 @@ public final class ResultVariableTest extends JPQLParserTest {
 			from("Foo", "f")
 		);
 		
+		testQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_JPQLQuery_20() {
+
+		if (!isEclipseLinkProvider() || EclipseLinkVersionTools.isOlderThan2_1(getGrammar())) {
+			return;
+		}
+
+		String jpqlQuery = "SELECT FUNC('MONTH', o.dateOperation) mois, " +
+		                   "       FUNC('YEAR', o.dateOperation) annee, " +
+		                   "       o.category.name categ, " +
+		                   "       SUM(o.amount) " +
+		                   "FROM BBankOperation o " +
+		                   "GROUP BY annee, mois, categ " +
+		                   "ORDER BY annee ASC, mois ASC, categ ASC";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				resultVariable(function(FUNC, "'MONTH'", path("o.dateOperation")), "mois"),
+				resultVariable(function(FUNC, "'YEAR'",  path("o.dateOperation")), "annee"),
+				resultVariable(path("o.category.name"), "categ"),
+				sum("o.amount")
+			),
+			from("BBankOperation", "o"),
+			groupBy(
+				variable("annee"),
+				variable("mois"),
+				variable("categ")
+			),
+			orderBy(
+				orderByItemAsc(variable("annee")),
+				orderByItemAsc(variable("mois")),
+				orderByItemAsc(variable("categ"))
+			)
+		);
+
 		testQuery(jpqlQuery, selectStatement);
 	}
 }

@@ -173,7 +173,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -812,28 +812,16 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(MaxFunction expression) {
-
 		// Visit the state field path expression in order to create the resolver
 		expression.getExpression().accept(this);
-
-		// Wrap the Resolver used to determine the type of the state field
-		// path expression so we can return the actual type
-		DeclarationResolver parent = getDeclarationResolver(expression);
-		resolver = new NumericResolver(parent, resolver);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(MinFunction expression) {
-
 		// Visit the state field path expression in order to create the resolver
 		expression.getExpression().accept(this);
-
-		// Wrap the Resolver used to determine the type of the state field
-		// path expression so we can return the actual type
-		DeclarationResolver parent = getDeclarationResolver(expression);
-		resolver = new NumericResolver(parent, resolver);
 	}
 
 	/**

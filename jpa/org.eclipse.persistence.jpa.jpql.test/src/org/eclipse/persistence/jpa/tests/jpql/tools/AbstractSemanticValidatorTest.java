@@ -93,6 +93,8 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 		return (AbstractSemanticValidator) super.getValidator();
 	}
 
+	protected abstract boolean isComparisonTypeChecked();
+
 	protected abstract boolean isPathExpressionToCollectionMappingAllowed();
 
 	/**
@@ -859,6 +861,44 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	}
 
 	@Test
+	public final void test_ComparisonExpression_WrongComparisonType_01() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Address e WHERE e.id = :key AND e.street = (SELECT MAX(c2.street) FROM Address AS c2 WHERE c2.id = :key)";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_ComparisonExpression_WrongComparisonType_02() throws Exception {
+
+		String jpqlQuery  = "SELECT p FROM Product p WHERE p.id = :key AND p.releaseDate = (SELECT MAX(p2.shelfLife.soldDate) FROM Product AS p2 WHERE p2.id = :key)";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_ComparisonExpression_WrongComparisonType_03() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Address e WHERE e.id = :key AND e.id = (SELECT MAX(c2.street) FROM Address AS c2 WHERE c2.id = :key)";
+		int startPosition = "SELECT e FROM Address e WHERE e.id = :key AND ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		if (isComparisonTypeChecked()) {
+			testHasOnlyOneProblem(
+				problems,
+				ComparisonExpression_WrongComparisonType,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testHasNoProblems(problems);
+		}
+	}
+
+	@Test
 	public final void test_IdentificationVariable_Invalid_Duplicate_1() throws Exception {
 
 		String jpqlQuery   = "SELECT e FROM Employee e, Address e";
@@ -1022,6 +1062,21 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 			startPosition,
 			endPosition
 		);
+	}
+
+	@Test
+	public final void test_IdentificationVariable_Valid_1() throws Exception {
+
+		String jpqlQuery = "SELECT MAX(e.roomNumber) mois, " +
+		                   "       SUBSTRING(e.department) annee, " +
+		                   "       e.address.city categ, " +
+		                   "       SUM(e.salary) " +
+		                   "FROM Employee e " +
+		                   "GROUP BY annee, mois, categ " +
+		                   "ORDER BY annee ASC, mois ASC, categ ASC";
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
 	}
 
 	@Test

@@ -28,7 +28,7 @@ import org.junit.Test;
  * The unit-test class used for testing a JPQL query semantically when the JPA version is 1.0 and 2.0
  * and EclipseLink is the persistence provider. The EclipseLink version supported is 2.5 only.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.5
  * @author Pascal Filion
  */
@@ -56,6 +56,14 @@ public class EclipseLinkSemanticValidatorTest2_5 extends AbstractSemanticValidat
 			buildSemanticValidatorHelper(),
 			buildSemanticExtension()
 		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isComparisonTypeChecked() {
+		return false;
 	}
 
 	/**

@@ -26,7 +26,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 /**
  * The unit-test class used for testing a JPQL jpqlQuery semantically when the JPA version is 1.0 and 2.0.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -47,6 +47,14 @@ public final class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValid
 	@Override
 	protected AbstractSemanticValidator buildValidator() {
 		return new DefaultSemanticValidator(buildSemanticValidatorHelper());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isComparisonTypeChecked() {
+		return true;
 	}
 
 	/**
