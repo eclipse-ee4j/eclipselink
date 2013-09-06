@@ -465,7 +465,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
     public String getMapKeyConvert() {
         return m_mapKeyConvert;
@@ -808,14 +807,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     public void setMapKeyColumn(ColumnMetadata mapKeyColumn) {
         m_mapKeyColumn = mapKeyColumn;
     } 
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setMapKeyConvert(String mapKeyConvert) {
-        m_mapKeyConvert = mapKeyConvert;
-    }
     
     /**
      * INTERNAL:

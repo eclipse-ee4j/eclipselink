@@ -85,6 +85,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinFieldMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.BatchFetchMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -114,22 +116,20 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     private Boolean m_nonCacheable;
     private Boolean m_privateOwned;
     
+    private BatchFetchMetadata m_batchFetch;
     private CascadeMetadata m_cascade;
     private ForeignKeyMetadata m_foreignKey;
+    private JoinTableMetadata m_joinTable;
     protected MetadataClass m_referenceClass;
     private MetadataClass m_targetEntity;
+    
+    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
+    private List<JoinFieldMetadata> m_joinFields = new ArrayList<JoinFieldMetadata>();
     
     private String m_fetch;
     private String m_mappedBy;
     private String m_joinFetch;
-    private String m_batchFetch;
     private String m_targetEntityName;
-    
-    private Integer m_batchFetchSize;
-
-    private JoinTableMetadata m_joinTable;
-    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
-    private List<JoinColumnMetadata> m_joinFields = new ArrayList<JoinColumnMetadata>();
     
     /**
      * INTERNAL:
@@ -149,20 +149,13 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         m_cascade = (annotation == null) ? null : new CascadeMetadata(annotation.getAttributeArray("cascade"), this);
         
         // Set the join fetch if one is present.
-        // TODO: should make this into its own JoinFetchMetadata and call it in process.
-        // Duplicating the work with DirectCollectionAccessor
         if (isAnnotationPresent(JoinFetch.class)) {
-            // Get attribute string will return the default ""
             m_joinFetch = getAnnotation(JoinFetch.class).getAttributeString("value");
         }
         
         // Set the batch fetch if one is present. 
-        // TODO: should make this into its own BatchFetchMetadata and call it in process.
-        // Duplicating the work with DirectCollectionAccessor
         if (isAnnotationPresent(BatchFetch.class)) {
-            // Get attribute string will return the default ""
-            m_batchFetch = getAnnotation(BatchFetch.class).getAttributeString("value");
-            m_batchFetchSize = getAnnotation(BatchFetch.class).getAttributeInteger("size");
+            m_batchFetch = new BatchFetchMetadata(getAnnotation(BatchFetch.class), this);
         }
         
         // Set the join columns if some are present. 
@@ -302,7 +295,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 return false;
             }
             
-            if (! valuesMatch(m_batchFetchSize, relationshipAccessor.getBatchFetchSize())) {
+            if (! valuesMatch(m_batchFetch, relationshipAccessor.getBatchFetch())) {
                 return false;
             }
             
@@ -328,7 +321,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getBatchFetch() {
+    public BatchFetchMetadata getBatchFetch() {
         return m_batchFetch;
     }
     
@@ -338,14 +331,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public Boolean getCascadeOnDelete() {
         return m_cascadeOnDelete;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public Integer getBatchFetchSize() {
-        return m_batchFetchSize;
     }
     
     /**
@@ -404,7 +389,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */    
-    public List<JoinColumnMetadata> getJoinFields() {
+    public List<JoinFieldMetadata> getJoinFields() {
         return m_joinFields;
     }
     
@@ -704,6 +689,16 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Set the batch fetch type on the foreign reference mapping.
+     */
+    protected void processBatchFetch(ForeignReferenceMapping mapping) {
+        if (m_batchFetch != null) {
+            m_batchFetch.process(mapping);
+        }   
+    }
+    
+    /**
+     * INTERNAL:
      */
     protected void processCascadeTypes(ForeignReferenceMapping mapping) {
         if (m_cascade != null) {
@@ -820,7 +815,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         processJoinFetch(getJoinFetch(), mapping);
         
         // Process the batch fetch if specified.
-        processBatchFetch(getBatchFetch(), mapping);
+        processBatchFetch(mapping);
             
         // Process the orphanRemoval or PrivateOwned
         processOrphanRemoval(mapping);
@@ -859,16 +854,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setBatchFetch(String batchFetch) {
+    public void setBatchFetch(BatchFetchMetadata batchFetch) {
         m_batchFetch = batchFetch;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setBatchFetchSize(Integer batchFetchSize) {
-        m_batchFetchSize = batchFetchSize;
     }
     
     /**
@@ -915,7 +902,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setJoinFields(List<JoinColumnMetadata> joinFields) {
+    public void setJoinFields(List<JoinFieldMetadata> joinFields) {
         m_joinFields = joinFields;
     }
     

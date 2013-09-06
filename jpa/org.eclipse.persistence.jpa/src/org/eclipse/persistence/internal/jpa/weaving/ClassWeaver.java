@@ -27,7 +27,6 @@ import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
-import org.eclipse.persistence.internal.libraries.asm.signature.SignatureReader;
 
 /**
  * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.

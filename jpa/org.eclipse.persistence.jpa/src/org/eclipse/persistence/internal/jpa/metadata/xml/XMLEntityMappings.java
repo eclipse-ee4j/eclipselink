@@ -89,6 +89,7 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMapping
 
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
 
 /**
  * Object to hold onto the XML entity mappings metadata.
@@ -132,6 +133,7 @@ public class XMLEntityMappings extends ORMetadata {
     private List<StructConverterMetadata> m_structConverters;
     private List<TableGeneratorMetadata> m_tableGenerators;
     private List<TypeConverterMetadata> m_typeConverters;
+    private List<UuidGeneratorMetadata> m_uuidGenerators;
     private List<PartitioningMetadata> m_partitioning;
     private List<RangePartitioningMetadata> m_rangePartitioning;
     private List<ValuePartitioningMetadata> m_valuePartitioning;
@@ -163,6 +165,9 @@ public class XMLEntityMappings extends ORMetadata {
         super("<entity-mappings>");
         m_isEclipseLinkORMFile = false;
         m_loadedForCanonicalModel = false;
+        
+        m_converters = new ArrayList<ConverterMetadata>();
+        m_converterAccessors = new ArrayList<ConverterAccessor>();
     }
     
     /**
@@ -204,10 +209,16 @@ public class XMLEntityMappings extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
-    public String getDescription() {
-        return m_description;
+    public List<ConverterAccessor> getConverterAccessors() {
+        return m_converterAccessors;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public List<ConverterMetadata> getConverters() {
+        return m_converters;
     }
     
     /**
@@ -242,6 +253,14 @@ public class XMLEntityMappings extends ORMetadata {
         } else {
             return m_schema;
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getDescription() {
+        return m_description;
     }
     
     /**
@@ -345,20 +364,8 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<NamedQueryMetadata> getNamedQueries() {
-        return m_namedQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
-        return m_namedStoredProcedureQueries;
-    }
-
-    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
-        return m_namedStoredFunctionQueries;
+    public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
+        return m_namedPLSQLStoredFunctionQueries;
     }
     
     /**
@@ -369,8 +376,28 @@ public class XMLEntityMappings extends ORMetadata {
         return m_namedPLSQLStoredProcedureQueries;
     }
 
-    public List<NamedPLSQLStoredFunctionQueryMetadata> getNamedPLSQLStoredFunctionQueries() {
-        return m_namedPLSQLStoredFunctionQueries;
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedQueryMetadata> getNamedQueries() {
+        return m_namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredFunctionQueryMetadata> getNamedStoredFunctionQueries() {
+        return m_namedStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStoredProcedureQueryMetadata> getNamedStoredProcedureQueries() {
+        return m_namedStoredProcedureQueries;
     }
     
     /**
@@ -540,6 +567,14 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<UuidGeneratorMetadata> getUuidGenerators() {
+        return m_uuidGenerators;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<ValuePartitioningMetadata> getValuePartitioning() {
         return m_valuePartitioning;
     }
@@ -560,9 +595,6 @@ public class XMLEntityMappings extends ORMetadata {
     public void initPersistenceUnitClasses(HashMap<String, EntityAccessor> allEntities, HashMap<String, EmbeddableAccessor> allEmbeddables) { 
         // Build our ConverterAccessor and ConverterMetadata lists from
         // the mixed converter metadata list.
-        m_converters = new ArrayList<ConverterMetadata>();
-        m_converterAccessors = new ArrayList<ConverterAccessor>();
-        
         for (MixedConverterMetadata mixedConverter : m_mixedConverters) {
             if (mixedConverter.isConverterMetadata()) {
                 m_converters.add(mixedConverter.buildConverterMetadata());
@@ -721,6 +753,12 @@ public class XMLEntityMappings extends ORMetadata {
         for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators) {
             sequenceGenerator.initXMLObject(m_file, this);
             m_project.addSequenceGenerator(sequenceGenerator, getDefaultCatalog(), getDefaultSchema());
+        }
+        
+        // Add the XML uuid generators to the project.
+        for (UuidGeneratorMetadata uuidGenerator : m_uuidGenerators) {
+            uuidGenerator.initXMLObject(m_file, this);
+            m_project.addUuidGenerator(uuidGenerator);
         }
         
         // Add the partitioning to the project.
@@ -1006,6 +1044,20 @@ public class XMLEntityMappings extends ORMetadata {
     
     /**
      * INTERNAL:
+     */
+    public void setConverterAccessors(List<ConverterAccessor> converterAccessors) {
+        m_converterAccessors = converterAccessors;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setConverters(List<ConverterMetadata> converters) {
+        m_converters = converters;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setDescription(String description) {
@@ -1099,8 +1151,32 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
+        m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
+        m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setNamedQueries(List<NamedQueryMetadata> namedQueries) {
         m_namedQueries = namedQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
+        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
     }
     
     /**
@@ -1111,22 +1187,6 @@ public class XMLEntityMappings extends ORMetadata {
         m_namedStoredProcedureQueries = namedStoredProcedureQueries;
     }
 
-    public void setNamedStoredFunctionQueries(List<NamedStoredFunctionQueryMetadata> namedStoredFunctionQueries) {
-        m_namedStoredFunctionQueries = namedStoredFunctionQueries;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
-        m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
-    }
-
-    public void setNamedPLSQLStoredFunctionQueries(List<NamedPLSQLStoredFunctionQueryMetadata> namedPLSQLStoredFunctionQueries) {
-        m_namedPLSQLStoredFunctionQueries = namedPLSQLStoredFunctionQueries;
-    }
-    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -1183,6 +1243,10 @@ public class XMLEntityMappings extends ORMetadata {
         m_oracleObjectTypes = objectTypes;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
         m_plsqlRecords = records;
     }
@@ -1289,6 +1353,14 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setUnionPartitioning(List<UnionPartitioningMetadata> unionPartitioning) {
         m_unionPartitioning = unionPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setUuidGenerators(List<UuidGeneratorMetadata> uuidGenerators) {
+        m_uuidGenerators = uuidGenerators;
     }
     
     /**
