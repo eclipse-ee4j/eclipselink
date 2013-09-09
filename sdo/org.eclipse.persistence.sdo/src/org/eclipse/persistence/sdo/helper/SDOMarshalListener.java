@@ -53,7 +53,6 @@ public class SDOMarshalListener implements XMLMarshalListener {
     private QName marshalledObjectRootQName;
     private MarshalRecord rootMarshalRecord;
     private SDOTypeHelper typeHelper;
-    private NamespaceResolver resolver;
 
     /** maintain narrowed context from the larger HelperContext (inside the xmlMarshaller)<br>
      * Visibility reduced from [public] in 2.1.0. May 15 2007 */
@@ -399,10 +398,10 @@ public class SDOMarshalListener implements XMLMarshalListener {
     }
 
     private String getXPathForProperty(SDOProperty prop) {
-        return getXPathForProperty(prop, false);
+        return getXPathForProperty(prop, false, typeHelper.getNamespaceResolver());
     }
 
-    private String getXPathForProperty(SDOProperty prop, boolean removeText) {
+    private String getXPathForProperty(SDOProperty prop, boolean removeText, NamespaceResolver namespaceResolver) {
         if ((prop).getXmlMapping() != null) {
             String xpath = prop.getXmlMapping().getField().getName();
             if (removeText && xpath.endsWith("/text()")) {
@@ -414,7 +413,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
             if (prop.isOpenContent()) {
                 String uri = prop.getUri();
                 if (uri != null) {
-                    String prefix = typeHelper.getNamespaceResolver().resolveNamespaceURI(uri);
+                    String prefix = namespaceResolver.resolveNamespaceURI(uri);
 
                     if ((prefix != null) && !prefix.equals(SDOConstants.EMPTY_STRING)) {
                         return prefix + XMLConstants.COLON + name;
@@ -578,21 +577,22 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
     private void marshalNilAttribute(SDOProperty property, DOMRecord row) {
         //Marshal out xsi:nil=true   
-        NamespaceResolver resolver;
-        if(this.resolver == null) {
+        NamespaceResolver resolver = null;
+        if(property.getContainingType() != null) {
+            resolver = property.getContainingType().getXmlDescriptor().getNamespaceResolver();
+        } 
+        if(null == resolver) {
             resolver = typeHelper.getNamespaceResolver();
-        } else {
-            resolver = this.resolver;
         }
         String xsiPrefix = resolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         if ((xsiPrefix == null) || xsiPrefix.equals(SDOConstants.EMPTY_STRING)) {
-            this.resolver = new NamespaceResolver();
-            resolver = this.resolver;
-            copyNamespaces(typeHelper.getNamespaceResolver(), resolver);
+            NamespaceResolver nsResolverWithXsi = new NamespaceResolver();
+            copyNamespaces(resolver, nsResolverWithXsi);
+            resolver = nsResolverWithXsi;
             xsiPrefix = resolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
             resolver.put(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         }
-        String xPath = getXPathForProperty(property, true);
+        String xPath = getXPathForProperty(property, true, resolver);
         xPath = xPath + "/@" + xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
 
         XMLField field = new XMLField(xPath);
