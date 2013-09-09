@@ -1355,7 +1355,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                                     // Note that this doesn't work in case LargeProject descriptor was set not to read subclasses:
                                     // in that case the selection expression will have (PROJ_TYPE = 'L') AND (PROJ_TYPE = 'V')
                                     // 
-                                    if(isLastTable) {
+                                    //bug 413765: this can only be called when selectCallForExist!=null.  Other classes might use this table 
+                                    // and be deleted if the inheritance info isn't included.
+                                    if(isLastTable && selectCallForExist!=null) {
                                         // In extended Employee example:
                                         //   Query with reference class VeryVeryLargeProject calls this for VLPROJECT table.
                                         deleteStatement = buildDeleteAllStatement(table, null, selectCallForExist, selectStatementForExist, null, null, primaryKeyFields);
