@@ -289,12 +289,16 @@ public class JSONReader extends XMLReaderAdapter {
                 	if(isTextValue){
                 		  parse(valueTree);
              		      break;
-                	}
+                	}                	
+                    NodeValue nv = ((UnmarshalRecord)contentHandler).getAttributeChildNodeValue(uri, localName);
+                    if(attributePrefix == null && nv !=null ){
+               	       break;
+                    }
                 }
                 if(valueTree != null && valueTree.getType() == JSONLexer.NULL){
-                	contentHandler.setNil(true);
+                    contentHandler.setNil(true);
                 }
-             
+                
                 contentHandler.startElement(uri, localName, localName, attributes.setTree(valueTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
                 parse(valueTree);
                 contentHandler.endElement(uri, localName, localName);                
@@ -593,6 +597,7 @@ public class JSONReader extends XMLReaderAdapter {
         private char namespaceSeparator;
         private NamespaceResolver namespaces;
         private boolean namespaceAware;
+        private static final String NULL="null";
 
         public JSONAttributes setTree(Tree tree, String attributePrefix, NamespaceResolver nr, char namespaceSeparator, boolean namespaceAware) {
             reset();
@@ -624,7 +629,6 @@ public class JSONReader extends XMLReaderAdapter {
                  break;
              }
              case JSONLexer.NULL: {
-                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, Constants.EMPTY_STRING));
                  break;
              } 
         	 }

@@ -52,4 +52,14 @@ public class DirectIsSetNullPolicyAttributeSetEmptyTrueTestCases extends XMLWith
         anEmployee.setLastName("Doe");
         return anEmployee;
     }
+    
+    //This method should be removed when bug 416854 is fixed
+    public Object getJSONReadControlObject() {
+        Employee anEmployee = new Employee();
+        anEmployee.setId(123);
+        //In JSON a set is not currently performed for null attributes but it should be
+        //anEmployee.setFirstName(null);
+        anEmployee.setLastName("Doe");
+        return anEmployee;
+    }
 }
