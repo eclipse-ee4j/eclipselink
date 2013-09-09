@@ -49,6 +49,14 @@ public class DirectNullPolicyAttributeSetEmptyFalseTestCases extends XMLWithJSON
         return anEmployee;
     }
     
+    public Object getJSONReadControlObject() {        
+        Employee anEmployee = new Employee();
+        anEmployee.setId(null);
+        anEmployee.setFirstName(null);
+        anEmployee.setLastName("Doe");
+        return anEmployee;
+    }
+    
     public Object getReadControlObject() {
         Employee anEmployee = new Employee();
         anEmployee.setId(0);

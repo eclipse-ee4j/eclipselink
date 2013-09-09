@@ -290,6 +290,10 @@ public class JSONReader extends XMLReaderAdapter {
                 		  parse(valueTree);
              		      break;
                 	}
+                    NodeValue nv = ((UnmarshalRecord)contentHandler).getAttributeChildNodeValue(uri, localName);
+                    if(attributePrefix == null && nv !=null ){
+               	       break;
+                    }
                 }
                 if(valueTree != null && valueTree.getType() == JSONLexer.NULL){
                 	contentHandler.setNil(true);
@@ -624,7 +628,6 @@ public class JSONReader extends XMLReaderAdapter {
                  break;
              }
              case JSONLexer.NULL: {
-                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, Constants.EMPTY_STRING));
                  break;
              } 
         	 }

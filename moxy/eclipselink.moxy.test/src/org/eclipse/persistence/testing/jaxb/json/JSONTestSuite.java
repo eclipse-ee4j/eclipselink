@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRoo
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixEmptyStringTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnMarshallerTestCases;
+import org.eclipse.persistence.testing.jaxb.json.attribute.SimpleBeanAttrNullTestCases;
 import org.eclipse.persistence.testing.jaxb.json.characters.EscapeCharactersTestCases;
 import org.eclipse.persistence.testing.jaxb.json.characters.UsAsciiTestCases;
 import org.eclipse.persistence.testing.jaxb.json.emptyroot.EmptyNullMarshalUnmarshalTestCases;
@@ -55,6 +56,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(JSONAttributeNoXmlRootElementIncludeRootFalseTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementInheritanceTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementJAXBElementTestCases.class);
+          suite.addTestSuite(SimpleBeanAttrNullTestCases.class);
           suite.addTestSuite(DifferentNamespacesTestCases.class);
           suite.addTestSuite(NamespacesOnContextTestCases.class);
           suite.addTestSuite(NamespacesOnUnmarshalOnlyTestCases.class);
