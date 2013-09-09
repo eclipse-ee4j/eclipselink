@@ -50,7 +50,11 @@ import org.eclipse.persistence.tools.dbws.TableOperationModel;
 import dbws.testing.DBWSTestSuite;
 
 public class SimpleSPTestSuite extends DBWSTestSuite {
-
+    
+    static {
+        System.setProperty("user.timezone", "Canada/Eastern");
+    }
+    
     static final String CREATE_SIMPLESP_TABLE =
         "CREATE TABLE SIMPLESP (" +
             "\nEMPNO DECIMAL(4,0) NOT NULL," +
@@ -370,7 +374,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
               "<ENAME>SMITH</ENAME>" +
               "<JOB>CLERK</JOB>" +
               "<MGR>7902</MGR>" +
-              "<HIREDATE>1980-12-17T00:00:00</HIREDATE>" +
+              "<HIREDATE>1980-12-17T00:00:00-05:00</HIREDATE>" +
               "<SAL>800.92</SAL>" +
               "<DEPTNO>20</DEPTNO>" +
           "</simplesp-row>" +
@@ -379,7 +383,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
               "<ENAME>ADAMS</ENAME>" +
               "<JOB>CLERK</JOB>" +
               "<MGR>7788</MGR>" +
-              "<HIREDATE>1987-05-23T00:00:00</HIREDATE>" +
+              "<HIREDATE>1987-05-23T00:00:00-04:00</HIREDATE>" +
               "<SAL>1100</SAL>" +
               "<DEPTNO>20</DEPTNO>" +
           "</simplesp-row>" +
@@ -388,7 +392,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
               "<ENAME>JAMES</ENAME>" +
               "<JOB>CLERK</JOB>" +
               "<MGR>7698</MGR>" +
-              "<HIREDATE>1981-12-03T00:00:00</HIREDATE>" +
+              "<HIREDATE>1981-12-03T00:00:00-05:00</HIREDATE>" +
               "<SAL>950</SAL>" +
               "<DEPTNO>30</DEPTNO>" +
           "</simplesp-row>" +
@@ -397,7 +401,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
               "<ENAME>MILLER</ENAME>" +
               "<JOB>CLERK</JOB>" +
               "<MGR>7782</MGR>" +
-              "<HIREDATE>1982-01-23T00:00:00</HIREDATE>" +
+              "<HIREDATE>1982-01-23T00:00:00-05:00</HIREDATE>" +
               "<SAL>1300</SAL>" +
               "<DEPTNO>10</DEPTNO>" +
           "</simplesp-row>" +

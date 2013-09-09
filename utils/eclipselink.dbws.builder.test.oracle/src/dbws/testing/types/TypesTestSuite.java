@@ -48,6 +48,11 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class TypesTestSuite extends DBWSTestSuite {
+
+    static {
+        System.setProperty("user.timezone", "Canada/Eastern");
+    }
+
     static final String CREATE_PACKAGE_TEST_TYPES =
     	"CREATE OR REPLACE PACKAGE TEST_TYPES AS" +
           "\nFUNCTION ECHO_INTEGER (PINTEGER IN INTEGER) RETURN INTEGER;" +
@@ -689,7 +694,7 @@ public class TypesTestSuite extends DBWSTestSuite {
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<simple-xml-format>" +
            "<simple-xml>" +
-              "<result>2009-12-03T00:00:00</result>" +
+              "<result>2009-12-03T00:00:00-05:00</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
 
@@ -712,7 +717,7 @@ public class TypesTestSuite extends DBWSTestSuite {
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<simple-xml-format>" +
            "<simple-xml>" +
-              "<result>2009-12-04T09:19:23.123</result>" +
+              "<result>2009-12-04T09:19:23.123-05:00</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
 

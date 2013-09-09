@@ -47,6 +47,11 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class WeakRefCursorTestSuite extends DBWSTestSuite {
+
+    static {
+        System.setProperty("user.timezone", "Canada/Eastern");
+    }
+
     static final String ELEMENT = "element";
     static final String ELEMENT_NAME = "EMP_DEPTNO";
     static final String ELEMENT_TYPE = "xsd:decimal";
@@ -265,12 +270,12 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
            "<simple-xml>" +
               "<ID>1</ID>" +
               "<NAME>mike</NAME>" +
-              "<SINCE>2001-12-25T00:00:00</SINCE>" +
+              "<SINCE>2001-12-25T00:00:00-05:00</SINCE>" +
            "</simple-xml>" +
            "<simple-xml>" +
               "<ID>4</ID>" +
               "<NAME>mikey</NAME>" +
-              "<SINCE>2010-01-01T00:00:00</SINCE>" +
+              "<SINCE>2010-01-01T00:00:00-05:00</SINCE>" +
            "</simple-xml>" +
         "</simple-xml-format>";
 
