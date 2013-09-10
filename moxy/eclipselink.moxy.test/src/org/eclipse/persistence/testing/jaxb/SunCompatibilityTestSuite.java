@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory.Class
 import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory.PackageLevelAccessorTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory.XmlAccessorFactorySupportTestCases;
 import org.eclipse.persistence.testing.jaxb.cycle.CycleRecoverableTestCases;
+import org.eclipse.persistence.testing.jaxb.cycle.inverse.InverseTestCases;
 import org.eclipse.persistence.testing.jaxb.sun.charescape.NonELCharacterEscapeHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.sun.idresolver.NonELIDResolverTestCases;
 import org.eclipse.persistence.testing.jaxb.sun.prefixmapper.NonELPrefixMapperTestCases;
@@ -31,6 +32,7 @@ public class SunCompatibilityTestSuite extends TestCase {
         TestSuite suite = new TestSuite("Sun Compatability Test Suite");
 
         suite.addTestSuite(CycleRecoverableTestCases.class);
+        suite.addTestSuite(InverseTestCases.class);
 
         suite.addTestSuite(ClassLevelAccessorTestCases.class);
         suite.addTestSuite(PackageLevelAccessorTestCases.class);
