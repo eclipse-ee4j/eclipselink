@@ -314,10 +314,11 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 }
             }
 
-            boolean isTextValue = isTextValue(parentLocalName);
+            boolean isTextValue = false;
             int arraySize = jsonArray.size();
             if (arraySize == 0) {
                 if (contentHandler instanceof UnmarshalRecord) {
+                    isTextValue = isTextValue(parentLocalName);
                     UnmarshalRecord ur = (UnmarshalRecord) contentHandler;
                     XPathNode node = ur.getNonAttributeXPathNode(uri, parentLocalName, parentLocalName, null);
                     if (node != null) {
@@ -336,6 +337,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             XPathFragment groupingXPathFragment = null;
             XPathFragment itemXPathFragment = null;
             if (contentHandler instanceof UnmarshalRecord) {
+                isTextValue = isTextValue(parentLocalName);
                 UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler;
                 if (unmarshalRecord.getUnmarshaller().isWrapperAsCollectionName()) {
                     XPathNode unmarshalRecordXPathNode = unmarshalRecord.getXPathNode();

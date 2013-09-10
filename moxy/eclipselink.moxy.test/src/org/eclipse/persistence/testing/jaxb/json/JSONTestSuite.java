@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json;
 
+import org.eclipse.persistence.testing.jaxb.json.adapter.JsonMapAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.json.any.AnyTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementIncludeRootFalseTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementInheritanceTestCases;
@@ -54,6 +55,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(JSONAttributePrefixOnMarshallerTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementIncludeRootFalseTestCases.class);
+          suite.addTestSuite(JsonMapAdapterTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementInheritanceTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementJAXBElementTestCases.class);
           suite.addTestSuite(SimpleBeanAttrNullTestCases.class);
