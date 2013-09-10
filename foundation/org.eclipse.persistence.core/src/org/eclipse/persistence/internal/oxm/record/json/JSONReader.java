@@ -373,7 +373,7 @@ public class JSONReader extends XMLReaderAdapter {
 			XPathFragment groupingXPathFragment = null;
 			XPathFragment itemXPathFragment = null;
             if(contentHandler instanceof UnmarshalRecord) {
-                isTextValue(parentLocalName);
+                isTextValue = isTextValue(parentLocalName);
                 UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler;
                 if(unmarshalRecord.getUnmarshaller().isWrapperAsCollectionName()) {
                     XPathNode unmarshalRecordXPathNode = unmarshalRecord.getXPathNode();
