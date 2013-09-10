@@ -88,6 +88,8 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
         if (isActive()) {
             throw new IllegalStateException(TransactionException.transactionIsActive().getMessage());
         }
+        //bug307445 : Throw IllegalStateException if entityManager was closed
+        this.wrapper.getEntityManager().verifyOpen();
 
         // always extended
         this.wrapper.localUOW = this.wrapper.getEntityManager().getActivePersistenceContext(null);

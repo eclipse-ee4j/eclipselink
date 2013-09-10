@@ -415,6 +415,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testNestedBatchQueryHints");
         tests.add("testReplaceElementCollection");
         tests.add("testProviderPropertySetting");
+        tests.add("testBeginTransactionOnClosedEM");
 //        if (isJPA21()){
 //            tests.add("testUnsynchronizedPC");
 //        }
@@ -4929,6 +4930,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 // unexpected exception - rethrow.
                 throw exception;
             }
+        }
+    }
+
+    public void testBeginTransactionOnClosedEM() {
+        if (isOnServer() && isJTA()) {
+            // Uses EntityTransactions.
+            return;
+        }
+        Exception expected = null;
+        EntityManager em = createEntityManager();
+        javax.persistence.EntityTransaction transaction= em.getTransaction();
+        em.close();
+        try {
+            transaction.begin();
+        } catch( IllegalStateException ise) {
+            expected = ise;
         }
     }
 
