@@ -94,9 +94,13 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         //when writing the collection need to see if any of the objects we are writing are in the parent collection inverse ref
         if((isInverseReference || xmlCompositeCollectionMapping.getInverseReferenceMapping() !=null)&& size >= 2){
             Object owner = marshalRecord.getCycleDetectionStack().get(size - 2);
-        	if(cp.contains(owner, collection, session)){
-        		return false;
-        	}
+            try {
+                if(cp.contains(owner, collection, session)){
+                    return false;
+                }
+            } catch(ClassCastException e) {
+                // For Bug #416875
+            }
          }
         iterator = cp.iteratorFor(collection);
         while (cp.hasNext(iterator)) {
