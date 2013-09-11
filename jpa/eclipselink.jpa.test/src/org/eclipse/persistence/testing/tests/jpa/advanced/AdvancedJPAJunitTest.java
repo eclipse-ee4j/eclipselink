@@ -163,6 +163,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
         suite.addTest(new AdvancedJPAJunitTest("testJoinColumnForeignKeyFieldLength"));
+        suite.addTest(new AdvancedJPAJunitTest("testEmployeeFetchWithAlias"));
         
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchAnnotation"));
         suite.addTest(new AdvancedJPAJunitTest("testVerifyEmployeeCacheSettings"));
@@ -2737,6 +2738,24 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+    
+    /**
+     * Bug 416003
+     * Test batch fetch with join fetch on a 1:m
+     */
+    public void testEmployeeFetchWithAlias() {
+        EntityManager em = createEntityManager();
+
+        try {
+            Query query = em.createQuery("SELECT d FROM Employee d join fetch d.phoneNumbers p", Employee.class);
+
+            List<Employee> results = query.getResultList();
+            assertTrue ("Test failed because extra join resulted in too many results", results.size() < 30);
+        }finally{
+            closeEntityManager(em);
+        }
+    }
+    
     
     protected int getVersion(EntityManager em, Dealer dealer) {
         Vector pk = new Vector(1);
