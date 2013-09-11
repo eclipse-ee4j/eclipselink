@@ -19,6 +19,7 @@ import org.eclipse.persistence.testing.jaxb.xmlelement.model.FullTestCasesNS;
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.SpecialCharacterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.nulls.NullTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.order.ElementOrderingTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlelement.self.XmlElementSelfTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.type.TypeBarTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.type.TypeBarXmlValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.type.TypeNoTypeTestCases;
@@ -51,6 +52,7 @@ public class XmlElementTestSuite extends TestSuite {
         suite.addTestSuite(TypeSimpleTestCases.class);
         suite.addTestSuite(TypeBarTestCases.class);
         suite.addTestSuite(TypeBarXmlValueTestCases.class);
+        suite.addTestSuite(XmlElementSelfTestCases.class);
         return suite;
     }
 
