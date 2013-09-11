@@ -23,10 +23,9 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class SimpleBeanAttrNullTestCases extends JAXBWithJSONTestCases {
 
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/simpleBean.json";
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/simpleBean.xml";
-	private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/simpleBean_write.xml";
-    private final static String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/simpleBean_write.json";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/simplebean.json";
+	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/simplebean.xml";
+    private final static String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/simplebean_write.json";
 	
 	public SimpleBeanAttrNullTestCases(String name) throws Exception {
 		super(name);
