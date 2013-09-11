@@ -3933,7 +3933,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (primaryKey == null){
                     primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToRegister, this, true);
                 }
-                if (descriptor.shouldLockForClone() || !isFromSharedCache){
+                if (descriptor.shouldLockForClone()|| !isFromSharedCache || (descriptor.isProtectedIsolation() && !(objectToRegister instanceof PersistenceEntity))){
                 // The primary key may be null for a new object in a nested unit of work (is existing in nested, new in parent).
                     if (primaryKey != null) {
                         // Always check the cache first.
@@ -3949,12 +3949,19 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     }
                 }
                 if (registeredObject == null) {
-                    // This is a case where the object is not in the session cache,
-                    // so a new cache-key is used as there is no original to use for locking.
+                    // This is a case where the object is not in the session cache, or the session lookup has been bypassed
+                    // check object for cachekey otherwise
+                    // a new cache-key is used as there is no original to use for locking.
                     // It read time must be set to avoid it being invalidated.
-                    CacheKey cacheKey = new CacheKey(primaryKey);
-                    cacheKey.setReadTime(System.currentTimeMillis());
-                    cacheKey.setIsolated(true); // if the cache does not have a version then this must be built from the supplied version
+                    CacheKey cacheKey = null;
+                    if (objectToRegister instanceof PersistenceEntity){
+                        cacheKey = ((PersistenceEntity)objectToRegister)._persistence_getCacheKey();
+                    }
+                    if (cacheKey == null){
+                        cacheKey = new CacheKey(primaryKey);
+                        cacheKey.setReadTime(System.currentTimeMillis());
+                        cacheKey.setIsolated(true); // if the cache does not have a version then this must be built from the supplied version
+                    }
                     registeredObject = cloneAndRegisterObject(objectToRegister, cacheKey, descriptor);
                 }
             }
