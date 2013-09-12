@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
-Export-Package: commonj.sdo.impl;version="2.4.0",
- org.eclipse.persistence.sdo;version="2.4.0",
- org.eclipse.persistence.sdo.dataobjects;version="2.4.0",
- org.eclipse.persistence.sdo.helper;version="2.4.0",
- org.eclipse.persistence.sdo.helper.delegates;version="2.4.0",
- org.eclipse.persistence.sdo.helper.extension;version="2.4.0",
- org.eclipse.persistence.sdo.helper.jaxb;version="2.4.0",
- org.eclipse.persistence.sdo.helper.metadata;version="2.4.0",
- org.eclipse.persistence.sdo.types;version="2.4.0"
+Export-Package: commonj.sdo.impl;version="2.6.0",
+ org.eclipse.persistence.sdo;version="2.6.0",
+ org.eclipse.persistence.sdo.dataobjects;version="2.6.0",
+ org.eclipse.persistence.sdo.helper;version="2.6.0",
+ org.eclipse.persistence.sdo.helper.delegates;version="2.6.0",
+ org.eclipse.persistence.sdo.helper.extension;version="2.6.0",
+ org.eclipse.persistence.sdo.helper.jaxb;version="2.6.0",
+ org.eclipse.persistence.sdo.helper.metadata;version="2.6.0",
+ org.eclipse.persistence.sdo.types;version="2.6.0"
 Private-Package: .
 Bundle-Name: EclipseLink SDO
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
