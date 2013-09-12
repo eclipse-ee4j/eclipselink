@@ -137,6 +137,10 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
                 processNamespacesForText(text.getTextContent(), endedElement);
             }
 
+            while(owningRecord.isSelfRecord() && owningRecord.getParentRecord() != null){
+            	owningRecord = owningRecord.getParentRecord();
+            }
+            
             //just the doc left in the stack. Finish this off.
             owningRecord.getXMLReader().setContentHandler(owningRecord);
             owningRecord.endElement(namespaceURI, localName, qName);
