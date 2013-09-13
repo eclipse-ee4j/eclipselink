@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonType;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.Property;
@@ -141,14 +142,21 @@ public class JsonSchemaGenerator {
         
         XMLDescriptor descriptor = (XMLDescriptor)project.getDescriptor(rootClass);
         Property rootProperty = null;
-        if(contextProperties != null && Boolean.TRUE.equals(this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT))) {
-            XMLField field = descriptor.getDefaultRootElementField();
-            if(field != null) {
-                rootProperty = new Property();
-                rootProperty.setType(JsonType.OBJECT);
-                rootProperty.setName(field.getXPathFragment().getLocalName());
-                properties.put(rootProperty.getName(), rootProperty);
-                properties = rootProperty.getProperties();
+
+        if(contextProperties != null) {
+            Boolean includeRoot = (Boolean) this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT);
+            if(includeRoot == null) {
+                includeRoot = Boolean.TRUE;
+            }
+            if(Boolean.TRUE.equals(includeRoot)) {
+                XMLField field = descriptor.getDefaultRootElementField();
+                if(field != null) {
+                    rootProperty = new Property();
+                    rootProperty.setType(JsonType.OBJECT);
+                    rootProperty.setName(field.getXPathFragment().getLocalName());
+                    properties.put(rootProperty.getName(), rootProperty);
+                    properties = rootProperty.getProperties();
+                }
             }
         }
         JsonType type = populateProperties(properties, descriptor);
@@ -187,7 +195,11 @@ public class JsonSchemaGenerator {
                 DirectCollectionMapping directMapping = (DirectCollectionMapping)mapping;
                 XPathFragment frag = ((XMLField)directMapping.getField()).getXPathFragment();
                 if(frag.nameIsText()) {
-                    return getJsonTypeForJavaType(directMapping.getAttributeElementClass());
+                    Class type = directMapping.getAttributeElementClass();
+                    if(type == null) {
+                        type = ClassConstants.STRING;
+                    }
+                    return getJsonTypeForJavaType(type);
                 }
             }
         }
