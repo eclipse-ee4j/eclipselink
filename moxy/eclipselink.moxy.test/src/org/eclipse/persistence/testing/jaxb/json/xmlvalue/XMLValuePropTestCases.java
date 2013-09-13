@@ -67,11 +67,11 @@ public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
 		return p;		
 	}
 	
-	 public void testJSONSchemaGen() throws Exception{
-	     InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+	 /*public void testJSONSchemaGen() throws Exception{
+	     InputStream controlSchema = ClassLoader.getSystemResourceAsStream(JSON_SCHEMA_RESOURCE);
 	     super.generateJSONSchema(controlSchema);
 	    
-	 }
+	 }*/
 
 
 }
