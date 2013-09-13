@@ -47,6 +47,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * INTERNAL:
@@ -164,7 +165,16 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 DirectMapping xmlDirectMapping = (DirectMapping) textMapping;
                 Object fieldValue = xmlDirectMapping.getFieldValue(xmlDirectMapping.valueFromObject(objectValue, xmlDirectMapping.getField(), session), session, marshalRecord);
                 QName schemaType = ((Field) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
-                marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
+                if(fieldValue != null) {
+                    marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
+                } else {
+                    XMLMarshalException ex = XMLMarshalException.nullValueNotAllowed(this.xmlCompositeObjectMapping.getAttributeName(), this.xmlCompositeObjectMapping.getDescriptor().getJavaClass().getName());
+                    try {
+                        marshalRecord.getMarshaller().getErrorHandler().warning(new SAXParseException(null, null, ex));
+                    } catch(Exception saxException) {
+                        throw ex;
+                    }
+                }
                 marshalRecord.closeStartGroupingElements(groupingFragment);
                 return true;
             } else {
