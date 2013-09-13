@@ -3658,10 +3658,10 @@ public class AnnotationsProcessor {
                     } else {
                         type = (JavaClass) actualTypeArguments[0];
                     } 
-                    processXmlElementDecl(type, next, packageInfo, elemDecls);
+                    type = processXmlElementDecl(type, next, packageInfo, elemDecls);
                 }else if (helper.JAXBELEMENT_CLASS.isAssignableFrom(type)) {                                   
                 	this.factoryMethods.put(type.getRawName(), next);
-                	processXmlElementDecl(type, next, packageInfo, elemDecls);
+                	type = processXmlElementDecl(type, next, packageInfo, elemDecls);
                 } else {
                     this.factoryMethods.put(type.getRawName(), next);                    
                 }
@@ -3679,8 +3679,8 @@ public class AnnotationsProcessor {
         }
     }
     
-    private void processXmlElementDecl(JavaClass type, JavaMethod next, PackageInfo packageInfo, Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl> elemDecls){
-        
+    private JavaClass processXmlElementDecl(JavaClass type, JavaMethod next, PackageInfo packageInfo, Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl> elemDecls){
+        JavaClass returnType = type;
         // if there's an XmlElementDecl for this method from XML, use it
         // - otherwise look for an annotation
     	org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl xmlEltDecl = elemDecls.get(next.getName());
@@ -3770,9 +3770,10 @@ public class AnnotationsProcessor {
                 declaration.setJavaTypeAdapterClass(typeAdapterClass);
 
                 Class declJavaType = CompilerHelper.getTypeFromAdapterClass(typeAdapterClass);
-
-                declaration.setJavaType(helper.getJavaClass(declJavaType));
+                JavaClass adaptedType = helper.getJavaClass(declJavaType);                
+                declaration.setJavaType(adaptedType);
                 declaration.setAdaptedJavaType(type);
+                returnType = adaptedType;
             }
             if (helper.isAnnotationPresent(next, XmlMimeType.class)) {
                 XmlMimeType mimeType = (XmlMimeType)helper.getAnnotation(next, XmlMimeType.class);
@@ -3792,6 +3793,7 @@ public class AnnotationsProcessor {
 
             elements.put(qname, declaration);
         }
+    	return returnType;
     }
 
     /**
