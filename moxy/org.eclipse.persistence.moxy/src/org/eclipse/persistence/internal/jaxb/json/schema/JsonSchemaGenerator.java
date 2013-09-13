@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonType;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.Property;
@@ -143,22 +142,24 @@ public class JsonSchemaGenerator {
         XMLDescriptor descriptor = (XMLDescriptor)project.getDescriptor(rootClass);
         Property rootProperty = null;
 
+        Boolean includeRoot = Boolean.TRUE;
         if(contextProperties != null) {
-            Boolean includeRoot = (Boolean) this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT);
+            includeRoot = (Boolean) this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT);
             if(includeRoot == null) {
                 includeRoot = Boolean.TRUE;
             }
-            if(Boolean.TRUE.equals(includeRoot)) {
-                XMLField field = descriptor.getDefaultRootElementField();
-                if(field != null) {
-                    rootProperty = new Property();
-                    rootProperty.setType(JsonType.OBJECT);
-                    rootProperty.setName(field.getXPathFragment().getLocalName());
-                    properties.put(rootProperty.getName(), rootProperty);
-                    properties = rootProperty.getProperties();
-                }
+        }
+        if(Boolean.TRUE.equals(includeRoot)) {
+            XMLField field = descriptor.getDefaultRootElementField();
+            if(field != null) {
+                rootProperty = new Property();
+                rootProperty.setType(JsonType.OBJECT);
+                rootProperty.setName(field.getXPathFragment().getLocalName());
+                properties.put(rootProperty.getName(), rootProperty);
+                properties = rootProperty.getProperties();
             }
         }
+        
         JsonType type = populateProperties(properties, descriptor);
         if(type != null) {
             if(rootProperty != null) {
@@ -197,7 +198,7 @@ public class JsonSchemaGenerator {
                 if(frag.nameIsText()) {
                     Class type = directMapping.getAttributeElementClass();
                     if(type == null) {
-                        type = ClassConstants.STRING;
+                        type = CoreClassConstants.STRING;
                     }
                     return getJsonTypeForJavaType(type);
                 }
@@ -624,6 +625,7 @@ public class JsonSchemaGenerator {
                 currentProperties = nestedProperty.getProperties();
             }
             frag = frag.getNextFragment();
+            propertyName = getNameForFragment(frag);
         }
         return null;
     }
