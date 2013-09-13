@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue;
 
 import org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.adapter.AdapterTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.attribute.NestedAttributeNullTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.attribute.NestedAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.integer.IntegerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.text.NestedTextTestCases;
@@ -27,6 +28,7 @@ public class XmlValueTestSuite {
         suite.addTestSuite(ObjectValueTestCases.class);
         suite.addTestSuite(AdapterTestCases.class);
         suite.addTestSuite(NestedAttributeTestCases.class);
+        suite.addTestSuite(NestedAttributeNullTestCases.class);
         suite.addTestSuite(IntegerTestCases.class);
         suite.addTestSuite(NestedTextTestCases.class);
         suite.addTestSuite(XsiTypeTestCases.class);
