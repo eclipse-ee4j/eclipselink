@@ -141,7 +141,15 @@ public class JsonSchemaGenerator {
         
         XMLDescriptor descriptor = (XMLDescriptor)project.getDescriptor(rootClass);
         Property rootProperty = null;
-        if(contextProperties != null && Boolean.TRUE.equals(this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT))) {
+
+        Boolean includeRoot = Boolean.TRUE;
+        if(contextProperties != null) {
+            includeRoot = (Boolean) this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT);
+            if(includeRoot == null) {
+                includeRoot = Boolean.TRUE;
+            }
+        }
+        if(Boolean.TRUE.equals(includeRoot)) {
             XMLField field = descriptor.getDefaultRootElementField();
             if(field != null) {
                 rootProperty = new Property();
@@ -151,6 +159,7 @@ public class JsonSchemaGenerator {
                 properties = rootProperty.getProperties();
             }
         }
+        
         JsonType type = populateProperties(properties, descriptor);
         if(type != null) {
             if(rootProperty != null) {
@@ -187,7 +196,11 @@ public class JsonSchemaGenerator {
                 DirectCollectionMapping directMapping = (DirectCollectionMapping)mapping;
                 XPathFragment frag = ((XMLField)directMapping.getField()).getXPathFragment();
                 if(frag.nameIsText()) {
-                    return getJsonTypeForJavaType(directMapping.getAttributeElementClass());
+                    Class type = directMapping.getAttributeElementClass();
+                    if(type == null) {
+                        type = CoreClassConstants.STRING;
+                    }
+                    return getJsonTypeForJavaType(type);
                 }
             }
         }
@@ -342,7 +355,7 @@ public class JsonSchemaGenerator {
                 if(frag.nameIsText()) {
                     propertyName = Constants.VALUE_WRAPPER;
                     if(this.contextProperties != null)  {
-                        String valueWrapper = (String) this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
+                        String valueWrapper = (String) this.contextProperties.get(JAXBContextProperties.JSON_VALUE_WRAPPER);
                         if(valueWrapper != null) {
                             propertyName = valueWrapper;
                         }
@@ -612,6 +625,7 @@ public class JsonSchemaGenerator {
                 currentProperties = nestedProperty.getProperties();
             }
             frag = frag.getNextFragment();
+            propertyName = getNameForFragment(frag);
         }
         return null;
     }

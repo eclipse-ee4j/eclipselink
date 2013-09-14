@@ -12,17 +12,21 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpath;
 
+
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlPathTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathannotation.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathannotation.json";
+    private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathschema.json";
     public XmlPathTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Root.class, Employee.class, Address.class, PhoneNumber.class});
@@ -72,6 +76,15 @@ public class XmlPathTestCases extends JAXBWithJSONTestCases {
         
         return root;
     }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = ClassLoader.getSystemResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+      
+    }
+
+
+    
     
     
 }
