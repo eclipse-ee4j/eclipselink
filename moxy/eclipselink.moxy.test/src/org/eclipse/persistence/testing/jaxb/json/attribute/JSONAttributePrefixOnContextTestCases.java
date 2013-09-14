@@ -12,18 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.attribute;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.PropertyException;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class JSONAttributePrefixOnContextTestCases extends JSONMarshalUnmarshalTestCases {
 	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/address_prefix.json";
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/attribute/address_prefixSchema.json";
 
 	public JSONAttributePrefixOnContextTestCases(String name) throws Exception {
 		super(name);
@@ -70,5 +76,11 @@ public class JSONAttributePrefixOnContextTestCases extends JSONMarshalUnmarshalT
 		testJSONMarshalToOutputStream();
 				
 	}
+	
+	 public void testJSONSchemaGen() throws Exception{
+	     InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+	     super.generateJSONSchema(controlSchema);
+	 }
+
 
 }

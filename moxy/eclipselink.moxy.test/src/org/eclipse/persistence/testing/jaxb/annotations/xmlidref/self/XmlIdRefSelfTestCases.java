@@ -12,11 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlidref.self;
 
+import java.io.InputStream;
+
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlIdRefSelfTestCases extends JAXBWithJSONTestCases {
 
     private static final String CONTROL_JSON = "org/eclipse/persistence/testing/jaxb/annotations/xmlidref/self/control.json";
+    private static final String CONTROL_JSON_SCHEMA = "org/eclipse/persistence/testing/jaxb/annotations/xmlidref/self/controlSchema.json";
     private static final String CONTROL_XML = "org/eclipse/persistence/testing/jaxb/annotations/xmlidref/self/control.xml";
 
     public XmlIdRefSelfTestCases(String name) throws Exception {
@@ -47,5 +50,12 @@ public class XmlIdRefSelfTestCases extends JAXBWithJSONTestCases {
 
         return customer;
     }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(CONTROL_JSON_SCHEMA);
+        super.generateJSONSchema(controlSchema);
+       
+    }
+
 
 }
