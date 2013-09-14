@@ -318,6 +318,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             Marshaller m = getJsonSchemaMarshaller();
             m.marshal(schema, outputResolver.createOutput(null, rootClass.getName() + ".json"));
         } catch (Exception ex) {
+            throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringSchemaGeneration(ex);
         }
     }
 

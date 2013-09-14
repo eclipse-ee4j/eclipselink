@@ -154,7 +154,7 @@ public class JsonSchemaGenerator {
             if(field != null) {
                 rootProperty = new Property();
                 rootProperty.setType(JsonType.OBJECT);
-                rootProperty.setName(field.getXPathFragment().getLocalName());
+                rootProperty.setName(getNameForFragment(field.getXPathFragment()));
                 properties.put(rootProperty.getName(), rootProperty);
                 properties = rootProperty.getProperties();
             }
@@ -306,7 +306,11 @@ public class JsonSchemaGenerator {
                 if(enumeration != null) {
                     nestedProperty.getItem().setEnumeration(enumeration);
                 } 
-                nestedProperty.getItem().setType(getJsonTypeForJavaType(mapping.getAttributeElementClass()));
+                Class type = mapping.getAttributeElementClass();
+                if(type == null) {
+                    type = CoreClassConstants.STRING;
+                }
+                nestedProperty.getItem().setType(getJsonTypeForJavaType(type));
                 return prop;
             } else if(next instanceof BinaryDataCollectionMapping) {
                 BinaryDataCollectionMapping mapping = (BinaryDataCollectionMapping)next;
@@ -416,17 +420,21 @@ public class JsonSchemaGenerator {
                 XMLDescriptor nextDescriptor = (XMLDescriptor)mapping.getReferenceDescriptor();
                 XMLField field = (XMLField)mapping.getField();
                 XPathFragment firstFragment = field.getXPathFragment();
-                String propName = getNameForFragment(firstFragment);
-                prop = properties.get(propName);
-                if(prop == null) {
-                    prop = new Property();
+                if(firstFragment.isSelfFragment()) {
+                    populateProperties(properties, nextDescriptor);
+                } else {
+                    String propName = getNameForFragment(firstFragment);
+                    prop = properties.get(propName);
+                    if(prop == null) {
+                        prop = new Property();
+                        prop.setName(propName);
+                    }
+                    //prop.setType(JsonType.OBJECT);
                     prop.setName(propName);
+                    Property nestedProperty = getNestedPropertyForFragment(firstFragment, prop);
+                    nestedProperty.setRef(getReferenceForDescriptor(nextDescriptor));
+                    //populateProperties(nestedProperty.getProperties(), nextDescriptor);
                 }
-                //prop.setType(JsonType.OBJECT);
-                prop.setName(propName);
-                Property nestedProperty = getNestedPropertyForFragment(firstFragment, prop);
-                nestedProperty.setRef(getReferenceForDescriptor(nextDescriptor));
-                //populateProperties(nestedProperty.getProperties(), nextDescriptor);
             } else if(next instanceof BinaryDataMapping) {
                 BinaryDataMapping binaryMapping = (BinaryDataMapping)next;
                 XMLField field = (XMLField)binaryMapping.getField();

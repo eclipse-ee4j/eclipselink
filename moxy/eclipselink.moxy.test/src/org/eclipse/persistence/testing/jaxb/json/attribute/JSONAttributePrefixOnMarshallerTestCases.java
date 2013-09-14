@@ -44,4 +44,9 @@ public class JSONAttributePrefixOnMarshallerTestCases extends JSONAttributePrefi
 		props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "CONTEXT_PREFIX"); 
 		return props;
 	}
+
+	
+	@Override
+	public void testJSONSchemaGen() throws Exception{
+	}
 }
