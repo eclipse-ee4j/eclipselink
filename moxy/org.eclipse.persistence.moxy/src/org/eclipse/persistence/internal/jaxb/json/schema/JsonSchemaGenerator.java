@@ -355,7 +355,7 @@ public class JsonSchemaGenerator {
                 if(frag.nameIsText()) {
                     propertyName = Constants.VALUE_WRAPPER;
                     if(this.contextProperties != null)  {
-                        String valueWrapper = (String) this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
+                        String valueWrapper = (String) this.contextProperties.get(JAXBContextProperties.JSON_VALUE_WRAPPER);
                         if(valueWrapper != null) {
                             propertyName = valueWrapper;
                         }

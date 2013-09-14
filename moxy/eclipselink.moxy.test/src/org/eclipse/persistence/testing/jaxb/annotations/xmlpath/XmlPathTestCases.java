@@ -77,11 +77,11 @@ public class XmlPathTestCases extends JAXBWithJSONTestCases {
         return root;
     }
     
-    /*public void testJSONSchemaGen() throws Exception{
+    public void testJSONSchemaGen() throws Exception{
         InputStream controlSchema = ClassLoader.getSystemResourceAsStream(JSON_SCHEMA_RESOURCE);
         super.generateJSONSchema(controlSchema);
       
-    }*/
+    }
 
 
     
