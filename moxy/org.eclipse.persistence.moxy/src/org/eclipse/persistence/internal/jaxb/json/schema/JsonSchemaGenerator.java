@@ -68,6 +68,7 @@ public class JsonSchemaGenerator {
     NamespacePrefixMapper prefixMapper = null;
     Property[] xopIncludeProp = null;
     XMLContext xmlContext;
+    Property rootProperty = null;
 
     private static String DEFINITION_PATH="#/definitions";
     
@@ -140,7 +141,7 @@ public class JsonSchemaGenerator {
         this.project = this.xmlContext.getSession(rootClass).getProject();
         
         XMLDescriptor descriptor = (XMLDescriptor)project.getDescriptor(rootClass);
-        Property rootProperty = null;
+
 
         Boolean includeRoot = Boolean.TRUE;
         if(contextProperties != null) {
@@ -524,7 +525,11 @@ public class JsonSchemaGenerator {
         String referenceName = DEFINITION_PATH + "/" + className;
         
         if(referenceDescriptor.getJavaClass() == this.rootClass) {
-            return "#";
+            String ref = "#";
+            if(this.rootProperty != null) {
+                ref += "/properties/" + rootProperty.getName();
+            }
+            return ref;
         }
         if(!this.schema.getDefinitions().containsKey(className)) {
             Property definition = new Property();
