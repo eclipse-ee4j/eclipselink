@@ -12,12 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.self;
 
+import java.io.InputStream;
+
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class SelfTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/self.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/self.json";
+    private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/selfSchema.json";
 
     public SelfTestCases(String name) throws Exception {
         super(name);
@@ -37,5 +40,11 @@ public class SelfTestCases extends JAXBWithJSONTestCases {
 
         return p;
     }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+    }
+
 
 }

@@ -12,8 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlelements;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -21,6 +23,7 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/employee_collection.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/employee_collection.json";
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/employee_collection_schema.json";
     private final static int CONTROL_ID = 10;
 
     public XmlElementsArrayTestCases(String name) throws Exception {
@@ -63,6 +66,12 @@ public class XmlElementsArrayTestCases extends JAXBWithJSONTestCases {
           employee.choice = choices;
           choices[4]=addr;
           return employee;
+    }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+       
     }
 }
 
