@@ -38,7 +38,7 @@ import org.eclipse.persistence.jpa.jpql.utility.iterable.ArrayIterable;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.</p>
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -83,8 +83,7 @@ public abstract class JPQLQueryBNF {
 	private boolean compound;
 
 	/**
-	 * The list of unique identifiers for the {@link ExpressionFactory} that are registered with this
-	 * BNF rule.
+	 * The list of unique identifiers for the {@link ExpressionFactory} that are registered with this BNF rule.
 	 */
 	private List<String> expressionFactoryIds;
 
@@ -486,6 +485,24 @@ public abstract class JPQLQueryBNF {
 	 */
 	public boolean handleSubExpression() {
 		return handleSubExpression;
+	}
+
+	/**
+	 * Determines whether the BNF with the given ID is part of this BNF or not.
+	 *
+	 * @param queryBNFId The unique identifier of the BNF rule to check if it's a child of this one
+	 * @return <code>true</code> if the BNF with the given ID is
+	 * @since 2.5.1
+	 */
+	public boolean hasChild(String queryBNFId) {
+
+		for (JPQLQueryBNF child : getChildren()) {
+			if (child.getId() == queryBNFId) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

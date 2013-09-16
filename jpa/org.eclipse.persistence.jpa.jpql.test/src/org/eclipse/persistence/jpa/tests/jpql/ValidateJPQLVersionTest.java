@@ -746,9 +746,9 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 	@Test
 	public void test_SQLFunction_1() {
 
-		String jpqlQuery  = "Select e from Employee e order by SQL('? NULLS LAST', e.id)";
- 		int startPosition = "Select e from Employee e order by ".length();
- 		int endPosition   = jpqlQuery.length();
+		String jpqlQuery  = "select e from Employee e where SQL('? NULLS LAST', e.id) between 2 and 3";
+ 		int startPosition = "select e from Employee e where ".length();
+ 		int endPosition   = "select e from Employee e where SQL('? NULLS LAST', e.id)".length();
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
@@ -763,9 +763,9 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 	@Test
 	public void test_SQLFunction_2() {
 
-		String jpqlQuery  = "Select e from Employee e order by SQL('? NULLS LAST', e.id)";
- 		int startPosition = "Select e from Employee e order by ".length();
- 		int endPosition   = jpqlQuery.length();
+		String jpqlQuery  = "select e from Employee e where SQL('? NULLS LAST', e.id) between 2 and 3";
+ 		int startPosition = "select e from Employee e where ".length();
+ 		int endPosition   = "select e from Employee e where SQL('? NULLS LAST', e.id)".length();
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
@@ -780,9 +780,9 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 	@Test
 	public void test_SQLFunction_3() {
 
-		String jpqlQuery  = "Select e from Employee e order by SQL('? NULLS LAST', e.id)";
- 		int startPosition = "Select e from Employee e order by ".length();
- 		int endPosition   = jpqlQuery.length();
+		String jpqlQuery  = "select e from Employee e where SQL('? NULLS LAST', e.id) between 2 and 3";
+ 		int startPosition = "select e from Employee e where ".length();
+ 		int endPosition   = "select e from Employee e where SQL('? NULLS LAST', e.id)".length();
 
  		testHasOnlyOneProblem(
  			jpqlQuery,

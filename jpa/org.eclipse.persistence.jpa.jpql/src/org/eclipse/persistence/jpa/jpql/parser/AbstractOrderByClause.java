@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>orderby_clause ::= <b>&lt;identifier&gt;</b> {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code><p>
  *
- * @version 2.5.1
+ * @version 2.5
  * @since 2.5
  * @author Pascal Filion
  */

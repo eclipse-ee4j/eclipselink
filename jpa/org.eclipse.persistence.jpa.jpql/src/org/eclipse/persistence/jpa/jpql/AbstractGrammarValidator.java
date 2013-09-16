@@ -74,6 +74,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
+import org.eclipse.persistence.jpa.jpql.parser.InternalOrderByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
@@ -142,7 +143,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see AbstractSemanticValidator
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -2268,8 +2269,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	                                  String reservedWordProblemKey,
 	                                  String invalidJavaIdentifierProblemKey) {
 
-		// Must not be a reserved identifier
-		if (getExpressionRegistry().isIdentifier(variableName)) {
+		// Must not be a reserved identifier. An exception is ORDER and GROUP because the actual
+		// identifiers are ORDER BY and GROUP BY
+		if (getExpressionRegistry().isIdentifier(variableName) &&
+		    !"ORDER".equalsIgnoreCase(variableName) &&
+		    !"GROUP".equalsIgnoreCase(variableName)) {
+
 			int startPosition = position(expression);
 			int endPosition   = startPosition + variableLength;
 			addProblem(expression, startPosition, endPosition, reservedWordProblemKey, variableName);
@@ -3929,8 +3934,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 		if (!expression.hasOrderByItems()) {
 			int startPosition = position(expression.getOrderByItems());
-			int endPosition   = startPosition;
-			addProblem(expression, startPosition, endPosition, OrderByClause_OrderByItemMissing);
+			addProblem(expression, startPosition, OrderByClause_OrderByItemMissing);
 		}
 		// Validate the separation of multiple grouping items
 		else {
@@ -3953,10 +3957,20 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		// Missing ordering item
 		if (!expression.hasExpression()) {
 			int startPosition = position(expression);
-			addProblem(expression, startPosition, OrderByItem_MissingStateFieldPathExpression);
+			addProblem(expression, startPosition, OrderByItem_MissingExpression);
 		}
 		else {
-			super.visit(expression);
+			Expression item = expression.getExpression();
+
+			// Invalid order by item
+			if (!isValid(item, InternalOrderByItemBNF.ID)) {
+				int startPosition = position(item);
+				int endPosition   = startPosition + length(item);
+				addProblem(item, startPosition, endPosition, OrderByItem_InvalidExpression);
+			}
+			else {
+				super.visit(expression);
+			}
 		}
 	}
 
