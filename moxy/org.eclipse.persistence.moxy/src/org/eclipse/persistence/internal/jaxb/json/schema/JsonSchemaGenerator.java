@@ -35,6 +35,8 @@ import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
@@ -46,7 +48,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -184,9 +185,9 @@ public class JsonSchemaGenerator {
     private JsonType populateProperties(Map<String, Property> properties, XMLDescriptor descriptor) {
         
         List<DatabaseMapping> mappings = descriptor.getMappings();
-        if(mappings.size() == 1) {
+        if(isSimpleType(descriptor)) {
             //check for simple type
-            DatabaseMapping mapping = mappings.get(0);
+            DatabaseMapping mapping = getTextMapping(descriptor);
             if(mapping instanceof DirectMapping) {
                 DirectMapping directMapping = (DirectMapping)mapping;
                 XPathFragment frag = ((XMLField)directMapping.getField()).getXPathFragment();
@@ -209,7 +210,7 @@ public class JsonSchemaGenerator {
             if(next instanceof ChoiceObjectMapping) {
                 ChoiceObjectMapping coMapping = (ChoiceObjectMapping)next;
                 for(Object nestedMapping:coMapping.getChoiceElementMappingsByClass().values()) {
-                    Property prop = generateProperty((XMLMapping)nestedMapping, descriptor, properties);
+                    Property prop = generateProperty((Mapping)nestedMapping, descriptor, properties);
                     if(!(properties.containsKey(prop.getName()))) {
                         properties.put(prop.getName(), prop);
                     }                    
@@ -217,13 +218,13 @@ public class JsonSchemaGenerator {
             } else if(next instanceof ChoiceCollectionMapping) {
                 ChoiceCollectionMapping coMapping = (ChoiceCollectionMapping)next;
                 for(Object nestedMapping:coMapping.getChoiceElementMappingsByClass().values()) {
-                    Property prop = generateProperty((XMLMapping)nestedMapping, descriptor, properties);
+                    Property prop = generateProperty((Mapping)nestedMapping, descriptor, properties);
                     if(!(properties.containsKey(prop.getName()))) {
                         properties.put(prop.getName(), prop);
                     }                    
                 }
             } else {
-                Property prop = generateProperty((XMLMapping)next, descriptor, properties);
+                Property prop = generateProperty((Mapping)next, descriptor, properties);
                 if(prop != null && !(properties.containsKey(prop.getName()))) {
                     properties.put(prop.getName(), prop);
                 }
@@ -232,9 +233,51 @@ public class JsonSchemaGenerator {
         return null;
     }
 
-    private Property generateProperty(XMLMapping next, XMLDescriptor descriptor, Map<String, Property> properties) {
+    private DatabaseMapping getTextMapping(XMLDescriptor descriptor) {
+        for(DatabaseMapping next:descriptor.getMappings()) {
+            if(next.isAbstractDirectMapping()) {
+                DirectMapping mapping = (DirectMapping)next;
+                if(((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
+                    return next;
+                }
+            }
+            if(next.isAbstractCompositeDirectCollectionMapping()) {
+                DirectCollectionMapping mapping = (DirectCollectionMapping)next;
+                if(((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
+                    return next;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isSimpleType(XMLDescriptor descriptor) {
+        for(DatabaseMapping next:descriptor.getMappings()) {
+            if(!(next.isAbstractDirectMapping() || next.isAbstractCompositeDirectCollectionMapping())) {
+                if(!(next instanceof InverseReferenceMapping)) {
+                    return false;
+                }
+                continue;
+            }
+            if(next.isAbstractDirectMapping()) {
+                DirectMapping mapping = (DirectMapping)next;
+                if(!((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
+                    return false;
+                }
+            }
+            if(next.isAbstractCompositeDirectCollectionMapping()) {
+                DirectCollectionMapping mapping = (DirectCollectionMapping)next;
+                if(!((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private Property generateProperty(Mapping next, XMLDescriptor descriptor, Map<String, Property> properties) {
         Property prop = null;
-        if(((XMLMapping)next).isCollectionMapping()) {
+        if(((Mapping)next).isCollectionMapping()) {
             if(next instanceof CollectionReferenceMapping) {
                 CollectionReferenceMapping mapping = (CollectionReferenceMapping)next;
                 Set<XMLField> sourceFields = mapping.getSourceToTargetKeyFieldAssociations().keySet();
