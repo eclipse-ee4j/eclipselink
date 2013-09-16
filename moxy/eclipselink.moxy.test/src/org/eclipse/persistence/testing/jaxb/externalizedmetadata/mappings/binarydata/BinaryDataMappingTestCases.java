@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydata;
 
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class BinaryDataMappingTestCases extends JAXBWithJSONTestCases  {
     
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydata/mydata.json";
     private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydata/write-mydata.json";
+    private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydata/mydataschema.json";
 
     private static final byte[] BYTES0123 = new byte[] { 0, 1, 2, 3 };
     private static final byte[] BYTES1234 = new byte[] { 1, 2, 3, 4 };
@@ -121,4 +123,10 @@ public class BinaryDataMappingTestCases extends JAXBWithJSONTestCases  {
 	public void testRoundTrip(){
 		//not applicable with write only mappings
 	}
+	
+	 public void testJSONSchemaGen() throws Exception{
+	     InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+	     super.generateJSONSchema(controlSchema);
+	 }
+
 }
