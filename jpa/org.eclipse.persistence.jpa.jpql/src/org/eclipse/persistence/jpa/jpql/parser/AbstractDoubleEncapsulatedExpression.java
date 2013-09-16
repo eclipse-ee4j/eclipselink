@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see ModExpression
  * @see NullIfExpression
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -298,7 +298,10 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 */
 	@Override
 	protected void removeEncapsulatedExpression() {
-		// TODO
+		hasComma = false;
+		firstExpression = null;
+		secondExpression = null;
+		hasSpaceAfterComma = false;
 	}
 
 	/**

@@ -33,6 +33,70 @@ public final class EclipseLinkVersionTools {
 		super();
 	}
 
+	public static boolean isEquals1_x(JPQLGrammar jpqlGrammar) {
+		return isEquals1_x(jpqlGrammar.getProviderVersion());
+	}
+
+	public static boolean isEquals1_x(String value) {
+		return EclipseLinkVersion.VERSION_1_x == EclipseLinkVersion.value(value);
+	}
+
+	public static boolean isEquals2_0(JPQLGrammar jpqlGrammar) {
+		return isEquals2_0(jpqlGrammar.getProviderVersion());
+	}
+
+	public static boolean isEquals2_0(String value) {
+		return EclipseLinkVersion.VERSION_2_0 == EclipseLinkVersion.value(value);
+	}
+
+	public static boolean isEquals2_1(JPQLGrammar jpqlGrammar) {
+		return isEquals2_1(jpqlGrammar.getProviderVersion());
+	}
+
+	public static boolean isEquals2_1(String value) {
+		return EclipseLinkVersion.VERSION_2_1 == EclipseLinkVersion.value(value);
+	}
+
+	public static boolean isEquals2_2(JPQLGrammar jpqlGrammar) {
+		return isEquals2_2(jpqlGrammar.getProviderVersion());
+	}
+
+	public static boolean isEquals2_2(String value) {
+		return EclipseLinkVersion.VERSION_2_2 == EclipseLinkVersion.value(value);
+	}
+
+	public static boolean isEquals2_3(JPQLGrammar jpqlGrammar) {
+		return isEquals2_3(jpqlGrammar.getProviderVersion());
+	}
+
+	public static boolean isEquals2_3(String value) {
+		return EclipseLinkVersion.VERSION_2_3 == EclipseLinkVersion.value(value);
+	}
+
+	public static boolean isEquals2_4(JPQLGrammar jpqlGrammar) {
+		return isEquals2_4(jpqlGrammar.getProviderVersion());
+	}
+
+	public static boolean isEquals2_4(String value) {
+		return EclipseLinkVersion.VERSION_2_4 == EclipseLinkVersion.value(value);
+	}
+
+	public static boolean isEquals2_5(JPQLGrammar jpqlGrammar) {
+		return isEquals2_5(jpqlGrammar.getProviderVersion());
+	}
+
+	public static boolean isEquals2_5(String value) {
+		return EclipseLinkVersion.VERSION_2_5 == EclipseLinkVersion.value(value);
+	}
+
+	public static boolean isEquals2_6(JPQLGrammar jpqlGrammar) {
+		return isEquals2_6(jpqlGrammar.getProviderVersion());
+	}
+
+	public static boolean isEquals2_6(String value) {
+		return EclipseLinkVersion.VERSION_2_6 == EclipseLinkVersion.value(value);
+	}
+
 	public static boolean isNewerThan(String value, EclipseLinkVersion version) {
 		return EclipseLinkVersion.value(value).isNewerThan(version);
 	}

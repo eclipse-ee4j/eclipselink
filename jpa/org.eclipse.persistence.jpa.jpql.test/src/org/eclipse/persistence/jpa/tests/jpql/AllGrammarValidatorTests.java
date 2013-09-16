@@ -27,20 +27,15 @@ import org.junit.runners.Suite.SuiteClasses;
  * The test suite containing all the test suites testing the validation of JPQL queries based on
  * the JPQL grammar.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
 @SuiteClasses({
-	// Unit-Test testing parsing a JPQL query that was written following the JPA 2.0 spec
 	AllGrammarValidatorTests.AllDefaultGrammarValidatorTest2_0.class,
-	// Unit-Test testing parsing a JPQL query that was written following the JPA 2.1 spec
 	AllGrammarValidatorTests.AllDefaultGrammarValidatorTest2_1.class,
-	// Unit-Test testing parsing a JPQL query that was written following EclipseLink 2.0, 2.1, 2.2, 2.3
 	AllGrammarValidatorTests.AllEclipseLinkGrammarValidatorTest.class,
-	// Unit-Test testing parsing a JPQL query that was written following EclipseLink 2.4
 	AllGrammarValidatorTests.AllEclipseLinkGrammarValidatorTest2_4.class,
-	// Unit-Test testing parsing a JPQL query that was written following EclipseLink 2.5
 	AllGrammarValidatorTests.AllEclipseLinkGrammarValidatorTest2_5.class,
 })
 @RunWith(JPQLTestRunner.class)

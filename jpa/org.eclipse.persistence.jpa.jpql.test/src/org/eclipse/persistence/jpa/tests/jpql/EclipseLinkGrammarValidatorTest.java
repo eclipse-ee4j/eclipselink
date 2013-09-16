@@ -16,7 +16,6 @@ package org.eclipse.persistence.jpa.tests.jpql;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
-import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
@@ -26,7 +25,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  * 2.0 and EclipseLink is the persistence provider. The EclipseLink version supported is 2.0, 2.1,
  * 2.2 and 2.3.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -41,22 +40,12 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 		return new EclipseLinkGrammarValidator(jpqlGrammar);
 	}
 
-	protected boolean equals(EclipseLinkVersion version) {
-		EclipseLinkVersion currentVersion = EclipseLinkVersion.value(jpqlGrammar.getProviderVersion());
-		return currentVersion == version;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
-		return isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
-	}
-
-	protected boolean isNewerThanOrEqual(EclipseLinkVersion version) {
-		EclipseLinkVersion currentVersion = EclipseLinkVersion.value(jpqlGrammar.getProviderVersion());
-		return currentVersion.isNewerThanOrEqual(version);
+		return EclipseLinkVersionTools.isNewerThanOrEqual2_4(jpqlGrammar);
 	}
 
 	/**
@@ -64,7 +53,7 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 	 */
 	@Override
 	protected boolean isSubqueryAllowedAnywhere() {
-		return isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
+		return EclipseLinkVersionTools.isNewerThanOrEqual2_4(jpqlGrammar);
 	}
 
 	@Test
@@ -73,7 +62,7 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 		String query = "SELECT e FROM Employee e GROUP BY AVG(e.age)";
 		List<JPQLQueryProblem> problems = validate(query);
 
-		if (equals(EclipseLinkVersion.VERSION_2_0)) {
+		if (EclipseLinkVersionTools.isEquals2_0(jpqlGrammar)) {
 			int startPosition = "SELECT e FROM Employee e GROUP BY ".length();
 			int endPosition   = query.length();
 			testHasOnlyOneProblem(problems, BadExpression_InvalidExpression, startPosition, endPosition);
@@ -92,7 +81,7 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		if (equals(EclipseLinkVersion.VERSION_2_0)) {
+		if (EclipseLinkVersionTools.isEquals2_0(jpqlGrammar)) {
 
 			int startPosition1 = "SELECT e FROM Employee e GROUP BY ".length();
 			int endPosition1   = "SELECT e FROM Employee e GROUP BY AVG(e.age)".length();
@@ -127,7 +116,7 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 		String jpqlQuery  = "SELECT e FROM Employee e WHERE ABS(e.salary) IN :age";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		if (isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_1)) {
+		if (EclipseLinkVersionTools.isNewerThanOrEqual2_1(jpqlGrammar)) {
 			testHasNoProblems(problems);
 		}
 		else {
@@ -147,31 +136,24 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 	public void test_OrderByClause_GroupByItemIsMissingComma_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY LENGTH(e.age) e.name";
-		int startPosition = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)".length();
-		int endPosition   = "SELECT e FROM Employee e ORDER BY LENGTH(e.age) ".length();
-
 		List<JPQLQueryProblem> problems = validate(query);
 
-		if (equals(EclipseLinkVersion.VERSION_2_0)) {
+		if (EclipseLinkVersionTools.isNewerThanOrEqual2_0(jpqlGrammar)) {
 
 			int startPosition1 = "SELECT e FROM Employee e ORDER BY ".length();
-			int endPosition1   = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)".length();
+			int endPosition1   = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)be.name".length();
 
 			testHasProblem(
 				problems,
-				BadExpression_InvalidExpression,
+				OrderByItem_InvalidExpression,
 				startPosition1,
 				endPosition1
 			);
-
-			testHasProblem(
-				problems,
-				OrderByClause_OrderByItemIsMissingComma,
-				startPosition,
-				endPosition
-			);
 		}
 		else {
+			int startPosition = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)".length();
+			int endPosition   = "SELECT e FROM Employee e ORDER BY LENGTH(e.age) ".length();
+
 			testHasOnlyOneProblem(
 				problems,
 				OrderByClause_OrderByItemIsMissingComma,

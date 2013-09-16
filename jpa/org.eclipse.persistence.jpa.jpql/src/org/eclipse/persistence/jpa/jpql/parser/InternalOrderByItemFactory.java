@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see OrderByItem
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -50,10 +50,6 @@ public final class InternalOrderByItemFactory extends ExpressionFactory {
 	                                             JPQLQueryBNF queryBNF,
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
-
-		if (tolerant && getExpressionRegistry().isIdentifier(word) || (expression != null)) {
-			return null;
-		}
 
 		if (word.indexOf(AbstractExpression.DOT) > -1) {
 			expression = new StateFieldPathExpression(parent, word);

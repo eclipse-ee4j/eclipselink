@@ -331,7 +331,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.</p>
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -452,9 +452,6 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 		addChildBNF(SingleValuedPathExpressionBNF.ID,     SingleValuedObjectPathExpressionBNF.ID);
 		addChildBNF(StateFieldPathExpressionBNF.ID,       GeneralIdentificationVariableBNF.ID);
 		addChildBNF(StringPrimaryBNF.ID,                  CaseExpressionBNF.ID);
-
-		// Override (internal) select_expression to add support for result variable
-		registerBNF(new ResultVariableBNF());
 	}
 
 	/**

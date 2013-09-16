@@ -20,7 +20,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * JPA 2.0 <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code><p>
  *
- * @version 2.4
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -45,6 +45,7 @@ public final class InternalOrderByItemBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
+		setHandleAggregate(true); // For invalid queries
 		setFallbackBNFId(ID);
 		setFallbackExpressionFactoryId(InternalOrderByItemFactory.ID);
 		registerChild(IdentificationVariableBNF.ID);

@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -296,7 +296,8 @@ public interface JPQLQueryProblemMessages {
 	String OrderByClause_OrderByItemEndsWithComma = "ORDER_BY_CLAUSE_ORDER_BY_ITEM_ENDS_WITH_COMMA";
 	String OrderByClause_OrderByItemIsMissingComma = "ORDER_BY_CLAUSE_ORDER_BY_ITEM_IS_MISSING_COMMA";
 	String OrderByClause_OrderByItemMissing = "ORDER_BY_CLAUSE_ORDER_BY_ITEM_MISSING";
-	String OrderByItem_MissingStateFieldPathExpression = "ORDER_BY_ITEM_MISSING_STATE_FIELD_PATH_EXPRESSION";
+	String OrderByItem_InvalidExpression = "ORDER_BY_ITEM_INVALID_EXPRESSION";
+	String OrderByItem_MissingExpression = "ORDER_BY_ITEM_MISSING_EXPRESSION";
 	String PathExpression_NotRelationshipMapping = "PATH_EXPRESSION_NOT_RELATIONSHIP_MAPPING";
 	String RangeVariableDeclaration_InvalidRootObject = "RANGE_VARIABLE_DECLARATION_INVALID_ROOT_OBJECT";
 	String RangeVariableDeclaration_MissingIdentificationVariable = "RANGE_VARIABLE_DECLARATION_MISSING_IDENTIFICATION_VARIABLE";

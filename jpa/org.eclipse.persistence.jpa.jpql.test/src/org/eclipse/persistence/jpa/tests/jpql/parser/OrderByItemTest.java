@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * This unit-tests test parsing the null ordering added to an ordering item.
  *
- * @version 2.4
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -104,9 +105,8 @@ public final class OrderByItemTest extends JPQLParserTest {
 
 		String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age nulls";
 
-		OrderByItemTester orderByItem = orderByItem("e.age");
-		orderByItem.nulls = "NULLS";
-		orderByItem.hasSpaceAfterNulls = false;
+		OrderByItemTester orderByItem = orderByItemNullsFirst("e.age");
+		orderByItem.nulls = NULLS;
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -125,7 +125,7 @@ public final class OrderByItemTest extends JPQLParserTest {
 
 		String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age NULLS ";
 
-		OrderByItemTester orderByItem = orderByItem("e.age");
+		OrderByItemTester orderByItem = orderByItemNullsFirst("e.age");
 		orderByItem.nulls = "NULLS";
 		orderByItem.hasSpaceAfterNulls = true;
 

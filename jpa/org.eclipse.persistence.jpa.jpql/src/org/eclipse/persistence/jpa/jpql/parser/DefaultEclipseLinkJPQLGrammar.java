@@ -17,7 +17,7 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
 
 /**
  * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined by the
- * JPA 2.1 functional specification and the EclipseLink 2.5.
+ * JPA 2.1 functional specification and the EclipseLink 2.6.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
@@ -25,9 +25,9 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @see JPQLGrammar2_1
- * @see EclipseLinkJPQLGrammar2_5
+ * @see EclipseLinkJPQLGrammar2_6
  *
- * @version 2.5
+ * @version 2.6
  * @since 2.4
  * @author Pascal Filion
  */
@@ -52,7 +52,7 @@ public final class DefaultEclipseLinkJPQLGrammar implements JPQLGrammar {
 	 * @return The latest {@link JPQLGrammar} that supports EclipseLink
 	 */
 	public static JPQLGrammar instance() {
-		return EclipseLinkJPQLGrammar2_5.instance();
+		return EclipseLinkJPQLGrammar2_6.instance();
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,32 +13,32 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * The root test suite containing the test suites that define how to test the parser with various
- * JPA versions and extensions.
+ * This test suite runs {@link EclipseLinkJPQLParserTests2_4} using JPQL grammars written for JPA
+ * 2.0 and for EclipseLink 2.1.
  *
  * @version 2.5.1
- * @since 2.4
+ * @since 2.5.1
  * @author Pascal Filion
  */
 @SuiteClasses({
-	AllJPQLParserTests1_0.class,
-	AllJPQLParserTests2_0.class,
-	AllJPQLParserTests2_1.class,
-	AllEclipseLinkJPQLParserTests.class,
-	AllEclipseLinkJPQLParserTests2_1.class,
-	AllEclipseLinkJPQLParserTests2_4.class,
-	AllEclipseLinkJPQLParserTests2_5.class,
-	AllJPQLParserConcurrentTests.class
+	EclipseLinkJPQLParserTests2_1.class
 })
 @RunWith(JPQLTestRunner.class)
-public final class AllJPQLParserTests {
+public final class AllEclipseLinkJPQLParserTests2_1 {
 
-	private AllJPQLParserTests() {
+	private AllEclipseLinkJPQLParserTests2_1() {
 		super();
+	}
+
+	@JPQLGrammarTestHelper
+	static JPQLGrammar[] buildJPQLGrammars() {
+		return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_1);
 	}
 }

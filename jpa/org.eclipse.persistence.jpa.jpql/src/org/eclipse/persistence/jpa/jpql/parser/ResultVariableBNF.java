@@ -16,14 +16,15 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a result variable expression.
  *
- * @version 2.4
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
 public final class ResultVariableBNF extends JPQLQueryBNF {
 
 	/**
-	 * The unique identifier of this BNF rule.
+	 * The unique identifier of this BNF rule, which is the same as {@link InternalSelectExpressionBNF#ID}
+	 * in order to override it.
 	 */
 	public static final String ID = InternalSelectExpressionBNF.ID;
 

@@ -20,6 +20,7 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.tools.EclipseLinkJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.tools.EclipseLinkSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.tools.JPQLQueryContext;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import org.eclipse.persistence.jpa.tests.jpql.tools.AbstractSemanticValidatorTest;
 import org.junit.Test;
 
@@ -34,6 +35,14 @@ import org.junit.Test;
  */
 @SuppressWarnings("nls")
 public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticValidatorTest {
+
+	private JPQLQueryStringFormatter buildFormatter_01(final String jpqlQuery) {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return jpqlQuery;
+			}
+		};
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -90,6 +99,14 @@ public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticVali
 		                   "ORDER BY annee ASC, mois ASC, categ ASC";
 
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_OrderByItem_Valid_1() throws Exception {
+
+		String jpqlQuery = "SELECT order2 AS order FROM Order order2 ORDER BY order";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery, buildFormatter_01(jpqlQuery));
 		testHasNoProblems(problems);
 	}
 }
