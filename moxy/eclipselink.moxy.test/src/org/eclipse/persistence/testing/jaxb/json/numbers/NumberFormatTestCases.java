@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.numbers;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -65,6 +66,11 @@ public class NumberFormatTestCases extends JAXBWithJSONTestCases {
 		listOfNumbers.add(new BigDecimal(0));
 		nh.listNumbersTest = listOfNumbers;
 		return nh;
+	}
+	
+	public void testJSONSchemaGen() throws Exception{
+		InputStream controlSchema = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/json/numbers/numberHolderSchema.json");
+		super.generateJSONSchema(controlSchema);
 	}
 
 }
