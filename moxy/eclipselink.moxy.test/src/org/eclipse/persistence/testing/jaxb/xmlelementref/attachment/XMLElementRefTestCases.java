@@ -31,6 +31,7 @@ public class XMLElementRefTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/attachment/employee.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/attachment/employee.json";
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/attachment/employeeschema.json";
 
     public XMLElementRefTestCases(String name) throws Exception {
         super(name);
@@ -71,5 +72,11 @@ public class XMLElementRefTestCases extends JAXBWithJSONTestCases {
         employee.ref2.add(factory.createFooB());        
         return employee;
     }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+    }
+
   
 }
