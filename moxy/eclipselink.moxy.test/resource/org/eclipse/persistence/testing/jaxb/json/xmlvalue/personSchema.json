@@ -24,12 +24,14 @@
             "phoneNumber" : {
                "$ref" : "#/definitions/PhoneNumber"
             }
-         }
+         },
+         "additionalProperties" : false
       }
    },
    "definitions" : {
       "Address" : {
-         "type" : "string"
+         "type" : "string",
+         "additionalProperties" : false
       },
       "PhoneNumber" : {
          "type" : "object",
@@ -40,7 +42,8 @@
             "areaCode" : {
                "type" : "string"
             }
-         }
+         },
+         "additionalProperties" : false
       }
    }
 }

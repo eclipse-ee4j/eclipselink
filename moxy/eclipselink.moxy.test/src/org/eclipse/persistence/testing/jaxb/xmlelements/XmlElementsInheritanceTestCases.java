@@ -12,13 +12,20 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlelements;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/employee_collection_2.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/employee_collection_2.json";
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/employee_collection_2_schema.json";
     private final static int CONTROL_ID = 10;
 
     public XmlElementsInheritanceTestCases(String name) throws Exception {
@@ -63,5 +70,11 @@ public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {
           employee.choice = choices;
           return employee;
     }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+    }
+
 }
 

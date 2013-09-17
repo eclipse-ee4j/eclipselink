@@ -1,16 +1,47 @@
 {
    "$schema" : "http://json-schema.org/draft-04/schema#",
    "title" : "org.eclipse.persistence.testing.jaxb.json.norootelement.AddressWithRootElement",
-   "type" : "object",
-   "properties" : {
-      "street" : {
-         "type" : "string"
+   "anyOf" : [ {
+      "$ref" : "#/definitions/AddressWithRootElement"
+   }, {
+      "$ref" : "#/definitions/Address"
+   } ],
+   "definitions" : {
+      "AddressWithRootElement" : {
+         "type" : "object",
+         "properties" : {
+            "type" : {
+               "type" : "string"
+            },
+            "street" : {
+               "type" : "string"
+            },
+            "city" : {
+               "type" : "string"
+            },
+            "id" : {
+               "type" : "integer"
+            }
+         },
+         "additionalProperties" : false
       },
-      "city" : {
-         "type" : "string"
-      },
-      "id" : {
-         "type" : "integer"
+      "Address" : {
+         "type" : "object",
+         "properties" : {
+            "type" : {
+               "type" : "string"
+            },
+            "street" : {
+               "type" : "string"
+            },
+            "city" : {
+               "type" : "string"
+            },
+            "id" : {
+               "type" : "integer"
+            }
+         },
+         "additionalProperties" : false
       }
    }
 }

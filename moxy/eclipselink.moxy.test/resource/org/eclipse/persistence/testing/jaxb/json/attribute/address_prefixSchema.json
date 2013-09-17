@@ -15,7 +15,9 @@
             "street" : {
                "type" : "string"
             }
-         }
+         },
+        "additionalProperties":false
       }
    }
 }
+

@@ -1,6 +1,6 @@
 {
    "$schema" : "http://json-schema.org/draft-04/schema#",
-   "title" : "org.eclipse.persistence.testing.jaxb.xmlelements.EmployeeArray",
+   "title" : "org.eclipse.persistence.testing.jaxb.xmlelements.EmployeeCollection",
    "type" : "object",
    "properties" : {
       "employee-data" : {
@@ -18,7 +18,11 @@
             "address" : {
                "type" : "array",
                "items" : {
-                  "$ref" : "#/definitions/Address"
+                  "anyOf" : [ {
+                     "$ref" : "#/definitions/Address"
+                  }, {
+                     "$ref" : "#/definitions/CanadianAddress"
+                  } ]
                }
             },
             "string" : {
@@ -35,10 +39,31 @@
       "Address" : {
          "type" : "object",
          "properties" : {
+            "type" : {
+               "type" : "string"
+            },
             "street" : {
                "type" : "string"
             },
             "city" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      },
+      "CanadianAddress" : {
+         "type" : "object",
+         "properties" : {
+            "type" : {
+               "type" : "string"
+            },
+            "street" : {
+               "type" : "string"
+            },
+            "city" : {
+               "type" : "string"
+            },
+            "postalCode" : {
                "type" : "string"
             }
          },

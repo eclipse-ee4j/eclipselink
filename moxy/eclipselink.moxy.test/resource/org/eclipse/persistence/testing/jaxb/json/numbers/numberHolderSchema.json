@@ -3,41 +3,47 @@
    "title" : "org.eclipse.persistence.testing.jaxb.json.numbers.NumberHolder",
    "type" : "object",
    "properties" : {
-      "intTest" : {
-         "type" : "integer"
-      },
-      "integerTest" : {
-         "type" : "integer"
-      },
-      "bigDecimalTest" : {
-         "type" : "number"
-      },
-      "bigIntegerTest" : {
-         "type" : "integer"
-      },
-      "doubleTest" : {
-         "type" : "number"
-      },
-      "floatTest" : {
-         "type" : "number"
-      },
-      "shortTest" : {
-         "type" : "number"
-      },
-      "longTest" : {
-         "type" : "number"
-      },
-      "listIntegersTest" : {
-         "type" : "array",
-         "items" : {
-            "type" : "integer"
-         }
-      },
-      "listNumbersTest" : {
-         "type" : "array",
-         "items" : {
-            "type" : "object"
-         }
+      "numberHolder" : {
+         "type" : "object",
+         "properties" : {
+            "intTest" : {
+               "type" : "integer"
+            },
+            "integerTest" : {
+               "type" : "integer"
+            },
+            "bigDecimalTest" : {
+               "type" : "number"
+            },
+            "bigIntegerTest" : {
+               "type" : "integer"
+            },
+            "doubleTest" : {
+               "type" : "number"
+            },
+            "floatTest" : {
+               "type" : "number"
+            },
+            "shortTest" : {
+               "type" : "number"
+            },
+            "longTest" : {
+               "type" : "number"
+            },
+            "listIntegersTest" : {
+               "type" : "array",
+               "items" : {
+                  "type" : "integer"
+               }
+            },
+            "listNumbersTest" : {
+               "type" : "array",
+               "items" : {
+                  "type" : "object"
+               }
+            }
+         },
+         "additionalProperties" : false
       }
    }
 }

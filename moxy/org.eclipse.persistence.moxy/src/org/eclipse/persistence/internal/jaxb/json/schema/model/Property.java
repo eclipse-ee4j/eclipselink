@@ -39,6 +39,9 @@ public class Property {
     @XmlElementWrapper(name="properties")
     private Map<String, Property> properties;
     
+    @XmlElement(name="additionalProperties")
+    private Boolean additionalProperties = null;
+    
     @XmlElement(name="items")
     private Property item;
     
@@ -121,5 +124,13 @@ public class Property {
 
     public Property[] getAnyOf() {
         return anyOf;
+    }
+    
+    public Boolean isAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    public void setAdditionalProperties(Boolean additionalProperties) {
+        this.additionalProperties = additionalProperties;
     }
 }
