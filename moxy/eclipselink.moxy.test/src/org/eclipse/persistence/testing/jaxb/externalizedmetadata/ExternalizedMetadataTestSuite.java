@@ -55,9 +55,9 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.X
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementBaseTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementDomHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementListTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.XmlAnyElementWithEltRefsNonGlobalTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs2.XmlAnyElementWithEltRefsNonGlobalTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.XmlAnyElementWithEltRefsTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.XmlAnyElementWithEltRefsViaAnnotationTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs3.XmlAnyElementWithEltRefsViaAnnotationTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattachmentref.XmlAttachmentRefCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute.XmlAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor.XmlClassExtractorTestCases;
