@@ -264,6 +264,10 @@ public class JsonSchemaGenerator {
     private JsonType populateProperties(Map<String, Property> properties, XMLDescriptor descriptor) {
         
         List<DatabaseMapping> mappings = descriptor.getMappings();
+        if(mappings == null || mappings.isEmpty()) {
+            return null;
+        }
+        
         if(isSimpleType(descriptor)) {
             //check for simple type
             DatabaseMapping mapping = getTextMapping(descriptor);
@@ -325,13 +329,13 @@ public class JsonSchemaGenerator {
             }
             if(next instanceof BinaryDataMapping) {
                 BinaryDataMapping mapping = (BinaryDataMapping)next;
-                if(!((XMLField)mapping.getField()).isSelfField()) {
+                if(((XMLField)mapping.getField()).isSelfField()) {
                     return next;
                 }
             }            
             if(next instanceof BinaryDataCollectionMapping) {
                 BinaryDataCollectionMapping mapping = (BinaryDataCollectionMapping)next;
-                if(!((XMLField)mapping.getField()).isSelfField()) {
+                if(((XMLField)mapping.getField()).isSelfField()) {
                     return next;
                 }
             }           
