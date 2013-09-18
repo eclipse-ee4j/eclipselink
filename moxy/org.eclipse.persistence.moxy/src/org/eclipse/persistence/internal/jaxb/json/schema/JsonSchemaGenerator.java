@@ -325,13 +325,13 @@ public class JsonSchemaGenerator {
             }
             if(next instanceof BinaryDataMapping) {
                 BinaryDataMapping mapping = (BinaryDataMapping)next;
-                if(!((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
+                if(!((XMLField)mapping.getField()).isSelfField()) {
                     return next;
                 }
             }            
             if(next instanceof BinaryDataCollectionMapping) {
                 BinaryDataCollectionMapping mapping = (BinaryDataCollectionMapping)next;
-                if(!((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
+                if(!((XMLField)mapping.getField()).isSelfField()) {
                     return next;
                 }
             }           
