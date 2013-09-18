@@ -1,0 +1,24 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.xmlvalue.BytesHolder",
+   "type" : "object",
+   "properties" : {
+      "theRoot" : {
+         "anyOf" : [ {
+            "type" : "string"
+         }, {
+            "type" : "object",
+            "properties" : {
+               "Include" : {
+                  "type" : "object",
+                  "properties" : {
+                     "href" : {
+                        "type" : "string"
+                     }
+                  }
+               }
+            }
+         } ]
+      }
+   }
+}

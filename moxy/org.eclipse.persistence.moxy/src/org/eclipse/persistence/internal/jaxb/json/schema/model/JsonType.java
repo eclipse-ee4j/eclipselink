@@ -42,5 +42,10 @@ public enum JsonType {
     INTEGER,
     
     @XmlEnumValue("boolean")
-    BOOLEAN
+    BOOLEAN,
+    
+    //A marker type, used by schema generator to indicate a type that could be an 
+    //attachment
+    @XmlEnumValue("binary")
+    BINARYTYPE
 }
