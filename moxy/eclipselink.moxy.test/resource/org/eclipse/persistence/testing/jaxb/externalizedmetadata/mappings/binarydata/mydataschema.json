@@ -62,7 +62,8 @@
                   }
                } ]
             }
-         }
+         },
+         "additionalProperties" : false
       }
    }
 }

@@ -12,7 +12,8 @@
             "phoneNumber" : {
                "$ref" : "#/definitions/PhoneNumber"
             }
-         }
+         },
+         "additionalProperties" : false
       }
    },
    "definitions" : {
@@ -22,7 +23,8 @@
             "contact" : {
                "$ref" : "#/definitions/Contact"
             }
-         }
+         },
+         "additionalProperties" : false
       },
       "Contact" : {
          "type" : "object",
@@ -41,7 +43,8 @@
                   }
                }
             }
-         }
+         },
+         "additionalProperties" : false
       },
       "PhoneNumber" : {
          "type" : "object",
@@ -49,7 +52,8 @@
             "id" : {
                "type" : "string"
             }
-         }
+         },
+         "additionalProperties" : false
       }
    }
 }

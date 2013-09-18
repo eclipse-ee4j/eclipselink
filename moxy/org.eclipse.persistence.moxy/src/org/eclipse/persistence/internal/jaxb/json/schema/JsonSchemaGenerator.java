@@ -20,11 +20,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonType;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.Property;
 import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.QNameInheritancePolicy;
+import org.eclipse.persistence.internal.oxm.XMLAnyCollectionMappingNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
@@ -48,6 +52,12 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
+import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -142,8 +152,7 @@ public class JsonSchemaGenerator {
         this.project = this.xmlContext.getSession(rootClass).getProject();
         
         XMLDescriptor descriptor = (XMLDescriptor)project.getDescriptor(rootClass);
-
-
+        
         Boolean includeRoot = Boolean.TRUE;
         if(contextProperties != null) {
             includeRoot = (Boolean) this.contextProperties.get(JAXBContextProperties.JSON_INCLUDE_ROOT);
@@ -162,15 +171,63 @@ public class JsonSchemaGenerator {
             }
         }
         
-        JsonType type = populateProperties(properties, descriptor);
-        if(type != null) {
+        boolean allowsAdditionalProperties = hasAnyMappings(descriptor);
+        if(descriptor.hasInheritance()) {
+            //handle inheritence
+            //schema.setAnyOf(new Property[descriptor.getInheritancePolicy().getAllChildDescriptors().size()]);
+            List<ClassDescriptor> descriptors = this.getAllDescriptorsForInheritance(descriptor);
+            Property[] props = new Property[descriptors.size()];
+            for(int i = 0; i < props.length; i++) {
+                XMLDescriptor nextDescriptor = (XMLDescriptor)descriptors.get(i);
+                
+                Property ref = new Property();
+                ref.setRef(getReferenceForDescriptor(nextDescriptor, true));
+                props[i] = ref;
+            }
             if(rootProperty != null) {
-                rootProperty.setType(type);
+                rootProperty.setAnyOf(props);
+                rootProperty.setProperties(null);
+                rootProperty.setType(null);
+                rootProperty.setAdditionalProperties(null);
+                rootProperty.setAdditionalProperties(null);
             } else {
-                schema.setType(type);
+                this.schema.setAnyOf(props);
+                this.schema.setProperties(null);
+                this.schema.setType(null);
+                this.schema.setAdditionalProperties(null);
+            }
+        } else {
+            JsonType type = populateProperties(properties, descriptor);
+            if(type != null) {
+                if(rootProperty != null) {
+                    rootProperty.setType(type);
+                } else {
+                    schema.setType(type);
+                }
+            } else {
+                if(rootProperty != null) {
+                    rootProperty.setAdditionalProperties(allowsAdditionalProperties);
+                } else {
+                    this.schema.setAdditionalProperties(allowsAdditionalProperties);
+                }                
             }
         }
         return schema;
+    }
+
+    private boolean hasAnyMappings(XMLDescriptor descriptor) {
+        for(DatabaseMapping next:descriptor.getMappings()) {
+            if(next instanceof XMLAnyAttributeMapping ||
+                    next instanceof XMLAnyObjectMapping ||
+                    next instanceof XMLAnyCollectionMapping ||
+                    next instanceof XMLFragmentCollectionMapping ||
+                    next instanceof XMLFragmentMapping
+                    
+             ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -317,8 +374,24 @@ public class JsonSchemaGenerator {
                 Property nestedProperty = getNestedPropertyForFragment(frag, prop);
                 nestedProperty.setType(JsonType.ARRAY);
                 nestedProperty.setItem(new Property());
-                nestedProperty.getItem().setRef(getReferenceForDescriptor((XMLDescriptor)mapping.getReferenceDescriptor()));
-                //populateProperties(nestedProperty.getItem().getProperties(), (XMLDescriptor)mapping.getReferenceDescriptor());                    
+                XMLDescriptor referenceDescriptor = (XMLDescriptor)mapping.getReferenceDescriptor(); 
+                if(referenceDescriptor != null && referenceDescriptor.hasInheritance()) {
+                    //handle inheritence
+                    //schema.setAnyOf(new Property[descriptor.getInheritancePolicy().getAllChildDescriptors().size()]);
+                    List<ClassDescriptor> descriptors = getAllDescriptorsForInheritance(referenceDescriptor);
+                    Property[] props = new Property[descriptors.size()];
+                    for(int i = 0; i < props.length; i++) {
+                        XMLDescriptor nextDescriptor = null;
+                        nextDescriptor = (XMLDescriptor)descriptors.get(i);
+                        Property ref = new Property();
+                        ref.setRef(getReferenceForDescriptor(nextDescriptor, true));
+                        props[i] = ref;
+                    }
+                    nestedProperty.getItem().setAnyOf(props);
+                } else {
+                    nestedProperty.getItem().setRef(getReferenceForDescriptor(referenceDescriptor, false));
+                    //populateProperties(nestedProperty.getItem().getProperties(), (XMLDescriptor)mapping.getReferenceDescriptor());
+                }
             } else if(next.isAbstractCompositeDirectCollectionMapping()) {
                 DirectCollectionMapping mapping = (DirectCollectionMapping)next;
                 XMLField field = (XMLField)mapping.getField();
@@ -476,8 +549,23 @@ public class JsonSchemaGenerator {
                     //prop.setType(JsonType.OBJECT);
                     prop.setName(propName);
                     Property nestedProperty = getNestedPropertyForFragment(firstFragment, prop);
-                    nestedProperty.setRef(getReferenceForDescriptor(nextDescriptor));
-                    //populateProperties(nestedProperty.getProperties(), nextDescriptor);
+                    XMLDescriptor referenceDescriptor = (XMLDescriptor)mapping.getReferenceDescriptor(); 
+                    if(referenceDescriptor != null && referenceDescriptor.hasInheritance()) {
+                        //handle inheritence
+                        //schema.setAnyOf(new Property[descriptor.getInheritancePolicy().getAllChildDescriptors().size()]);
+                        List<ClassDescriptor> descriptors = getAllDescriptorsForInheritance(referenceDescriptor);
+                        Property[] props = new Property[descriptors.size()];
+                        for(int i = 0; i < props.length; i++) {
+                            XMLDescriptor nextDesc = (XMLDescriptor)descriptors.get(i);
+                            Property ref = new Property();
+                            ref.setRef(getReferenceForDescriptor(nextDesc, true));
+                            props[i] = ref;
+                        }
+                        nestedProperty.setAnyOf(props);
+                    } else {
+                        nestedProperty.setRef(getReferenceForDescriptor(referenceDescriptor, false));
+                        //populateProperties(nestedProperty.getItem().getProperties(), (XMLDescriptor)mapping.getReferenceDescriptor());
+                    }                    //populateProperties(nestedProperty.getProperties(), nextDescriptor);
                 }
             } else if(next instanceof BinaryDataMapping) {
                 BinaryDataMapping binaryMapping = (BinaryDataMapping)next;
@@ -560,14 +648,14 @@ public class JsonSchemaGenerator {
 
 
 
-    private String getReferenceForDescriptor(XMLDescriptor referenceDescriptor) {
+    private String getReferenceForDescriptor(XMLDescriptor referenceDescriptor, boolean generateRoot) {
         if(referenceDescriptor == null) {
             return null;
         }
         String className = referenceDescriptor.getJavaClass().getSimpleName();
         String referenceName = DEFINITION_PATH + "/" + className;
         
-        if(referenceDescriptor.getJavaClass() == this.rootClass) {
+        if(referenceDescriptor.getJavaClass() == this.rootClass && !generateRoot) {
             String ref = "#";
             if(this.rootProperty != null) {
                 ref += "/properties/" + rootProperty.getName();
@@ -577,14 +665,22 @@ public class JsonSchemaGenerator {
         if(!this.schema.getDefinitions().containsKey(className)) {
             Property definition = new Property();
             definition.setName(className);
-            definition.setType(JsonType.OBJECT);
             this.schema.getDefinitions().put(definition.getName(), definition);
+            definition.setType(JsonType.OBJECT);
+            if(referenceDescriptor.hasInheritance() && referenceDescriptor.getInheritancePolicy().hasClassIndicator()) {
+                XMLField f = (XMLField)referenceDescriptor.getInheritancePolicy().getClassIndicatorField();
+                Property indicatorProp = new Property();
+                indicatorProp.setName(getNameForFragment(f.getXPathFragment()));
+                indicatorProp.setType(JsonType.STRING);
+                definition.getProperties().put(indicatorProp.getName(), indicatorProp);
+            }
             JsonType jType = populateProperties(definition.getProperties(), referenceDescriptor);
             if(jType != null) {
                 //this represents a simple type
                 definition.setType(jType);
                 definition.setProperties(null);
             }
+            definition.setAdditionalProperties(hasAnyMappings(referenceDescriptor));
         }
         // TODO Auto-generated method stub
         return referenceName;
@@ -700,6 +796,20 @@ public class JsonSchemaGenerator {
             return true;
         }
         return false;        
+    }
+    
+    private List<ClassDescriptor> getAllDescriptorsForInheritance(XMLDescriptor descriptor) {
+        ArrayList<ClassDescriptor> descriptors = new ArrayList<ClassDescriptor>();
+        QNameInheritancePolicy policy = (QNameInheritancePolicy) descriptor.getInheritancePolicy();
+        descriptors.add(descriptor);
+        descriptors.addAll(policy.getAllChildDescriptors());
+        ClassDescriptor parent = policy.getParentDescriptor();
+        while(parent != null) {
+            descriptors.add(parent);
+            parent = parent.getInheritancePolicy().getParentDescriptor();
+        }
+        return descriptors;
+        
     }
 
 }

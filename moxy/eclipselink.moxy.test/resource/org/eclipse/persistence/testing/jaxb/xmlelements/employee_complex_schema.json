@@ -18,7 +18,8 @@
             "string" : {
                "type" : "string"
             }
-         }
+         },
+         "additionalProperties" : false
       }
    },
    "definitions" : {
@@ -31,7 +32,8 @@
             "city" : {
                "type" : "string"
             }
-         }
+         },
+         "additionalProperties" : false
       }
    }
 }

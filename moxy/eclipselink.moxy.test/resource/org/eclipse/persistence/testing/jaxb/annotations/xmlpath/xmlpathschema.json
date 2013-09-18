@@ -28,7 +28,8 @@
                   }
                }
             }
-         }
+         },
+         "additionalProperties" : false
       }
    },
    "definitions" : {
@@ -91,10 +92,12 @@
                "items" : {
                }
             }
-         }
+         },
+         "additionalProperties" : true
       },
       "PhoneNumber" : {
-         "type" : "string"
+         "type" : "string",
+         "additionalProperties" : false
       },
       "Address" : {
          "type" : "object",
@@ -108,10 +111,8 @@
             "city" : {
                "type" : "string"
             }
-         }
+         },
+         "additionalProperties" : false
       }
    }
 }
-
-		
-			    

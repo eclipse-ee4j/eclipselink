@@ -12,5 +12,6 @@
       "id" : {
          "type" : "integer"
       }
-   }
+   },
+   "additionalProperties" : false
 }
