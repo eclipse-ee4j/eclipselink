@@ -12,6 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelement.self;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
@@ -21,6 +28,7 @@ public class XmlElementSelfTestCases extends JAXBWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/selfNode.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/selfNode.json";
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelement/selfNodeSchema.json";
 
     public XmlElementSelfTestCases(String name) throws Exception {
         super(name);
@@ -42,5 +50,11 @@ public class XmlElementSelfTestCases extends JAXBWithJSONTestCases{
         r.child = thing;
         return r;
     }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+    }
+
 
 }

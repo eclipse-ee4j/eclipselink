@@ -1,0 +1,87 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.Root",
+   "type" : "object",
+   "properties" : {
+      "root" : {
+         "type" : "object",
+         "properties" : {
+            "employee" : {
+               "$ref" : "#/definitions/EmployeeWithElements"
+            },
+            "address" : {
+               "type" : "array",
+               "items" : {
+                  "$ref" : "#/definitions/Address"
+               }
+            },
+            "phone-number" : {
+               "type" : "array",
+               "items" : {
+                  "$ref" : "#/definitions/PhoneNumber"
+               }
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "EmployeeWithElements" : {
+         "type" : "object",
+         "properties" : {
+            "id" : {
+               "type" : "string"
+            },
+            "name" : {
+               "type" : "string"
+            },
+            "address-id" : {
+               "type" : "array",
+               "items" : {
+                  "type" : "string"
+               }
+            },
+            "phone-id" : {
+               "type" : "array",
+               "items" : {
+                  "type" : "string"
+               }
+            }
+         },
+         "additionalProperties" : false
+      },
+      "Address" : {
+         "type" : "object",
+         "properties" : {
+            "aid" : {
+               "type" : "string"
+            },
+            "street" : {
+               "type" : "string"
+            },
+            "city" : {
+               "type" : "string"
+            },
+            "country" : {
+               "type" : "string"
+            },
+            "zip" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      },
+      "PhoneNumber" : {
+         "type" : "object",
+         "properties" : {
+            "id" : {
+               "type" : "string"
+            },
+            "number" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}
