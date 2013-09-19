@@ -47,6 +47,9 @@ public class JsonSchema {
     @XmlElement(name="anyOf")
     private Property[] anyOf;
     
+    @XmlElement(name="enumeration")
+    private List<String> enumeration; 
+    
     @XmlVariableNode("name")
     @XmlElementWrapper(name="properties")
     private Map<String, Property> properties;
@@ -129,4 +132,12 @@ public class JsonSchema {
      public Property[] getAnyOf() {
          return anyOf;
      }
+
+    public List<String> getEnumeration() {
+        return enumeration;
+    }
+
+    public void setEnumeration(List<String> enumeration) {
+        this.enumeration = enumeration;
+    }
 }
