@@ -485,7 +485,7 @@ public class JsonSchemaGenerator {
                 XPathFragment frag = field.getXPathFragment();
 
                 String propertyName = getNameForFragment(frag);
-                if(frag.nameIsText()) {
+                if(frag.isSelfFragment()) {
                     propertyName = Constants.VALUE_WRAPPER;
                     if(this.contextProperties != null)  {
                         String valueWrapper = (String) this.contextProperties.get(JAXBContextProperties.JSON_VALUE_WRAPPER);
@@ -590,7 +590,7 @@ public class JsonSchemaGenerator {
                         properties.put(prop.getName(), prop);                    
                     }
                 }
-                return null;                
+                return prop;                
             } else if(next.isAbstractCompositeObjectMapping()) {
                 CompositeObjectMapping mapping = (CompositeObjectMapping)next;
                 XMLDescriptor nextDescriptor = (XMLDescriptor)mapping.getReferenceDescriptor();
@@ -633,7 +633,7 @@ public class JsonSchemaGenerator {
                 XMLField field = (XMLField)binaryMapping.getField();
                 XPathFragment frag = field.getXPathFragment();
                 String propertyName = getNameForFragment(frag);
-                if(frag.nameIsText()) {
+                if(frag.isSelfFragment()) {
                     propertyName = Constants.VALUE_WRAPPER;
                     if(this.contextProperties != null)  {
                         String valueWrapper = (String) this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
