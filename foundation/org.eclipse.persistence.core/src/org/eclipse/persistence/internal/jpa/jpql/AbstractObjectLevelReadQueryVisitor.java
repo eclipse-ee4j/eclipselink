@@ -353,7 +353,17 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
 				// Then add the join associated path expression as a joined attribute
 				// Example: FROM Employee e JOIN FETCH e.employees
 				if (variableName.equals(joinFetchVariableName)) {
-					org.eclipse.persistence.expressions.Expression queryExpression = queryContext.buildExpression(joinFetch);
+
+				    org.eclipse.persistence.expressions.Expression queryExpression = null;
+
+				    if (joinFetch.hasIdentificationVariable()){
+					    String identificationVariable = queryContext.literal(joinFetch, LiteralType.IDENTIFICATION_VARIABLE);
+					    //join expression has an identification variable and querykey would have been added during FROM processing
+					    queryExpression = queryContext.findQueryExpression(identificationVariable);
+					}
+					if (queryExpression == null){
+					    queryExpression = queryContext.buildExpression(joinFetch);
+					}
 					query.addJoinedAttribute(queryExpression);
 				}
 			}
@@ -481,7 +491,18 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
 			if (expression.hasIdentificationVariable()) {
 
 				IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
-				Expression queryExpression = addNonFetchJoinedAttribute(expression, identificationVariable);
+				Expression queryExpression = null;
+				
+				if (expression.hasFetch()){
+				    String variableName = identificationVariable.getVariableName();
+				    queryExpression = queryContext.getQueryExpression(variableName);
+				    if (queryExpression == null){
+				        queryExpression = queryContext.buildExpression(expression);
+				        queryContext.addQueryExpression(variableName, queryExpression);
+				    }
+				}else{
+				    queryExpression = addNonFetchJoinedAttribute(expression, identificationVariable);
+				}
 
 				// Add the ON clause to the expression
 				if (expression.hasOnClause()) {
@@ -493,18 +514,6 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
 					}
 					else {
 						queryExpression = baseExpression.join(queryExpression, onClause);
-					}
-				}
-
-				// Add the FETCH expression to the Expression
-				if (expression.hasFetch()) {
-
-					String variableName = identificationVariable.getVariableName();
-					queryExpression = queryContext.getQueryExpression(variableName);
-
-					if (queryExpression == null) {
-						queryExpression = queryContext.buildExpression(expression);
-						queryContext.addQueryExpression(variableName, queryExpression);
 					}
 				}
 			}
