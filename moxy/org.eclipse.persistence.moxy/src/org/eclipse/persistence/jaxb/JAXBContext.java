@@ -312,7 +312,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     public void generateJsonSchema(SchemaOutputResolver outputResolver, Class rootClass) {
-        JsonSchemaGenerator generator = new JsonSchemaGenerator(this.contextState.getXMLContext(), this.contextState.properties);
+        JsonSchemaGenerator generator = new JsonSchemaGenerator(this, this.contextState.properties);
         JsonSchema schema = generator.generateSchema(rootClass);
         try {
             Marshaller m = getJsonSchemaMarshaller();

@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonType;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.Property;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.QNameInheritancePolicy;
-
+import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
+import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBEnumTypeConverter;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
@@ -78,15 +79,17 @@ public class JsonSchemaGenerator {
     Property[] xopIncludeProp = null;
     XMLContext xmlContext;
     Property rootProperty = null;
+    private JAXBContext jaxbContext;
 
     private static String DEFINITION_PATH="#/definitions";
     
     private static HashMap<Class, JsonType> javaTypeToJsonType;
     
     
-    public JsonSchemaGenerator(XMLContext context, Map properties) {
+    public JsonSchemaGenerator(JAXBContext jaxbContext, Map properties) {
         //this.project = project;
-        this.xmlContext = context;
+        this.xmlContext = jaxbContext.getXMLContext();
+        this.jaxbContext = jaxbContext;
         this.contextProperties = properties;
         if(properties != null) {
             attributePrefix = (String)properties.get(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX);
@@ -113,11 +116,25 @@ public class JsonSchemaGenerator {
         schema = new JsonSchema();
         schema.setTitle(rootClass.getName());
         
+        if(rootClass.isEnum()) {
+            Class generatedWrapper = jaxbContext.getClassToGeneratedClasses().get(rootClass.getName());
+            if(generatedWrapper != null) {
+                rootClass = generatedWrapper;
+            } else {
+                schema.setType(JsonType.STRING);
+                return schema;
+            }
+        }
         //Check for simple type
         JsonType rootType = getJsonTypeForJavaType(rootClass);
         if(rootType != JsonType.OBJECT) {
-            schema.setType(rootType);
-            return schema;
+            if(rootType == JsonType.BINARYTYPE) {
+                schema.setAnyOf(getXopIncludeProperties());
+                return schema;
+            } else {
+                schema.setType(rootType);
+                return schema;
+            }
         }
         
         Map<String, Property> properties = null;        
@@ -208,7 +225,17 @@ public class JsonSchemaGenerator {
                         this.schema.setProperties(null);
                         this.schema.setType(null);
                         this.schema.setAdditionalProperties(null);
-                    }                    
+                    } 
+                } else if(type == JsonType.ENUMTYPE) {
+                    if(rootProperty != null) {
+                        rootProperty.setType(JsonType.STRING);
+                        rootProperty.setProperties(null);
+                        rootProperty.setEnumeration(getEnumeration(descriptor));
+                    } else {
+                        this.schema.setType(JsonType.STRING);
+                        this.schema.setProperties(null);
+                        this.schema.setEnumeration(getEnumeration(descriptor));
+                }
                 } else {
                     if(rootProperty != null) {
                         rootProperty.setType(type);
@@ -225,6 +252,27 @@ public class JsonSchemaGenerator {
             }
         }
         return schema;
+    }
+
+    private List<String> getEnumeration(XMLDescriptor desc) {
+        return getEnumeration(getTextMapping(desc));
+    }
+
+    private List<String> getEnumeration(DatabaseMapping textMapping) {
+        JAXBEnumTypeConverter converter = null;
+        if(textMapping.isAbstractDirectMapping()) {
+            converter = (JAXBEnumTypeConverter) ((DirectMapping)textMapping).getConverter();
+        } else if(textMapping.isAbstractCompositeDirectCollectionMapping()) {
+            converter = (JAXBEnumTypeConverter) ((DirectCollectionMapping)textMapping).getValueConverter();
+        }
+        if(converter == null) {
+            return null;
+        }
+        List<String> enumeration = new ArrayList<String>();
+        for(Object nextValue: converter.getAttributeToFieldValues().values()) {
+            enumeration.add(nextValue.toString());
+        }
+        return enumeration;
     }
 
     private boolean hasAnyMappings(XMLDescriptor descriptor) {
@@ -264,14 +312,24 @@ public class JsonSchemaGenerator {
     private JsonType populateProperties(Map<String, Property> properties, XMLDescriptor descriptor) {
         
         List<DatabaseMapping> mappings = descriptor.getMappings();
+        if(mappings == null || mappings.isEmpty()) {
+            return null;
+        }
+        
         if(isSimpleType(descriptor)) {
             //check for simple type
             DatabaseMapping mapping = getTextMapping(descriptor);
             if(mapping.isAbstractDirectMapping()) {
                 DirectMapping directMapping = (DirectMapping)mapping;
+                if(directMapping.getConverter() instanceof JAXBEnumTypeConverter) {
+                    return JsonType.ENUMTYPE;
+                } 
                 return getJsonTypeForJavaType(directMapping.getAttributeClassification());
             } else if(mapping.isAbstractCompositeDirectCollectionMapping()) {
                 DirectCollectionMapping directMapping = (DirectCollectionMapping)mapping;
+                if(directMapping.getValueConverter() instanceof JAXBEnumTypeConverter) {
+                    return JsonType.ENUMTYPE;
+                }
                 Class type = directMapping.getAttributeElementClass();
                 if(type == null) {
                     type = CoreClassConstants.STRING;
@@ -287,7 +345,7 @@ public class JsonSchemaGenerator {
                 ChoiceObjectMapping coMapping = (ChoiceObjectMapping)next;
                 for(Object nestedMapping:coMapping.getChoiceElementMappingsByClass().values()) {
                     Property prop = generateProperty((Mapping)nestedMapping, descriptor, properties);
-                    if(!(properties.containsKey(prop.getName()))) {
+                    if(prop != null && !(properties.containsKey(prop.getName()))) {
                         properties.put(prop.getName(), prop);
                     }                    
                 }
@@ -295,7 +353,7 @@ public class JsonSchemaGenerator {
                 ChoiceCollectionMapping coMapping = (ChoiceCollectionMapping)next;
                 for(Object nestedMapping:coMapping.getChoiceElementMappingsByClass().values()) {
                     Property prop = generateProperty((Mapping)nestedMapping, descriptor, properties);
-                    if(!(properties.containsKey(prop.getName()))) {
+                    if(prop != null && !(properties.containsKey(prop.getName()))) {
                         properties.put(prop.getName(), prop);
                     }                    
                 }
@@ -325,13 +383,13 @@ public class JsonSchemaGenerator {
             }
             if(next instanceof BinaryDataMapping) {
                 BinaryDataMapping mapping = (BinaryDataMapping)next;
-                if(!((XMLField)mapping.getField()).isSelfField()) {
+                if(((XMLField)mapping.getField()).isSelfField()) {
                     return next;
                 }
             }            
             if(next instanceof BinaryDataCollectionMapping) {
                 BinaryDataCollectionMapping mapping = (BinaryDataCollectionMapping)next;
-                if(!((XMLField)mapping.getField()).isSelfField()) {
+                if(((XMLField)mapping.getField()).isSelfField()) {
                     return next;
                 }
             }           
@@ -340,39 +398,46 @@ public class JsonSchemaGenerator {
     }
 
     private boolean isSimpleType(XMLDescriptor descriptor) {
-        for(DatabaseMapping next:descriptor.getMappings()) {
-            if(!(next.isAbstractDirectMapping() || next.isAbstractCompositeDirectCollectionMapping() || next instanceof BinaryDataMapping || next instanceof BinaryDataCollectionMapping)) {
-                if(!(next instanceof InverseReferenceMapping)) {
-                    return false;
-                }
-                continue;
-            }
-            if(next.isAbstractDirectMapping()) {
-                DirectMapping mapping = (DirectMapping)next;
-                if(!((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
-                    return false;
-                }
-            }
-            if(next.isAbstractCompositeDirectCollectionMapping()) {
-                DirectCollectionMapping mapping = (DirectCollectionMapping)next;
-                if(!((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
-                    return false;
+        DatabaseMapping mapping = null;
+        if(descriptor.getMappings().size() == 1) {
+            mapping = descriptor.getMappings().get(0);
+        } else if(descriptor.getMappings().size() == 2) {
+            boolean hasInverseRef = false;
+            for(DatabaseMapping next:descriptor.getMappings()) {
+                if(next instanceof InverseReferenceMapping) {
+                    hasInverseRef = true;
+                } else {
+                    mapping = next;
                 }
             }
-            if(next instanceof BinaryDataMapping) {
-                BinaryDataMapping mapping = (BinaryDataMapping)next;
-                if(!((XMLField)mapping.getField()).isSelfField()) {
-                    return false;
-                }
-            }            
-            if(next instanceof BinaryDataCollectionMapping) {
-                BinaryDataCollectionMapping mapping = (BinaryDataCollectionMapping)next;
-                if(!((XMLField)mapping.getField()).isSelfField()) {
-                    return false;
-                }
-            }           
+            if(!hasInverseRef) {
+                return false;
+            }
+        } else {
+            return false;
         }
-        return true;
+
+        if(mapping.isAbstractDirectMapping()) {
+            if(((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
+                return true;
+            }
+        }
+        if(mapping.isAbstractCompositeDirectCollectionMapping()) {
+            if(((XMLField)mapping.getField()).getXPathFragment().nameIsText()) {
+                return true;
+            }
+        }
+        if(mapping instanceof BinaryDataMapping) {
+            if(((XMLField)mapping.getField()).isSelfField()) {
+                return true;
+            }
+        }            
+        if(mapping instanceof BinaryDataCollectionMapping) {
+            if(((XMLField)mapping.getField()).isSelfField()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Property generateProperty(Mapping next, XMLDescriptor descriptor, Map<String, Property> properties) {
@@ -444,11 +509,7 @@ public class JsonSchemaGenerator {
                 XPathFragment frag = field.getXPathFragment();
                 List<String> enumeration = null;
                 if(mapping.getValueConverter() instanceof JAXBEnumTypeConverter) {
-                    JAXBEnumTypeConverter conv = (JAXBEnumTypeConverter)mapping.getValueConverter();
-                    enumeration = new ArrayList<String>();
-                    for(Object nextValue: conv.getAttributeToFieldValues().values()) {
-                        enumeration.add(nextValue.toString());
-                    }
+                    enumeration = getEnumeration((DatabaseMapping)next);
                 }
                 String propertyName = getNameForFragment(frag);
                 if(frag.nameIsText()) {
@@ -481,7 +542,7 @@ public class JsonSchemaGenerator {
                 XPathFragment frag = field.getXPathFragment();
 
                 String propertyName = getNameForFragment(frag);
-                if(frag.nameIsText()) {
+                if(frag.isSelfFragment()) {
                     propertyName = Constants.VALUE_WRAPPER;
                     if(this.contextProperties != null)  {
                         String valueWrapper = (String) this.contextProperties.get(JAXBContextProperties.JSON_VALUE_WRAPPER);
@@ -518,11 +579,7 @@ public class JsonSchemaGenerator {
                 XPathFragment frag = field.getXPathFragment();
                 List<String> enumeration = null;
                 if(directMapping.getConverter() instanceof JAXBEnumTypeConverter) {
-                    JAXBEnumTypeConverter conv = (JAXBEnumTypeConverter)directMapping.getConverter();
-                    enumeration = new ArrayList<String>();
-                    for(Object nextValue: conv.getAttributeToFieldValues().values()) {
-                        enumeration.add(nextValue.toString());
-                    }
+                    enumeration = getEnumeration((DatabaseMapping)directMapping);
                 }                
                 String propertyName = getNameForFragment(frag);
                 if(frag.nameIsText()) {
@@ -586,7 +643,7 @@ public class JsonSchemaGenerator {
                         properties.put(prop.getName(), prop);                    
                     }
                 }
-                return null;                
+                return prop;                
             } else if(next.isAbstractCompositeObjectMapping()) {
                 CompositeObjectMapping mapping = (CompositeObjectMapping)next;
                 XMLDescriptor nextDescriptor = (XMLDescriptor)mapping.getReferenceDescriptor();
@@ -629,7 +686,7 @@ public class JsonSchemaGenerator {
                 XMLField field = (XMLField)binaryMapping.getField();
                 XPathFragment frag = field.getXPathFragment();
                 String propertyName = getNameForFragment(frag);
-                if(frag.nameIsText()) {
+                if(frag.isSelfFragment()) {
                     propertyName = Constants.VALUE_WRAPPER;
                     if(this.contextProperties != null)  {
                         String valueWrapper = (String) this.contextProperties.get(MarshallerProperties.JSON_VALUE_WRAPPER);
@@ -763,6 +820,9 @@ public class JsonSchemaGenerator {
     }
 
     private JsonType getJsonTypeForJavaType(Class attributeClassification) {
+        if(attributeClassification.isEnum()) {
+            return JsonType.ENUMTYPE;
+        }
         HashMap<Class, JsonType> types = getJavaTypeToJsonType();
         JsonType jsonType = types.get(attributeClassification);
         if(jsonType == null) {
@@ -810,7 +870,14 @@ public class JsonSchemaGenerator {
         javaTypeToJsonType.put(CoreClassConstants.TIME, JsonType.STRING);
         javaTypeToJsonType.put(CoreClassConstants.TIMESTAMP, JsonType.STRING);
         javaTypeToJsonType.put(CoreClassConstants.DURATION, JsonType.STRING);
-       
+        javaTypeToJsonType.put(Constants.QNAME_CLASS, JsonType.STRING);
+        javaTypeToJsonType.put(Constants.URI, JsonType.STRING);
+        javaTypeToJsonType.put(Constants.UUID, JsonType.STRING);
+
+        javaTypeToJsonType.put(XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER, JsonType.BINARYTYPE);
+        javaTypeToJsonType.put(XMLBinaryDataHelper.getXMLBinaryDataHelper().IMAGE, JsonType.BINARYTYPE);
+        javaTypeToJsonType.put(XMLBinaryDataHelper.getXMLBinaryDataHelper().SOURCE, JsonType.BINARYTYPE);
+        javaTypeToJsonType.put(XMLBinaryDataHelper.getXMLBinaryDataHelper().MULTIPART, JsonType.BINARYTYPE);
         
     }
 

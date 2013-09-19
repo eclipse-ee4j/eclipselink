@@ -47,5 +47,9 @@ public enum JsonType {
     //A marker type, used by schema generator to indicate a type that could be an 
     //attachment
     @XmlEnumValue("binary")
-    BINARYTYPE
+    BINARYTYPE,
+    
+    //A marker type, used by schema generator to indicate an enumeration
+    @XmlEnumValue("enum")
+    ENUMTYPE
 }
