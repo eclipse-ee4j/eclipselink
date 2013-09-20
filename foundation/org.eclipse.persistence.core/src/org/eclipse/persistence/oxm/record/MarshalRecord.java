@@ -778,14 +778,12 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     // === Inner Classes ======================================================
 
-    private static final Object[] EMPTY_CYCLE_DATA = new Object[8];
-    
     /**
      * A Stack-like List, used to detect object cycles during marshal operations.
      */
     public static class CycleDetectionStack<E> extends AbstractList<Object> {
 
-        private Object[] data = EMPTY_CYCLE_DATA;
+        private Object[] data = new Object[8];
         
         int currentIndex = 0;
 

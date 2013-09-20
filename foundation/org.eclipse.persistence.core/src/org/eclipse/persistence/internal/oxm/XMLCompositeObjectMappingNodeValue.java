@@ -140,11 +140,11 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     	int size =marshalRecord.getCycleDetectionStack().size(); 
         Object objectValue = marshalContext.getAttributeValue(object, xmlCompositeObjectMapping);
         
-        if((isInverseReference || xmlCompositeObjectMapping.getInverseReferenceMapping() !=null)&& objectValue !=null && size >= 2){        	
-    	    Object owner = marshalRecord.getCycleDetectionStack().get(size - 2);
-    	    if(owner.equals(objectValue)){
-    	    	return false;
-    	    }        	    	
+        if ((isInverseReference || xmlCompositeObjectMapping.getInverseReferenceMapping() != null) && objectValue != null && size >= 2) {
+            Object owner = marshalRecord.getCycleDetectionStack().get(size - 2);
+            if (objectValue.equals(owner)) {
+                return false;
+            }
         }
 
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
