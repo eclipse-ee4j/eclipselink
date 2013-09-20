@@ -235,7 +235,10 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         if (indicator instanceof String) {
             boolean namespaceAware = ((XMLRecord) rowFromDatabase).isNamespaceAware();
             String indicatorValue = (String)indicator;
-            int index = indicatorValue.indexOf(((XMLRecord)rowFromDatabase).getNamespaceSeparator());
+            int index = -1;
+            if(namespaceAware){
+              index = indicatorValue.indexOf(((XMLRecord)rowFromDatabase).getNamespaceSeparator());
+            }
             if (index == -1) {
                 if (namespaceAware && usesXsiType) {
                     String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
