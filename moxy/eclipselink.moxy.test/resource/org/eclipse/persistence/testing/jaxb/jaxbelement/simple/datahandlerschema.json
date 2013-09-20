@@ -1,0 +1,19 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "javax.activation.DataHandler",
+   "anyOf" : [ {
+      "type" : "string"
+   }, {
+      "type" : "object",
+      "properties" : {
+         "Include" : {
+            "type" : "object",
+            "properties" : {
+               "href" : {
+                  "type" : "string"
+               }
+            }
+         }
+      }
+   } ]
+}

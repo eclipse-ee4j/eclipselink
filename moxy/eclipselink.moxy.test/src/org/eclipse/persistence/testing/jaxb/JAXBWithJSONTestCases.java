@@ -448,7 +448,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
 
         Class theClass = getWriteControlObject().getClass();
-        if(theClass == JAXBElement.class){
+        if(getWriteControlObject() instanceof JAXBElement){
         	 theClass = ((JAXBElement) getWriteControlObject()).getValue().getClass();
         }
         
