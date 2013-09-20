@@ -1,0 +1,36 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.text.Top",
+   "type" : "object",
+   "properties" : {
+      "top" : {
+         "type" : "object",
+         "properties" : {
+            "middle1" : {
+               "$ref" : "#/definitions/Middle1"
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "Middle1" : {
+         "type" : "object",
+         "properties" : {
+            "middle1Attr" : {
+               "type" : "string"
+            },
+            "middle2Attr" : {
+               "type" : "string"
+            },
+            "bottomAttr" : {
+               "type" : "string"
+            },
+            "value" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}
