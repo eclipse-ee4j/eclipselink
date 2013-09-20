@@ -649,7 +649,7 @@ public class JsonSchemaGenerator {
                 XMLDescriptor nextDescriptor = (XMLDescriptor)mapping.getReferenceDescriptor();
                 XMLField field = (XMLField)mapping.getField();
                 XPathFragment firstFragment = field.getXPathFragment();
-                if(firstFragment.isSelfFragment()) {
+                if(firstFragment.isSelfFragment() || firstFragment.nameIsText()) {
                     if(nextDescriptor != null) {
                         populateProperties(properties, nextDescriptor);
                     }
