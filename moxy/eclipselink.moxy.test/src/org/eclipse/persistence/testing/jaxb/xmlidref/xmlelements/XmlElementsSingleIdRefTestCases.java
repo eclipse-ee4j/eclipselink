@@ -12,17 +12,25 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+
+import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlElementsSingleIdRefTestCases extends JAXBWithJSONTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/instance_single.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/instance_single.json";
     private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/control_schema_single.xsd";
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/xmlelements/instance_single_schema.json";
+    
     private static final String CONTROL_ID = "222";
     private static final String CONTROL_NAME = "Joe Smith";
     private static final String CONTROL_ADD_ID_1 = "199";
@@ -95,4 +103,10 @@ public class XmlElementsSingleIdRefTestCases extends JAXBWithJSONTestCases{
         this.testSchemaGen(controlSchemas);
         
     }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+    }
+
 }
