@@ -410,5 +410,17 @@ if build=true
             <say message="Bundle generation failure detected."                                                    if="@{failureproperty}"/>
         </sequential>
     </macrodef>
+    
+  <!-- Checkin process
+   ant -f oraclebuild.xml
+   cd plugins
+   git status
+   git rm org.eclipse.persistence.oracle.nosql.source_2.6.0.v20130403-25fca96.jar org.eclipse.persistence.oracle.nosql_2.6.0.v20130403-25fca96.jar org.eclipse.persistence.oracle.source_2.6.0.v20130403-25fca96.jar org.eclipse.persistence.oracle_2.6.0.v20130403-25fca96.jar
+   git add -f org.eclipse.persistence.oracle*
+   git status
+   git commit -m "contribute new oracle bundles"
+   git push
+   git pull
+-->
 
 </project>
