@@ -12,6 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlidref.object;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -24,6 +26,8 @@ public class XmlIdRefObjectTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instance.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instance.json";    
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlidref/instanceschema.json";
+    
     private static final String CONTROL_ID = "222";
     private static final String CONTROL_NAME = "Joe Smith";
     private static final String CONTROL_ADD_ID_1 = "199";
@@ -137,5 +141,11 @@ public class XmlIdRefObjectTestCases extends JAXBWithJSONTestCases {
         root.phoneNumbers = rootPhones;
         return root;
     }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+    }
+
 
 }

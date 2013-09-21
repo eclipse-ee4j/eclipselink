@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -20,11 +21,16 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 
 public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.xml";
 	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.json";
+    protected final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArraySchema.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArrayNoXsiType.xml";
 	protected final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
 	protected final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
@@ -102,5 +108,11 @@ public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases{
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;
 	}
+	
+	 public void testJSONSchemaGen() throws Exception{
+	     InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+	     super.generateJSONSchema(controlSchema);
+	 }
+
 
 }

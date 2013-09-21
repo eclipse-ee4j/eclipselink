@@ -1,0 +1,28 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.Owner",
+   "type" : "object",
+   "properties" : {
+      "owner" : {
+         "type" : "object",
+         "properties" : {
+            "adapted" : {
+               "type" : "array",
+               "items" : {
+                  "$ref" : "#/definitions/Adapted"
+               }
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "Adapted" : {
+         "type" : "object",
+         "properties" : {
+         },
+         "additionalProperties" : false
+      }
+   }
+}
+

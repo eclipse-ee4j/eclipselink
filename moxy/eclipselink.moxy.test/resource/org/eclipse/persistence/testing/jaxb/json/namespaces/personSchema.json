@@ -1,0 +1,74 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.json.namespaces.Person",
+   "type" : "object",
+   "properties" : {
+      "ns0.person" : {
+         "type" : "object",
+         "properties" : {
+            "@ns2.id" : {
+               "type" : "integer"
+            },
+            "ns1.firstName" : {
+               "type" : "string"
+            },
+            "ns1.middleNames" : {
+               "type" : "array",
+               "items" : {
+                  "type" : "string"
+               }
+            },
+            "ns2.lastName" : {
+               "type" : "string"
+            },
+            "ns3.contact" : {
+               "type" : "object",
+               "properties" : {
+                  "ns1.address" : {
+                     "$ref" : "#/definitions/Address"
+                  }
+               }
+            },
+            "ns1.a" : {
+               "type" : "string"
+            },
+            "ns1.aa" : {
+               "type" : "string"
+            },
+            "ns1.aaa" : {
+               "type" : "string"
+            },
+            "ns1.aaaa" : {
+               "$ref" : "#/definitions/Address"
+            },
+            "ns1.aaaaa" : {
+               "type" : "array",
+               "items" : {
+                  "$ref" : "#/definitions/Address"
+               }
+            },
+            "@ns1.theattribute" : {
+               "type" : "string"
+            }
+         },
+        "additionalProperties":false
+      }
+   },
+   "definitions" : {
+      "Address" : {
+         "type" : "object",
+         "properties" : {
+            "id" : {
+               "type" : "string"
+            },
+            "street" : {
+               "type" : "string"
+            },
+            "city" : {
+               "type" : "string"
+            }
+         },
+        "additionalProperties":false
+      }
+   }
+}

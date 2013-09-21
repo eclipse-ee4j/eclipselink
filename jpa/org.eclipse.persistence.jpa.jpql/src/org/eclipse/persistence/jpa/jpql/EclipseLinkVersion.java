@@ -16,16 +16,16 @@ package org.eclipse.persistence.jpa.jpql;
 /**
  * An enumeration listing the various releases of EclipseLink.
  *
- * @version 2.5
+ * @version 2.6
  * @since 2.5
  * @author Pascal Filion
  */
 public enum EclipseLinkVersion {
 
 	/**
-	 * A constant that points to the current release of EclipseLink, which is 2.5.
+	 * A constant that points to the current release of EclipseLink, which is 2.6.
 	 */
-	DEFAULT_VERSION(2.5),
+	DEFAULT_VERSION(2.6),
 
 	/**
 	 * The constant for the EclipseLink 1.x release.
@@ -60,7 +60,12 @@ public enum EclipseLinkVersion {
 	/**
 	 * The constant for the EclipseLink 2.5 release.
 	 */
-	VERSION_2_5(2.5);
+	VERSION_2_5(2.5),
+
+	/**
+	 * The constant for the EclipseLink 2.6 release.
+	 */
+	VERSION_2_6(2.6);
 
 	/**
 	 * The real version number.

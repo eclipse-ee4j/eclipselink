@@ -34,6 +34,7 @@ import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
@@ -244,6 +245,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             suite.addTest(new CacheableModelJunitTest("testIsolatedIsolation"));
             suite.addTest(new CacheableModelJunitTest("testProtectedIsolation"));
             suite.addTest(new CacheableModelJunitTest("testProtectedCaching"));
+            suite.addTest(new CacheableModelJunitTest("testProtectedIsolationWithLockOnCloneFalse"));
             suite.addTest(new CacheableModelJunitTest("testReadOnlyTree"));
             
             suite.addTest(new CacheableModelJunitTest("testUpdateForceProtectedBasic"));
@@ -1262,6 +1264,31 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         }
     }
     
+    public void testProtectedIsolationWithLockOnCloneFalse(){
+        EntityManager em = createDSEntityManager();
+        beginTransaction(em);
+        ClassDescriptor descriptor = null;
+        try{
+            ServerSession session = em.unwrap(ServerSession.class);
+            descriptor = session.getDescriptor(CacheableForceProtectedEntity.class);
+            descriptor.setShouldLockForClone(false);
+            session.readObject(CacheableForceProtectedEntity.class, new ExpressionBuilder().get("id").equal(m_cacheableForceProtectedEntity1Id));
+            CacheableForceProtectedEntity cte = em.find(CacheableForceProtectedEntity.class, m_cacheableForceProtectedEntity1Id);
+            CacheableFalseEntity cfe = cte.getCacheableFalse();
+            assertNotNull("Failed to load protected relationship when setShouldLockForClone is set to false", cfe);
+            CacheableProtectedEntity cpe = cfe.getProtectedEntity();
+            assertNotNull("Failed to load protected relationship when setShouldLockForClone is set to false", cpe);
+        }finally{
+            if (descriptor != null){
+                descriptor.setShouldLockForClone(true);
+            }
+        rollbackTransaction(em);
+        
+        closeEM(em);
+        }
+        
+    }
+
     public void testProtectedIsolation(){
         EntityManager em = createDSEntityManager();
         beginTransaction(em);

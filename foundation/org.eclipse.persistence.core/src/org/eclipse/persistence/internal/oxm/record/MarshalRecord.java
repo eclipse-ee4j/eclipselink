@@ -151,9 +151,7 @@ public interface MarshalRecord<
      */
     public static class CycleDetectionStack<E> extends AbstractList<Object> {
 
-        private static final Object[] EMPTY_CYCLE_DATA = new Object[8];
-        
-        private Object[] data = EMPTY_CYCLE_DATA;
+        private Object[] data = new Object[8];
         
         int currentIndex = 0;
 

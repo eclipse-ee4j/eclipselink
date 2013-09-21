@@ -1,0 +1,49 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.json.xmlvalue.Person",
+   "type" : "object",
+   "properties" : {
+      "person" : {
+         "type" : "object",
+         "properties" : {
+            "address" : {
+               "$ref" : "#/definitions/Address"
+            },
+            "firstName" : {
+               "type" : "string"
+            },
+            "lastName" : {
+               "type" : "string"
+            },
+            "middleNames" : {
+               "type" : "array",
+               "items" : {
+                  "type" : "string"
+               }
+            },
+            "phoneNumber" : {
+               "$ref" : "#/definitions/PhoneNumber"
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "Address" : {
+         "type" : "string",
+         "additionalProperties" : false
+      },
+      "PhoneNumber" : {
+         "type" : "object",
+         "properties" : {
+            "valuewrapper" : {
+               "type" : "string"
+            },
+            "areaCode" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}

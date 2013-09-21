@@ -13,8 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
@@ -23,6 +25,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 public class InverseRefChoiceAdapterTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlinversereference/owner.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlinversereference/owner.json";
+    private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlinversereference/ownerschema.json";
     
     public InverseRefChoiceAdapterTestCases(String name) throws Exception {
         super(name);
@@ -45,4 +48,12 @@ public class InverseRefChoiceAdapterTestCases extends JAXBWithJSONTestCases {
         owner.owned.add(owned);
         return owner;
     }
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+       
+    }
+
+
 }

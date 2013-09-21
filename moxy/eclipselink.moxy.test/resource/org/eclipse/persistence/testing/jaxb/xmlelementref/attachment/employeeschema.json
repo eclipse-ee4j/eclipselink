@@ -1,0 +1,56 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.xmlelementref.attachment.Employee",
+   "type" : "object",
+   "properties" : {
+      "employee" : {
+         "type" : "object",
+         "properties" : {
+            "fooA" : {
+               "anyOf" : [ {
+                  "type" : "string"
+               }, {
+                  "type" : "object",
+                  "properties" : {
+                     "Include" : {
+                        "type" : "object",
+                        "properties" : {
+                           "href" : {
+                              "type" : "string"
+                           }
+                        }
+                     }
+                  }
+               } ]
+            },
+            "fooB" : {
+               "type" : "array",
+               "items" : {
+                  "anyOf" : [ {
+                     "type" : "string"
+                  }, {
+                     "type" : "object",
+                     "properties" : {
+                        "Include" : {
+                           "type" : "object",
+                           "properties" : {
+                              "href" : {
+                                 "type" : "string"
+                              }
+                           }
+                        }
+                     }
+                  } ]
+               }
+            },
+            "fooC" : {
+               "type" : "array",
+               "items" : {
+                  "type" : "string"
+               }
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}

@@ -1,0 +1,39 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.xmlelements.Employee",
+   "type" : "object",
+   "properties" : {
+      "employee-data" : {
+         "type" : "object",
+         "properties" : {
+            "id" : {
+               "type" : "integer"
+            },
+            "integer" : {
+               "type" : "integer"
+            },
+            "address" : {
+               "$ref" : "#/definitions/Address"
+            },
+            "string" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "Address" : {
+         "type" : "object",
+         "properties" : {
+            "street" : {
+               "type" : "string"
+            },
+            "city" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}

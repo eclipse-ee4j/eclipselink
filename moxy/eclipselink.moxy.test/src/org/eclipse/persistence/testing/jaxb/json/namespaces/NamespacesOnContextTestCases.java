@@ -12,16 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.namespaces;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class NamespacesOnContextTestCases extends JSONMarshalUnmarshalTestCases{
 	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/namespaces/person.json";
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/namespaces/personSchema.json";
 
 	public NamespacesOnContextTestCases(String name) throws Exception {
 		super(name);
@@ -64,6 +71,12 @@ public class NamespacesOnContextTestCases extends JSONMarshalUnmarshalTestCases{
 		props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaceMap);
 		return props;
 	}
+	
+	 public void testJSONSchemaGen() throws Exception{
+	     InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+	     super.generateJSONSchema(controlSchema);
+	 }
+
 
 
 }

@@ -1,0 +1,44 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.xmlvalue.Root",
+   "type" : "object",
+   "properties" : {
+      "root" : {
+         "type" : "object",
+         "properties" : {
+            "thing" : {
+               "$ref" : "#/definitions/BytesHolderWithXmlId"
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "BytesHolderWithXmlId" : {
+         "type" : "object",
+         "properties" : {
+            "value" : {
+               "anyOf" : [ {
+                  "type" : "string"
+               }, {
+                  "type" : "object",
+                  "properties" : {
+                     "Include" : {
+                        "type" : "object",
+                        "properties" : {
+                           "href" : {
+                              "type" : "string"
+                           }
+                        }
+                     }
+                  }
+               } ]
+            },
+            "Id" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}

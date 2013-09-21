@@ -3431,7 +3431,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	public static final class OrderByItemTester extends AbstractExpressionTester {
 
+		public boolean hasSpaceAfterExpression;
 		public boolean hasSpaceAfterNulls;
+		public boolean hasSpaceAfterOrdering;
 		private NullOrdering nullOrdering;
 		public String nulls;
 		private ExpressionTester orderByItem;
@@ -3445,21 +3447,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			this.ordering     = ordering;
 			this.orderByItem  = orderByItem;
 			this.nullOrdering = nullOrdering;
+			this.hasSpaceAfterExpression = ordering != Ordering.DEFAULT ||
+			                               nullOrdering != NullOrdering.DEFAULT;
+			this.hasSpaceAfterOrdering = ordering != Ordering.DEFAULT &&
+			                             nullOrdering != NullOrdering.DEFAULT;
 		}
 
 		public void test(Expression expression) {
 			assertInstance(expression, OrderByItem.class);
 
 			OrderByItem orderByItem = (OrderByItem) expression;
-
-			boolean hasSpaceAfterExpression = ordering != Ordering.DEFAULT         ||
-			                                  nullOrdering != NullOrdering.DEFAULT ||
-			                                  orderByItem.hasNulls();
-
 			assertEquals(toString(), orderByItem.toParsedText());
 			assertEquals(!this.orderByItem.isNull(), orderByItem.hasExpression());
-			assertEquals(!this.orderByItem.isNull() && hasSpaceAfterExpression, orderByItem.hasSpaceAfterExpression());
-			assertEquals(ordering != Ordering.DEFAULT && nullOrdering != NullOrdering.DEFAULT, orderByItem.hasSpaceAfterOrdering());
+			assertEquals(hasSpaceAfterExpression,    orderByItem.hasSpaceAfterExpression());
+			assertEquals(hasSpaceAfterOrdering,      orderByItem.hasSpaceAfterOrdering());
 			assertSame  (ordering, orderByItem.getOrdering());
 
 			if (nulls != null) {
@@ -3478,20 +3479,25 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			StringBuilder sb = new StringBuilder();
 			sb.append(orderByItem);
 
-			if (ordering != Ordering.DEFAULT) {
+			if (hasSpaceAfterExpression) {
 				sb.append(SPACE);
+			}
+
+			if (ordering != Ordering.DEFAULT) {
 				sb.append(ordering.name());
 			}
 
-			if (nulls != null) {
+			if (hasSpaceAfterOrdering) {
 				sb.append(SPACE);
+			}
+
+			if (nulls != null) {
 				sb.append(nulls);
 				if (hasSpaceAfterNulls) {
 					sb.append(SPACE);
 				}
 			}
 			else if (nullOrdering != NullOrdering.DEFAULT) {
-				sb.append(SPACE);
 				sb.append(nullOrdering.getIdentifier());
 			}
 

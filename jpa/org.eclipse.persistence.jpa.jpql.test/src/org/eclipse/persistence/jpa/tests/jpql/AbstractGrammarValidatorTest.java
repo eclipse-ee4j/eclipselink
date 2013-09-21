@@ -26,7 +26,10 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InternalOrderByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.SubqueryBNF;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
@@ -34,7 +37,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 /**
  * The unit-tests testing {@link AbstractGrammarValidator}.
  *
- * @version 2.4
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -45,6 +48,14 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		return new JPQLQueryStringFormatter() {
 			public String format(String jpqlQuery) {
 				return jpqlQuery.replace("SELECT)", "SELECT )");
+			}
+		};
+	}
+
+	private JPQLQueryStringFormatter buildFormatter_10(final String jpqlQuery) {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return jpqlQuery;
 			}
 		};
 	}
@@ -97,6 +108,16 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		};
 	}
 
+	private JPQLQueryStringFormatter buildFormatter_9() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.endsWith("NULLS ORDER") ?
+				       query.replace("NULLS ORDER", "NULLS order") :
+				       query.replace("nulls ORDER", "NULLS order");
+			}
+		};
+	}
+
 	@Override
 	protected abstract AbstractGrammarValidator buildValidator();
 
@@ -107,7 +128,17 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 	protected abstract boolean isJoinFetchIdentifiable();
 
+	private boolean isScalarExpressionInOrderByClauseSupported() {
+		JPQLQueryBNF queryBNF = jpqlGrammar.getExpressionRegistry().getQueryBNF(InternalOrderByItemBNF.ID);
+		return queryBNF.hasChild(ScalarExpressionBNF.ID);
+	}
+
 	protected abstract boolean isSubqueryAllowedAnywhere();
+
+	private boolean isSubqueryInOrderByClauseSupported() {
+		JPQLQueryBNF queryBNF = jpqlGrammar.getExpressionRegistry().getQueryBNF(InternalOrderByItemBNF.ID);
+		return queryBNF.hasChild(SubqueryBNF.ID);
+	}
 
 	@Test
 	public final void test_AbsExpression_InvalidExpression() throws Exception {
@@ -947,23 +978,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		testHasOnlyOneProblem(
 			problems,
 			AvgFunction_MissingRightParenthesis,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public final void test_BadExpression_InvalidExpression_1() throws Exception {
-
-		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY ALL(SELECT d FROM Dept d)";
-		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
-		int endPosition   = jpqlQuery.length();
-
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-
-		testHasOnlyOneProblem(
-			problems,
-			BadExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -4803,40 +4817,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_OrderByClause_OrderByItemIsMissingComma_1() throws Exception {
-
-		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.name e.age";
-		int startPosition = "SELECT e FROM Employee e ORDER BY e.name".length();
-		int endPosition   = startPosition + 1;
-
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-
-		testHasOnlyOneProblem(
-			problems,
-			OrderByClause_OrderByItemIsMissingComma,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public final void test_OrderByClause_OrderByItemIsMissingComma_2() throws Exception {
-
-		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.name, e.age e";
-		int startPosition = "SELECT e FROM Employee e ORDER BY e.name, e.age".length();
-		int endPosition   = startPosition + 1;
-
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-
-		testHasOnlyOneProblem(
-			problems,
-			OrderByClause_OrderByItemIsMissingComma,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
 	public final void test_OrderByClause_OrderByItemMissing() throws Exception {
 
 		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY";
@@ -4854,7 +4834,384 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_OrderByItem_MissingStateFieldPathExpression() throws Exception {
+	public final void test_OrderByItem_InvalidExpression_01() throws Exception {
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_02() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age ORDER";
+		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_03() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age GROUP";
+		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_04() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age SELECT";
+		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_05() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age nulls order";
+
+		int startPosition = "SELECT e FROM Employee e ORDER BY e.age nulls".length();
+		int endPosition   = "SELECT e FROM Employee e ORDER BY e.age nulls ".length();
+		List<JPQLQueryProblem> problems = validate(jpqlQuery, buildFormatter_9());
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByClause_OrderByItemIsMissingComma,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_06() throws Exception {
+
+		String jpqlQuery  = "SELECT d FROM DiscountCode d ORDER BY d.rate ORDER BY";
+		int startPosition = "SELECT d FROM DiscountCode d ORDER BY d.rate ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLExpression_UnknownEnding,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_07() throws Exception {
+
+		String jpqlQuery  = "SELECT d FROM DiscountCode d ORDER BY d.rate SUBSTRING";
+		int startPosition = "SELECT d FROM DiscountCode d ORDER BY ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_08() throws Exception {
+
+		String jpqlQuery  = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC ORDER, f.address DESC, g.phone";
+
+		int startPosition = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC".length();
+		int endPosition   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC ".length();
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByClause_OrderByItemIsMissingComma,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_09() throws Exception {
+
+		String jpqlQuery  = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ORDER, f.address DESC, g.phone";
+		int startPosition = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS".length();
+		int endPosition   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByClause_OrderByItemIsMissingComma,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_10() throws Exception {
+
+		String jpqlQuery  = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS SELECT, f.address DESC, g.phone";
+
+		int startPosition1 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS".length();
+		int endPosition1   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ".length();
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		if (isSubqueryInOrderByClauseSupported()) {
+
+			int startPosition2 = jpqlQuery.length();
+			int endPosition2   = jpqlQuery.length();
+
+			int startPosition3 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS SELECT".length();
+			int endPosition3   = jpqlQuery.length();
+
+			testHasOnlyTheseProblems(
+				problems,
+				new String[] {
+					OrderByClause_OrderByItemIsMissingComma,
+					AbstractSelectStatement_FromClauseMissing,
+					SimpleSelectClause_NotSingleExpression
+				},
+				new int[] {
+					startPosition1,
+					startPosition2,
+					startPosition3
+				},
+				new int[] {
+					endPosition1,
+					endPosition2,
+					endPosition3
+				}
+			);
+		}
+		else {
+			int startPosition2 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ".length();
+			int endPosition2   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS SELECT, f.address DESC, g.phone".length();
+
+			testHasOnlyTheseProblems(
+				problems,
+				new String[] { OrderByClause_OrderByItemIsMissingComma, OrderByItem_InvalidExpression },
+				new int[] { startPosition1, startPosition2 },
+				new int[] { endPosition1, endPosition2 }
+			);
+		}
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_11() throws Exception {
+
+		String jpqlQuery   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ORDER FIRST, f.address DESC, g.phone";
+
+		int startPosition1 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS".length();
+		int endPosition1   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ".length();
+
+		int startPosition2 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ".length();
+		int endPosition2   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ORDER FIRST".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyTheseProblems(
+			problems,
+			new String[] { OrderByClause_OrderByItemIsMissingComma, OrderByItem_InvalidExpression },
+			new int[] { startPosition1, startPosition2 },
+			new int[] { endPosition1, endPosition2 }
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_12() throws Exception {
+
+		String jpqlQuery = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC ORDER NULLS FIRST, f.address DESC, g.phone";
+
+		int startPosition = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC".length();
+		int endPosition   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC ".length();
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByClause_OrderByItemIsMissingComma,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_13() throws Exception {
+
+		String jpqlQuery   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC SUBSTRING NULLS FIRST, f.address DESC, g.phone";
+
+		int startPosition1 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC".length();
+		int endPosition1   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC ".length();
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		if (isScalarExpressionInOrderByClauseSupported()) {
+			int startPosition2 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC SUBSTRING".length();
+			int endPosition2   = startPosition2;
+
+			testHasOnlyTheseProblems(
+				problems,
+				new String[] { OrderByClause_OrderByItemIsMissingComma, SubstringExpression_MissingLeftParenthesis },
+				new int[] { startPosition1, startPosition2 },
+				new int[] { endPosition1, endPosition2 }
+			);
+		}
+		else {
+			int startPosition2 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC ".length();
+			int endPosition2   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC SUBSTRING".length();
+
+			testHasOnlyTheseProblems(
+				problems,
+				new String[] { OrderByClause_OrderByItemIsMissingComma, OrderByItem_InvalidExpression },
+				new int[] { startPosition1, startPosition2 },
+				new int[] { endPosition1, endPosition2 }
+			);
+		}
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_14() throws Exception {
+
+		String jpqlQuery   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS SUBSTRING FIRST, f.address DESC, g.phone";
+
+		int startPosition1 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS".length();
+		int endPosition1   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ".length();
+
+		int startPosition2 = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS ".length();
+		int endPosition2   = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC NULLS SUBSTRING FIRST".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyTheseProblems(
+			problems,
+			new String[] { OrderByClause_OrderByItemIsMissingComma, OrderByItem_InvalidExpression },
+			new int[] { startPosition1, startPosition2 },
+			new int[] { endPosition1, endPosition2 }
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_15() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY ALL(SELECT d FROM Dept d)";
+		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_16() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.name e.age";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
+		int endPosition   = "SELECT e FROM Employee e ORDER BY e.name e.age".length();
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_17() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.name, e.age e";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		int startPosition = "SELECT e FROM Employee e ORDER BY e.name, ".length();
+		int endPosition   = jpqlQuery.length();
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_InvalidExpression_18() throws Exception {
+		String jpqlQuery  = "SELECT order FROM Order order ORDER BY order";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery, buildFormatter_10(jpqlQuery));
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_OrderByItem_MissingExpression_01() throws Exception {
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_OrderByItem_MissingExpression_02() throws Exception {
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age ASC";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_OrderByItem_MissingExpression_03() throws Exception {
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age DESC";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_OrderByItem_MissingExpression_04() throws Exception {
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age NULLS FIRST";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_OrderByItem_MissingExpression_05() throws Exception {
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY e.age NULLS LAST";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_OrderByItem_MissingExpression_06() throws Exception {
 
 		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY ASC";
 		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
@@ -4864,7 +5221,58 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			OrderByItem_MissingStateFieldPathExpression,
+			OrderByItem_MissingExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_MissingExpression_07() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY DESC";
+		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_MissingExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_MissingExpression_08() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY NULLS FIRST";
+		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_MissingExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OrderByItem_MissingExpression_09() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ORDER BY NULLS LAST";
+		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			OrderByItem_MissingExpression,
 			startPosition,
 			endPosition
 		);

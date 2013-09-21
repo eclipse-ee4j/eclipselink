@@ -104,25 +104,22 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         }
 
         int numberOfAttributes = atts.getLength();
-        String attributeNamespaceURI;
+        String attributeNamespaceURI, attributeQName, attributeValue;
         for (int x = 0; x < numberOfAttributes; x++) {
             attributeNamespaceURI = atts.getURI(x);
+            attributeQName = atts.getQName(x);
+            attributeValue = atts.getValue(x);
             // Empty string will be treated as a null URI
             if (null != attributeNamespaceURI && attributeNamespaceURI.length() == 0) {
-            	attributeNamespaceURI = null;
+                attributeNamespaceURI = null;
             }
             // Handle case where prefix/uri are not set on an xmlns prefixed attribute
-            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON)) {
-        		attributeNamespaceURI = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
+            if (attributeNamespaceURI == null && attributeQName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
+                attributeNamespaceURI = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
             }
-            String value = atts.getValue(x);
-            if (attributeNamespaceURI == null) {
-                element.setAttribute(atts.getQName(x), value);
-            } else {
-                element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), value == null ? Constants.EMPTY_STRING : value);
-            }
-            if(value != null) {
-                processNamespacesForText(value, element);
+            element.setAttributeNS(attributeNamespaceURI, attributeQName, attributeValue == null ? Constants.EMPTY_STRING : attributeValue);
+            if (attributeValue != null) {
+                processNamespacesForText(attributeValue, element);
             }
         }
     }
@@ -137,6 +134,10 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
                 processNamespacesForText(text.getTextContent(), endedElement);
             }
 
+            while(owningRecord.isSelfRecord() && owningRecord.getParentRecord() != null){
+            	owningRecord = owningRecord.getParentRecord();
+            }
+            
             //just the doc left in the stack. Finish this off.
             owningRecord.getXMLReader().setContentHandler(owningRecord);
             owningRecord.endElement(namespaceURI, localName, qName);

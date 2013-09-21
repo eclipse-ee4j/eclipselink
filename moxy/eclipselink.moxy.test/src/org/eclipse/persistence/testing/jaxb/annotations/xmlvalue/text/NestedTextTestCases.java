@@ -12,12 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.text;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class NestedTextTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/nestedText.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/nestedText.json";
+    private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/nestedTextSchema.json";
 
     public NestedTextTestCases(String name) throws Exception {
         super(name);
@@ -47,5 +55,10 @@ public class NestedTextTestCases extends JAXBWithJSONTestCases {
         middle1.top = top;
         return top;
     }
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+    }
+
 
 }

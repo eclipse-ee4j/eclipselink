@@ -1,0 +1,81 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.RootEmployeeSingle",
+   "type" : "object",
+   "properties" : {
+      "root" : {
+         "type" : "object",
+         "properties" : {
+            "employee" : {
+               "$ref" : "#/definitions/EmployeeSingle"
+            },
+            "address" : {
+               "type" : "array",
+               "items" : {
+                  "$ref" : "#/definitions/AddressSingle"
+               }
+            },
+            "phone-number" : {
+               "type" : "array",
+               "items" : {
+                  "$ref" : "#/definitions/PhoneSingle"
+               }
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "EmployeeSingle" : {
+         "type" : "object",
+         "properties" : {
+            "id" : {
+               "type" : "string"
+            },
+            "name" : {
+               "type" : "string"
+            },
+            "address-id" : {
+               "type" : "string"
+            },
+            "phone-id" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      },
+      "AddressSingle" : {
+         "type" : "object",
+         "properties" : {
+            "aid" : {
+               "type" : "string"
+            },
+            "street" : {
+               "type" : "string"
+            },
+            "city" : {
+               "type" : "string"
+            },
+            "country" : {
+               "type" : "string"
+            },
+            "zip" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      },
+      "PhoneSingle" : {
+         "type" : "object",
+         "properties" : {
+            "id" : {
+               "type" : "string"
+            },
+            "number" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}

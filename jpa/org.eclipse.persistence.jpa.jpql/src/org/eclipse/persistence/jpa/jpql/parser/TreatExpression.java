@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * Example: <code>SELECT e FROM Employee e JOIN TREAT(e.projects AS LargeProject) lp WHERE lp.budget = value</code>
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -314,7 +314,11 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 */
 	@Override
 	protected void removeEncapsulatedExpression() {
-		// TODO
+		entityType = null;
+		asIdentifier = null;
+		hasSpaceAfterAs = false;
+		collectionValuedPathExpression = null;
+		hasSpaceAfterCollectionValuedPathExpression = false;
 	}
 
 	/**

@@ -1,0 +1,38 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "[Lorg.eclipse.persistence.testing.jaxb.listofobjects.Employee;",
+   "type" : "array",
+   "items" : {
+      "type" : "object",
+      "properties" : {
+         "employee-data" : {
+            "type" : "object",
+            "properties" : {
+               "id" : {
+                  "type" : "integer"
+               },
+               "firstName" : {
+                  "type" : "string"
+               },
+               "lastName" : {
+                  "type" : "string"
+               },
+               "birthday" : {
+                  "type" : "string"
+               },
+               "responsibilities" : {
+                  "type" : "object",
+                  "properties" : {
+                     "responsibility" : {
+                        "type" : "array",
+                        "items" : {
+                        }
+                     }
+                  }
+               }
+            },
+            "additionalProperties" : false
+         }
+      }
+   }
+}

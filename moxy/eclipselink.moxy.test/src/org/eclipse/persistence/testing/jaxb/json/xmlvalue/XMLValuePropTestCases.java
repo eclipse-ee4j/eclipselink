@@ -12,12 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.xmlvalue;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
+
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
@@ -25,6 +31,7 @@ public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/xmlvalue/person.json";    
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/xmlvalue/person.xml";
     
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/xmlvalue/personSchema.json";    
 	public XMLValuePropTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[]{Person.class});
@@ -59,5 +66,12 @@ public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
 				
 		return p;		
 	}
+	
+	 public void testJSONSchemaGen() throws Exception{
+	     InputStream controlSchema = ClassLoader.getSystemResourceAsStream(JSON_SCHEMA_RESOURCE);
+	     super.generateJSONSchema(controlSchema);
+	    
+	 }
+
 
 }

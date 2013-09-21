@@ -100,5 +100,10 @@ public class JAXBEmployeeListTestCases extends JAXBEmployeeArrayTestCases {
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE_NO_XSI_TYPE;
 	}
+	
+	@Override
+	public void testJSONSchemaGen() {
+	    
+	}
 
 }

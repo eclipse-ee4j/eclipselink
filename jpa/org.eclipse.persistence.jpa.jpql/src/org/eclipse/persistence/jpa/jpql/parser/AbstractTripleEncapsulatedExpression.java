@@ -27,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see LocateExpression
  * @see SubstringExpression
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -412,7 +412,13 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 */
 	@Override
 	protected void removeEncapsulatedExpression() {
-		// TODO
+		hasFirstComma = false;
+		hasSecondComma = false;
+		firstExpression = null;
+		thirdExpression = null;
+		secondExpression = null;
+		hasSpaceAfterFirstComma = false;
+		hasSpaceAfterSecondComma = false;
 	}
 
 	/**

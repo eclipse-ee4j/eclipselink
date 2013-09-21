@@ -1,0 +1,54 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty.Employee",
+   "type" : "object",
+   "properties" : {
+      "employee" : {
+         "type" : "object",
+         "properties" : {
+            "id" : {
+               "type" : "integer"
+            },
+            "first-name" : {
+               "type" : "string"
+            },
+            "last-name" : {
+               "type" : "string"
+            },
+            "address" : {
+               "$ref" : "#/definitions/Address"
+            },
+            "phone-numbers" : {
+               "type" : "object",
+               "properties" : {
+                  "number" : {
+                     "type" : "array",
+                     "items" : {
+                        "$ref" : "#/definitions/PhoneNumber"
+                     }
+                  }
+               }
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "Address" : {
+         "type" : "object",
+         "properties" : {
+            "street" : {
+               "type" : "string"
+            },
+            "city" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      },
+      "PhoneNumber" : {
+         "type" : "string",
+         "additionalProperties" : false
+      }
+   }
+}

@@ -47,6 +47,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * INTERNAL:
@@ -139,11 +140,11 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     	int size =marshalRecord.getCycleDetectionStack().size(); 
         Object objectValue = marshalContext.getAttributeValue(object, xmlCompositeObjectMapping);
         
-        if((isInverseReference || xmlCompositeObjectMapping.getInverseReferenceMapping() !=null)&& objectValue !=null && size >= 2){        	
-    	    Object owner = marshalRecord.getCycleDetectionStack().get(size - 2);
-    	    if(owner.equals(objectValue)){
-    	    	return false;
-    	    }        	    	
+        if ((isInverseReference || xmlCompositeObjectMapping.getInverseReferenceMapping() != null) && objectValue != null && size >= 2) {
+            Object owner = marshalRecord.getCycleDetectionStack().get(size - 2);
+            if (objectValue.equals(owner)) {
+                return false;
+            }
         }
 
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
@@ -164,7 +165,16 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 DirectMapping xmlDirectMapping = (DirectMapping) textMapping;
                 Object fieldValue = xmlDirectMapping.getFieldValue(xmlDirectMapping.valueFromObject(objectValue, xmlDirectMapping.getField(), session), session, marshalRecord);
                 QName schemaType = ((Field) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
-                marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
+                if(fieldValue != null) {
+                    marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
+                } else {
+                    XMLMarshalException ex = XMLMarshalException.nullValueNotAllowed(this.xmlCompositeObjectMapping.getAttributeName(), this.xmlCompositeObjectMapping.getDescriptor().getJavaClass().getName());
+                    try {
+                        marshalRecord.getMarshaller().getErrorHandler().warning(new SAXParseException(null, null, ex));
+                    } catch(Exception saxException) {
+                        throw ex;
+                    }
+                }
                 marshalRecord.closeStartGroupingElements(groupingFragment);
                 return true;
             } else {

@@ -1,0 +1,59 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.annotations.xmlidref.self.Customer",
+   "type" : "object",
+   "properties" : {
+      "customer" : {
+         "type" : "object",
+         "properties" : {
+            "address" : {
+               "$ref" : "#/definitions/AddressSelfSource"
+            },
+            "phoneNumber" : {
+               "$ref" : "#/definitions/PhoneNumber"
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "AddressSelfSource" : {
+         "type" : "object",
+         "properties" : {
+            "contact" : {
+               "$ref" : "#/definitions/Contact"
+            }
+         },
+         "additionalProperties" : false
+      },
+      "Contact" : {
+         "type" : "object",
+         "properties" : {
+            "idRefPhoneNumber" : {
+               "type" : "string"
+            },
+            "idRefPhoneNumbers" : {
+               "type" : "object",
+               "properties" : {
+                  "idRefPhoneNumber" : {
+                     "type" : "array",
+                     "items" : {
+                        "type" : "string"
+                     }
+                  }
+               }
+            }
+         },
+         "additionalProperties" : false
+      },
+      "PhoneNumber" : {
+         "type" : "object",
+         "properties" : {
+            "id" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}

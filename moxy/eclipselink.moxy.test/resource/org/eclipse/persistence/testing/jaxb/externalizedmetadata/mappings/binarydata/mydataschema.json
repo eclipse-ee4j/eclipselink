@@ -1,0 +1,69 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydata.MyData",
+   "type" : "object",
+   "properties" : {
+      "my-data" : {
+         "type" : "object",
+         "properties" : {
+            "data" : {
+               "type" : "object",
+               "properties" : {
+                  "mybytes" : {
+                     "anyOf" : [ {
+                        "type" : "string"
+                     }, {
+                        "type" : "object",
+                        "properties" : {
+                           "Include" : {
+                              "type" : "object",
+                              "properties" : {
+                                 "href" : {
+                                    "type" : "string"
+                                 }
+                              }
+                           }
+                        }
+                     } ]
+                  }
+               }
+            },
+            "my-read-only-bytes" : {
+               "anyOf" : [ {
+                  "type" : "string"
+               }, {
+                  "type" : "object",
+                  "properties" : {
+                     "Include" : {
+                        "type" : "object",
+                        "properties" : {
+                           "href" : {
+                              "type" : "string"
+                           }
+                        }
+                     }
+                  }
+               } ]
+            },
+            "write-only-bytes" : {
+               "anyOf" : [ {
+                  "type" : "string"
+               }, {
+                  "type" : "object",
+                  "properties" : {
+                     "Include" : {
+                        "type" : "object",
+                        "properties" : {
+                           "href" : {
+                              "type" : "string"
+                           }
+                        }
+                     }
+                  }
+               } ]
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}

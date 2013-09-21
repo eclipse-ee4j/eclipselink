@@ -22,6 +22,7 @@ public class CircularTestCases extends JAXBWithJSONTestCases{
 	 private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root.xml";
 	 private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root.json";
 	 private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root.xsd";
+     private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelements/root_schema.json";
 	  
 	 public CircularTestCases(String name) throws Exception {
 	        super(name);
@@ -49,4 +50,12 @@ public class CircularTestCases extends JAXBWithJSONTestCases{
 		 controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE));
 		 super.testSchemaGen(controlSchemas);
 	 }
+	 
+	    
+	 public void testJSONSchemaGen() throws Exception{
+	     InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+	     super.generateJSONSchema(controlSchema);
+	    
+	 }
+
 }

@@ -35,6 +35,7 @@ public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases 
     private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/write-mydata.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/mydata.json";
     private static final String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/write-mydata.json";
+    private static final String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/binarydatacollection/mydataschema.json";
     private static final byte[] BYTES0123 = new byte[] { 0, 1, 2, 3 };
     private static final byte[] BYTES1234 = new byte[] { 1, 2, 3, 4 };
     private static final byte[] BYTES2345 = new byte[] { 2, 3, 4, 5 };
@@ -228,4 +229,11 @@ public class BinaryDataCollectionMappingTestCases extends JAXBWithJSONTestCases 
         }
     }
     */
+	
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+    
+    }
 }

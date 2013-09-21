@@ -1,0 +1,72 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.inheritance.E",
+   "type" : "object",
+   "properties" : {
+      "a-element" : {
+         "anyOf" : [ {
+            "$ref" : "#/definitions/E"
+         }, {
+            "$ref" : "#/definitions/B"
+         }, {
+            "$ref" : "#/definitions/A"
+         } ]
+      }
+   },
+   "definitions" : {
+      "E" : {
+         "type" : "object",
+         "properties" : {
+            "type" : {
+               "type" : "string"
+            },
+            "aaa" : {
+               "type" : "integer"
+            },
+            "bbb" : {
+               "type" : "integer"
+            },
+            "foo" : {
+               "type" : "integer"
+            },
+            "ccc" : {
+               "type" : "integer"
+            },
+            "ddd" : {
+               "type" : "integer"
+            },
+            "eee" : {
+               "type" : "integer"
+            }
+         },
+         "additionalProperties" : false
+      },
+      "B" : {
+         "type" : "object",
+         "properties" : {
+            "type" : {
+               "type" : "string"
+            },
+            "aaa" : {
+               "type" : "integer"
+            },
+            "bbb" : {
+               "type" : "integer"
+            }
+         },
+         "additionalProperties" : false
+      },
+      "A" : {
+         "type" : "object",
+         "properties" : {
+            "type" : {
+               "type" : "string"
+            },
+            "aaa" : {
+               "type" : "integer"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}

@@ -1,0 +1,118 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.annotations.xmlpath.Root",
+   "type" : "object",
+   "properties" : {
+      "root" : {
+         "type" : "object",
+         "properties" : {
+            "employees" : {
+               "type" : "object",
+               "properties" : {
+                  "employee" : {
+                     "type" : "array",
+                     "items" : {
+                        "$ref" : "#/definitions/Employee"
+                     }
+                  }
+               }
+            },
+            "addresses" : {
+               "type" : "object",
+               "properties" : {
+                  "address" : {
+                     "type" : "array",
+                     "items" : {
+                        "$ref" : "#/definitions/Address"
+                     }
+                  }
+               }
+            }
+         },
+         "additionalProperties" : false
+      }
+   },
+   "definitions" : {
+      "Employee" : {
+         "type" : "object",
+         "properties" : {
+            "employee-info" : {
+               "type" : "object",
+               "properties" : {
+                  "id" : {
+                     "type" : "integer"
+                  }
+               }
+            },
+            "personal-info" : {
+               "type" : "object",
+               "properties" : {
+                  "first-name" : {
+                     "type" : "string"
+                  },
+                  "last-name" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "contact-info" : {
+               "type" : "object",
+               "properties" : {
+                  "address-id" : {
+                     "type" : "string"
+                  },
+                  "phones" : {
+                     "type" : "object",
+                     "properties" : {
+                        "phone-number" : {
+                           "type" : "array",
+                           "items" : {
+                              "$ref" : "#/definitions/PhoneNumber"
+                           }
+                        }
+                     }
+                  }
+               }
+            },
+            "responsibilities" : {
+               "type" : "object",
+               "properties" : {
+                  "responsibility" : {
+                     "type" : "array",
+                     "items" : {
+                        "type" : "string"
+                     }
+                  }
+               }
+            },
+            "any-object-root" : {
+            },
+            "any-collection-root" : {
+               "type" : "array",
+               "items" : {
+               }
+            }
+         },
+         "additionalProperties" : true
+      },
+      "PhoneNumber" : {
+         "type" : "string",
+         "additionalProperties" : false
+      },
+      "Address" : {
+         "type" : "object",
+         "properties" : {
+            "id" : {
+               "type" : "string"
+            },
+            "street" : {
+               "type" : "string"
+            },
+            "city" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}

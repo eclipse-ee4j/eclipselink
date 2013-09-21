@@ -35,8 +35,8 @@ public class XMLValuePropDifferentTestCases extends XMLValuePropTestCases {
 		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "unmarshalWrapper");
 	}
 	
-	public Map getProperties(){
-		return null;
-	}
+	//public Map getProperties(){
+	//	return null;
+	//}
 	
 }

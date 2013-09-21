@@ -18,7 +18,7 @@ import java.util.ListResourceBundle;
 /**
  * The resource bundle containing the problems encountered in a JPQL query.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -438,7 +438,8 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"NUMERIC_LITERAL_INVALID", "''{0}'' is not a valid numeric value."},
 
 			// ObjectByItem - Grammar
-			{"ORDER_BY_ITEM_MISSING_STATE_FIELD_PATH_EXPRESSION", "A state field path expression must be specified."},
+			{"ORDER_BY_ITEM_INVALID_EXPRESSION", "The order by item is not a valid expression."},
+			{"ORDER_BY_ITEM_MISSING_EXPRESSION", "An order by item must be specified."},
 
 			// ObjectExpression - Grammar
 			{"OBJECT_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},

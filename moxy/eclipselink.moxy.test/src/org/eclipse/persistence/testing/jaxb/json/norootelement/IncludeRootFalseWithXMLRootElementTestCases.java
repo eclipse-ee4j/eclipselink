@@ -12,9 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.norootelement;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
@@ -58,5 +62,14 @@ public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTe
 
 	public void testJSONSchemaGeneration() throws Exception{
 		generateJSONSchema(getClass().getClassLoader().getResourceAsStream(JSON_SCHEMA));
+	}
+	
+	@Override
+	public Map<Object, Object> getProperties() {
+	    HashMap m = new HashMap();
+	    
+	    m.put(JAXBContextProperties.JSON_INCLUDE_ROOT, new Boolean(false));
+	    return m;
+	    
 	}
 }

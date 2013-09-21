@@ -12,6 +12,7 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.jaxb.xmlvalue;
 
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,6 +27,7 @@ public class XmlValueByteArrayWithIdTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvalue/bytesholderid.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvalue/bytesholderid.json";
+    private final static String JSON_SCHEMA_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlvalue/bytesholderid_schema.json";
 
     public XmlValueByteArrayWithIdTestCases(String name) throws Exception {
         super(name);
@@ -45,5 +47,11 @@ public class XmlValueByteArrayWithIdTestCases extends JAXBWithJSONTestCases {
         Root theRoot = new Root();
         theRoot.thing = holder;
         return theRoot;
-    }           
+    }  
+    
+    public void testJSONSchemaGen() throws Exception{
+        InputStream controlSchema = classLoader.getResourceAsStream(JSON_SCHEMA_RESOURCE);
+        super.generateJSONSchema(controlSchema);
+    }
+
 }

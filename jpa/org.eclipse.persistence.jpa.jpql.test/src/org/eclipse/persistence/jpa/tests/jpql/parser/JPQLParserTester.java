@@ -373,15 +373,15 @@ public final class JPQLParserTester {
 	}
 
 	public static CollectionExpressionTester collection(ExpressionTester[] expressions,
-	                                                       Boolean[] commas,
-	                                                       Boolean[] spaces) {
+	                                                    Boolean[] commas,
+	                                                    Boolean[] spaces) {
 
 		return new CollectionExpressionTester(expressions, commas, spaces);
 	}
 
 	public static CollectionValuedPathExpressionTester collectionPath(ExpressionTester identificationVariable,
-	                                                                     boolean startsWithDot,
-	                                                                     String collectionPath) {
+	                                                                  boolean startsWithDot,
+	                                                                  String collectionPath) {
 
 		return new CollectionValuedPathExpressionTester(
 			identificationVariable,
@@ -390,7 +390,7 @@ public final class JPQLParserTester {
 	}
 
 	public static CollectionValuedPathExpressionTester collectionPath(ExpressionTester identificationVariable,
-	                                                                     String collectionPath) {
+	                                                                  String collectionPath) {
 
 		return collectionPath(identificationVariable, true, collectionPath);
 	}

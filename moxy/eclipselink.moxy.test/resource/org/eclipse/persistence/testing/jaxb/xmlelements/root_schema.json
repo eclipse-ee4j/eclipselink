@@ -1,0 +1,28 @@
+{
+   "$schema" : "http://json-schema.org/draft-04/schema#",
+   "title" : "org.eclipse.persistence.testing.jaxb.xmlelements.Root",
+   "type" : "object",
+   "properties" : {
+      "root" : {
+         "type" : "object",
+         "properties" : {
+            "string" : {
+               "type" : "array",
+               "items" : {
+                  "type" : "string"
+               }
+            },
+            "root" : {
+               "type" : "array",
+               "items" : {
+                  "$ref" : "#/properties/root"
+               }
+            },
+            "theName" : {
+               "type" : "string"
+            }
+         },
+         "additionalProperties" : false
+      }
+   }
+}
