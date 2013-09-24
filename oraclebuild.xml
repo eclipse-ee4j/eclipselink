@@ -159,7 +159,7 @@ if build=true
     </target>
 
     <target name="establish-baseline" if="git.exec" depends="init">
-        <!-- Determine starting hash values -->
+        <!-- Determine starting hash values of repo in specific locations (base proj, oracle, and nosql dirs) -->
         <get_git_hash githashproperty="prebuild.git.hash"   repoprojectdir="${oraclebuild.2.base.dir}"/>
         <get_git_hash githashproperty="prebuild.ext.hash"   repoprojectdir="${oraclebuild.2.oracle.dir}"/>
         <get_git_hash githashproperty="prebuild.nosql.hash" repoprojectdir="${oraclebuild.2.oracle.nosql.dir}"/>
@@ -302,7 +302,12 @@ if build=true
 
     <target name="commit-oracle" if="commit.oracle" depends="oracle-failed">
         <echo message="commit-oracle"/>
-        <!-- commit_extension   qualifierhash="" targetprefix="" commithash="commit.oracle.hash"/ -->
+        <!-- Need:
+            ${oracle.ext.prefix} prefix of bundles to commit
+            ${postbuild.oracle.ext.version} version of bundles to commit
+            ${prebuild.oracle.ext.version} to delete old bundle from repo
+        -->
+        <commit_extension targetprefix="${oracle.ext.prefix}" currentversionproperty="postbuild.oracle.ext.version" prebuildversion="${prebuild.oracle.ext.version}"/>
     </target>
 
     <target name="nosql-failed" if="nosql.build.failed" depends="">
@@ -312,7 +317,12 @@ if build=true
 
     <target name="commit-nosql" if="commit.nosql" depends="nosql-failed">
         <echo message="commit-nosql"/>
-        <!-- commit_extension   qualifierhash="" targetprefix="" commithash="commit.oracle.hash"/ -->
+        <!-- Need:
+            ${oracle.nosql.prefix} prefix of bundles to commit
+            ${postbuild.oracle.nosql.version} version of bundles to commit
+            ${prebuild.oracle.nosql.version} to delete old bundle from repo
+        -->
+        <commit_extension targetprefix="${oracle.nosql.prefix}" currentversionproperty="postbuild.oracle.nosql.version" prebuildversion="${prebuild.oracle.nosql.version}"/>
     </target>
 
    <target name="validate-commits">
@@ -410,17 +420,67 @@ if build=true
             <say message="Bundle generation failure detected."                                                    if="@{failureproperty}"/>
         </sequential>
     </macrodef>
-    
-  <!-- Checkin process
-   ant -f oraclebuild.xml
-   cd plugins
-   git status
-   git rm org.eclipse.persistence.oracle.nosql.source_2.6.0.v20130403-25fca96.jar org.eclipse.persistence.oracle.nosql_2.6.0.v20130403-25fca96.jar org.eclipse.persistence.oracle.source_2.6.0.v20130403-25fca96.jar org.eclipse.persistence.oracle_2.6.0.v20130403-25fca96.jar
-   git add -f org.eclipse.persistence.oracle*
-   git status
-   git commit -m "contribute new oracle bundles"
-   git push
-   git pull
--->
+
+
+    <macrodef name="commit_extension">
+        <!-- Commit built artifacts -->
+        <attribute name="targetprefix"/>
+        <attribute name="currentversion"/>
+        <attribute name="prebuildversion"/>
+        <sequential>
+        <!-- Checkin process -->
+            <!-- git pull -->
+            <exec
+                failonerror="false"
+                failifexecutionfails="false"
+                errorproperty="githash.failed"
+                logError="true"
+                executable="${git.exec}">
+                <arg value="pull"/>
+            </exec>
+            <!-- cd plugins -->
+            <!-- git rm ${targetprefix}_${prebuildversion}.jar ${targetprefix}.source_${prebuildversion}.jar -->
+            <exec
+                failonerror="false"
+                failifexecutionfails="false"
+                errorproperty="githash.failed"
+                logError="true"
+                executable="${git.exec}">
+                <arg value="rm"/>
+                <arg line="${targetprefix}_${prebuildversion}.jar ${targetprefix}.source_${prebuildversion}.jar"/>
+            </exec>
+            <!-- git add -f ${targetprefix}_${currentversion}.jar ${targetprefix}.source_${currentversion}.jar -->
+            <exec
+                failonerror="false"
+                failifexecutionfails="false"
+                errorproperty="githash.failed"
+                logError="true"
+                executable="${git.exec}">
+                <arg value="add"/>
+                <arg value="-f"/>
+                <arg line="${targetprefix}_${currentversion}.jar ${targetprefix}.source_${currentversion}.jar"/>
+            </exec>
+            <!-- Not needed:   git status -->
+            <!-- git commit -m "contribute new oracle bundles" -->
+            <exec
+                failonerror="false"
+                failifexecutionfails="false"
+                errorproperty="githash.failed"
+                logError="true"
+                executable="${git.exec}">
+                <arg value="commit"/>
+                <arg line="-m "contribute new oracle bundles""/>
+            </exec>
+            <!-- git push -->
+            <exec
+                failonerror="false"
+                failifexecutionfails="false"
+                errorproperty="githash.failed"
+                logError="true"
+                executable="${git.exec}">
+                <arg value="push"/>
+            </exec>
+        </sequential>
+    </macrodef>
 
 </project>
