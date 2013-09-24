@@ -109,7 +109,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     public Object getObject() {
         if(object == null) {
             if(this.descriptor != null) {            	
-            	if(this.unmarshaller.isResultAlwaysXMLRoot() || shouldWrap || descriptor.isResultAlwaysXMLRoot()){
+                if(this.unmarshaller.isResultAlwaysXMLRoot() || shouldWrap){
                     object = this.descriptor.wrapObjectInXMLRoot(this.rootRecord, this.unmarshaller.isResultAlwaysXMLRoot());
             	}else {
             		object = this.rootRecord.getCurrentObject();
@@ -230,42 +230,51 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     	session = xmlContext.getSession(xmlDescriptor);   
                     }
                 }
-            } else if(xmlDescriptor.hasInheritance()){
-            	 //if descriptor has inheritance check class indicator
-            	 session = xmlContext.getSession(xmlDescriptor);            	
-            	 UnmarshalRecord tmpUnmarshalRecord = new UnmarshalRecordImpl(null);
-            	 tmpUnmarshalRecord.setUnmarshaller(unmarshaller);
-            	 tmpUnmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
-            	 tmpUnmarshalRecord.setXMLReader(this.getXMLReader());
-            	 tmpUnmarshalRecord.setAttributes(atts);
+            } else {
+            	if(null != xmlDescriptor.getDefaultRootElementField() ){
+            	    String descLocalName = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getLocalName();
+                	if( descLocalName != null && descLocalName.equals(localName) ){
+                	    String descUri = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getNamespaceURI();
+                    	if(!xmlReader.isNamespaceAware() || (xmlReader.isNamespaceAware() && ((namespaceURI == null && descUri == null ) || (namespaceURI !=null &&namespaceURI.length() == 0 && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))))){
+                 	       //found a descriptor based on root element then know we won't need to wrap in an XMLRoot
+                	       shouldWrap = false;
+                	    }
+                    }
+            	}
+            	
+                if(xmlDescriptor.hasInheritance()){
+            	    //if descriptor has inheritance check class indicator
+            	    session = xmlContext.getSession(xmlDescriptor);            	
+            	    UnmarshalRecord tmpUnmarshalRecord = new UnmarshalRecordImpl(null);
+            	    tmpUnmarshalRecord.setUnmarshaller(unmarshaller);
+            	    tmpUnmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
+            	    tmpUnmarshalRecord.setXMLReader(this.getXMLReader());
+            	    tmpUnmarshalRecord.setAttributes(atts);
                  
-                 Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(tmpUnmarshalRecord), (CoreAbstractSession) session);
-                 if (classValue == null) {
-                     // no xsi:type attribute - look for type indicator on the default root element
-                     QName leafElementType = xmlDescriptor.getDefaultRootElementType();
-                     // if we have a user-set type, try to get the class from the inheritance policy
-                     if (leafElementType != null) {
-                         Object indicator = xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
-                         if(indicator != null) {
-                             classValue = (Class)indicator;
-                         }
-                     }
-                 }
-                 if (classValue != null) {                	 
-                     xmlDescriptor = (Descriptor)session.getDescriptor(classValue);
-                     shouldWrap = false;
-                 } else {
-                     // since there is no xsi:type attribute, we'll use the descriptor
-                     // that was retrieved based on the rootQName -  we need to make 
-                     // sure it is non-abstract
-                     if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
-                         // need to throw an exception here
-                         throw DescriptorException.missingClassIndicatorField((XMLRecord) tmpUnmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
-                     }
-                 }
-            } else if(null != xmlDescriptor.getTables() && xmlDescriptor.getTables().size() == 1){
-            	//found a descriptor based on root element and no inheritance then know we won't need to wrap in an XMLRoot
-            	shouldWrap = false;
+                    Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(tmpUnmarshalRecord), (CoreAbstractSession) session);
+                    if (classValue == null) {
+                       // no xsi:type attribute - look for type indicator on the default root element
+                       QName leafElementType = xmlDescriptor.getDefaultRootElementType();
+                       // if we have a user-set type, try to get the class from the inheritance policy
+                       if (leafElementType != null) {
+                           Object indicator = xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(leafElementType);
+                           if(indicator != null) {
+                               classValue = (Class)indicator;
+                           }
+                       }
+                    }
+                    if (classValue != null) {                	 
+                       xmlDescriptor = (Descriptor)session.getDescriptor(classValue);
+                    } else {
+                       // since there is no xsi:type attribute, we'll use the descriptor
+                       // that was retrieved based on the rootQName -  we need to make 
+                       // sure it is non-abstract
+                       if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
+                           // need to throw an exception here
+                           throw DescriptorException.missingClassIndicatorField((XMLRecord) tmpUnmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
+                       }
+                   }
+                }
             }
             
             if (null == xmlDescriptor) {

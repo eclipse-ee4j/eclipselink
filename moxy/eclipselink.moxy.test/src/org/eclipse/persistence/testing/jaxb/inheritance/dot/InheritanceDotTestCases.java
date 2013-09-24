@@ -32,11 +32,5 @@ public class InheritanceDotTestCases extends JAXBWithJSONTestCases{
 	    emp.badgeNumber = "123";
 	    return emp;
 	}
-	
-	public Object getReadControlObject() {
-	    Employee emp = new Employee();
-	    emp.name = "Bob Smith";
-	    emp.badgeNumber = "123";
-	    return new JAXBElement<Person>(new QName("person"), Person.class, emp);
-	}
+		
 }
