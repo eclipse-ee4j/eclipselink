@@ -56,10 +56,4 @@ public class JAXBInheritanceSubTypeParentRootOnlyTestCases extends JAXBWithJSONT
 		return subType;
 	}
 	
-	public Object getReadControlObject() {
-		SubTypeParentRootOnly subType = new SubTypeParentRootOnly();	
-		JAXBElement elem = new JAXBElement<BaseTypeWithRootElement>(new QName("baseTypeWithRootElement"), BaseTypeWithRootElement.class, subType);
-		return elem;
-
-	}
 }

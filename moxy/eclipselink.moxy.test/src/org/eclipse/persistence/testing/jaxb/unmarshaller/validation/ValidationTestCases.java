@@ -42,7 +42,6 @@ public class ValidationTestCases extends JAXBTestCases {
         this.jaxbUnmarshaller.setSchema(schema);
     }
 
-
     @Override
     protected JAXBElement<Address> getControlObject() {
         CanadianAddress control = new CanadianAddress();
@@ -53,4 +52,13 @@ public class ValidationTestCases extends JAXBTestCases {
         return new JAXBElement<Address>(new QName("urn:foo", "address"), Address.class, control);
     }
 
+    @Override
+    public CanadianAddress getReadControlObject() {
+        CanadianAddress control = new CanadianAddress();
+        control.street = "1 A Street";
+        control.city = "Any Town";
+        control.province = "Ontario";
+        control.postalCode = "A1B 2C3";
+        return control;
+    }
 }

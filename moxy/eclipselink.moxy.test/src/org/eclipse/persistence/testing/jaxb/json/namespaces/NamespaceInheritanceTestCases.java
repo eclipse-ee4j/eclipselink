@@ -39,12 +39,8 @@ public class NamespaceInheritanceTestCases extends JSONMarshalUnmarshalTestCases
 	}
 	
 	protected Object getControlObject() {
-	    Employee emp = getEmployee();
-		
-		QName qname = new QName("namespace0", "person");
-		JAXBElement jaxbElement = new JAXBElement(qname, Person.class, emp);
-
-		return jaxbElement;
+	    Employee emp = getEmployee();		
+		return emp;
 	}
 
 	public Object getWriteControlObject() {

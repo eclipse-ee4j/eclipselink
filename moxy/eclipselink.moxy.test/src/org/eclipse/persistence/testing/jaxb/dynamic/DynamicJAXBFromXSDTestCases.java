@@ -226,7 +226,9 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         person.set("employeeId", "CA2472");
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        JAXBElement<DynamicEntity> jbe = new JAXBElement<DynamicEntity>(new QName("root"), DynamicEntity.class, person);
+        
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
         // Nothing to really test, XmlSeeAlso isn't represented in an instance doc.
     }

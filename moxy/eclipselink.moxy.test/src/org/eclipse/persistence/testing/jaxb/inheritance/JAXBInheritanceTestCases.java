@@ -49,6 +49,20 @@ public class JAXBInheritanceTestCases extends JAXBWithJSONTestCases {
 
 		return jaxbElement;
 	}
+	
+	public Object getReadControlObject() {
+		// reads a document that also contains a value for "ddd" and makes sure
+		// we ignore it
+		E object = new E();
+		object.setAaa(1);
+		object.setBbb(2);
+		object.setCcc(3);
+		object.setDdd(4);
+		object.setEee(5);
+		
+		return object;
+	}
+
 
 	public void testSchemaGen() throws Exception {
 		testSchemaGen(getControlSchemaFiles());

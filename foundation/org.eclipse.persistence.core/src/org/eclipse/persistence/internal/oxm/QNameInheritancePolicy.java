@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
@@ -68,6 +69,11 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(childTables, parentTables);
         getDescriptor().setTables(uniqueTables);
         
+        if(getDescriptor().isXMLDescriptor() && getParentDescriptor().isXMLDescriptor()){
+	        if(((XMLDescriptor)getDescriptor()).getDefaultRootElementField() == null){
+	        	((XMLDescriptor)getDescriptor()).setDefaultRootElementField(((XMLDescriptor)getParentDescriptor()).getDefaultRootElementField());
+	        }
+        }
         
         // After filtering out any duplicate tables, set the default table
         // if one is not already set. This must be done now before any other
