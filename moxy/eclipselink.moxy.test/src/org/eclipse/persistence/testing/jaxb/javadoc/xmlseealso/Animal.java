@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 
 @XmlSeeAlso({ Dog.class, Cat.class })
 @XmlRootElement
-public class Animal {
+public class Animal extends Organism {
 
 	@XmlElement
 	public String name;
