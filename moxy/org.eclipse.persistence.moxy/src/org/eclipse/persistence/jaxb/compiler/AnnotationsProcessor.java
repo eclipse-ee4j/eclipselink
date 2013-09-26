@@ -728,11 +728,24 @@ public class AnnotationsProcessor {
         if (javaClasses.length == 0) {
             return javaClasses;
         }
+        ArrayList<JavaClass> originalList = new ArrayList<JavaClass>(javaClasses.length);
+        for(JavaClass next:javaClasses) {
+            originalList.add(next);
+        }
         // create type info instances for any additional classes
         javaClasses = processAdditionalClasses(javaClasses);
         preBuildTypeInfo(javaClasses);
         buildTypeInfo(javaClasses);
         updateGlobalElements(javaClasses);
+        if(javaClasses.length > originalList.size()) {
+            ArrayList<JavaClass> newClasses = new ArrayList(javaClasses.length - originalList.size());
+            for(JavaClass next:javaClasses) {
+                if(!(originalList.contains(next))) {
+                    newClasses.add(next);
+                }
+            }
+            postBuildTypeInfo(newClasses.toArray(new JavaClass[newClasses.size()]));
+        }
         return javaClasses;
     }
 
