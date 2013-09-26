@@ -524,6 +524,9 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
 
     @Override
     public void setTableNames(Vector tableNames) {
+        if (null != tableNames && tableNames.size() > 0) {
+            setDefaultRootElementField((String) tableNames.get(0));
+        }
         super.setTableNames(tableNames);
     }
 
