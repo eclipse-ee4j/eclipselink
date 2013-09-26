@@ -92,22 +92,24 @@ public class DomToXMLStreamWriter{
             localName = elem.getLocalName();
             nodeName = elem.getNodeName();
         }
-             
+        String defaultNamespace = xsw.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
+
+        boolean needToAddDefaultNS = false;
         if(prefix != null && prefix.length() > 0) {
            String namespaceURI = xsw.getNamespaceContext().getNamespaceURI(prefix);
             xsw.writeStartElement(prefix, localName, namespace);
             if(!(namespace.equals(namespaceURI))) {
                 xsw.writeNamespace(prefix, namespace);
            }
-        } else {
+        } else {            
             if(namespace == null || namespace.length() == 0) {
-                xsw.writeStartElement(nodeName);                
-                String defaultNamespace = xsw.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
+                xsw.writeStartElement(nodeName);                                
                 if(defaultNamespace != null &&  defaultNamespace.length() >0) {
                     //write default namespace declaration
                     xsw.writeDefaultNamespace(Constants.EMPTY_STRING);
                 }
             } else {
+                needToAddDefaultNS = true;
                 xsw.writeStartElement(Constants.EMPTY_STRING, localName, namespace);
             }
         }
@@ -127,12 +129,18 @@ public class DomToXMLStreamWriter{
                     }
                 } else {
                 	if (next.getName().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)){
-                            //Part of bug fix 398446 modified fix for Bug 387464. 
+                        //Part of bug fix 398446 modified fix for Bug 387464. 
                 		xsw.writeDefaultNamespace(next.getValue());
+                		needToAddDefaultNS = false;
                 	}else{
                 		nonNamespaceDeclAttrs.add(attribute);
                 	}
                 }
+            }
+        }        
+        if(needToAddDefaultNS){            
+            if(defaultNamespace == null || !defaultNamespace.equals(namespace)){
+                xsw.writeDefaultNamespace(namespace);
             }
         }
         for(Attr next:nonNamespaceDeclAttrs) {

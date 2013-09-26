@@ -98,6 +98,8 @@ public class DomToXMLEventWriter{
             nodeName = elem.getNodeName();
         }
                 
+        String defaultNamespace = xew.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
+        boolean needToAddDefaultNS = false;
         if(prefix != null && prefix.length() > 0) {
             String namespaceURI = xew.getNamespaceContext().getNamespaceURI(prefix);
             xew.add(xmlEventFactory.createStartElement(prefix, namespace, localName));
@@ -105,14 +107,14 @@ public class DomToXMLEventWriter{
                 xew.add(xmlEventFactory.createNamespace(prefix, namespace));
             }
         } else {            
-            if(namespace == null || namespace.length() == 0) {
-                String defaultNamespace = xew.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
+            if(namespace == null || namespace.length() == 0) {                
                 xew.add(xmlEventFactory.createStartElement("", "", nodeName));
                 if(defaultNamespace != null &&  defaultNamespace.length() >0) {
                     //write default namespace declaration
                     xew.add(xmlEventFactory.createNamespace(Constants.EMPTY_STRING));
                 }
             } else {
+                needToAddDefaultNS = true;
                 xew.add(xmlEventFactory.createStartElement(Constants.EMPTY_STRING, namespace, localName));
             }
         }
@@ -130,9 +132,20 @@ public class DomToXMLEventWriter{
                     if(currentUri == null || !currentUri.equals(next.getValue())) {
                         xew.add(xmlEventFactory.createNamespace(next.getLocalName(), next.getValue()));
                     }
-                } else {
-                    nonNamespaceDeclAttrs.add(attribute);                  
+                } else {                    
+                    if (next.getName().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)){
+                        //Part of bug fix 398446 modified fix for Bug 387464. 
+                        xew.add(xmlEventFactory.createNamespace(next.getValue())); 
+                        needToAddDefaultNS = false;
+                    }else{
+                        nonNamespaceDeclAttrs.add(attribute);     
+                    }
                 }
+            }
+        }
+        if(needToAddDefaultNS){
+            if(defaultNamespace == null || !defaultNamespace.equals(namespace)){
+                xew.add(xmlEventFactory.createNamespace(namespace));            
             }
         }
         for(Attr next:nonNamespaceDeclAttrs) {
