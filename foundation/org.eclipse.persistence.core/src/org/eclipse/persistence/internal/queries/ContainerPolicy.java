@@ -1613,7 +1613,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         for (Object entity: fromCache.values()){
             addInto(entity, result, session);
         }
-        DatabaseRecord translationRow = new DatabaseRecord();
         List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
         for (int index = 0; index < pks.length; ++index){
             Object pk = pks[index];
@@ -1626,12 +1625,12 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             }
         }
         if (!foreignKeyValues.isEmpty()){
-            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
     
             ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(elementDescriptor.getJavaClass());
             query.setIsExecutionClone(true);
-            query.setTranslationRow(translationRow);
+            query.addArgument(ForeignReferenceMapping.QUERY_BATCH_PARAMETER);
+            query.addArgumentValue(foreignKeyValues);
             query.setSession(session);
             query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
             Collection<Object> temp = (Collection<Object>) session.executeQuery(query);

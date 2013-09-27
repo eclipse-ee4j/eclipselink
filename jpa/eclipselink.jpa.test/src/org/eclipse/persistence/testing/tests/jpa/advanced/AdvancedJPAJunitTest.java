@@ -76,9 +76,11 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
 import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
@@ -122,6 +124,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Sc
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Student;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
+import org.hamcrest.core.IsEqual;
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.
@@ -213,6 +216,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedJPAJunitTest("testMapBuildReferencesPKList"));
         suite.addTest(new AdvancedJPAJunitTest("testListBuildReferencesPKList"));
+        suite.addTest(new AdvancedJPAJunitTest("testValuePKListMissingElement"));
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
         
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
@@ -544,6 +548,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             jigsaw.addPiece(new JigsawPiece(i));
         }
         em.persist(jigsaw);
+
        
         em.flush();
         
@@ -565,7 +570,75 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         for (JigsawPiece element : elements){
             assertTrue("Entity id " + element.getId() + " not found in ValueFromPKList list", foundJigsaw.getPieces().contains(element));
         }
+        
+        elements = (List<JigsawPiece>) mapping.valueFromPKList(pks, null, session);
+        assertEquals("ValueFromPKList returned list of different size from actual entity.", expectedNumber, elements.size());
+        
+        for (JigsawPiece element : elements){
+            assertTrue("Entity id " + element.getId() + " not found in ValueFromPKList list", foundJigsaw.getPieces().contains(element));
+        }
         rollbackTransaction(em);
+    }
+
+    public void testValuePKListMissingElement(){
+        if (this.isOnServer()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+
+        Jigsaw jigsaw = new Jigsaw();
+        for (int i = 1; i < 11; i++) {
+            jigsaw.addPiece(new JigsawPiece(i));
+        }
+        em.persist(jigsaw);
+        commitTransaction(em);
+        try {
+
+            AbstractSession session = (AbstractSession) JpaHelper.getEntityManager(em).getActiveSession();
+            ClassDescriptor descriptor = session.getDescriptorForAlias("Jigsaw");
+
+            Jigsaw foundJigsaw = (Jigsaw) em.find(Jigsaw.class, jigsaw.getId());
+            int expectedNumber = foundJigsaw.getPieces().size();
+
+            OneToManyMapping mapping = (OneToManyMapping) descriptor.getMappingForAttributeName("pieces");
+            Object[] pks = mapping.buildReferencesPKList(foundJigsaw, mapping.getAttributeValueFromObject(foundJigsaw), session);
+            assertEquals("PK list is of incorrect size", expectedNumber, pks.length);
+
+            session.getIdentityMapAccessor().invalidateObject(foundJigsaw.getPieces().get(2));
+            DatabaseRecord fks = new DatabaseRecord();
+            for (DatabaseField field : mapping.getSourceKeyFields()){
+                fks.add(field, descriptor.getObjectBuilder().extractValueFromObjectForField(foundJigsaw, field, session));
+            }
+
+            mapping.writeFromObjectIntoRow(foundJigsaw, fks, session, DatabaseMapping.WriteType.UNDEFINED);
+
+            List<JigsawPiece> elements = (List<JigsawPiece>) mapping.valueFromPKList(pks, fks, session);
+            assertEquals("ValueFromPKList returned list of different size from actual entity.", expectedNumber, elements.size());
+            assertFalse("Collection contains unexpected null", elements.contains(null));
+            for (JigsawPiece element : elements) {
+                assertTrue("Entity id " + element.getId() + " not found in ValueFromPKList list", foundJigsaw.getPieces().contains(element));
+            }
+            em.refresh(foundJigsaw.getPieces().get(2));
+            session.getIdentityMapAccessor().invalidateObject(foundJigsaw.getPieces().get(5));
+
+            elements = (List<JigsawPiece>) mapping.valueFromPKList(pks, fks, session);
+            assertEquals("ValueFromPKList returned list of different size from actual entity.", expectedNumber, elements.size());
+            assertFalse("Collection contains unexpected null", elements.contains(null));
+            for (JigsawPiece element : elements) {
+                assertTrue("Entity id " + element.getId() + " not found in ValueFromPKList list", foundJigsaw.getPieces().contains(element));
+            }
+
+        } finally {
+            try {
+                beginTransaction(em);
+                em.remove(jigsaw);
+                commitTransaction(em);
+            } catch (Exception e) {
+            } finally {
+                closeEntityManager(em);
+            }
+        }
     }
 
     /**
