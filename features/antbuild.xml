@@ -101,7 +101,7 @@
         <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
 
         <!-- Defaults of Pre-Set variables -->
-        <property name="release.version"                    value="2.5.1"/>
+        <property name="release.version"                    value="2.5.2"/>
         <property name="version.qualifier"                  value="qualifier"/>
         <property name="version.string"                     value="${release.version}.${version.qualifier}"/>
         <property name="eclipselink.install.prefix"         value="eclipselink"/>
@@ -222,7 +222,7 @@
         <property name="resource.prefix" value="javax.resource"/>
         <property name="resource.criteria" value="[1.4.0,1.6.0)"/>
         <property name="servlet.prefix" value="javax.servlet"/>
-        <property name="servlet.criteria" value="[2.4.0,2.5.1)"/>
+        <property name="servlet.criteria" value="[2.4.0,2.5.0)"/>
         <property name="wsdl.prefix" value="javax.wsdl"/>
         <property name="wsdl.criteria" value="[1.0,9.0)"/>
         <property name="jaxrs.prefix" value="javax.ws.rs"/>
