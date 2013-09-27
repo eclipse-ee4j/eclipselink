@@ -518,7 +518,6 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session){
         List<Object> orderedResult = new ArrayList<Object>(keyInfo.length);
         Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(keyInfo, referenceDescriptor);
-        DatabaseRecord translationRow = new DatabaseRecord();
         List foreignKeyValues = new ArrayList(keyInfo.length - fromCache.size());
         
         CacheKeyType cacheKeyType = referenceDescriptor.getCachePolicy().getCacheKeyType();
@@ -533,10 +532,10 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             }
         }
         if (!foreignKeyValues.isEmpty()){
-            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
             ReadAllQuery query = new ReadAllQuery(referenceDescriptor.getJavaClass());
             query.setIsExecutionClone(true);
-            query.setTranslationRow(translationRow);
+            query.addArgument(ForeignReferenceMapping.QUERY_BATCH_PARAMETER);
+            query.addArgumentValue(foreignKeyValues);
             query.setSession(session);
             query.setSelectionCriteria(referenceDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
             Collection<Object> temp = (Collection<Object>) session.executeQuery(query);

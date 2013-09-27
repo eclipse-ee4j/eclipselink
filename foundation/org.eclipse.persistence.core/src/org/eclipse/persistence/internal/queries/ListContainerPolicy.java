@@ -212,7 +212,6 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
         Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(pks, elementDescriptor);
 
         
-        DatabaseRecord translationRow = new DatabaseRecord();
         List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
         for (int index = 0; index < pks.length; ++index){
             //it is a map so the keys are in the list but we do not need them in this case
@@ -226,12 +225,11 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             }
         }
         if (!foreignKeyValues.isEmpty()){
-            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
-    
             ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(this.elementDescriptor.getJavaClass());
             query.setIsExecutionClone(true);
-            query.setTranslationRow(translationRow);
+            query.addArgument(ForeignReferenceMapping.QUERY_BATCH_PARAMETER);
+            query.addArgumentValue(foreignKeyValues);
             query.setSession(session);
             query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
             Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
