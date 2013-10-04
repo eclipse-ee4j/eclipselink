@@ -376,7 +376,7 @@ public class MappingsGenerator {
                 mapping.setSetMethodName("setValue");
                 mapping.setGetMethodName("getValue");
 
-                Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
+                Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], helper.getClassLoader());
                 mapping.setAttributeClassification(attributeClassification);
                 mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
@@ -396,7 +396,7 @@ public class MappingsGenerator {
                 mapping.setGetMethodName("getValue");
                 mapping.setSetMethodName("setValue");
                 mapping.setXPath("text()");
-                Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
+                Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], helper.getClassLoader());
                 mapping.setAttributeClassification(attributeClassification);
                 xmlDescriptor.addMapping(mapping);
             }
@@ -410,7 +410,7 @@ public class MappingsGenerator {
              mapping.setGetMethodName("getValue");
              mapping.setSetMethodName("setValue");
              mapping.setXPath("text()");
-             Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
+             Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], helper.getClassLoader());
              mapping.setAttributeClassification(attributeClassification);
              xmlDescriptor.addMapping(mapping);
              
@@ -2989,7 +2989,7 @@ public class MappingsGenerator {
 	                  mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
 	                  mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
-	                  Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());
+	                  Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, helper.getClassLoader());
 	                  mapping.setAttributeClassification(attributeClassification);
 
 	              	  mapping.setShouldInlineBinaryData(false);
@@ -3017,7 +3017,7 @@ public class MappingsGenerator {
 	                      if(nextElement.getJavaType().isPrimitive()) {
 	                          attributeClassification = XMLConversionManager.getDefaultManager().convertClassNameToClass(attributeTypeName);
 	                      } else {
-	                          attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());
+	                          attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, helper.getClassLoader());
 	                      }
 	                      mapping.setAttributeClassification(attributeClassification);
 	                  }
