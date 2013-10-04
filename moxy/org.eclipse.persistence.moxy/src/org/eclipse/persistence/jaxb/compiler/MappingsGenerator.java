@@ -422,7 +422,6 @@ public class MappingsGenerator {
              }  
             
             namespace = packageNamespace;
-            descriptor.setResultAlwaysXMLRoot(true);
         } else {
             elementName = rootElem.getName();
             if (elementName.equals(XMLProcessor.DEFAULT)) {
@@ -433,7 +432,6 @@ public class MappingsGenerator {
                 }  
             }
             namespace = rootElem.getNamespace();
-            descriptor.setResultAlwaysXMLRoot(false);
         }
 
         descriptor.setJavaClassName(jClassName);
