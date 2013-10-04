@@ -12,10 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.descriptors.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 
 /**
@@ -32,6 +34,8 @@ public class IsolatedEmployeeProject extends Project {
         addDescriptor(buildEmployeeDescriptor());
         addDescriptor(buildEmploymentPeriodDescriptor());
         addDescriptor(buildPhoneNumberDescriptor());
+        addDescriptor(buildIsolatedParentDescriptor());
+        addDescriptor(buildIsolatedChildDescriptor());
     }
 
     public void applyLogin() {
@@ -261,4 +265,108 @@ public class IsolatedEmployeeProject extends Project {
         descriptor.applyAmendmentMethod();
         return descriptor;
     }
+    
+    public RelationalDescriptor buildIsolatedParentDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(IsolatedParent.class);
+        descriptor.addTableName("ISOLATED_PARENT");
+        descriptor.addPrimaryKeyFieldName("ISOLATED_PARENT.ID");
+        
+        // ClassDescriptor Properties.
+        descriptor.useSoftCacheWeakIdentityMap();
+        descriptor.setIdentityMapSize(100);
+        descriptor.useRemoteSoftCacheWeakIdentityMap();
+        descriptor.setRemoteIdentityMapSize(100);
+        descriptor.setSequenceNumberFieldName("ISOLATED_PARENT.ID");
+        descriptor.setSequenceNumberName("PARENT_SEQ");
+        descriptor.alwaysConformResultsInUnitOfWork(); // IMPORTANT!
+        descriptor.setIsIsolated(true);
+        descriptor.setAlias("IsolatedParent");
+        descriptor.setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
+        
+        
+        // Query Manager.
+        descriptor.getQueryManager().checkCacheForDoesExist();
+        // Named Queries.
+        // Named Query -- findParentBySerial
+        ReadObjectQuery namedQuery0 = new ReadObjectQuery(IsolatedParent.class);
+        namedQuery0.setName("findParentBySerial");
+        namedQuery0.setShouldBindAllParameters(true);
+        ExpressionBuilder expBuilder0 = namedQuery0.getExpressionBuilder();
+        namedQuery0.setSelectionCriteria(expBuilder0.get("serial").equal(expBuilder0.getParameter("serial_p")));
+        namedQuery0.addArgument("serial_p", java.lang.String.class);
+        descriptor.getQueryManager().addQuery("findParentBySerial", namedQuery0);
+        
+        
+        
+        // Event Manager.
+        
+        // Mappings.
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("ISOLATED_PARENT.ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping serialMapping = new DirectToFieldMapping();
+        serialMapping.setAttributeName("serial");
+        serialMapping.setFieldName("ISOLATED_PARENT.SERIAL");
+        descriptor.addMapping(serialMapping);
+        
+        OneToManyMapping childrenMapping = new OneToManyMapping();
+        childrenMapping.setAttributeName("children");
+        childrenMapping.setReferenceClass(IsolatedChild.class);
+        childrenMapping.useTransparentCollection();
+        childrenMapping.useCollectionClass(org.eclipse.persistence.indirection.IndirectList.class);
+        childrenMapping.addTargetForeignKeyFieldName("ISOLATED_CHILD.PARENT_ID", "ISOLATED_PARENT.ID");
+        descriptor.addMapping(childrenMapping);
+        
+        return descriptor;
+    }
+    
+    public RelationalDescriptor buildIsolatedChildDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(IsolatedChild.class);
+        descriptor.addTableName("ISOLATED_CHILD");
+        descriptor.addPrimaryKeyFieldName("ISOLATED_CHILD.ID");
+        
+        // ClassDescriptor Properties.
+        descriptor.useSoftCacheWeakIdentityMap();
+        descriptor.setIdentityMapSize(100);
+        descriptor.useRemoteSoftCacheWeakIdentityMap();
+        descriptor.setRemoteIdentityMapSize(100);
+        descriptor.setSequenceNumberFieldName("ISOLATED_CHILD.ID");
+        descriptor.setSequenceNumberName("CHILD_SEQ");
+        descriptor.alwaysConformResultsInUnitOfWork(); // IMPORTANT!
+        descriptor.setIsIsolated(true);
+        descriptor.setAlias("IsolatedChild");
+        descriptor.setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
+        
+        
+        // Query Manager.
+        descriptor.getQueryManager().checkCacheForDoesExist();
+        
+        
+        // Event Manager.
+        
+        // Mappings.
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("ISOLATED_CHILD.ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping serialMapping = new DirectToFieldMapping();
+        serialMapping.setAttributeName("serial");
+        serialMapping.setFieldName("ISOLATED_CHILD.SERIAL");
+        descriptor.addMapping(serialMapping);
+        
+        OneToOneMapping parentMapping = new OneToOneMapping();
+        parentMapping.setAttributeName("parent");
+        parentMapping.setReferenceClass(IsolatedParent.class);
+        parentMapping.useBasicIndirection();
+        parentMapping.addForeignKeyFieldName("ISOLATED_CHILD.PARENT_ID", "ISOLATED_PARENT.ID");
+        descriptor.addMapping(parentMapping);
+        
+        return descriptor;
+    }
+    
 }

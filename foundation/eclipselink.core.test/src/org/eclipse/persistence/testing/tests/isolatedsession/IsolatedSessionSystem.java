@@ -30,12 +30,15 @@ public class IsolatedSessionSystem extends TestSystem {
         schemaManager.replaceObject(IsolatedAddress.buildIsolatedTableDefinition());
         schemaManager.replaceObject(IsolatedEmployee.buildISOLATEDRESPONSTable());
         schemaManager.replaceObject(IsolatedEmployee.buildISOLATEDSALARYTable());
+        schemaManager.replaceObject(IsolatedParent.buildISOLATEDPARENTTable());
+        schemaManager.replaceObject(IsolatedChild.buildISOLATEDCHILDTable());
     }
 
     public void populate(DatabaseSession session) {
         UnitOfWork uow = session.acquireUnitOfWork();
         uow.registerObject(IsolatedEmployee.buildEmployeeExample1());
         uow.registerObject(IsolatedEmployee.buildEmployeeExample2());
+        uow.registerObject(IsolatedParent.buildIsolatedParentExample1());
         uow.commit();
     }
 }

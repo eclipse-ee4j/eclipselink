@@ -273,7 +273,9 @@ public class ParameterExpression extends BaseExpression {
                 }
                 // Also check the same field, but a different table for table per class inheritance.
                 // TODO: JPA also allows for field to be renamed in subclasses, this needs to account for that (never has...).
-                value = translationRow.getIndicatingNoEntry(new DatabaseField(this.field.getName()));
+                if (translationRow != null) {
+                    value = translationRow.getIndicatingNoEntry(new DatabaseField(this.field.getName()));
+                }
                 if ((value == AbstractRecord.noEntry) || (value == null)) {
                     throw QueryException.parameterNameMismatch(this.field.getName());
                 }

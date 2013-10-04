@@ -171,6 +171,21 @@ public class FieldExpression extends DataExpression {
 
     /**
      * INTERNAL:
+     * Provide for conversion of the passed object's value, based on the referenced field value.
+     */
+    @Override
+    public Object getFieldValue(Object value, AbstractSession session) {
+        // Bug 418705
+        if (getField() != null && value != null && (value.getClass() != getField().getType()) && !(value instanceof Collection) && !(value instanceof Enum)) {
+            try {
+                return session.getPlatform().convertObject(value, getField().getType());
+            } catch (ConversionException c) {}
+        }
+        return super.getFieldValue(value, session);
+    }
+    
+    /**
+     * INTERNAL:
      * Alias the database field for our current environment
      */
     private void initializeAliasedField() {
