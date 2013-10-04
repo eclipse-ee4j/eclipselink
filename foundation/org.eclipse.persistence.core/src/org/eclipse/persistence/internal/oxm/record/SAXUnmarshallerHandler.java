@@ -109,8 +109,8 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     public Object getObject() {
         if(object == null) {
             if(this.descriptor != null) {            	
-                if(this.unmarshaller.isResultAlwaysXMLRoot() || shouldWrap){
-                    object = this.descriptor.wrapObjectInXMLRoot(this.rootRecord, this.unmarshaller.isResultAlwaysXMLRoot());
+                if(this.unmarshaller.isResultAlwaysXMLRoot() || descriptor.isResultAlwaysXMLRoot() || shouldWrap){
+                    object = this.descriptor.wrapObjectInXMLRoot(this.rootRecord, (this.unmarshaller.isResultAlwaysXMLRoot() || descriptor.isResultAlwaysXMLRoot()));
             	}else {
             		object = this.rootRecord.getCurrentObject();
             	}
@@ -231,7 +231,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     }
                 }
             } else {
-            	if(null != xmlDescriptor.getDefaultRootElementField() ){
+            	if(null != xmlDescriptor.getDefaultRootElementField() && !unmarshaller.isResultAlwaysXMLRoot()){
             	    String descLocalName = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getLocalName();
                 	if( descLocalName != null && descLocalName.equals(localName) ){
                 	    String descUri = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getNamespaceURI();

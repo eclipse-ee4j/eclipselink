@@ -453,6 +453,7 @@
                     <fileset dir="${src.dir}">
                         <include name="**/ContainerAccessorTestSuite.java"/>
                         <include name="**/*MappingTestSuite.java"/>
+                        <include name="**/RootElementTestSuite.java"/>
                         <include name="**/InheritanceTestSuite.java"/>
                         <include name="**/XMLMarshalTestCases.java"/>
                         <include name="**/XMLMarshalFragmentTestCases.java"/>

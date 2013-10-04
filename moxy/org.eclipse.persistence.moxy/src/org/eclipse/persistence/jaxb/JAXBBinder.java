@@ -166,10 +166,9 @@ public class JAXBBinder extends Binder {
                 return updatedObj;
             }
             
-            String objRootElem = desc.getDefaultRootElement();
+            if(desc.getDefaultRootElementField() != null){
+                    String objRootElem = desc.getDefaultRootElement();
 
-            if (!desc.isResultAlwaysXMLRoot()) {
-                if (objRootElem != null) {
                     String rootElemNS = objRootElem.substring(0, objRootElem.lastIndexOf(":"));
                     String rootElemName = objRootElem.substring(objRootElem.lastIndexOf(":") + 1);
                     String resolvedNS = desc.getNamespaceResolver().resolveNamespacePrefix(rootElemNS);
@@ -181,7 +180,6 @@ public class JAXBBinder extends Binder {
                         shouldWrapInJAXBElement = false;
                     }
                 }
-            }
 
             if (!shouldWrapInJAXBElement) {
                 return updatedObj;

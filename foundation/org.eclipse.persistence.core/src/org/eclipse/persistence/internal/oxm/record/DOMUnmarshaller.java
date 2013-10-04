@@ -470,9 +470,24 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      	                typeFragment.setNamespaceURI(namespaceURI);
      	                descriptor = xmlContext.getDescriptorByGlobalType(typeFragment);    	               
      	            }
-                 } else if(descriptor.getTables().size() == 1){
-                     shouldWrap = false;
-                 }                 	    		
+                 }else{
+                	 if(null != descriptor.getDefaultRootElementField() && !descriptor.isResultAlwaysXMLRoot() && !xmlUnmarshaller.isResultAlwaysXMLRoot()){
+                 	    String descLocalName = descriptor.getDefaultRootElementField().getXPathFragment().getLocalName();
+                 	    String localName = xmlRow.getDOM().getLocalName();
+                 	    if (localName == null) {
+                 		  localName = xmlRow.getDOM().getNodeName();
+       	                }
+                 	String namespaceURI = xmlRow.getDOM().getNamespaceURI();
+                     	if( descLocalName != null && descLocalName.equals(localName) ){
+                     	    String descUri = descriptor.getDefaultRootElementField().getXPathFragment().getNamespaceURI();
+                         	if((namespaceURI == null && descUri == null ) || (namespaceURI !=null &&namespaceURI.length() == 0 && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))){
+                      	       //found a descriptor based on root element then know we won't need to wrap in an XMLRoot
+                     	       shouldWrap = false;
+                     	    }
+                         }
+                 	}
+                 }          
+                
                  if (null == descriptor) {
                      throw XMLMarshalException.noDescriptorWithMatchingRootElement(rootQName.toString());
                  }else{
