@@ -48,6 +48,8 @@ public class IsolatedSessionTestModel extends TestModel {
         addTest(new ProjectXMLTest());
         addTest(new VerifyQueryCacheIsolated(false));
         addTest(new CheckAccessorUsageForIsolatedClass());
+        // Bug 418705
+        addTest(new IsolatedSessionRelationConformingTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
