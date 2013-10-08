@@ -225,16 +225,38 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             }
         }
         if (!foreignKeyValues.isEmpty()){
-    
+            if (foreignKeyValues.size() == pks.length){
+                //need to find all of the entities so just perform a FK search
+                return session.executeQuery(mapping.getSelectionQuery(), foreignKeys);
+            }
             ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(this.elementDescriptor.getJavaClass());
             query.setIsExecutionClone(true);
-            query.addArgument(ForeignReferenceMapping.QUERY_BATCH_PARAMETER);
-            query.addArgumentValue(foreignKeyValues);
             query.setSession(session);
+            query.addArgument(ForeignReferenceMapping.QUERY_BATCH_PARAMETER);
             query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
-            Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
-            if (temp.size() < foreignKeyValues.size()){
+            int pkCount = foreignKeyValues.size();
+            Collection<Object> temp = new ArrayList<Object>();
+            List arguments = new ArrayList();
+            arguments.add(foreignKeyValues);
+            if (pkCount > 1000){
+                int index = 0;
+                
+                while ( index+1000 < pkCount ) { // some databases only support ins < 1000 entries
+                    List pkList = new ArrayList();
+                    pkList.addAll(foreignKeyValues.subList(index, index+1000));
+                    arguments.set(0, pkList);
+                    query.setArgumentValues(arguments);
+                    temp.addAll((Collection<Object>) session.executeQuery(query));
+                    index += 1000;
+                }
+                foreignKeyValues = foreignKeyValues.subList(index, pkCount);
+            }
+            arguments.set(0, foreignKeyValues);
+            query.setArgumentValues(arguments);
+            //need to put the translation row here or it will be replaced later.
+            temp.addAll((Collection<Object>) session.executeQuery(query));
+            if (temp.size() < pkCount){
                 //Not enough results have been found, this must be a stale collection with a removed
                 //element.  Execute a reload based on FK.
                 return session.executeQuery(mapping.getSelectionQuery(), foreignKeys);
