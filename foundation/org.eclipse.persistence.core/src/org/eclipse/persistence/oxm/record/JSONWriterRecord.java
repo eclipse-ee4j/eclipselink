@@ -1022,6 +1022,36 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
         @Override
         public void write(char character) throws IOException {
+            if (character > 0x7F) {
+                if(character > 0x7FF) {
+                    if((character >= Character.MIN_HIGH_SURROGATE) && (character <= Character.MAX_LOW_SURROGATE)) {
+                        int uc = ((character & 0x3ff) << 10);
+                        // 11110zzz
+                        write((byte)(0xF0 | ((uc >> 18))));
+                        // 10zzyyyy
+                        write((byte)(0x80 | ((uc >> 12) & 0x3F)));
+                        // 10yyyyxx
+                        write((byte)(0x80 | ((uc >> 6) & 0x3F)));
+                        // 10xxxxxx
+                        write((byte)(0x80 + (uc & 0x3F)));
+                        return;
+                    } else {
+                        // 1110yyyy
+                        write((byte)(0xE0 + (character >> 12)));
+                    }
+                    // 10yyyyxx
+                    write((byte)(0x80 + ((character >> 6) & 0x3F)));
+                } else {
+                    // 110yyyxx
+                    write((byte)(0xC0 + (character >> 6)));
+                }
+                write((byte)(0x80 + (character & 0x3F)));
+            } else {
+                write((byte) character);
+            }
+        }
+
+        private void write(byte b) {
             if(bufferIndex == BUFFER_SIZE) {
                 try {
                     outputStream.write(buffer, 0, BUFFER_SIZE);
@@ -1030,7 +1060,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                     throw XMLMarshalException.marshalException(e);
                 }
             }
-            buffer[bufferIndex++] = (byte) character;
+            buffer[bufferIndex++] = b;
         }
 
         @Override
