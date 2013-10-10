@@ -4012,7 +4012,7 @@ public class AnnotationsProcessor {
             if (property.isAttribute()) {
                 JavaClass ptype = property.getActualType();
                 TypeInfo refInfo = typeInfo.get(ptype.getQualifiedName());
-                if (refInfo != null) {
+                if (refInfo != null && refInfo != tInfo) {
                     return hasTextMapping(refInfo);
                 }
             }
