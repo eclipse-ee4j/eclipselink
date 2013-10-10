@@ -411,6 +411,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return false;
         } else if(CoreClassConstants.APBYTE == type || CoreClassConstants.STRING == type) {
             return false;
+        } else if(Map.class.isAssignableFrom(type)) {
+            return false;
         } else if(File.class.isAssignableFrom(type)) {
             return false;
         } else if(DataSource.class.isAssignableFrom(type)) {
@@ -503,6 +505,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         if(!supportsMediaType(mediaType)) {
             return false;
         } else if(CoreClassConstants.APBYTE == type || CoreClassConstants.STRING == type || type.isPrimitive()) {
+            return false;
+        } else if(Map.class.isAssignableFrom(type)) {
             return false;
         } else if(File.class.isAssignableFrom(type)) {
             return false;

@@ -17,6 +17,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.activation.DataSource;
 import javax.activation.URLDataSource;
@@ -86,6 +89,22 @@ public class IsReadableTestCases extends TestCase {
 
     public void testInvalidDomainClassNotWriteable() {
         assertFalse(moxyJsonProvider.isWriteable(InvalidDomainClass.class, null, null, null));
+    }
+
+    public void testMapNotReadable() {
+        assertFalse(moxyJsonProvider.isReadable(Map.class, null, null, null));
+    }
+
+    public void testMapNotWriteable() {
+        assertFalse(moxyJsonProvider.isWriteable(Map.class, null, null, null));
+    }
+
+    public void testMapImplNotReadable() {
+        assertFalse(moxyJsonProvider.isReadable(TreeMap.class, null, null, null));
+    }
+
+    public void testMapImplNotWriteable() {
+        assertFalse(moxyJsonProvider.isWriteable(HashMap.class, null, null, null));
     }
 
     private static class TestMOXyJsonProvider extends MOXyJsonProvider {
