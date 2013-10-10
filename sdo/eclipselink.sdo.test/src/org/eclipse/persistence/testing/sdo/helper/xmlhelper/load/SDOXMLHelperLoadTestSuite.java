@@ -32,6 +32,7 @@ public class SDOXMLHelperLoadTestSuite {
         suite.addTest(new TestSuite(LoadWithDataHandlerGetStringTestCases.class));
         suite.addTest(new TestSuite(LoadWithDataHandlerIsSetTestCases.class));
         suite.addTest(new TestSuite(LoadSchemasWithImportAndInheritance.class));
+        suite.addTest(new TestSuite(LoadSchemasWithImportCloseStream.class));
         suite.addTest(new TestSuite(StringWrapperBug268335TestCases.class));
         return suite;
     }
