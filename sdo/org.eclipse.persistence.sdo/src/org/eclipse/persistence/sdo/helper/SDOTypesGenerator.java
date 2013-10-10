@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.sdo.helper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -113,7 +115,7 @@ public class SDOTypesGenerator {
     }
 
     public java.util.List<Type> define(Source xsdSource, SchemaResolver schemaResolver, boolean includeAllTypes, boolean processImports) {
-        Schema schema = getSchema(xsdSource, schemaResolver);
+        Schema schema = getSchema(xsdSource, schemaResolver, false);
         return define(schema, includeAllTypes, processImports);
     }
 
@@ -2175,10 +2177,10 @@ public class SDOTypesGenerator {
      * @param schemaResolver the schema resolver to be used to resolve imports/includes
      * @return
      */
-    public Schema getSchema(Source xsdSource, SchemaResolver schemaResolver) {
+    public Schema getSchema(Source xsdSource, SchemaResolver schemaResolver, boolean closeStream) {
         // Create a resolver wrapper that will prevent schemas from being processed
         // multiple times (such as in the case of circular includes/imports)
-        return getSchema(xsdSource, new SchemaResolverWrapper(schemaResolver));
+        return getSchema(xsdSource, new SchemaResolverWrapper(schemaResolver), closeStream);
     }
 
     /**
@@ -2191,7 +2193,7 @@ public class SDOTypesGenerator {
      * @param schemaResolverWrapper wraps the schema resolver to be used to resolve imports/includes
      * @return
      */
-    public Schema getSchema(Source xsdSource, SchemaResolverWrapper schemaResolverWrapper) {
+    public Schema getSchema(Source xsdSource, SchemaResolverWrapper schemaResolverWrapper, boolean closeStream) {
       
        xsdSource = schemaResolverWrapper.resolveSchema(xsdSource);
 
@@ -2200,16 +2202,18 @@ public class SDOTypesGenerator {
        unmarshaller.setEntityResolver(schemaResolverWrapper.getSchemaResolver());
 
        Schema schema = (Schema) unmarshaller.unmarshal(xsdSource);
+       if(closeStream){
 
+           closeSource(xsdSource);
+       }
        //populate Imports
        java.util.List imports = schema.getImports();
        Iterator iter = imports.iterator();
        while (iter.hasNext()) {
            Import nextImport = (Import) iter.next();
-
            Source referencedSchema = getReferencedSchema(xsdSource, nextImport.getNamespace(), nextImport.getSchemaLocation(), schemaResolverWrapper);
            if (referencedSchema != null) {
-               Schema importedSchema = getSchema(referencedSchema, schemaResolverWrapper);
+               Schema importedSchema = getSchema(referencedSchema, schemaResolverWrapper, true);
                nextImport.setSchema(importedSchema);
             }
        }
@@ -2222,12 +2226,28 @@ public class SDOTypesGenerator {
 
             Source referencedSchema = getReferencedSchema(xsdSource, schema.getTargetNamespace(), nextInclude.getSchemaLocation(), schemaResolverWrapper);
             if (referencedSchema != null) {
-                Schema includedSchema = getSchema(referencedSchema, schemaResolverWrapper);
+                Schema includedSchema = getSchema(referencedSchema, schemaResolverWrapper, true);
                 nextInclude.setSchema(includedSchema);
             }
         }
         return schema;
 
+    }
+    
+    private void closeSource(Source source){
+        if(source != null && source instanceof StreamSource){
+            StreamSource ss = (StreamSource)source;
+            try{
+                if(ss.getInputStream() != null){
+                   ss.getInputStream().close();
+                } else if(ss.getReader() != null){
+                   ss.getReader().close();
+                } 
+                   
+            }catch (IOException e) {
+                throw SDOException.errorResolvingSchema(e);
+           }
+        }
     }
 
     private Source getReferencedSchema(Source xsdSource, String namespace, String schemaLocation, SchemaResolverWrapper schemaResolverWrapper) {
