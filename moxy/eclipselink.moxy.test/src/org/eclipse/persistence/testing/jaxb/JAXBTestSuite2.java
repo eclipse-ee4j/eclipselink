@@ -53,6 +53,7 @@ import org.eclipse.persistence.testing.jaxb.xmlidref.array.XmlIdRefArrayTestCase
 import org.eclipse.persistence.testing.jaxb.xmlidref.inheritance.XmlIdRefInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectWhitespaceTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidref.self.XmlIdRefSelfObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsSingleIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.interfaces.XmlElementsIdRefInterfaceTestCases;
@@ -78,6 +79,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(XmlIdRefObjectTestCases.class);
         suite.addTestSuite(XmlIdRefObjectWhitespaceTestCases.class);
         suite.addTestSuite(XmlIdRefInheritanceTestCases.class);
+        suite.addTestSuite(XmlIdRefSelfObjectTestCases.class);
         suite.addTestSuite(XmlIdRefsTestCases.class);
         suite.addTestSuite(XmlIdRefsObjectTestCases.class);
         suite.addTestSuite(XmlElementsIdRefTestCases.class);
