@@ -856,6 +856,10 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             }
 
             preWriteTo(object, type, genericType, annotations, mediaType, httpHeaders, marshaller);
+            
+            if(domainClass.getPackage().getName().startsWith("java.") && !(List.class.isAssignableFrom(type) ||  type.isArray())) {
+                object = new JAXBElement(new QName((String) marshaller.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER)), domainClass, object);
+            }
             marshaller.marshal(object, entityStream);
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);

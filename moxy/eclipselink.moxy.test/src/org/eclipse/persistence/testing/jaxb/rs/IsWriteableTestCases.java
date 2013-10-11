@@ -12,9 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.rs;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 
 import javax.activation.DataSource;
 import javax.activation.URLDataSource;
@@ -29,6 +31,9 @@ import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 
 public class IsWriteableTestCases extends TestCase {
 
+    private static final String JSON_INTEGER = "{\"value\":123}";
+
+    public Integer integerField;
     private MOXyJsonProvider moxyJsonProvider;
 
     @Override
@@ -74,6 +79,22 @@ public class IsWriteableTestCases extends TestCase {
 
     public void testStreamingOutputImplNotWriteable() {
         assertFalse(moxyJsonProvider.isWriteable(StreamingOutputImpl.class, null, null, null));
+    }
+
+    public void testIntNotWriteable() {
+        assertFalse(moxyJsonProvider.isWriteable(int.class, null, null, null));
+    }
+
+    public void testIntegerWriteable() throws Exception {
+        Field integerField = IsWriteableTestCases.class.getDeclaredField("integerField");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        moxyJsonProvider.writeTo(123, integerField.getType(), integerField.getType(), null, null, null, baos);
+        assertEquals(JSON_INTEGER, new String(baos.toByteArray()));
+        baos.close();
+    }
+
+    public void testObjectNotWriteable() {
+        assertFalse(moxyJsonProvider.isWriteable(Object.class, null, null, null));
     }
 
     private static class TestMOXyJsonProvider extends MOXyJsonProvider {

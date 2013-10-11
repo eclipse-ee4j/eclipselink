@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,6 +34,8 @@ import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 public class IsReadableTestCases extends TestCase {
 
     private MOXyJsonProvider moxyJsonProvider;
+    
+    public Integer integerField;
 
     @Override
     protected void setUp() throws Exception {
@@ -105,6 +108,15 @@ public class IsReadableTestCases extends TestCase {
 
     public void testMapImplNotWriteable() {
         assertFalse(moxyJsonProvider.isWriteable(HashMap.class, null, null, null));
+    }
+
+    public void testIntegerReadable() throws Exception {
+        assertTrue(moxyJsonProvider.isReadable(Integer.class, null, null, null));
+        
+        Field integerField = IsReadableTestCases.class.getDeclaredField("integerField");
+        ByteArrayInputStream bais = new ByteArrayInputStream("{\"value\" : 123}".getBytes());
+        Object result = moxyJsonProvider.readFrom((Class<Object>) integerField.getType(), null, null, null, null, bais);
+        assertEquals(123, result);
     }
 
     private static class TestMOXyJsonProvider extends MOXyJsonProvider {
