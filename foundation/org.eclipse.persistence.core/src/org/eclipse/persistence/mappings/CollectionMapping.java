@@ -29,6 +29,7 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import org.eclipse.persistence.annotations.OrderCorrectionType;
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.internal.descriptors.changetracking.*;
@@ -323,6 +324,51 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             return cloningSession.createProtectedInstanceFromCachedData(element, refreshCascade, referenceDescriptor);
         }
         return element;
+    }
+
+    /**
+     * INTERNAL:
+     * In case Query By Example is used, this method generates an expression from a attribute value pair.  Since
+     * this is an Aggregate mapping, a recursive call is made to the buildExpressionFromExample method of
+     * ObjectBuilder.
+     */
+    public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
+        String bypassProperty = System.getProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
+        if (this.getContainerPolicy().isMapPolicy() ||  (bypassProperty != null && bypassProperty.toLowerCase().equals("true")) ){
+            // not supported
+            return super.buildExpression(queryObject, policy, expressionBuilder, processedObjects, session);
+        }
+        String attributeName = this.getAttributeName();
+        Object attributeValue = this.getRealAttributeValueFromObject(queryObject, session);
+        if (attributeValue != null && getContainerPolicy().isEmpty(attributeValue)){
+            //empty is the same as null
+            attributeValue = null;
+        }
+
+        if (!policy.shouldIncludeInQuery(queryObject.getClass(), attributeName, attributeValue)) {
+            //the attribute name and value pair is not to be included in the query.
+            return null;
+        }
+
+        if (attributeValue == null) {
+            //even though it is null, it is to be always included in the query
+            Expression expression = expressionBuilder.anyOf(attributeName);
+            return policy.completeExpressionForNull(expression);
+        }
+
+        Object iterator = getContainerPolicy().iteratorFor(attributeValue);
+        Expression exp = null;
+        ObjectBuilder objectBuilder = getReferenceDescriptor().getObjectBuilder();
+        Expression base = expressionBuilder.anyOf(attributeName);
+        while(getContainerPolicy().hasNext(iterator)){
+            Object element = getContainerPolicy().next(iterator, session);
+            if (exp == null){
+                exp = objectBuilder.buildExpressionFromExample(element, policy, base, processedObjects, session);
+            }else{
+                exp = exp.or(objectBuilder.buildExpressionFromExample(element, policy, base, processedObjects, session));
+            }
+        }
+        return exp;
     }
 
     /**

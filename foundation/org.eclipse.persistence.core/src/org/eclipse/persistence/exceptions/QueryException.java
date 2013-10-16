@@ -206,6 +206,7 @@ public class QueryException extends ValidationException {
     public final static int SOP_OBJECT_IS_NOT_FOUND = 6180;
     public final static int SOP_OBJECT_WRONG_VERSION = 6181;
     public final static int SOP_OBJECT_WRONG_PK = 6182;
+    public final static int UNSUPPORTED_MAPPING_FOR_QUERYBYEXAMPLE = 6183;
     
     
     /**
@@ -1660,6 +1661,14 @@ public class QueryException extends ValidationException {
 
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, SOP_OBJECT_WRONG_PK, args), query);
         queryException.setErrorCode(SOP_OBJECT_WRONG_PK);
+        return queryException;
+    }
+
+    public static QueryException unsupportedMappingQueryByExample(String className, DatabaseMapping databaseMapping) {
+        Object[] args = {className, databaseMapping.getClass().getName(), databaseMapping.getAttributeName()};
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, UNSUPPORTED_MAPPING_FOR_QUERYBYEXAMPLE, args));
+        queryException.setErrorCode(UNSUPPORTED_MAPPING_FOR_QUERYBYEXAMPLE);
         return queryException;
     }
 }

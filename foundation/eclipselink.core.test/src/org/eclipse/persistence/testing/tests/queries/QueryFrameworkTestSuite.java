@@ -213,6 +213,9 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new QBEObjectWithAllFieldsFilled());
         addTest(new QBESpecialOperators());
         addTest(new QBEExcludedValues());
+        addTest(new QBEValidateUnsupportedMappingsFlag());
+        addTest(new QBEObjectReferenceMapping());
+        addTest(new QBECollectionMapping());
 
         // Conforming tests
         // For bug 3568141: shoudn't ignore policy if set to triggerIndirection()

@@ -267,9 +267,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     /**
      * INTERNAL:
      * In case Query By Example is used, this method builds and returns an expression that
-     * corresponds to a single attribue and it's value.
+     * corresponds to a single attribute and it's value.
      */
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
+        if (policy.shouldValidateExample()){
+            throw QueryException.unsupportedMappingQueryByExample(queryObject.getClass().getName(), this);
+        }
         return null;
     }
 
