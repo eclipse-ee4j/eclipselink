@@ -2361,6 +2361,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Only in this case if you set the example object again after execution you must then also reset the selection criteria.
      * (This is because after execution the original criteria and Query By Example criteria were fused together,
      * and the former cannot be easily recovered from the now invalid result).
+     * <p>
+     * <b>Restrictions</b>:
+     * <ul>
+     * <li>Only attributes whose mappings are DirectToField, Aggregate (Embeddable), ObjectReference
+     * (OneToOne) or Collection type OneToMany/ManyToMany are considered in a Query By Example object.  The behaviour when an example object has attribute values for other mappings types is <b>undefined</b>.</li>
+     * <ul><li>To ensure the example does not include any unsupported mappings the flag {@link #setValidateExample}
+     * should be set to true on the corresponding QueryByExamplePolicy to ensure no unsupported relationship types are used in the example.</li>
+     * <li> For OneToMany and ManyToMany mappings the elements within the collections and the references attribute values will be added to the expression as disjuncts (OR)</li>
+     * </ul>
+     * </ul>
      */
     public void setExampleObject(Object newExampleObject) {
         if (!getQueryMechanism().isQueryByExampleMechanism()) {

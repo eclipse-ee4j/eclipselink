@@ -71,8 +71,12 @@ import org.eclipse.persistence.exceptions.*;
 * <p>
 * <b>Restrictions</b>:
 * <ul>
-* <li>Only attributes whose mappings are DirectToField or ObjectReference
-* (OneToOne) are considered in a Query By Example.
+* <li>Only attributes whose mappings are DirectToField, Aggregate (Embeddable), ObjectReference
+* (OneToOne) or Collection type OneToMany/ManyToMany are considered in a Query By Example object.  The behaviour when an example object has attribute values for other mappings types is <b>undefined</b>.</li>
+* <ul><li>To ensure the example does not include any unsupported mappings the flag {@link #setValidateExample}
+* should be set to true on the corresponding QueryByExamplePolicy to ensure no unsupported relationship types are used in the example.</li>
+* <li> For OneToMany and ManyToMany mappings the elements within the collections and the references attribute values will be added to the expression as disjuncts (OR)</li>
+* </ul>
 * </ul>
 * <p>
 * <b>Example</b>:
@@ -103,6 +107,7 @@ public class QueryByExamplePolicy implements java.io.Serializable {
     public Map attributesToAlwaysInclude = new HashMap();
     public Map specialOperations = new HashMap();
     public boolean shouldUseEqualityForNulls;
+    protected boolean validateExample;
 
     /**
      * PUBLIC:
@@ -513,6 +518,16 @@ public class QueryByExamplePolicy implements java.io.Serializable {
     public void setSpecialOperations(Map newOperations) {
         specialOperations = newOperations;
     }
+    
+    /**
+     * PUBLIC:
+     * When set to <code>true</code> the example object will be validated for unsupported mapping types.
+     * If you wish these mapping types to be ignored either set this flag to <code>false</code> or add the attribute
+     * to the list of ignored attributes in this policy
+     */
+    public void setValidateExample(boolean validate){
+        this.validateExample = validate;
+    }
 
     /**
      * PUBLIC:
@@ -578,5 +593,14 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      */
     public boolean shouldUseEqualityForNulls() {
         return shouldUseEqualityForNulls;
+    }
+    
+    /**
+     * PUBLIC:
+     * Returns true if the example object used with this policy should be validated for attributes
+     * with unsupported mappings.
+     */
+    public boolean shouldValidateExample(){
+        return this.validateExample;
     }
 }

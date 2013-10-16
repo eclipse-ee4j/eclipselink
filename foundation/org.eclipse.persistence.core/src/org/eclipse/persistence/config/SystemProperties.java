@@ -59,4 +59,13 @@ public class SystemProperties {
      */
 
     public static final String RECORD_STACK_ON_LOCK = "eclipselink.cache.record-stack-on-lock";
+    
+    /**
+     * This property can be set to disable processing of X-Many relationship
+     * attributes for Query By Example objects. In previous versions of
+     * EclipseLink these attributes would have been ignored but as of this
+     * release they will be processed into the expression.
+     */
+    
+    public static final String DO_NOT_PROCESS_XTOMANY_FOR_QBE = "eclipselink.query.query-by-example.ignore-xtomany";
 }
