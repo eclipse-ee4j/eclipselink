@@ -18,6 +18,7 @@ import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -149,6 +150,18 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
         objectBuilder.mergeIntoObject(result, true, element, mergeManager, targetSession);
 
         return result;
+    }
+
+    /**
+     * INTERNAL:
+     * In case Query By Example is used, this method builds and returns an expression that
+     * corresponds to a single attribute and it's value.
+     */
+    public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
+        if (policy.shouldValidateExample()){
+            throw QueryException.unsupportedMappingQueryByExample(queryObject.getClass().getName(), this);
+        }
+        return null;
     }
 
     /**
