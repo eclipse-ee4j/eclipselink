@@ -55,6 +55,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -71,6 +72,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MapAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
@@ -214,6 +216,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testEnumeratedPrimaryKeys"));
         
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
+        suite.addTest(new AdvancedJPAJunitTest("testJoinFetchWithRefreshOnRelatedEntity"));
         
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
@@ -2716,6 +2719,77 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             }
         } finally {
             rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    
+    /**
+     * Bug 415082 - JoinFetch does not refresh cache even though REFRESH hint is set to true
+     * Test that a refresh is performed on a queried and related object, with fetchjoins
+     */
+    public void testJoinFetchWithRefreshOnRelatedEntity() {
+        // create test entities
+        Employee emp = null;
+        Department dept = null;
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            emp = new Employee("Bob", "Robertson");
+            dept = new Department("Pomology");
+            emp.setDepartment(dept);
+            
+            em.persist(emp);
+            em.persist(dept);
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // update tables directly
+        em = createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            Session session = ((JpaEntityManager)em.getDelegate()).getActiveSession();
+            session.executeNonSelectingSQL("UPDATE CMP3_EMPLOYEE t0 SET t0.F_NAME='Joe', t0.L_NAME='Josephson' WHERE t0.EMP_ID=" + emp.getId());
+            session.executeNonSelectingSQL("UPDATE CMP3_DEPT t1 SET t1.NAME='Xenobiology' WHERE t1.ID=" + dept.getId());
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // perform refreshing query
+        em = createEntityManager();
+        try {
+            Query query = em.createQuery("select e from Employee e where e.id = :pk");
+            query.setParameter("pk", emp.getId());
+            query.setHint(QueryHints.REFRESH, HintValues.TRUE);
+            Employee empReturned = (Employee)query.getSingleResult();
+        
+            // validate refresh      
+            assertNotNull("Employee should not be null", empReturned);
+            Department deptReturned = empReturned.getDepartment();
+            assertNotNull("Department should not be null", deptReturned);
+            assertEquals("Employee should have the same id", emp.getId(), empReturned.getId());
+            assertEquals("Department should have the same id", dept.getId(), deptReturned.getId());
+            assertEquals("Employee's firstName should be refreshed", "Joe", empReturned.getFirstName());
+            assertEquals("Employee's lastName should be refreshed", "Josephson", empReturned.getLastName());
+            assertEquals("Department's name should be refreshed", "Xenobiology", deptReturned.getName());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // clean up
+        em = createEntityManager();
+        try {
+            beginTransaction(em);
+            em.remove(em.find(Employee.class, emp.getId()));
+            em.remove(em.find(Department.class, dept.getId()));
+            commitTransaction(em);
+        } finally {
             closeEntityManager(em);
         }
     }
