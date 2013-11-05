@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Nov 5, 2013-2.5 Chris Delahunt 
+ *       - 421109: DB2 AS400 doesn't support "USE AND KEEP UPDATE LOCKS" used for pessimistic locking
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -38,6 +40,17 @@ public class DB2MainframePlatform extends DB2Platform {
         super.initializePlatformOperators();
 
         addOperator(ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "CONCAT"));
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for pessimistic locking in DB2.
+     * Without the "WITH RS" the lock is not held.
+     * AS/400 does not support UPDATE type lock, so EXCLUSIVE is used instead.
+     */
+    @Override
+    public String getSelectForUpdateString() {
+        return " FOR READ ONLY WITH RS USE AND KEEP EXCLUSIVE LOCKS";
     }
     
     /**
