@@ -1013,7 +1013,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     // bug 421557 
     public void testGetIdenitifierOnNonEntity(){
         EntityManagerFactory factory = getEntityManagerFactory();
-        Object nonEntity = new MajorId();
+        Object nonEntity = new Object();
         try{
             factory.getPersistenceUnitUtil().getIdentifier(nonEntity);
         } catch (IllegalArgumentException e){
