@@ -130,9 +130,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedCompositePKJunitTest("testSharedDerivedIdEmbeddableClass"));
         suite.addTest(new AdvancedCompositePKJunitTest("testNestedMapsId"));
-        
-        suite.addTest(new AdvancedCompositePKJunitTest("testCopyAggregateCollection"));
-        
+
         if (!isJPA10()) {
             // This test runs only on a JEE6 / JPA 2.0 capable server
             suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
@@ -967,34 +965,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             throw e;
         }
     }
-    
-    // Bug 406957 - Copy fails on AggregateCollectionMapping and on map with @MapKeyColumn
-    public void testCopyAggregateCollection() {
-        Department department = new Department();
-        department.setName("DEPT AggregateCollection");
-        department.setRole("ROLE AggregateCollection");
-        department.setLocation("LOCATION AggregateCollection");
-        
-        Competency competency = new Competency();
-        competency.description = "Manage groups";
-        competency.rating = 9;
-        department.addCompetency(competency);
 
-        EntityManager em = createEntityManager();
-        CopyGroup privatelyOwned = new CopyGroup();
-        Department departmentCopy = (Department)JpaHelper.getEntityManager(em).copy(department, privatelyOwned);
-        if (departmentCopy.getCompetencies().size() != department.getCompetencies().size()) {
-            fail("departmentCopy.getCompetencies().size() = " + departmentCopy.getCompetencies().size() + "; "+department.getCompetencies().size()+" was expected");
-        }
-        if (departmentCopy.getCompetencies() == department.getCompetencies()) {
-            fail("departmentCopy.getCompetencies() == department.getCompetencies()");
-        }
-        Competency copmetencyCopy = departmentCopy.getCompetencies().iterator().next();
-        if (!competency.description.equals(copmetencyCopy.description)) {
-            fail("competency.descripton = " + competency.description +"; but copmetencyCopy.description = " + copmetencyCopy.description);
-        }
-    }
-    
     // bug 409579
     public void testFailedGetIdenitifier(){
         EntityManagerFactory factory = getEntityManagerFactory();
@@ -1012,7 +983,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
     // bug 421557 
     public void testGetIdenitifierOnNonEntity(){
         EntityManagerFactory factory = getEntityManagerFactory();
-        Object nonEntity = new MajorId();
+        Object nonEntity = new Object();
         try{
             factory.getPersistenceUnitUtil().getIdentifier(nonEntity);
         } catch (IllegalArgumentException e){
