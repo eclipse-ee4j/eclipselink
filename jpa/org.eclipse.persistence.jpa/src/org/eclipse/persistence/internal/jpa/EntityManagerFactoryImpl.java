@@ -79,7 +79,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * 
      * @param entity
      * @return id of the entity
-     * @throws IllegalStateException
+     * @throws IllegalArgumentException
      *             if the entity is found not to be an entity.
      */
     public static Object getIdentifier(Object entity, AbstractSession session) {

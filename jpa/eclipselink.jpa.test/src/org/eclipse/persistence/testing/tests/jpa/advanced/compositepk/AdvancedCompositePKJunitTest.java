@@ -138,6 +138,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             // This test runs only on a JEE6 / JPA 2.0 capable server
             suite.addTest(new AdvancedCompositePKJunitTest("testGetIdentifier"));
             suite.addTest(new AdvancedCompositePKJunitTest("testFailedGetIdenitifier"));
+            suite.addTest(new AdvancedCompositePKJunitTest("testGetIdenitifierOnNonEntity"));
         }
         return suite;
     }
@@ -995,7 +996,6 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         }
     }
     
-    
     // bug 409579
     public void testFailedGetIdenitifier(){
         EntityManagerFactory factory = getEntityManagerFactory();
@@ -1008,5 +1008,17 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             return;
         }
         fail("Exception not thrown for call to getIdentifier when empty constructor not available.");
+    }
+
+    // bug 421557 
+    public void testGetIdenitifierOnNonEntity(){
+        EntityManagerFactory factory = getEntityManagerFactory();
+        Object nonEntity = new MajorId();
+        try{
+            factory.getPersistenceUnitUtil().getIdentifier(nonEntity);
+        } catch (IllegalArgumentException e){
+            return;
+        }
+        fail("IllegalArgumentException not thrown for call to getIdentifier with a non-entity class.");
     }
 }
