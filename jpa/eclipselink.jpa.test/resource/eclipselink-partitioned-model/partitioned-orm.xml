@@ -209,4 +209,25 @@
             </one-to-one>
         </attributes>
     </entity>
+    <entity name="Office" class="Office" access="PROPERTY">
+        <table name="PART_OFFICE"/>
+        <hash-partitioning name="HashPartitioningByNAME">
+            <partition-column name="OFF_NAME"/>
+            <connection-pool>node2</connection-pool>
+            <connection-pool>node3</connection-pool>
+        </hash-partitioning>
+        <partitioned>HashPartitioningByNAME</partitioned>
+        <attributes>
+            <id name="id">
+                <column name="OFF_ID"/>
+                <generated-value strategy="TABLE" generator="OFFICE_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name">
+                <column name="OFF_NAME"/>
+            </basic>
+            <basic name="number">
+                <column name="OFF_NUMBER"/>
+            </basic>
+        </attributes>
+    </entity>
 </entity-mappings>

@@ -27,9 +27,9 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * HashPartitioningPolicy partitions access to a database cluster by the hash of a field value from the object,
  * such as the object's location, or tenant.
  * The hash indexes into the list of connection pools.
- * All write or read request for object's with that hash value are sent to the server.
+ * All write or read request for objects with that hash value are sent to the server.
  * If a query does not include the field as a parameter, then it can either be sent
- * to all server's and unioned, or left to the sesion's default behavior.
+ * to all servers and unioned, or left to the session's default behavior.
  * @author James Sutherland
  * @since EclipseLink 2.2
  */
@@ -104,7 +104,7 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
                 return null;
             }
         }
-        int index = value.hashCode() % this.connectionPools.size();
+        int index = Math.abs(value.hashCode()) % this.connectionPools.size();
         if (session.getPlatform().hasPartitioningCallback()) {
             // UCP support.
             session.getPlatform().getPartitioningCallback().setPartitionId(index);
@@ -127,7 +127,7 @@ public class HashPartitioningPolicy extends FieldPartitioningPolicy {
         if (value == null) {
             return;
         }
-        int index = value.hashCode() % this.connectionPools.size();
+        int index = Math.abs(value.hashCode()) % this.connectionPools.size();
         if (session.getPlatform().hasPartitioningCallback()) {
             // UCP support.
             session.getPlatform().getPartitioningCallback().setPartitionId(index);

@@ -15,8 +15,10 @@ package org.eclipse.persistence.testing.tests.jpa.partitioned;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.persistence.*;
+
 import junit.framework.*;
 
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
@@ -52,6 +54,7 @@ public class PartitionedTestSuite extends JUnitTestCase {
         suite.addTest(new PartitionedTestSuite("testUpdateProject"));
         suite.addTest(new PartitionedTestSuite("testPartitioning"));
         suite.addTest(new PartitionedTestSuite("testPersistPartitioning"));
+        suite.addTest(new PartitionedTestSuite("testPersistOfficeWithLongName"));
         return suite;
     }
     
@@ -371,6 +374,21 @@ public class PartitionedTestSuite extends JUnitTestCase {
         }
         for (int index = 0; index < 3; index++) {
             verifyPersist(new EmployeePopulator().basicEmployeeExample2());
+        }
+    }
+    
+    /**
+     * Test persist an Office with a long name to produce a potential negative hashcode.
+     * Bug 371514 - fragile hashing in HashPartitioningPolicy
+     */
+    public void testPersistOfficeWithLongName() {
+        if (!this.validDatabase) {
+            return;
+        }
+        for (int index = 0; index < 25; index++) {
+            String longName = "Office with a very, very, very long name indeed";
+            longName += String.valueOf(UUID.randomUUID());
+            verifyPersist(new Office(longName, index + 1));
         }
     }
     
