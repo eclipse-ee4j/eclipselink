@@ -29,6 +29,7 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildWORKTable());
         addTableDefinition(buildDEPTTable());
         addTableDefinition(buildDEPT_EMPTable());
+        addTableDefinition(buildPART_OFFICETable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -501,6 +502,36 @@ public class PartitionedTableCreator extends TogglingFastTableCreator {
        table.addField(location);
        
        return table;   
+   }
+   
+   public TableDefinition buildPART_OFFICETable() {
+       TableDefinition table = new TableDefinition();
+       table.setName("PART_OFFICE");
+
+       FieldDefinition fieldID = new FieldDefinition();
+       fieldID.setName("OFF_ID");
+       fieldID.setTypeName("NUMERIC");
+       fieldID.setSize(15);
+       fieldID.setShouldAllowNull(false);
+       fieldID.setIsPrimaryKey(true);
+       fieldID.setUnique(false);
+       fieldID.setIsIdentity(false);
+       table.addField(fieldID);
+       
+       FieldDefinition fieldNAME = new FieldDefinition();
+       fieldNAME.setName("OFF_NAME");
+       fieldNAME.setTypeName("VARCHAR2");
+       fieldNAME.setSize(128);
+       fieldNAME.setSubSize(0);
+       table.addField(fieldNAME);
+       
+       FieldDefinition fieldNUMBER = new FieldDefinition();
+       fieldNUMBER.setName("OFF_NUMBER");
+       fieldNUMBER.setTypeName("NUMERIC");
+       fieldNUMBER.setSize(15);
+       table.addField(fieldNUMBER);
+       
+       return table;
    }
 
 }
