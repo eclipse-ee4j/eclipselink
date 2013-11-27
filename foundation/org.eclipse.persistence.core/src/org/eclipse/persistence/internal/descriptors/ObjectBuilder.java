@@ -3310,6 +3310,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             valueIntoObject = mapping.getAttributeValueFromObject(valueIntoObject);
             mapping = ((AggregateMapping)mapping).getReferenceDescriptor().getObjectBuilder().getMappingForField(databaseField);
         }
+        // Bug 422610
+        if (valueIntoObject == null) {
+            return null;
+        }
         return mapping.getAttributeValueFromObject(valueIntoObject);
     }
 

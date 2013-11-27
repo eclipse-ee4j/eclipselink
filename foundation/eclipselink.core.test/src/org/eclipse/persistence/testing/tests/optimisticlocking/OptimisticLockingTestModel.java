@@ -109,6 +109,8 @@ public class OptimisticLockingTestModel extends TestModel {
         
         // EL bug 247884 - NullPointerException using Timestamp (server) based optimistic locking and UpdateAllQuery
         suite.addTest(new UpdateAllWithTimestampLockingTest());
+        // EL bug 422610 - Null aggregate with lock field using TimestampLockingPolicy causes NPE on change calculation
+        suite.addTest(new WriteNullAggregateWithTimestampLockingTest());
 
         return suite;
     }

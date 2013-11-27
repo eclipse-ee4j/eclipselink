@@ -46,7 +46,7 @@ public class TimestampInAggregateObject extends LockObject {
         aggregateobjectmapping.setAttributeName("version");
         aggregateobjectmapping.setIsReadOnly(false);
         aggregateobjectmapping.setReferenceClass(TimestampVersion.class);
-        aggregateobjectmapping.setIsNullAllowed(false);
+        aggregateobjectmapping.setIsNullAllowed(true);
         descriptor.addMapping(aggregateobjectmapping);
 
         return descriptor;
