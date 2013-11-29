@@ -91,6 +91,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Bag;
+import org.eclipse.persistence.testing.models.jpa.advanced.BarCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Cost;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
@@ -108,6 +109,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Loot;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.advanced.Product;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.Quantity;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
@@ -220,6 +222,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedJPAJunitTest("testAttributeOverrideToMultipleSameDefaultColumnName"));
         suite.addTest(new AdvancedJPAJunitTest("testJoinFetchWithRefreshOnRelatedEntity"));
+        suite.addTest(new AdvancedJPAJunitTest("testSharedEmbeddedAttributeOverrides"));
         
         if (!isJPA10()) {
             // These tests use JPA 2.0 entity manager API
@@ -1382,6 +1385,43 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         
         closeEntityManager(em);
+    }
+    
+    /**
+     * Test that an embedded attribute can correctly share a field override with
+     * its parent class and write a non-null value when it is inserted and then modified.   
+     * EL Bug 393520
+     */
+    public void testSharedEmbeddedAttributeOverrides() {
+        EntityManager em = createEntityManager();
+        try {
+            Product product = new Product();
+            product.setName("Scottish Shortbread" );
+            product.setCountryCode("GBR");
+            product.setBarCode1(new BarCode("123-456-789", "GBR"));
+            product.setBarCode2(null);
+            
+            beginTransaction(em);
+            em.persist(product);
+            commitTransaction(em);
+            
+            Product productReRead = em.find(Product.class, product.getId());
+            productReRead.setName("Beef Jerky");
+            productReRead.setCountryCode("USA");
+            productReRead.setBarCode1(new BarCode("722-666-489", "USA"));
+            productReRead.setBarCode2(null);
+            
+            beginTransaction(em);
+            em.persist(product);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
     }
     
     /**
