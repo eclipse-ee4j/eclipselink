@@ -485,10 +485,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected void writeNullReferenceRow(AbstractRecord record) {
         List<DatabaseField> fields = getReferenceFields();
         int size = fields.size();
+        boolean nullInserted = false;
         for (int index = 0; index < size; index++) {
-            record.put(fields.get(index), null);
+            DatabaseField field = fields.get(index);
+            // EL Bug 393520
+            if (!field.isReadOnly() && (field.isUpdatable() || field.isInsertable())) {
+                record.put(field, null);
+                nullInserted = true;
+            }
         }
-        if (size > 0) {
+        if (size > 0 && nullInserted) {
             // EL Bug 319759 - if a field is null, then the update call cache should not be used
             record.setNullValueInFields(true);
         }

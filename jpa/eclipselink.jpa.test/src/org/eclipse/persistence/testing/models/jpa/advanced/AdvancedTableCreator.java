@@ -97,6 +97,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRABBITFOOTTable());
         addTableDefinition(buildCMP3_ROOMTable());
         addTableDefinition(buildCMP3_DOORTable());
+        addTableDefinition(buildCMP3_PRODUCTTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -2601,6 +2602,63 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldHEIGHT.setShouldAllowNull(true);
         table.addField(fieldHEIGHT);
 
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_PRODUCTTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_PRODUCT");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(32);
+        fieldNAME.setShouldAllowNull(false);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldCOUNTRYCODE = new FieldDefinition();
+        fieldCOUNTRYCODE.setName("COUNTRY_CODE");
+        fieldCOUNTRYCODE.setTypeName("VARCHAR");
+        fieldCOUNTRYCODE.setSize(3);
+        fieldCOUNTRYCODE.setShouldAllowNull(false);
+        fieldCOUNTRYCODE.setIsPrimaryKey(false);
+        fieldCOUNTRYCODE.setUnique(false);
+        fieldCOUNTRYCODE.setIsIdentity(false);
+        table.addField(fieldCOUNTRYCODE);
+        
+        FieldDefinition fieldBARCODE1 = new FieldDefinition();
+        fieldBARCODE1.setName("BARCODE1");
+        fieldBARCODE1.setTypeName("VARCHAR");
+        fieldBARCODE1.setSize(32);
+        fieldBARCODE1.setShouldAllowNull(true);
+        fieldBARCODE1.setIsPrimaryKey(false);
+        fieldBARCODE1.setUnique(false);
+        fieldBARCODE1.setIsIdentity(false);
+        table.addField(fieldBARCODE1);
+        
+        FieldDefinition fieldBARCODE2 = new FieldDefinition();
+        fieldBARCODE2.setName("BARCODE2");
+        fieldBARCODE2.setTypeName("VARCHAR");
+        fieldBARCODE2.setSize(32);
+        fieldBARCODE2.setShouldAllowNull(true);
+        fieldBARCODE2.setIsPrimaryKey(false);
+        fieldBARCODE2.setUnique(false);
+        fieldBARCODE2.setIsIdentity(false);
+        table.addField(fieldBARCODE2);
+        
         return table;
     }
     
