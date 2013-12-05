@@ -86,6 +86,8 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
@@ -398,7 +400,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Create a JAXBBinder.  The JAXBBinder is used to preserve unmapped XML Data.
      */
     public JAXBBinder createBinder() {
-        return new JAXBBinder(getXMLContext());
+        return contextState.createBinder(this);
     }
 
     /**
@@ -408,7 +410,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */
     public <T> JAXBBinder createBinder(Class<T> nodeClass) {
         if (nodeClass.getName().equals("org.w3c.dom.Node")) {
-            return new JAXBBinder(getXMLContext());
+            return contextState.createBinder(this);
         } else {
             throw new UnsupportedOperationException(JAXBException.unsupportedNodeClass(nodeClass.getName()));
         }
@@ -1527,6 +1529,22 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
              }
              return unmarshaller;
         }
+        
+        public JAXBBinder createBinder(JAXBContext context) {
+        	XMLMarshaller marshaller = null;
+        	XMLUnmarshaller unmarshaller = null;
+        	try {
+        		marshaller = createMarshaller(context).getXMLMarshaller();
+        		unmarshaller = createUnmarshaller(context).getXMLUnmarshaller();
+        	} catch (javax.xml.bind.JAXBException e) {
+        		// log something
+        		marshaller = context.getXMLContext().createMarshaller();
+        		unmarshaller = context.getXMLContext().createUnmarshaller();
+        	}
+        	
+        	return new JAXBBinder(context, marshaller, unmarshaller);
+        }
+
         private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException{
             Object propertyValue = properties.get(propertyName);
             if(propertyValue != null){          

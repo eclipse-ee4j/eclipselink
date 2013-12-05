@@ -17,6 +17,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 
+import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -31,6 +32,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.jaxb.JAXBBinder;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.ListenerMarshal.MarshalEvent;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.ListenerUnmarshal.UnmarshalEvent;
@@ -552,4 +554,22 @@ public class ListenerTestCases extends TestCase {
         testUnmarshalListenerRootObjectAsJAXBElement(jaxbElement, unmarshaller, listener);
     }
 */
+    
+    public void testClassCallbacksForBinder() throws Exception {
+    	Binder binder = jc.createBinder();
+    	
+    	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(new InputSource(new StringReader(ROOT_XML)));
+        
+        //marshal and unmarshal
+        ListenerRootObject root = (ListenerRootObject) binder.unmarshal(doc);
+        binder.marshal(root, db.newDocument());
+        
+        // just tests the fact that they are called
+        assertNotNull(root.afterMarshalMarshaller);
+        assertNotNull(root.beforeMarshalMarshaller);
+        assertNotNull(root.afterUnmarshalUnmarshaller);
+        assertNotNull(root.beforeUnmarshalUnmarshaller);
+    }
 }

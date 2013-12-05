@@ -23,16 +23,15 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-
 import org.eclipse.persistence.oxm.XMLBinder;
-import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrderingPolicy;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * INTERNAL
@@ -49,12 +48,12 @@ import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrdering
  */
 public class JAXBBinder extends Binder {
 
-    private XMLContext xmlContext;
+    private JAXBContext jaxbContext;
     private XMLBinder xmlBinder;
 
-    public JAXBBinder(XMLContext xmlContext) {
-        this.xmlContext = xmlContext;
-        this.xmlBinder = this.xmlContext.createBinder();
+    public JAXBBinder(JAXBContext xmlContext, XMLMarshaller marshaller, XMLUnmarshaller unmarshaller) {
+        this.jaxbContext = xmlContext;
+        this.xmlBinder = this.jaxbContext.getXMLContext().createBinder(marshaller, unmarshaller);
         this.xmlBinder.getDocumentPreservationPolicy().setNodeOrderingPolicy(new RelativePositionOrderingPolicy());
         this.xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER));
     }
@@ -166,7 +165,6 @@ public class JAXBBinder extends Binder {
                 return updatedObj;
             }
             
-
             if(desc.getDefaultRootElementField() != null){
                     String objRootElem = desc.getDefaultRootElement();
 

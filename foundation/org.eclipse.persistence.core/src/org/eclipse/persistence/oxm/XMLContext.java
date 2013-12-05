@@ -261,6 +261,14 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     public XMLBinder createBinder() {
         return new XMLBinder(this);
     }
+    
+    /**
+     * Create a new XMLBinder with supplied marshaller and unmarshaller instances.
+     * @return an XMLBinder based on this XMLContext,
+     */
+    public XMLBinder createBinder(XMLMarshaller marshaller, XMLUnmarshaller unmarshaller) {
+        return new XMLBinder(this, marshaller, unmarshaller);
+    }
 
     /**
      * Create a new XMLMarshaller
