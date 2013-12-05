@@ -306,7 +306,9 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public boolean isAttributeValueFullyBuilt(Object attributeValue){
-        return attributeValue != null;
+        //Bug#413833 : If attributeValue is an instance of ValueHolder,
+        //it has not been built into the clone previously
+        return attributeValue != null && !(attributeValue instanceof ValueHolder && ((ValueHolder)attributeValue).isNewlyWeavedValueHolder());
     }
     
     /**
