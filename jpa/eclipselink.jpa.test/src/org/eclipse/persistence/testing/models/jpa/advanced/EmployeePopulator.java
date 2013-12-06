@@ -920,6 +920,23 @@ public class EmployeePopulator {
         return proc;
     }
     
+    public StoredProcedureDefinition buildOracleStoredProcedureReadFromEmployee(DatabaseSession session) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("SProc_Read_Employee");
+        proc.addInOutputArgument("employee_id_v", Integer.class);
+        proc.addOutputArgument("f_name_v", String.class);
+        proc.addOutputArgument("huge_proj_id_v", Integer.class);
+        String statement = null;
+        if(session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT @f_name_v=F_NAME, @huge_proj_id_v=HUGE_PROJ_ID FROM CMP3_EMPLOYEE WHERE EMP_ID = @employee_id_v";
+        } else {
+            statement = "SELECT F_NAME, HUGE_PROJ_ID  INTO f_name_v, huge_proj_id_v FROM CMP3_EMPLOYEE WHERE (EMP_ID = employee_id_v)";
+        } 
+        proc.addStatement(statement);
+        return proc;
+    }
+    
     public StoredProcedureDefinition buildOracleStoredProcedureReadInOut(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("SProc_Read_InOut");
@@ -965,6 +982,7 @@ public class EmployeePopulator {
             try {
                 SchemaManager schema = new SchemaManager((DatabaseSession) session);
                 schema.replaceObject(buildOracleStoredProcedureReadFromAddress((DatabaseSession) session));
+                schema.replaceObject(buildOracleStoredProcedureReadFromEmployee((DatabaseSession) session));
                 schema.replaceObject(buildOracleStoredProcedureReadInOut((DatabaseSession) session));
             } finally {
                 if (useFastTableCreatorAfterInitialCreate && !isFirstCreation) {

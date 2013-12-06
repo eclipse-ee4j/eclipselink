@@ -40,6 +40,7 @@ import java.util.Vector;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
@@ -49,12 +50,15 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.Bindable.BindableType;
 import javax.persistence.metamodel.Type.PersistenceType;
+import javax.persistence.spi.LoadState;
+import javax.persistence.spi.ProviderUtil;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.config.CascadePolicy;
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -74,6 +78,7 @@ import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -104,6 +109,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.Equipment;
 import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.HugeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Jigsaw;
 import org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
@@ -201,6 +207,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetFieldMapping"));        
         suite.addTest(new AdvancedJPAJunitTest("testNamedFunction"));
+        suite.addTest(new AdvancedJPAJunitTest("testNonTriggerLazyForSProc"));
 
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
@@ -1894,6 +1901,53 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         closeEntityManager(em);
     }
 
+    // Test for lazy OneToOne relation not getting triggered
+    public void testNonTriggerLazyForSProc() {
+        if (!supportsStoredProcedures()) {
+            return;
+        }
+        Employee employee2;
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        try {
+            Employee employee1 = new Employee();
+            
+            employee1.setFirstName("Me");
+            employee1.setId(11);
+            HugeProject hp = new HugeProject("big proj");
+            
+            employee1.setHugeProject(hp);
+            em.persist(hp);
+            em.persist(employee1);
+
+            commitTransaction(em);
+            em.clear();
+            
+            beginTransaction(em);
+            
+            Query q = em.createNamedQuery("SProcEmployee");
+            q.setParameter("EMP_ID", employee1.getId());
+            q.setFlushMode(FlushModeType.COMMIT);
+            q.setHint(QueryHints.REFRESH, HintValues.TRUE);
+            q.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
+            employee2 = (Employee) q.getSingleResult();
+            
+            ProviderUtil util = (new PersistenceProvider()).getProviderUtil();
+            //status can be LoadState.NOT_LOADED or LoadState.UNKNOWN
+            assertFalse("ProviderUtil returned LOADED for isLoaded for hugeProject when it should not.", util.isLoadedWithReference(employee2, "hugeProject").equals(LoadState.LOADED));
+             
+        } catch (RuntimeException e) {
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+    
     /** 
      * Tests an OptimisticLockingException is thrown when calling merge a detached and removed object.
      * bug 272704
