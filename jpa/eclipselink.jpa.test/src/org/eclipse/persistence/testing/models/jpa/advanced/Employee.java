@@ -180,7 +180,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
             @StoredProcedureParameter(direction=IN_OUT, name="employee_id_v", queryParameter="EMP_ID", type=Integer.class),
             @StoredProcedureParameter(direction=OUT, name="f_name_v", queryParameter="F_NAME", type=String.class),
             @StoredProcedureParameter(direction=OUT, name="huge_proj_id_v", queryParameter="HUGE_PROJ_ID", type=Integer.class)
-        }),
+        })
 })
 
 @OptimisticLocking(
