@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,11 +17,13 @@ package dbws.testing;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+
 //JUnit4 imports
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+
 
 //testing imports
 import dbws.testing.advancedjdbcpackage.AdvancedJDBCPackageTestSuite;
@@ -41,6 +43,7 @@ import dbws.testing.ordescriptor.ORDescriptorTestSuite;
 import dbws.testing.oxdescriptor.OXDescriptorTestSuite;
 import dbws.testing.plsqlcollection.PLSQLCollectionTestSuite;
 import dbws.testing.plsqlrecord.PLSQLRecordTestSuite;
+import dbws.testing.plsqlrecord2.PLSQLRecord2TestSuite;
 import dbws.testing.prependedpackage.PrependedPackageTestSuite;
 import dbws.testing.prependedschema.PrependedSchemaTestSuite;
 import dbws.testing.rowtype.RowTypeTestSuite;
@@ -80,6 +83,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     OXDescriptorTestSuite.class,
     PLSQLCollectionTestSuite.class,
     PLSQLRecordTestSuite.class,
+    PLSQLRecord2TestSuite.class,
     PrependedPackageTestSuite.class,
     PrependedSchemaTestSuite.class,
     RowTypeTestSuite.class,
