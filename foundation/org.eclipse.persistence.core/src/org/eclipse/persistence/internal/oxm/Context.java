@@ -16,9 +16,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.xml.namespace.QName;
@@ -171,10 +173,24 @@ public abstract class Context<
         /**
          * INTERNAL:
          */
-        public void storeDescriptorByQName(DESCRIPTOR descriptor, CorePlatform platform) {
+        public void storeDescriptorByQName(DESCRIPTOR descriptor, CorePlatform platform, Set<DESCRIPTOR> processedDescriptors) {
             XPathQName descriptorQName;
             String defaultRootName;
     
+            if (processedDescriptors == null) {
+                processedDescriptors = new HashSet<DESCRIPTOR>();
+            }
+ 
+            if (processedDescriptors.contains(descriptor)) {
+                return;
+            } else {
+                processedDescriptors.add(descriptor);
+                if (descriptor.hasInheritance() && !descriptor.getInheritancePolicy().isRootParentDescriptor()) {
+                    //this means we have a descriptor that is a child in an inheritance hierarchy
+                    storeDescriptorByQName((DESCRIPTOR) descriptor.getInheritancePolicy().getParentDescriptor(), platform, processedDescriptors);
+                }
+            }
+            
             List tableNames = descriptor.getTableNames();
             for (int i = 0; i < tableNames.size(); i++) {
                 defaultRootName = (String) tableNames.get(i);
@@ -197,8 +213,6 @@ public abstract class Context<
                         if (!descriptor.hasInheritance() || descriptor.getInheritancePolicy().isRootParentDescriptor()) {
                             addDescriptorByQName(descriptorQName, descriptor);
                         } else {
-                            //this means we have a descriptor that is a child in an inheritance hierarchy
-                            storeDescriptorByQName((DESCRIPTOR) descriptor.getInheritancePolicy().getParentDescriptor(), platform);
                             Descriptor existingDescriptor = getDescriptor(descriptorQName);
                             if (existingDescriptor == null) {
                                 addDescriptorByQName(descriptorQName, descriptor);
@@ -241,9 +255,10 @@ public abstract class Context<
     
         public void storeDescriptorsByQName(CoreSession session) {
             Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
+            Set<DESCRIPTOR> processedDescriptors = new HashSet<DESCRIPTOR>();
             while (iterator.hasNext()) {
                 DESCRIPTOR descriptor = (DESCRIPTOR) iterator.next();
-                storeDescriptorByQName(descriptor, session.getDatasourcePlatform());
+                storeDescriptorByQName(descriptor, session.getDatasourcePlatform(), processedDescriptors);
             }
         }
     

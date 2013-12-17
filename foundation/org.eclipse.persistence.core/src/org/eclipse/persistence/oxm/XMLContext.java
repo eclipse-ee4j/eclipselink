@@ -377,7 +377,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * INTERNAL:
      */
     public void storeXMLDescriptorByQName(XMLDescriptor xmlDescriptor) {
-        contextState.storeDescriptorByQName(xmlDescriptor, null);
+        contextState.storeDescriptorByQName(xmlDescriptor, null, null);
     }
 
     /**
