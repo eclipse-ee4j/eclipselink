@@ -66,7 +66,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
            "\nPROCEDURE sp_get_empRecord" +
            "\n(" +
                "\np_empno            IN  NUMBER," +
-               "\no_return_status    OUT VARCHAR2," +
+               "\no_return_status    OUT BOOLEAN," +
                "\no_return_message   OUT VARCHAR2," +
                "\np_emprec           OUT empRecType" + 
            "\n);" +
@@ -78,14 +78,14 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
     static final String CREATE_PACKAGE_BODY =
         "CREATE OR REPLACE PACKAGE BODY DMCCANN.pkgRec_wrapper2 IS" +
            "\nPROCEDURE sp_get_empRecord (" + 
-               "\np_empno            IN     NUMBER," +
-               "\no_return_status    OUT VARCHAR2," +
+               "\np_empno            IN  NUMBER," +
+               "\no_return_status    OUT BOOLEAN," +
                "\no_return_message   OUT VARCHAR2," +
                "\np_emprec           OUT empRecType)" +
            "\nAS" +
               "\nl_return_status   VARCHAR2 (10);" +
            "\nBEGIN" +
-               "\no_return_status := 'S';" +
+               "\no_return_status := TRUE;" +
                "\no_return_message := 'No Errors';" +
     
                 "\nSELECT empno, ename" +
@@ -117,7 +117,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
         }
         String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDropProp)) {
-            ddlDrop = true;
+            ddlDrop = false;
         }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
@@ -160,9 +160,6 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
               "</properties>" +
               "<plsql-procedure " +
                   "name=\"GetEmpRecord\" " +
-                  "isSimpleXMLFormat=\"true\" " +
-                  "isCollection=\"true\" " +
-                  "returnType=\"xsd:any\" " +
                   "schemaPattern=\"DMCCANN\" " +
                   "catalogPattern=\"pkgRec_wrapper2\" " +
                   "procedurePattern=\"sp_get_empRecord\" " +
@@ -198,6 +195,11 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
 
     @Test
     public void getEmpRecordTest() {
+        System.out.println(DBWS_WSDL_STREAM);
+        System.out.println(DBWS_OR_STREAM);
+        System.out.println(DBWS_OX_STREAM);
+        System.out.println(DBWS_SCHEMA_STREAM);
+        
         Invocation invocation = new Invocation("GetEmpRecord");
         invocation.setParameter("p_empno", 69);
         Operation op = xrService.getOperation(invocation.getName());
@@ -215,7 +217,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
             STANDALONE_XML_HEADER +
             "\n<simple-xml-format>" +
             "\n<simple-xml>"+
-            "\n<o_return_status>S</o_return_status>" +
+            "\n<o_return_status>1</o_return_status>" +
             "\n<o_return_message>No Errors</o_return_message>" +
             "\n<PKGREC_WRAPPER2_EMPRECTYPE xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "\n<p_empno>69</p_empno>" +

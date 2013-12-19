@@ -51,6 +51,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
             "\nPROCEDURE OPTIONAL_ARG2(X IN DBWS_VCARRAY DEFAULT NULL, Q OUT VARCHAR2);" +
             "\nPROCEDURE OPTIONAL_ARG3(X IN DBWS_PHONETYPE DEFAULT NULL, Q OUT VARCHAR2);" +
             "\nPROCEDURE OPTIONAL_ARG4(X IN DBWS_PHONETYPE_TABLE DEFAULT NULL, Q OUT VARCHAR2);" +
+            "\nPROCEDURE OPTIONAL_ARG5(P OUT BOOLEAN);" +
         "\nEND OPTIONALARG;";
     static final String CREATE_OPTIONALARG_BODY =
         "CREATE OR REPLACE PACKAGE BODY OPTIONALARG AS" +
@@ -100,6 +101,10 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
 			        "\nQ := CONCAT(Q, X(2).CELL);" +
 			    "\nEND IF;" +
 	        "\nEND OPTIONAL_ARG4;" +
+            "\nPROCEDURE OPTIONAL_ARG5(P OUT BOOLEAN) AS" +
+            "\nBEGIN" +
+                "\nP := TRUE;" +
+            "\nEND OPTIONAL_ARG5;" +
         "\nEND OPTIONALARG;";
 
     static final String DROP_OPTIONALARG_BODY =
@@ -188,7 +193,13 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
 	            "procedurePattern=\"OPTIONAL_ARG4\" " +
 	            "isSimpleXMLFormat=\"true\" " +
 	        "/>" +
-          "</dbws-builder>";
+            "<plsql-procedure " +
+                "name=\"OptionalArgTest5\" " +
+                "catalogPattern=\"OPTIONALARG\" " +
+                "procedurePattern=\"OPTIONAL_ARG5\" " +
+                "returnType=\"xsd:any\" " +
+            "/>" +
+            "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
     }
@@ -304,6 +315,23 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
 		  "</simple-xml>" +
 	    "</simple-xml-format>";
 
+    @Test
+    public void optionalArgTest5() {
+        Invocation invocation = new Invocation("OptionalArgTest5");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(OPTIONAL_ARG_RESULT45_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String OPTIONAL_ARG_RESULT45_XML =
+        REGULAR_XML_HEADER +
+        "<value>1</value>";
+    
+    
     /**
      * Tests VArray default.  
      * Expects 'null'.

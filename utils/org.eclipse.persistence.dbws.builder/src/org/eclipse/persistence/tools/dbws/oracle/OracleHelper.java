@@ -1301,8 +1301,26 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         String returnType = opModel.getReturnType();
         boolean hasResponse = returnType != null;
 
+        
+        /**
+         * For multiple OUT args as well as a stored function with OUT args
+         * we want a DataReadQuery.
+         */
+        boolean multipleOuts = false;
+        int outCount = 0; 
+        for (ArgumentType arg : procType.getArguments()) {
+            
+            if (arg.getDirection() == ArgumentTypeDirection.OUT || arg.getDirection() == ArgumentTypeDirection.INOUT) {
+                outCount++;
+                if (outCount > 1 || (arg.isFunctionType() && outCount >= 1) ) {
+                    multipleOuts = true;
+                    break;
+                }
+            }
+        }
+        
         DatabaseQuery dq = null;
-        if (hasCursor || (hasResponse && opModel.isCollection())) {
+        if (hasCursor || multipleOuts || (hasResponse && opModel.isCollection())) {
             dq = new DataReadQuery();
         } else {
             dq = new ValueReadQuery();
