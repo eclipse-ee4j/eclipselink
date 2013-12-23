@@ -1972,7 +1972,7 @@ public class AnnotationsProcessor {
         // if there is a TypeInfo for ptype check it for transient, otherwise
         // check the class        
         if (helper.isCollectionType(ptype)) {
-            JavaClass componentType = helper.getJavaClass(Object.class);;
+            JavaClass componentType = helper.getJavaClass(Object.class);
             
             Collection typeArgs =  ptype.getActualTypeArguments();
             if(typeArgs.size() > 0) {

@@ -19,12 +19,14 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
@@ -317,16 +319,7 @@ public class Property implements Cloneable {
         }
     	String clsName= cls.getRawName();
         if(helper.isCollectionType(cls)){
-            if(cls.getPackageName().startsWith("java.")) {
-                Collection typeArgs =  cls.getActualTypeArguments();
-                if(typeArgs.size() > 0){
-                    genericType = (JavaClass) typeArgs.iterator().next();
-                } else {
-                    genericType = helper.getJavaClass(Object.class);
-                }           
-            } else {
-                genericType = getGenericType(cls, 0, helper);
-            }
+           	genericType = getGenericType(cls, 0, helper);           
             type = cls;
         }else if(cls.isArray()  && !clsName.equals("byte[]") ){
         	type = cls;
@@ -357,10 +350,12 @@ public class Property implements Cloneable {
         }
        
     }
-
-    private JavaClass getGenericType(JavaClass cls, int argument, Helper helper) {
+  
+    private JavaClass getGenericType(JavaClass cls, int argument, Helper helper){
+    	Collection typeArgs = cls.getActualTypeArguments();
+        Object[] typeArgsArray = typeArgs.toArray();
+        JavaClass genericType = null;
         if(cls.getPackageName().startsWith("java.")) {
-            Collection typeArgs =  cls.getActualTypeArguments();
             if(typeArgs.size() > argument){
                 Iterator iterator = typeArgs.iterator();
                 for(int x=0; x<argument; x++) {
@@ -370,11 +365,24 @@ public class Property implements Cloneable {
             } else {
                 return helper.getJavaClass(Object.class);
             }
-        } else {
-            Type genericTypeType = getGenericType(cls.getGenericSuperclass(), argument);
-            if(null == genericTypeType) {
+        }else{
+        	Map<String, JavaClass> variableToType = null;
+
+            if(cls instanceof JavaClassImpl){
+            	variableToType = new HashMap<String, JavaClass>();
+            	TypeVariable[] tvs = ((JavaClassImpl)cls).getJavaClass().getTypeParameters();
+            	if(tvs.length == typeArgsArray.length){
+	            	for (int x = 0; x < tvs.length; x++) {
+	                    variableToType.put(tvs[x].getName(), (JavaClass)typeArgsArray[x]);
+	                }
+            	}
+            }
+          
+        	Type genericTypeType = getGenericType(cls.getGenericSuperclass(), argument, variableToType);
+            
+        	if(null == genericTypeType) {
                 for(Type genericInterface : cls.getGenericInterfaces()) {
-                    genericTypeType = getGenericType(genericInterface, argument);
+                    genericTypeType = getGenericType(genericInterface, argument, variableToType);
                     if(null != genericTypeType) {
                         break;
                     }
@@ -382,17 +390,21 @@ public class Property implements Cloneable {
             }
             if(genericTypeType instanceof TypeVariable) {
                 TypeVariable typeVariable = (TypeVariable) genericTypeType;
-                Type[] typeVariableBounds = typeVariable.getBounds();
-                if(typeVariableBounds.length > 0) {
-                    genericTypeType = typeVariableBounds[0];
+                JavaClass existing = variableToType.get(typeVariable.getName());
+                if( existing != null){
+                	return existing;
+                }else{
+                    Type[] typeVariableBounds = typeVariable.getBounds();
+                    if(typeVariableBounds.length > 0) {
+                    	genericTypeType = typeVariableBounds[0];
+                    }  
                 }
-            } 
-            JavaClass genericType = null;
+        	}
+        	 
             if(genericTypeType instanceof Class) {
                 genericType = helper.getJavaClass((Class) genericTypeType);
             }
             if(null == genericType || genericTypeType == Object.class) {
-                Collection typeArgs =  cls.getActualTypeArguments();
                 if(typeArgs.size() > argument){
                     Iterator iterator = typeArgs.iterator();
                     for(int x=0; x<argument; x++) {
@@ -405,43 +417,49 @@ public class Property implements Cloneable {
             }
             return genericType;
         }
+        
     }
 
-    private Type getGenericType(Type type, int argument) {
+    private Type getGenericType(Type type, int argument, Map<String, JavaClass> variableToType) {
         if(type instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) type;
             Type rawType = parameterizedType.getRawType();
             if(rawType instanceof Class) {
                 Class rawTypeClass = (Class) rawType;
+                Type[] typeArgs = parameterizedType.getActualTypeArguments();
+                TypeVariable[] tvs = rawTypeClass.getTypeParameters();
+            	if(tvs.length == typeArgs.length){
+	            	for (int x = 0; x < tvs.length; x++) {
+	            		String name = tvs[x].getName();	            	
+	            		Type theType = typeArgs[x];
+	            		if(!variableToType.containsKey(name) && theType instanceof Class){
+	            			variableToType.put(name, helper.getJavaClass((Class)theType));	
+	            		}	                    
+	                }
+            	}
+                
                 if(rawTypeClass.getPackage().getName().startsWith("java.")) {
-                    Type actualType = parameterizedType.getActualTypeArguments()[argument];
-                    if(actualType instanceof TypeVariable) {
-                        TypeVariable typeVariable = (TypeVariable) actualType;
-                        Type[] typeVariableBounds = typeVariable.getBounds();
-                        if(typeVariableBounds.length > 0) {
-                            return typeVariableBounds[0];
-                        }
-                    }
+                    Type actualType = parameterizedType.getActualTypeArguments()[argument];                 
                     return actualType;
                 }
-                Type genericType = getGenericType(rawType, argument);
+                Type genericType = getGenericType(rawType, argument, variableToType);
                 if(genericType != null) {
                     return genericType;
                 } else {
                     return parameterizedType.getActualTypeArguments()[argument];
                 }
             } else {
-                return getGenericType(parameterizedType.getRawType(), argument);
+                return getGenericType(parameterizedType.getRawType(), argument,variableToType);
             }
         } else if(type instanceof Class) {
             Class clazz = (Class) type;
             for(Type genericInterface : clazz.getGenericInterfaces()) {
-                Type genericType = getGenericType(genericInterface, argument);
+                Type genericType = getGenericType(genericInterface, argument, variableToType);
                 if(null != genericType) {
                     return genericType;
                 }
             }
-            return getGenericType(clazz.getGenericSuperclass(), argument);
+            return getGenericType(clazz.getGenericSuperclass(), argument, variableToType);
         }
         return null;
     }
