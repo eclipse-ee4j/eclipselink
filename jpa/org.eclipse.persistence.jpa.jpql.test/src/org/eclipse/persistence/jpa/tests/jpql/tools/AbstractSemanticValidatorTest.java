@@ -1789,6 +1789,14 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 		testHasNoProblems(problems);
 	}
 
+	@Test
+	public final void test_ValidQuery_05() throws Exception {
+
+		String jpqlQuery = "SELECT r FROM Employee r OUTER JOIN r.phoneNumbers c WHERE c.phoneNumber = :major AND c.area = :name AND r.working = true";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
