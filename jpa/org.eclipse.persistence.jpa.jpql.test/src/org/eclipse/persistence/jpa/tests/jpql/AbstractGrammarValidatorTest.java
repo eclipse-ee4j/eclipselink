@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,7 +37,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 /**
  * The unit-tests testing {@link AbstractGrammarValidator}.
  *
- * @version 2.5.1
+ * @version 2.5.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -2881,6 +2881,82 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 			new String[] { DeleteClause_FromMissing, DeleteClause_RangeVariableDeclarationMalformed },
 			new int[] { startPosition1, startPosition2 },
 			new int[] { endPosition1,   endPosition2 }
+		);
+	}
+
+	@Test
+	public final void test_Join_InvalidIdentifier_01() throws Exception {
+
+		String jpqlQuery  = "SELECT r FROM Employee r LEFT OUTER JOIN r.phoneNumbers c WHERE c.phoneNumber = :major AND c.area = :name AND r.working = true";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_Join_InvalidIdentifier_02() throws Exception {
+
+		String jpqlQuery  = "SELECT r FROM Employee r OUTER JOIN r.phoneNumbers c WHERE c.phoneNumber = :major AND c.area = :name AND r.working = true";
+		int startPosition = "SELECT r FROM Employee r ".length();
+		int endPosition   = "SELECT r FROM Employee r OUTER JOIN".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			Join_InvalidIdentifier,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_Join_InvalidIdentifier_03() throws Exception {
+
+		String jpqlQuery  = "SELECT r FROM Employee r OUTER INNER JOIN r.phoneNumbers c WHERE c.phoneNumber = :major AND c.area = :name AND r.working = true";
+		int startPosition = "SELECT r FROM Employee r ".length();
+		int endPosition   = "SELECT r FROM Employee r OUTER INNER JOIN".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			Join_InvalidIdentifier,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_Join_InvalidIdentifier_04() throws Exception {
+
+		String jpqlQuery  = "SELECT r FROM Employee r LEFT INNER JOIN r.phoneNumbers c WHERE c.phoneNumber = :major AND c.area = :name AND r.working = true";
+		int startPosition = "SELECT r FROM Employee r ".length();
+		int endPosition   = "SELECT r FROM Employee r LEFT INNER JOIN".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			Join_InvalidIdentifier,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_Join_InvalidIdentifier_05() throws Exception {
+
+		String jpqlQuery  = "SELECT r FROM Employee r LEFT OUTER INNER JOIN r.phoneNumbers c WHERE c.phoneNumber = :major AND c.area = :name AND r.working = true";
+		int startPosition = "SELECT r FROM Employee r ".length();
+		int endPosition   = "SELECT r FROM Employee r LEFT OUTER INNER JOIN".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			Join_InvalidIdentifier,
+			startPosition,
+			endPosition
 		);
 	}
 

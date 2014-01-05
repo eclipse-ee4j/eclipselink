@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -119,7 +119,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * Utility class that creates an equivalent representation of any JPQL fragment, which then can be
  * used to test the actual hierarchical representation of a parsed JPQL query.
  *
- * @version 2.5
+ * @version 2.5.2
  * @since 2.5
  * @author Pascal Filion
  */
@@ -390,7 +390,7 @@ public final class JPQLParserTester {
 	}
 
 	public static CollectionValuedPathExpressionTester collectionPath(ExpressionTester identificationVariable,
-	                                                                     String collectionPath) {
+	                                                                  String collectionPath) {
 
 		return collectionPath(identificationVariable, true, collectionPath);
 	}
@@ -1502,6 +1502,33 @@ public final class JPQLParserTester {
 		);
 	}
 
+	public static JoinTester join(String joinType,
+	                              ExpressionTester collectionPath,
+	                              ExpressionTester identificationVariable) {
+
+		return join(
+			joinType,
+			collectionPath,
+			false,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	public static JoinTester join(String joinType,
+	                              ExpressionTester collectionPath,
+	                              ExpressionTester identificationVariable,
+	                              ExpressionTester joinCondition) {
+
+		return join(
+			joinType,
+			collectionPath,
+			false,
+			identificationVariable,
+			joinCondition
+		);
+	}
+
 	public static JoinTester join(String collectionPath, String identificationVariable) {
 
 		return join(
@@ -1562,6 +1589,33 @@ public final class JPQLParserTester {
 		return joinAs(
 			collectionPath,
 			variable(identificationVariable),
+			joinCondition
+		);
+	}
+
+	public static JoinTester joinAs(String joinType,
+	                                ExpressionTester collectionPath,
+	                                ExpressionTester identificationVariable) {
+
+		return join(
+			joinType,
+			collectionPath,
+			true,
+			identificationVariable,
+			nullExpression()
+		);
+	}
+
+	public static JoinTester joinAs(String joinType,
+	                                ExpressionTester collectionPath,
+	                                ExpressionTester identificationVariable,
+	                                ExpressionTester joinCondition) {
+
+		return join(
+			joinType,
+			collectionPath,
+			true,
+			identificationVariable,
 			joinCondition
 		);
 	}

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -22,7 +22,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see Join
  *
- * @version 2.4
+ * @version 2.5.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -57,6 +57,10 @@ public final class JoinFactory extends ExpressionFactory {
 	                                             boolean tolerant) {
 
 		int index = wordParser.position();
+
+		// TODO: There must be a better way to parse all the JOIN identifiers with a generic
+		//       parsing behavior without parsing something like "LEFT JOIN OUTER" has a single
+		//       expression but multiple join expressions
 
 		// JOIN and JOIN FETCH
 		if (wordParser.startsWithIdentifier(JOIN, index)) {
@@ -95,10 +99,33 @@ public final class JoinFactory extends ExpressionFactory {
 						expression = new Join(parent, LEFT_OUTER_JOIN);
 					}
 				}
+				// LEFT OUTER INNER
+				else if (wordParser.startsWithIdentifier(INNER, index)) {
+					index += 5;
+					index += wordParser.whitespaceCount(index);
+
+					if (wordParser.startsWithIdentifier(JOIN, index)) {
+						index += 4;
+						index += wordParser.whitespaceCount(index);
+
+						// LEFT OUTER INNER JOIN FETCH
+						if (wordParser.startsWithIdentifier(FETCH, index)) {
+							expression = new Join(parent, "LEFT OUTER INNER JOIN FETCH");
+						}
+						// LEFT OUTER INNER JOIN
+						else {
+							expression = new Join(parent, "LEFT OUTER INNER JOIN");
+						}
+					}
+					else {
+						expression = new Join(parent, "LEFT OUTER INNER");
+					}
+				}
 				else {
-					expression = new Join(parent, "LEFT_OUTER");
+					expression = new Join(parent, "LEFT OUTER");
 				}
 			}
+			// LEFT JOIN
 			else if (wordParser.startsWithIdentifier(JOIN, index)) {
 				index += 4;
 				index += wordParser.whitespaceCount(index);
@@ -112,6 +139,27 @@ public final class JoinFactory extends ExpressionFactory {
 					expression = new Join(parent, LEFT_JOIN);
 				}
 			}
+			// LEFT INNER
+			else if (wordParser.startsWithIdentifier(INNER, index)) {
+				index += 5;
+				index += wordParser.whitespaceCount(index);
+
+				// LEFT INNER JOIN
+				if (wordParser.startsWithIdentifier(JOIN, index)) {
+					index += 5;
+					index += wordParser.whitespaceCount(index);
+
+					// LEFT INNER JOIN FETCH
+					if (wordParser.startsWithIdentifier(FETCH, index)) {
+						expression = new Join(parent, "LEFT INNER JOIN FETCH");
+					}
+					// LEFT INNER JOIN
+					else {
+						expression = new Join(parent, "LEFT INNER JOIN");
+					}
+				}
+			}
+			// LEFT
 			else {
 				expression = new Join(parent, LEFT);
 			}
@@ -137,6 +185,50 @@ public final class JoinFactory extends ExpressionFactory {
 			// INNER
 			else {
 				expression = new Join(parent, INNER);
+			}
+		}
+		// OUTER JOIN and OUTER JOIN FETCH
+		// OUTER INNER JOIN and OUTER INNER JOIN FETCH
+		else if (wordParser.startsWithIdentifier(OUTER, index)) {
+			index += 5;
+			index += wordParser.whitespaceCount(index);
+
+			// OUTER JOIN and OUTER JOIN FETCH
+			if (wordParser.startsWithIdentifier(JOIN, index)) {
+				index += 4;
+				index += wordParser.whitespaceCount(index);
+
+				// OUTER JOIN FETCH
+				if (wordParser.startsWithIdentifier(FETCH, index)) {
+					expression = new Join(parent, "OUTER JOIN FETCH");
+				}
+				// OUTER JOIN
+				else {
+					expression = new Join(parent, "OUTER JOIN");
+				}
+			}
+			// OUTER INNER JOIN and OUTER INNER JOIN FETCH
+			else if (wordParser.startsWithIdentifier(INNER, index)) {
+				index += 5;
+				index += wordParser.whitespaceCount(index);
+
+				if (wordParser.startsWithIdentifier(JOIN, index)) {
+					index += 4;
+					index += wordParser.whitespaceCount(index);
+
+					// OUTER INNER JOIN FETCH
+					if (wordParser.startsWithIdentifier(FETCH, index)) {
+						expression = new Join(parent, "OUTER INNER JOIN FETCH");
+					}
+					// INNER JOIN
+					else {
+						expression = new Join(parent, "OUTER INNER JOIN");
+					}
+				}
+			}
+			// OUTER
+			else {
+				expression = new Join(parent, OUTER);
 			}
 		}
 		else {
