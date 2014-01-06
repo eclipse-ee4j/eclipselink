@@ -17,12 +17,17 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
@@ -66,6 +71,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJunitTest("testCreateDerivedPKFromPKValues"));
         suite.addTest(new AdvancedJunitTest("testElementCollectionClear"));
         suite.addTest(new AdvancedJunitTest("testElementCollectionEntityMapKeyRemove"));
+        suite.addTest(new AdvancedJunitTest("testSwitchBatchDuringSessionEvent"));
         
         return suite;
     }
@@ -436,6 +442,87 @@ public class AdvancedJunitTest extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testSwitchBatchDuringSessionEvent() {
+        //Test for bug#419326
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            Vegetable vegetable = em.find(Vegetable.class, new VegetablePK("Potato", "Yellow"));
+            if (null != vegetable) {
+                //cleanup old data
+                em.remove(vegetable); 
+                em.flush();
+                commitTransaction(em);
+            } 
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            clearCache();
+            closeEntityManager(em);
+        }
+
+        em = createEntityManager();
+        DatabasePlatform platform = getServerSession().getPlatform();
+        boolean usesBatchWriting = platform.usesBatchWriting();
+        boolean usesJDBCBatchWriting = platform.usesJDBCBatchWriting();
+        boolean usesExternalConnectionPooling = getServerSession().getLogin().shouldUseExternalConnectionPooling();
+        boolean usesExternalTransactionController = getServerSession().getLogin().shouldUseExternalTransactionController();
+        final SessionEventAdapter listener = new PostAcquireExclusiveConnectionSqlExecutorListener();
+        Vegetable vegetable;
+
+        try {
+            //Simulate JDBC batching with external connection pooling
+            getServerSession().getLogin().useExternalConnectionPooling();
+            getServerSession().getLogin().useExternalTransactionController();
+            platform.setUsesBatchWriting(true);
+            platform.setUsesJDBCBatchWriting(true);
+            em.setProperty(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
+            getServerSession().getEventManager().addListener(listener);
+
+            beginTransaction(em);
+            em.setFlushMode(FlushModeType.COMMIT);
+
+            vegetable = em.find(Vegetable.class, new VegetablePK("Potato", "Yellow"));
+            if (vegetable == null) {
+                vegetable = new Vegetable();
+            }
+            vegetable.setId(new VegetablePK("Potato", "Yellow"));
+            vegetable.setCost(1.10);
+
+            em.persist(vegetable);
+            // Here the transaction will be lazily opened, old connection handles released and new
+            // connection obtained, triggering postAcquireExclusiveConnection event.
+            // The postAcquireExclusiveConnection() invokes a non-batchable statement, due to which
+            // current batch is cleared.  This should not cause a duplicate execution of insert.
+            commitTransaction(em);
+
+        } catch (javax.persistence.RollbackException r) {
+            fail("RollbackException exception occurred : " + r.getMessage());
+        } finally {
+            //Cleanup and revert back to original conditions
+            getServerSession().getEventManager().removeListener(listener);
+
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+
+            platform.setUsesBatchWriting(usesBatchWriting);
+            platform.setUsesJDBCBatchWriting(usesJDBCBatchWriting);
+
+            if (!usesExternalConnectionPooling) {
+                getServerSession().getLogin().dontUseExternalConnectionPooling();
+            }
+            if (!usesExternalTransactionController) {
+                getServerSession().getLogin().dontUseExternalTransactionController();
+            }
+            clearCache();
             closeEntityManager(em);
         }
     }
