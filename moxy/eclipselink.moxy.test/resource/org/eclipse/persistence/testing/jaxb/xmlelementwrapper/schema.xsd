@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.somenamespace.org/" targetNamespace="http://www.somenamespace.org/">
+   <xsd:complexType name="department">
+      <xsd:sequence>
+         <xsd:element form="qualified" minOccurs="0" name="name" type="xsd:string"/>
+         <xsd:element form="qualified" minOccurs="0" name="employees">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="employee" type="ns0:employee"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element form="qualified" name="id" type="xsd:int"/>
+         <xsd:element form="qualified" minOccurs="0" name="name" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="department" type="ns0:department"/>
+   <xsd:element name="employee" type="ns0:employee"/>
+</xsd:schema>
