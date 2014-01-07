@@ -107,7 +107,9 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
      */
     public void clear() {
         this.previousCall = null;
-        this.parameters.clear();
+        //Bug#419326 : A clone may be holding a reference to this.parameters.
+        //So, instead of clearing the parameters, just initialize with a new reference.
+        this.parameters = new ArrayList();
         this.statementCount = 0;
         this.executionCount  = 0;
         this.queryTimeoutCache = DescriptorQueryManager.NoTimeout;
@@ -124,6 +126,23 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         if (this.parameters.isEmpty()) {
             return;
         }
+        //Bug#419326 : Added below clone, clear and clone.executeBatch(session)
+        //Cloning the mechanism and clearing the current mechanism ensures that the current batch 
+        //is not visible to recursive calls to executeBatchedStatements(session).
+        ParameterizedSQLBatchWritingMechanism currentBatch = (ParameterizedSQLBatchWritingMechanism) this.clone();
+        this.clear();
+        currentBatch.executeBatch(session);
+    }
+
+    /**
+     * INTERNAL:
+     * This method is added to execute and clear the batched statements on the cloned batch mechanism which 
+     * is created in executeBatchedStatements(session).
+     * 
+     * Introduced in fix for bug#419326.
+     */
+    private void executeBatch(AbstractSession session) {
+
         if (this.parameters.size() == 1) {
             // If only one call, just execute normally.
             try {
