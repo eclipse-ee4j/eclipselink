@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:department xmlns:ns0="http://www.somenamespace.org/">
+    <ns0:name>HR</ns0:name>
+    <ns0:employees>
+        <ns0:employee>
+            <ns0:id>1</ns0:id>
+            <ns0:name>Bob</ns0:name>
+        </ns0:employee>
+        <ns0:employee>
+            <ns0:id>2</ns0:id>
+            <ns0:name>Fred</ns0:name>
+        </ns0:employee>
+    </ns0:employees>
+</ns0:department> 

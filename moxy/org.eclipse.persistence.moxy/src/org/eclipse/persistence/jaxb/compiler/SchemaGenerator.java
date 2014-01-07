@@ -1620,6 +1620,19 @@ public class SchemaGenerator {
         } else {
             wrapperElement.setMinOccurs(Occurs.ZERO);
         }
+        if (!wrapperNS.equals(XMLProcessor.DEFAULT)) {
+            String lookupNamespace = schema.getTargetNamespace();
+            if (lookupNamespace == null) {
+                lookupNamespace = EMPTY_STRING;
+            }
+            NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace);
+            boolean isElementFormQualified = false;
+            if (namespaceInfo != null) {
+                isElementFormQualified = namespaceInfo.isElementFormQualified();
+            }
+            shouldAddRefAndSetForm(wrapperElement, wrapperNS, lookupNamespace,
+                    isElementFormQualified, true);
+        }
         compositor.addElement(wrapperElement);
         ComplexType wrapperType = new ComplexType();
         Sequence wrapperSequence = new Sequence();
