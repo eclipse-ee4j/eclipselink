@@ -50,7 +50,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
     static final String DROP_EMPREC_TYPE = "DROP TYPE pkgrec_wrapper2_empRecType";
     
     static final String CREATE_EMP_TABLE =
-        "CREATE TABLE EMP ( EMPNO  NUMBER(4), ENAME  VARCHAR2(20 BYTE) )";
+        "CREATE TABLE EMP ( EMPNO  NUMBER(4), ENAME  VARCHAR2(20 BYTE), PRIMARY KEY (EMPNO) )";
     
     static final String[] POPULATE_EMP_TABLE = new String[] {
         "INSERT INTO EMP (EMPNO, ENAME) VALUES (69, 'Holly')",
@@ -117,7 +117,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
         }
         String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDropProp)) {
-            ddlDrop = false;
+            ddlDrop = true;
         }
         String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
         if ("true".equalsIgnoreCase(ddlDebugProp)) {
@@ -195,10 +195,10 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
 
     @Test
     public void getEmpRecordTest() {
-        System.out.println(DBWS_WSDL_STREAM);
+        /*System.out.println(DBWS_WSDL_STREAM);
         System.out.println(DBWS_OR_STREAM);
         System.out.println(DBWS_OX_STREAM);
-        System.out.println(DBWS_SCHEMA_STREAM);
+        System.out.println(DBWS_SCHEMA_STREAM);*/
         
         Invocation invocation = new Invocation("GetEmpRecord");
         invocation.setParameter("p_empno", 69);
