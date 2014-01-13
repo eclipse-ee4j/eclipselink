@@ -926,17 +926,29 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
                             }
                         }
                     }
-                    if (hasResponse) {
-                        if (nameAndModel.procOpModel.isCollection) {
-                            dq = new DataReadQuery();
-                        }
-                        else {
-                            dq = new ValueReadQuery();
+                    
+                    /**
+                     * For multiple OUT args as well as a stored function with OUT args
+                     * we want a DataReadQuery.
+                     */
+                    boolean multipleOuts = false;
+                    int outCount = 0; 
+                    for (DbStoredArgument arg : storedProcedure.getArguments()) {
+                        if (arg.getInOut() == OUT || arg.getInOut() == INOUT) {
+                            outCount++;
+                            if (outCount > 1 || (storedProcedure.isFunction() && outCount >= 1) ) {
+                                multipleOuts = true;
+                                break;
+                            }
                         }
                     }
-                    else {
+
+                    if (multipleOuts || (hasResponse && nameAndModel.procOpModel.isCollection)) {
+                    	dq = new DataReadQuery();
+                    } else {
                         dq = new ValueReadQuery();
                     }
+
                     dq.bindAllParameters();
                     dq.setName(nameAndModel.name);
                     dq.setCall(call);

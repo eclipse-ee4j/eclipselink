@@ -23,14 +23,18 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Vector;
 import java.util.List;
+
 import org.w3c.dom.Element;
+
 
 // Java extension imports
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
+
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
+
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -49,6 +53,7 @@ import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatModel;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -60,6 +65,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
+
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETYPE;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
@@ -426,6 +432,14 @@ public class QueryOperation extends Operation {
         for (DatabaseRecord dr : records) {
             Element rowElement = TEMP_DOC.createElement(tempXMLTag);
             for (DatabaseField field : (Vector<DatabaseField>)dr.getFields()) {
+                // handle complex types, i.e. ones we have a descriptor for
+                if (field instanceof ObjectRelationalDatabaseField) {
+                    ObjectRelationalDatabaseField ordtField = (ObjectRelationalDatabaseField) field;
+                    if (xrService.getOXSession().getDescriptor(ordtField.getType()) != null) {
+                        xrService.getXMLContext().createMarshaller().marshal(dr.get(field), rowElement);
+                        continue;
+                    }	  
+                }
                 Object fieldValue = dr.get(field);
                 if (fieldValue != null) {
                     if (fieldValue instanceof Calendar) {
