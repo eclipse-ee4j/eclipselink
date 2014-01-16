@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.testing.jaxb.file.FileTestCases;
 import org.eclipse.persistence.testing.jaxb.idresolver.IDResolverTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.JAXBContextMediaTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.xml.XMLNamespaceTestCases;
@@ -130,7 +131,9 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.attachments.contenttype.ContentTypeTestCases.class);
         suite.addTestSuite(XmlElementRefWithNamespaceTests.class);
         suite.addTestSuite(XmlElementRefPrefixesTestCases.class);
+        suite.addTestSuite(FileTestCases.class);
         return suite;
+
     }
 
     public static void main(String[] args) {
