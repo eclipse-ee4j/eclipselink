@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -180,6 +181,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             return convertObjectToXMLGregorianCalendar(sourceObject);
         } else if ((javaClass == CoreClassConstants.DURATION)) {
             return convertObjectToDuration(sourceObject);
+        } else if ((javaClass == CoreClassConstants.FILE) && (sourceObject instanceof String)) {
+            return convertStringToFile((String) sourceObject);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
@@ -1661,6 +1664,13 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             }
         }
         return list;
+    }
+
+    protected File convertStringToFile(String path) {
+        if(path == null || path.length() == 0) {
+            return null;
+        }
+        return new File(path);
     }
 
     /**

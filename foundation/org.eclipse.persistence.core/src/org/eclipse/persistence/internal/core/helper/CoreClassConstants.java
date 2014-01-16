@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.core.helper;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
@@ -74,6 +75,7 @@ public class CoreClassConstants {
     public static final Class URL_Class = URL.class;
     public static final Class UTILDATE = java.util.Date.class;
     public static final Class XML_GREGORIAN_CALENDAR = XMLGregorianCalendar.class;
+    public static final Class FILE = File.class;
 
     
 }
