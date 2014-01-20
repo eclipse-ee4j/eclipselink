@@ -3481,13 +3481,7 @@ public class AnnotationsProcessor {
         if (packageInfo == null) {
             XmlSchema xmlSchema = (XmlSchema) helper.getAnnotation(pack, XmlSchema.class);
             packageInfo = new PackageInfo();
-            NamespaceInfo namespaceInfo = null;
-            if(xmlSchema != null) {
-                namespaceInfo = findInfoForNamespace(xmlSchema.namespace());
-            }
-            if(namespaceInfo == null) {
-                namespaceInfo = processNamespaceInformation(xmlSchema);
-            }
+            NamespaceInfo   namespaceInfo = processNamespaceInformation(xmlSchema);
             
             packageInfo.setNamespaceInfo(namespaceInfo);
 

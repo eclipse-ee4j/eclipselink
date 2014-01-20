@@ -76,6 +76,8 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(RootLevelByteArrayEmptyContentTestCases.class);
         suite.addTestSuite(RootLevelByteArrayEmptyContentAttachmentTestCases.class);
         suite.addTestSuite(DefaultTargetNamespaceTestCases.class);
+        suite.addTestSuite(DefaultTargetNamespaceConflictTestCases.class);
+        suite.addTestSuite(DefaultTargetNamespaceConflict2TestCases.class);
         suite.addTestSuite(GenericArrayTypeTestCases.class);
         
         suite.addTest(TypeMappingInfoCollisionsTestSuite.suite());
