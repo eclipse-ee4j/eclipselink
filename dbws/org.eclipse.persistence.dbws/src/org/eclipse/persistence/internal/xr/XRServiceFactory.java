@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -346,6 +346,12 @@ public class XRServiceFactory  {
      * have to be aligned in some cases. 
      */
     protected static void prepareDescriptors(Project oxProject, Project orProject, XRDynamicClassLoader xrdcl) {
+    	// step one:  remove default dummy alias descriptor (i.e. alias = "")
+        if (orProject.getAliasDescriptors() != null) {
+        	orProject.getAliasDescriptors().remove("");
+        }
+
+    	// step two:  align OR/OX alias names, handle JAXB DataHandler issue, and convert OR class names to classes
         if (oxProject.getAliasDescriptors() != null) {
             for (Object alias : oxProject.getAliasDescriptors().keySet()) {
                 if (alias.equals(SIMPLE_XML_FORMAT_STR)) {
@@ -363,10 +369,33 @@ public class XRServiceFactory  {
                 // convert class names to classes on the associated OR descriptor
                 ClassDescriptor odesc = (ClassDescriptor) orProject.getAliasDescriptors().get(alias);
                 if (odesc != null)  {  // shouldn't be null...
-                    odesc.convertClassNamesToClasses(xrdcl);
+                    // step three:  align OR alias and ordered descriptors (alias names and mappings)
+                    ClassDescriptor orderedDescriptor = getDescriptorForClassName(orProject, odesc.getJavaClassName());
+                    if (orderedDescriptor != null) {
+                    	orderedDescriptor.setAlias(alias.toString());
+                    	//orderedDescriptor.setJavaClass(odesc.getJavaClass());
+                    	orderedDescriptor.setJavaClassName(odesc.getJavaClassName());
+                    	// need to convert class names to classes such that reference classes, etc are setup
+                    	orderedDescriptor.convertClassNamesToClasses(xrdcl);
+                    	// replace the incomplete descriptor in the alias map with this one
+                    	orProject.addAlias(orderedDescriptor.getAlias(), orderedDescriptor);
+                    }
                 }
             }
-        }
+        }   	
+    }
+    
+    /**
+     * Returns a ClassDescriptor from the given project with the matching javaClassName,
+     * or null if not found.
+     */
+    protected static ClassDescriptor getDescriptorForClassName(Project project, String javaClassName) {
+    	for (ClassDescriptor cd : project.getOrderedDescriptors()) {
+    		if (cd != null && cd.getJavaClassName().equals(javaClassName)) {
+    			return cd;
+    		}
+    	}
+    	return null;
     }
     
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -63,7 +63,6 @@ public class TypesTestSuite extends DBWSTestSuite {
           "\nFUNCTION ECHO_NUMBER (PNUMBER IN NUMBER) RETURN NUMBER;" +
           "\nFUNCTION ECHO_VARCHAR(PVARCHAR IN VARCHAR) RETURN VARCHAR;" +
           "\nFUNCTION ECHO_VARCHAR2 (PINPUTVARCHAR IN VARCHAR2) RETURN VARCHAR2;" +
-          "\nFUNCTION ECHO_NVARCHAR2 (PNVARCHAR IN NVARCHAR2) RETURN NVARCHAR2;" +
           "\nFUNCTION ECHO_CHAR (PINPUTCHAR IN CHAR) RETURN CHAR;" +
           "\nFUNCTION ECHO_REAL (PREAL IN REAL) RETURN REAL;" +
           "\nFUNCTION ECHO_FLOAT (PINPUTFLOAT IN FLOAT) RETURN FLOAT;" +
@@ -76,6 +75,12 @@ public class TypesTestSuite extends DBWSTestSuite {
           "\nFUNCTION ECHO_LONG_RAW (PLONGRAW IN LONG RAW) RETURN LONG RAW;" +
           "\nFUNCTION ECHO_RAW(PRAW IN RAW) RETURN RAW;" +
           "\nFUNCTION ECHO_ROWID(PROWID IN ROWID) RETURN ROWID;" +
+          "\nFUNCTION ECHO_BOOLEAN(P1 IN BOOLEAN) RETURN BOOLEAN;" +
+          "\nPROCEDURE ECHO_BOOLEAN2(P1 IN BOOLEAN, P2 OUT BOOLEAN);" +
+          "\nFUNCTION ECHO_NVARCHAR2 (PNVARCHAR IN NVARCHAR2) RETURN NVARCHAR2;" +
+          "\nPROCEDURE pEchoNchar(p_nchar in nchar);" +
+          "\nFUNCTION fEchoNchar(p_nchar in nchar) return nchar;" +
+          "\nPROCEDURE pEchoNvarchar2(p_nvarchar2 in nvarchar2, p_nvarchar22 OUT nvarchar2);" +
         "\nEND;" ;
 
     static final String CREATE_PACKAGE_BODY_TEST_TYPES =
@@ -164,6 +169,26 @@ public class TypesTestSuite extends DBWSTestSuite {
           "\nBEGIN" +
               "\nRETURN PROWID;" +
           "\nEND ECHO_ROWID;" +
+          "\nFUNCTION ECHO_BOOLEAN(P1 IN BOOLEAN) RETURN BOOLEAN IS" +
+          "\nBEGIN" +
+              "\nRETURN P1;" +
+          "\nEND ECHO_BOOLEAN;" +
+          "\nPROCEDURE ECHO_BOOLEAN2(P1 IN BOOLEAN, P2 OUT BOOLEAN) IS" +
+          "\nBEGIN" +
+              "\nP2 := P1;" +
+          "\nEND ECHO_BOOLEAN2;" +
+		  "\nPROCEDURE pEchoNchar(p_nchar in nchar) AS" +
+		  "\nBEGIN" +
+		      "\nNULL;" +
+		  "\nEND pEchoNchar;" +
+          "\nFUNCTION fEchoNchar(p_nchar in nchar) return nchar AS" +
+          "\nBEGIN" +
+              "\nreturn p_nchar;" +
+          "\nEND fEchoNchar;" +
+          "\nPROCEDURE pEchoNvarchar2(p_nvarchar2 in nvarchar2, p_nvarchar22 OUT nvarchar2) AS" +
+          "\nBEGIN" +
+              "\np_nvarchar22 := p_nvarchar2;" +
+          "\nEND pEchoNvarchar2;" +
         "\nEND;" ;
 
     static final String CREATE_XMLTYPEDATA_TABLE =
@@ -301,6 +326,24 @@ public class TypesTestSuite extends DBWSTestSuite {
                    "procedurePattern=\"ECHO_NVARCHAR2\" " +
                    "isSimpleXMLFormat=\"true\" " +
                 "/>" +
+                "<procedure " +
+                    "name=\"pEchoNchar\" " +
+                    "catalogPattern=\"TEST_TYPES\" " +
+                    "procedurePattern=\"pEchoNchar\" " +
+                    "isSimpleXMLFormat=\"true\" " +
+                 "/>" +
+                 "<procedure " +
+                     "name=\"fEchoNchar\" " +
+                     "catalogPattern=\"TEST_TYPES\" " +
+                     "procedurePattern=\"fEchoNchar\" " +
+                     "isSimpleXMLFormat=\"true\" " +
+                  "/>" +
+                  "<procedure " +
+                      "name=\"pEchoNvarchar2\" " +
+                      "catalogPattern=\"TEST_TYPES\" " +
+                      "procedurePattern=\"pEchoNvarchar2\" " +
+                      "isSimpleXMLFormat=\"true\" " +
+                   "/>" +
 	           "<procedure " +
 	              "name=\"echoChar\" " +
 	              "catalogPattern=\"TEST_TYPES\" " +
@@ -373,7 +416,19 @@ public class TypesTestSuite extends DBWSTestSuite {
                    "procedurePattern=\"ECHO_ROWID\" " +
                    "isSimpleXMLFormat=\"true\" " +
                 "/>" +
-                "<sql " +
+                "<procedure " +
+	                "name=\"echoBoolean\" " +
+	                "catalogPattern=\"TEST_TYPES\" " +
+	                "procedurePattern=\"ECHO_BOOLEAN\" " +
+	                "isSimpleXMLFormat=\"true\" " +
+	             "/>" +
+                "<procedure " +
+	                "name=\"echoBoolean2\" " +
+	                "catalogPattern=\"TEST_TYPES\" " +
+	                "procedurePattern=\"ECHO_BOOLEAN2\" " +
+	                "isSimpleXMLFormat=\"true\" " +
+	             "/>" +
+	             "<sql " +
                     "name=\"selectXMLData\" " +
                     "isSimpleXMLFormat=\"true\" " +
                     ">" +
@@ -585,7 +640,73 @@ public class TypesTestSuite extends DBWSTestSuite {
               "<result>N'qwerty'</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
+    
+    @Test
+    public void pEchoNvarchar2() {
+        Invocation invocation = new Invocation("pEchoNvarchar2");
+        invocation.setParameter("p_nvarchar2", "N'qwerty'");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(P_ECHO_NVARCHAR2_RESULT));
+        assertTrue("control document not same as instance document.  Expected " + documentToString(controlDoc) + " but was " + documentToString(doc), comparer.isNodeEqual(
+                controlDoc, doc));
+    }
+    public static final String P_ECHO_NVARCHAR2_RESULT =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<result>N'qwerty'</result>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";
+    
+    @Test
+    public void pEchoNchar() {
+        Invocation invocation = new Invocation("pEchoNchar");
+        invocation.setParameter("p_nchar", "N'q'");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ECHO_NCHAR_RESULT));
+        assertTrue("control document not same as instance document.  Expected " + documentToString(controlDoc) + " but was " + documentToString(doc), comparer.isNodeEqual(
+            controlDoc, doc));
+    }
+    public static final String ECHO_NCHAR_RESULT =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<result>1</result>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";
 
+    @Test
+    public void fEchoNchar() {
+        Invocation invocation = new Invocation("fEchoNchar");
+        invocation.setParameter("p_nchar", "N'q'");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(F_ECHO_NCHAR_RESULT));
+        assertTrue("control document not same as instance document.  Expected " + documentToString(controlDoc) + " but was " + documentToString(doc), comparer.isNodeEqual(
+            controlDoc, doc));
+    }
+    public static final String F_ECHO_NCHAR_RESULT =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<result>N'q'</result>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";
+    
     @Test
     public void echoChar() {
         Invocation invocation = new Invocation("echoChar");
@@ -901,5 +1022,90 @@ public class TypesTestSuite extends DBWSTestSuite {
             "<ID>667</ID>" +
             "<XMLDATA>&lt;foo>yo fool!&lt;/foo></XMLDATA>" +
           "</simple-xml>" +
+        "</simple-xml-format>";
+
+    @Test
+    public void echoBooleanTrue() {
+        Invocation invocation = new Invocation("echoBoolean");
+        invocation.setParameter("P1", 1);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ECHO_BOOLEAN_TRUE_RESULT));
+        assertTrue("control document not same as instance document:  expected " + documentToString(controlDoc) + " but was " + documentToString(doc), comparer.isNodeEqual(
+            controlDoc, doc));
+    }
+    @Test
+    public void echoBooleanTrue2() {
+        Invocation invocation = new Invocation("echoBoolean2");
+        invocation.setParameter("P1", 1);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ECHO_BOOLEAN_TRUE_RESULT2));
+        assertTrue("control document not same as instance document:  expected " + documentToString(controlDoc) + " but was " + documentToString(doc), comparer.isNodeEqual(
+            controlDoc, doc));
+    }
+    public static final String ECHO_BOOLEAN_TRUE_RESULT =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<RESULT>1</RESULT>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";
+    public static final String ECHO_BOOLEAN_TRUE_RESULT2 =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<P2>1</P2>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";    
+    @Test
+    public void echoBooleanFalse() {
+        Invocation invocation = new Invocation("echoBoolean");
+        invocation.setParameter("P1", 0);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ECHO_BOOLEAN_RESULT));
+        assertTrue("control document not same as instance document:  expected " + documentToString(controlDoc) + " but was " + documentToString(doc), comparer.isNodeEqual(
+            controlDoc, doc));
+    }
+    @Test
+    public void echoBooleanFalse2() {
+        Invocation invocation = new Invocation("echoBoolean2");
+        invocation.setParameter("P1", 0);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ECHO_BOOLEAN_RESULT2));
+        assertTrue("control document not same as instance document:  expected " + documentToString(controlDoc) + " but was " + documentToString(doc), comparer.isNodeEqual(
+            controlDoc, doc));
+    }
+    public static final String ECHO_BOOLEAN_RESULT =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<RESULT>0</RESULT>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";
+    public static final String ECHO_BOOLEAN_RESULT2 =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<P2>0</P2>" +
+           "</simple-xml>" +
         "</simple-xml-format>";
 }

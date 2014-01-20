@@ -61,6 +61,7 @@ import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
+import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
@@ -86,6 +87,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_OUT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_REF_CURSOR;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.XMLType;
 import static org.eclipse.persistence.tools.dbws.Util._TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.Util.BOOLEAN_STR;
@@ -216,13 +218,11 @@ public class XmlEntityMappingsGenerator {
 
                         if (arg.databaseType == XMLType) {
                             dbType = XMLType.name();
+                        } else if (arg.databaseType == PLSQLBoolean) {
+                        	dbType = PLSQLBoolean.name();
                         } else {
                             if (!(getJDBCTypeFromTypeName(dbType) == Types.OTHER)) {
-                                // for BOOLEAN we want to wrap the type in a PLSQLrecord to force the appropriate
-                                // conversion method in PLSQLStoredProcedureCall (declare block, etc)
-                                if (!dbType.equals(BOOLEAN_STR)) {
-                                    dbType = dbType.concat(_TYPE_STR);
-                                }
+                                dbType = dbType.concat(_TYPE_STR);
                             }
                         }
                         param.setDatabaseType(dbType);
@@ -316,6 +316,8 @@ public class XmlEntityMappingsGenerator {
                         
                         if (arg.databaseType == XMLType) {
                             param.setDatabaseType(XMLType.name());
+                        } else if (arg.databaseType == PLSQLBoolean) {
+                        	param.setDatabaseType(PLSQLBoolean.name());
                         } else {
                             param.setDatabaseType(dbType);
                         }
