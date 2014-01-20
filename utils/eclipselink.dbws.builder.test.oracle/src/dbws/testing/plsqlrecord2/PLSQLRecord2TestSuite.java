@@ -196,9 +196,6 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
 
     @Test
     public void getEmpRecordTest() {
-        System.out.println(DBWS_OR_STREAM);
-        
-        
         Invocation invocation = new Invocation("GetEmpRecord");
         invocation.setParameter("p_empno", 69);
         Operation op = xrService.getOperation(invocation.getName());
