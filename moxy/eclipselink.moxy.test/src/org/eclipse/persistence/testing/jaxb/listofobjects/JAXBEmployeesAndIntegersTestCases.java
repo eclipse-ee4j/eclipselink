@@ -66,18 +66,16 @@ public class JAXBEmployeesAndIntegersTestCases extends
 	}
 	
 	public List< InputStream> getControlSchemaFiles(){		
-		  InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers2.xsd");					
-			
-			InputStream instream3 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers3.xsd");
-			
-			InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers1.xsd");
-			List<InputStream> controlSchema= new ArrayList<InputStream>();
-			
-			controlSchema.add(instream1);
-			controlSchema.add(instream2);			
-			controlSchema.add(instream3);
-			
-			return controlSchema;
+        InputStream instream3 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers3.xsd");
+        InputStream instream1 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers1.xsd");
+        InputStream instream2 = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/listofobjects/employeesAndIntegers2.xsd");                  
+		
+        List<InputStream> controlSchema= new ArrayList<InputStream>();
+        controlSchema.add(instream3);
+        controlSchema.add(instream1);
+        controlSchema.add(instream2);			
+		
+        return controlSchema;
 	}
 	 
 	 

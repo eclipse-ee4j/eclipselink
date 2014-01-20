@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ns0:root xmlns:ns0="rootNamespace" xmlns:ns5="uri1">  
-    <objectList xmlns:ns1="someNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:subType">
+<ns1:root xmlns:ns1="rootNamespace" xmlns:ns5="uri1">
+    <objectList xmlns:ns0="someNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:subType">
 		<ns5:subTypeProp>10</ns5:subTypeProp>
 	</objectList>
 	<objectList xmlns:ns2="anotherNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:anotherSubType">
@@ -17,4 +17,4 @@
 	</objectList>
 	<objectList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">string test</objectList>
 	<objectList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">500</objectList>	
-</ns0:root>
+</ns1:root>

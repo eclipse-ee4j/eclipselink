@@ -57,9 +57,9 @@ public class XmlTypeNameTestCases extends JAXBWithJSONTestCases {
     public void testSchemaGen() throws Exception{
         List<InputStream> controlSchemas = new ArrayList<InputStream>();
         InputStream is0 = getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE0);
-        controlSchemas.add(is0);
         InputStream is1 = getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE1);
         controlSchemas.add(is1);
+        controlSchemas.add(is0);
         super.testSchemaGen(controlSchemas);
     }
 }
