@@ -1,7 +1,7 @@
-<ns0:foo xmlns:ns0="FOO">
-   <ns0:map>
+<ns1:foo xmlns:ns1="FOO">
+   <ns1:map>
      <entry>
         <key>A</key>
         <value>a</value></entry>
-   </ns0:map>
-</ns0:foo>
+   </ns1:map>
+</ns1:foo>

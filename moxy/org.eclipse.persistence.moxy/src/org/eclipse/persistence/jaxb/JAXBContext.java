@@ -18,10 +18,14 @@ import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -73,6 +77,7 @@ import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
 import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
@@ -1010,7 +1015,33 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         TypeMappingInfoInput(TypeMappingInfo[] typeMappingInfo, Map properties, ClassLoader classLoader) {
             super(properties, classLoader);
-            this.typeMappingInfo = typeMappingInfo;
+            this.typeMappingInfo = Arrays.copyOf(typeMappingInfo, typeMappingInfo.length);
+           
+            Arrays.sort(this.typeMappingInfo, new Comparator<TypeMappingInfo>() {
+                @Override
+                public int compare(TypeMappingInfo javaClass1, TypeMappingInfo javaClass2) {
+                    String sourceName = getNameForType(javaClass1.getType());
+                    String targetName = getNameForType(javaClass2.getType());
+                    if(sourceName == null ||  targetName == null){
+                        return -1;
+                    }
+
+                    return sourceName.compareTo(targetName);
+                }
+
+                private String getNameForType(Type type) {
+                    if (type instanceof Class) {
+                        return ((Class)type).getCanonicalName();
+                    } else if (type instanceof GenericArrayType) {
+                        Class genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
+                        return genericTypeClass.getCanonicalName();
+                    } else {
+                        // assume parameterized type
+                        ParameterizedType pType = (ParameterizedType) type;
+                        return ((Class)pType.getRawType()).getCanonicalName();
+                    }
+                }
+            });
         }
 
         protected JAXBContextState createContextState() throws javax.xml.bind.JAXBException {
@@ -1035,6 +1066,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 }
             }
             TypeMappingInfo[] typesToBeBound = typeMappingInfo;
+
             for (Entry<String, XmlBindings> entry : xmlBindings.entrySet()) {
                 typesToBeBound = getXmlBindingsClasses(entry.getValue(), classLoader, typesToBeBound);
             }

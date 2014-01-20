@@ -36,8 +36,8 @@ public class MapNamespaceFooTestCases extends JAXBWithJSONTestCases{
 	
 	public void testSchemaGen() throws Exception{
 		List<InputStream> controlSchemas = new ArrayList<InputStream>();
+        controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE2));
 		controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE));
-		controlSchemas.add(getClass().getClassLoader().getResourceAsStream(XSD_RESOURCE2));
 		super.testSchemaGen(controlSchemas);
 	}
 
