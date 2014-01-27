@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -50,6 +50,9 @@ public class IsolatedSessionTestModel extends TestModel {
         addTest(new CheckAccessorUsageForIsolatedClass());
         // Bug 418705
         addTest(new IsolatedSessionRelationConformingTest());
+        // Bug 426500
+        addTest(new IsolatedOneToManyQueryModificationTest());
+        addTest(new IsolatedOneToOneQueryModificationTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.

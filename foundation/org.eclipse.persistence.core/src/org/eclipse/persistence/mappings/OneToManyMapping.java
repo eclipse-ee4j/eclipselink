@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,6 +25,10 @@ import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.expressions.FieldExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 
@@ -68,6 +72,13 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      *  Used only in case data modification events required.
      **/
     protected transient List<DatabaseField> targetPrimaryKeyFields;
+    
+    /**
+     * Keep a reference to the source and target expressions to post initialize 
+     * when building a selection criteria early.
+     */
+    protected transient List<Expression> sourceExpressionsToPostInitialize;
+    protected transient List<Expression> targetExpressionsToPostInitialize;
 
     /** 
      * Query used to update a single target row setting its foreign key to point to the source. 
@@ -120,6 +131,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.sourceExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.targetExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
 
         this.deleteAllQuery = new DeleteAllQuery();
         this.removeTargetQuery = new DataModifyQuery();
@@ -233,7 +246,13 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                  targetForeignKeys.hasMoreElements();) {
             DatabaseField targetForeignKey = (DatabaseField)targetForeignKeys.nextElement();
             DatabaseField sourceKey = (DatabaseField)sourceKeys.nextElement();
-            Expression partialSelectionCriteria = builder.getField(targetForeignKey).equal(builder.getParameter(sourceKey));
+            Expression targetExpression = builder.getField(targetForeignKey);
+            Expression sourceExpression = builder.getParameter(sourceKey);
+            // store the expressions in order to initialize their fields later
+            this.targetExpressionsToPostInitialize.add(targetExpression);
+            this.sourceExpressionsToPostInitialize.add(sourceExpression);
+            
+            Expression partialSelectionCriteria = targetExpression.equal(sourceExpression);
             selectionCriteria = partialSelectionCriteria.and(selectionCriteria);
         }
         return selectionCriteria;
@@ -974,6 +993,51 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             } else {
                 if (!isReadOnly() && (requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())){
                     updateTargetRowPostInsertSource(query);
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Post-initialize source and target expression fields created when a mapping's selectionCriteria 
+     * is created early with only partly initialized fields.
+     */
+    @Override
+    public void postInitializeSourceAndTargetExpressions() {
+        // EL Bug 426500
+        // postInitialize and set source expression fields using my descriptor
+        if (this.sourceExpressionsToPostInitialize != null && this.sourceExpressionsToPostInitialize.size() > 0) {
+            ClassDescriptor descriptor = getDescriptor();
+            ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+            for (Iterator<Expression> expressions = this.sourceExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
+                Expression expression = expressions.next();
+                DatabaseField field = null;
+                if (expression.isParameterExpression()) {
+                    field = ((ParameterExpression)expression).getField();
+                } else if (expression.isFieldExpression()) {
+                    field = ((FieldExpression)expression).getField();
+                }
+                if (field != null && (field.getType() == null || field.getTypeName() == null)) {
+                    field.setType(objectBuilder.getFieldClassification(field));
+                }
+            }
+        }
+        
+        // postInitialize and set target expression fields using my reference descriptor
+        if (this.targetExpressionsToPostInitialize != null && this.targetExpressionsToPostInitialize.size() > 0) {
+            ClassDescriptor descriptor = getReferenceDescriptor();
+            ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+            for (Iterator<Expression> expressions = this.targetExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
+                Expression expression = expressions.next();
+                DatabaseField field = null;
+                if (expression.isParameterExpression()) {
+                    field = ((ParameterExpression)expression).getField();
+                } else if (expression.isFieldExpression()) {
+                    field = ((FieldExpression)expression).getField();
+                }
+                if (field != null && (field.getType() == null || field.getTypeName() == null)) {
+                    field.setType(objectBuilder.getFieldClassification(field));
                 }
             }
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,10 @@ package org.eclipse.persistence.testing.tests.isolatedsession;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
@@ -70,6 +74,19 @@ public class IsolatedParent {
         IsolatedChild child = new IsolatedChild();
         child.setId("200");
         child.setSerial("child-1");
+        child.setDeleted("N");
+        parent.addChild(child);
+        return parent;
+    }
+    
+    public static IsolatedParent buildIsolatedParentExample2() {
+        IsolatedParent parent = new IsolatedParent();
+        parent.setId("200");
+        parent.setSerial("parent-2");
+        IsolatedChild child = new IsolatedChild();
+        child.setId("300");
+        child.setSerial("child-2");
+        child.setDeleted("N");
         parent.addChild(child);
         return parent;
     }
@@ -103,6 +120,13 @@ public class IsolatedParent {
         tabledefinition.addField(field1);
         
         return tabledefinition;
+    }
+    
+    public static void afterLoad(ClassDescriptor descriptor) {
+        OneToManyMapping childrenMapping = (OneToManyMapping)descriptor.getMappingForAttributeName("children");
+        Expression selectionCriteria = childrenMapping.buildSelectionCriteria();
+        ExpressionBuilder builder = new ExpressionBuilder();
+        childrenMapping.setSelectionCriteria(selectionCriteria.and(builder.get("deleted").equal("N")));
     }
     
     @Override

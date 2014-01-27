@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -372,6 +372,18 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      */
     public void collectQueryParameters(Set<DatabaseField> record){
         //no-op for mappings that do not support PROTECTED cache isolation
+    }
+    
+    /**
+     * INTERNAL:
+     * Mapping callback for post-initialization of source and target expression fields
+     * created when a mapping's selectionCriteria is created early with uninitialized fields. 
+     * @see OneToOneMapping#postInitializeSourceAndTargetExpressions()
+     * @see OneToManyMapping#postInitializeSourceAndTargetExpressions()
+     */
+    public void postInitializeSourceAndTargetExpressions() {
+        // no-op by default
+        // EL Bug 426500
     }
 
     /**
