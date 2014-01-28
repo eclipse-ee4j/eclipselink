@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Rick Curtis -- Refactor to facilitate adding WebSphereLibertyTransactionController.
  ******************************************************************************/  
 package org.eclipse.persistence.transaction.was;
 
@@ -43,6 +44,14 @@ public class WebSphereTransactionController extends JTATransactionController {
         super();
     }
 
+    protected String getTxManagerFactoryClass() {
+        return TX_MANAGER_FACTORY_CLASS;
+    }
+
+    protected String getTxManagerFactoryMethod() {
+        return TX_MANAGER_FACTORY_METHOD;
+    }
+        
     /**
      * INTERNAL:
      * Obtain and return the JTA TransactionManager on this platform.
@@ -51,8 +60,8 @@ public class WebSphereTransactionController extends JTATransactionController {
     protected TransactionManager acquireTransactionManager() throws Exception {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
-                Class clazz = (Class) AccessController.doPrivileged(new PrivilegedClassForName(TX_MANAGER_FACTORY_CLASS));
-                Method method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, TX_MANAGER_FACTORY_METHOD, null, false));
+                Class clazz = (Class) AccessController.doPrivileged(new PrivilegedClassForName(getTxManagerFactoryClass()));
+                Method method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, getTxManagerFactoryMethod(), null, false));
                 return (TransactionManager) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, null, null));
             }catch (PrivilegedActionException ex){
                 if (ex.getCause() instanceof ClassNotFoundException){
@@ -70,8 +79,8 @@ public class WebSphereTransactionController extends JTATransactionController {
                 throw (RuntimeException) ex.getCause();
             }
         }else{
-            Class clazz = PrivilegedAccessHelper.getClassForName(TX_MANAGER_FACTORY_CLASS);
-            Method method = PrivilegedAccessHelper.getMethod(clazz, TX_MANAGER_FACTORY_METHOD, null, false);
+            Class clazz = PrivilegedAccessHelper.getClassForName(getTxManagerFactoryClass());
+            Method method = PrivilegedAccessHelper.getMethod(clazz, getTxManagerFactoryMethod(), null, false);
             return (TransactionManager)PrivilegedAccessHelper.invokeMethod(method, null, null);
         }
     }

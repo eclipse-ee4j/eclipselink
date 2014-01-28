@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Rick Curtis - Add WebSphere Liberty target server.
  ******************************************************************************/  
 package org.eclipse.persistence.config;
 
@@ -32,6 +33,7 @@ public class TargetServer {
     public static final String  WebSphere = "WebSphere";
     public static final String  WebSphere_6_1 = "WebSphere_6_1";
     public static final String  WebSphere_7 = "WebSphere_7";
+    public static final String  WebSphere_Liberty = "WebSphere_Liberty";
     public static final String  WebLogic = "WebLogic";
     public static final String  WebLogic_9 = "WebLogic_9";
     public static final String  WebLogic_10 = "WebLogic_10";
