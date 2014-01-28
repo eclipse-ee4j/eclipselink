@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -34,8 +34,10 @@ public class IsolatedEmployeeProject extends Project {
         addDescriptor(buildEmployeeDescriptor());
         addDescriptor(buildEmploymentPeriodDescriptor());
         addDescriptor(buildPhoneNumberDescriptor());
-        addDescriptor(buildIsolatedParentDescriptor());
         addDescriptor(buildIsolatedChildDescriptor());
+        addDescriptor(buildIsolatedParentDescriptor());
+        addDescriptor(buildIsolatedBoneClassDescriptor());
+        addDescriptor(buildIsolatedDogClassDescriptor());
     }
 
     public void applyLogin() {
@@ -273,9 +275,9 @@ public class IsolatedEmployeeProject extends Project {
         descriptor.addPrimaryKeyFieldName("ISOLATED_PARENT.ID");
         
         // ClassDescriptor Properties.
-        descriptor.useSoftCacheWeakIdentityMap();
+        descriptor.useFullIdentityMap();
         descriptor.setIdentityMapSize(100);
-        descriptor.useRemoteSoftCacheWeakIdentityMap();
+        descriptor.useRemoteFullIdentityMap();
         descriptor.setRemoteIdentityMapSize(100);
         descriptor.setSequenceNumberFieldName("ISOLATED_PARENT.ID");
         descriptor.setSequenceNumberName("PARENT_SEQ");
@@ -284,6 +286,8 @@ public class IsolatedEmployeeProject extends Project {
         descriptor.setAlias("IsolatedParent");
         descriptor.setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
         
+        descriptor.setAmendmentClass(IsolatedParent.class);
+        descriptor.setAmendmentMethodName("afterLoad");
         
         // Query Manager.
         descriptor.getQueryManager().checkCacheForDoesExist();
@@ -318,6 +322,8 @@ public class IsolatedEmployeeProject extends Project {
         childrenMapping.useTransparentCollection();
         childrenMapping.useCollectionClass(org.eclipse.persistence.indirection.IndirectList.class);
         childrenMapping.addTargetForeignKeyFieldName("ISOLATED_CHILD.PARENT_ID", "ISOLATED_PARENT.ID");
+        childrenMapping.privateOwnedRelationship();
+        
         descriptor.addMapping(childrenMapping);
         
         return descriptor;
@@ -330,9 +336,9 @@ public class IsolatedEmployeeProject extends Project {
         descriptor.addPrimaryKeyFieldName("ISOLATED_CHILD.ID");
         
         // ClassDescriptor Properties.
-        descriptor.useSoftCacheWeakIdentityMap();
+        descriptor.useFullIdentityMap();
         descriptor.setIdentityMapSize(100);
-        descriptor.useRemoteSoftCacheWeakIdentityMap();
+        descriptor.useRemoteFullIdentityMap();
         descriptor.setRemoteIdentityMapSize(100);
         descriptor.setSequenceNumberFieldName("ISOLATED_CHILD.ID");
         descriptor.setSequenceNumberName("CHILD_SEQ");
@@ -359,6 +365,11 @@ public class IsolatedEmployeeProject extends Project {
         serialMapping.setFieldName("ISOLATED_CHILD.SERIAL");
         descriptor.addMapping(serialMapping);
         
+        DirectToFieldMapping deletedMapping = new DirectToFieldMapping();
+        deletedMapping.setAttributeName("deleted");
+        deletedMapping.setFieldName("ISOLATED_CHILD.DELETED");
+        descriptor.addMapping(deletedMapping);
+        
         OneToOneMapping parentMapping = new OneToOneMapping();
         parentMapping.setAttributeName("parent");
         parentMapping.setReferenceClass(IsolatedParent.class);
@@ -366,6 +377,113 @@ public class IsolatedEmployeeProject extends Project {
         parentMapping.addForeignKeyFieldName("ISOLATED_CHILD.PARENT_ID", "ISOLATED_PARENT.ID");
         descriptor.addMapping(parentMapping);
         
+        return descriptor;
+    }
+    
+    public ClassDescriptor buildIsolatedBoneClassDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(IsolatedBone.class);
+        descriptor.addTableName("ISOLATED_BONE");
+        descriptor.addPrimaryKeyFieldName("ISOLATED_BONE.ID");
+        
+        // ClassDescriptor Properties.
+        descriptor.useFullIdentityMap();
+        descriptor.setIdentityMapSize(100);
+        descriptor.useRemoteFullIdentityMap();
+        descriptor.setRemoteIdentityMapSize(100);
+        descriptor.alwaysConformResultsInUnitOfWork();
+        descriptor.setIsIsolated(true);
+        descriptor.setAlias("IsolatedBone");
+        descriptor.setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
+        
+        
+        // Query Manager.
+        descriptor.getQueryManager().checkCacheForDoesExist();
+        
+        
+        // Event Manager.
+        
+        // Mappings.
+        DirectToFieldMapping colorMapping = new DirectToFieldMapping();
+        colorMapping.setAttributeName("color");
+        colorMapping.setFieldName("ISOLATED_BONE.COLOR");
+        descriptor.addMapping(colorMapping);
+        
+        DirectToFieldMapping deletedMapping = new DirectToFieldMapping();
+        deletedMapping.setAttributeName("deleted");
+        deletedMapping.setFieldName("ISOLATED_BONE.DELETED");
+        descriptor.addMapping(deletedMapping);
+        
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("ISOLATED_BONE.ID");
+        descriptor.addMapping(idMapping);
+        
+        OneToOneMapping ownerMapping = new OneToOneMapping();
+        ownerMapping.setAttributeName("owner");
+        ownerMapping.setReferenceClass(IsolatedDog.class);
+        ownerMapping.useBasicIndirection();
+        ownerMapping.addForeignKeyFieldName("ISOLATED_BONE.DOG_ID", "ISOLATED_DOG.ID");
+        descriptor.addMapping(ownerMapping);
+        
+        return descriptor;
+    }
+    
+    public ClassDescriptor buildIsolatedDogClassDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(IsolatedDog.class);
+        descriptor.addTableName("ISOLATED_DOG");
+        descriptor.addPrimaryKeyFieldName("ISOLATED_DOG.ID");
+        
+        // ClassDescriptor Properties.
+        descriptor.useFullIdentityMap();
+        descriptor.setIdentityMapSize(100);
+        descriptor.useRemoteFullIdentityMap();
+        descriptor.setRemoteIdentityMapSize(100);
+        descriptor.alwaysConformResultsInUnitOfWork();
+        descriptor.setIsIsolated(true);
+        descriptor.setAlias("IsolatedDog");
+        descriptor.setAmendmentClass(IsolatedDog.class);
+        descriptor.setAmendmentMethodName("afterLoad");
+        descriptor.setCacheSynchronizationType(ClassDescriptor.DO_NOT_SEND_CHANGES);
+        
+        
+        // Query Manager.
+        descriptor.getQueryManager().checkCacheForDoesExist();
+        // Named Queries.
+        // Named Query -- findIsolatedDogByName
+        ReadObjectQuery namedQuery0 = new ReadObjectQuery(IsolatedDog.class);
+        namedQuery0.setName("findIsolatedDogByName");
+        namedQuery0.setShouldBindAllParameters(true);
+        ExpressionBuilder expBuilder0 = namedQuery0.getExpressionBuilder();
+        namedQuery0.setSelectionCriteria(expBuilder0.get("name").equal(expBuilder0.getParameter("dogName")));
+        namedQuery0.addArgument("dogName", java.lang.String.class);
+        descriptor.getQueryManager().addQuery("findIsolatedDogByName", namedQuery0);
+        
+        
+        
+        // Event Manager.
+        
+        // Mappings.
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("ISOLATED_DOG.ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping nameMapping = new DirectToFieldMapping();
+        nameMapping.setAttributeName("name");
+        nameMapping.setFieldName("ISOLATED_DOG.NAME");
+        descriptor.addMapping(nameMapping);
+        
+        OneToOneMapping boneMapping = new OneToOneMapping();
+        boneMapping.setAttributeName("bone");
+        boneMapping.setReferenceClass(IsolatedBone.class);
+        boneMapping.useBasicIndirection();
+        boneMapping.privateOwnedRelationship();
+        boneMapping.addTargetForeignKeyFieldName("ISOLATED_BONE.DOG_ID", "ISOLATED_DOG.ID");
+        descriptor.addMapping(boneMapping);
+        
+        descriptor.applyAmendmentMethod();
         return descriptor;
     }
     

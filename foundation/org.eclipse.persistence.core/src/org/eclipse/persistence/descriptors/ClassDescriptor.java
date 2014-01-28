@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -3871,6 +3871,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 }
             }
         }        
+        
+        // EL Bug 426500 - When a mapping has built its selection criteria early with partially 
+        // initialized fields, post-initialize any source and target Expression fields.
+        for (DatabaseMapping mapping : getMappings()) {
+            mapping.postInitializeSourceAndTargetExpressions();
+        }
+        
         // Set cache key type.
         if (getCachePolicy().getCacheKeyType() == null || (getCachePolicy().getCacheKeyType() == CacheKeyType.AUTO)) {
             if ((getPrimaryKeyFields().size() > 1) || getObjectBuilder().isXMLObjectBuilder()) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -32,6 +32,8 @@ public class IsolatedSessionSystem extends TestSystem {
         schemaManager.replaceObject(IsolatedEmployee.buildISOLATEDSALARYTable());
         schemaManager.replaceObject(IsolatedParent.buildISOLATEDPARENTTable());
         schemaManager.replaceObject(IsolatedChild.buildISOLATEDCHILDTable());
+        schemaManager.replaceObject(IsolatedDog.buildISOLATEDDOGTable());
+        schemaManager.replaceObject(IsolatedBone.buildISOLATEDBONETable());
     }
 
     public void populate(DatabaseSession session) {
@@ -39,6 +41,8 @@ public class IsolatedSessionSystem extends TestSystem {
         uow.registerObject(IsolatedEmployee.buildEmployeeExample1());
         uow.registerObject(IsolatedEmployee.buildEmployeeExample2());
         uow.registerObject(IsolatedParent.buildIsolatedParentExample1());
+        uow.registerObject(IsolatedParent.buildIsolatedParentExample2());
+        uow.registerObject(IsolatedDog.buildIsolatedDogExample1());
         uow.commit();
     }
 }

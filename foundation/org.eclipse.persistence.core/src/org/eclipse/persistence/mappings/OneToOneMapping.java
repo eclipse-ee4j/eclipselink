@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -36,6 +36,8 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.FieldExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
@@ -90,6 +92,13 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     protected HashSet<DatabaseField> updatableFields = new HashSet<DatabaseField>();
     
     /**
+     * Keep a reference to the source and target expressions to post initialize 
+     * when building a selection criteria early.
+     */
+    protected List<Expression> sourceExpressionsToPostInitialize;
+    protected List<Expression> targetExpressionsToPostInitialize;
+    
+    /**
      * Mode for writeFromObjectIntoRowInternal method
      */
     protected static enum ShallowMode {
@@ -107,6 +116,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         this.sourceToTargetKeyFields = new HashMap(2);
         this.targetToSourceKeyFields = new HashMap(2);
         this.foreignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.sourceExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.targetExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.isForeignKeyRelationship = false;
         this.shouldVerifyDelete = true;
     }
@@ -1294,6 +1305,51 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     
     /**
      * INTERNAL:
+     * Post-initialize source and target expression fields created when a mapping's selectionCriteria 
+     * is created early with only partly initialized fields.
+     */
+    @Override
+    public void postInitializeSourceAndTargetExpressions() {
+        // EL Bug 426500
+        // postInitialize and set source expression fields using my descriptor 
+        if (this.sourceExpressionsToPostInitialize != null && this.sourceExpressionsToPostInitialize.size() > 0) {
+            ClassDescriptor descriptor = getDescriptor();
+            ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+            for (Iterator<Expression> expressions = this.sourceExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
+                Expression expression = expressions.next();
+                DatabaseField field = null;
+                if (expression.isParameterExpression()) {
+                    field = ((ParameterExpression)expression).getField();
+                } else if (expression.isFieldExpression()) {
+                    field = ((FieldExpression)expression).getField();
+                }
+                if (field != null && (field.getType() == null || field.getTypeName() == null)) {
+                    field.setType(objectBuilder.getFieldClassification(field));
+                }
+            }
+        }
+        
+        // postInitialize and set target expression fields using my reference descriptor
+        if (this.targetExpressionsToPostInitialize != null && this.targetExpressionsToPostInitialize.size() > 0) {
+            ClassDescriptor descriptor = getReferenceDescriptor();
+            ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+            for (Iterator<Expression> expressions = this.targetExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
+                Expression expression = expressions.next();
+                DatabaseField field = null;
+                if (expression.isParameterExpression()) {
+                    field = ((ParameterExpression)expression).getField();
+                } else if (expression.isFieldExpression()) {
+                    field = ((FieldExpression)expression).getField();
+                }
+                if (field != null && (field.getType() == null || field.getTypeName() == null)) {
+                    field.setType(objectBuilder.getFieldClassification(field));
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Prepare a cascade locking policy.
      */
     @Override
@@ -1337,13 +1393,22 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                 DatabaseField foreignKey = (DatabaseField)keys.next();
                 DatabaseField targetKey = getSourceToTargetKeyFields().get(foreignKey);
     
-                Expression expression = null;
+                Expression targetKeyExpression = builder.getField(targetKey);
+                Expression sourceKeyExpression = null;
+                
                 if (useParameter){
-                    expression = builder.getField(targetKey).equal(builder.getParameter(foreignKey));
+                    sourceKeyExpression = builder.getParameter(foreignKey);
                 } else {
-                    expression = builder.getField(targetKey).equal(builder.getField(foreignKey));
+                    sourceKeyExpression = builder.getField(foreignKey);
                 }
                 
+                Expression expression = targetKeyExpression.equal(sourceKeyExpression);
+
+                if (usePreviousSelectionCriteria == false) {
+                    this.sourceExpressionsToPostInitialize.add(sourceKeyExpression);
+                    this.targetExpressionsToPostInitialize.add(targetKeyExpression);
+                }
+
                 if (criteria == null) {
                     criteria = expression;
                 } else {
