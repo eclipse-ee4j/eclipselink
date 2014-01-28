@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *      Gordon Yorke - VM managed entity detachment
  *     Eduard Bartsch, SAP - Fix for Bug 351186 - ConcurrentModificationException Exception in PropertiesHandler 
+ *     Rick Curtis - Add support for WebSphere Liberty platform.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -557,6 +558,7 @@ public class PropertiesHandler {
                 {TargetServer.WebSphere, pcg + "was.WebSpherePlatform"},
                 {TargetServer.WebSphere_6_1, pcg + "was.WebSphere_6_1_Platform"},
                 {TargetServer.WebSphere_7, pcg + "was.WebSphere_7_Platform"},
+                {TargetServer.WebSphere_Liberty, pcg + "was.WebSphere_Liberty_Platform"},
                 {TargetServer.WebLogic, pcg + "wls.WebLogicPlatform"},
                 {TargetServer.WebLogic_9, pcg + "wls.WebLogic_9_Platform"},
                 {TargetServer.WebLogic_10, pcg + "wls.WebLogic_10_Platform"},

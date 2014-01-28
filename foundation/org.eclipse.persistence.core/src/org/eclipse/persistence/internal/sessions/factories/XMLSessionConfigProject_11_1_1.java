@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Rick Curtis - Add support for WebSphere Liberty
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories;
 
@@ -39,6 +40,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLog
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_9_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_6_1_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_7_0_PlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.WebSphere_Liberty_Platform_Config;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.Oc4jJGroupsTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.TransportManagerConfig;
 
@@ -62,6 +64,7 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_10_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_6_1_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_7_0_PlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(WebSphere_Liberty_Platform_Config.class));
         
         // 242452 -- add metadata support for XMLLogin's DocumentPreservationPolicy
         addDescriptor(buildDocumentPreservationPolicyConfigDescriptor());
@@ -170,7 +173,8 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_9_PlatformConfig.class, "weblogic-9-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_10_PlatformConfig.class, "weblogic-10-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebSphere_6_1_PlatformConfig.class, "websphere-61-platform");
-        descriptor.getInheritancePolicy().addClassIndicator(WebSphere_7_0_PlatformConfig.class, "websphere-7-platform");	
+        descriptor.getInheritancePolicy().addClassIndicator(WebSphere_7_0_PlatformConfig.class, "websphere-7-platform");
+        descriptor.getInheritancePolicy().addClassIndicator(WebSphere_Liberty_Platform_Config.class, "websphere-liberty-platform");
         return descriptor;
     }
 
