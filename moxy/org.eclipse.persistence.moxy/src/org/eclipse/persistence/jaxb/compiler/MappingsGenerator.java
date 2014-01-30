@@ -1400,8 +1400,10 @@ public class MappingsGenerator {
 
         if (property.getType() != null) {
             String theClass = null;
+            String targetClass = null;
             if (property.isSetXmlJavaTypeAdapter()) {
                 theClass = property.getOriginalType().getQualifiedName();
+                targetClass = property.getType().getQualifiedName();                
             } else {
                 theClass = property.getType().getQualifiedName();
                 
@@ -1410,7 +1412,13 @@ public class MappingsGenerator {
             try {
                 JavaClass actualJavaClass = helper.getJavaClass(theClass);
                 Class actualClass = helper.getClassForJavaClass(actualJavaClass);
+
                 mapping.setAttributeClassification(actualClass);
+                if(targetClass != null) {
+                    JavaClass targetJavaClass = helper.getJavaClass(targetClass);
+                    Class fieldClass = helper.getClassForJavaClass(targetJavaClass);
+                    mapping.getField().setType(fieldClass);
+                }  
             } catch (Exception e) {
                 // Couldn't find Class (Dynamic?), so set class name instead.
                 mapping.setAttributeClassificationName(theClass);
