@@ -1656,8 +1656,10 @@ public class MappingsGenerator {
 
         if (property.getType() != null) {
             String theClass = null;
+            String targetClass = null;
             if (property.isSetXmlJavaTypeAdapter()) {
                 theClass = property.getOriginalType().getQualifiedName();
+                targetClass = property.getType().getQualifiedName();                
             } else {
                 theClass = property.getType().getQualifiedName();
                 
@@ -1667,6 +1669,11 @@ public class MappingsGenerator {
                 JavaClass actualJavaClass = helper.getJavaClass(theClass);
                 Class actualClass =  org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(actualJavaClass.getQualifiedName(), helper.getClassLoader());
                 mapping.setAttributeClassification(actualClass);
+                if(targetClass != null) {
+                    Class fieldClass = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(targetClass, helper.getClassLoader());
+                    mapping.getField().setType(fieldClass);
+                }  
+                
             } catch (Exception e) {
                 // Couldn't find Class (Dynamic?), so set class name instead.
                 mapping.setAttributeClassificationName(theClass);
