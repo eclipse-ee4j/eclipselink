@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.jaxb.xmladapter.direct.CollapsedStringTes
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.ListToStringAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.NormalizedStringTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterSchemaTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.objectlist.ObjectListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefTestCases;
@@ -74,6 +75,7 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(NormalizedStringListTestCases.class);
         suite.addTestSuite(NormalizedStringTestCases.class);
         suite.addTestSuite(AdapterWithInheritanceTestCases.class);
+        suite.addTestSuite(XmlAdapterSchemaTypeTestCases.class);
         return suite;
     }
 }
