@@ -31,6 +31,7 @@ import org.eclipse.persistence.testing.jaxb.xmladapter.direct.NormalizedStringTe
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectExceptionTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectNullTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterSchemaTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.objectlist.ObjectListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefTestCases;
@@ -88,6 +89,8 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(AdapterEnumTestCases.class);
         suite.addTestSuite(GenericAdapterTestCases.class);
         suite.addTestSuite(NoArgCtorAdapterTestCases.class);
+        suite.addTestSuite(XmlAdapterSchemaTypeTestCases.class);
+
         return suite;
     }
 }
