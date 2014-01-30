@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -166,6 +166,26 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 @NamedQuery(
         name="UpdateEmployeeQueryWithLockModeNONE",
         query="UPDATE Employee e set e.salary = 100 where e.firstName like 'blah'"
+),
+//Bug# 426129 - Verify order of named query and named parameters.
+@NamedQuery(
+		name="employee.findPhoneNumberByEmployeIdAndPhoneNumberIdNamedParams",
+		query="SELECT e FROM Employee e, ADV_DEPT d WHERE e.id=:eId and d.id=:dId"
+),
+//Bug# 426129 - Verify order of named query and named parameters, where condition in reverse order.
+@NamedQuery(
+		name="employee.findPhoneNumberByEmployeIdAndPhoneNumberIdNamedParamsReverseOrder",
+		query="SELECT e FROM Employee e, ADV_DEPT d WHERE d.id=:dId and e.id=:eId"
+),
+//Bug# 426129 - Verify order of named query and indexed parameters.
+@NamedQuery(
+		name="employee.findPhoneNumberByEmployeIdAndPhoneNumberIdIndexedParams",
+		query="SELECT e FROM Employee e, ADV_DEPT d WHERE e.id=?1 and d.id=?2"
+),
+//Bug# 426129 - Verify order of named query and indexed parameters, where condition in reverse order.
+@NamedQuery(
+		name="employee.findPhoneNumberByEmployeIdAndPhoneNumberIdIndexedParamsReverseOrder",
+		query="SELECT e FROM Employee e, ADV_DEPT d WHERE d.id=?1 and e.id=?2"
 )
 }
 )
