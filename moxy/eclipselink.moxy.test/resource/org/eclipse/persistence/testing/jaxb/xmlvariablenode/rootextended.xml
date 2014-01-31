@@ -1,0 +1,13 @@
+<root-with-reference>
+   <name>theRootName</name>
+   <thinga>
+      <thingName>thinga</thingName>
+	  <thingValue>thingavalue</thingValue>
+	  <refs>
+	  	<name>refa</name>
+	  </refs>
+   </thinga>
+   <ref>
+      <name>refa</name>
+   </ref>
+</root-with-reference>

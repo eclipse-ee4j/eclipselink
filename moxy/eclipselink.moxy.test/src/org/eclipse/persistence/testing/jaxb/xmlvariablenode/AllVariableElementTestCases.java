@@ -36,6 +36,7 @@ public class AllVariableElementTestCases extends TestSuite {
         suite.addTestSuite(XmlVariableNodeBindingsTestCases.class);
         suite.addTestSuite(XmlVariableNodeNullValueTestCases.class);
         suite.addTestSuite(XmlVariableNodeAdapterTestCases.class);
+        suite.addTestSuite(XmlVariableNodeWithReferenceTestCase.class);
         
         suite.addTestSuite(XmlVariableNodeXmlValueTestCases.class);
         suite.addTestSuite(XmlVariableNodeXmlValueAttributeTestCases.class);
