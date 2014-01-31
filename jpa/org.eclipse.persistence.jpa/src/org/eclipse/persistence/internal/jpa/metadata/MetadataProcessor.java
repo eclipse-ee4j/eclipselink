@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,6 +33,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     08/18/2014-2.5 Jody Grassel (IBM Corporation)
  *       - 440802: xml-mapping-metadata-complete does not exclude @Entity annotated entities
+ *     11/23/2017: Scott Marlow
+ *       - 414974: allow eclipselink.archive.factory to be specified as an integration property of PersistenceProvider.createContainerEntityManagerFactory(PersistenceUnitInfo, Map)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -468,7 +470,7 @@ public class MetadataProcessor {
 
             Archive par = null;
             try {
-                par = PersistenceUnitProcessor.getArchiveFactory(m_loader).createArchive(rootURL, null);
+                par = PersistenceUnitProcessor.getArchiveFactory(m_loader, m_predeployProperties).createArchive(rootURL, null);
 
                 if (par != null) {
                     ormURL = par.getEntryAsURL(ormXMLFile);
