@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation.
+ * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation.
  * All rights reserved. This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0 and Eclipse Distribution License
  * v. 1.0 which accompanies this distribution.
@@ -15,6 +15,8 @@
  *       - 439163: JSE Bootstrapping does not handle "wsjar" URLs referencing war-contained resources
  *     08/29/2016 Jody Grassel
  *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
+ *     11/23/2017: Scott Marlow
+ *       - 414974: allow eclipselink.archive.factory to be specified as an integration property of PersistenceProvider.createContainerEntityManagerFactory(PersistenceUnitInfo, Map)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.deployment;
 
@@ -63,6 +65,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.ArchiveFactory;
@@ -360,7 +363,7 @@ public class PersistenceUnitProcessor {
      *
      * @param loader the class loader to get the class path from
      */
-    public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath, List<URL> jarFileUrls) {
+    public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath, List<URL> jarFileUrls, Map properties) {
         Archive archive = null;
 
         Set<Archive> archives = new HashSet<Archive>();
@@ -376,7 +379,7 @@ public class PersistenceUnitProcessor {
         try {
             for(int i=0; i < jarFileUrls.size(); i++) {
                 URL puRootUrl = jarFileUrls.get(i);
-                archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
+                archive = PersistenceUnitProcessor.getArchiveFactory(loader, properties).createArchive(puRootUrl, descriptorPath, null);
 
                 // archive = new BundleArchive(puRootUrl, descUrl);
                 if (archive != null){
@@ -398,7 +401,7 @@ public class PersistenceUnitProcessor {
         if(descriptorPath == null) {
             descriptorPath = PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
         }
-        Set<Archive> archives = findPersistenceArchives(loader, descriptorPath, jarFileUrls);
+        Set<Archive> archives = findPersistenceArchives(loader, descriptorPath, jarFileUrls, m);
         Set<SEPersistenceUnitInfo> puInfos = new HashSet();
         try {
             for(Archive archive : archives) {
@@ -414,12 +417,25 @@ public class PersistenceUnitProcessor {
     }
 
     public static ArchiveFactory getArchiveFactory(ClassLoader loader){
+        return getArchiveFactory(loader, null);
+    }
+
+    public static ArchiveFactory getArchiveFactory(ClassLoader loader, Map properties){
         if (ARCHIVE_FACTORY != null){
             return ARCHIVE_FACTORY;
         }
 
         ArchiveFactory factory = null;
-        String factoryClassName = PrivilegedAccessHelper.getSystemProperty(SystemProperties.ARCHIVE_FACTORY, null);
+        String factoryClassName = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                ? AccessController.doPrivileged(new PrivilegedGetSystemProperty(SystemProperties.ARCHIVE_FACTORY))
+                : System.getProperty(SystemProperties.ARCHIVE_FACTORY);
+
+        if (factoryClassName == null && properties != null) {
+            Object name = properties.get(SystemProperties.ARCHIVE_FACTORY);
+            if(name instanceof String) {
+                factoryClassName = (String) name;
+            }
+        }
 
         if (factoryClassName == null) {
             return new ArchiveFactoryImpl();
@@ -453,7 +469,7 @@ public class PersistenceUnitProcessor {
         Set<String> classNames = new HashSet<String>();
         Archive archive = null;
         try {
-            archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(url, properties);
+            archive = PersistenceUnitProcessor.getArchiveFactory(loader, properties).createArchive(url, properties);
 
             if (archive != null) {
                 for (Iterator<String> entries = archive.getEntries(); entries.hasNext();) {
