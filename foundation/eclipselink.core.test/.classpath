@@ -5,7 +5,6 @@
 	<classpathentry excluding="**/.svn/**" including="simpleTable" kind="src" path=""/>
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.resource 1.5.0"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.transaction 1.1.0"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.jms 1.1.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.1.0"/>

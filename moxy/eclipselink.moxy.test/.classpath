@@ -5,13 +5,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.resource 1.5.0"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.activation"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.mail"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.bind"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.stream"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy.dynamicxjc"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.sun.xml.bind"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.ws.rs"/>

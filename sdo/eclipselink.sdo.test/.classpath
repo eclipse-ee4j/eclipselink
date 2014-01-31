@@ -7,8 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.sdo"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.activation"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.bind"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commonj.sdo"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

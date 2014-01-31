@@ -12,7 +12,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.validation"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.jpa.modelgen.test"/>
-	<classpathentry kind="var" path="JAXRS_LIB"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.persistence 2.1.0"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.ws.rs"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
