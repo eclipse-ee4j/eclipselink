@@ -1,0 +1,11 @@
+{"root-with-reference":{
+     "name":"theRootName",
+     "thinga":{
+     	"thingName":"thinga",
+     	"thingValue":"thingavalue",
+     	"refs":[ {
+     		"name":"refa"
+     		}
+     	]},
+     "ref":{"name":"refa"}
+ }}

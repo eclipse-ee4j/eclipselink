@@ -136,6 +136,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
 	        
 	        childObject = getMapping().convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
 	        setOrAddAttributeValue(unmarshalRecord, childObject, xPathFragment, null);
+	        unmarshalRecord.setChildRecord(null);
 	    } else {                         
 	         unmarshalRecord.resetStringBuffer();	               	           
 	    }
