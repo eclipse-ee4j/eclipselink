@@ -12,15 +12,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlinverseref;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.bindings.InverseBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.bindings.InverseWriteableBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalList2TestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalList3TestCases;
+import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalList4TestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalListObjectsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalListTestCases;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class XmlInverseRefBidirectionalTestSuite {
 	  public static Test suite() {
@@ -34,6 +35,7 @@ public class XmlInverseRefBidirectionalTestSuite {
 	        suite.addTestSuite(XmlInverseRefBidirectionalListTestCases.class);
 	        suite.addTestSuite(XmlInverseRefBidirectionalList2TestCases.class);
 	        suite.addTestSuite(XmlInverseRefBidirectionalList3TestCases.class);
+	        suite.addTestSuite(XmlInverseRefBidirectionalList4TestCases.class);
 	        suite.addTestSuite(XmlInverseRefBidirectionalListObjectsTestCases.class);
 	        
 	        //need external meta data test case
