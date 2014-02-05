@@ -19,7 +19,7 @@ import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidi
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalList4TestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalListObjectsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalListTestCases;
-
+import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefWithWrapperTestCases;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -37,6 +37,7 @@ public class XmlInverseRefBidirectionalTestSuite {
 	        suite.addTestSuite(XmlInverseRefBidirectionalList3TestCases.class);
 	        suite.addTestSuite(XmlInverseRefBidirectionalList4TestCases.class);
 	        suite.addTestSuite(XmlInverseRefBidirectionalListObjectsTestCases.class);
+	        suite.addTestSuite(XmlInverseRefWithWrapperTestCases.class);
 	        
 	        //need external meta data test case
 	        //need true on one side false on the other side test

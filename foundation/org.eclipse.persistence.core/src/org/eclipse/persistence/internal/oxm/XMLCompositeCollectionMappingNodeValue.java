@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.List;
@@ -40,13 +40,9 @@ import org.xml.sax.SAXException;
 
 /**
  * INTERNAL:
- * <p><b>Purpose</b>: This is how the XML Composite Collection Mapping is
- * handled when used with the TreeObjectBuilder.</p>
- */
-/**
- * INTERNAL:
- * <p><b>Purpose</b>: This is how the XML Composite Collection Mapping is
- * handled when used with the TreeObjectBuilder.</p>
+ * <p><b>Purpose</b>: This is how the XML Composite Collection Mapping is handled when used with the TreeObjectBuilder.</p>
+ * when used with the TreeObjectBuilder.
+ * </p>
  */
 public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappingNodeValue implements ContainerValue {
     private CompositeCollectionMapping xmlCompositeCollectionMapping;
@@ -57,13 +53,11 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         super();
         this.xmlCompositeCollectionMapping = xmlCompositeCollectionMapping;
     }
-    
-    
+        
     public XMLCompositeCollectionMappingNodeValue(CompositeCollectionMapping xmlCompositeCollectionMapping, boolean isInverse) {
         this(xmlCompositeCollectionMapping);
         this.isInverseReference = isInverse;
     }
-
 
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlCompositeCollectionMapping.isReadOnly()) {
@@ -80,29 +74,30 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 return false;
             }
         }
+        
         CoreContainerPolicy cp = getContainerPolicy();
-        Object iterator = cp.iteratorFor(collection);
+        int size = marshalRecord.getCycleDetectionStack().size();
+        // when writing the collection need to see if any of the objects we are
+        // writing are in the parent collection inverse ref
+        if ((isInverseReference || xmlCompositeCollectionMapping.getInverseReferenceMapping() != null) && size >= 2) {
+        	Object owner = marshalRecord.getCycleDetectionStack().get(size - 2);
+        	try {
+        		if (cp.contains(owner, collection, session)) {
+        			return false;
+        		}
+        	} catch (ClassCastException e) {
+        		// For Bug #416875
+        	}
+        }
+        Object iterator = cp.iteratorFor(collection);        
         if (null != iterator && cp.hasNext(iterator)) {
-            XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-            marshalRecord.closeStartGroupingElements(groupingFragment);
+        	XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+        	marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
         	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlCompositeCollectionMapping.getWrapperNullPolicy() != null);
         }
-        
-        
-        int size =marshalRecord.getCycleDetectionStack().size(); 
-        //when writing the collection need to see if any of the objects we are writing are in the parent collection inverse ref
-        if((isInverseReference || xmlCompositeCollectionMapping.getInverseReferenceMapping() !=null)&& size >= 2){
-            Object owner = marshalRecord.getCycleDetectionStack().get(size - 2);
-            try {
-                if(cp.contains(owner, collection, session)){
-                    return false;
-                }
-            } catch(ClassCastException e) {
-                // For Bug #416875
-            }
-         }
-        marshalRecord.startCollection(); 
+                        
+        marshalRecord.startCollection();
         iterator = cp.iteratorFor(collection);
         while (cp.hasNext(iterator)) {
             Object objectValue = cp.next(iterator, session);
@@ -113,23 +108,23 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     }
 
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
-        try {
-        	Descriptor xmlDescriptor = (Descriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
+        try {        	
+        	Descriptor xmlDescriptor = (Descriptor) xmlCompositeCollectionMapping.getReferenceDescriptor();        	
             if (xmlDescriptor == null) {
-                xmlDescriptor = findReferenceDescriptor(xPathFragment,unmarshalRecord, atts, xmlCompositeCollectionMapping, xmlCompositeCollectionMapping.getKeepAsElementPolicy());
+            	xmlDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlCompositeCollectionMapping, xmlCompositeCollectionMapping.getKeepAsElementPolicy());
                 
-                if(xmlDescriptor == null){
-                	if (unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(xmlCompositeCollectionMapping.getNullPolicy())){
-                		if(unmarshalRecord.isNil()){
+            	if (xmlDescriptor == null) {
+            		if (unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(xmlCompositeCollectionMapping.getNullPolicy())) {
+            			if (unmarshalRecord.isNil()) {
                             return true;
                 		}
-                    } else if(xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)){ 
-                    	 getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
-                         return true;
+                    } else if (xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)) { 
+                    	getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
+                    	return true;
                     }
-                    if(xmlCompositeCollectionMapping.getField() != null){
+            		if (xmlCompositeCollectionMapping.getField() != null) {
                         //try leaf element type
-                        QName leafType = ((Field)xmlCompositeCollectionMapping.getField()).getLastXPathFragment().getLeafElementType();
+            			QName leafType = ((Field) xmlCompositeCollectionMapping.getField()).getLastXPathFragment().getLeafElementType();
                         if (leafType != null) {
                             XPathFragment frag = new XPathFragment();
                             frag.setNamespaceAware(unmarshalRecord.isNamespaceAware());
@@ -138,27 +133,27 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                             String uri = leafType.getNamespaceURI();
                             if (uri != null && uri.length() > 0) {
                                 frag.setNamespaceURI(uri);
-                                String prefix = ((Descriptor)xmlCompositeCollectionMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
+                                String prefix = ((Descriptor) xmlCompositeCollectionMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
                                 if (prefix != null && prefix.length() > 0) {
                                     xpath = prefix + Constants.COLON + xpath;
                                 }
                             }
-                            frag.setXPath(xpath);     
+                            frag.setXPath(xpath);  
                             Context xmlContext = unmarshalRecord.getUnmarshaller().getContext();
-                            xmlDescriptor =  xmlContext.getDescriptorByGlobalType(frag);
+                            xmlDescriptor = xmlContext.getDescriptorByGlobalType(frag);
                         }
                     }
                 } 
                     
                 UnmarshalKeepAsElementPolicy policy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();
-                if (policy != null && ((xmlDescriptor == null && policy.isKeepUnknownAsElement()) || policy.isKeepAllAsElement())) {
-                    if(unmarshalRecord.getTypeQName() != null){
+                if (policy != null && ((xmlDescriptor == null && policy.isKeepUnknownAsElement()) || policy.isKeepAllAsElement())) {                    
+                    if (unmarshalRecord.getTypeQName() != null) {                    	
                         Class theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
-                        if(theClass == null){
+                        if (theClass == null) {
                             setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
                             return true;
                         }
-                    }else{
+                    } else {
                         setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
                         return true;
                     }
@@ -166,22 +161,22 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             }
 
             AbstractNullPolicy nullPolicy = xmlCompositeCollectionMapping.getNullPolicy();
-            if(nullPolicy.isNullRepresentedByEmptyNode()) {
+            if (nullPolicy.isNullRepresentedByEmptyNode()) {
                 String qnameString = xPathFragment.getLocalName();
-                if(xPathFragment.getPrefix() != null) {
-                    qnameString = xPathFragment.getPrefix()  + Constants.COLON + qnameString;
+                if (xPathFragment.getPrefix() != null) {
+                	qnameString = xPathFragment.getPrefix() + Constants.COLON + qnameString;
                 }
-                if(null != xmlDescriptor) {
-                    // Process null capable value
+                if (null != xmlDescriptor) {
+                	// Process null capable value
                     CompositeCollectionMappingContentHandler aHandler = new CompositeCollectionMappingContentHandler(//
-                        unmarshalRecord, this, xmlCompositeCollectionMapping, atts, xPathFragment, xmlDescriptor);
+                    		unmarshalRecord, this, xmlCompositeCollectionMapping, atts, xPathFragment, xmlDescriptor);
                     // Send control to the handler
                     aHandler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
                     XMLReader xmlReader = unmarshalRecord.getXMLReader();
                     xmlReader.setContentHandler(aHandler);
                     xmlReader.setLexicalHandler(aHandler);
                 }
-            } else if (!(unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(nullPolicy) && unmarshalRecord.isNil())) {            	
+            } else if (!(unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(nullPolicy) && unmarshalRecord.isNil())) {
             	Field xmlFld = (Field) this.xmlCompositeCollectionMapping.getField();
                 if (xmlFld.hasLastXPathFragment()) {
                     unmarshalRecord.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
