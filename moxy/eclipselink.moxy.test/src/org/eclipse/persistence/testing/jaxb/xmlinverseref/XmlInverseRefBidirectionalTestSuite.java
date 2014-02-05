@@ -16,6 +16,7 @@ import org.eclipse.persistence.testing.jaxb.xmlinverseref.bindings.InverseBindin
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.bindings.InverseWriteableBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalList2TestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalList3TestCases;
+import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalList4TestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalListObjectsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinverseref.list.XmlInverseRefBidirectionalListTestCases;
 
@@ -34,6 +35,7 @@ public class XmlInverseRefBidirectionalTestSuite {
 	        suite.addTestSuite(XmlInverseRefBidirectionalListTestCases.class);
 	        suite.addTestSuite(XmlInverseRefBidirectionalList2TestCases.class);
 	        suite.addTestSuite(XmlInverseRefBidirectionalList3TestCases.class);
+	        suite.addTestSuite(XmlInverseRefBidirectionalList4TestCases.class);
 	        suite.addTestSuite(XmlInverseRefBidirectionalListObjectsTestCases.class);
 	        
 	        //need external meta data test case
