@@ -30,6 +30,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 import java.io.*;
+import java.lang.reflect.Constructor;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
@@ -74,6 +75,8 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
+import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.cdi.DisabledEntityListenerInjectionManager;
@@ -1132,9 +1135,17 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return new ProtectedValueHolder(attributeValue, mapping, this);
     }
 
-    public EntityListenerInjectionManager createEntityListenerInjectionManager(){
+    public EntityListenerInjectionManager createEntityListenerInjectionManager(Object beanManager){
         try{
-            return (EntityListenerInjectionManager)Class.forName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()).newInstance();
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    Class elim = (Class)AccessController.doPrivileged(new PrivilegedClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
+                    Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(elim, new Class[] {String.class}, false));
+                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
+            } else {
+                Class elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()); 
+                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(elim, new Class[] {Object.class}, false);
+                return (EntityListenerInjectionManager) PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {beanManager});
+            }
         } catch (Exception e){
             logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
         }
@@ -2223,7 +2234,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     public EntityListenerInjectionManager getEntityListenerInjectionManager() {
         if (entityListenerInjectionManager == null){
-            entityListenerInjectionManager = createEntityListenerInjectionManager();
+            entityListenerInjectionManager = createEntityListenerInjectionManager(this.getProperty(PersistenceUnitProperties.CDI_BEANMANAGER));
         }
         return entityListenerInjectionManager;
     }

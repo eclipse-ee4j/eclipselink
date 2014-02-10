@@ -1877,6 +1877,12 @@ public class PersistenceUnitProperties {
      * @see #BATCH_WRITING
      */
     public static final String BATCH_WRITING_SIZE = "eclipselink.jdbc.batch-writing.size";
+    
+    /**
+     * The <code>"javax.persistence.bean.manager"</code> property is used to set
+     * CDI BeanManager when available
+     */
+    public static final String CDI_BEANMANAGER = "javax.persistence.bean.manager";
 
     /**
      * The <code>"eclipselink.persistencexml"</code> property specifies the full

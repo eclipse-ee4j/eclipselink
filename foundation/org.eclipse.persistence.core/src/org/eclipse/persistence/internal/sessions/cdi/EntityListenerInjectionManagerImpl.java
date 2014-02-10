@@ -40,9 +40,14 @@ public class EntityListenerInjectionManagerImpl implements EntityListenerInjecti
     protected Map<Object, InjectionTarget<Object>> injectionTargets = null;
     
     
-    public EntityListenerInjectionManagerImpl() throws NamingException{
-        Context context = new InitialContext();
-        beanManager = (BeanManager) context.lookup("java:comp/BeanManager");
+    public EntityListenerInjectionManagerImpl(Object beanManager) throws NamingException{
+        if (beanManager != null){
+            this.beanManager = (BeanManager) beanManager;
+        }else{
+            Context context = new InitialContext();
+            
+            beanManager = (BeanManager) context.lookup("java:comp/BeanManager");
+        }
         injectionTargets = new HashMap<Object, InjectionTarget<Object>>();
     }
     
