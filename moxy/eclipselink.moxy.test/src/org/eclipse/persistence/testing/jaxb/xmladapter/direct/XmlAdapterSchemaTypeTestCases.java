@@ -15,8 +15,8 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.direct;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlAdapterSchemaTypeTestCases extends JAXBWithJSONTestCases {
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/schemaType.xml";
-	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/schemaType.json";
+	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/schematype.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/schematype.json";
     
     public XmlAdapterSchemaTypeTestCases(String name) throws Exception {
         super(name);
