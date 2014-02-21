@@ -167,7 +167,10 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
 
 	@Override
 	public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        if(objectValue == null) {
+		Marshaller marshaller = marshalRecord.getMarshaller();
+        objectValue = xmlBinaryDataCollectionMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
+        
+		if(objectValue == null) {
             AbstractNullPolicy nullPolicy = xmlBinaryDataCollectionMapping.getNullPolicy();
             if (nullPolicy.getMarshalNullRepresentation() != XMLNullRepresentationType.ABSENT_NODE) {
                 XPathNode holderXPathNode = new XPathNode();
@@ -188,8 +191,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             mimeType = Constants.EMPTY_STRING;
             attachmentType = "application/octet-stream";
         }
-        Marshaller marshaller = marshalRecord.getMarshaller();
-        objectValue = xmlBinaryDataCollectionMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
+        
         marshalRecord.openStartElement(xPathFragment, namespaceResolver);
         marshalRecord.closeStartElement();
 

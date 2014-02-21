@@ -162,6 +162,8 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         if(unmarshalRecord.isNil() && xmlDirectMapping.getNullPolicy().isNullRepresentedByXsiNil()){
+            Object convertedValue = xmlDirectMapping.getAttributeValue(org.eclipse.persistence.oxm.record.XMLRecord.NIL, unmarshalRecord.getSession(), unmarshalRecord);
+            unmarshalRecord.setAttributeValue(convertedValue, xmlDirectMapping);
             unmarshalRecord.resetStringBuffer();
             return;
         }        

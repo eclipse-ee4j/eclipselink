@@ -12,6 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import javax.xml.bind.JAXBElement;
+
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
@@ -63,8 +65,12 @@ public class ChoiceUnmarshalContext implements UnmarshalContext {
         unmarshalContext.unmappedContent(unmarshalRecord);
     }
 
-    private Object getValue(Object value, UnmarshalRecord unmarshalRecord) {
-        return converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller()); 
+    protected Object getValue(Object value, UnmarshalRecord unmarshalRecord) {
+    	Object converted = converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+    	if (converted instanceof JAXBElement<?>) {
+    		((JAXBElement<?>)converted).setNil(unmarshalRecord.isNil());
+    	}
+    	return converted;
     }
 
 }

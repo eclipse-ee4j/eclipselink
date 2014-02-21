@@ -42,6 +42,7 @@ import org.xml.sax.Attributes;
  */
 
 public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
+
     private NodeValue choiceElementNodeValue;
     private Map<Class, NodeValue> choiceElementNodeValues;
     private ChoiceObjectMapping xmlChoiceMapping;
@@ -207,4 +208,8 @@ public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
         return this.xmlChoiceMapping;
     }
 
+    @Override
+    public boolean isWhitespaceAware() {
+        return choiceElementNodeValue.isWhitespaceAware();
+    }
 }

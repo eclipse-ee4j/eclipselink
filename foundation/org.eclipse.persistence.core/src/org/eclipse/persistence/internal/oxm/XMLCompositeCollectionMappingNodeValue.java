@@ -176,7 +176,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                     xmlReader.setContentHandler(aHandler);
                     xmlReader.setLexicalHandler(aHandler);
                 }
-            } else if (!(unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(nullPolicy) && unmarshalRecord.isNil())) {
+            } else if (!(unmarshalRecord.getXMLReader().isNullRecord(nullPolicy, atts, unmarshalRecord))) {            	
             	Field xmlFld = (Field) this.xmlCompositeCollectionMapping.getField();
                 if (xmlFld.hasLastXPathFragment()) {
                     unmarshalRecord.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
@@ -195,7 +195,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     }
     
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
-        if(unmarshalRecord.isNil() && unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(xmlCompositeCollectionMapping.getNullPolicy())){
+        if(unmarshalRecord.isNil() && unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(xmlCompositeCollectionMapping.getNullPolicy()) && 
+        		(unmarshalRecord.getChildRecord() == null)){
         	if(unmarshalRecord.getXMLReader().isInCollection()){
         		unmarshalRecord.addAttributeValue(this, null);
         	}else{
@@ -276,6 +277,12 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
       
         Marshaller marshaller = marshalRecord.getMarshaller();
         // convert the value - if necessary
+        boolean isNil = false;
+        if (value instanceof Root) {
+        	isNil = ((Root) value).nil;
+        	value = ((Root) value).getObject();
+        }
+        
         value = xmlCompositeCollectionMapping.convertObjectValueToDataValue(value, session, marshaller);
         if (null == value) {
         	   return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
@@ -314,7 +321,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             }
             marshalRecord.pushAttributeGroup(nestedGroup);
             
-            xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);            
+            xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);
+            if (isNil) {
+            	marshalRecord.nilSimple(namespaceResolver);
+            }
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session,true, false);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);

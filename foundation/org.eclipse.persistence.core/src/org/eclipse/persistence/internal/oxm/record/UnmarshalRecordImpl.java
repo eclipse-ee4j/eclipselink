@@ -52,6 +52,7 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
@@ -1035,22 +1036,18 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
                 XPathNode textNode = xPathNode.getTextNode();
                 if (null != textNode && textNode.isWhitespaceAware() && getStringBuffer().length() == 0) {
                     NodeValue textNodeUnmarshalNodeValue = textNode.getUnmarshalNodeValue();
-                    if (!isXsiNil) {
-                        if (textNodeUnmarshalNodeValue.isMappingNodeValue()) {
+                    if (textNodeUnmarshalNodeValue.isMappingNodeValue()) {
+                        Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
+                        if(mapping.isAbstractDirectMapping() && isXsiNil) {
+                            Object nullValue = ((DirectMapping)mapping).getNullValue();
+                            if(!(Constants.EMPTY_STRING.equals(nullValue))) {
+                                setAttributeValue(null, mapping);
+                                this.removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
+                            }
+                        } else {
                             textNodeUnmarshalNodeValue.endElement(xPathFragment, this);
                         }
-                    } else {
-                        if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
-                            Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
-                            if(mapping.isAbstractDirectMapping()) {
-                                Object nullValue = ((AbstractDirectMapping)mapping).getNullValue();
-                                if(!(Constants.EMPTY_STRING.equals(nullValue))) {
-                                    setAttributeValue(null, mapping);
-                                    this.removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
-                                }
-                            }
-                            isXsiNil = false;
-                        }
+                        isXsiNil = false;
                     }
                 }
             }
