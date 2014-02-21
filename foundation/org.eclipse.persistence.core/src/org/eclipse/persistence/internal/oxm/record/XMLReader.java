@@ -25,6 +25,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
+
+import javax.xml.namespace.QName;
 import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -297,8 +299,26 @@ public class XMLReader implements org.xml.sax.XMLReader {
     public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy){
     	return nullPolicy.isNullRepresentedByXsiNil();    	
     }
-
     
+    public boolean isNullRecord(AbstractNullPolicy nullPolicy, Attributes atts, UnmarshalRecord record) {
+    	boolean isNil = isNullRepresentedByXsiNil(nullPolicy) && record.isNil();
+    	if (!nullPolicy.ignoreAttributesForNil()) {
+    		return isNil && !hasAttributes(atts);
+    	}
+    	return isNil;
+    }
+    
+    private boolean hasAttributes(Attributes attributes) {
+    	QName nilAttrName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
+		for (int i = 0; i < attributes.getLength(); i++) {
+			if (!(nilAttrName.getNamespaceURI().equals(attributes.getURI(i)) &&
+					nilAttrName.getLocalPart().equals(attributes.getLocalName(i)))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
     public boolean isInCollection(){
     	return true;
     }

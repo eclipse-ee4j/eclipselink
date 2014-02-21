@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.deferred.CompositeObjectMappingContentHandler;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
@@ -150,12 +151,20 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
     }
 
+    
+    private boolean isNil(Object value) {
+    	if (value instanceof XMLRoot) {
+    		return ((XMLRoot)value).isNil();
+    	}
+    	return false;
+    }
+    
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
+        boolean isNilFlag = isNil(objectValue);
+    	objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
         if (null == objectValue) {
             return xmlCompositeObjectMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
-        
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         if(xPathFragment.hasAttribute) {
             ObjectBuilder tob = (ObjectBuilder) xmlCompositeObjectMapping.getReferenceDescriptor().getObjectBuilder();
@@ -234,6 +243,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             marshalRecord.pushAttributeGroup(nestedGroup);
             if (!(isSelfFragment || xPathFragment.nameIsText)) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
+                if (isNilFlag) {
+                	marshalRecord.nilSimple(namespaceResolver);
+                }
             }
 
             List extraNamespaces = null;
@@ -244,7 +256,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if(!isSelfFragment) {
                 marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, (Descriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (Field)xmlCompositeObjectMapping.getField(), false);
             }
-
 
             objectBuilder.buildRow(marshalRecord, objectValue, session, marshalRecord.getMarshaller(), xPathFragment);
             marshalRecord.afterContainmentMarshal(object, objectValue);
@@ -354,7 +365,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                     xmlReader.setLexicalHandler(aHandler);
                 }
             } else {
-            	if(unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(nullPolicy) && unmarshalRecord.isNil()){
+            	if(unmarshalRecord.getXMLReader().isNullRecord(nullPolicy, atts, unmarshalRecord)){
                     xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
                 } else {
                 	Field xmlFld = (Field)this.xmlCompositeObjectMapping.getField();
@@ -372,7 +383,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        if(unmarshalRecord.isNil() && xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByXsiNil()){
+        if(unmarshalRecord.isNil() && xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByXsiNil() && (unmarshalRecord.getChildRecord() == null)){
             unmarshalRecord.resetStringBuffer();
             return;
         }

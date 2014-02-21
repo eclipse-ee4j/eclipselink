@@ -107,6 +107,14 @@ public abstract class AbstractNullPolicy {
      * equivalent.. false = (default) do nothing and treat as an empty node.
      */
     protected boolean isNullRepresentedByXsiNil = false;
+    
+    /**
+     * This state flag determines how we unmarshal xsi:nil nodes when there
+     * are other attributes (other than xsi:nil) present. If false, we ignore
+     * any attributes and treat the element as nil. If true, we inspect if
+     * some attributes are present and if yes, we process them.
+     */
+    protected boolean ignoreAttributesForNil = true;
 
     /**
      * This enum instance determines what to write out during a marshal
@@ -257,8 +265,9 @@ public abstract class AbstractNullPolicy {
         }
         return false;
     }
-    
-    /**
+
+
+	/**
      * INTERNAL: When using the DOM Platform during unmarshal operations. 
      * Use the element to determine if the element represents a null value.
      * 
@@ -329,6 +338,22 @@ public abstract class AbstractNullPolicy {
      */
     public void setNullRepresentedByXsiNil(boolean bIsNullRepresentedByXsiNil) {
         isNullRepresentedByXsiNil = bIsNullRepresentedByXsiNil;
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public boolean ignoreAttributesForNil() {
+        return ignoreAttributesForNil;
+    }
+
+    /**
+     * 
+     * @param ignoreAttributesForNil
+     */
+    public void setIgnoreAttributesForNil(boolean ignoreAttributtesForNil) {
+    	this.ignoreAttributesForNil = ignoreAttributtesForNil;
     }
 
     /**

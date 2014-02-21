@@ -22,6 +22,8 @@ import org.eclipse.persistence.testing.jaxb.jaxbcontext.JAXBContextMediaTypeTest
 import org.eclipse.persistence.testing.jaxb.namespaceuri.xml.XMLNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.xml.XMLNamespaceXmlPathTestCases;
 import org.eclipse.persistence.testing.jaxb.nomappings.NoMappingsTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlelementref.nills.XmlElementRefNillStringTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlelementref.nills.XmlElementRefNillWithAttributesTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelementref.ns.XmlElementRefWithNamespaceTests;
 import org.eclipse.persistence.testing.jaxb.xmlelementref.prefix.XmlElementRefPrefixesTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueByteArrayTestCases;
@@ -134,6 +136,8 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(XmlElementRefWithNamespaceTests.class);
         suite.addTestSuite(XmlElementRefPrefixesTestCases.class);
         suite.addTestSuite(FileTestCases.class);
+        suite.addTestSuite(XmlElementRefNillWithAttributesTestCases.class);
+        suite.addTestSuite(XmlElementRefNillStringTestCases.class);
         return suite;
 
     }

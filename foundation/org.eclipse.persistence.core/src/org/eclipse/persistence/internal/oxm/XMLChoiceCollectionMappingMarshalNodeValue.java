@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,11 +32,8 @@ import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
-
-import java.util.Iterator;
 
 public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;
@@ -234,14 +232,9 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
     }
 
     private boolean marshalSingleValueWithNodeValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, NodeValue unwrappedNodeValue) {        
-        
-    	Object fieldValue = value;
-    	if(value instanceof Root && !unwrappedNodeValue.isAnyMappingNodeValue()){
-    		fieldValue = ((Root)value).getObject();
-    	}
+    	
     	if(unwrappedNodeValue != null){
-    	    unwrappedNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, fieldValue, session, namespaceResolver, marshalContext);
-
+    	    unwrappedNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
     	}    	   
     	return true;
     }
