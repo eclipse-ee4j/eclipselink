@@ -104,8 +104,9 @@ public class DBPlatformHelper {
             String[] entry = iterator.next();
             String regExpr = entry[0];
             String value = entry[1];
-            if(logger.shouldLog(SessionLog.FINEST)) {
-                logger.log(SessionLog.FINEST, "dbPlatformHelper_regExprDbPlatform", regExpr, value); // NOI18N
+            if (logger.shouldLog(SessionLog.FINEST)) {
+                logger.log(SessionLog.FINEST, SessionLog.CONNECTION, "dbPlatformHelper_regExprDbPlatform", regExpr,
+                    value); // NOI18N
             }
             if( matchPattern(regExpr, vendorName, logger) ) {
                 dbPlatform = value;
