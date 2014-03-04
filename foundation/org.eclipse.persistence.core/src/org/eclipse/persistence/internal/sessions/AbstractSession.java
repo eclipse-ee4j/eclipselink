@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -4261,8 +4261,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Process the JPA named queries into EclipseLink Session queries. This 
      * method is called after descriptor initialization.
+     * Temporarily made public for ODI. Should not be used elsewhere.
      */
-    protected void processJPAQueries() {
+    public void processJPAQueries() {
         if (! jpaQueriesProcessed) {
             // Process the JPA queries that do not query table per tenant entities.
             for (DatabaseQuery jpaQuery : getJPAQueries()) {
