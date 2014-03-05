@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * <P>
@@ -415,9 +416,10 @@ public class ExpressionBuilder extends ObjectExpression {
     /**
      * INTERNAL:
      * Set the session in which we expect this expression to be translated.
+     * Stored session shall always be root session.
      */
     public void setSession(AbstractSession session) {
-        this.session = session;
+        this.session = session.getRootSession(null);
     }
 
     /**
