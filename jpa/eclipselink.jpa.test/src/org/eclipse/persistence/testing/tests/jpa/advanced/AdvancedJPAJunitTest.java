@@ -2794,8 +2794,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             List<Project> results = query.getResultList();
 
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 8) {
-                fail("Should have been 6 queries but was: " + counter.getSqlStatements().size());
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 9) {
+                fail("Should have been 9 queries but was: " + counter.getSqlStatements().size());
             }
             
             for (Project project : results) {
