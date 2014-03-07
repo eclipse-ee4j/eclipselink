@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -400,42 +400,44 @@ public class QueryKeyExpression extends ObjectExpression {
     public Object getFieldValue(Object objectValue, AbstractSession session) {
         DatabaseMapping mapping = getMapping();
         Object fieldValue = objectValue;
-        if ((mapping != null) && (mapping.isAbstractDirectMapping() || mapping.isDirectCollectionMapping())) {
-            // CR#3623207, check for IN Collection here not in mapping.
-            if (objectValue instanceof Collection) {
-                // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
-                Collection values = (Collection)objectValue;
-                Vector fieldValues = new Vector(values.size());
-                for (Iterator iterator = values.iterator(); iterator.hasNext();) {
-                    Object value = iterator.next();
-                    if (!(value instanceof Expression)){
-                        value = getFieldValue(value, session);
+        if (mapping != null) {
+            if (mapping.isAbstractDirectMapping() || mapping.isDirectCollectionMapping()) {
+                // CR#3623207, check for IN Collection here not in mapping.
+                if (objectValue instanceof Collection) {
+                    // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
+                    Collection values = (Collection)objectValue;
+                    Vector fieldValues = new Vector(values.size());
+                    for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+                        Object value = iterator.next();
+                        if (!(value instanceof Expression)){
+                            value = getFieldValue(value, session);
+                        }
+                        fieldValues.add(value);
                     }
-                    fieldValues.add(value);
-                }
-                fieldValue = fieldValues;
-            } else {
-                if (mapping.isAbstractColumnMapping()) {
-                    fieldValue = ((AbstractColumnMapping)mapping).getFieldValue(objectValue, session);
-                } else if (mapping.isDirectCollectionMapping()) {
-                    fieldValue = ((DirectCollectionMapping)mapping).getFieldValue(objectValue, session);                    
-                }
-            }
-        } else if ((objectValue instanceof Collection) && (mapping.isForeignReferenceMapping())) {
-            // Was an IN with a collection of objects, extract their ids.
-            List ids = new ArrayList();
-            for (Object object : ((Collection)objectValue)) {
-                if ((mapping.getReferenceDescriptor() != null) && (mapping.getReferenceDescriptor().getJavaClass().isInstance(object))) {
-                    Object id = mapping.getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, session);
-                    if (id instanceof CacheId) {
-                        id = Arrays.asList(((CacheId)id).getPrimaryKey());
-                    }
-                    ids.add(id);
+                    fieldValue = fieldValues;
                 } else {
-                    ids.add(object);
+                    if (mapping.isAbstractColumnMapping()) {
+                        fieldValue = ((AbstractColumnMapping)mapping).getFieldValue(objectValue, session);
+                    } else if (mapping.isDirectCollectionMapping()) {
+                        fieldValue = ((DirectCollectionMapping)mapping).getFieldValue(objectValue, session);
+                    }
                 }
+            } else if ((objectValue instanceof Collection) && (mapping.isForeignReferenceMapping())) {
+                // Was an IN with a collection of objects, extract their ids.
+                List ids = new ArrayList();
+                for (Object object : ((Collection)objectValue)) {
+                    if ((mapping.getReferenceDescriptor() != null) && (mapping.getReferenceDescriptor().getJavaClass().isInstance(object))) {
+                        Object id = mapping.getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(object, session);
+                        if (id instanceof CacheId) {
+                            id = Arrays.asList(((CacheId)id).getPrimaryKey());
+                        }
+                        ids.add(id);
+                    } else {
+                        ids.add(object);
+                    }
+                }
+                fieldValue = ids;
             }
-            fieldValue = ids;
         }
 
         return fieldValue;

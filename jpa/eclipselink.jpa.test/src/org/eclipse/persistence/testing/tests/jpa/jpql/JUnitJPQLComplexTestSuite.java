@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,14 +34,22 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.QueryImpl;
+import org.eclipse.persistence.internal.queries.CallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.platform.server.oc4j.Oc4jPlatform;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
@@ -237,6 +245,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testComplexBetween");
         tests.add("testComplexLike");
         tests.add("testComplexIn");
+        tests.add("testCollectionQueryKeysFieldValueWithNoMapping");
         tests.add("testQueryKeys");
         tests.add("complexOneToOneJoinOptimization");
         tests.add("testCountOneToManyQueryKey");
@@ -4317,6 +4326,31 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("Select e from Employee e where e.firstName in :arg");
         query.setParameter("arg", Arrays.asList(new int[]{1,2}));
         query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // Bug# 413146 - Test query with collection as a condition in query for attribute with no mapping.
+    // In current model Employee.startTime has no explicit mapping so QueryKeyExpression.getMapping() returns null.
+    public void testCollectionQueryKeysFieldValueWithNoMapping() {
+        EntityManager em = createEntityManager();
+        // Run query to trigger code path related to Bug# 413146
+        Query query = em.createQuery("Select e.startTime from Employee e where e.startTime in (:time1, :time2)");
+        query.setParameter("time1", new java.util.Date());
+        query.setParameter("time2", new java.util.Date());
+        query.getResultList();
+        // Verify that no mapping exists for Employee.startTime
+        ReportQuery rq = (ReportQuery)((QueryImpl)query).getDatabaseQueryInternal();
+        CallQueryMechanism qm = rq != null ? (CallQueryMechanism)rq.getQueryMechanism() : null;
+        DatasourceCall sc = qm != null ? (DatasourceCall)qm.getDatabaseCall() : null;
+        List params = sc != null ? sc.getParameters() : null;
+        ParameterExpression pe = params != null && params.size() > 0 ? (ParameterExpression)params.get(0) : null;
+        QueryKeyExpression qke = pe != null ? (QueryKeyExpression)pe.getLocalBase() : null;
+        if (qke != null) {
+            DatabaseMapping mapping = qke.getMapping();
+            assertNull("There shall be no mapping for Employee.startTime", mapping);
+        } else {
+            fail("Could not retrieve mapping from QueryKeyExpression.");
+        }
         closeEntityManager(em);
     }
 
