@@ -535,4 +535,9 @@ public final class HANAPlatform extends DatabasePlatform {
         field.appendDBString(writer, session, table);
         writer.write(")");
     }
+    
+    @Override
+    public String getProcedureCallHeader() {
+        return "CALL ";
+    }    
 }
