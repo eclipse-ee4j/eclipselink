@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998 -2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.conversion;
 
 import java.util.BitSet;
@@ -20,122 +20,157 @@ import java.util.BitSet;
  */
 
 public class Base64 {
-    private static BitSet BoundChar;
-    private static BitSet EBCDICUnsafeChar;
-    private static byte[] Base64EncMap;
-    private static byte[] Base64DecMap;
-    private static char[] UUEncMap;
-    private static byte[] UUDecMap;
+    private static final byte[] Base64EncMap;
+    private static final byte[] Base64DecMap;
+
+    private static final byte PADDING = 127;
 
     // Class Initializer
     static {
-        // rfc-2046 & rfc-2045: (bcharsnospace & token)
-        // used for multipart codings
-        BoundChar = new BitSet(256);
-        for (int ch = '0'; ch <= '9'; ch++) {
-            BoundChar.set(ch);
-        }
-        for (int ch = 'A'; ch <= 'Z'; ch++) {
-            BoundChar.set(ch);
-        }
-        for (int ch = 'a'; ch <= 'z'; ch++) {
-            BoundChar.set(ch);
-        }
-        BoundChar.set('+');
-        BoundChar.set('_');
-        BoundChar.set('-');
-        BoundChar.set('.');
-
-        // EBCDIC unsafe characters to be quoted in quoted-printable
-        // See first NOTE in section 6.7 of rfc-2045
-        EBCDICUnsafeChar = new BitSet(256);
-        EBCDICUnsafeChar.set('!');
-        EBCDICUnsafeChar.set('"');
-        EBCDICUnsafeChar.set('#');
-        EBCDICUnsafeChar.set('$');
-        EBCDICUnsafeChar.set('@');
-        EBCDICUnsafeChar.set('[');
-        EBCDICUnsafeChar.set('\\');
-        EBCDICUnsafeChar.set(']');
-        EBCDICUnsafeChar.set('^');
-        EBCDICUnsafeChar.set('`');
-        EBCDICUnsafeChar.set('{');
-        EBCDICUnsafeChar.set('|');
-        EBCDICUnsafeChar.set('}');
-        EBCDICUnsafeChar.set('~');
-
         // rfc-2045: Base64 Alphabet
-        byte[] map = { (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F', (byte)'G', (byte)'H', (byte)'I', (byte)'J', (byte)'K', (byte)'L', (byte)'M', (byte)'N', (byte)'O', (byte)'P', (byte)'Q', (byte)'R', (byte)'S', (byte)'T', (byte)'U', (byte)'V', (byte)'W', (byte)'X', (byte)'Y', (byte)'Z', (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', (byte)'f', (byte)'g', (byte)'h', (byte)'i', (byte)'j', (byte)'k', (byte)'l', (byte)'m', (byte)'n', (byte)'o', (byte)'p', (byte)'q', (byte)'r', (byte)'s', (byte)'t', (byte)'u', (byte)'v', (byte)'w', (byte)'x', (byte)'y', (byte)'z', (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'+', (byte)'/' };
-        Base64EncMap = map;
-        Base64DecMap = new byte[128];
-        for (int idx = 0; idx < Base64EncMap.length; idx++) {
-            Base64DecMap[Base64EncMap[idx]] = (byte)idx;
+        Base64EncMap = initEncodeMap();
+        Base64DecMap = initDecodeMap();
+    }
+
+    private static byte[] initEncodeMap() {
+        byte[] map = new byte[64];
+        int i;
+        for (i = 0; i < 26; i++) {
+            map[i] = (byte) ('A' + i);
+        }
+        for (i = 26; i < 52; i++) {
+            map[i] = (byte) ('a' + (i - 26));
+        }
+        for (i = 52; i < 62; i++) {
+            map[i] = (byte) ('0' + (i - 52));
+        }
+        map[62] = '+';
+        map[63] = '/';
+
+        return map;
+    }
+
+    private static byte[] initDecodeMap() {
+        byte[] map = new byte[128];
+        int i;
+        for (i = 0; i < 128; i++) {
+            map[i] = -1;
         }
 
-        // uuencode'ing maps
-        UUEncMap = new char[64];
-        for (int idx = 0; idx < UUEncMap.length; idx++) {
-            UUEncMap[idx] = (char)(idx + 0x20);
+        for (i = 'A'; i <= 'Z'; i++) {
+            map[i] = (byte) (i - 'A');
         }
-        UUDecMap = new byte[128];
-        for (int idx = 0; idx < UUEncMap.length; idx++) {
-            UUDecMap[UUEncMap[idx]] = (byte)idx;
+        for (i = 'a'; i <= 'z'; i++) {
+            map[i] = (byte) (i - 'a' + 26);
         }
+        for (i = '0'; i <= '9'; i++) {
+            map[i] = (byte) (i - '0' + 52);
+        }
+        map['+'] = 62;
+        map['/'] = 63;
+        map['='] = PADDING;
+
+        return map;
     }
 
     /**
      * Base64 constructor comment.
      */
-    public Base64() {
-        super();
+    private Base64() {
     }
 
     /**
+     * computes the length of binary data speculatively.
+     *
+     * <p>
+     * Our requirement is to create byte[] of the exact length to store the binary data.
+     * If we do this in a straight-forward way, it takes two passes over the data.
+     * Experiments show that this is a non-trivial overhead (35% or so is spent on
+     * the first pass in calculating the length.)
+     *
+     * <p>
+     * So the approach here is that we compute the length speculatively, without looking
+     * at the whole contents. The obtained speculative value is never less than the
+     * actual length of the binary data, but it may be bigger. So if the speculation
+     * goes wrong, we'll pay the cost of reallocation and buffer copying.
+     *
+     * <p>
+     * If the base64 text is tightly packed with no indentation nor illegal char
+     * (like what most web services produce), then the speculation of this method
+     * will be correct, so we get the performance benefit.
+     */
+    private static int guessLength(byte[] data) {
+        final int len = data.length;
+
+        // compute the tail '=' chars
+        int j = len - 1;
+        for (; j >= 0; j--) {
+            byte code = Base64DecMap[data[j]];
+            if (code == PADDING)
+                continue;
+            if (code == -1) // most likely this base64 data is indented. go with the upper bound
+                return data.length / 4 * 3;
+            break;
+        }
+
+        j++;    // data.charAt(j) is now at some base64 char, so +1 to make it the size
+        int padSize = len - j;
+        if (padSize > 2) // something is wrong with base64. be safe and go with the upper bound
+            return data.length / 4 * 3;
+
+        // so far this base64 looks like it's unindented tightly packed base64.
+        // take a chance and create an array with the expected size
+        return data.length / 4 * 3 - padSize;
+    }
+
+    /**
+     * base64Binary data is likely to be long, and decoding requires
+     * each character to be accessed twice (once for counting length, another
+     * for decoding.)
+     *
      * This method decodes the given byte[] using the base64-encoding
      * specified in RFC-2045 (Section 6.8).
      *
      * @param  data the base64-encoded data.
      * @return the decoded <var>data</var>.
      */
-    public final static byte[] base64Decode(byte[] data) {
-        if (data == null) {
-            return null;
-        }
-        
-        if (data.length == 0) {
-            return new byte[0];
+    public static byte[] base64Decode(byte[] data) {
+        final int buflen = guessLength(data);
+        final byte[] out = new byte[buflen];
+        int o = 0;
+
+        final int len = data.length;
+        int i;
+
+        final byte[] quadruplet = new byte[4];
+        int q = 0;
+
+        // convert each quadruplet to three bytes.
+        for (i = 0; i < len; i++) {
+            byte ch = data[i];
+            byte v = Base64DecMap[ch];
+
+            if (v != -1)
+                quadruplet[q++] = v;
+
+            if (q == 4) {
+                // quadruplet is now filled.
+                out[o++] = (byte) ((quadruplet[0] << 2) | (quadruplet[1] >> 4));
+                if (quadruplet[2] != PADDING)
+                    out[o++] = (byte) ((quadruplet[1] << 4) | (quadruplet[2] >> 2));
+                if (quadruplet[3] != PADDING)
+                    out[o++] = (byte) ((quadruplet[2] << 6) | (quadruplet[3]));
+                q = 0;
+            }
         }
 
-        int tail = data.length;
-        while (data[tail - 1] == '=') {
-            tail--;
-        }
+        if (buflen == o) // speculation worked out to be OK
+            return out;
 
-        byte[] dest = new byte[tail - (data.length / 4)];
-
-        // ascii printable to 0-63 conversion
-        for (int idx = 0; idx < data.length; idx++) {
-            data[idx] = Base64DecMap[data[idx]];
-        }
-
-        // 4-byte to 3-byte conversion
-        int sidx;
-
-        // 4-byte to 3-byte conversion
-        int didx;
-        for (sidx = 0, didx = 0; didx < (dest.length - 2); sidx += 4, didx += 3) {
-            dest[didx] = (byte)(((data[sidx] << 2) & 255) | ((data[sidx + 1] >>> 4) & 003));
-            dest[didx + 1] = (byte)(((data[sidx + 1] << 4) & 255) | ((data[sidx + 2] >>> 2) & 017));
-            dest[didx + 2] = (byte)(((data[sidx + 2] << 6) & 255) | (data[sidx + 3] & 077));
-        }
-        if (didx < dest.length) {
-            dest[didx] = (byte)(((data[sidx] << 2) & 255) | ((data[sidx + 1] >>> 4) & 003));
-        }
-        if (++didx < dest.length) {
-            dest[didx] = (byte)(((data[sidx + 1] << 4) & 255) | ((data[sidx + 2] >>> 2) & 017));
-        }
-
-        return dest;
+        // we overestimated, so need to create a new buffer
+        byte[] nb = new byte[o];
+        System.arraycopy(out, 0, nb, 0, o);
+        return nb;
     }
 
     /**
@@ -145,7 +180,7 @@ public class Base64 {
      * @param  data the data
      * @return the base64-encoded <var>data</var>
      */
-    public final static byte[] base64Encode(byte[] data) {
+    public static byte[] base64Encode(byte[] data) {
         if (data == null) {
             return null;
         }

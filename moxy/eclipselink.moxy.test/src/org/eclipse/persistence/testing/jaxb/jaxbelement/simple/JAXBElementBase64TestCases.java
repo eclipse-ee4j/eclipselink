@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998 - 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,9 +14,11 @@ package org.eclipse.persistence.testing.jaxb.jaxbelement.simple;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import org.eclipse.persistence.internal.oxm.conversion.Base64;
 
 import org.eclipse.persistence.testing.jaxb.jaxbelement.JAXBElementTestCases;
 
@@ -63,4 +65,8 @@ public class JAXBElementBase64TestCases  extends JAXBElementTestCases {
 		super.testSchemaGen(new ArrayList<InputStream>());
 	}
 
+    public void testInvalidData() throws Exception {
+        byte[] result = Base64.base64Decode("cid:1197646757481".getBytes());
+        assertTrue(Arrays.equals("cid1197646757481".getBytes(), Base64.base64Encode(result)));
+    }
 }
