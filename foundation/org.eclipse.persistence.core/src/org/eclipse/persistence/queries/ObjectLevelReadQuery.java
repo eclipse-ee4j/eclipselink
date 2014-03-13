@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -666,7 +666,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void addNonFetchJoin(Expression target) {
         getNonFetchJoinAttributeExpressions().add(target);
-        
+        if (target.isObjectExpression() && ((ObjectExpression)target).shouldUseOuterJoin()) {
+            this.setShouldBuildNullForNullPk(true);
+        }
         // Bug 2804042 Must un-prepare if prepared as the SQL may change.
         // Joined attributes are now calculated in prePrepare.
         setIsPrePrepared(false);

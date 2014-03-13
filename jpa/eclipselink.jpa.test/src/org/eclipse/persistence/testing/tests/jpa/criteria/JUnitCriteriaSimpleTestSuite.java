@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -81,6 +81,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.HugeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
@@ -209,6 +210,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testCriteriaBuilderConstructValidation"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testLiteralValidation"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testCompoundSelectionAliasValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testEmptyLeftJoinInCriteriaQuery"));
 
         return suite;
     }
@@ -3168,6 +3170,38 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         closeEntityManager(em);
     }
+
+    // Bug# 412582 - CriteriaBuilder.construct(...) fails with JoinType.LEFT and null.
+    // Employee and HugeProject relation is one to one with no existing HugeProject instances.
+    // Those are conditions for bug# 412582 reproduction scenario.
+    /**
+     * Criteria query result container for <code>testEmptyLeftJoinInCriteriaQuery</code> test.
+     */
+    public static class EntityDTO {
+        public EntityDTO(Employee employee, HugeProject hugeProject) {}
+    }
+
+    // Bug# 412582 - CriteriaBuilder.construct(...) fails with JoinType.LEFT and null.
+    /**
+     * Verify criteria query with left outer join on empty table.
+     */
+    public void testEmptyLeftJoinInCriteriaQuery() {
+        EntityManager em = createEntityManager();
+        // Make sure that no HugeProject instance exists.
+        TypedQuery<Long> q1 = em.createQuery("SELECT COUNT(hp.id) FROM HugeProject hp", Long.class);
+        Long count = q1.getSingleResult();
+        assertEquals("There should be no HugeProject", 0, count.intValue());
+        // Execute left outer join on empty table as criteria query.
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<EntityDTO> criteriaQuery = builder.createQuery(EntityDTO.class);
+        Root<Employee> rootEmployee = criteriaQuery.from(Employee.class);
+        Join<Employee, HugeProject> joinHugeProject = rootEmployee.join("hugeProject", JoinType.LEFT);
+        criteriaQuery.select(builder.construct(EntityDTO.class, rootEmployee, joinHugeProject));
+        TypedQuery<EntityDTO> query = em.createQuery(criteriaQuery);
+        List<EntityDTO> entities = query.getResultList();
+        closeEntityManager(em);
+    }
+
 }
 
 
