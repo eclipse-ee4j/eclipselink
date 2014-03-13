@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -233,6 +233,9 @@ public class RelationExpression extends CompoundExpression {
             return false;
         }
 
+        // Descriptor to use for child query key
+        ClassDescriptor descriptorForChild = null;
+        
         // Ensure that the primary key is being queried on.
         if (this.firstChild.isFieldExpression()) {
             FieldExpression child = (FieldExpression)this.firstChild;
@@ -247,7 +250,12 @@ public class RelationExpression extends CompoundExpression {
             if (!child.getBaseExpression().isExpressionBuilder()) {
                 return false;
             }
-            DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(child.getName());
+            descriptorForChild = ((ExpressionBuilder)child.getBaseExpression()).getDescriptor();
+            if (descriptorForChild == null) {
+                descriptorForChild = descriptor;
+            }
+            DatabaseMapping mapping = descriptorForChild.getObjectBuilder().getMappingForAttributeName(child.getName());
+            
             if (mapping != null) {
                 if (primaryKeyOnly && !mapping.isPrimaryKeyMapping()) {
                     return false;
@@ -264,7 +272,7 @@ public class RelationExpression extends CompoundExpression {
                 field = ((AbstractColumnMapping)mapping).getField();
             } else {
                 // Only get field for the source object.
-                field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
+                field = descriptorForChild.getObjectBuilder().getFieldForQueryKeyName(child.getName());
             }
         } else if (this.secondChild.isFieldExpression()) {
             FieldExpression child = (FieldExpression)this.secondChild;
@@ -279,7 +287,12 @@ public class RelationExpression extends CompoundExpression {
             if (!child.getBaseExpression().isExpressionBuilder()) {
                 return false;
             }
-            DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(child.getName());
+            descriptorForChild = ((ExpressionBuilder)child.getBaseExpression()).getDescriptor();
+            if (descriptorForChild == null) {
+                descriptorForChild = descriptor;
+            }
+            DatabaseMapping mapping = descriptorForChild.getObjectBuilder().getMappingForAttributeName(child.getName());
+            
             // Only support referencing limited number of relationship types.
             if (mapping != null) {
                 if (primaryKeyOnly && !mapping.isPrimaryKeyMapping()) {
@@ -294,12 +307,26 @@ public class RelationExpression extends CompoundExpression {
                 }
                 field = ((AbstractColumnMapping)mapping).getField();
             } else {
-                field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
+                field = descriptorForChild.getObjectBuilder().getFieldForQueryKeyName(child.getName());
             }
         } else {
             return false;
         }
-        if ((field == null) || (primaryKeyOnly && !descriptor.getPrimaryKeyFields().contains(field))) {
+        if (field == null) {
+            return false;
+        }
+        // Check child descriptor's primary key fields if the passed descriptor does not contain the field 
+        if (primaryKeyOnly && !descriptor.getPrimaryKeyFields().contains(field)) {
+            if (descriptorForChild != null && descriptorForChild != descriptor && descriptorForChild.getPrimaryKeyFields().contains(field)) {
+                // Child descriptor's pk fields contains the field, return true.
+                // Do not add the field from the query key's descriptor to the primaryKeyRow
+                return true;
+            } else {
+                return false;
+            }
+        }
+        // Do not replace the field in the row with the same field
+        if (primaryKeyRow.get(field) != null) {
             return false;
         }
         primaryKeyRow.put(field, value);

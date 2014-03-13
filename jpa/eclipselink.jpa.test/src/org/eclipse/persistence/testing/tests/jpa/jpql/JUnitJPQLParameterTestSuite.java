@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,24 +13,31 @@
 
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
-
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
+import org.eclipse.persistence.testing.models.jpa.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.Jigsaw;
+import org.eclipse.persistence.testing.models.jpa.advanced.JigsawPiece;
+import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.relationshipmaintenance.Dept;
 /**
  * <p>
  * <b>Purpose</b>: Test EJBQL parameter functionality.
@@ -80,6 +87,10 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLParameterTestSuite("testSetup"));
         suite.addTest(new JUnitJPQLParameterTestSuite("multipleParameterTest"));
         suite.addTest(new JUnitJPQLParameterTestSuite("updateEnumParameter"));
+        suite.addTest(new JUnitJPQLParameterTestSuite("testQueryParametersCheckCacheTest"));
+        suite.addTest(new JUnitJPQLParameterTestSuite("testQueryParametersDontCheckCacheTest"));
+        suite.addTest(new JUnitJPQLParameterTestSuite("testQueryParametersReversedCheckCacheTest"));
+        suite.addTest(new JUnitJPQLParameterTestSuite("testQueryParametersReversedDontCheckCacheTest"));
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(new JUnitJPQLParameterTestSuite("emptyParametersForNonParameterizedNamedQueryTest"));
         }
@@ -126,7 +137,7 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         query.setParameter(3, employee.getId());
         List result = query.getResultList();
         
-        Assert.assertTrue("Multiple Parameter Test Case Failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Multiple Parameter Test Case Failed", comparer.compareObjects(result, expectedResult));
     }
            
     // Test for GF#1123 - UPDATE with JPQL does not handle enums correctly.
@@ -182,6 +193,69 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         Set parameters = query.getParameters();
         assertNotNull(parameters);
         assertEquals("Parameters size should be 0", 0, parameters.size());
+    }
+    
+    public void testQueryParametersCheckCacheTest() {
+        testQueryParametersWithQueryAndCheckCache("SELECT p FROM JigsawPiece p, Jigsaw j WHERE j.id=:jigsawId AND p.id=:jigsawPieceId", true);
+    }
+    
+    public void testQueryParametersDontCheckCacheTest() {
+        testQueryParametersWithQueryAndCheckCache("SELECT p FROM JigsawPiece p, Jigsaw j WHERE j.id=:jigsawId AND p.id=:jigsawPieceId", false);
+    }
+    
+    public void testQueryParametersReversedCheckCacheTest() {
+        testQueryParametersWithQueryAndCheckCache("SELECT p FROM JigsawPiece p, Jigsaw j WHERE p.id=:jigsawPieceId AND j.id=:jigsawId", true);
+    }
+    
+    public void testQueryParametersReversedDontCheckCacheTest() {
+        testQueryParametersWithQueryAndCheckCache("SELECT p FROM JigsawPiece p, Jigsaw j WHERE p.id=:jigsawPieceId AND j.id=:jigsawId", false);
+    }
+    
+    // EL bug 430042 - pk query parameter binding incorrect
+    private void testQueryParametersWithQueryAndCheckCache(String jpqlQueryString, boolean checkCacheOnly) {
+        EntityManager em = createEntityManager();
+        Jigsaw jigsawTestData = null;
+        JigsawPiece jigsawPieceTestData = null;
+        
+        try {
+            beginTransaction(em);
+            
+            jigsawTestData = new Jigsaw();
+            jigsawPieceTestData = new JigsawPiece();
+            jigsawTestData.addPiece(jigsawPieceTestData);
+            em.persist(jigsawTestData);
+            
+            commitTransaction(em);
+            closeEntityManager(em);
+            
+            em = createEntityManager();
+            
+            Query query = em.createQuery(jpqlQueryString);
+            query.setParameter("jigsawId", jigsawTestData.getId());
+            query.setParameter("jigsawPieceId", jigsawPieceTestData.getId());
+            
+            if (checkCacheOnly) {
+                query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
+            }
+            
+            JigsawPiece resultPiece = (JigsawPiece) query.getSingleResult();
+            assertNotNull("Query Entity should not be null", resultPiece);
+            Jigsaw resultJigsaw = resultPiece.getJigsaw();
+            assertNotNull("Queried Entity's parent reference should not be null", resultJigsaw);
+            assertEquals("Queried Entity should have the same id", jigsawPieceTestData.getId(), resultPiece.getId());
+            assertEquals("Queried Entity should reference the same parent Entity", jigsawTestData.getId(), resultJigsaw.getId());
+        } finally {
+            if (jigsawTestData != null) {
+                beginTransaction(em);
+                Jigsaw jigsawToRemove = em.find(Jigsaw.class, jigsawTestData.getId());
+                em.remove(jigsawToRemove);
+                for (JigsawPiece piece : jigsawToRemove.getPieces()) {
+                    em.remove(piece);
+                }
+                commitTransaction(em);
+            }
+            closeEntityManager(em);   
+        }
     }
     
 }
