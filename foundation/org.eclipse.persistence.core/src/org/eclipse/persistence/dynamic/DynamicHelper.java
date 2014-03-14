@@ -123,6 +123,8 @@ public class DynamicHelper {
             fqClassnameToDescriptor.remove(descriptor.getJavaClassName());
             getSession().getProject().getOrderedDescriptors().remove(descriptor);
             getSession().getProject().getDescriptors().remove(type.getJavaClass());
+            //bug 430318 - clear the parsed cache as queries in that cache could be using this descriptor
+            getSession().getProject().getJPQLParseCache().clear();
             ((AbstractSession)getSession()).getCommitManager().getCommitOrder().remove(type.getJavaClass());
         }
     }

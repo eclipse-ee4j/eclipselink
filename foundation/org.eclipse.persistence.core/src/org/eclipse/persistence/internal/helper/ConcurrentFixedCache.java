@@ -65,6 +65,10 @@ public class ConcurrentFixedCache implements Serializable {
     public Object get(Object key) {
         return this.cache.get(key);
     }
+    
+    public void clear(){
+        this.cache.clear();
+    }
 
     /**
      * Add the value to the cache.
