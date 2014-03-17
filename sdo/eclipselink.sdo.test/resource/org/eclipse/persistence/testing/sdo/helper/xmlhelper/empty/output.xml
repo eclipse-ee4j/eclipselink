@@ -1,0 +1,8 @@
+<ns0:root xmlns:ns0="namespace1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:nillableNilString xsi:nil="true"/>
+   <ns0:nonnillableEmptyString></ns0:nonnillableEmptyString>
+   <ns0:nonnillableNilString/>
+   <ns0:nillableNilDecimal xsi:nil="true"/>
+   <ns0:nonnillableEmptyDecimal></ns0:nonnillableEmptyDecimal>
+   <ns0:nonnillableNilDecimal/>
+</ns0:root>
