@@ -1,0 +1,23 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<xsd:schema targetNamespace="namespace1" 
+ xmlns:ns0="namespace1" 
+ xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" 
+ elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import namespace="commonj.sdo" schemaLocation="datagraph.xsd"/>
+   <xsd:element name="root" type="ns0:RootType"/>
+   <xsd:complexType name="RootType">
+      <xsd:sequence>
+         <xsd:element name="nillableEmptyString" type="xsd:string"  nillable="true"/>
+         <xsd:element name="nillableNilString" type="xsd:string" nillable="true"/>
+         <xsd:element name="nonnillableEmptyString" type="xsd:string" nillable="false"/>
+         <xsd:element name="nonnillableNilString" type="xsd:string" nillable="false"/>
+         
+         <xsd:element name="nillableEmptyDecimal" type="xsd:decimal" nillable="true"/>
+         <xsd:element name="nillableNilDecimal" type="xsd:decimal"  nillable="true"/>
+         <xsd:element name="nonnillableEmptyDecimal" type="xsd:decimal" nillable="false"/>
+         <xsd:element name="nonnillableNilDecimal" type="xsd:decimal"  nillable="false"/>
+        
+      </xsd:sequence>
+   </xsd:complexType>  
+   
+</xsd:schema>

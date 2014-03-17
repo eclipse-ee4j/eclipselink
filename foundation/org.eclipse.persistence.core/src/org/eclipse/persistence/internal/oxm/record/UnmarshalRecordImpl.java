@@ -1033,20 +1033,33 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 }
             } else {
                 XPathNode textNode = xPathNode.getTextNode();
-                if (null != textNode && textNode.isWhitespaceAware() && getStringBuffer().length() == 0) {
+                
+                if (null != textNode && getStringBuffer().length() == 0) {
                     NodeValue textNodeUnmarshalNodeValue = textNode.getUnmarshalNodeValue();
-                    if (textNodeUnmarshalNodeValue.isMappingNodeValue()) {
-                        Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
-                        if(mapping.isAbstractDirectMapping() && isXsiNil) {
-                            Object nullValue = ((DirectMapping)mapping).getNullValue();
-                            if(!(Constants.EMPTY_STRING.equals(nullValue))) {
-                                setAttributeValue(null, mapping);
-                                this.removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
+                    if(textNode.isWhitespaceAware()){
+	                    if (textNodeUnmarshalNodeValue.isMappingNodeValue()) {
+	                        Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
+	                        if(mapping.isAbstractDirectMapping() && isXsiNil) {
+	                            Object nullValue = ((DirectMapping)mapping).getNullValue();
+	                            if(!(Constants.EMPTY_STRING.equals(nullValue))) {
+	                                setAttributeValue(null, mapping);
+	                                this.removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
+	                            }
+	                        } else {
+	                            textNodeUnmarshalNodeValue.endElement(xPathFragment, this);
+	                        }
+	                        isXsiNil = false;
+	                    }
+                    }else{
+                    	
+                       //This means empty tag
+                       if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
+                            Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
+                            if(mapping.isAbstractDirectMapping() && !isXsiNil && ((DirectMapping)mapping).getNullPolicy().isNullRepresentedByXsiNil()){
+                                removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);                		
                             }
-                        } else {
-                            textNodeUnmarshalNodeValue.endElement(xPathFragment, this);
                         }
-                        isXsiNil = false;
+
                     }
                 }
             }

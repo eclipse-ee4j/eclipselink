@@ -51,6 +51,7 @@ public class SDOXMLHelperLoadAndSaveTestSuite {
         suite.addTest(new TestSuite(LoadAndSaveExceptionBug325353TestCases.class));
         suite.addTestSuite(ListEmptyElementTestCases.class);
         suite.addTestSuite(ListEmptyElementNullableTestCases.class);
+        suite.addTestSuite(LoadAndSaveEmptyElementTestCases.class);
         return suite;
     }
 }
