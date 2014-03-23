@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,14 +34,14 @@ public final class OrderByClauseTest extends JPQLParserTest {
 		};
 	}
 
-	private boolean isSubqueryResultVariableSupported() {
-		JPQLQueryBNF queryBNF = getGrammar().getExpressionRegistry().getQueryBNF(InternalSimpleSelectExpressionBNF.ID);
-		return queryBNF.getFallbackBNFId() == SimpleResultVariableBNF.ID;
-	}
-
 	private boolean isScalarExpressionSupported() {
 		JPQLQueryBNF queryBNF = getGrammar().getExpressionRegistry().getQueryBNF(InternalOrderByItemBNF.ID);
 		return queryBNF.hasChild(ScalarExpressionBNF.ID);
+	}
+
+	private boolean isSubqueryResultVariableSupported() {
+		JPQLQueryBNF queryBNF = getGrammar().getExpressionRegistry().getQueryBNF(InternalSimpleSelectExpressionBNF.ID);
+		return queryBNF.getFallbackBNFId() == SimpleResultVariableBNF.ID;
 	}
 
 	private boolean isSubquerySupported() {
@@ -517,6 +517,41 @@ public final class OrderByClauseTest extends JPQLParserTest {
 		);
 
 		testQuery(jpqlQuery, selectStatement, buildQueryFormatter_01(jpqlQuery));
+	}
+
+	@Test
+	public void test_JPQLQuery_19() {
+
+		String query = "SELECT t,t.name FROM Table1 t ORDER BY NLSSORT(t.name, NLS_SORT=ENGLISH)";
+
+		CollectionExpressionTester collection = collection(
+			variable("NLSSORT"),
+			sub(
+				collection(
+					path("t.name"),
+					bad(
+						variable("NLS_SORT").equal(variable("ENGLISH"))
+					)
+				)
+			)
+		);
+		collection.commas[0] = false;
+		collection.spaces[0] = false;
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				collection(
+					variable("t"),
+					path("t.name")
+				)
+			),
+			from("Table1", "t"),
+			orderBy(
+				orderByItem(collection)
+			)
+		);
+
+		testInvalidQuery(query, selectStatement);
 	}
 
 	@Test
