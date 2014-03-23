@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,6 +18,14 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public final class OrderByClauseTest extends JPQLParserTest {
 
+	private JPQLQueryStringFormatter buildQueryFormatter_02() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace(" = ", "=");
+			}
+		};
+	}
+
 	@Test
 	public void testBuildExpression_01() {
 
@@ -33,6 +41,66 @@ public final class OrderByClauseTest extends JPQLParserTest {
 		);
 
 		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_02() {
+
+		String query = "SELECT t,t.name FROM Table1 t ORDER BY NLSSORT(t.name, NLS_SORT=ENGLISH)";
+
+		ExpressionTester orderByItems;
+
+		if (isEclipseLink2_1OrLater()) {
+
+			SubExpressionTester sub = sub(path("t.name"));
+			sub.hasRightParenthesis = false;
+
+			CollectionExpressionTester subCollection = collection(
+				variable("NLSSORT"),
+				sub
+			);
+			subCollection.commas[0] = false;
+			subCollection.spaces[0] = false;
+
+			CollectionExpressionTester collection = collection(
+				orderByItem(subCollection),
+				orderByItem(variable("NLS_SORT"))
+			);
+			orderByItems = collection;
+		}
+		else {
+			SubExpressionTester sub = sub(collection(
+				orderByItem(path("t.name")),
+				orderByItem(variable("NLS_SORT"))
+			));
+			sub.hasRightParenthesis = false;
+
+			CollectionExpressionTester collection = collection(
+				orderByItem(variable("NLSSORT")),
+				sub
+			);
+			collection.commas[0] = false;
+			collection.spaces[0] = false;
+			orderByItems = collection;
+		}
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				collection(
+					variable("t"),
+					path("t.name")
+				)
+			),
+			from("Table1", "t"),
+			orderBy(orderByItems)
+		);
+
+		JPQLExpressionTester jpqlQuery = jpqlExpression(
+			selectStatement,
+			unknown("=ENGLISH)")
+		);
+
+		testInvalidQuery(query, jpqlQuery, buildQueryFormatter_02());
 	}
 
 	@Test
