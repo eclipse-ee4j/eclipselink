@@ -816,8 +816,6 @@ public abstract class AbstractExpression implements Expression {
 				//
 				// No factories could be used, use the fall back ExpressionFactory
 				if (child == null) {
-
-					int position = wordParser.position();
 					child = buildExpressionFromFallingBack(wordParser, word, queryBNF, expression, tolerant);
 
 					if (child != null) {
@@ -843,12 +841,6 @@ public abstract class AbstractExpression implements Expression {
 
 						// The new expression becomes the previous expression
 						expression = child;
-					}
-
-					// A child Expression was created but nothing was parsed, assume this
-					// is an invalid query and breaking is required
-					if ((child != null) && (position == wordParser.position())) {
-						break;
 					}
 				}
 
