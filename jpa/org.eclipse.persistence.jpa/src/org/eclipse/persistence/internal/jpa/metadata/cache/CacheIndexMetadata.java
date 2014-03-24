@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.descriptors.CacheIndex;
+import org.eclipse.persistence.descriptors.CachePolicy;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -105,7 +107,14 @@ public class CacheIndexMetadata extends ORMetadata {
      */
     public void process(MetadataDescriptor descriptor, String defaultColumnName) {
         if (m_columnNames.isEmpty() && (defaultColumnName != null)) {
-            descriptor.getClassDescriptor().getCachePolicy().addCacheIndex(defaultColumnName);
+            CachePolicy cachePolicy = descriptor.getClassDescriptor().getCachePolicy();
+            DatabaseField field = new DatabaseField(defaultColumnName);
+            if (m_project.useDelimitedIdentifier()) {
+                field.setUseDelimiters(true);
+            } else if (m_project.getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
+                field.useUpperCaseForComparisons(true);
+            }
+            cachePolicy.addCacheIndex(new DatabaseField[] {field});
         } else {
             CacheIndex index = new CacheIndex();
             if (this.updateable != null) {
