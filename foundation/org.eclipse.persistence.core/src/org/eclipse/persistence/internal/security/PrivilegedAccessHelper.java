@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.helper.Helper;
  * Note the usage of do privileged has major impacts on performance, so should normally be avoided.
  */
 public class PrivilegedAccessHelper {
+    private static boolean defaultUseDoPrivilegedValue = false;
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
     
@@ -55,6 +56,16 @@ public class PrivilegedAccessHelper {
         primitiveClasses.put("byte", byte.class);
         primitiveClasses.put("void", void.class);
         primitiveClasses.put("short", short.class);
+    }
+    
+    /**
+     * INTERNAL
+     * It will be used to set default value of property "eclipselink.security.usedoprivileged"
+     * if not passed as system property. This is used by GlassfishPlatform.
+     */
+    public static void setDefaultUseDoPrivilegedValue(boolean def) {
+        defaultUseDoPrivilegedValue = def;
+        shouldCheckPrivilegedAccess = true;
     }
     
     /**
@@ -338,11 +349,7 @@ public class PrivilegedAccessHelper {
      */
     public static String getLineSeparator() {
         if (shouldUsePrivilegedAccess()) {
-            return (String)AccessController.doPrivileged(new PrivilegedAction() {
-                    public Object run() {
-                        return System.getProperty("file.separator");
-                    }
-                });
+            return (String)AccessController.doPrivileged(new PrivilegedGetSystemProperty("file.separator"));
         } else {
             return org.eclipse.persistence.internal.helper.Helper.cr();
         }
@@ -437,13 +444,12 @@ public class PrivilegedAccessHelper {
         // We will only detect whether to use doPrivileged once.
         if (shouldCheckPrivilegedAccess) {
             if (System.getSecurityManager() != null) {    
-                Boolean privilegedPropertySet = (Boolean)AccessController.doPrivileged(new PrivilegedAction() {
-                        public Object run() {
-                            String usePrivileged = System.getProperty("eclipselink.security.usedoprivileged");
-                            return (usePrivileged != null) && usePrivileged.equalsIgnoreCase("true");
-                        }
-                    });
-                shouldUsePrivilegedAccess = privilegedPropertySet.booleanValue();
+                String usePrivileged = (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty("eclipselink.security.usedoprivileged"));
+                if (usePrivileged == null) {
+                    shouldUsePrivilegedAccess = defaultUseDoPrivilegedValue;
+                } else {
+                    shouldUsePrivilegedAccess = usePrivileged.equalsIgnoreCase("true");
+                }
             } else {
                 shouldUsePrivilegedAccess = false;
             }

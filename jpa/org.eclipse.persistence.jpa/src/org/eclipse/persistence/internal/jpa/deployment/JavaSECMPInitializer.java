@@ -18,10 +18,15 @@ import java.util.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.lang.instrument.*;
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.security.ProtectionDomain;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
+import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
+import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.logging.SessionLog;
@@ -158,7 +163,20 @@ public class JavaSECMPInitializer extends JPAInitializer {
             return currentLoader;
         }
         URL[] urlPath = ((URLClassLoader)currentLoader).getURLs();
-        ClassLoader tempLoader = new TempEntityLoader(urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers);
+        
+        ClassLoader tempLoader = null;
+        if (System.getSecurityManager() != null) {
+            try {
+                Class[] argsClasses = new Class[] {this.getClass(), URL[].class, ClassLoader.class, Collection.class, boolean.class};
+                Object[] args = new Object[] {this, urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers};
+                Constructor classLoaderConstructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(TempEntityLoader.class, argsClasses, true));
+                tempLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedInvokeConstructor(classLoaderConstructor, args));
+            } catch (PrivilegedActionException privilegedException) {
+                throw new PersistenceException(EntityManagerSetupException.failedToInstantiateTemporaryClassLoader(privilegedException));
+            }
+        } else {
+            tempLoader = new TempEntityLoader(urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers);
+        }
 
         AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_tempLoader_created", tempLoader);
         AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.WEAVER, "cmp_init_shouldOverrideLoadClassForCollectionMembers", Boolean.valueOf(shouldOverrideLoadClassForCollectionMembers));

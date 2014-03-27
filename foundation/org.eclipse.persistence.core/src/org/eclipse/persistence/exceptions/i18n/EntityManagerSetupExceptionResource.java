@@ -52,7 +52,8 @@ public class EntityManagerSetupExceptionResource extends ListResourceBundle {
                                            { "28028", "Failed to instantiate class instance [{0}] for persistence unit property [{1}], ensure constructor is defined correctly." },
                                            { "28029", "PersistenceUnit [{0}] tries both to use sessions.xml (specifies eclipselink.sessions-xml property) and to be a composite (specifies eclipselink.composite-unit property with value true). These modes are incompatible." },
                                            { "28030", "PersistenceUnit [{0}] specifies eclipselink.composite-unit.member property with value true. That means it cannot be used standalone, but only as a composite member." },
-                                           { "28031", "Missing the required property [{0}]." }
+                                           { "28031", "Missing the required property [{0}]." },
+                                           { "28032", "Failed to create temporary classloader with doPrivileged." }
    };
 
     /**

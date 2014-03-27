@@ -60,6 +60,8 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "]";
         APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
         
+        // Change the default value of property "eclipselink.security.usedoprivileged".
+        PrivilegedAccessHelper.setDefaultUseDoPrivilegedValue(true);
     }
     
     /**

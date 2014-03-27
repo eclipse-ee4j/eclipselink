@@ -46,6 +46,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
     public static final int COMPOSITE_INCOMPATIBLE_WITH_SESSIONS_XML = 28029;
     public static final int COMPOSITE_MEMBER_CANNOT_BE_USED_STANDALONE = 28030;
     public static final int MISSING_PROPERTY = 28031;
+    public static final int FAILED_TO_INSTANTIATE_TEMP_CLASSLOADER = 28032;
     
     /**
      * INTERNAL:
@@ -346,6 +347,19 @@ public class EntityManagerSetupException extends EclipseLinkException {
         EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(
                 EntityManagerSetupException.class, COMPOSITE_MEMBER_CANNOT_BE_USED_STANDALONE, args));
         setupException.setErrorCode(COMPOSITE_MEMBER_CANNOT_BE_USED_STANDALONE);
+        return setupException;
+    }
+
+    /**
+     * INTERNAL:
+     * Reflective call with doPrivileged to create temporary classloader instance failed.<br>
+     * @return
+     */
+    public static EntityManagerSetupException failedToInstantiateTemporaryClassLoader(Exception exception) {
+        Object[] args = {  };
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(//
+                EntityManagerSetupException.class, FAILED_TO_INSTANTIATE_TEMP_CLASSLOADER, args), exception);
+        setupException.setErrorCode(FAILED_TO_INSTANTIATE_TEMP_CLASSLOADER);
         return setupException;
     }
 }
