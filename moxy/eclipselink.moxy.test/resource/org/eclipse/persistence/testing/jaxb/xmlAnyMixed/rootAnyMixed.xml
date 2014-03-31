@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<main>
+    <RootAnyMixed>
+        <SomeTag>
+            <AChildTag>
+                <AnotherChildTag/>
+                <AnotherChildTag/>
+            </AChildTag>
+        </SomeTag>
+    </RootAnyMixed>
+    <RootAny>
+        <VeryGood>
+            <TheBest>
+                <MegaSuper/>
+                <MegaSuper/>
+            </TheBest>
+        </VeryGood>
+    </RootAny>
+</main>

@@ -204,6 +204,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
     protected void setupHandlerForKeepAsElementPolicy(UnmarshalRecord unmarshalRecord, XPathFragment xPathFragment, Attributes atts) {
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         builder.setOwningRecord(unmarshalRecord);
+        builder.setMixedContent(xPathNode.getUnmarshalNodeValue().isMixedContentNodeValue());
         try {
             String namespaceURI = Constants.EMPTY_STRING;
             if (xPathFragment.getNamespaceURI() != null) {
