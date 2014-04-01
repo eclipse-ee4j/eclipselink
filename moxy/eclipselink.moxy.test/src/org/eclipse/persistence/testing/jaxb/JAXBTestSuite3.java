@@ -46,7 +46,6 @@ import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsPopulatedTest
 import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsWithExternalMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmldecriptor.LazyInitTestCases;
-import org.eclipse.persistence.testing.jaxb.xmlAnyMixed.XmlAnyMixedTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlmixed.XmlMixedTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathToAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathToElementWithXmlAttributeTestCases;
@@ -112,7 +111,6 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(PropOrderTestCases.class);
         suite.addTestSuite(LazyInitTestCases.class);
         suite.addTestSuite(XmlMixedTestCases.class);
-        suite.addTestSuite(XmlAnyMixedTestCases.class);
         suite.addTestSuite(XmlPathWithMultipleEqualsCharactersTestCases.class);
         suite.addTestSuite(XmlPathToElementWithXmlAttributeTestCases.class);
         suite.addTestSuite(XmlPathToAttributeTestCases.class);

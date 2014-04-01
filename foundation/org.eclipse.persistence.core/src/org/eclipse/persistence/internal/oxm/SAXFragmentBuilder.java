@@ -34,7 +34,6 @@ import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
  */
 public class SAXFragmentBuilder extends SAXDocumentBuilder {
     private UnmarshalRecord owningRecord;
-    private boolean mixedContent;
 
     public SAXFragmentBuilder(UnmarshalRecord unmarshalRecord) {
         super();
@@ -42,11 +41,9 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if (!mixedContent) {
-            boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().length() == 0;
-            if (bufferContainsOnlyWhitespace) {
-                stringBuffer.reset();
-            }
+        boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().length() == 0;
+        if (bufferContainsOnlyWhitespace) {
+            stringBuffer.reset();
         }
 
         if ((stringBuffer.length() > 0) && !(nodes.size() == 1)) {
@@ -224,7 +221,4 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         }
     }
 
-    public void setMixedContent(boolean mixedContent) {
-        this.mixedContent = mixedContent;
-    }
 }
