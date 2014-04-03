@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Blaise Doughan - 2.4.0 - initial implementation
+ *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -222,5 +223,40 @@ public class JAXBContextProperties {
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
      */
     public static final String JSON_WRAPPER_AS_ARRAY_NAME = "eclipselink.json.wrapper-as-array-name";
+
+    /**
+     * If set to <i>Boolean.TRUE</i>, {@link org.eclipse.persistence.jaxb.JAXBUnmarshaller} will match
+     * XML Elements and XML Attributes to Java fields case insensitively.
+     *
+     * <p><b>Example</b></p>
+     * <p>Given the following class:</p>
+     * <pre>
+     * &#64;XmlAccessorType(XmlAccessType.FIELD)
+     * public class Customer {
+     *
+     *     &#64;XmlElement
+     *     private String name;
+     *     &#64;XmlAttribute
+     *     private int id;
+     *
+     * }
+     * </pre>
+     * <p>If the property is set to true, the following XML object will match the class and will be unmarshaled.</p>
+     * <pre>
+     * &lt;customer iD="007"&gt;
+     *   &lt;nAMe&gt;cafeBabe&lt;/nAMe&gt;
+     * &lt;/customer&gt;
+     * </pre>
+     *
+     * <p><b>By default, case-insensitive unmarshalling is turned off.</b><p/>
+     *
+     * <p>The property must be passed to the {@link org.eclipse.persistence.jaxb.JAXBContextFactory}, when creating
+     * {@link org.eclipse.persistence.jaxb.JAXBContext}. It will affect only unmarshaller created from that context.</p>
+     *
+     * @since 2.6.0
+     * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=331241">EclipseLink Forum, Bug 331241.</a>
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#UNMARSHALLING_CASE_INSENSITIVE
+     */
+    public static final String UNMARSHALLING_CASE_INSENSITIVE = "eclipselink.unmarshalling.case-insensitive";
 
 }

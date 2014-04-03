@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -1566,6 +1567,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.OBJECT_GRAPH, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.UNMARSHALLING_CASE_INSENSITIVE, unmarshaller);
             }
             return unmarshaller;
         }

@@ -35,6 +35,7 @@
 *     rbarkhouse - 06 Apr 2011 - Separate JavadocAnnotationExamples from JAXBTestSuite
 *     dmahar     - Jan 2012 - remove update-package-names targets
 *     bdoughan   - Sep 2012 - Added RESTful tests and necessary dependencies
+*     mvalovy    - Mar 2014 - Added JAXBPerformanceTestSuite
 #******************************************************************************/-->
 
 <project name="eclipselink.moxy.test" default="test" basedir=".">
@@ -371,6 +372,7 @@
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite2.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite3.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite4.java"/>
+                        <!--<include name="org/eclipse/persistence/testing/jaxb/JAXBPerformanceTestSuite.java"/>-->
                         <include name="org/eclipse/persistence/testing/jaxb/listofobjects/JAXBListOfObjectsSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/annotations/AnnotationsTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/externalizedmetadata/ExternalizedMetadataTestSuite.java"/>

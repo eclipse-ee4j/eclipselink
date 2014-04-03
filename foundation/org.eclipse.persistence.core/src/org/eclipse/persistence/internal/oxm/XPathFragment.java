@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.nio.charset.Charset;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.xml.namespace.QName;
@@ -60,10 +62,13 @@ public class XPathFragment <
     private QName leafElementType;
     private boolean generatedPrefix = false;   
     private XPathPredicate predicate; 
-    
+
     private boolean namespaceAware;
     private char namespaceSeparator;
-    
+
+    private Set<String> attributeCollisionSet;
+    private Set<String> nonAttributeCollisionSet;
+
 
     public XPathFragment() {
         setNamespaceAware(true);     
@@ -412,7 +417,32 @@ public class XPathFragment <
     
     private void resetShortName(){
     	shortName = null;
-    	prefixBytes = null;
-    	localNameBytes = null;
+	prefixBytes = null;
+	localNameBytes = null;
     }
+
+    /**
+     * INTERNAL:
+     * Gets auxiliary set for determining collisions during case insensitive unmarshalling.
+     *
+     * @param isAttribute Determine if retrieving an element or an attribute collision set.
+     * @return
+     *      Set containing localNames of attributes or elements of an XPathFragment.
+     */
+    public Set<String> getChildrenCollisionSet(boolean isAttribute) {
+        return isAttribute ? getAttributeCollisionSet() : getNonAttributeCollisionSet();
+    }
+
+    private Set<String> getAttributeCollisionSet() {
+        if (attributeCollisionSet == null)
+            attributeCollisionSet = new HashSet<String>();
+        return attributeCollisionSet;
+    }
+
+    private Set<String> getNonAttributeCollisionSet() {
+        if (nonAttributeCollisionSet == null)
+            nonAttributeCollisionSet = new HashSet<String>();
+        return nonAttributeCollisionSet;
+    }
+
 }

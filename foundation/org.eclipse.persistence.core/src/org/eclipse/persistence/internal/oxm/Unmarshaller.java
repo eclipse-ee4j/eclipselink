@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Blaise Doughan - 2.5 - initial implementation
+ *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
@@ -172,6 +173,11 @@ public abstract class Unmarshaller<
      * by setMediaType)
      */
     public abstract boolean isAutoDetectMediaType();
+
+    /**
+     * Return whether this Unmarshaller should perform case insensitive unmarshalling.
+     */
+    public abstract boolean isCaseInsensitive();
 
     /**
      * Determine if the @XMLRootElement should be marshalled when present.  

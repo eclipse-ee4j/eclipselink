@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
@@ -55,7 +54,11 @@ public class XPathNode {
     private List<XPathNode> nonAttributeChildren;
     private List<XPathNode> selfChildren;
     private Map<XPathFragment, XPathNode> attributeChildrenMap;
+    private Map<String, XPathNode> attributeChildrenLookupTable;
+    private boolean isAttributeChildrenLookupTableFilled = false;
     private Map<XPathFragment, XPathNode> nonAttributeChildrenMap;
+    private Map<String, XPathNode> nonAttributeChildrenLookupTable;
+    private boolean isNonAttributeChildrenLookupTableFilled = false;
     private MappingNodeValue anyAttributeNodeValue;
     private XPathNode anyAttributeNode;
     private XPathNode textNode;
@@ -64,7 +67,7 @@ public class XPathNode {
     private boolean hasPredicateSiblings;
     private boolean hasPredicateChildren;
     private NullCapableValue nullCapableValue;
-	
+
     public XPathFragment getXPathFragment() {
         return xPathFragment;
     }
@@ -85,11 +88,11 @@ public class XPathNode {
             isMarshalOnlyNodeValue =  nodeValue.isMarshalOnlyNodeValue();
         }
     }
-    
+
     public NodeValue getUnmarshalNodeValue() {
         return unmarshalNodeValue;
     }
-    
+
     public void setUnmarshalNodeValue(NodeValue nodeValue) {
         if (null != nodeValue) {
             nodeValue.setXPathNode(this);
@@ -100,7 +103,7 @@ public class XPathNode {
     public NodeValue getMarshalNodeValue() {
         return marshalNodeValue;
     }
-    
+
     public void setMarshalNodeValue(NodeValue nodeValue) {
         if (null != nodeValue) {
             nodeValue.setXPathNode(this);
@@ -108,7 +111,7 @@ public class XPathNode {
         this.marshalNodeValue = nodeValue;
         isMarshalOnlyNodeValue =  marshalNodeValue.isMarshalOnlyNodeValue();
     }
-    
+
     public NullCapableValue getNullCapableValue() {
         return nullCapableValue;
     }
@@ -116,7 +119,7 @@ public class XPathNode {
     public void setNullCapableValue(NullCapableValue nullCapableValue) {
         this.nullCapableValue = nullCapableValue;
     }
-    
+
     public XPathNode getParent() {
         return parent;
     }
@@ -143,6 +146,33 @@ public class XPathNode {
 
     public Map<XPathFragment, XPathNode> getAttributeChildrenMap() {
         return this.attributeChildrenMap;
+    }
+
+    public boolean isChildrenLookupTableFilled(boolean isAttribute) {
+        return isAttribute ? isAttributeChildrenLookupTableFilled : isNonAttributeChildrenLookupTableFilled;
+    }
+
+    public void setChildrenLookupTableFilled(boolean isAttribute) {
+        if (isAttribute)
+            this.isAttributeChildrenLookupTableFilled = true;
+        else
+            this.isNonAttributeChildrenLookupTableFilled = true;
+    }
+
+    public Map<String, XPathNode> getChildrenLookupTable(boolean isAttribute) {
+        return isAttribute ? getAttributeChildrenLookupTable() : getNonAttributeChildrenLookupTable();
+    }
+
+    private Map<String, XPathNode> getAttributeChildrenLookupTable() {
+        if (attributeChildrenLookupTable == null)
+            attributeChildrenLookupTable = new HashMap<String, XPathNode>();
+        return attributeChildrenLookupTable;
+    }
+
+    private Map<String, XPathNode> getNonAttributeChildrenLookupTable() {
+        if (nonAttributeChildrenLookupTable == null)
+            nonAttributeChildrenLookupTable = new HashMap<String, XPathNode>();
+        return nonAttributeChildrenLookupTable;
     }
 
     public void setAnyAttributeNodeValue(MappingNodeValue nodeValue) {
@@ -321,11 +351,11 @@ public class XPathNode {
                 childrenMap.put(anXPathFragment, xPathNode);
             }
         }
-        
+
         if (aNodeValue.isOwningNode(anXPathFragment)) {
             if(aNodeValue.isMarshalNodeValue()) {
                 xPathNode.setMarshalNodeValue(aNodeValue);
-            } 
+            }
             if(aNodeValue.isUnmarshalNodeValue() && xPathNode.getUnmarshalNodeValue() == null) {
                 xPathNode.setUnmarshalNodeValue(aNodeValue);
             }
@@ -339,7 +369,7 @@ public class XPathNode {
     private void setHasPredicateSiblings(boolean b) {
         this.hasPredicateSiblings = b;
     }
-    
+
     public boolean hasPredicateSiblings() {
         return this.hasPredicateSiblings;
     }
@@ -402,7 +432,7 @@ public class XPathNode {
         }
     }
 
-    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, ObjectBuilder compositeObjectBuilder, Object compositeObject) {    
+    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, ObjectBuilder compositeObjectBuilder, Object compositeObject) {
         if (null == anXPathFragment) {
             return false;
         }
@@ -431,8 +461,8 @@ public class XPathNode {
     }
 
     /**
-     * Marshal any 'self' mapped attributes.  
-     * 
+     * Marshal any 'self' mapped attributes.
+     *
      * @param marshalRecord
      * @param object
      * @param session

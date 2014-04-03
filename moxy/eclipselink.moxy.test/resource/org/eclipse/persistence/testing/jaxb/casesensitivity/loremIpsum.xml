@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<loremIpsum Lorem="101" ipsum="102" dolor="103" sit="104" amet="105">
+
+    <!-- element integers -->
+    <consectetur>201</consectetur>
+    <adipiscing>202</adipiscing>
+    <elit>203</elit>
+    <Phasellus>204</Phasellus>
+    <condimentum>206</condimentum>
+    <tellus>207</tellus>
+    <tincidunt>208</tincidunt>
+    <magna>209</magna>
+    <Fusce>210</Fusce>
+    <cursus>211</cursus>
+
+    <!-- element Strings -->
+    <diam>301</diam>
+    <id>302</id>
+    <pulvinar>303</pulvinar>
+    <Mauris>304</Mauris>
+    <iaculis>305</iaculis>
+
+</loremIpsum>

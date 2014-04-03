@@ -1,15 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespace
 import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.ErrorHandler;
@@ -1214,10 +1216,17 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             xPathFragment.setNamespaceURI(namespaceURI);
         }
 
-        XPathNode resultNode = null;
-        Map nonAttributeChildrenMap = xPathNode.getNonAttributeChildrenMap();
+        Map<XPathFragment, XPathNode> nonAttributeChildrenMap = xPathNode.getNonAttributeChildrenMap();
+
         if (null != nonAttributeChildrenMap) {
-            resultNode = (XPathNode)nonAttributeChildrenMap.get(xPathFragment);
+            XPathNode resultNode;
+
+            if (unmarshaller.isCaseInsensitive()){
+                resultNode = getNodeFromLookupTable(nonAttributeChildrenMap, false);
+            } else {
+                resultNode = nonAttributeChildrenMap.get(xPathFragment);
+            }
+
             XPathNode nonPredicateNode = null;
             if(resultNode != null && resultNode.hasPredicateSiblings()) {
                 nonPredicateNode = resultNode;
@@ -1243,7 +1252,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 predicateFragment.setNamespaceURI(xPathFragment.getNamespaceURI());
                 predicateFragment.setLocalName(xPathFragment.getLocalName());
                 predicateFragment.setIndexValue(newIndex);
-                resultNode = (XPathNode)nonAttributeChildrenMap.get(predicateFragment);
+                resultNode = nonAttributeChildrenMap.get(predicateFragment);
                 if (null == resultNode) {
                     predicateFragment.setIndexValue(-1);
                     if(attributes != null){
@@ -1254,7 +1263,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                             conditionFragment.setAttribute(true);
                             XPathPredicate condition = new XPathPredicate(conditionFragment, attributes.getValue(x));
                             predicateFragment.setPredicate(condition);
-                            resultNode = (XPathNode) nonAttributeChildrenMap.get(predicateFragment);
+                            resultNode = nonAttributeChildrenMap.get(predicateFragment);
                             if(null != resultNode) {
                                 break;
                             }
@@ -1315,22 +1324,98 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     }
 
     public NodeValue getAttributeChildNodeValue(String namespace, String localName) {
-        Map attributeChildrenMap = xPathNode.getAttributeChildrenMap();
+        Map<XPathFragment, XPathNode> attributeChildrenMap = xPathNode.getAttributeChildrenMap();
         if (attributeChildrenMap != null) {
+            XPathNode resultNode;
             xPathFragment.setLocalName(localName);
             xPathFragment.setNamespaceURI(namespace);
-           
-            XPathNode node = (XPathNode)attributeChildrenMap.get(xPathFragment);
-            if (node != null) {
-                return node.getUnmarshalNodeValue();
+
+            if (unmarshaller.isCaseInsensitive()){
+                resultNode = getNodeFromLookupTable(attributeChildrenMap, true);
+            } else {
+                resultNode = attributeChildrenMap.get(xPathFragment);
+            }
+
+            if (resultNode != null) {
+                return resultNode.getUnmarshalNodeValue();
             }
         }
         return null;
     }
 
+    /**
+     * INTERNAL:
+     * Retrieves the XPathNode by searching in the auxiliary case insensitive lookup table.
+     *
+     * @param childrenMap Original Map for construction of the auxiliary table.
+     * @param isAttribute Determine if searching for an element or an attribute.
+     * @return XPathNode object reference, which is also present in the original children map.
+     * @since 2.6.0
+     */
+    private XPathNode getNodeFromLookupTable(Map<XPathFragment, XPathNode> childrenMap, boolean isAttribute) {
+        Map<String, XPathNode> lookupTable = xPathNode.getChildrenLookupTable(isAttribute);
+
+        if(!xPathNode.isChildrenLookupTableFilled(isAttribute)){
+            this.fillLookupTable(childrenMap, lookupTable);
+            xPathNode.setChildrenLookupTableFilled(isAttribute);
+        }
+
+        String lowerCaseFragment = xPathFragment.getLocalName().toLowerCase();
+        if (!xPathFragment.getChildrenCollisionSet(isAttribute).add(lowerCaseFragment))
+            handleCollision(lowerCaseFragment, false);
+        return lookupTable.get(lowerCaseFragment);
+    }
+
+    /**
+     * INTERNAL:
+     * Creates an auxiliary lookup table containing lower-cased localNames of XPathFragments.
+     *
+     * Does NOT pass the Turkey test.
+     *
+     * For future development: Handle ISO-8859-9 encoding.
+     * if (encoding.equals("ISO-8859-9")) {
+     *      String auxLocalName = entry.getKey().getLocalName().toLowerCase(Locale.forLanguageTag("tr-TR"));
+     * }
+     *
+     * @param childrenMap Table from which the data is acquired.
+     * @param lookupTable Table to which the lower-cased data is stored.
+     * @since 2.6.0
+     */
+    private void fillLookupTable(Map<XPathFragment, XPathNode> childrenMap, Map<String, XPathNode> lookupTable) {
+        String lookupName;
+        for (Map.Entry<XPathFragment, XPathNode> entry : childrenMap.entrySet()) {
+            lookupName = entry.getKey().getLocalName().toLowerCase();
+            if (lookupTable.put(lookupName, entry.getValue()) != null){
+                handleCollision(lookupName, true);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Handles collisions, i.e. fragments or fields with the same name, different case.
+     *
+     * @param lookupName Lookup variant of the localName.
+     * @param onXPathNode true - the collision occurred on XPathNode (case for Java fields),
+     *                    false - the collision occurred on XPathFragment (case for XML elements/attributes).
+     * @since 2.6.0
+     */
+    private void handleCollision(String lookupName, boolean onXPathNode) {
+        StringBuilder sb = new StringBuilder()
+                .append(">\nUnmarshalRecordImpl.handleCollision() -->\tCOLLISION on ")
+                .append(
+                        onXPathNode
+                        ? "XPathNode fields by case insensitive localName \""
+                        : "XPathFragments by case insensitive localName \""
+                ).append(lookupName).append("\".");
+
+//        session.setLogLevel(SessionLog.WARNING); // for debugging
+        ((AbstractSession) session).logMessage(CommandProcessor.LOG_WARNING, sb.toString());
+    }
+
     public SAXFragmentBuilder getFragmentBuilder() {
         if(this.fragmentBuilder == null){
-        	fragmentBuilder = new SAXFragmentBuilder(this);
+		fragmentBuilder = new SAXFragmentBuilder(this);
         }
         return fragmentBuilder;
     }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Blaise Doughan - 2.6 - initial implementation
+ *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
@@ -145,8 +146,9 @@ public class XMLUnmarshaller<
     private char namespaceSeparator = Constants.DOT;
     private String attributePrefix;
     private boolean includeRoot = true;
-    private NamespaceResolver namespaceResolver;    
+    private NamespaceResolver namespaceResolver;
     private boolean autoDetectMediaType = false;
+    private boolean caseInsensitive = false;
     private Object unmarshalAttributeGroup;
     private boolean wrapperAsCollectionName = false;
 
@@ -779,8 +781,20 @@ public class XMLUnmarshaller<
 		this.autoDetectMediaType = autoDetectMediaType;
 	}
 
-    
-    
+    /**
+     * Return if this Unmarshaller should perform case insensitive unmarshalling.
+     */
+    public boolean isCaseInsensitive(){
+        return caseInsensitive;
+    }
+
+    /**
+     * Set true to make this Unmarshaller perform case insensitive unmarshalling.
+     */
+    public void setCaseInsensitive(boolean caseInsensitive) {
+        this.caseInsensitive = caseInsensitive;
+    }
+
     /**
      * Name of the NamespaceResolver to be used during unmarshal
      * Ignored unmarshalling XML.  

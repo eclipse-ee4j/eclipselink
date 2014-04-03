@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -751,12 +752,17 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 mType = MediaType.getMediaType((String)value);
             }
             if(mType == null){
-            	throw new PropertyException(key, Constants.EMPTY_STRING);
+		throw new PropertyException(key, Constants.EMPTY_STRING);
             }
-            xmlUnmarshaller.setMediaType(mType);           
+            xmlUnmarshaller.setMediaType(mType);
+        } else if (key.equals(UnmarshallerProperties.UNMARSHALLING_CASE_INSENSITIVE)){
+            if(value == null){
+                throw new PropertyException(key, Constants.EMPTY_STRING);
+            }
+            xmlUnmarshaller.setCaseInsensitive((Boolean)value);
         } else if (key.equals(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)){
-        	if(value == null){
-        	    throw new PropertyException(key, Constants.EMPTY_STRING);
+		if(value == null){
+		    throw new PropertyException(key, Constants.EMPTY_STRING);
         	}        
         	xmlUnmarshaller.setAutoDetectMediaType((Boolean)value);     
         } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)){
@@ -825,6 +831,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return xmlUnmarshaller.getMediaType();
         } else if (key.equals(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)) {
             return xmlUnmarshaller.isAutoDetectMediaType();
+        } else if (key.equals(UnmarshallerProperties.UNMARSHALLING_CASE_INSENSITIVE)) {
+            return xmlUnmarshaller.isCaseInsensitive();
         } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)) {
             return xmlUnmarshaller.getAttributePrefix();
         } else if (key.equals(UnmarshallerProperties.JSON_INCLUDE_ROOT)) {
