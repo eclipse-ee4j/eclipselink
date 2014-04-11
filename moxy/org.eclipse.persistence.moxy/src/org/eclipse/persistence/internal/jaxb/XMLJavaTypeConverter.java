@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998 -2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
+import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -255,26 +256,27 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         }
         
         this.mapping = mapping;
-        Method[] methods = null;
+        Method[] methods; // becaus adapter could be not direct child of XmlAdapter -> we need all methods
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                methods = (Method[]) AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(xmlAdapterClass));
+                methods = AccessController.doPrivileged(new PrivilegedGetMethods(xmlAdapterClass));
             } catch (PrivilegedActionException ex) {
                 throw JAXBException.adapterClassMethodsCouldNotBeAccessed(getXmlAdapterClassName(), ex);
             }
         } else {
-            methods = PrivilegedAccessHelper.getDeclaredMethods(xmlAdapterClass);
+            methods = PrivilegedAccessHelper.getMethods(xmlAdapterClass);
         }
-        Method method;
         // look for marshal method
-        for (int i = 0; i < methods.length; i++) {
-            method = methods[i];
+        Class[] parameterTypes;
+        for (Method method : methods) {
+            if (!method.isBridge()
+                    && method.getName().equals("marshal") // looking for marshal method
+                    && (parameterTypes = PrivilegedAccessHelper.getMethodParameterTypes(method)).length == 1) { // should contain 1 parameter
 
-            // for some reason, getDeclaredMethods is returning inherited
-            // methods - need to filter
-            if (method.getName().equals("marshal") && (PrivilegedAccessHelper.getMethodReturnType(method) != Object.class) && (method.getParameterTypes()[0] != Object.class)) {
-                valueType = method.getReturnType();
-                boundType = method.getParameterTypes()[0];
+                Class methodReturnType = PrivilegedAccessHelper.getMethodReturnType(method);
+                if (!methodReturnType.isInterface())
+                    valueType = methodReturnType;
+                boundType = parameterTypes[0];
                 break;
             }
         }

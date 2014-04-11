@@ -3,4 +3,8 @@
    <multi>1</multi>
    <multi>3</multi>
    <multi>1</multi>
+   <cardSuit>DIAMOND</cardSuit>
+   <cardSuits>CLUB</cardSuits>
+   <cardSuits>HEART</cardSuits>
+   <cardSuits>SPADE</cardSuits>
 </root>
