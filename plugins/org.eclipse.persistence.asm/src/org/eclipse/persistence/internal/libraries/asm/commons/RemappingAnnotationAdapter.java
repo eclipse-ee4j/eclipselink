@@ -1,6 +1,6 @@
 /***
  * ASM: a very small and fast Java bytecode manipulation framework
- * Copyright (c) 2000-2007 INRIA, France Telecom
+ * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,46 +31,49 @@
 package org.eclipse.persistence.internal.libraries.asm.commons;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
- * An <code>AnnotationVisitor</code> adapter for type remapping.
+ * An {@link AnnotationVisitor} adapter for type remapping.
  * 
  * @author Eugene Kuleshov
  */
-public class RemappingAnnotationAdapter implements AnnotationVisitor {
-    
-    private final AnnotationVisitor av;
-    
-    private final Remapper renamer;
+public class RemappingAnnotationAdapter extends AnnotationVisitor {
 
-    public RemappingAnnotationAdapter(AnnotationVisitor av, Remapper renamer) {
-        this.av = av;
-        this.renamer = renamer;
+    protected final Remapper remapper;
+
+    public RemappingAnnotationAdapter(final AnnotationVisitor av,
+            final Remapper remapper) {
+        this(Opcodes.ASM5, av, remapper);
     }
 
+    protected RemappingAnnotationAdapter(final int api,
+            final AnnotationVisitor av, final Remapper remapper) {
+        super(api, av);
+        this.remapper = remapper;
+    }
+
+    @Override
     public void visit(String name, Object value) {
-        av.visit(name, renamer.mapValue(value));
+        av.visit(name, remapper.mapValue(value));
     }
 
+    @Override
     public void visitEnum(String name, String desc, String value) {
-        av.visitEnum(name, renamer.mapDesc(desc), value);
+        av.visitEnum(name, remapper.mapDesc(desc), value);
     }
 
+    @Override
     public AnnotationVisitor visitAnnotation(String name, String desc) {
-        AnnotationVisitor v = av.visitAnnotation(name, renamer.mapDesc(desc));
-        return v == null ? null : (v == av
-                ? this
-                : new RemappingAnnotationAdapter(v, renamer));
+        AnnotationVisitor v = av.visitAnnotation(name, remapper.mapDesc(desc));
+        return v == null ? null : (v == av ? this
+                : new RemappingAnnotationAdapter(v, remapper));
     }
 
+    @Override
     public AnnotationVisitor visitArray(String name) {
         AnnotationVisitor v = av.visitArray(name);
-        return v == null ? null : (v == av
-                ? this
-                : new RemappingAnnotationAdapter(v, renamer));
-    }
-
-    public void visitEnd() {
-        av.visitEnd();
+        return v == null ? null : (v == av ? this
+                : new RemappingAnnotationAdapter(v, remapper));
     }
 }

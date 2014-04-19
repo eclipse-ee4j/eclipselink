@@ -1,25 +1,41 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.internal.libraries.asm;version="3.3.1",
- org.eclipse.persistence.internal.libraries.asm.commons;version="3.3.1",
- org.eclipse.persistence.internal.libraries.asm.signature;version="3.3.1",
- org.eclipse.persistence.internal.libraries.asm.tree;version="3.3.1",
- org.eclipse.persistence.internal.libraries.asm.tree.analysis;version="3.3.1",
- org.eclipse.persistence.internal.libraries.asm.util;version="3.3.1",
- org.eclipse.persistence.internal.libraries.asm.xml;version="3.3.1"
-Implementation-Version: 3.3.1.v201302191223
+Export-Package: org.eclipse.persistence.internal.libraries.asm.signature;version="5.0.1",
+ org.eclipse.persistence.internal.libraries.asm.commons;version="5.0.1";
+  uses:="org.eclipse.persistence.internal.libraries.asm,
+   org.eclipse.persistence.internal.libraries.asm.tree,
+   org.eclipse.persistence.internal.libraries.asm.signature",
+ org.eclipse.persistence.internal.libraries.asm.util;version="5.0.1";
+  uses:="org.eclipse.persistence.internal.libraries.asm,
+   org.eclipse.persistence.internal.libraries.asm.tree.analysis,
+   org.eclipse.persistence.internal.libraries.asm.tree,
+   org.eclipse.persistence.internal.libraries.asm.signature",
+ org.eclipse.persistence.internal.libraries.asm.tree.analysis;version="5.0.1";
+  uses:="org.eclipse.persistence.internal.libraries.asm,
+   org.eclipse.persistence.internal.libraries.asm.tree",
+ org.eclipse.persistence.internal.libraries.asm;version="5.0.1",
+ org.eclipse.persistence.internal.libraries.asm.xml;version="5.0.1";
+  uses:="org.xml.sax,
+   org.eclipse.persistence.internal.libraries.asm,
+   org.xml.sax.helpers,
+   org.xml.sax.ext,
+   javax.xml.transform.sax,
+   javax.xml.transform,
+   javax.xml.transform.stream,
+   org.eclipse.persistence.internal.libraries.asm.util",
+ org.eclipse.persistence.internal.libraries.asm.tree;version="5.0.1";
+  uses:="org.eclipse.persistence.internal.libraries.asm"
 Bundle-Name: EclipseLink ASM
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 3.3.1.v201302191223
+Bundle-Version: 5.0.1.qualifier
 Bundle-ManifestVersion: 2
-Import-Package: javax.xml.transform,
- javax.xml.transform.sax,
- javax.xml.transform.stream,
- org.xml.sax,
- org.xml.sax.ext,
- org.xml.sax.helpers
+Import-Package: javax.xml.transform;resolution:=optional,
+ javax.xml.transform.sax;resolution:=optional,
+ javax.xml.transform.stream;resolution:=optional,
+ org.xml.sax;resolution:=optional,
+ org.xml.sax.ext;resolution:=optional,
+ org.xml.sax.helpers;resolution:=optional
 Bundle-SymbolicName: org.eclipse.persistence.asm
-
