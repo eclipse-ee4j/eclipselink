@@ -415,12 +415,13 @@ public class XMLBinaryDataHelper {
         return null;
     }
 
+    // Made static final for performance reasons.
     /**
      * INTERNAL
      * @author mmacivor
      *
      */
-    public class EncodedData {
+    public static final class EncodedData {
         private byte[] data;
         private String mimeType;
 

@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation from Oracle TopLink
+ ******************************************************************************/
 // $ANTLR 3.0 JPQL.g 2010-05-03 16:14:54
 
     package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
@@ -4628,7 +4640,8 @@ public class JPQLLexer extends Lexer {
         }
     }
 
-    class DFA17 extends DFA {
+    // Made static for performance reasons.
+    static class DFA17 extends DFA {
 
         public DFA17(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -4685,7 +4698,8 @@ public class JPQLLexer extends Lexer {
         }
     }
 
-    class DFA20 extends DFA {
+    // Made static for performance reasons.
+    static class DFA20 extends DFA {
 
         public DFA20(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -5338,7 +5352,8 @@ public class JPQLLexer extends Lexer {
         }
     }
 
-    class DFA35 extends DFA {
+    // Made static for performance reasons.
+    static class DFA35 extends DFA {
 
         public DFA35(BaseRecognizer recognizer) {
             this.recognizer = recognizer;

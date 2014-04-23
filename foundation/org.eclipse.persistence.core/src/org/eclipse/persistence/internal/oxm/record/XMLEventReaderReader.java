@@ -202,7 +202,8 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         }
     }
 
-    private static class XMLEventReaderAttributes extends IndexedAttributeList {
+    // Made static final for performance reasons.
+    private static final class XMLEventReaderAttributes extends IndexedAttributeList {
 
         private Iterator namespaces;
         private Iterator attrs;
@@ -261,13 +262,14 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
 
     }
 
+    // Made static final for performance reasons.
     /**
      * <p>An implementation of Locator, with location data provided by an existing XMLEvent.</p>
      *
      * @see org.xml.sax.Locator
      * @see javax.xml.stream.events.XMLEvent
      */
-    private class EventReaderLocator implements Locator2 {
+    private static final class EventReaderLocator implements Locator2 {
 
         private XMLEvent event;
 

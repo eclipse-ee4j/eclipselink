@@ -279,13 +279,14 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
 
     }
 
+    // Made static for performance reasons.
     /**
      * <p>An implementation of Locator, created from an existing XMLStreamReader.</p>
      *
      * @see org.xml.sax.Locator
      * @see javax.xml.stream.XMLStreamReader
      */
-    private class StreamReaderLocator implements Locator2 {
+    private static class StreamReaderLocator implements Locator2 {
 
         private XMLStreamReader reader;
 

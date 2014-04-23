@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,7 +30,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.logging.Level;
+
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.FINEST;
 import static java.util.logging.Level.SEVERE;
@@ -50,8 +52,10 @@ import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.descriptors.DescriptorHelper;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsWriter;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -109,6 +113,7 @@ import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle;
 import org.eclipse.persistence.tools.dbws.jdbc.DbColumn;
 import org.eclipse.persistence.tools.dbws.jdbc.DbTable;
+
 import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
 import static org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_LABEL;
@@ -215,7 +220,6 @@ public abstract class BaseDBWSBuilderHelper {
     public static final String COMMA_SPACE_STR = COMMA + SINGLE_SPACE;
     public static final String EQUALS_BINDING1_STR = " = ?1";
     public static final String EQUALS_BINDING_STR = " = ?";
-    public static final String QUESTION_STR = "?";
     public static final String TIMESTAMP_CLASS = "oracle.sql.TIMESTAMP";
     public static final String USER_STR = "user";
     public static final String PASSWORD_STR = "password";
@@ -775,28 +779,14 @@ public abstract class BaseDBWSBuilderHelper {
                     theInstance.setType(theInstanceType);
                     insertOperation.getParameters().add(theInstance);
                     dbwsBuilder.xrServiceModel.getOperations().put(insertOperation.getName(), insertOperation);
-                    
-                    String sqlStmt = INSERT_STR + tableName + SINGLE_SPACE + OPEN_BRACKET;
-                    int idx = 1;
-                    String cols = "";
-                    for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
-                        DatabaseMapping mapping = (DatabaseMapping) j.next();
-                        cols += mapping.getField().getName();
-                        if (j.hasNext()) {
-                            cols += COMMA_SPACE_STR;
-                        }
-                        idx++;
-                    }
-                    sqlStmt += cols + CLOSE_BRACKET + VALUES_STR + OPEN_BRACKET;
-                    String vals = "";
-                    for (int k=1; k<idx; k++) {
-                        vals += QUESTION_STR + k;
-                        if (k+1 < idx) {
-                            vals += COMMA_SPACE_STR;
-                        }
-                    }
-                    sqlStmt += vals + CLOSE_BRACKET;
-                    ops.put(crudOpName, sqlStmt);
+
+                    StringBuilder sqlStmt = new StringBuilder(128);
+                    sqlStmt.append(INSERT_STR).append(tableName).append(SINGLE_SPACE).append(OPEN_BRACKET);
+                    DescriptorHelper.buildColsFromMappings(sqlStmt, desc.getMappings(), COMMA_SPACE_STR);
+                    sqlStmt.append(CLOSE_BRACKET).append(VALUES_STR).append(OPEN_BRACKET);
+                    DescriptorHelper.buildValuesAsQMarksFromMappings(sqlStmt, desc.getMappings(), COMMA_SPACE_STR);
+                    sqlStmt.append(CLOSE_BRACKET);
+                    ops.put(crudOpName, sqlStmt.toString());
                     
                     // update
                     crudOpName = UPDATE_OPERATION_NAME + UNDERSCORE + aliasType;
@@ -804,22 +794,13 @@ public abstract class BaseDBWSBuilderHelper {
                     updateOperation.setName(crudOpName);
                     updateOperation.getParameters().add(theInstance);
                     dbwsBuilder.xrServiceModel.getOperations().put(updateOperation.getName(), updateOperation);
-                    
-                    sqlStmt = UPDATE_STR + tableName + SET_STR;
-                    idx = pkCount;
-                    for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
-                        DatabaseMapping mapping = (DatabaseMapping) j.next();
-                        DatabaseField field = mapping.getField();
-                        if (!desc.getPrimaryKeyFields().contains(field)) {
-                            sqlStmt += mapping.getField().getName() + EQUALS_BINDING_STR + (++idx);
-                            if (j.hasNext()) {
-                                sqlStmt += COMMA_SPACE_STR;
-                            }                            
-                        }
-                    }
-                    
-                    sqlStmt += WHERE_STR + pks;
-                    ops.put(crudOpName, sqlStmt);
+
+                    sqlStmt = new StringBuilder(128);
+                    sqlStmt.append(UPDATE_STR).append(tableName).append(SET_STR);
+                    DescriptorHelper.buildColsAndValuesBindingsFromMappings(sqlStmt, desc.getMappings(),
+                            desc.getPrimaryKeyFields(), pkCount, EQUALS_BINDING_STR, COMMA_SPACE_STR);
+                    sqlStmt.append(WHERE_STR).append(pks);
+                    ops.put(crudOpName, sqlStmt.toString());
                     
                     // delete
                     crudOpName = REMOVE_OPERATION_NAME + UNDERSCORE + aliasType;
@@ -836,8 +817,9 @@ public abstract class BaseDBWSBuilderHelper {
                     }
                     dbwsBuilder.xrServiceModel.getOperations().put(deleteOperation.getName(), deleteOperation);
                     
-                    sqlStmt = DELETE_STR + tableName + WHERE_STR + pks;
-                    ops.put(crudOpName, sqlStmt);
+                    sqlStmt = new StringBuilder(128);
+                    sqlStmt.append(DELETE_STR).append(tableName).append(WHERE_STR).append(pks);
+                    ops.put(crudOpName, sqlStmt.toString());
                 }
             }
             // check for additional operations

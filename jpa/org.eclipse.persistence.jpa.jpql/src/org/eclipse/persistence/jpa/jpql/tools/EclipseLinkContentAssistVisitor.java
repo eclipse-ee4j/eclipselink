@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.List;
+
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
@@ -49,6 +50,7 @@ import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals.ClassType;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.Declaration;
+
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -92,7 +94,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	@Override
 	protected AppendableExpressionVisitor buildAppendableExpressionVisitor() {
-		return new AppendableExpressionVisitor();
+		return new AppendableExpressionVisitor(this);
 	}
 
 	/**
@@ -100,7 +102,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	@Override
 	protected EndingQueryPositionBuilder buildEndingQueryPositionBuilder() {
-		return new EndingQueryPositionBuilder();
+		return new EndingQueryPositionBuilder(this);
 	}
 
 	/**
@@ -116,7 +118,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	@Override
 	protected FromClauseCollectionHelper buildFromClauseCollectionHelper() {
-		return new FromClauseCollectionHelper();
+		return new FromClauseCollectionHelper(this);
 	}
 
 	/**
@@ -124,7 +126,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	@Override
 	protected FromClauseStatementHelper buildFromClauseStatementHelper() {
-		return new FromClauseStatementHelper();
+		return new FromClauseStatementHelper(this);
 	}
 
 	/**
@@ -132,7 +134,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	@Override
 	protected GroupByClauseCollectionHelper buildGroupByClauseCollectionHelper() {
-		return new GroupByClauseCollectionHelper();
+		return new GroupByClauseCollectionHelper(this);
 	}
 
 	/**
@@ -148,7 +150,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	@Override
 	protected OrderByClauseStatementHelper buildOrderByClauseStatementHelper() {
-		return new OrderByClauseStatementHelper();
+		return new OrderByClauseStatementHelper(this);
 	}
 
 	/**
@@ -156,7 +158,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	@Override
 	protected SimpleFromClauseStatementHelper buildSimpleFromClauseStatementHelper() {
-		return new SimpleFromClauseStatementHelper();
+		return new SimpleFromClauseStatementHelper(this);
 	}
 
 	protected TableExpressionVisitor buildTableExpressionVisitor() {
@@ -769,13 +771,18 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		}
 	}
 
-	protected class AcceptableTypeVisitor extends AbstractContentAssistVisitor.AcceptableTypeVisitor {
+    // Made static final for performance reasons.
+	protected static final class AcceptableTypeVisitor extends AbstractContentAssistVisitor.AcceptableTypeVisitor {
 	}
 
-	protected class AppendableExpressionVisitor extends AbstractContentAssistVisitor.AppendableExpressionVisitor
+    // Made static final for performance reasons.
+	protected static final class AppendableExpressionVisitor extends AbstractContentAssistVisitor.AppendableExpressionVisitor
 	                                            implements EclipseLinkExpressionVisitor {
+        AppendableExpressionVisitor(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
-		/**
+        /**
 		 * {@inheritDoc}
 		 */
 		public void visit(AsOfClause expression) {
@@ -892,10 +899,15 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		}
 	}
 
-	protected class EndingQueryPositionBuilder extends AbstractContentAssistVisitor.EndingQueryPositionBuilder
+    // Made static final for performance reasons.
+	protected static final class EndingQueryPositionBuilder extends AbstractContentAssistVisitor.EndingQueryPositionBuilder
 	                                           implements EclipseLinkExpressionVisitor {
 
-		/**
+        protected EndingQueryPositionBuilder(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		public void visit(AsOfClause expression) {
@@ -1103,10 +1115,11 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor adds support for the additional clauses provided by EclipseLink, such as the
 	 */
-	protected class FollowingClausesVisitor extends AbstractContentAssistVisitor.FollowingClausesVisitor {
+	protected static final class FollowingClausesVisitor extends AbstractContentAssistVisitor.FollowingClausesVisitor {
 
 		protected boolean hasAsOfClause;
 		protected boolean hasConnectByClause;
@@ -1281,7 +1294,11 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 
 	protected class FromClauseCollectionHelper extends AbstractContentAssistVisitor.FromClauseCollectionHelper {
 
-		/**
+        protected FromClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		@Override
@@ -1396,6 +1413,10 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 
 	protected class FromClauseStatementHelper extends AbstractContentAssistVisitor.FromClauseStatementHelper {
 
+        protected FromClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -1448,6 +1469,10 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 
 	protected class OrderByClauseStatementHelper extends AbstractContentAssistVisitor.OrderByClauseStatementHelper {
 
+        protected OrderByClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -1466,6 +1491,10 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	}
 
 	protected class SimpleFromClauseStatementHelper extends AbstractContentAssistVisitor.SimpleFromClauseStatementHelper {
+
+        protected SimpleFromClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}

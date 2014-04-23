@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -604,7 +604,8 @@ public class XRServiceFactory  {
             }
         }
     }
-    
+
+    // Made static final for performance reasons.
     /**
      * <p>INTERNAL:
      * 
@@ -612,7 +613,7 @@ public class XRServiceFactory  {
      * to the DynamicJAXBContextFactory
      *
      */
-    public class OXMMetadataSource implements MetadataSource {
+    public static final class OXMMetadataSource implements MetadataSource {
         XmlBindings xmlbindings;
         
         public OXMMetadataSource(XmlBindings bindings) {
@@ -624,7 +625,8 @@ public class XRServiceFactory  {
             return xmlbindings;
         }
     }
-    
+
+    // Made static final for performance reasons.
     /**
      * <p>INTERNAL:
      * 
@@ -632,7 +634,7 @@ public class XRServiceFactory  {
      * MetadataProcessor.
      *
      */
-    public class JPAMetadataSource implements org.eclipse.persistence.jpa.metadata.MetadataSource {
+    public static final class JPAMetadataSource implements org.eclipse.persistence.jpa.metadata.MetadataSource {
         XRDynamicClassLoader xrdecl;
         Reader reader;
         
@@ -652,6 +654,7 @@ public class XRServiceFactory  {
         }
     }                  
 
+    // Made static final for performance reasons.
     /**
      * <p>INTERNAL:
      * 
@@ -660,7 +663,7 @@ public class XRServiceFactory  {
      * null, empty lists, etc.
      *
      */
-    public class XRPersistenceUnitInfo implements PersistenceUnitInfo {
+    public static final class XRPersistenceUnitInfo implements PersistenceUnitInfo {
         XRDynamicClassLoader xrdecl;
         public XRPersistenceUnitInfo(XRDynamicClassLoader loader) {
             xrdecl = loader;

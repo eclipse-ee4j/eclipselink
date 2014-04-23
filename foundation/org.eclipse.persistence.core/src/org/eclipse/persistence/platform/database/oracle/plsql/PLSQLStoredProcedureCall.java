@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -1193,11 +1193,12 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         return inArgs;
     }
 
+    // Made static for performance reasons.
     /**
      * INTERNAL:
      * Helper structure used to store the PLSQL type conversion routines.
      */
-    class TypeInfo {
+    static final class TypeInfo {
         String sql2PlName;
         String sql2PlConv;
         String pl2SqlName;
@@ -1258,12 +1259,13 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         this.arguments = arguments;
     }
     
+    // Made static final for performance reasons.
     /**
      * Class responsible for comparing PLSQLargument instances based on
      * the inIndex property.
      *
      */
-    static class InArgComparer implements Comparator<PLSQLargument> {
+    static final class InArgComparer implements Comparator<PLSQLargument> {
         @Override
         public int compare(PLSQLargument arg0, PLSQLargument arg1) {
             if (arg0.inIndex < arg1.inIndex) {
@@ -1276,12 +1278,13 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
     }
     
+    // Made static final for performance reasons.
     /**
      * Class responsible for comparing PLSQLargument instances based on
      * the outIndex property.
      *
      */
-    static class OutArgComparer implements Comparator<PLSQLargument> {
+    static final class OutArgComparer implements Comparator<PLSQLargument> {
         @Override
         public int compare(PLSQLargument arg0, PLSQLargument arg1) {
             if (arg0.inIndex < arg1.outIndex) {

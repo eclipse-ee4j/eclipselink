@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -45,8 +46,13 @@ import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
  * @since EclipseLink 2.2
  */
 public class IndexMetadata extends ORMetadata {
+    /** Name prefix. */
+    private static final String INDEX = "INDEX";
+    /** Name parts separator. */
+    private static final char FIELD_SEP = '_';
+
     private Boolean m_unique;
-    
+
     private String m_name;
     private String m_schema;
     private String m_catalog;
@@ -297,17 +303,26 @@ public class IndexMetadata extends ORMetadata {
      */
     protected String processName(DatabaseTable table, IndexDefinition indexDefinition) {
         if (hasName()) {
-            return m_name;            
-        } else {            
-            String name = "INDEX_" + table.getName();
-        
+            return m_name;
+        } else {
+            String tableName = StringHelper.nonNullString(table.getName());
+            // Calculate name length to avoid StringBuilder resizing
+            int length = INDEX.length() + 1 + tableName.length();
+            for (String field : indexDefinition.getFields()) {
+                length += 1;
+                length += StringHelper.nonNullString(field).length();
+            }
+            // Build name
+            StringBuilder name = new StringBuilder(length);
+            name.append(INDEX).append(FIELD_SEP).append(tableName);
             // Append all the field names to it.
             for (String field : indexDefinition.getFields()) {
-                name = name + "_" + field;
+                name.append(FIELD_SEP);
+                name.append(StringHelper.nonNullString(field));
             }
-            
-            return name;
-        }   
+
+            return name.toString();
+        }
     }
 
     /**

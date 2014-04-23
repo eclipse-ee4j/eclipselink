@@ -13,10 +13,10 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
 
 import java.util.Stack;
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -179,8 +179,13 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
             return aggregatesAllowed;
         }
 
+        // State access from DFA classes
+        private final RecognizerSharedState getSharedState() {
+            return state;
+        }
+
         /** */
-        protected void validateAbstractSchemaName(Token token) 
+        protected void validateAbstractSchemaName(Token token)
             throws RecognitionException {
             String text = token.getText();
             if (!isValidJavaIdentifier(token.getText())) {
@@ -8780,6 +8785,24 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
     static final short[] DFA10_special = DFA.unpackEncodedString(DFA10_specialS);
     static final short[][] DFA10_transition;
 
+    // Made static for performance reasons.
+    static class DFAParser extends DFA {
+
+        boolean aggregatesAllowed;
+        public DFAParser(JPQLParser recognizer) {
+            this.recognizer = recognizer;
+        }
+        protected final boolean aggregatesAllowed() {
+            return ((JPQLParser)recognizer).aggregatesAllowed();
+        }
+        protected final boolean synpred1_JPQL() {
+            return ((JPQLParser)recognizer).synpred1_JPQL();
+        }
+        protected final RecognizerSharedState getSharedState() {
+            return ((JPQLParser)recognizer).getSharedState();
+        }
+    }
+
     static {
         int numStates = DFA10_transitionS.length;
         DFA10_transition = new short[numStates][];
@@ -8788,7 +8811,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA10 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA10 extends DFA {
 
         public DFA10(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -8885,7 +8909,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA11 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA11 extends DFA {
 
         public DFA11(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -8986,7 +9011,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA15 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA15 extends DFA {
 
         public DFA15(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -9377,10 +9403,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA19 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA19 extends DFAParser {
 
-        public DFA19(BaseRecognizer recognizer) {
-            this.recognizer = recognizer;
+        public DFA19(JPQLParser recognizer) {
+            super(recognizer);
             this.decisionNumber = 19;
             this.eot = DFA19_eot;
             this.eof = DFA19_eof;
@@ -12773,7 +12800,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         if ( s>=0 ) return s;
                         break;
             }
-            if (state.backtracking>0) {state.failed=true; return -1;}
+            RecognizerSharedState sharedState = getSharedState();
+            if (sharedState.backtracking>0) {sharedState.failed=true; return -1;}
             NoViableAltException nvae =
                 new NoViableAltException(getDescription(), 19, _s, input);
             error(nvae);
@@ -12851,7 +12879,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA20 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA20 extends DFA {
 
         public DFA20(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -12948,7 +12977,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA22 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA22 extends DFA {
 
         public DFA22(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -13045,7 +13075,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA23 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA23 extends DFA {
 
         public DFA23(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -13142,7 +13173,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA24 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA24 extends DFA {
 
         public DFA24(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -13239,7 +13271,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA25 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA25 extends DFA {
 
         public DFA25(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -13336,7 +13369,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA26 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA26 extends DFA {
 
         public DFA26(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -13724,10 +13758,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA30 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA30 extends DFAParser {
 
-        public DFA30(BaseRecognizer recognizer) {
-            this.recognizer = recognizer;
+        public DFA30(JPQLParser recognizer) {
+            super(recognizer);
             this.decisionNumber = 30;
             this.eot = DFA30_eot;
             this.eof = DFA30_eof;
@@ -13751,7 +13786,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         int index30_50 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (( aggregatesAllowed() )) ) {s = 1;}
+                        if ( (( this.aggregatesAllowed() )) ) {s = 1;}
 
                         else if ( (true) ) {s = 275;}
 
@@ -17120,7 +17155,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         if ( s>=0 ) return s;
                         break;
             }
-            if (state.backtracking>0) {state.failed=true; return -1;}
+            RecognizerSharedState sharedState = getSharedState();
+            if (sharedState.backtracking>0) {sharedState.failed=true; return -1;}
             NoViableAltException nvae =
                 new NoViableAltException(getDescription(), 30, _s, input);
             error(nvae);
@@ -17171,7 +17207,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA33 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA33 extends DFA {
 
         public DFA33(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -17235,7 +17272,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA41 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA41 extends DFA {
 
         public DFA41(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -17299,7 +17337,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA42 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA42 extends DFA {
 
         public DFA42(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -17397,7 +17436,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA45 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA45 extends DFA {
 
         public DFA45(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -17494,7 +17534,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA46 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA46 extends DFA {
 
         public DFA46(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -17944,10 +17985,11 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA47 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA47 extends DFAParser {
 
-        public DFA47(BaseRecognizer recognizer) {
-            this.recognizer = recognizer;
+        public DFA47(JPQLParser recognizer) {
+            super(recognizer);
             this.decisionNumber = 47;
             this.eot = DFA47_eot;
             this.eof = DFA47_eof;
@@ -20457,7 +20499,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                         if ( s>=0 ) return s;
                         break;
             }
-            if (state.backtracking>0) {state.failed=true; return -1;}
+            RecognizerSharedState sharedState = getSharedState();
+            if (sharedState.backtracking>0) {sharedState.failed=true; return -1;}
             NoViableAltException nvae =
                 new NoViableAltException(getDescription(), 47, _s, input);
             error(nvae);
@@ -20544,7 +20587,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA48 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA48 extends DFA {
 
         public DFA48(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -20606,7 +20650,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA51 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA51 extends DFA {
 
         public DFA51(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -20703,7 +20748,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA55 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA55 extends DFA {
 
         public DFA55(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -20762,7 +20808,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA57 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA57 extends DFA {
 
         public DFA57(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -20862,7 +20909,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA60 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA60 extends DFA {
 
         public DFA60(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -20975,7 +21023,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA61 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA61 extends DFA {
 
         public DFA61(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21060,7 +21109,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA62 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA62 extends DFA {
 
         public DFA62(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21147,7 +21197,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA63 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA63 extends DFA {
 
         public DFA63(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21227,7 +21278,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA64 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA64 extends DFA {
 
         public DFA64(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21307,7 +21359,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA65 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA65 extends DFA {
 
         public DFA65(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21404,7 +21457,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA66 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA66 extends DFA {
 
         public DFA66(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21501,7 +21555,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA67 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA67 extends DFA {
 
         public DFA67(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21568,7 +21623,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA68 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA68 extends DFA {
 
         public DFA68(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21630,7 +21686,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA77 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA77 extends DFA {
 
         public DFA77(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21705,7 +21762,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA89 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA89 extends DFA {
 
         public DFA89(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21764,7 +21822,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA97 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA97 extends DFA {
 
         public DFA97(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21824,7 +21883,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA98 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA98 extends DFA {
 
         public DFA98(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21890,7 +21950,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA102 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA102 extends DFA {
 
         public DFA102(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
@@ -21949,7 +22010,8 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
         }
     }
 
-    class DFA101 extends DFA {
+    // Made static final for performance reasons.
+    static final class DFA101 extends DFA {
 
         public DFA101(BaseRecognizer recognizer) {
             this.recognizer = recognizer;

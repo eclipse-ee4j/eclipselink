@@ -221,13 +221,14 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
         return events;
     }
     
+    // Made static final for performance reasons.
     /**
      * Implementation of Attributes - used to pass along a given node's attributes
      * to the startElement method of the reader's content handler.
      */
-    public class AttributeList implements org.xml.sax.Attributes {
-      
-      private String[] localNames;      
+    private static final class AttributeList implements org.xml.sax.Attributes {
+
+      private String[] localNames;
       private String[] uris;
       private String[] values;
       private String[] types;   	

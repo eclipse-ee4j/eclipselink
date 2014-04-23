@@ -105,13 +105,14 @@ public class SecurableObjectHolder {
         }
     }
 
+    // Made static final for performance reasons.
     /*
      * If we default to JCE and the initialization fails, our fall back is to do
      * no encryption. This covers the case where the user is running against JDK 1.3
      * At runtime, no encryption will be made and the passwords will be assummed to
      * be clear text.
      */
-    private class PassThroughEncryptor implements Securable {
+    private static final class PassThroughEncryptor implements Securable {
         public String encryptPassword(String pswd) {
             return pswd;
         }

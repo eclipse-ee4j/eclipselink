@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,6 +39,7 @@ import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
+
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -130,7 +131,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 	 */
 	@Override
 	protected TopLevelFirstDeclarationVisitor buildTopLevelFirstDeclarationVisitor() {
-		return new TopLevelFirstDeclarationVisitor();
+		return new TopLevelFirstDeclarationVisitor(this);
 	}
 
 	protected JPQLQueryDeclaration getDeclaration(String variableName) {
@@ -527,10 +528,11 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 		// Nothing to validate semantically
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor retrieves the clause owning the visited {@link Expression}.
 	 */
-	public static class EclipseLinkOwningClauseVisitor extends OwningClauseVisitor {
+	public static final class EclipseLinkOwningClauseVisitor extends OwningClauseVisitor {
 
 		public UnionClause unionClause;
 
@@ -555,7 +557,8 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 		}
 	}
 
-	protected static class SubquerySelectItemCalculator extends AnonymousExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class SubquerySelectItemCalculator extends AnonymousExpressionVisitor {
 
 		public int count;
 
@@ -608,7 +611,8 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 		}
 	}
 
-	protected static class TableExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class TableExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
 
 		/**
 		 * The {@link Expression} being visited.
@@ -629,7 +633,14 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 		}
 	}
 
-	protected class TopLevelFirstDeclarationVisitor extends AbstractSemanticValidator.TopLevelFirstDeclarationVisitor {
+    // Made static final for performance reasons.
+	protected static final class TopLevelFirstDeclarationVisitor extends AbstractSemanticValidator.TopLevelFirstDeclarationVisitor {
+
+        private final AbstractEclipseLinkSemanticValidator validator;
+
+        private TopLevelFirstDeclarationVisitor(AbstractEclipseLinkSemanticValidator validator) {
+            this.validator = validator;
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -639,12 +650,12 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 
 			// Derived path is not allowed, this could although be a fully
 			// qualified class name, which was added to EclipseLink 2.4
-			EclipseLinkVersion version = EclipseLinkVersion.value(getProviderVersion());
+			EclipseLinkVersion version = EclipseLinkVersion.value(validator.getProviderVersion());
 			valid = version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
 
 			if (valid) {
-				Object type = helper.getType(expression.toActualText());
-				valid = helper.isTypeResolvable(type);
+				Object type = validator.helper.getType(expression.toActualText());
+				valid = validator.helper.isTypeResolvable(type);
 			}
 		}
 	}

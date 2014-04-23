@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -71,6 +71,12 @@ import org.eclipse.persistence.queries.DoesExistQuery;
  * @see org.eclipse.persistence.oxm.mappings
  */
 public class XMLDescriptor extends ClassDescriptor implements Descriptor<AttributeAccessor, DatabaseMapping, DatabaseField, InheritancePolicy, InstantiationPolicy, NamespaceResolver, ObjectBuilder, DatabaseTable, UnmarshalRecord, XMLUnmarshaller>{
+
+    /*
+     * Character used to separate individual xPath elements.
+     * TODO: Use some global value reference.
+     */
+    private static final char XPATH_FRAGMENT_SEPARATOR = '/';
 
     private static final Vector EMPTY_VECTOR = NonSynchronizedVector.newInstance(1);
 
@@ -1025,7 +1031,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         if(null != foundField) {
             return foundField;
         }
-        StringTokenizer stringTokenizer = new StringTokenizer(field.getName(), "/");
+        StringTokenizer stringTokenizer = new StringTokenizer(field.getName(), String.valueOf(XPATH_FRAGMENT_SEPARATOR));
         DatabaseField typedField = getTypedField(stringTokenizer);
         if(null == typedField) {
             DatabaseMapping selfMapping = objectBuilder.getMappingForField(new XMLField("."));
@@ -1037,18 +1043,18 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     }
 
     protected DatabaseField getTypedField(StringTokenizer stringTokenizer) {
-        String xPath = ""; 
-        XMLField xmlField = new XMLField(); 
-        xmlField.setNamespaceResolver(namespaceResolver); 
+        StringBuilder xPath = new StringBuilder();
+        XMLField xmlField = new XMLField();
+        xmlField.setNamespaceResolver(namespaceResolver);
         while(stringTokenizer.hasMoreElements()) {
             String nextToken = stringTokenizer.nextToken();
-            xmlField.setXPath(xPath + nextToken);
+            xmlField.setXPath(xPath.toString() + nextToken);
             xmlField.initialize();
-            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField); 
+            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField);
             if(null == mapping) {
                 XPathFragment xPathFragment = new XPathFragment(nextToken);
                 if(xPathFragment.getIndexValue() > 0) {
-                    xmlField.setXPath(xPath + nextToken.substring(0, nextToken.indexOf('[')));
+                    xmlField.setXPath(xPath.toString() + nextToken.substring(0, nextToken.indexOf('[')));
                     xmlField.initialize();
                     mapping = objectBuilder.getMappingForField(xmlField);
                     if(null != mapping) {
@@ -1068,11 +1074,11 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
                     return ((XMLDescriptor) mapping.getReferenceDescriptor()).getTypedField(stringTokenizer);
                 } else {
                     return mapping.getField();
-                } 
-            } 
-            xPath = xPath + nextToken + "/"; 
+                }
+            }
+            xPath = xPath.append(nextToken).append(XPATH_FRAGMENT_SEPARATOR);
         }
-        return null; 
+        return null;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -70,7 +70,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<CastExpression> buildCastExpressionHelper() {
-		return new AbstractSingleEncapsulatedExpressionHelper<CastExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<CastExpression>(this) {
 			@Override
 			protected String encapsulatedExpressionInvalidKey(CastExpression expression) {
 				return CastExpression_InvalidExpression;
@@ -89,7 +89,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	}
 
 	protected AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> buildDatabaseTypeHelper() {
-		return new AbstractDoubleEncapsulatedExpressionHelper<DatabaseType>() {
+		return new AbstractDoubleEncapsulatedExpressionHelper<DatabaseType>(this) {
 			@Override
 			protected String firstExpressionInvalidKey() {
 				return DatabaseType_InvalidFirstExpression;
@@ -160,7 +160,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<ExtractExpression> buildExtractExpressionHelper() {
-		return new AbstractSingleEncapsulatedExpressionHelper<ExtractExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<ExtractExpression>(this) {
 			@Override
 			protected String encapsulatedExpressionInvalidKey(ExtractExpression expression) {
 				return ExtractExpression_InvalidExpression;
@@ -190,7 +190,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	}
 
 	protected InExpressionWithNestedArrayVisitor buildInExpressionWithNestedArrayVisitor() {
-		return new InExpressionWithNestedArrayVisitor();
+		return new InExpressionWithNestedArrayVisitor(this);
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<TableExpression> buildTableExpressionHelper() {
-		return new AbstractSingleEncapsulatedExpressionHelper<TableExpression>() {
+		return new AbstractSingleEncapsulatedExpressionHelper<TableExpression>(this) {
 			@Override
 			protected String encapsulatedExpressionInvalidKey(TableExpression expression) {
 				return TableExpression_InvalidExpression;
@@ -652,6 +652,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		}
 	}
 
+    // Made static for performance reasons.
 	protected static class InExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
 
 		protected InExpression expression;
@@ -662,9 +663,16 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		}
 	}
 
-	protected class InExpressionWithNestedArrayVisitor extends AbstractEclipseLinkExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class InExpressionWithNestedArrayVisitor extends AbstractEclipseLinkExpressionVisitor {
 
-		/**
+	    private final EclipseLinkGrammarValidator visitor;
+
+	    protected InExpressionWithNestedArrayVisitor(EclipseLinkGrammarValidator visitor) {
+	        this.visitor = visitor;
+	    }
+
+	    /**
 		 * Determines whether the left expression of an <code><b>IN</b></code> expression is a nested
 		 * array when the <code><b>IN</b></code> item is a subquery.
 		 */
@@ -675,7 +683,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		 */
 		@Override
 		public void visit(InExpression expression) {
-			valid = isNestedArray(expression.getExpression());
+			valid = visitor.isNestedArray(expression.getExpression());
 		}
 
 		/**

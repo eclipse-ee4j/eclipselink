@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,7 +65,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.descriptors.DescriptorHelper;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
@@ -1016,49 +1018,29 @@ public class JPAMetadataGenerator {
             crudQuery.setQuery(SELECT_FROM_STR + tableName);
             crudQuery.setResultClassName(entity.getClassName());
             entity.getNamedNativeQueries().add(crudQuery);
-            
             // create
-            String sqlStmt = INSERT_STR + tableName + SINGLE_SPACE + OPEN_BRACKET;
-            int idx = 1;
-            String cols = "";
-            for (Iterator i = mappings.iterator(); i.hasNext(); ) {
-                MappingAccessor mapping = (MappingAccessor) i.next();
-                cols += mapping.getName().toUpperCase();
-                if (i.hasNext()) {
-                    cols += COMMA_SPACE_STR;
-                }
-                idx++;
-            }
-            sqlStmt += cols + CLOSE_BRACKET + VALUES_STR + OPEN_BRACKET;
-            String vals = "";
-            for (int k = 1; k < idx; k++) {
-                vals += QUESTION_STR + k;
-                if (k+1 < idx) {
-                    vals += COMMA_SPACE_STR;
-                }
-            }
-            sqlStmt += vals + CLOSE_BRACKET;
+            StringBuilder sqlStmt = new StringBuilder(128);
+            sqlStmt.append(INSERT_STR).append(tableName).append(SINGLE_SPACE).append(OPEN_BRACKET);
+            MetadataHelper.buildColsFromMappings(sqlStmt, mappings, COMMA_SPACE_STR);
+            sqlStmt.append(CLOSE_BRACKET).append(VALUES_STR).append(OPEN_BRACKET);
+            MetadataHelper.buildValuesAsQMarksFromMappings(sqlStmt, mappings, COMMA_SPACE_STR);
+            sqlStmt.append(CLOSE_BRACKET);
 
             crudQuery = new NamedNativeQueryMetadata();
             crudQuery.setName(CREATE_OPERATION_NAME + UNDERSCORE + entityType);
-            crudQuery.setQuery(sqlStmt);
+            crudQuery.setQuery(sqlStmt.toString());
             entity.getNamedNativeQueries().add(crudQuery);
             
             // update
-            sqlStmt = UPDATE_STR + tableName + SET_STR;
-            idx = pkCount;
-            for (Iterator i = basics.iterator(); i.hasNext(); ) {
-                BasicAccessor basic = (BasicAccessor) i.next();
-                sqlStmt += basic.getName().toUpperCase() + EQUALS_BINDING_STR + (++idx);
-                if (i.hasNext()) {
-                    sqlStmt += COMMA_SPACE_STR;
-                }                            
-            }
-            sqlStmt += WHERE_STR + pks;
+            sqlStmt = new StringBuilder(128);
+            sqlStmt.append(UPDATE_STR).append(tableName).append(SET_STR);
+            MetadataHelper.buildColsAndValuesBindingsFromMappings(sqlStmt, basics,
+                    pkCount, EQUALS_BINDING_STR, COMMA_SPACE_STR);
+            sqlStmt.append(WHERE_STR).append(pks);
             
             crudQuery = new NamedNativeQueryMetadata();
             crudQuery.setName(UPDATE_OPERATION_NAME + UNDERSCORE + entityType);
-            crudQuery.setQuery(sqlStmt);
+            crudQuery.setQuery(sqlStmt.toString());
             entity.getNamedNativeQueries().add(crudQuery);
 
             // delete

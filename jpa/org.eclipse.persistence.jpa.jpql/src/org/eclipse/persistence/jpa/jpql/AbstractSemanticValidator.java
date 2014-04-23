@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -213,7 +213,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	}
 
 	protected InItemsVisitor buildInItemsVisitor() {
-		return new InItemsVisitor();
+		return new InItemsVisitor(this);
 	}
 
 	protected SubqueryFirstDeclarationVisitor buildSubqueryFirstDeclarationVisitor() {
@@ -281,7 +281,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 	protected ComparisonExpressionVisitor getComparisonExpressionVisitor() {
 		if (comparisonExpressionVisitor == null) {
-			comparisonExpressionVisitor = new ComparisonExpressionVisitor();
+			comparisonExpressionVisitor = new ComparisonExpressionVisitor(this);
 		}
 		return comparisonExpressionVisitor;
 	}
@@ -3264,11 +3264,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		validateWhereClause(expression);
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor is meant to retrieve an {@link CollectionValuedPathExpression} if the visited
 	 * {@link Expression} is that object.
 	 */
-	protected static class CollectionValuedPathExpressionVisitor extends AbstractExpressionVisitor {
+	protected static final class CollectionValuedPathExpressionVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The {@link CollectionValuedPathExpression} that was visited; <code>null</code> if he was not.
@@ -3284,7 +3285,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
-	protected class ComparingEntityTypeLiteralVisitor extends AbstractExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class ComparingEntityTypeLiteralVisitor extends AbstractExpressionVisitor {
 
 		protected IdentificationVariable expression;
 		public boolean result;
@@ -3317,12 +3319,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor compares the left and right expressions of a comparison expression and gathers
 	 * information about those expressions if they are an identification variable or a path expression.
 	 */
-	protected class ComparisonExpressionVisitor extends AnonymousExpressionVisitor {
+	protected static final class ComparisonExpressionVisitor extends AnonymousExpressionVisitor {
 
+	    private final AbstractSemanticValidator validator;
 		public boolean leftIdentificationVariable;
 		public boolean leftIdentificationVariableValid;
 		public boolean leftStateFieldPathExpression;
@@ -3333,10 +3337,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		public boolean rightStateFieldPathExpressionValid;
 		public boolean validatingLeftExpression;
 
+		private ComparisonExpressionVisitor(AbstractSemanticValidator validator) {
+		    this.validator = validator;
+		}
+
 		/**
 		 * Resets the flags.
 		 */
-		protected void dispose() {
+		private void dispose() {
 			leftIdentificationVariable         = false;
 			leftIdentificationVariableValid    = false;
 			leftStateFieldPathExpression       = false;
@@ -3353,7 +3361,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		@Override
 		protected void visit(Expression expression) {
 			// Redirect to the validator, nothing special is required
-			expression.accept(AbstractSemanticValidator.this);
+			expression.accept(validator);
 		}
 
 		/**
@@ -3363,19 +3371,19 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		public void visit(IdentificationVariable expression) {
 
 			// Make sure the identification variable is not a result variable
-			if (!helper.isResultVariable(expression.getVariableName())) {
+			if (!validator.helper.isResultVariable(expression.getVariableName())) {
 
 				if (validatingLeftExpression) {
 					leftIdentificationVariable = !expression.isVirtual();
 
 					// Make sure what was parsed is a valid identification variable
-					leftIdentificationVariableValid = validateIdentificationVariable(expression);
+					leftIdentificationVariableValid = validator.validateIdentificationVariable(expression);
 				}
 				else {
 					rightIdentificationVariable = !expression.isVirtual();
 
 					// Make sure what was parsed is a valid identification variable
-					rightIdentificationVariableValid = validateIdentificationVariable(expression);
+					rightIdentificationVariableValid = validator.validateIdentificationVariable(expression);
 				}
 			}
 		}
@@ -3390,7 +3398,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				leftStateFieldPathExpression = true;
 
 				// Make sure what was parsed is a valid path expression
-				leftStateFieldPathExpressionValid = validateStateFieldPathExpression(
+				leftStateFieldPathExpressionValid = validator.validateStateFieldPathExpression(
 					expression,
 					PathType.ANY_FIELD_INCLUDING_COLLECTION
 				);
@@ -3399,7 +3407,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				rightStateFieldPathExpression = true;
 
 				// Make sure what was parsed is a valid path expression
-				rightStateFieldPathExpressionValid = validateStateFieldPathExpression(
+				rightStateFieldPathExpressionValid = validator.validateStateFieldPathExpression(
 					expression,
 					PathType.ANY_FIELD_INCLUDING_COLLECTION
 				);
@@ -3407,7 +3415,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
-	protected class FirstDeclarationVisitor extends AnonymousExpressionVisitor {
+    // Made static for performance reasons.
+	protected static class FirstDeclarationVisitor extends AnonymousExpressionVisitor {
 
 		protected boolean valid;
 
@@ -3462,14 +3471,21 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
-	protected class InItemsVisitor extends AnonymousExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class InItemsVisitor extends AnonymousExpressionVisitor {
 
-		/**
+	    private final AbstractSemanticValidator validator;
+
+	    protected InItemsVisitor(AbstractSemanticValidator validator) {
+	        this.validator = validator;
+	    }
+
+	    /**
 		 * {@inheritDoc}
 		 */
 		@Override
 		protected void visit(Expression expression) {
-			expression.accept(AbstractSemanticValidator.this);
+			expression.accept(validator);
 		}
 
 		/**
@@ -3477,16 +3493,17 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		 */
 		@Override
 		public void visit(StateFieldPathExpression expression) {
-			validateStateFieldPathExpression(expression, validPathExpressionTypeForInItem());
+		    validator.validateStateFieldPathExpression(expression, validator.validPathExpressionTypeForInItem());
 		}
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * This enumeration allows {@link AbstractSemanticValidator#validateStateFieldPathExpression(
 	 * StateFieldPathExpression, PathType)} to validate the type of the mapping and to make sure it
 	 * is allowed based on its location.
 	 */
-	protected enum PathType {
+	protected static enum PathType {
 
 		/**
 		 * This will allow basic, and association fields to be specified.
@@ -3509,11 +3526,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		BASIC_FIELD_ONLY
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor is meant to retrieve an {@link StateFieldPathExpressionVisitor} if the visited
 	 * {@link Expression} is that object.
 	 */
-	protected static class StateFieldPathExpressionVisitor extends AbstractExpressionVisitor {
+	protected static final class StateFieldPathExpressionVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The {@link StateFieldPathExpression} that was visited; <code>null</code> if it was not.
@@ -3529,7 +3547,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
-	protected class SubqueryFirstDeclarationVisitor extends FirstDeclarationVisitor {
+    // Made static final for performance reasons.
+	protected static final class SubqueryFirstDeclarationVisitor extends FirstDeclarationVisitor {
 
 		/**
 		 * {@inheritDoc}
@@ -3540,7 +3559,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
-	protected class TopLevelFirstDeclarationVisitor extends FirstDeclarationVisitor {
+    // Made static for performance reasons.
+	protected static class TopLevelFirstDeclarationVisitor extends FirstDeclarationVisitor {
 
 		/**
 		 * {@inheritDoc}

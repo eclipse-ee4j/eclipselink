@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -24,6 +24,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -48,6 +49,21 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since TopLink Essentials 1.0
  */
 public class ConstructorReportItem extends ReportItem  {
+
+    /**
+     * String prefix of {@link #toString()} output.
+     */
+    private static final String TO_STR_PREFIX = "ConstructorReportItem(";
+
+    /**
+     * String to separate name and items array of {@link #toString()} output.
+     */
+    private static final String TO_STR_ARRAY = " -> [";
+
+    /**
+     * String suffix of {@link #toString()} output.
+     */
+    private static final String TO_STR_SUFFIX = "])";
 
     protected Class[] constructorArgTypes;
     protected List constructorMappings;
@@ -209,17 +225,26 @@ public class ConstructorReportItem extends ReportItem  {
     public void setReportItems(List reportItems){
         this.reportItems = reportItems;
     }
-    
+
     public String toString() {
-        String string = "ConstructorReportItem(" + getName() + " -> [";
-        //don't use getReportItems to avoid creating collection.  
-        if (reportItems!=null){
-            int size=reportItems.size();
-            for(int i=0;i<size;i++){
-                string =string + reportItems.get(i).toString();
-            }
+        String name = StringHelper.nonNullString(getName());
+        // Calculate string length
+        int length = TO_STR_PREFIX.length() + name.length()
+                + TO_STR_ARRAY.length() + TO_STR_SUFFIX.length();
+        int size = reportItems != null ? reportItems.size() : 0;
+        String[] items = new String[size];
+        for (int i=0; i < size; i++) {
+            items[i] = StringHelper.nonNullString(reportItems.get(i).toString());
+            length += items[i].length();
         }
-        return string +"])";
+        // Build string
+        StringBuilder str = new StringBuilder(length);
+        str.append(TO_STR_PREFIX).append(name).append(TO_STR_ARRAY);
+        for (int i=0; i < size; i++) {
+            str.append(items[i]);
+        }
+        str.append(TO_STR_SUFFIX);
+        return str.toString();
     }
-    
+
 }

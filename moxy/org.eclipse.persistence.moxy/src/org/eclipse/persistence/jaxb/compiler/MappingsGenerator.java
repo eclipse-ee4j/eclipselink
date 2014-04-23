@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -2722,7 +2722,7 @@ public class MappingsGenerator {
 
 
     private String prefixCustomXPath(String unprefixedXPath, Property property, NamespaceInfo nsInfo) {
-        String newXPath = "";
+        StringBuilder newXPath = new StringBuilder(32);
         QName schemaName = property.getSchemaName();
         String namespace = schemaName.getNamespaceURI();
 
@@ -2742,20 +2742,20 @@ public class MappingsGenerator {
             if (st.hasMoreTokens()) {
                 if (nextToken.lastIndexOf(Constants.COLON) != -1) {
                     // Token already has a user-supplied prefix
-                    newXPath += nextToken;
+                    newXPath.append(nextToken);
                 } else {
-                    newXPath += prefix + Constants.COLON + nextToken;
+                    newXPath.append(prefix).append(Constants.COLON).append(nextToken);
                 }
-                newXPath += Constants.XPATH_SEPARATOR;
+                newXPath.append(Constants.XPATH_SEPARATOR);
             } else {
                 // Last token is text()
-                newXPath += nextToken;
+                newXPath.append(nextToken);
             }
 
         }
-        return newXPath;
+        return newXPath.toString();
     }
-    
+
     public Field getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping, boolean isAny) {
         Field xmlField = null;
         String xPath = property.getXmlPath();
@@ -2763,7 +2763,7 @@ public class MappingsGenerator {
             String newXPath = prefixCustomXPath(xPath, property, namespaceInfo);
             xmlField = new XMLField(newXPath);
         } else {
-            xPath = "";
+            StringBuilder xPathBuilder = new StringBuilder();
             if (property.isSetXmlElementWrapper()) {
                 XmlElementWrapper wrapper = property.getXmlElementWrapper();
                 String namespace = wrapper.getNamespace();
@@ -2774,44 +2774,43 @@ public class MappingsGenerator {
                         namespace = "";
                     }
                 }
-                
+
                 if (namespace.equals("")) {
-                    xPath += (wrapper.getName() + "/");
+                    xPathBuilder.append(wrapper.getName()).append("/");
                 } else {
-                	String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor());
-                	xPath += getQualifiedString(prefix, wrapper.getName() + "/");
+			String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor());
+			xPathBuilder.append(getQualifiedString(prefix, wrapper.getName() + "/"));
                 }
 
                 if (isAny || property.isMap()) {
-                    xPath = xPath.substring(0, xPath.length() - 1);
-                    xmlField = new XMLField(xPath);
+                    xmlField = new XMLField(xPathBuilder.toString());
                     return xmlField;
                 }
 
             }
             if (property.isAttribute()) {
                 if (property.isSetXmlPath()) {
-                    xPath += property.getXmlPath();
+                    xPathBuilder.append(property.getXmlPath());
                 } else {
                     QName name = property.getSchemaName();
                     String namespace = name.getNamespaceURI();
                     if (namespace.equals("")) {
-                        xPath += (ATT + name.getLocalPart());
+                        xPathBuilder.append(ATT).append(name.getLocalPart());
                     } else {
                         String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor());
-                    	xPath += ATT + getQualifiedString(prefix, name.getLocalPart());
+                        xPathBuilder.append(ATT).append(getQualifiedString(prefix, name.getLocalPart()));
                     }
                 }
-                xmlField = new XMLField(xPath);
-            } else if (property.isXmlValue()) {                
-            	if(isBinaryData(property.getActualType())){
-            		xmlField = new XMLField(".");
+                xmlField = new XMLField(xPathBuilder.toString());
+            } else if (property.isXmlValue()) {
+		if(isBinaryData(property.getActualType())){
+			xmlField = new XMLField(".");
             	}else{
             		xmlField = new XMLField("text()");
-            	}
+		}
             } else {
                 QName elementName = property.getSchemaName();
-                xmlField = getXPathForElement(xPath, elementName, namespaceInfo, isTextMapping);
+                xmlField = getXPathForElement(xPathBuilder.toString(), elementName, namespaceInfo, isTextMapping);
             }
         }
 
@@ -3252,8 +3251,9 @@ public class MappingsGenerator {
         return generatedMapEntryClasses;
     }
 
-    private class MapEntryGeneratedKey {
-      	@SuppressWarnings("unused")
+    // Made static final for performance reasons.
+    private static final class MapEntryGeneratedKey {
+	@SuppressWarnings("unused")
         String keyClassName;
 		@SuppressWarnings("unused")
         String valueClassName;
@@ -3367,6 +3367,7 @@ public class MappingsGenerator {
     	return areEquals(type, CoreClassConstants.APBYTE) ||areEquals(type, "javax.activation.DataHandler") || areEquals(type, "java.awt.Image") || areEquals(type, "javax.xml.transform.Source") || areEquals(type, "javax.mail.internet.MimeMultipart");
     }
 
+    // Made static final for performance reasons.
     /**
      * <p>An InstantiationPolicy that does not construct any objects (and therefore
      * will not throw validation errors caused by a lack of a no-arg constructor).</p>
@@ -3378,7 +3379,7 @@ public class MappingsGenerator {
      * @see org.eclipse.persistence.internal.descriptors.InstantiationPolicy
      * @see org.xml.sax.Locator
      */
-    private class NullInstantiationPolicy extends InstantiationPolicy {
+    private static final class NullInstantiationPolicy extends InstantiationPolicy {
 
         /**
          * Returns a new instance of this InstantiationPolicy's Descriptor's class.

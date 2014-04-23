@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -464,9 +464,9 @@ public class CMP3Policy extends CMPPolicy {
                                 break;
                             }
                         }
-                        
+
                         try {
-                            pkAttributes[i] = new FieldAccessor(getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
+                            pkAttributes[i] = new FieldAccessor(this, getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
                             fieldToAccessorMap.put(field, pkAttributes[i]);
                             noSuchElementException = null;
                         } catch (NoSuchFieldException ex) {
@@ -505,7 +505,7 @@ public class CMP3Policy extends CMPPolicy {
                                     } else {
                                         setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
                                     }
-                                    pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
+                                    pkAttributes[i] = new PropertyAccessor(this, getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
                                     this.fieldToAccessorMap.put(field, pkAttributes[i]);
                                     noSuchElementException = null;
                                 } catch (NoSuchMethodException exs) {
@@ -548,22 +548,15 @@ public class CMP3Policy extends CMPPolicy {
     protected KeyElementAccessor[] getKeyClassFields() {
         return this.keyClassFields;
     }
-    
-    /**
-     * INTERNAL:
-     * This class is used when the key class element is a property
-     */
-    private class PropertyAccessor implements KeyElementAccessor {
-        protected Method getMethod;
-        protected Method setMethod;
-        protected String attributeName;
-        protected DatabaseField databaseField;
-        protected DatabaseMapping mapping;
-        protected boolean isNestedAccessor;
 
-        public PropertyAccessor(Method getMethod, Method setMethod, String attributeName, DatabaseField field, DatabaseMapping mapping, boolean isNestedAccessor) {
-            this.getMethod = getMethod;
-            this.setMethod = setMethod;
+    // Made static for performance reasons.
+    private static abstract class CommonAccessor implements KeyElementAccessor {
+        private final String attributeName;
+        private final DatabaseField databaseField;
+        protected final DatabaseMapping mapping;
+        private final boolean isNestedAccessor;
+
+        public CommonAccessor(String attributeName, DatabaseField field, DatabaseMapping mapping, boolean isNestedAccessor) {
             this.attributeName = attributeName;
             this.databaseField = field;
             this.mapping = mapping;
@@ -577,11 +570,34 @@ public class CMP3Policy extends CMPPolicy {
         public DatabaseField getDatabaseField() {
             return this.databaseField;
         }
-        
+
         public DatabaseMapping getMapping() {
             return this.mapping;
         }
-        
+
+        public boolean isNestedAccessor() {
+            return isNestedAccessor;
+        }
+
+    }
+
+    // Made static final for performance reasons.
+    /**
+     * INTERNAL:
+     * This class is used when the key class element is a property
+     */
+    private static final class PropertyAccessor extends CommonAccessor {
+        private final Method getMethod;
+        private final Method setMethod;
+        private final CMPPolicy policy;
+
+        public PropertyAccessor(CMPPolicy policy, Method getMethod, Method setMethod, String attributeName, DatabaseField databaseField, DatabaseMapping mapping, boolean isNestedAccessor) {
+            super(attributeName, databaseField, mapping, isNestedAccessor);
+            this.getMethod = getMethod;
+            this.setMethod = setMethod;
+            this.policy = policy;
+        }
+
         public Object getValue(Object object, AbstractSession session) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -599,14 +615,10 @@ public class CMP3Policy extends CMPPolicy {
                     return PrivilegedAccessHelper.invokeMethod(this.getMethod, object, new Object[] {  });
                 }
             } catch (Exception ex) {
-                throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), ex);
+                throw DescriptorException.errorUsingPrimaryKey(object, policy.getDescriptor(), ex);
             }
         }
-        
-        public boolean isNestedAccessor() {
-            return isNestedAccessor;
-        }
-        
+
         public void setValue(Object object, Object value) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -624,61 +636,41 @@ public class CMP3Policy extends CMPPolicy {
                     PrivilegedAccessHelper.invokeMethod(this.setMethod, object, new Object[] {value});
                 }
             } catch (Exception ex) {
-                throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), ex);
+                throw DescriptorException.errorUsingPrimaryKey(object, policy.getDescriptor(), ex);
             }
         }
     }
-    
+
+    // Made static final for performance reasons.
     /**
      * INTERNAL:
      * This class will be used when the element of the keyclass is a field
      */
-    private class FieldAccessor implements KeyElementAccessor, Serializable {
-        protected Field field;
-        protected String attributeName;
-        protected DatabaseField databaseField;
-        protected DatabaseMapping mapping;
-        protected boolean isNestedAccessor;
+    private static final class FieldAccessor extends CommonAccessor implements Serializable {
+        private final Field field;
+        private final CMPPolicy policy;
 
-        public FieldAccessor(Field field, String attributeName, DatabaseField databaseField, DatabaseMapping mapping, boolean isNestedAccessor) {
+        public FieldAccessor(CMPPolicy policy, Field field, String attributeName, DatabaseField databaseField, DatabaseMapping mapping, boolean isNestedAccessor) {
+            super(attributeName, databaseField, mapping, isNestedAccessor);
             this.field = field;
-            this.attributeName = attributeName;
-            this.databaseField = databaseField;
-            this.mapping = mapping;
-            this.isNestedAccessor = isNestedAccessor;
+            this.policy = policy;
         }
 
-        public String getAttributeName() {
-            return this.attributeName;
-        }
-
-        public DatabaseField getDatabaseField() {
-            return this.databaseField;
-        }
-        
-        public DatabaseMapping getMapping() {
-            return this.mapping;
-        }
-        
-        public Object getValue(Object object, AbstractSession session) {
+         public Object getValue(Object object, AbstractSession session) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
                         return AccessController.doPrivileged(new PrivilegedGetValueFromField(field, object));
                     } catch (PrivilegedActionException exception) {
-                        throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), exception.getException());                    }
+                        throw DescriptorException.errorUsingPrimaryKey(object, policy.getDescriptor(), exception.getException());                    }
                 } else {
                     return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getValueFromField(field, object);
                 }
             } catch (Exception ex) {
-                throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), ex);
+                throw DescriptorException.errorUsingPrimaryKey(object, policy.getDescriptor(), ex);
             }
         }
-        
-        public boolean isNestedAccessor() {
-            return isNestedAccessor;
-        }
-        
+
         public void setValue(Object object, Object value) {
             try {
                 Field pkField = null;
@@ -687,57 +679,35 @@ public class CMP3Policy extends CMPPolicy {
                         pkField = (Field)AccessController.doPrivileged(new PrivilegedGetField(object.getClass(), field.getName(), true));
                         AccessController.doPrivileged(new PrivilegedSetValueInField(pkField, object, value));
                     } catch (PrivilegedActionException exception) {
-                        throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), exception.getException());
+                        throw DescriptorException.errorUsingPrimaryKey(object, policy.getDescriptor(), exception.getException());
                     }
                 } else {
                     pkField = PrivilegedAccessHelper.getField(object.getClass(), field.getName(), true);
                     PrivilegedAccessHelper.setValueInField(pkField, object, value);
                 }
             } catch (Exception ex) {
-                throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), ex);
+                throw DescriptorException.errorUsingPrimaryKey(object, policy.getDescriptor(), ex);
             }
         }
     }
-    
+
+    // Made static final for performance reasons.    
     /**
      * INTERNAL:
      * This class will be used when the element of the keyclass is a virtual field.
      */
-    private class ValuesFieldAccessor implements KeyElementAccessor {
-        protected String attributeName;
-        protected DatabaseField databaseField;
-        protected DatabaseMapping mapping;
-        protected boolean isNestedAccessor;
+    private static final class ValuesFieldAccessor extends CommonAccessor {
 
         public ValuesFieldAccessor(String attributeName, DatabaseField databaseField, DatabaseMapping mapping, boolean isNestedAccessor) {
-            this.attributeName = attributeName;
-            this.databaseField = databaseField;
-            this.mapping = mapping;
-            this.isNestedAccessor = isNestedAccessor;
+            super(attributeName, databaseField, mapping, isNestedAccessor);
         }
 
-        public String getAttributeName() {
-            return this.attributeName;
-        }
-
-        public DatabaseField getDatabaseField() {
-            return this.databaseField;
-        }
-        
-        public DatabaseMapping getMapping() {
-            return this.mapping;
-        }
-        
         public Object getValue(Object object, AbstractSession session) {
-        	return mapping.getRealAttributeValueFromObject(object, session);
+		return mapping.getRealAttributeValueFromObject(object, session);
         }
-        
-        public boolean isNestedAccessor() {
-            return isNestedAccessor;
-        }
-        
+
         public void setValue(Object object, Object value) {
-        	mapping.setRealAttributeValueInObject(object, value);
+		mapping.setRealAttributeValueInObject(object, value);
         }
     }
 

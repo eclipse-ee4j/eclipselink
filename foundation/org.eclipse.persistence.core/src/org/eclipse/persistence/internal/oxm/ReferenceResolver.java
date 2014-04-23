@@ -386,7 +386,8 @@ public class ReferenceResolver {
         return null;
     }
 
-    private class ReferenceKey {
+    // Made static final for performance reasons.
+    private static final class ReferenceKey {
         private Object sourceObject;
         private Mapping mapping;
 

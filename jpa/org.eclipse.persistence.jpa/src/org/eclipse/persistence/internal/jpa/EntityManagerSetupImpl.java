@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -477,8 +477,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
     }
         
-    protected static String buildSessionNameSuffixFromConnectionProperties(Map properties) {        
-        String suffix = "";
+    protected static String buildSessionNameSuffixFromConnectionProperties(Map properties) {
+        StringBuilder suffix = new StringBuilder(32);
         for (int i=0; i < connectionPropertyNames.length; i++) {
             String name = connectionPropertyNames[i];
             Object value = properties.get(name);
@@ -498,11 +498,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
                 // don't set an empty String
                 if (strValue.length() > 0) {
-                    suffix += "_" + Helper.getShortClassName(name) + "=" + strValue;
+                    suffix.append("_").append(Helper.getShortClassName(name)).append("=").append(strValue);
                 }
             }
         }
-        return suffix;
+        return suffix.toString();
     }
     
     /*

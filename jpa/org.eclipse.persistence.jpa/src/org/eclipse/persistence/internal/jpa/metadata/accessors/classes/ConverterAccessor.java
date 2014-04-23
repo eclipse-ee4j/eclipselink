@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -162,13 +162,13 @@ public class ConverterAccessor extends ORMetadata {
         // any generic specifications, e.g. List<String>. We need to be able to 
         // distinguish between List<String> and List<Integer> etc. to correctly
         // handle the auto-apply feature for basics.
-        String attributeClassificationName = "";
+        StringBuilder attributeClassificationName = new StringBuilder(32);
         for (int i = 2; i < genericTypesSize - 1; i++) {
-            attributeClassificationName += genericTypes.get(i);
+            attributeClassificationName.append(genericTypes.get(i));
         }
         
         // Cache the classification classes.
-        attributeClassification = getMetadataClass(attributeClassificationName);
+        attributeClassification = getMetadataClass(attributeClassificationName.toString());
         fieldClassification = getMetadataClass(genericTypes.get(genericTypesSize - 1));
     }
     

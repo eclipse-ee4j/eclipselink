@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,7 +13,10 @@
 
 package org.eclipse.persistence.tools.dbws;
 
-//javase imports
+import static java.util.logging.Level.SEVERE;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
@@ -34,14 +37,29 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static java.util.logging.Level.SEVERE;
 
-//java eXtension imports
 import javax.wsdl.WSDLException;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
-//EclipseLink imports
+// EclipseLink imports
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.ignore;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_PLATFORM_CLASSNAME;
+import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_WSDL_LOCATION_URI;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
+import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
+
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -64,25 +82,6 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse;
 import org.eclipse.persistence.tools.dbws.jdbc.JDBCHelper;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
-
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.archive;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.ignore;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_PLATFORM_CLASSNAME;
-import static org.eclipse.persistence.tools.dbws.Util.DEFAULT_WSDL_LOCATION_URI;
-import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_CLASS_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.PROVIDER_LISTENER_SOURCE_FILE;
-import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
-import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 public class DBWSBuilder extends DBWSBuilderModel {
     public static final String BUILDER_FILE_PATH = "-builderFile";

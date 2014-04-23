@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -714,14 +714,20 @@ public class QueryException extends ValidationException {
         queryException.setErrorCode(MAPPING_FOR_EXPRESSION_DOES_NOT_SUPPORT_JOINING);
         return queryException;
     }
-    
-    public static QueryException mappingForFieldResultNotFound(String[] attributeNames, int currentString){
-        String attributeName ="";
-        for(int i=0; i<attributeNames.length;i++){
-            attributeName=attributeName+attributeNames[i];
+
+    public static QueryException mappingForFieldResultNotFound(String[] attributeNames, int currentString) {
+        // Calculate name length
+        int length = 0;
+        for(int i=0; i<attributeNames.length;i++) {
+            length += attributeNames[i].length();
         }
-        Object[] args = { attributeName, attributeNames[currentString] };
-    
+        // Build name
+        StringBuilder attributeName = new StringBuilder(length);
+        for(int i=0; i<attributeNames.length;i++) {
+            attributeName.append(attributeNames[i]);
+        }
+        Object[] args = { attributeName.toString(), attributeNames[currentString] };
+
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, MAPPING_FOR_FIELDRESULT_NOT_FOUND, args));
         queryException.setErrorCode(MAPPING_FOR_FIELDRESULT_NOT_FOUND);
         return queryException;

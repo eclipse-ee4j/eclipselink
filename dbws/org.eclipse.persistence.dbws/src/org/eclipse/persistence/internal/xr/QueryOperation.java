@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -196,8 +196,8 @@ public class QueryOperation extends Operation {
         }
     }
 
-
-    public class DataHandlerInstantiationPolicy extends InstantiationPolicy {
+    // Made static final for performance reasons.
+    private static final class DataHandlerInstantiationPolicy extends InstantiationPolicy {
         protected String mimeType;
         public DataHandlerInstantiationPolicy(String mimeType) {
             super();
@@ -250,8 +250,7 @@ public class QueryOperation extends Operation {
                     descriptor = new XMLDescriptor();
                     descriptor.setAlias(DATAHANDLER_STR);
                     descriptor.setJavaClass(DataHandler.class);
-                    descriptor.setInstantiationPolicy(
-                        this.new DataHandlerInstantiationPolicy(attachment.getMimeType()));
+                    descriptor.setInstantiationPolicy(new DataHandlerInstantiationPolicy(attachment.getMimeType()));
                     XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
                     mapping.setAttributeName(RESULTS_STR);
                     mapping.setAttributeAccessor(new AttributeAccessor() {

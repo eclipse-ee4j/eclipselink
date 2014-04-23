@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -2131,11 +2131,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		return whenClauseExpressionVisitor;
 	}
 
+	// Made static for performance reasons.
 	/**
 	 * This visitor creates a list by retrieving either the single child or the children of the
 	 * {@link CollectionExpression}, which would be the child.
 	 */
-	private class ChildrenExpressionVisitor extends AnonymousExpressionVisitor {
+	private static class ChildrenExpressionVisitor extends AnonymousExpressionVisitor {
 
 		/**
 		 * The list of {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} that are

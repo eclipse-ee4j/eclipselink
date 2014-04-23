@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,7 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.tools.dbws.oracle;
 
-//javase imports
+import static java.sql.Types.ARRAY;
+import static java.sql.Types.OTHER;
+import static java.sql.Types.STRUCT;
+import static java.util.logging.Level.FINEST;
+
 import java.sql.Array;
 import java.sql.Struct;
 import java.sql.Types;
@@ -24,19 +28,60 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import static java.sql.Types.ARRAY;
-import static java.sql.Types.OTHER;
-import static java.sql.Types.STRUCT;
-import static java.util.logging.Level.FINEST;
 
-//java eXtension imports
 import javax.xml.namespace.QName;
 
-//EclipseLink imports
+// EclipseLink imports
+import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
+import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.getJDBCTypeForTypeName;
+import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
+import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.COLON;
+import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.DOT;
+import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
+import static org.eclipse.persistence.oxm.XMLConstants.INT;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
+import static org.eclipse.persistence.oxm.XMLConstants.TEXT;
+import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
+import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
+import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
+import static org.eclipse.persistence.tools.dbws.Util.getAttributeClassForDatabaseType;
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
+import static org.eclipse.persistence.tools.dbws.Util.getGeneratedAlias;
+import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
+import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLCursorArg;
+import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
+import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
+import static org.eclipse.persistence.tools.dbws.Util.shouldSetJavaType;
+import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
+import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
+import static org.eclipse.persistence.tools.dbws.Util.AT_SIGN;
+import static org.eclipse.persistence.tools.dbws.Util.BUILDING_QUERYOP_FOR;
+import static org.eclipse.persistence.tools.dbws.Util.CLOSE_PAREN;
+import static org.eclipse.persistence.tools.dbws.Util.CURSOR_STR;
+import static org.eclipse.persistence.tools.dbws.Util.CURSOR_OF_STR;
+import static org.eclipse.persistence.tools.dbws.Util.OPEN_PAREN;
+import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
+import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
+import static org.eclipse.persistence.tools.dbws.Util.SLASH;
+import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
+import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.XMLTYPE_STR;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
+import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.xr.Attachment;
 import org.eclipse.persistence.internal.xr.CollectionResult;
@@ -107,50 +152,6 @@ import org.eclipse.persistence.tools.oracleddl.metadata.visit.BaseDatabaseTypeVi
 import org.eclipse.persistence.tools.oracleddl.metadata.visit.DatabaseTypeVisitor;
 import org.eclipse.persistence.tools.oracleddl.parser.ParseException;
 import org.eclipse.persistence.tools.oracleddl.util.DatabaseTypeBuilder;
-import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
-import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
-import static org.eclipse.persistence.internal.xr.Util.getJDBCTypeForTypeName;
-import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
-import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.COLON;
-import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.DOT;
-import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
-import static org.eclipse.persistence.oxm.XMLConstants.INT;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_PREFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
-import static org.eclipse.persistence.oxm.XMLConstants.TEXT;
-import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
-import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
-import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
-import static org.eclipse.persistence.tools.dbws.Util.getAttributeClassForDatabaseType;
-import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
-import static org.eclipse.persistence.tools.dbws.Util.getGeneratedAlias;
-import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
-import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLCursorArg;
-import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
-import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
-import static org.eclipse.persistence.tools.dbws.Util.shouldSetJavaType;
-import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
-import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
-import static org.eclipse.persistence.tools.dbws.Util.AT_SIGN;
-import static org.eclipse.persistence.tools.dbws.Util.BUILDING_QUERYOP_FOR;
-import static org.eclipse.persistence.tools.dbws.Util.CLOSE_PAREN;
-import static org.eclipse.persistence.tools.dbws.Util.CURSOR_STR;
-import static org.eclipse.persistence.tools.dbws.Util.CURSOR_OF_STR;
-import static org.eclipse.persistence.tools.dbws.Util.OPEN_PAREN;
-import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
-import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
-import static org.eclipse.persistence.tools.dbws.Util.SLASH;
-import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
-import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
-import static org.eclipse.persistence.tools.dbws.Util.XMLTYPE_STR;
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
-import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
 
 public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelper {
 
@@ -590,6 +591,31 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
+     * Build list of name patterns separated by vertical bar.
+     * @param namePatterns {@see List} of name patterns.
+     * @return {@see String} containing list of name patterns separated by vertical bar.
+     */
+    private static String buildNamePatternsList(List<String> namePatterns) {
+        final int count = namePatterns.size();
+        if (count > 0) {
+            int lenhth = count - 1;
+            for (Iterator<String> i = namePatterns.iterator(); i.hasNext(); ) {
+                lenhth += i.next().length();
+            }
+            StringBuilder out = new StringBuilder(lenhth);
+            for (Iterator<String> i = namePatterns.iterator(); i.hasNext(); ) {
+                out.append(i.next());
+                if (i.hasNext()) {
+                    out.append(StringHelper.VERTICAL_BAR);
+                }
+            }
+            return out.toString();
+        } else {
+            return StringHelper.EMPTY_STRING;
+        }
+    }
+
+    /**
      * Generates a List<ProcedureType> based on a given set of patterns.
      */
     protected List<ProcedureType> loadProcedures(List<String> catalogPatterns, List<String> schemaPatterns, List<String> procedureNamePatterns) {
@@ -673,14 +699,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	                            }
 	                        }
 	                    }
-	                    //check against procedureNamePatterns
-	                    String tmp = "";
-	                    for (int i = 0, len = procedureNamePatterns.size(); i < len; i++) {
-	                        tmp += procedureNamePatterns.get(i);
-	                        if (i < len -1) {
-	                            tmp += "|";
-	                        }
-	                    }
+	                    // Check against procedureNamePatterns
+	                    String tmp = buildNamePatternsList(procedureNamePatterns);
 	                    for (ProcedureType procedure : procedures) {
 	                        if (sqlMatch(tmp, procedure.getProcedureName())) {
 	                            allProcsAndFuncs.add(procedure);

@@ -371,11 +371,12 @@ public class DOMReader extends XMLReaderAdapter {
         this.contentHandler.setDocumentLocator(locator);
     }
 
+    // Made static final for performance reasons.
     /**
      * Implementation of Attributes - used to pass along a given node's attributes
      * to the startElement method of the reader's content handler.
      */
-    protected class IndexedAttributeList implements org.xml.sax.Attributes {
+    protected static final class IndexedAttributeList implements org.xml.sax.Attributes {
 
         private List<Attr> attrs;
 
@@ -493,7 +494,8 @@ public class DOMReader extends XMLReaderAdapter {
         }
     }
 
-    protected class LocatorImpl implements Locator2 {
+    // Made static final for performance reasons.
+    protected static final class LocatorImpl implements Locator2 {
 
         private String encoding;
         private String version;

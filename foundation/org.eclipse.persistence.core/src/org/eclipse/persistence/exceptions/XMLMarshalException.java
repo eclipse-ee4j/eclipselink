@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -25,6 +25,11 @@ import org.eclipse.persistence.internal.oxm.mappings.Mapping;
  * </P>
  */
 public class XMLMarshalException extends ValidationException {
+    /**
+     *  Name parts separator. Used in {@link #missingIDForIDRef(String, Object[])} method to build output string.
+     */
+    private static final String FIELD_SEP = ", ";
+
     public static final int INVALID_XPATH_STRING = 25001;
     public static final int INVALID_XPATH_INDEX_STRING = 25002;
     public static final int MARSHAL_EXCEPTION = 25003;
@@ -425,18 +430,31 @@ public class XMLMarshalException extends ValidationException {
         exception.setInternalException(nestedException);
         exception.setErrorCode(PLATFORM_NOT_SUPPORTED_WITH_JSON_MEDIA_TYPE);
         return exception;
-    } 
-    
-    public static XMLMarshalException missingIDForIDRef(String classname, Object[] primaryKey) {   
-        String id = "";
-        for(int i=0;i<primaryKey.length; i++){
-            id += primaryKey[i];
-            if(i < primaryKey.length -1){
-                id += ", ";
+    }
+
+    public static XMLMarshalException missingIDForIDRef(String classname, Object[] primaryKey) {
+        String id;
+        if (primaryKey.length > 0) {
+            // Calculate id length
+            int length = 0;
+            length += (primaryKey.length - 1) * FIELD_SEP.length();
+            for (int i=0; i < primaryKey.length; i++) {
+                length += primaryKey[i].toString().length();
             }
+            // Build id
+            StringBuilder idBuilder = new StringBuilder(length);
+            for (int i=0; i < primaryKey.length; i++) {
+                if (i > 0) {
+                    idBuilder.append(FIELD_SEP);
+                }
+                idBuilder.append(primaryKey[i].toString());
+            }
+            id = idBuilder.toString();
+        } else {
+            id = "";
         }
         Object[] args = {classname, id};
-        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, MISSING_ID_FOR_IDREF, args));        
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, MISSING_ID_FOR_IDREF, args));
         exception.setErrorCode(MISSING_ID_FOR_IDREF);
         return exception;
     }

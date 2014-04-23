@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -224,47 +224,45 @@ public class ByteConverter {
     protected String getStringValueFromPackedDecimal() {
         int mask = 0xf0;
         boolean signed = this.getFieldMetaData().isSigned();
-        String sign = new String();
+        String sign = "";
         int offset = this.getFieldMetaData().getOffset();
         int size = this.getFieldMetaData().getSize();
-        String value = new String();
+        StringBuilder value = new StringBuilder();
         int position = 0;
 
-        //determine the sign if there is one
+        // Determine the sign if there is one
         if (signed) {
             byte signBits = (byte)(myRecordData[(offset + size) - 1] | mask);
             if (signBits == 0x0d) {
-                sign = "-";
+                sign = String.valueOf('-');
             } else if (signBits == 0x0c) {
-                sign = "+";
+                sign = String.valueOf('+');
             }
         }
 
         String stringValue;
 
-        //build hex string
+        // Build hex string
         for (int i = offset; i < (offset + size); i++) {
             stringValue = Integer.toHexString(Helper.intFromByte(myRecordData[i]));
-            //added to handle strange behavior of toHexString method with negative numbers
+            // Added to handle strange behavior of toHexString method with negative numbers
             if (stringValue.length() > 2) {
                 stringValue = stringValue.substring(stringValue.length() - 2);
             }
-            value += stringValue;
+            value.append(stringValue);
         }
 
-        //count leading zeros
+        // Count leading zeros
         while (value.charAt(position) == '0') {
             position++;
         }
-
-        //remove sign bits and leading zeros
-        value = value.substring(position, value.length() - 1);
-
+        // Prepend sign and remove leading zeros
         if (signed) {
-            return sign + value;
+            value.replace(0, position, sign);
         } else {
-            return value;
+            value.delete(0, position);
         }
+        return value.toString();
     }
 
     /**

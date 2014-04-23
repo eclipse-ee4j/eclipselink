@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -578,7 +578,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * INTERNAL:
      * This is the interface used to encapsulate the the type of key class element
      */
-    protected interface KeyElementAccessor {
+    protected static interface KeyElementAccessor {
         public String getAttributeName();
         public DatabaseField getDatabaseField();
         public DatabaseMapping getMapping();
@@ -591,7 +591,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * INTERNAL:
      * This class will be used when the keyClass is a primitive
      */
-    protected class KeyIsElementAccessor implements KeyElementAccessor, Serializable {
+    protected static final class KeyIsElementAccessor implements KeyElementAccessor, Serializable {
         protected String attributeName;
         protected DatabaseField databaseField;
         protected DatabaseMapping mapping;

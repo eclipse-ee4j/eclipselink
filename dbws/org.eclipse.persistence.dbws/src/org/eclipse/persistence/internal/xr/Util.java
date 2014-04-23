@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -127,31 +127,31 @@ public class Util {
             return name;
         }
 
-        String xmlName = new String();
+        StringBuilder xmlName = new StringBuilder();
         int beginAt = 1;
         char firstChar = name.charAt(0);
         // escape : to _x003A_
         if (firstChar == ':') {
-            xmlName = xmlName + "_x003A_";
+            xmlName.append("_x003A_");
         }
         // escape _ of _x to _x005F_
         else if ((length >= 2) && name.substring(0, 2).equals("_x")) {
-            xmlName = xmlName + "_x005F_";
+            xmlName.append("_x005F_");
         }
         // check to see if it is a valid first character
         else {
             if ((firstChar >= 0xd800) && (firstChar < 0xdc00)) {
                 // surrogate
                 if (length > 1) {
-                    xmlName += hexEscape((firstChar << 16) | (name.charAt(1) & 0xffff));
+                    xmlName.append(hexEscape((firstChar << 16) | (name.charAt(1) & 0xffff)));
                     beginAt = 2;
                 } else {
-                    xmlName += hexEscape(firstChar);
+                    xmlName.append(hexEscape(firstChar));
                 }
             } else if (isFirstNameChar(firstChar)) {
-                xmlName = xmlName + firstChar;
+                xmlName.append(firstChar);
             } else {
-                xmlName = xmlName + hexEscape(firstChar);
+                xmlName.append(hexEscape(firstChar));
             }
         }
 
@@ -163,19 +163,19 @@ public class Util {
             if ((c >= 0xd800) && (c < 0xdc00)) {
                 // surrogate
                 if ((x + 1) < length) {
-                    xmlName += hexEscape((c << 16) | (name.charAt(x + 1) & 0xffff));
+                    xmlName.append(hexEscape((c << 16) | (name.charAt(x + 1) & 0xffff)));
                     x++;
                 } else {
-                    xmlName += hexEscape(c);
+                    xmlName.append(hexEscape(c));
                 }
             } else if (!isNameChar(c)) {
                 // escape
-                xmlName = xmlName + hexEscape(c);
+                xmlName.append(hexEscape(c));
             } else {
-                xmlName = xmlName + c;
+                xmlName.append(c);
             }
         }
-        return xmlName;
+        return xmlName.toString();
     }
 
     /**

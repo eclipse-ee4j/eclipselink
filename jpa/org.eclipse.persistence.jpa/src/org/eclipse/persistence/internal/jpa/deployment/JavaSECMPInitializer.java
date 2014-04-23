@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -298,10 +298,10 @@ public class JavaSECMPInitializer extends JPAInitializer {
      * It selectively loads classes based on the list of classnames it is instantiated with.  Classes
      * not on that list are allowed to be loaded by the parent.
      */
-    public class TempEntityLoader extends URLClassLoader {
+    public static class TempEntityLoader extends URLClassLoader {
         Collection classNames;
         boolean shouldOverrideLoadClassForCollectionMembers;
-        
+
         //added to resolved gf #589 - without this, the orm.xml url would be returned twice 
         public Enumeration<URL> getResources(String name) throws java.io.IOException {
             return this.getParent().getResources(name);

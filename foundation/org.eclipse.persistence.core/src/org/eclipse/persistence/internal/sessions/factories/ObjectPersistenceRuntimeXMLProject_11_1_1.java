@@ -848,7 +848,9 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         STORED_PROCEDURE_OUT_ARG,
         STORED_PROCEDURE_OUTCURSOR_ARG
     }
-    class StoredProcedureArgumentInstantiationPolicy extends InstantiationPolicy {
+
+    // Made static for performance reasons.
+    static class StoredProcedureArgumentInstantiationPolicy extends InstantiationPolicy {
         ObjectPersistenceRuntimeXMLProject_11_1_1 outer;
         StoredProcedureArgumentType argType;
         StoredProcedureArgumentInstantiationPolicy(
@@ -1386,14 +1388,15 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          return aDescriptor;
      }
 
+     // Made static for performance reasons.
      /**
       * INTERNAL:
       * Wrap the isset parameter object array as a Collection.
       * Prerequisite: parameterTypes must be set.
       */
-     public class IsSetNullPolicyIsSetParametersAttributeAccessor extends AttributeAccessor {
+     public static class IsSetNullPolicyIsSetParametersAttributeAccessor extends AttributeAccessor {
          public IsSetNullPolicyIsSetParametersAttributeAccessor() {
-        	 super();
+		 super();
          }
 
          @Override
@@ -1425,11 +1428,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          }
      }
 
+     // Made static for performance reasons.
      /**
       * INTERNAL:
       * Wrap the isset parameterType class array as a Collection
       */
-     public class IsSetNullPolicyIsSetParameterTypesAttributeAccessor extends AttributeAccessor {
+     public static class IsSetNullPolicyIsSetParameterTypesAttributeAccessor extends AttributeAccessor {
          public IsSetNullPolicyIsSetParameterTypesAttributeAccessor() {
              super();
          }
@@ -1482,11 +1486,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          return descriptor;
      }
 
+     // Made static for performance reasons.
      /**
       * INTERNAL:
       * If the policy is the default NullPolicy with defaults set - then represent this default policy by null.
       */
-     public class NullPolicyAttributeAccessor extends AttributeAccessor {
+     public static class NullPolicyAttributeAccessor extends AttributeAccessor {
 
          public NullPolicyAttributeAccessor() {
              super();
@@ -1776,11 +1781,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          
          return descriptor;
      }
+
+     // Made static for performance reasons.
      /**
       * Instantiation policy for ObjectTypeFieldAssociation class.  This policy
       * enables the default constructor of the inner class to be accessed.
       */
-     class ObjectTypeFieldAssociationInstantiationPolicy extends InstantiationPolicy {
+     static class ObjectTypeFieldAssociationInstantiationPolicy extends InstantiationPolicy {
          ObjectPersistenceRuntimeXMLProject_11_1_1 outer;
          ObjectTypeFieldAssociationInstantiationPolicy(
              ObjectPersistenceRuntimeXMLProject_11_1_1 outer) {
@@ -2030,7 +2037,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          return descriptor;
      }
 
-     class ObjectRelationalDatabaseFieldInstantiationPolicy extends InstantiationPolicy {
+     // Made static for performance reasons.
+     static class ObjectRelationalDatabaseFieldInstantiationPolicy extends InstantiationPolicy {
 
          ObjectRelationalDatabaseFieldInstantiationPolicy() {
          }

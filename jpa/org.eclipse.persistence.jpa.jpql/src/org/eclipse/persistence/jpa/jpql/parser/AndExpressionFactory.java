@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -91,11 +91,12 @@ public final class AndExpressionFactory extends ExpressionFactory {
 		return visitor;
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This {@link ExpressionVisitor} is used to check if the {@link Expression} passed to this
 	 * factory is an {@link OrExpression}.
 	 */
-	private class OrExpressionVisitor extends AbstractExpressionVisitor {
+	private static final class OrExpressionVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * This flag is turned on if the {@link Expression} visited is {@link OrExpression}.

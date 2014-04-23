@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -836,7 +836,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	protected abstract AcceptableTypeVisitor buildAcceptableTypeVisitor();
 
 	protected AppendableExpressionVisitor buildAppendableExpressionVisitor() {
-		return new AppendableExpressionVisitor();
+		return new AppendableExpressionVisitor(this);
 	}
 
 	protected Filter<Expression> buildCollectionCompoundTypeFilter() {
@@ -859,15 +859,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected ConcatExpressionCollectionHelper buildConcatExpressionCollectionHelper() {
-		return new ConcatExpressionCollectionHelper();
+		return new ConcatExpressionCollectionHelper(this);
 	}
 
 	protected ConditionalClauseCollectionHelper buildConditionalClauseCollectionHelper() {
-		return new ConditionalClauseCollectionHelper();
+		return new ConditionalClauseCollectionHelper(this);
 	}
 
 	protected ConstrutorCollectionHelper buildConstrutorCollectionHelper() {
-		return new ConstrutorCollectionHelper();
+		return new ConstrutorCollectionHelper(this);
 	}
 
 	protected DeclarationVisitor buildDeclarationVisitor() {
@@ -879,11 +879,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected DeleteClauseCollectionHelper buildDeleteClauseCollectionHelper() {
-		return new DeleteClauseCollectionHelper();
+		return new DeleteClauseCollectionHelper(this);
 	}
 
 	protected DeleteClauseStatementHelper buildDeleteClauseStatementHelper() {
-		return new DeleteClauseStatementHelper();
+		return new DeleteClauseStatementHelper(this);
 	}
 
 	protected Filter<Expression> buildDifferentComparisonFilter() {
@@ -891,7 +891,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected DoubleEncapsulatedCollectionHelper buildDoubleEncapsulatedCollectionHelper() {
-		return new DoubleEncapsulatedCollectionHelper();
+		return new DoubleEncapsulatedCollectionHelper(this);
 	}
 
 	protected EncapsulatedExpressionVisitor buildEncapsulatedExpressionVisitor() {
@@ -930,7 +930,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected EndingQueryPositionBuilder buildEndingQueryPositionBuilder() {
-		return new EndingQueryPositionBuilder();
+		return new EndingQueryPositionBuilder(this);
 	}
 
 	protected EnumVisitor buildEnumVisitor() {
@@ -954,27 +954,27 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected FollowingInvalidExpressionVisitor buildFollowingInvalidExpressionVisitor() {
-		return new FollowingInvalidExpressionVisitor();
+		return new FollowingInvalidExpressionVisitor(this);
 	}
 
 	protected FromClauseCollectionHelper buildFromClauseCollectionHelper() {
-		return new FromClauseCollectionHelper();
+		return new FromClauseCollectionHelper(this);
 	}
 
 	protected FromClauseStatementHelper buildFromClauseStatementHelper() {
-		return new FromClauseStatementHelper();
+		return new FromClauseStatementHelper(this);
 	}
 
 	protected GroupByClauseCollectionHelper buildGroupByClauseCollectionHelper() {
-		return new GroupByClauseCollectionHelper();
+		return new GroupByClauseCollectionHelper(this);
 	}
 
 	protected GroupByClauseStatementHelper buildGroupByClauseStatementHelper() {
-		return new GroupByClauseStatementHelper();
+		return new GroupByClauseStatementHelper(this);
 	}
 
 	protected HavingClauseStatementHelper buildHavingClauseStatementHelper() {
-		return new HavingClauseStatementHelper();
+		return new HavingClauseStatementHelper(this);
 	}
 
 	protected IncompleteCollectionExpressionVisitor buildIncompleteCollectionExpressionVisitor() {
@@ -986,7 +986,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected JoinCollectionHelper buildJoinCollectionHelper() {
-		return new JoinCollectionHelper();
+		return new JoinCollectionHelper(this);
 	}
 
 	/**
@@ -1027,7 +1027,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 
 		// This will filter the property mappings
-		return new AndFilter<IMapping>(new MappingTypeFilter(type), filter);
+		return new AndFilter<IMapping>(new MappingTypeFilter(type, this), filter);
 	}
 
 	protected Filter<IMapping> buildMappingFilter(Expression expression) {
@@ -1042,7 +1042,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected MappingFilterBuilder buildMappingFilterBuilder() {
-		return new MappingFilterBuilder();
+		return new MappingFilterBuilder(this);
 	}
 
 	protected Filter<Expression> buildNonCollectionCompoundTypeFilter() {
@@ -1061,11 +1061,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected OrderByClauseCollectionHelper buildOrderByClauseCollectionHelper() {
-		return new OrderByClauseCollectionHelper();
+		return new OrderByClauseCollectionHelper(this);
 	}
 
 	protected OrderByClauseStatementHelper buildOrderByClauseStatementHelper() {
-		return new OrderByClauseStatementHelper();
+		return new OrderByClauseStatementHelper(this);
 	}
 
 	protected PropertyMappingFilter buildPropertyMappingFilter() {
@@ -1128,35 +1128,35 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected SelectClauseCollectionHelper buildSelectClauseCollectionHelper() {
-		return new SelectClauseCollectionHelper();
+		return new SelectClauseCollectionHelper(this);
 	}
 
 	protected SelectClauseStatementHelper buildSelectClauseStatementHelper() {
-		return new SelectClauseStatementHelper();
+		return new SelectClauseStatementHelper(this);
 	}
 
 	protected SimpleFromClauseStatementHelper buildSimpleFromClauseStatementHelper() {
-		return new SimpleFromClauseStatementHelper();
+		return new SimpleFromClauseStatementHelper(this);
 	}
 
 	protected SimpleGroupByClauseStatementHelper buildSimpleGroupByClauseStatementHelper() {
-		return new SimpleGroupByClauseStatementHelper();
+		return new SimpleGroupByClauseStatementHelper(this);
 	}
 
 	protected SimpleHavingClauseStatementHelper buildSimpleHavingClauseStatementHelper() {
-		return new SimpleHavingClauseStatementHelper();
+		return new SimpleHavingClauseStatementHelper(this);
 	}
 
 	protected SimpleSelectClauseCollectionHelper buildSimpleSelectClauseCollectionHelper() {
-		return new SimpleSelectClauseCollectionHelper();
+		return new SimpleSelectClauseCollectionHelper(this);
 	}
 
 	protected SimpleSelectClauseStatementHelper buildSimpleSelectClauseStatementHelper() {
-		return new SimpleSelectClauseStatementHelper();
+		return new SimpleSelectClauseStatementHelper(this);
 	}
 
 	protected SimpleWhereClauseSelectStatementHelper buildSimpleWhereClauseSelectStatementHelper() {
-		return new SimpleWhereClauseSelectStatementHelper();
+		return new SimpleWhereClauseSelectStatementHelper(this);
 	}
 
 	protected SubqueryAppendableExpressionVisitor buildSubqueryAppendableExpressionVisitor() {
@@ -1168,35 +1168,35 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected TripleEncapsulatedCollectionHelper buildTripleEncapsulatedCollectionHelper() {
-		return new TripleEncapsulatedCollectionHelper();
+		return new TripleEncapsulatedCollectionHelper(this);
 	}
 
 	protected UpdateClauseStatementHelper buildUpdateClauseStatementHelper() {
-		return new UpdateClauseStatementHelper();
+		return new UpdateClauseStatementHelper(this);
 	}
 
 	protected UpdateItemCollectionHelper buildUpdateItemCollectionHelper() {
-		return new UpdateItemCollectionHelper();
+		return new UpdateItemCollectionHelper(this);
 	}
 
 	protected VisitParentVisitor buildVisitParentVisitor() {
-		return new VisitParentVisitor();
+		return new VisitParentVisitor(this);
 	}
 
 	protected WhenClauseConditionalClauseCollectionHelper buildWhenClauseConditionalClauseCollectionHelper() {
-		return new WhenClauseConditionalClauseCollectionHelper();
+		return new WhenClauseConditionalClauseCollectionHelper(this);
 	}
 
 	protected WhereClauseDeleteStatementHelper buildWhereClauseDeleteStatementHelper() {
-		return new WhereClauseDeleteStatementHelper();
+		return new WhereClauseDeleteStatementHelper(this);
 	}
 
 	protected WhereClauseSelectStatementHelper buildWhereClauseSelectStatementHelper() {
-		return new WhereClauseSelectStatementHelper();
+		return new WhereClauseSelectStatementHelper(this);
 	}
 
 	protected WhereClauseUpdateStatementHelper buildWhereClauseUpdateStatementHelper() {
-		return new WhereClauseUpdateStatementHelper();
+		return new WhereClauseUpdateStatementHelper(this);
 	}
 
 	protected WithinInvalidExpressionVisitor buildWithinInvalidExpressionVisitor() {
@@ -4887,7 +4887,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	                                             String variableName) {
 	}
 
-	protected class AbstractAppendableExpressionVisitor extends AnonymousExpressionVisitor {
+    // Made static for performance reasons.
+	protected static class AbstractAppendableExpressionVisitor extends AnonymousExpressionVisitor {
 
 		/**
 		 * Flag used to determine if JPQL identifiers can be appended to the expression.
@@ -4911,14 +4912,37 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static for performance reasons.
+	/**
+	 * Common helper with visitor reference.
+	 */
+	private static abstract class AbstractVisitorHelper {
+
+        /**
+         * Enclosing visitor instance.
+         */
+	    protected final AbstractContentAssistVisitor visitor;
+
+	    AbstractVisitorHelper(AbstractContentAssistVisitor visitor) {
+            this.visitor = visitor;
+        }
+
+	}
+
+    // Made static for performance reasons.
 	/**
 	 * This helper handles adding proposals within a conditional expression that might be parsed as
 	 * a single expression or has a collection of expression, which means the fragment is either
 	 * incomplete or invalid.
 	 */
-	protected abstract class AbstractConditionalClauseCollectionHelper<T extends Expression> implements CollectionExpressionHelper<T> {
+	protected static abstract class AbstractConditionalClauseCollectionHelper<T extends Expression>
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<T> {
 
-		/**
+	    protected AbstractConditionalClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+	        super(visitor);
+	    }
+
+	    /**
 		 * {@inheritDoc}
 		 */
 		public void addAtTheEndOfChild(Expression expression,
@@ -4939,8 +4963,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 				Expression child = collectionExpression.getChild(0);
 
-				if (areArithmeticSymbolsAppendable(child)) {
-					addArithmeticIdentifiers();
+				if (visitor.areArithmeticSymbolsAppendable(child)) {
+				    visitor.addArithmeticIdentifiers();
 				}
 			}
 			else {
@@ -4958,21 +4982,21 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				// If 'IS' or 'IS NOT' is present, then none of the following are valid proposals
 				if (!hasIs && !hasNot) {
 
-					if (areLogicalSymbolsAppendable(child)) {
-						addLogicalIdentifiers();
+					if (visitor.areLogicalSymbolsAppendable(child)) {
+					    visitor.addLogicalIdentifiers();
 					}
 
-					if (areArithmeticSymbolsAppendable(child)) {
-						addArithmeticIdentifiers();
+					if (visitor.areArithmeticSymbolsAppendable(child)) {
+					    visitor.addArithmeticIdentifiers();
 					}
 
-					if (areComparisonSymbolsAppendable(child)) {
-						addComparisonIdentifiers(child);
+					if (visitor.areComparisonSymbolsAppendable(child)) {
+					    visitor.addComparisonIdentifiers(child);
 					}
 				}
 
-				if (isCompoundable(child)) {
-					addCompoundIdentifiers(ConditionalExpressionBNF.ID, child, hasIs, hasNot);
+				if (visitor.isCompoundable(child)) {
+				    visitor.addCompoundIdentifiers(ConditionalExpressionBNF.ID, child, hasIs, hasNot);
 				}
 			}
 		}
@@ -4981,7 +5005,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(Expression expression, String identifier) {
-			proposals.addIdentifier(identifier);
+		    visitor.proposals.addIdentifier(identifier);
 		}
 
 		/**
@@ -4994,13 +5018,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 			if (index == 0) {
 
-				addIdentificationVariables();
-				addFunctionIdentifiers(ConditionalExpressionBNF.ID);
+			    visitor.addIdentificationVariables();
+			    visitor.addFunctionIdentifiers(ConditionalExpressionBNF.ID);
 
 				if ((collectionExpression != null) &&
-				    isSubqueryAppendable(collectionExpression.getChild(index))) {
+				        visitor.isSubqueryAppendable(collectionExpression.getChild(index))) {
 
-					AbstractContentAssistVisitor.this.addIdentifier(SELECT);
+				    visitor.addIdentifier(SELECT);
 				}
 			}
 			else {
@@ -5017,7 +5041,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 			Expression child = collectionExpression.getChild(index);
 
-			if (isNotExpression(child)) {
+			if (visitor.isNotExpression(child)) {
 				return true;
 			}
 
@@ -5052,7 +5076,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				String text = child.toParsedText();
 
 				// Handle 'NOT'
-				if (text.equalsIgnoreCase(NOT) || isNotExpression(child)) {
+				if (text.equalsIgnoreCase(NOT) || visitor.isNotExpression(child)) {
 
 					// Two consecutive 'NOT' or 'IS' is invalid or 'NOT IS' is not valid
 					if (isFound || notFound) {
@@ -5119,17 +5143,23 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(Expression expression, int index) {
-			return getQueryBNF(ConditionalExpressionBNF.ID);
+			return visitor.getQueryBNF(ConditionalExpressionBNF.ID);
 		}
 	}
 
-	protected abstract class AbstractFromClauseStatementHelper<T extends AbstractSelectStatement> implements StatementHelper<T> {
+    // Made static for performance reasons.
+	protected static abstract class AbstractFromClauseStatementHelper<T extends AbstractSelectStatement>
+	        extends AbstractVisitorHelper implements StatementHelper<T> {
+
+	    protected AbstractFromClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addIdentifier(FROM);
+		    visitor.addIdentifier(FROM);
 		}
 
 		/**
@@ -5164,7 +5194,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(T expression) {
-			return isComplete(expression.getFromClause());
+			return visitor.isComplete(expression.getFromClause());
 		}
 
 		/**
@@ -5175,13 +5205,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected abstract class AbstractGroupByClauseStatementHelper<T extends AbstractSelectStatement> implements StatementHelper<T> {
+    // Made static for performance reasons.
+	protected static abstract class AbstractGroupByClauseStatementHelper<T extends AbstractSelectStatement>
+	        extends AbstractVisitorHelper implements StatementHelper<T> {
+
+        protected AbstractGroupByClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addCompositeIdentifier(GROUP_BY, -1);
+		    visitor.addCompositeIdentifier(GROUP_BY, -1);
 		}
 
 		/**
@@ -5216,7 +5252,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(T expression) {
-			return isComplete(expression.getGroupByClause());
+			return visitor.isComplete(expression.getGroupByClause());
 		}
 
 		/**
@@ -5227,13 +5263,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected abstract class AbstractHavingClauseStatementHelper<T extends AbstractSelectStatement> implements StatementHelper<T> {
+    // Made static for performance reasons.
+	protected static abstract class AbstractHavingClauseStatementHelper<T extends AbstractSelectStatement>
+	        extends AbstractVisitorHelper implements StatementHelper<T> {
+
+        protected AbstractHavingClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addIdentifier(HAVING);
+		    visitor.addIdentifier(HAVING);
 		}
 
 		/**
@@ -5261,7 +5303,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(T expression) {
-			return isComplete(expression.getHavingClause());
+			return  visitor.isComplete(expression.getHavingClause());
 		}
 
 		/**
@@ -5272,7 +5314,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected abstract class AbstractSelectClauseCollectionHelper<T extends AbstractSelectClause> implements CollectionExpressionHelper<T> {
+    // Made static for performance reasons.
+	protected static abstract class AbstractSelectClauseCollectionHelper<T extends AbstractSelectClause>
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<T> {
+
+        protected AbstractSelectClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -5290,8 +5338,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 				Expression child = collectionExpression.getChild(index);
 
-				if (areArithmeticSymbolsAppendable(child)) {
-					addArithmeticIdentifiers();
+				if (visitor.areArithmeticSymbolsAppendable(child)) {
+				    visitor.addArithmeticIdentifiers();
 				}
 			}
 		}
@@ -5300,7 +5348,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(T expression, String identifier) {
-			proposals.addIdentifier(identifier);
+		    visitor.proposals.addIdentifier(identifier);
 		}
 
 		/**
@@ -5312,8 +5360,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   boolean hasComma) {
 
 			if ((index == 0) || hasComma) {
-				addIdentificationVariables();
-				addFunctionIdentifiers(expression.getSelectItemQueryBNFId());
+			    visitor.addIdentificationVariables();
+			    visitor.addFunctionIdentifiers(expression.getSelectItemQueryBNFId());
 			}
 		}
 
@@ -5321,7 +5369,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(T expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getSelectExpression());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getSelectExpression());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -5360,17 +5408,23 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(T expression, int index) {
-			return getQueryBNF(expression.getSelectItemQueryBNFId());
+			return visitor.getQueryBNF(expression.getSelectItemQueryBNFId());
 		}
 	}
 
-	protected abstract class AbstractSelectClauseStatementHelper implements StatementHelper<AbstractSelectStatement> {
+    // Made static for performance reasons.
+	protected static abstract class AbstractSelectClauseStatementHelper
+	        extends AbstractVisitorHelper implements StatementHelper<AbstractSelectStatement> {
+
+        protected AbstractSelectClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addIdentifier(SELECT);
+		    visitor.addIdentifier(SELECT);
 		}
 
 		/**
@@ -5405,7 +5459,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(AbstractSelectStatement expression) {
-			return isComplete(expression.getSelectClause());
+			return visitor.isComplete(expression.getSelectClause());
 		}
 
 		/**
@@ -5417,13 +5471,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 	}
 
-	protected abstract class AbstractWhereClauseSelectStatementHelper<T extends AbstractSelectStatement> implements StatementHelper<T> {
+    // Made static for performance reasons.
+	protected static abstract class AbstractWhereClauseSelectStatementHelper<T extends AbstractSelectStatement>
+	        extends AbstractVisitorHelper implements StatementHelper<T> {
+
+        protected AbstractWhereClauseSelectStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addIdentifier(WHERE);
+		    visitor.addIdentifier(WHERE);
 		}
 
 		/**
@@ -5458,7 +5518,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(T expression) {
-			return isComplete(expression.getWhereClause());
+			return visitor.isComplete(expression.getWhereClause());
 		}
 
 		/**
@@ -5469,11 +5529,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * This visitor retrieves the permitted type from the path expression's parent. For instance,
 	 * <b>SUM<b></b> or <b>AVG</b> only accepts state fields that have a numeric type.
 	 */
-	protected abstract class AcceptableTypeVisitor extends AbstractExpressionVisitor {
+	protected static abstract class AcceptableTypeVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The type that is retrieved based on the expression, it determines what is acceptable.
@@ -5504,6 +5565,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * This visitor scans the visited {@link Expression} and determines if a JPQL identifier can be
 	 * added ("appended") when the position of the cursor is at the end of the expression.
@@ -5521,9 +5583,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * identifiers are allowed, but the logical and compound identifiers.</li>
 	 * </ul>
 	 */
-	protected class AppendableExpressionVisitor extends AbstractAppendableExpressionVisitor {
+	protected static class AppendableExpressionVisitor extends AbstractAppendableExpressionVisitor {
 
-		/**
+	    /**
+	     * Enclosing visitor instance.
+	     */
+        protected final AbstractContentAssistVisitor visitor;
+
+        /**
 		 * The type of the JPQL identifiers can can be possible proposals.
 		 */
 		protected AppendableType appendableType;
@@ -5563,10 +5630,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		/**
 		 * Creates a new <code>AppendableExpressionVisitor</code>.
 		 */
-		protected AppendableExpressionVisitor() {
-			super();
-			this.positionInCollection = -1;
-		}
+        AppendableExpressionVisitor(AbstractContentAssistVisitor visitor) {
+            super();
+            this.visitor = visitor;
+            this.positionInCollection = -1;
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -5651,7 +5719,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			// Example 1: "x between y SQRT(e.age)" is seen as complete
 			if (!expression.hasAnd()) {
 
-				String variable = queryContext.literal(
+				String variable = visitor.queryContext.literal(
 					expression.getUpperBoundExpression(),
 					LiteralType.IDENTIFICATION_VARIABLE
 				);
@@ -5999,7 +6067,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			else if (clauseOfItems || (!clauseOfItems && (appendableType == AppendableType.CLAUSE))) {
 				appendable = !hasComma                   &&
 				             (positionInCollection > -1) &&
-				             !isFollowingInvalidExpression(expression);
+				             !visitor.isFollowingInvalidExpression(expression);
 			}
 			else {
 
@@ -6231,7 +6299,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			// Example: "NOT B" can only have compound identifiers like 'NOT BETWEEN'
 			if (expression.hasExpression()) {
 
-				String variable = queryContext.literal(
+				String variable = visitor.queryContext.literal(
 					expression.getExpression(),
 					LiteralType.IDENTIFICATION_VARIABLE
 				);
@@ -6509,7 +6577,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			else {
 
 				// Resolve the mapping so we can determine what is valid based on its type
-				IMapping mapping = queryContext.getMapping(expression);
+				IMapping mapping = visitor.queryContext.getMapping(expression);
 
 				if (mapping == null) {
 					appendable = false;
@@ -6521,11 +6589,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 						case ARITHMETIC: {
 							// e.name (String) cannot be followed by +,-,/,*
 							// e.age (int) can be followed by an arithmetic operator
-							appendable = queryContext.getTypeHelper().isNumericType(type);
+							appendable = visitor.queryContext.getTypeHelper().isNumericType(type);
 							break;
 						}
 						case COMPARISON: {
-							TypeHelper typeHelper = queryContext.getTypeHelper();
+							TypeHelper typeHelper = visitor.queryContext.getTypeHelper();
 							appendable = !typeHelper.isCollectionType(type) &&
 							             !typeHelper.isMapType(type);
 							break;
@@ -6536,7 +6604,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 							break;
 						}
 						case LOGICAL: {
-							appendable = queryContext.getTypeHelper().isBooleanType(type);
+							appendable = visitor.queryContext.getTypeHelper().isBooleanType(type);
 							break;
 						}
 					}
@@ -6710,10 +6778,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * This is used to determine how {@link AppendableExpressionVisitor} should perform the check.
 	 */
-	protected enum AppendableType {
+	protected static enum AppendableType {
 
 		/**
 		 * Determines whether the arithmetic operators (+, -, *, /) can be appended as valid proposals.
@@ -6756,11 +6825,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		SUBQUERY
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * This helper is used to determine how to add proposals within a collection of expressions. Each
 	 * expression is usually separated by either a whitespace or by a comma.
 	 */
-	protected interface CollectionExpressionHelper<T extends Expression> {
+	protected static interface CollectionExpressionHelper<T extends Expression> {
 
 		/**
 		 * Adds the proposals because the cursor is at the end of the child at the given position.
@@ -6865,10 +6935,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		JPQLQueryBNF queryBNF(T expression, int index);
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor retrieves the {@link CollectionExpression} if it is visited.
 	 */
-	protected static class CollectionExpressionVisitor extends AbstractExpressionVisitor {
+	protected static final class CollectionExpressionVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The {@link CollectionExpression} if it is the {@link Expression} that was visited.
@@ -6891,7 +6962,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class CollectionMappingFilter implements Filter<IMapping> {
+    // Made static final for performance reasons.
+	protected static final class CollectionMappingFilter implements Filter<IMapping> {
 
 		/**
 		 * {@inheritDoc}
@@ -6904,9 +6976,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class ConcatExpressionCollectionHelper implements CollectionExpressionHelper<ConcatExpression> {
+    // Made static final for performance reasons.
+	protected static final class ConcatExpressionCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<ConcatExpression> {
 
-		/**
+	    protected ConcatExpressionCollectionHelper(AbstractContentAssistVisitor visitor) {
+	        super(visitor);
+	    }
+
+	    /**
 		 * {@inheritDoc}
 		 */
 		public void addAtTheEndOfChild(ConcatExpression expression,
@@ -6924,18 +7002,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 				if ((index == 0) && !virtualSpace) {
 
-					if (areArithmeticSymbolsAppendable(child)) {
-						addArithmeticIdentifiers();
+					if (visitor.areArithmeticSymbolsAppendable(child)) {
+					    visitor.addArithmeticIdentifiers();
 					}
 				}
 				else {
 
-					if (areArithmeticSymbolsAppendable(child)) {
-						addArithmeticIdentifiers();
+					if (visitor.areArithmeticSymbolsAppendable(child)) {
+					    visitor.addArithmeticIdentifiers();
 					}
 
-					if (areComparisonSymbolsAppendable(child)) {
-						addComparisonIdentifiers(child);
+					if (visitor.areComparisonSymbolsAppendable(child)) {
+					    visitor.addComparisonIdentifiers(child);
 					}
 				}
 			}
@@ -6945,9 +7023,9 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(ConcatExpression expression, String identifier) {
-			proposals.addIdentifier(identifier);
-			addIdentificationVariables();
-			addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
+		    visitor.proposals.addIdentifier(identifier);
+		    visitor.addIdentificationVariables();
+		    visitor.addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
 		}
 
 		/**
@@ -6958,15 +7036,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   int index,
 		                                   boolean hasComma) {
 
-			addIdentificationVariables();
-			addFunctionIdentifiers(queryBNF(expression, index));
+		    visitor.addIdentificationVariables();
+		    visitor.addFunctionIdentifiers(queryBNF(expression, index));
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(ConcatExpression expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getExpression());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getExpression());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -7009,20 +7087,26 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(ConcatExpression expression, int index) {
-			return getQueryBNF(expression.getEncapsulatedExpressionQueryBNFId());
+			return visitor.getQueryBNF(expression.getEncapsulatedExpressionQueryBNFId());
 		}
+
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This helpers handles adding proposals for {@link AbstractConditionalClause}.
 	 */
-	protected class ConditionalClauseCollectionHelper extends AbstractConditionalClauseCollectionHelper<AbstractConditionalClause> {
+	protected static final class ConditionalClauseCollectionHelper extends AbstractConditionalClauseCollectionHelper<AbstractConditionalClause> {
 
-		/**
+        protected ConditionalClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(AbstractConditionalClause expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getConditionalExpression());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getConditionalExpression());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -7037,7 +7121,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class ConstrutorCollectionHelper implements CollectionExpressionHelper<ConstructorExpression> {
+    // Made static final for performance reasons.
+	protected static final class ConstrutorCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<ConstructorExpression> {
+
+        protected ConstrutorCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -7057,18 +7147,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 				if ((index == 0) && !virtualSpace) {
 
-					if (areArithmeticSymbolsAppendable(child)) {
-						addArithmeticIdentifiers();
+					if (visitor.areArithmeticSymbolsAppendable(child)) {
+					    visitor.addArithmeticIdentifiers();
 					}
 				}
 				else {
 
-					if (areArithmeticSymbolsAppendable(child)) {
-						addArithmeticIdentifiers();
+					if (visitor.areArithmeticSymbolsAppendable(child)) {
+					    visitor.addArithmeticIdentifiers();
 					}
 
-					if (areComparisonSymbolsAppendable(child)) {
-						addComparisonIdentifiers(child);
+					if (visitor.areComparisonSymbolsAppendable(child)) {
+					    visitor.addComparisonIdentifiers(child);
 					}
 				}
 			}
@@ -7078,7 +7168,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(ConstructorExpression expression, String identifier) {
-			proposals.addIdentifier(identifier);
+		    visitor.proposals.addIdentifier(identifier);
 		}
 
 		/**
@@ -7089,15 +7179,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   int index,
 		                                   boolean hasComma) {
 
-			addIdentificationVariables(expression, IdentificationVariableType.ALL);
-			addFunctionIdentifiers(ConstructorItemBNF.ID);
+		    visitor.addIdentificationVariables(expression, IdentificationVariableType.ALL);
+		    visitor.addFunctionIdentifiers(ConstructorItemBNF.ID);
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(ConstructorExpression expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getConstructorItems());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getConstructorItems());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -7142,11 +7232,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(ConstructorExpression expression, int index) {
-			return AbstractContentAssistVisitor.this.getQueryBNF(ConstructorItemBNF.ID);
+			return visitor.getQueryBNF(ConstructorItemBNF.ID);
 		}
 	}
 
-	protected class DeclarationVisitor extends AnonymousExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class DeclarationVisitor extends AnonymousExpressionVisitor {
 
 		/**
 		 * Indicates if the visited {@link CollectionValuedPathExpression} is found within a
@@ -7189,10 +7280,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * The default implementation of {@link MappingCollector}, which simply returns an empty collection.
 	 */
-	protected class DefaultMappingCollector implements MappingCollector {
+	protected static final class DefaultMappingCollector implements MappingCollector {
 
 		/**
 		 * {@inheritDoc}
@@ -7202,9 +7294,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class DeleteClauseCollectionHelper implements CollectionExpressionHelper<DeleteClause> {
+    // Made static final for performance reasons.
+	protected static final class DeleteClauseCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<DeleteClause> {
 
-		/**
+	    protected DeleteClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+	        super(visitor);
+	    }
+
+	    /**
 		 * {@inheritDoc}
 		 */
 		public void addAtTheEndOfChild(DeleteClause expression,
@@ -7218,7 +7316,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(DeleteClause expression, String identifier) {
-			proposals.addIdentifier(identifier);
+		    visitor.proposals.addIdentifier(identifier);
 		}
 
 		/**
@@ -7230,7 +7328,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   boolean hasComma) {
 
 			if (index == 0) {
-				addEntities();
+			    visitor.addEntities();
 			}
 		}
 
@@ -7238,7 +7336,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(DeleteClause expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getRangeVariableDeclaration());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getRangeVariableDeclaration());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -7280,17 +7378,23 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(DeleteClause expression, int index) {
-			return getQueryBNF(RangeVariableDeclarationBNF.ID);
+			return visitor.getQueryBNF(RangeVariableDeclarationBNF.ID);
 		}
 	}
 
-	protected class DeleteClauseStatementHelper implements StatementHelper<DeleteStatement> {
+    // Made static final for performance reasons.
+	protected static final class DeleteClauseStatementHelper
+	        extends AbstractVisitorHelper implements StatementHelper<DeleteStatement> {
+
+        protected DeleteClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addIdentifier(DELETE_FROM);
+		    visitor.addIdentifier(DELETE_FROM);
 		}
 
 		/**
@@ -7311,7 +7415,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public WhereClauseDeleteStatementHelper getNextHelper() {
-			return getWhereClauseDeleteStatementHelper();
+			return visitor.getWhereClauseDeleteStatementHelper();
 		}
 
 		/**
@@ -7332,7 +7436,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(DeleteStatement expression) {
-			return isComplete(expression.getDeleteClause());
+			return visitor.isComplete(expression.getDeleteClause());
 		}
 
 		/**
@@ -7343,8 +7447,9 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class DifferentComparisonFilter extends AnonymousExpressionVisitor
-	                                          implements Filter<Expression> {
+    // Made static final for performance reasons.
+	protected static final class DifferentComparisonFilter
+	        extends AnonymousExpressionVisitor implements Filter<Expression> {
 
 		/**
 		 * Determines whether '<', '<=', '>=', '>' are valid comparison operators.
@@ -7381,7 +7486,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class DoubleEncapsulatedCollectionHelper implements CollectionExpressionHelper<AbstractDoubleEncapsulatedExpression> {
+    // Made static final for performance reasons.
+	protected static final class DoubleEncapsulatedCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<AbstractDoubleEncapsulatedExpression> {
+
+	    protected DoubleEncapsulatedCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -7401,18 +7512,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 				if ((index == 0) && !virtualSpace) {
 
-					if (areArithmeticSymbolsAppendable(child)) {
-						addArithmeticIdentifiers();
+					if (visitor.areArithmeticSymbolsAppendable(child)) {
+					    visitor.addArithmeticIdentifiers();
 					}
 				}
 				else {
 
-					if (areArithmeticSymbolsAppendable(child)) {
-						addArithmeticIdentifiers();
+					if (visitor.areArithmeticSymbolsAppendable(child)) {
+					    visitor.addArithmeticIdentifiers();
 					}
 
-					if (areComparisonSymbolsAppendable(child)) {
-						addComparisonIdentifiers(child);
+					if (visitor.areComparisonSymbolsAppendable(child)) {
+					    visitor.addComparisonIdentifiers(child);
 					}
 				}
 			}
@@ -7422,9 +7533,9 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(AbstractDoubleEncapsulatedExpression expression, String identifier) {
-			proposals.addIdentifier(identifier);
-			addIdentificationVariables();
-			addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
+		    visitor.proposals.addIdentifier(identifier);
+		    visitor.addIdentificationVariables();
+		    visitor.addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
 		}
 
 		/**
@@ -7435,8 +7546,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   int index,
 		                                   boolean hasComma) {
 
-			addIdentificationVariables();
-			addFunctionIdentifiers(queryBNF(expression, index));
+		    visitor.addIdentificationVariables();
+		    visitor.addFunctionIdentifiers(queryBNF(expression, index));
 		}
 
 		/**
@@ -7483,11 +7594,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(AbstractDoubleEncapsulatedExpression expression, int index) {
-			return getQueryBNF(expression.parameterExpressionBNF(index));
+			return visitor.getQueryBNF(expression.parameterExpressionBNF(index));
 		}
 	}
 
-	protected class EncapsulatedExpressionVisitor extends AnonymousExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class EncapsulatedExpressionVisitor extends AnonymousExpressionVisitor {
 
 		/**
 		 * Determines whether the visited {@link Expression} is being encapsulated or not.
@@ -7537,6 +7649,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * This builder populates a {@link QueryPosition} by traversing the valid portion of the JPQL
 	 * query. The position is the end of each {@link Expression}.
@@ -7552,7 +7665,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * <li>IdentificationVariable = 1</li>
 	 * </ul>
 	 */
-	protected class EndingQueryPositionBuilder implements ExpressionVisitor {
+	protected static class EndingQueryPositionBuilder
+	        extends AbstractVisitorHelper implements ExpressionVisitor {
 
 		/**
 		 * This internal flag helps to determine if the {@link Expression} where the cursor is located
@@ -7592,6 +7706,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		public boolean virtualSpace;
 
+        protected EndingQueryPositionBuilder(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
 		/**
 		 * Disposes the internal data.
 		 */
@@ -7629,7 +7747,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		public void prepare(Expression invalidExpression) {
 
-			QueryPosition oldQueryPosition = AbstractContentAssistVisitor.this.queryPosition;
+			QueryPosition oldQueryPosition = visitor.queryPosition;
 
 			this.invalidExpression = invalidExpression;
 			this.positionWithinInvalidExpression = oldQueryPosition.getPosition(invalidExpression);
@@ -7827,7 +7945,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				if (index > 0) {
 					Expression previousChild = expression.getChild(index - 1);
 
-					if (!isComplete(previousChild)) {
+					if (!visitor.isComplete(previousChild)) {
 						queryPosition.setExpression(previousChild);
 						queryPosition.addPosition(previousChild, previousChild.getLength());
 					}
@@ -9173,6 +9291,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor determines whether a path expression can be resolved as a fully qualified enum
 	 * type and an enum constant.
@@ -9192,7 +9311,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * <li>{@link NullIfExpression} : The second expression;</li>
 	 * </ul>
 	 */
-	protected class EnumVisitor extends AbstractExpressionVisitor {
+	protected static final class EnumVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The {@link AbstractPathExpression} being scanned for its location within the JPQL query.
@@ -9326,11 +9445,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This {@link MappingCollector} returns the possible mappings (non-collection type or
 	 * collection type) from a managed type.
 	 */
-	protected class FilteringMappingCollector implements MappingCollector {
+	protected static final class FilteringMappingCollector implements MappingCollector {
 
 		/**
 		 * The {@link Filter} used to filter out either the collection type properties or the non-
@@ -9408,7 +9528,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class FollowingClausesVisitor extends AbstractTraverseParentVisitor {
+    // Made static for performance reasons.
+	protected static class FollowingClausesVisitor extends AbstractTraverseParentVisitor {
 
 		/**
 		 * The JPQL identifier of the clause used to determine if there is any clause defined after it.
@@ -9612,7 +9733,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class FollowingInvalidExpressionVisitor extends AbstractTraverseParentVisitor {
+    // Made static final for performance reasons.
+	protected static final class FollowingInvalidExpressionVisitor extends AbstractTraverseParentVisitor {
+
+	    /**
+         * Enclosing visitor instance.
+         */
+        protected final AbstractContentAssistVisitor visitor;
 
 		/**
 		 * The {@link Expression} used to determine if it follows an invalid fragment or not.
@@ -9623,6 +9750,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * Determines whether the visited {@link Expression} is preceded by an invalid expression.
 		 */
 		protected boolean followingInvalidExpression;
+
+		protected FollowingInvalidExpressionVisitor(AbstractContentAssistVisitor visitor) {
+		    super();
+            this.visitor = visitor;
+        }
 
 		/**
 		 * Disposes of the internal data.
@@ -9662,7 +9794,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			// Check to see if an expression before the index is invalid
 			while (--index >= 0) {
 				Expression child = expression.getChild(index);
-				followingInvalidExpression = isInvalidExpression(child);
+				followingInvalidExpression = visitor.isInvalidExpression(child);
 
 				if (followingInvalidExpression) {
 					index = -1;
@@ -9680,7 +9812,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class FromClauseCollectionHelper implements CollectionExpressionHelper<AbstractFromClause> {
+    // Made static for performance reasons.
+	protected static class FromClauseCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<AbstractFromClause> {
+
+	    protected FromClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -9697,9 +9835,9 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			if (((index == 0) || hasComma) && virtualSpace) {
 				// "... JOIN e.mananager m |" <- Valid to add JOIN identifiers
 				// "... JOIN e.mananager m ON e.name |" <- Invalid to add JOIN identifiers
-				if (isComplete(collectionExpression.getChild(0))) {
-					addJoinIdentifiers();
-					AbstractContentAssistVisitor.this.addIdentifier(ON);
+				if (visitor.isComplete(collectionExpression.getChild(0))) {
+				    visitor.addJoinIdentifiers();
+				    visitor.addIdentifier(ON);
 				}
 			}
 			// Special case to handle a range variable declaration that can also
@@ -9709,14 +9847,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 	 			if ((index > 0) && end && !hasComma) {
 
-	 				int position = queryPosition.getPosition();
+					int position = visitor.queryPosition.getPosition();
 
-					if (!hasClausesDefinedBetween(expression, FROM, HAVING)) {
-						addCompositeIdentifier(GROUP_BY, 4 /* GROUP - 1 */);
+					if (!visitor.hasClausesDefinedBetween(expression, FROM, HAVING)) {
+					    visitor.addCompositeIdentifier(GROUP_BY, 4 /* GROUP - 1 */);
 					}
 
-					if (!hasClausesDefinedBetween(expression, FROM, ORDER_BY)) {
-						addCompositeIdentifier(ORDER_BY, 4 /* ORDER - 1 */);
+					if (!visitor.hasClausesDefinedBetween(expression, FROM, ORDER_BY)) {
+					    visitor.addCompositeIdentifier(ORDER_BY, 4 /* ORDER - 1 */);
 					}
 	 			}
 			}
@@ -9726,7 +9864,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(AbstractFromClause expression, String identifier) {
-			proposals.addIdentifier(identifier);
+		    visitor.proposals.addIdentifier(identifier);
 		}
 
 		/**
@@ -9741,12 +9879,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			// 2. To be valid elsewhere, the declarations have to be separated by a comma
 			//    "SELECT e FROM Employee e W|" <- entity names are not valid proposals, only 'WHERE' is
 			if ((index == 0) || hasComma) {
-				addEntities();
+			    visitor.addEntities();
 			}
 			// In any other case, the JOIN identifiers are the only valid choices
 			// "SELECT e FROM Employee e J|" <- only 'JOIN' and 'JOIN FETCH' are valid proposals
 			else if ((index > 0) && !hasComma) {
-				addJoinIdentifiers();
+			    visitor.addJoinIdentifiers();
 			}
 
 			// The identifier for a collection member declaration can only be added
@@ -9755,7 +9893,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			// "SELECT e FROM Employee e, I|" <- 'IN' is a valid proposal
 			// "SELECT e FROM Employee e I|" <- 'IN' is NOT a valid proposal
 			if ((index > 0) && hasComma) {
-				AbstractContentAssistVisitor.this.addIdentifier(IN);
+			    visitor.addIdentifier(IN);
 			}
 		}
 
@@ -9763,7 +9901,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(AbstractFromClause expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getDeclaration());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getDeclaration());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -9805,23 +9943,34 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(AbstractFromClause expression, int index) {
-			return getQueryBNF(expression.getDeclarationQueryBNFId());
+			return visitor.getQueryBNF(expression.getDeclarationQueryBNFId());
 		}
 	}
 
-	protected class FromClauseStatementHelper extends AbstractFromClauseStatementHelper<SelectStatement> {
+    // Made static for performance reasons.
+	protected static class FromClauseStatementHelper extends AbstractFromClauseStatementHelper<SelectStatement> {
+
+        protected FromClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public WhereClauseSelectStatementHelper getNextHelper() {
-			return getWhereClauseSelectStatementHelper();
+			return visitor.getWhereClauseSelectStatementHelper();
 		}
 	}
 
-	protected class GroupByClauseCollectionHelper implements CollectionExpressionHelper<GroupByClause> {
+    // Made static final for performance reasons.
+	protected static final class GroupByClauseCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<GroupByClause> {
 
-		/**
+        protected GroupByClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		public void addAtTheEndOfChild(GroupByClause expression,
@@ -9835,7 +9984,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(GroupByClause expression, String identifier) {
-			proposals.addIdentifier(identifier);
+		    visitor.proposals.addIdentifier(identifier);
 		}
 
 		/**
@@ -9847,8 +9996,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   boolean hasComma) {
 
 			if ((index == 0) || hasComma) {
-				addFunctionIdentifiers(GroupByItemBNF.ID);
-				addIdentificationVariables();
+			    visitor.addFunctionIdentifiers(GroupByItemBNF.ID);
+			    visitor.addIdentificationVariables();
 			}
 		}
 
@@ -9856,7 +10005,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(GroupByClause expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getGroupByItems());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getGroupByItems());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -9898,27 +10047,37 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(GroupByClause expression, int index) {
-			return AbstractContentAssistVisitor.this.getQueryBNF(GroupByItemBNF.ID);
+			return visitor.getQueryBNF(GroupByItemBNF.ID);
 		}
 	}
 
-	protected class GroupByClauseStatementHelper extends AbstractGroupByClauseStatementHelper<SelectStatement> {
+    // Made static final for performance reasons.
+	protected static final class GroupByClauseStatementHelper extends AbstractGroupByClauseStatementHelper<SelectStatement> {
+
+	    protected GroupByClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public HavingClauseStatementHelper getNextHelper() {
-			return getHavingClauseStatementHelper();
+			return visitor.getHavingClauseStatementHelper();
 		}
 	}
 
-	protected class HavingClauseStatementHelper extends AbstractHavingClauseStatementHelper<SelectStatement> {
+    // Made static final for performance reasons.
+	protected static final class HavingClauseStatementHelper extends AbstractHavingClauseStatementHelper<SelectStatement> {
+
+        protected HavingClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public OrderByClauseStatementHelper getNextHelper() {
-			return getOrderByClauseStatementHelper();
+			return visitor.getOrderByClauseStatementHelper();
 		}
 
 		/**
@@ -9929,10 +10088,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * The various ways of retrieving identification variables from the declaration expression.
 	 */
-	protected enum IdentificationVariableType {
+	protected static enum IdentificationVariableType {
 
 		/**
 		 * Retrieves all the identification variables declared in the declaration portion of the
@@ -10121,6 +10281,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                               Expression expression);
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * This visitor is used when a clause or a compound expression was parsed with a collection of
 	 * expressions representing an invalid fragment.
@@ -10132,7 +10293,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * this one just means it's incomplete and "GROUP B" is the beginning of the <code><b>GROUP BY</b></code>
 	 * clause.
 	 */
-	protected class IncompleteCollectionExpressionVisitor extends AbstractExpressionVisitor {
+	protected static class IncompleteCollectionExpressionVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The clause being visited, which is marked by its JPQL identifier.
@@ -10317,11 +10478,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor determines if the visited {@link Expression} is one of the two that represents
 	 * an invalid expression.
 	 */
-	protected static class InvalidExpressionVisitor extends AbstractExpressionVisitor {
+	protected static final class InvalidExpressionVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The invalid {@link Expression}, which is either {@link UnknownExpression} or {@link BadExpression}.
@@ -10362,7 +10524,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class JoinCollectionHelper implements CollectionExpressionHelper<IdentificationVariableDeclaration> {
+    // Made static final for performance reasons.
+	protected static final class JoinCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<IdentificationVariableDeclaration> {
+
+	    protected JoinCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -10378,7 +10546,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(IdentificationVariableDeclaration expression, String identifier) {
-			proposals.addIdentifier(identifier);
+		    visitor.proposals.addIdentifier(identifier);
 		}
 
 		/**
@@ -10389,14 +10557,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   int index,
 		                                   boolean hasComma) {
 
-			addJoinIdentifiers();
+		    visitor.addJoinIdentifiers();
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(IdentificationVariableDeclaration expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getJoins());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getJoins());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -10438,15 +10606,16 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(IdentificationVariableDeclaration expression, int index) {
-			return AbstractContentAssistVisitor.this.getQueryBNF(InternalJoinBNF.ID);
+			return visitor.getQueryBNF(InternalJoinBNF.ID);
 		}
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * A collector is responsible to retrieve the possible proposals by using the mappings that can
 	 * complete a path expression.
 	 */
-	protected interface MappingCollector {
+	protected static interface MappingCollector {
 
 		/**
 		 * Retrieves the possible proposals that can be used to complete a path expression based on
@@ -10457,16 +10626,27 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		Collection<IMapping> buildProposals();
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor is responsible to create the right {@link Filter} based on the type of the {@link Expression}.
 	 */
-	protected class MappingFilterBuilder extends AbstractTraverseParentVisitor {
+	protected static final class MappingFilterBuilder extends AbstractTraverseParentVisitor {
 
-		/**
+        /**
+         * Enclosing visitor instance.
+         */
+        protected final AbstractContentAssistVisitor visitor;
+
+        /**
 		 * The {@link Filter} that will filter the various type of {@link IMapping IMappings} based
 		 * on the location of the of the path expression within the JPQL query.
 		 */
 		protected Filter<IMapping> filter;
+
+        protected MappingFilterBuilder(AbstractContentAssistVisitor visitor) {
+            super();
+            this.visitor = visitor;
+        }
 
 		/**
 		 * Disposes of the internal data.
@@ -10480,7 +10660,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(AbsExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10488,7 +10668,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(AvgFunction expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10496,7 +10676,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(BetweenExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10504,7 +10684,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(CoalesceExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10512,7 +10692,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(CollectionMemberDeclaration expression) {
-			filter = getMappingCollectionFilter();
+			filter = visitor.getMappingCollectionFilter();
 		}
 
 		/**
@@ -10520,7 +10700,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(CollectionValuedPathExpression expression) {
-			filter = getMappingCollectionFilter();
+			filter = visitor.getMappingCollectionFilter();
 		}
 
 		/**
@@ -10528,7 +10708,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(ConcatExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10536,7 +10716,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(CountFunction expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10544,7 +10724,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(EmptyCollectionComparisonExpression expression) {
-			filter = getMappingCollectionFilter();
+			filter = visitor.getMappingCollectionFilter();
 		}
 
 		/**
@@ -10552,7 +10732,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(FunctionExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10573,7 +10753,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(Join expression) {
-			filter = getMappingCollectionFilter();
+			filter = visitor.getMappingCollectionFilter();
 		}
 
 		/**
@@ -10581,7 +10761,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(JPQLExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10589,7 +10769,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(LengthExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10597,7 +10777,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(LocateExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10605,7 +10785,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(LowerExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10613,7 +10793,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(MaxFunction expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10621,7 +10801,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(MinFunction expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10629,7 +10809,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(ModExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10637,7 +10817,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(NullComparisonExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10658,7 +10838,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(SizeExpression expression) {
-			filter = getMappingCollectionFilter();
+			filter = visitor.getMappingCollectionFilter();
 		}
 
 		/**
@@ -10666,7 +10846,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(SqrtExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10674,7 +10854,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(SubstringExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10682,7 +10862,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(SumFunction expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10690,7 +10870,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(TreatExpression expression) {
-			filter = getMappingCollectionFilter();
+			filter = visitor.getMappingCollectionFilter();
 		}
 
 		/**
@@ -10698,7 +10878,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(TrimExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10706,7 +10886,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(UpperExpression expression) {
-			filter = getMappingPropertyFilter();
+			filter = visitor.getMappingPropertyFilter();
 		}
 
 		/**
@@ -10736,11 +10916,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This {@link Filter} is responsible to filter out the mappings that can't have their type
 	 * assignable to the one passed in.
 	 */
-	protected class MappingTypeFilter implements Filter<IMapping> {
+	protected static final class MappingTypeFilter
+	        extends AbstractVisitorHelper implements Filter<IMapping> {
 
 		/**
 		 * The type used to determine if the mapping's type is a valid type.
@@ -10752,8 +10934,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 *
 		 * @param type The type used to determine if the mapping's type is a valid type
 		 */
-		MappingTypeFilter(IType type) {
-			super();
+		MappingTypeFilter(IType type, AbstractContentAssistVisitor visitor) {
+			super(visitor);
 			this.type = type;
 		}
 
@@ -10771,12 +10953,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 			// Determine if it's assignable to the desired type
 			IType mappingType = value.getType();
-			mappingType = queryContext.getTypeHelper().convertPrimitive(mappingType);
+			mappingType = visitor.queryContext.getTypeHelper().convertPrimitive(mappingType);
 			return mappingType.isAssignableTo(type);
 		}
 	}
 
-	protected class NotExpressionVisitor extends AbstractExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class NotExpressionVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The {@link NotExpression} if it is the {@link Expression} being visited otherwise <code>null</code>.
@@ -10809,7 +10992,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class OrderByClauseCollectionHelper implements CollectionExpressionHelper<AbstractOrderByClause> {
+    // Made static final for performance reasons.
+	protected static final class OrderByClauseCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<AbstractOrderByClause> {
+
+        protected OrderByClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -10823,8 +11012,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			OrderByItem item = (OrderByItem) collectionExpression.getChild(index);
 
 			if (item.getOrdering() == Ordering.DEFAULT) {
-				AbstractContentAssistVisitor.this.addIdentifier(ASC);
-				AbstractContentAssistVisitor.this.addIdentifier(DESC);
+			    visitor.addIdentifier(ASC);
+			    visitor.addIdentifier(DESC);
 			}
 		}
 
@@ -10832,7 +11021,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(AbstractOrderByClause expression, String identifier) {
-			proposals.addIdentifier(identifier);
+		    visitor.proposals.addIdentifier(identifier);
 		}
 
 		/**
@@ -10844,8 +11033,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   boolean hasComma) {
 
 			if ((index == 0) || hasComma) {
-				addIdentificationVariables();
-				addResultVariables();
+			    visitor.addIdentificationVariables();
+			    visitor.addResultVariables();
 			}
 		}
 
@@ -10853,7 +11042,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(AbstractOrderByClause expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getOrderByItems());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getOrderByItems());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -10895,17 +11084,23 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(AbstractOrderByClause expression, int index) {
-			return AbstractContentAssistVisitor.this.getQueryBNF(OrderByItemBNF.ID);
+			return visitor.getQueryBNF(OrderByItemBNF.ID);
 		}
 	}
 
-	protected class OrderByClauseStatementHelper implements StatementHelper<SelectStatement> {
+    // Made static for performance reasons.
+	protected static class OrderByClauseStatementHelper
+	        extends AbstractVisitorHelper implements StatementHelper<SelectStatement> {
+
+        protected OrderByClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addCompositeIdentifier(ORDER_BY, -1);
+		    visitor.addCompositeIdentifier(ORDER_BY, -1);
 		}
 
 		/**
@@ -10947,7 +11142,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(SelectStatement expression) {
-			return isComplete(expression.getOrderByClause());
+			return visitor.isComplete(expression.getOrderByClause());
 		}
 
 		/**
@@ -10958,7 +11153,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class PropertyMappingFilter implements Filter<IMapping> {
+    // Made static final for performance reasons.
+	protected static final class PropertyMappingFilter implements Filter<IMapping> {
 
 		/**
 		 * {@inheritDoc}
@@ -10969,7 +11165,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class RangeVariableDeclarationVisitor extends AbstractExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class RangeVariableDeclarationVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The {@link RangeVariableDeclaration} if it was visited otherwise <code>null</code>.
@@ -10992,7 +11189,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class ResultVariableVisitor extends AbstractExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class ResultVariableVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The {@link ResultVariable} if it was visited otherwise <code>null</code>.
@@ -11015,9 +11213,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class SelectClauseCollectionHelper extends AbstractSelectClauseCollectionHelper<SelectClause> {
+    // Made static final for performance reasons.
+	protected static final class SelectClauseCollectionHelper extends AbstractSelectClauseCollectionHelper<SelectClause> {
 
-		/**
+        protected SelectClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		@Override
@@ -11033,8 +11236,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 			// "SELECT e |" <- Valid to add AS
 			// "SELECT AVG(e |" <- Invalid to add AS
-			if (virtualSpace && isComplete(child)) {
-				AbstractContentAssistVisitor.this.addIdentifier(AS);
+			if (virtualSpace && visitor.isComplete(child)) {
+			    visitor.addIdentifier(AS);
 			}
 		}
 
@@ -11050,7 +11253,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			super.addTheBeginningOfChild(expression, collectionExpression, index, hasComma);
 
 			if (index == 0) {
-				AbstractContentAssistVisitor.this.addIdentifier(DISTINCT);
+			    visitor.addIdentifier(DISTINCT);
 			}
 		}
 
@@ -11074,37 +11277,57 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class SelectClauseStatementHelper extends AbstractSelectClauseStatementHelper {
+    // Made static final for performance reasons.
+	protected static final class SelectClauseStatementHelper extends AbstractSelectClauseStatementHelper {
+
+	    protected SelectClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public FromClauseStatementHelper getNextHelper() {
-			return getFromClauseStatementHelper();
+			return visitor.getFromClauseStatementHelper();
 		}
 	}
 
-	protected class SimpleFromClauseStatementHelper extends AbstractFromClauseStatementHelper<SimpleSelectStatement> {
+    // Made static for performance reasons.
+	protected static class SimpleFromClauseStatementHelper extends AbstractFromClauseStatementHelper<SimpleSelectStatement> {
+
+        protected SimpleFromClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public SimpleWhereClauseSelectStatementHelper getNextHelper() {
-			return getSimpleWhereClauseSelectStatementHelper();
+			return visitor.getSimpleWhereClauseSelectStatementHelper();
 		}
 	}
 
-	protected class SimpleGroupByClauseStatementHelper extends AbstractGroupByClauseStatementHelper<SimpleSelectStatement> {
+    // Made static final for performance reasons.
+	protected static final class SimpleGroupByClauseStatementHelper extends AbstractGroupByClauseStatementHelper<SimpleSelectStatement> {
+
+        protected SimpleGroupByClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public SimpleHavingClauseStatementHelper getNextHelper() {
-			return getSimpleHavingClauseStatementHelper();
+			return visitor.getSimpleHavingClauseStatementHelper();
 		}
 	}
 
-	protected class SimpleHavingClauseStatementHelper extends AbstractHavingClauseStatementHelper<SimpleSelectStatement> {
+    // Made static final for performance reasons.
+	protected static final class SimpleHavingClauseStatementHelper extends AbstractHavingClauseStatementHelper<SimpleSelectStatement> {
+
+        protected SimpleHavingClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -11121,34 +11344,51 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class SimpleSelectClauseCollectionHelper extends AbstractSelectClauseCollectionHelper<SimpleSelectClause> {
+    // Made static final for performance reasons.
+	protected static final class SimpleSelectClauseCollectionHelper extends AbstractSelectClauseCollectionHelper<SimpleSelectClause> {
+
+	    protected SimpleSelectClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
 	}
 
-	protected class SimpleSelectClauseStatementHelper extends AbstractSelectClauseStatementHelper {
+    // Made static final for performance reasons.
+	protected static final class SimpleSelectClauseStatementHelper extends AbstractSelectClauseStatementHelper {
+
+        protected SimpleSelectClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public StatementHelper<SimpleSelectStatement> getNextHelper() {
-			return getSimpleFromClauseStatementHelper();
+			return visitor.getSimpleFromClauseStatementHelper();
 		}
 	}
 
-	protected class SimpleWhereClauseSelectStatementHelper extends AbstractWhereClauseSelectStatementHelper<SimpleSelectStatement> {
+    // Made static final for performance reasons.
+	protected static final class SimpleWhereClauseSelectStatementHelper extends AbstractWhereClauseSelectStatementHelper<SimpleSelectStatement> {
 
-		/**
+        protected SimpleWhereClauseSelectStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		public StatementHelper<SimpleSelectStatement> getNextHelper() {
-			return getSimpleGroupByClauseStatementHelper();
+			return visitor.getSimpleGroupByClauseStatementHelper();
 		}
 	}
 
+    // Made static for performance reasons.
 	/**
 	 * This helper helps to add JPQL identifiers for the clauses that make up a query statement and
 	 * also chains the clauses within the query.
 	 */
-	protected interface StatementHelper<T extends Expression> {
+	protected static interface StatementHelper<T extends Expression> {
 
 		/**
 		 * Adds the JPQL identifier of the clause being scanned by this helper.
@@ -11220,7 +11460,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		boolean isRequired();
 	}
 
-	protected class SubqueryAppendableExpressionVisitor extends AbstractAppendableExpressionVisitor {
+    // Made static final for performance reasons.
+	protected static final class SubqueryAppendableExpressionVisitor extends AbstractAppendableExpressionVisitor {
 
 		/**
 		 * For a subquery <code><b>SELECT</b></code> clause identifier to be appendable, it has to be
@@ -11255,10 +11496,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor determines if an {@link Expression} is in a subquery.
 	 */
-	protected class SubqueryVisitor extends AbstractTraverseParentVisitor {
+	protected static final class SubqueryVisitor extends AbstractTraverseParentVisitor {
 
 		/**
 		 * The subquery {@link Expression} if it's the first clause visitor. Otherwise it will be
@@ -11292,9 +11534,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class TripleEncapsulatedCollectionHelper implements CollectionExpressionHelper<AbstractTripleEncapsulatedExpression> {
+    // Made static final for performance reasons.
+	protected static final class TripleEncapsulatedCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<AbstractTripleEncapsulatedExpression> {
 
-		/**
+        protected TripleEncapsulatedCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		public void addAtTheEndOfChild(AbstractTripleEncapsulatedExpression expression,
@@ -11312,18 +11560,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 				if ((index == 0) && !virtualSpace) {
 
-					if (areArithmeticSymbolsAppendable(child)) {
-						addArithmeticIdentifiers();
+					if (visitor.areArithmeticSymbolsAppendable(child)) {
+					    visitor.addArithmeticIdentifiers();
 					}
 				}
 				else {
 
-					if (areArithmeticSymbolsAppendable(child)) {
-						addArithmeticIdentifiers();
+					if (visitor.areArithmeticSymbolsAppendable(child)) {
+					    visitor.addArithmeticIdentifiers();
 					}
 
-					if (areComparisonSymbolsAppendable(child)) {
-						addComparisonIdentifiers(child);
+					if (visitor.areComparisonSymbolsAppendable(child)) {
+					    visitor.addComparisonIdentifiers(child);
 					}
 				}
 			}
@@ -11333,8 +11581,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(AbstractTripleEncapsulatedExpression expression, String identifier) {
-			proposals.addIdentifier(identifier);
-			addFunctionIdentifiers(expression);
+		    visitor.proposals.addIdentifier(identifier);
+		    visitor.addFunctionIdentifiers(expression);
 		}
 
 		/**
@@ -11345,8 +11593,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   int index,
 		                                   boolean hasComma) {
 
-			addIdentificationVariables();
-			addFunctionIdentifiers(queryBNF(expression, index));
+		    visitor.addIdentificationVariables();
+		    visitor.addFunctionIdentifiers(queryBNF(expression, index));
 		}
 
 		/**
@@ -11393,17 +11641,23 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(AbstractTripleEncapsulatedExpression expression, int index) {
-			return getQueryBNF(expression.getParameterQueryBNFId(index));
+			return visitor.getQueryBNF(expression.getParameterQueryBNFId(index));
 		}
 	}
 
-	protected class UpdateClauseStatementHelper implements StatementHelper<UpdateStatement> {
+    // Made static final for performance reasons.
+	protected static final class UpdateClauseStatementHelper
+	        extends AbstractVisitorHelper implements StatementHelper<UpdateStatement> {
 
-		/**
+        protected UpdateClauseStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addIdentifier(UPDATE);
+		    visitor.addIdentifier(UPDATE);
 		}
 
 		/**
@@ -11424,7 +11678,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public StatementHelper<UpdateStatement> getNextHelper() {
-			return getWhereClauseUpdateStatementHelper();
+			return visitor.getWhereClauseUpdateStatementHelper();
 		}
 
 		/**
@@ -11445,7 +11699,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(UpdateStatement expression) {
-			return isComplete(expression.getUpdateClause());
+			return visitor.isComplete(expression.getUpdateClause());
 		}
 
 		/**
@@ -11456,7 +11710,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class UpdateItemCollectionHelper implements CollectionExpressionHelper<UpdateClause> {
+    // Made static final for performance reasons.
+	protected static final class UpdateItemCollectionHelper
+	        extends AbstractVisitorHelper implements CollectionExpressionHelper<UpdateClause> {
+
+        protected UpdateItemCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
@@ -11467,14 +11727,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                               boolean hasComma,
 		                               boolean virtualSpace) {
 
-			addAggregateIdentifiers(NewValueBNF.ID);
+		    visitor.addAggregateIdentifiers(NewValueBNF.ID);
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addIdentifier(UpdateClause expression, String identifier) {
-			proposals.addIdentifier(identifier);
+		    visitor.proposals.addIdentifier(identifier);
 		}
 
 		/**
@@ -11485,14 +11745,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		                                   int index,
 		                                   boolean hasComma) {
 
-			addIdentificationVariables();
+		    visitor.addIdentificationVariables();
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(UpdateClause expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getUpdateItems());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getUpdateItems());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
 			}
@@ -11539,10 +11799,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(UpdateClause expression, int index) {
-			return AbstractContentAssistVisitor.this.getQueryBNF(NewValueBNF.ID);
+			return visitor.getQueryBNF(NewValueBNF.ID);
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This visitor is meant to adjust the corrections stack when traversing an {@link Expression} in
 	 * order to increase the list of valid proposals.
@@ -11552,14 +11813,23 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * However, due to how {@link AbstractContentAssistVisitor} works, the identifier <code>INDEX</code>
 	 * is not added as a valid proposal. This visitor adds that functionality.
 	 */
-	protected class VisitParentVisitor extends AnonymousExpressionVisitor {
+	protected static final class VisitParentVisitor extends AnonymousExpressionVisitor {
+
+	    /**
+         * Enclosing visitor instance.
+         */
+        protected final AbstractContentAssistVisitor visitor;
+
+	    protected VisitParentVisitor(AbstractContentAssistVisitor visitor) {
+            this.visitor = visitor;
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
 		protected void visit(Expression expression) {
-			expression.getParent().accept(AbstractContentAssistVisitor.this);
+			expression.getParent().accept(visitor);
 		}
 
 		/**
@@ -11568,7 +11838,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		@Override
 		public void visit(InExpression expression) {
 
-			int position = queryPosition.getPosition(expression) - corrections.peek();
+			int position = visitor.queryPosition.getPosition(expression) - visitor.corrections.peek();
 			int length = 0;
 
 			if (expression.hasExpression()) {
@@ -11576,19 +11846,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			}
 
 			// Within "IN"
-			if (isPositionWithin(position, length, expression.getIdentifier())) {
+			if (visitor.isPositionWithin(position, length, expression.getIdentifier())) {
 
 				boolean hasOnlyIdentifier = !expression.hasExpression() &&
 				                            !expression.hasInItems();
 
 				if (hasOnlyIdentifier) {
-					corrections.add(queryPosition.getPosition(expression));
+				    visitor.corrections.add(visitor.queryPosition.getPosition(expression));
 				}
 
 				super.visit(expression);
 
 				if (hasOnlyIdentifier) {
-					corrections.pop();
+				    visitor.corrections.pop();
 				}
 			}
 			else {
@@ -11597,16 +11867,21 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+    // Made static final for performance reasons.
 	/**
 	 * This helpers handles adding proposals for {@link WhenClause}.
 	 */
-	protected class WhenClauseConditionalClauseCollectionHelper extends AbstractConditionalClauseCollectionHelper<WhenClause> {
+	protected static final class WhenClauseConditionalClauseCollectionHelper extends AbstractConditionalClauseCollectionHelper<WhenClause> {
 
-		/**
+        protected WhenClauseConditionalClauseCollectionHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		public CollectionExpression buildCollectionExpression(WhenClause expression) {
-			CollectionExpression collectionExpression = getCollectionExpression(expression.getWhenExpression());
+			CollectionExpression collectionExpression = visitor.getCollectionExpression(expression.getWhenExpression());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildWhenCollectionExpression();
 			}
@@ -11621,13 +11896,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class WhereClauseDeleteStatementHelper implements StatementHelper<DeleteStatement> {
+    // Made static final for performance reasons.
+	protected static final class WhereClauseDeleteStatementHelper
+	        extends AbstractVisitorHelper implements StatementHelper<DeleteStatement> {
 
-		/**
+        protected WhereClauseDeleteStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
+
+        /**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addIdentifier(WHERE);
+		    visitor.addIdentifier(WHERE);
 		}
 
 		/**
@@ -11669,7 +11950,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(DeleteStatement expression) {
-			return isComplete(expression.getWhereClause());
+			return visitor.isComplete(expression.getWhereClause());
 		}
 
 		/**
@@ -11680,23 +11961,34 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class WhereClauseSelectStatementHelper extends AbstractWhereClauseSelectStatementHelper<SelectStatement> {
+    // Made static final for performance reasons.
+	protected static final class WhereClauseSelectStatementHelper extends AbstractWhereClauseSelectStatementHelper<SelectStatement> {
+
+        protected WhereClauseSelectStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public StatementHelper<SelectStatement> getNextHelper() {
-			return getGroupByClauseStatementHelper();
+			return visitor.getGroupByClauseStatementHelper();
 		}
 	}
 
-	protected class WhereClauseUpdateStatementHelper implements StatementHelper<UpdateStatement> {
+    // Made static final for performance reasons.
+	protected static final class WhereClauseUpdateStatementHelper
+	        extends AbstractVisitorHelper implements StatementHelper<UpdateStatement> {
+
+        protected WhereClauseUpdateStatementHelper(AbstractContentAssistVisitor visitor) {
+            super(visitor);
+        }
 
 		/**
 		 * {@inheritDoc}
 		 */
 		public void addClauseProposals() {
-			addIdentifier(WHERE);
+		    visitor.addIdentifier(WHERE);
 		}
 
 		/**
@@ -11738,7 +12030,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean isClauseComplete(UpdateStatement expression) {
-			return isComplete(expression.getWhereClause());
+			return visitor.isComplete(expression.getWhereClause());
 		}
 
 		/**
@@ -11749,7 +12041,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class WithinInvalidExpressionVisitor extends AbstractTraverseParentVisitor {
+    // Made static final for performance reasons.
+	protected static final class WithinInvalidExpressionVisitor extends AbstractTraverseParentVisitor {
 
 		/**
 		 * Determines whether the visited {@link Expression} is an descendant of either a bad or
