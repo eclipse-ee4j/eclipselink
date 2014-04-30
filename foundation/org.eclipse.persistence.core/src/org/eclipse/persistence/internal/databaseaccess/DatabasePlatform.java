@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -16,9 +16,11 @@
  *     Vikram Bhatia - added method for releasing temporary LOBs after conversion
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
- *     02/04/2013-2.5 Guy Pelletier 
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ *     04/30/2014-2.6 Lukas Jungmann
+ *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
@@ -2181,7 +2183,11 @@ public class DatabasePlatform extends DatasourcePlatform {
     public boolean shouldPrintStoredProcedureArgumentNameInCall(){
         return true;
     }
-    
+
+    public boolean shouldPrintForUpdateClause() {
+        return true;
+    }
+
     public boolean shouldTrimStrings() {
         return shouldTrimStrings;
     }

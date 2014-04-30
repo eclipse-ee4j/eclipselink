@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -35,6 +35,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.config.CacheUsage;
+import org.eclipse.persistence.config.PessimisticLock;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.config.ResultSetConcurrency;
@@ -49,7 +50,6 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Engineer;
@@ -118,7 +118,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READLock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITELock"));
         suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_READ_TIMEOUTLock"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITE_TIMEOUTLock"));        
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_WRITE_TIMEOUTLock"));
+        suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTICLockWithLimit"));
         suite.addTest(new AdvancedQueryTestSuite("testObjectResultType"));
         suite.addTest(new AdvancedQueryTestSuite("testNativeResultType"));
         suite.addTest(new AdvancedQueryTestSuite("testCursors"));
@@ -2703,7 +2704,68 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 reset.setLastName(lastName);
             }
             commitTransaction(em);
-            closeEntityManagerAndTransaction(em);            
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+
+    public void testQueryPESSIMISTICLockWithLimit() throws InterruptedException {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createQuery("Select e from Employee e");
+            query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
+            query.setFirstResult(5);
+            query.setMaxResults(2);
+            List<Employee> results = query.getResultList();
+            final Employee e = results.get(0);
+            final String name = e.getFirstName();
+            if (results.size() > 2) {
+                fail("Should have only returned 2 objects but was: " + results.size());
+            }
+            clearCache();
+
+            final EntityManager em2 = createEntityManager();
+            try {
+                // P2 (Non-repeatable read)
+                Runnable runnable = new Runnable() {
+                    @Override
+                        public void run() {
+                        try {
+                            beginTransaction(em2);
+                            Query query2 = em2.createQuery("select e from Employee e where e.id = :id");
+                            query2.setParameter("id", e.getId());
+                            query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                            Employee emp = (Employee) query2.getSingleResult(); // might wait for lock to be released
+                            emp.setFirstName("Trouba");
+                            commitTransaction(em2); // might wait for lock to be released
+                        } catch (javax.persistence.RollbackException ex) {
+                            if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1) {
+                                ex.printStackTrace();
+                                fail("it's not the right exception:" + ex);
+                            }
+                        }
+                    }
+                };
+
+                Thread t2 = new Thread(runnable);
+                t2.start();
+                Thread.sleep(1000); // allow t2 to attempt update
+                em.refresh(e);
+                assertTrue("pessimistic lock failed: parallel transaction modified locked entity (non-repeatable read)", name.equals(e.getFirstName()));
+                rollbackTransaction(em); // release lock
+                t2.join(); // wait until t2 finished
+            } finally {
+                if (isTransactionActive(em2)) {
+                    rollbackTransaction(em2);
+                }
+                closeEntityManager(em2);
+            }
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 }

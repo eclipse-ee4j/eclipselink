@@ -9,9 +9,11 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     20/11/2012-2.5 Guy Pelletier  
+ *     20/11/2012-2.5 Guy Pelletier
  *       - 394524: Invalid query key [...] in expression
- ******************************************************************************/  
+ *     04/30/2014-2.6 Lukas Jungmann
+ *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+ ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -506,7 +508,9 @@ public class SQLSelectStatement extends SQLStatement {
         List<DatabaseTable> outerJoinedAliases = new ArrayList(4); // Must keep track of tables used for outer join so no normal join is given
 
         // prepare to lock tables if required
-        boolean shouldPrintUpdateClause = !printer.getPlatform().shouldPrintLockingClauseAfterWhereClause() && (getForUpdateClause() != null);
+        boolean shouldPrintUpdateClause = printer.getPlatform().shouldPrintForUpdateClause()
+                && !printer.getPlatform().shouldPrintLockingClauseAfterWhereClause()
+                && (getForUpdateClause() != null);
         Collection aliasesOfTablesToBeLocked = null;
         boolean shouldPrintUpdateClauseForAllTables = false;
         if (shouldPrintUpdateClause) {
@@ -731,6 +735,16 @@ public class SQLSelectStatement extends SQLStatement {
             printer.getWriter().write(" ");
             expression.printSQL(printer);
             printer.printString(")");
+        }
+    }
+
+    /**
+     * This method will append the for update clause to the end of the
+     * select statement.
+     */
+    public void appendForUpdateClause(ExpressionSQLPrinter printer) {
+        if (getForUpdateClause() != null) {
+            getForUpdateClause().printSQL(printer, this);
         }
     }
 
@@ -1700,11 +1714,9 @@ public class SQLSelectStatement extends SQLStatement {
                 appendOrderClauseToWriter(printer);
             }
 
-            if(printer.getPlatform().shouldPrintLockingClauseAfterWhereClause()) {
+            if(printer.getPlatform().shouldPrintLockingClauseAfterWhereClause() && printer.getPlatform().shouldPrintForUpdateClause()) {
                 // For pessimistic locking.
-                if (getForUpdateClause() != null) {
-                    getForUpdateClause().printSQL(printer, this);
-                }
+                appendForUpdateClause(printer);
             }
 
             if (hasUnionExpressions()) {

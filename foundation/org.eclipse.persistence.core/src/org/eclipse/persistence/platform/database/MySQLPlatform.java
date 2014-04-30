@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -11,10 +11,12 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Zoltan NAGY & tware - added implementation of updateMaxRowsForQuery
  *     09/14/2011-2.3.1 Guy Pelletier 
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU 
- *     02/04/2013-2.5 Guy Pelletier 
+ *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+ *     02/04/2013-2.5 Guy Pelletier
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ *     04/30/2014-2.6 Lukas Jungmann
+ *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+ ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -555,7 +557,16 @@ public class MySQLPlatform extends DatabasePlatform {
     public boolean shouldPrintStoredProcedureArgumentNameInCall(){
 	    return false;
     }
-   
+
+    /**
+     * INTERNAL:
+     * MySQL FOR UPDATE clause has to be the last
+     */
+    @Override
+    public boolean shouldPrintForUpdateClause(){
+        return false;
+    }
+
     /**
      * INTERNAL:
      * MySQL uses ' to allow identifier to have spaces.
@@ -671,6 +682,7 @@ public class MySQLPlatform extends DatabasePlatform {
 
         if (max <= 0 || !(this.shouldUseRownumFiltering())) {
             super.printSQLSelectStatement(call, printer, statement);
+            statement.appendForUpdateClause(printer);
             return;
         }
         statement.setUseUniqueFieldAliases(true);
@@ -679,6 +691,7 @@ public class MySQLPlatform extends DatabasePlatform {
         printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         printer.printString(", ");
         printer.printParameter(DatabaseCall.MAXROW_FIELD);
+        statement.appendForUpdateClause(printer);
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
     }
