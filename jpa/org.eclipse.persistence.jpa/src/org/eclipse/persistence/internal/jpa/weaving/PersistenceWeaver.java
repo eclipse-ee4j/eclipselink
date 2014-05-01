@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     19/04/2014-2.6 Lukas Jungmann
+ *       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
@@ -22,7 +24,9 @@ import javax.persistence.spi.ClassTransformer;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
+import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
@@ -90,7 +94,8 @@ public class PersistenceWeaver implements ClassTransformer {
                     classWriter = new ComputeClassWriter(loader, ClassWriter.COMPUTE_FRAMES);
                 }
                 ClassWeaver classWeaver = new ClassWeaver(classWriter, classDetails);
-                classReader.accept(classWeaver, 0);
+                ClassVisitor sv = new SerialVersionUIDAdder(classWeaver);
+                classReader.accept(sv, 0);
                 if (classWeaver.alreadyWeaved) {
                     ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                     return null;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -142,7 +142,7 @@ public class DynamicClassWriter {
     private void addConstructors(ClassWriter cw) {
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]), null, new String[] { Type.getInternalName(Serializable.class) });
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getType(parentClass).getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]));
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getType(parentClass).getInternalName(), "<init>", Type.getMethodDescriptor(Type.VOID_TYPE, new Type[0]), false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -176,15 +176,15 @@ public class DynamicClassWriter {
         String builtIn = SDOUtil.getBuiltInType(returnType);
         if (null != builtIn) {
             if (property.getType().isDataType() && !builtIn.equals(LIST)) {
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, GET + builtIn, "(I)" + propertyInstanceClassDescriptor);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, GET + builtIn, "(I)" + propertyInstanceClassDescriptor, false);
                 int iReturnOpcode = Type.getType(property.getType().getInstanceClass()).getOpcode(Opcodes.IRETURN);
                 mv.visitInsn(iReturnOpcode);
             } else {
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, GET, "(I)Ljava/lang/Object;");
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, GET, "(I)Ljava/lang/Object;", false);
                 mv.visitInsn(Opcodes.ARETURN);
             }
         } else {
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, GET, "(I)Ljava/lang/Object;");
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, GET, "(I)Ljava/lang/Object;", false);
             mv.visitInsn(Opcodes.ARETURN);
         }
         mv.visitMaxs(2, 1);
@@ -215,14 +215,14 @@ public class DynamicClassWriter {
             if (property.getType().isDataType() && !builtIn.equals(LIST)) {
                 iLoadOpcode = Type.getType(property.getType().getInstanceClass()).getOpcode(Opcodes.ILOAD);
                 mv.visitVarInsn(iLoadOpcode, 1);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, SET + builtIn, "(I" + propertyInstanceClassDescriptor + ")V");
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, SET + builtIn, "(I" + propertyInstanceClassDescriptor + ")V", false);
             } else {
                 mv.visitVarInsn(iLoadOpcode, 1);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, SET, "(ILjava/lang/Object;)V");
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, SET, "(ILjava/lang/Object;)V", false);
             }
         } else {
             mv.visitVarInsn(iLoadOpcode, 1);
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, SET, "(ILjava/lang/Object;)V");
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, typeImplClassDescriptor, SET, "(ILjava/lang/Object;)V", false);
         }
 
         mv.visitInsn(Opcodes.RETURN);
@@ -245,7 +245,7 @@ public class DynamicClassWriter {
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PROTECTED, method.getName(), Type.getMethodDescriptor(method), null, new String[] { Type.getInternalName(ObjectStreamException.class) });
 
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(parentClass), method.getName(), Type.getMethodDescriptor(method));
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(parentClass), method.getName(), Type.getMethodDescriptor(method), false);
         mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();

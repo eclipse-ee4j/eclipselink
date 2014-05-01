@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010-2011 Oracle. All rights reserved.
+ * Copyright (c) 2010-2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
@@ -52,11 +50,15 @@ public class SignatureImporter {
         return visitor.classes;
     }
 
-    class SignatureClassVisitor implements ClassVisitor {
+    class SignatureClassVisitor extends ClassVisitor {
 
         protected Map<String, ClassSignature> classes = new HashMap<String, ClassSignature>();
 
         protected ClassSignature sig = null;
+
+        SignatureClassVisitor() {
+        	super(Opcodes.ASM5);
+        }
 
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
             if ((access & Opcodes.ACC_PUBLIC) > 0) {
@@ -76,22 +78,6 @@ public class SignatureImporter {
                 this.sig.addMethod(name, desc);
             }
             return null;
-        }
-
-        public void visitInnerClass(String name, String outerName, String innerName, int access) {
-        }
-
-        public void visitOuterClass(String owner, String name, String desc) {
-        }
-
-        public void visitSource(String source, String debug) {
-        }
-
-        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            return null;
-        }
-
-        public void visitAttribute(Attribute attr) {
         }
 
         public void visitEnd() {

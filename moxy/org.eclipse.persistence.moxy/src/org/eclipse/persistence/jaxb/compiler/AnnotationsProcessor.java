@@ -4133,7 +4133,7 @@ public class AnnotationsProcessor {
         
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/many/MapValue", "<init>", "()V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -4172,7 +4172,7 @@ public class AnnotationsProcessor {
 
         mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "getItem", "()Ljava/lang/Object;", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON);
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON, false);
         mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -4181,7 +4181,7 @@ public class AnnotationsProcessor {
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitVarInsn(Opcodes.ALOAD, 1);
         mv.visitTypeInsn(Opcodes.CHECKCAST, mapType.getInternalName());
-        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L" + mapType.getInternalName() + ";)V");
+        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setItem", "(L" + mapType.getInternalName() + ";)V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
@@ -4412,7 +4412,7 @@ public class AnnotationsProcessor {
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(superType), "<init>", "()V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(superType), "<init>", "()V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -4441,7 +4441,7 @@ public class AnnotationsProcessor {
         	mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
         	mv.visitVarInsn(Opcodes.ALOAD, 0);
         	mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
-        	mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "size", "()I");
+        	mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "size", "()I", false);
         	mv.visitVarInsn(Opcodes.ISTORE, 1);
         	mv.visitVarInsn(Opcodes.ILOAD, 1);
         	mv.visitTypeInsn(Opcodes.ANEWARRAY, componentClassNameSeparatedBySlash);
@@ -4449,7 +4449,7 @@ public class AnnotationsProcessor {
         	mv.visitVarInsn(Opcodes.ALOAD, 0);
         	mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
         	mv.visitVarInsn(Opcodes.ALOAD, 2);
-        	mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;");
+        	mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;", true);
         	mv.visitInsn(Opcodes.POP);        	
         	
         	mv.visitVarInsn(Opcodes.ALOAD, 2);
@@ -4470,7 +4470,7 @@ public class AnnotationsProcessor {
         	mv.visitVarInsn(Opcodes.ASTORE, 2);
         	mv.visitVarInsn(Opcodes.ALOAD, 0);
         	mv.visitVarInsn(Opcodes.ALOAD, 2);
-        	mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;");
+        	mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;", false);
         	mv.visitFieldInsn(Opcodes.PUTFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
         	mv.visitInsn(Opcodes.RETURN);
         	mv.visitMaxs(2, 3);
@@ -4533,7 +4533,7 @@ public class AnnotationsProcessor {
 
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(superType), "getAdaptedValue", "()Ljava/util/Collection;");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(superType), "getAdaptedValue", "()Ljava/util/Collection;", false);
         mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -4545,7 +4545,7 @@ public class AnnotationsProcessor {
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitVarInsn(Opcodes.ALOAD, 1);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(superType), "setAdaptedValue", "(Ljava/util/Collection;)V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(superType), "setAdaptedValue", "(Ljava/util/Collection;)V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(2, 2);
         mv.visitEnd();

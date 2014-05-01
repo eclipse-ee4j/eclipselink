@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,19 +14,20 @@
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
+ *     19/04/2014-2.6 Lukas Jungmann
+ *       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
 import java.util.Iterator;
 
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
-import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
 
 /**
  * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.
@@ -38,7 +39,7 @@ import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAd
  * @see org.eclipse.persistence.internal.weaving.MethodWeaver
  */
 
-public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
+public class ClassWeaver extends ClassVisitor implements Opcodes {
 
     // PersistenceWeaved
     public static final String PERSISTENCE_WEAVED_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeaved";
@@ -155,28 +156,28 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         String wrapper = wrapperFor(attribute.getReferenceClassType().getSort());
         switch (attribute.getReferenceClassType().getSort()) {
             case Type.BOOLEAN:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "booleanValue", "()Z");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "booleanValue", "()Z", false);
                 return;
             case Type.BYTE:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "byteValue", "()B");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "byteValue", "()B", false);
                 return;
             case Type.CHAR:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "charValue", "()C");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "charValue", "()C", false);
                 return;
             case Type.SHORT:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "shortValue", "()S");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "shortValue", "()S", false);
                 return;
             case Type.INT:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "intValue", "()I");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "intValue", "()I", false);
                 return;
             case Type.FLOAT:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "floatValue", "()F");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "floatValue", "()F", false);
                 return;
             case Type.LONG:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "longValue", "()J");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "longValue", "()J", false);
                 return;
             case Type.DOUBLE:
-                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "doubleValue", "()D");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, wrapper, "doubleValue", "()D", false);
                 return;
         }
     }
@@ -211,8 +212,8 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         return isJAXBOnPath;
     }
 
-    public ClassWeaver(ClassWriter classWriter, ClassDetails classDetails) {
-        super(classWriter);
+    public ClassWeaver(ClassVisitor classWriter, ClassDetails classDetails) {
+        super(ASM5, classWriter);
         this.classDetails = classDetails;
     }
 
@@ -316,8 +317,8 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_addPC.visitVarInsn(ALOAD, 1);
         cv_addPC.visitVarInsn(ALOAD, 2);
         cv_addPC.visitVarInsn(ALOAD, 3);
-        cv_addPC.visitMethodInsn(INVOKESPECIAL, PCE_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
-        cv_addPC.visitMethodInsn(INVOKEINTERFACE, PCL_SHORT_SIGNATURE, "propertyChange", "(" + PCE_SIGNATURE + ")V");
+        cv_addPC.visitMethodInsn(INVOKESPECIAL, PCE_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", false);
+        cv_addPC.visitMethodInsn(INVOKEINTERFACE, PCL_SHORT_SIGNATURE, "propertyChange", "(" + PCE_SIGNATURE + ")V", true);
 
         // }
         cv_addPC.visitLabel(l0);
@@ -357,9 +358,9 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         if (attributeDetails.hasField()) {
             cv_init_VH.visitVarInsn(ALOAD, 0);
             cv_init_VH.visitFieldInsn(GETFIELD, className, attribute, attributeDetails.getReferenceClassType().getDescriptor());
-            cv_init_VH.visitMethodInsn(INVOKESPECIAL, VH_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;)V");
+            cv_init_VH.visitMethodInsn(INVOKESPECIAL, VH_SHORT_SIGNATURE, "<init>", "(Ljava/lang/Object;)V", false);
         } else {
-            cv_init_VH.visitMethodInsn(INVOKESPECIAL, VH_SHORT_SIGNATURE, "<init>", "()V");
+            cv_init_VH.visitMethodInsn(INVOKESPECIAL, VH_SHORT_SIGNATURE, "<init>", "()V", false);
         }
         cv_init_VH.visitFieldInsn(PUTFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
 
@@ -367,7 +368,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_init_VH.visitVarInsn(ALOAD, 0);
         cv_init_VH.visitFieldInsn(GETFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
         cv_init_VH.visitInsn(ICONST_1);
-        cv_init_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "setIsNewlyWeavedValueHolder", "(Z)V");
+        cv_init_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "setIsNewlyWeavedValueHolder", "(Z)V", true);
 
         // }
         cv_init_VH.visitLabel(l0);
@@ -395,18 +396,18 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
 
         // _persistence_initialize_attributeName_vh();
         cv_get_VH.visitVarInsn(ALOAD, 0);
-        cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
+        cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
 
         // if (_toplink_foo_vh.isCoordinatedWithProperty() ||
         // _toplink_foo_vh.isNewlyWeavedValueHolder()){
         cv_get_VH.visitVarInsn(ALOAD, 0);
         cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isCoordinatedWithProperty", "()Z");
+        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isCoordinatedWithProperty", "()Z", true);
         Label l0 = new Label();
         cv_get_VH.visitJumpInsn(IFNE, l0);
         cv_get_VH.visitVarInsn(ALOAD, 0);
         cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isNewlyWeavedValueHolder", "()Z");
+        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isNewlyWeavedValueHolder", "()Z", true);
         Label l1 = new Label();
         cv_get_VH.visitJumpInsn(IFEQ, l1);
         cv_get_VH.visitLabel(l0);
@@ -414,10 +415,10 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
 
         // EntityC object = (EntityC)getFoo();
         if (attributeDetails.getGetterMethodName() != null) {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";");
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
             cv_get_VH.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
         } else {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";");
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
         }
         cv_get_VH.visitVarInsn(ASTORE, 1);
 
@@ -425,16 +426,16 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_get_VH.visitVarInsn(ALOAD, 1);
         cv_get_VH.visitVarInsn(ALOAD, 0);
         cv_get_VH.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
-        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
+        cv_get_VH.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
         cv_get_VH.visitJumpInsn(IF_ACMPEQ, l1);
 
         // setFoo(object);
         cv_get_VH.visitVarInsn(ALOAD, 0);
         cv_get_VH.visitVarInsn(ALOAD, 1);
         if (attributeDetails.getSetterMethodName() != null) {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
         } else {
-            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
+            cv_get_VH.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
         }
 
         // }
@@ -471,22 +472,22 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
 
         // if (valueholderinterface.isInstantiated()){
         cv_set_value.visitVarInsn(ALOAD, 1);
-        cv_set_value.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isInstantiated", "()Z");
+        cv_set_value.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isInstantiated", "()Z", true);
         Label l0 = new Label();
         cv_set_value.visitJumpInsn(IFEQ, l0);
 
         // Object object = getFoo();
         cv_set_value.visitVarInsn(ALOAD, 0);
         if (attributeDetails.getGetterMethodName() != null) {
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";");
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getGetterMethodName(), "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
         } else {
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";");
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_GET + attributeDetails.attributeName, "()L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";", false);
         }
         cv_set_value.visitVarInsn(ASTORE, 2);
 
         // Object value = valueholderinterface.getValue();
         cv_set_value.visitVarInsn(ALOAD, 1);
-        cv_set_value.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
+        cv_set_value.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
         cv_set_value.visitVarInsn(ASTORE, 3);
 
         // if (object != value){
@@ -498,7 +499,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             cv_set_value.visitVarInsn(ALOAD, 0);
             cv_set_value.visitVarInsn(ALOAD, 3);
             cv_set_value.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, attributeDetails.getSetterMethodName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
             //}
             cv_set_value.visitLabel(l0);
         } else {
@@ -508,7 +509,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             cv_set_value.visitVarInsn(ALOAD, 0);
             cv_set_value.visitVarInsn(ALOAD, 3);
             cv_set_value.visitTypeInsn(CHECKCAST, attributeDetails.getReferenceClassName().replace('.', '/'));
-            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V");
+            cv_set_value.visitMethodInsn(INVOKEVIRTUAL, className, PERSISTENCE_SET + attributeDetails.getAttributeName(), "(L" + attributeDetails.getReferenceClassName().replace('.', '/') + ";)V", false);
             // }
             cv_set_value.visitLabel(l1);
             cv_set_value.visitFrame(F_SAME, 0, null, 0, null);
@@ -557,20 +558,20 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             cv_set.visitVarInsn(ALOAD, 0);
             cv_set.visitLdcInsn(attribute);
             // _persistence_checkFetchedForSet("variableName");
-            cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V");
+            cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", false);
         }
 
         if (classDetails.shouldWeaveChangeTracking()) {
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_variableName_vh();
                 cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
+                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
 
                 // _persistenc_variableName_vh.getValue();
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
+                cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
 
                 // Add the cast:
                 // (<VariableClass>)_persistenc_variableName_vh.getValue()
@@ -602,32 +603,32 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             if (wrapper != null) {
                 // invoke the constructor for wrapping
                 // e.g. new Integer(variableName)
-                cv_set.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                cv_set.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
 
                 // wrap the method argument
                 // e.g. new Integer(argument)
                 cv_set.visitTypeInsn(NEW, wrapper);
                 cv_set.visitInsn(DUP);
                 cv_set.visitVarInsn(opcode, 1);
-                cv_set.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V");
+                cv_set.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
             } else {
                 // if we are not wrapping the argument, just load it
                 cv_set.visitVarInsn(ALOAD, 1);
             }
             // _persistence_propertyChange("variableName", variableName,
             // argument);
-            cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V");
+            cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_propertyChange", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V", false);
         } else {
             if (attributeDetails.weaveValueHolders()) {
                 // _persistence_initialize_variableName_vh();
                 cv_set.visitVarInsn(ALOAD, 0);
-                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
+                cv_set.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
 
                 // _persistenc_variableName_vh.getValue();
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitVarInsn(ALOAD, 0);
                 cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
+                cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
 
                 // Add the cast:
                 // (<VariableClass>)_persistenc_variableName_vh.getValue()
@@ -651,7 +652,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             cv_set.visitVarInsn(ALOAD, 0);
             cv_set.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
             cv_set.visitVarInsn(ALOAD, 1);
-            cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "setValue", "(Ljava/lang/Object;)V");
+            cv_set.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "setValue", "(Ljava/lang/Object;)V", true);
         }
 
         cv_set.visitInsn(RETURN);
@@ -678,19 +679,19 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitLdcInsn(attribute);
             // _persistence_checkFetched("variableName");
-            cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetched", "(Ljava/lang/String;)V");
+            cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_checkFetched", "(Ljava/lang/String;)V", false);
         }
 
         if (attributeDetails.weaveValueHolders()) {
             // _persistence_initialize_variableName_vh();
             cv_get.visitVarInsn(ALOAD, 0);
-            cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V");
+            cv_get.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_initialize_" + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, "()V", false);
 
             // _persistenc_variableName_vh.getValue();
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-            cv_get.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;");
+            cv_get.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "getValue", "()Ljava/lang/Object;", true);
 
             // Add the cast:
             // (<VariableClass>)_persistenc_variableName_vh.getValue()
@@ -740,7 +741,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         // super._persistence_post_clone()
         if (classDetails.getSuperClassDetails() != null && classDetails.getSuperClassDetails().shouldWeaveInternal()) {
             cv_clone.visitVarInsn(ALOAD, 0);
-            cv_clone.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_post_clone", "()Ljava/lang/Object;");
+            cv_clone.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_post_clone", "()Ljava/lang/Object;", false);
         }
 
         if (classDetails.shouldWeaveValueHolders()) {
@@ -757,7 +758,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
                     cv_clone.visitVarInsn(ALOAD, 0);
                     cv_clone.visitVarInsn(ALOAD, 0);
                     cv_clone.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
-                    cv_clone.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "clone", "()Ljava/lang/Object;");
+                    cv_clone.visitMethodInsn(INVOKEINTERFACE, ClassWeaver.VHI_SHORT_SIGNATURE, "clone", "()Ljava/lang/Object;", true);
                     cv_clone.visitTypeInsn(CHECKCAST, ClassWeaver.VHI_SHORT_SIGNATURE);
                     cv_clone.visitFieldInsn(PUTFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + attributeDetails.getAttributeName() + PERSISTENCE_FIELDNAME_POSTFIX, ClassWeaver.VHI_SIGNATURE);
                     cv_clone.visitLabel(label);
@@ -854,7 +855,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
 
         // return super.clone();
         cv_clone.visitVarInsn(ALOAD, 0);
-        cv_clone.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "clone", "()Ljava/lang/Object;");
+        cv_clone.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "clone", "()Ljava/lang/Object;", false);
 
         cv_clone.visitInsn(ARETURN);
         cv_clone.visitMaxs(0, 0);
@@ -877,13 +878,13 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_new.visitTypeInsn(NEW, classDetails.getClassName());
         cv_new.visitInsn(DUP);
         if (!classDetails.canWeaveConstructorOptimization()) {
-            cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "()V");
+            cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "()V", false);
             cv_new.visitInsn(ARETURN);
             cv_new.visitMaxs(0, 0);
             return;
         } else {
             cv_new.visitVarInsn(ALOAD, 1);
-            cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V");
+            cv_new.visitMethodInsn(INVOKESPECIAL, classDetails.getClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", false);
         }
         cv_new.visitInsn(ARETURN);
         cv_new.visitMaxs(0, 0);
@@ -894,11 +895,11 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_constructor.visitVarInsn(ALOAD, 0);
         if (classDetails.getSuperClassDetails() == null) {
             // super();
-            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "()V");
+            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "()V", false);
         } else {
             // super(factory);
             cv_constructor.visitVarInsn(ALOAD, 1);
-            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V");
+            cv_constructor.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "<init>", "(" + PERSISTENCE_OBJECT_SIGNATURE + ")V", false);
         }
         cv_constructor.visitInsn(RETURN);
         cv_constructor.visitMaxs(0, 0);
@@ -939,7 +940,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
                 if (wrapper != null) {
                     // Call valueOf on the wrapper (more optimal than
                     // constructor).
-                    cv_get.visitMethodInsn(INVOKESTATIC, wrapper, "valueOf", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")L" + wrapper + ";");
+                    cv_get.visitMethodInsn(INVOKESTATIC, wrapper, "valueOf", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")L" + wrapper + ";", false);
                 }
 
                 cv_get.visitInsn(ARETURN);
@@ -955,7 +956,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         } else {
             cv_get.visitVarInsn(ALOAD, 0);
             cv_get.visitVarInsn(ALOAD, 1);
-            cv_get.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;");
+            cv_get.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_get", "(Ljava/lang/String;)Ljava/lang/Object;", false);
         }
 
         cv_get.visitInsn(ARETURN);
@@ -998,7 +999,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             cv_set.visitVarInsn(ALOAD, 0);
             cv_set.visitVarInsn(ALOAD, 1);
             cv_set.visitVarInsn(ALOAD, 2);
-            cv_set.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V");
+            cv_set.visitMethodInsn(INVOKESPECIAL, classDetails.getSuperClassName(), "_persistence_set", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
         }
 
         cv_set.visitInsn(RETURN);
@@ -1151,7 +1152,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_isAttributeFetched.visitVarInsn(ALOAD, 0);
         cv_isAttributeFetched.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_fetchGroup", FETCHGROUP_SIGNATURE);
         cv_isAttributeFetched.visitVarInsn(ALOAD, 1);
-        cv_isAttributeFetched.visitMethodInsn(INVOKEVIRTUAL, FETCHGROUP_SHORT_SIGNATURE, "containsAttributeInternal", "(Ljava/lang/String;)Z");
+        cv_isAttributeFetched.visitMethodInsn(INVOKEVIRTUAL, FETCHGROUP_SHORT_SIGNATURE, "containsAttributeInternal", "(Ljava/lang/String;)Z", false);
         Label gotoFalse = new Label();
         cv_isAttributeFetched.visitJumpInsn(IFEQ, gotoFalse);
         cv_isAttributeFetched.visitLabel(gotoTrue);
@@ -1167,13 +1168,13 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         MethodVisitor cv_checkFetched = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetched", "(Ljava/lang/String;)V", null, null);
         cv_checkFetched.visitVarInsn(ALOAD, 0);
         cv_checkFetched.visitVarInsn(ALOAD, 1);
-        cv_checkFetched.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z");
+        cv_checkFetched.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
         gotoReturn = new Label();
         cv_checkFetched.visitJumpInsn(IFNE, gotoReturn);
         cv_checkFetched.visitVarInsn(ALOAD, 0);
         cv_checkFetched.visitTypeInsn(CHECKCAST, FETCHGROUP_TRACKER_SHORT_SIGNATURE);
         cv_checkFetched.visitVarInsn(ALOAD, 1);
-        cv_checkFetched.visitMethodInsn(INVOKESTATIC, ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttribute", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V");
+        cv_checkFetched.visitMethodInsn(INVOKESTATIC, ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttribute", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V", false);
         cv_checkFetched.visitLabel(gotoReturn);
         cv_checkFetched.visitInsn(RETURN);
         cv_checkFetched.visitMaxs(0, 0);
@@ -1181,13 +1182,13 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         MethodVisitor cv_checkFetchedForSet = cv.visitMethod(ACC_PUBLIC, "_persistence_checkFetchedForSet", "(Ljava/lang/String;)V", null, null);
         cv_checkFetchedForSet.visitVarInsn(ALOAD, 0);
         cv_checkFetchedForSet.visitVarInsn(ALOAD, 1);
-        cv_checkFetchedForSet.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z");
+        cv_checkFetchedForSet.visitMethodInsn(INVOKEVIRTUAL, classDetails.getClassName(), "_persistence_isAttributeFetched", "(Ljava/lang/String;)Z", false);
         gotoReturn = new Label();
         cv_checkFetchedForSet.visitJumpInsn(IFNE, gotoReturn);
         cv_checkFetchedForSet.visitVarInsn(ALOAD, 0);
         cv_checkFetchedForSet.visitTypeInsn(CHECKCAST, FETCHGROUP_TRACKER_SHORT_SIGNATURE);
         cv_checkFetchedForSet.visitVarInsn(ALOAD, 1);
-        cv_checkFetchedForSet.visitMethodInsn(INVOKESTATIC, ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttributeForSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V");
+        cv_checkFetchedForSet.visitMethodInsn(INVOKESTATIC, ENTITY_MANAGER_IMPL_SHORT_SIGNATURE, "processUnfetchedAttributeForSet", "(" + FETCHGROUP_TRACKER_SIGNATURE + "Ljava/lang/String;)V", false);
         cv_checkFetchedForSet.visitLabel(gotoReturn);
         cv_checkFetchedForSet.visitInsn(RETURN);
         cv_checkFetchedForSet.visitMaxs(0, 0);
@@ -1201,15 +1202,6 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
      */
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-
-        // Capture original values for SerialVersionUID generation (if needed)
-        this.computeSVUID = (access & Opcodes.ACC_INTERFACE) == 0;
-        if (computeSVUID) {
-            this.name = name;
-            this.access = access;
-            this.interfaces = interfaces;
-        }
-
         boolean weaveCloneable = true;
         // To prevent 'double' weaving: scan for PersistenceWeaved interface.
         for (int index = 0; index < interfaces.length; index++) {
@@ -1372,15 +1364,6 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
      */
     public void visitEnd() {
         if (!alreadyWeaved) {
-
-            // Add 'serialversionUID' if one does not exist.
-            if (computeSVUID && !hasSVUID) {
-                try {
-                    cv.visitField(Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, "serialVersionUID", "J", null, new Long(computeSVUID()));
-                } catch (Throwable e) {
-                    throw new RuntimeException("Error while computing SVUID for " + name, e);
-                }
-            }
 
             if (this.classDetails.shouldWeaveInternal()) {
 

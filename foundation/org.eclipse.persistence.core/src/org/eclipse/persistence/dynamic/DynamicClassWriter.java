@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -186,7 +186,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         MethodVisitor mv = cw.visitMethod(ACC_STATIC, CLINIT, "()V", null, null);
         mv.visitTypeInsn(NEW, DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES);
         mv.visitInsn(DUP);
-        mv.visitMethodInsn(INVOKESPECIAL, DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES, INIT, "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES, INIT, "()V", false);
         mv.visitFieldInsn(PUTSTATIC, classNameAsSlashes, PROPERTIES_MANAGER_FIELD, "L" + DYNAMIC_PROPERTIES_MANAGER_CLASSNAME_SLASHES + ";");
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
@@ -196,7 +196,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         // }
         mv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, parentClassNameAsSlashes, INIT, "()V");
+        mv.visitMethodInsn(INVOKESPECIAL, parentClassNameAsSlashes, INIT, "()V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
 
@@ -254,7 +254,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         // Add the "values()" method
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "values", "()[L" + internalClassName + ";", null, null);
         mv.visitFieldInsn(GETSTATIC, internalClassName, "$VALUES", "[L" + internalClassName + ";");
-        mv.visitMethodInsn(INVOKEVIRTUAL, "[L" + internalClassName + ";", "clone", "()Ljava/lang/Object;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "[L" + internalClassName + ";", "clone", "()Ljava/lang/Object;", false);
         mv.visitTypeInsn(CHECKCAST, "[L" + internalClassName + ";");
         mv.visitInsn(ARETURN);
         mv.visitMaxs(1, 0);
@@ -263,7 +263,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "valueOf", "(Ljava/lang/String;)L" + internalClassName + ";", null, null);
         mv.visitLdcInsn(Type.getType("L" + internalClassName + ";"));
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Enum", "valueOf", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;");
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Enum", "valueOf", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;", false);
         mv.visitTypeInsn(CHECKCAST, internalClassName);
         mv.visitInsn(ARETURN);
         mv.visitMaxs(2, 1);
@@ -274,7 +274,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
         mv.visitVarInsn(ILOAD, 2);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Enum", "<init>", "(Ljava/lang/String;I)V");
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Enum", "<init>", "(Ljava/lang/String;I)V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(3, 3);
 
@@ -294,7 +294,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
             } else {
                 mv.visitIntInsn(SIPUSH, i);
             }
-            mv.visitMethodInsn(INVOKESPECIAL, internalClassName, "<init>", "(Ljava/lang/String;I)V");
+            mv.visitMethodInsn(INVOKESPECIAL, internalClassName, "<init>", "(Ljava/lang/String;I)V", false);
             mv.visitFieldInsn(PUTSTATIC, internalClassName, enumValue, "L" + internalClassName + ";");
             lastCount = i;
         }

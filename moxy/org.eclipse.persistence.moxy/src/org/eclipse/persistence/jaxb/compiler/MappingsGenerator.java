@@ -1975,7 +1975,7 @@ public class MappingsGenerator {
 
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -2013,7 +2013,7 @@ public class MappingsGenerator {
         if(!qualifiedInternalValueClassName.equals("java/lang/Object")){
 	        mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "getValue", "()Ljava/lang/Object;", null, null);
 	        mv.visitVarInsn(Opcodes.ALOAD, 0);
-	        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getValue", "()L"+qualifiedInternalValueClassName+";");
+	        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "getValue", "()L"+qualifiedInternalValueClassName+";", false);
 	        mv.visitInsn(Opcodes.ARETURN);
 	        mv.visitMaxs(1, 1);
 	        mv.visitEnd();
@@ -2022,7 +2022,7 @@ public class MappingsGenerator {
 	        mv.visitVarInsn(Opcodes.ALOAD, 0);
 	        mv.visitVarInsn(Opcodes.ALOAD, 1);
 	        mv.visitTypeInsn(Opcodes.CHECKCAST, qualifiedInternalValueClassName);
-	        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setValue", "(L"+qualifiedInternalValueClassName+";)V");
+	        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setValue", "(L"+qualifiedInternalValueClassName+";)V", false);
 	        mv.visitInsn(Opcodes.RETURN);
 	        mv.visitMaxs(2, 2);
 	        mv.visitEnd();
@@ -2031,7 +2031,7 @@ public class MappingsGenerator {
         if(!qualifiedInternalKeyClassName.equals("java/lang/Object")){
             mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_BRIDGE + Opcodes.ACC_SYNTHETIC, "getKey", "()Ljava/lang/Object;", null, null);
             mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,qualifiedInternalClassName, "getKey", "()L"+qualifiedInternalKeyClassName+";");
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,qualifiedInternalClassName, "getKey", "()L"+qualifiedInternalKeyClassName+";", false);
             mv.visitInsn(Opcodes.ARETURN);
             mv.visitMaxs(1, 1);
             mv.visitEnd();
@@ -2040,7 +2040,7 @@ public class MappingsGenerator {
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitVarInsn(Opcodes.ALOAD, 1);
             mv.visitTypeInsn(Opcodes.CHECKCAST, qualifiedInternalKeyClassName);
-            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setKey", "(L"+qualifiedInternalKeyClassName+";)V");
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, qualifiedInternalClassName, "setKey", "(L"+qualifiedInternalKeyClassName+";)V", false);
             mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(2, 2);
             mv.visitEnd();
@@ -3214,11 +3214,11 @@ public class MappingsGenerator {
 	        mv.visitInsn(Opcodes.DUP);
 	        mv.visitLdcInsn(theQName.getNamespaceURI());
 	        mv.visitLdcInsn(theQName.getLocalPart());
-	        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "javax/xml/namespace/QName", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
+	        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "javax/xml/namespace/QName", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V", false);
 	        mv.visitLdcInsn(Type.getType(fieldType));
 	        mv.visitInsn(Opcodes.ACONST_NULL);
 
-	        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/WrappedValue", "<init>", "(Ljavax/xml/namespace/QName;Ljava/lang/Class;Ljava/lang/Object;)V");
+	        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "org/eclipse/persistence/internal/jaxb/WrappedValue", "<init>", "(Ljavax/xml/namespace/QName;Ljava/lang/Class;Ljava/lang/Object;)V", false);
 	        mv.visitInsn(Opcodes.RETURN);
 	        mv.visitMaxs(5, 1);
 	        mv.visitEnd();
