@@ -62,7 +62,7 @@
 
         <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
         <!-- Version properties -->
-        <property name="release.version"               value="3.3.1"/>
+        <property name="release.version"               value="5.0.1"/>
         <!-- Project infrastructure properties -->
         <property name="src.dir"                       value="src"/>
         <property name="asm.classes.dir"             value="${asm.build.location}"/> <!-- "." -->
@@ -102,7 +102,7 @@
         </tstamp>
         <property name="build.type"            value="SNAPSHOT"/>
         <property name="svn.revision"          value="NA"/>
-        <property name="version.qualifier"     value="v201302191223"/>
+        <property name="version.qualifier"     value="v201405010958"/>
         <property name="version.string"        value="${release.version}.${version.qualifier}"/>
         <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
@@ -117,7 +117,6 @@
         <javac srcdir="${src.dir}"
                destdir="${asm.classes.dir}"
                includes="org/eclipse/persistence/**/*.java"
-               debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
                encoding="UTF-8"
                optimize="${javac.optimize}"

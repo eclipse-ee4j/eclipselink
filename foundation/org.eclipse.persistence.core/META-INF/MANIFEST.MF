@@ -171,7 +171,7 @@ Bundle-ClassPath: .
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.persistence.antlr;bundle-version="3.2.0";resolution:=optional,
- org.eclipse.persistence.asm;bundle-version="3.3.1";resolution:=optional
+ org.eclipse.persistence.asm;bundle-version="5.0.1";resolution:=optional
 Bundle-SymbolicName: org.eclipse.persistence.core
 Eclipse-ExtensibleAPI: true
 Bundle-Name: EclipseLink Core
