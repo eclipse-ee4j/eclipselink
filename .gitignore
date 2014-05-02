@@ -10,6 +10,7 @@ org.eclipse.persistence.moxy*jar
 org.eclipse.persistence.sdo*jar
 org.eclipse.persistence.nosql*jar
 org.eclipse.persistence.oracle*jar
+org.eclipse.persistence.extension*jar
 bin/
 target/
 class/

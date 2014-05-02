@@ -3,10 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.sdo"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.sdo.test"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.ejb 3.0.0"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/commonj.sdo 2.1.1"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/sdo/plugins/commonj.sdo_2.1.1.v201112051852.jar" sourcepath="/ECLIPSELINK_HOME/sdo/plugins/commonj.sdo.source_2.1.1.v201112051852.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ejb_3.1.0.v201205171433.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
