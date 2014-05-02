@@ -1,27 +1,27 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     04/24/2009-2.0 Guy Pelletier 
+ *     04/24/2009-2.0 Guy Pelletier
  *       - 270011: JPA 2.0 MappedById support
- *     10/21/2009-2.0 Guy Pelletier 
+ *     10/21/2009-2.0 Guy Pelletier
  *       - 290567: mappedbyid support incomplete
- *     11/23/2009-2.0 Guy Pelletier 
+ *     11/23/2009-2.0 Guy Pelletier
  *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
- *     05/31/2010-2.1 Guy Pelletier 
+ *     05/31/2010-2.1 Guy Pelletier
  *       - 314941: multiple joinColumns without referenced column names defined, no error
- *     08/13/2010-2.2 Guy Pelletier 
+ *     08/13/2010-2.2 Guy Pelletier
  *       - 296078: JPA 2.0 with @MapsId, em.persist generates Internal Exception IllegalArgumentException
- *     02/02/2011-2.3 Chris Delahunt 
+ *     02/02/2011-2.3 Chris Delahunt
  *       - 336122: ValidationException thrown for JoinColumns on OneToMany with composite primary key
- ******************************************************************************/  
+ ******************************************************************************/
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
@@ -69,7 +69,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
     public static TableDefinition buildBOOKIETable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_BOOKIE");
-        
+
         FieldDefinition fieldBOOKIE_ID = new FieldDefinition();
         fieldBOOKIE_ID.setName("BOOKIE_ID");
         fieldBOOKIE_ID.setTypeName("NUMERIC");
@@ -79,7 +79,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldBOOKIE_ID.setUnique(false);
         fieldBOOKIE_ID.setIsIdentity(true);
         table.addField(fieldBOOKIE_ID);
-    
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -92,7 +92,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildCELLNUMBERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CELLNUMBER");
@@ -107,7 +107,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("JPA_BOOKIE.BOOKIE_ID");
         table.addField(field);
-    
+
         FieldDefinition fieldNUMBER = new FieldDefinition();
         fieldNUMBER.setName("NUMB");
         fieldNUMBER.setTypeName("VARCHAR");
@@ -117,7 +117,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldNUMBER.setUnique(false);
         fieldNUMBER.setIsIdentity(false);
         table.addField(fieldNUMBER);
-        
+
         FieldDefinition fieldDESCRIPTION = new FieldDefinition();
         fieldDESCRIPTION.setName("DESCRIP");
         fieldDESCRIPTION.setTypeName("VARCHAR");
@@ -130,11 +130,11 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildADMIN_CONTRACTTable(){
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ADMIN_CONTRACT");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMPLOYEE_EMP_ID");
         field.setTypeName("NUMERIC");
@@ -144,7 +144,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field4 = new FieldDefinition();
         field4.setName("END_DATE");
         field4.setTypeName("DATE");
@@ -157,11 +157,11 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildADMINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ADMIN");
-        
+
         FieldDefinition field = new FieldDefinition();
         field.setName("EMPLOYEE_EMP_ID");
         field.setTypeName("NUMERIC");
@@ -171,7 +171,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(true);
         table.addField(field);
-    
+
         FieldDefinition field1 = new FieldDefinition();
         field1.setName("CONTRACT_COMPANY");
         field1.setTypeName("VARCHAR");
@@ -181,7 +181,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         field1.setUnique(false);
         field1.setIsIdentity(false);
         table.addField(field1);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -198,7 +198,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
     public static TableDefinition buildBRIGADIERGENERALTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_BRIGADIER_GENERAL");
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("FIRST_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -208,7 +208,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("LAST_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -218,14 +218,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildCAPTAINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CAPTAIN");
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("someOtherName");
         fieldNAME.setTypeName("VARCHAR");
@@ -235,7 +235,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("FK1");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -245,7 +245,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("FK2");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -255,14 +255,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildCORPORALTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CORPORAL");
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("F_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -272,7 +272,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("L_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -282,7 +282,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
 
@@ -332,7 +332,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildDEPARTMENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_DEPARTMENT");
@@ -346,7 +346,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         NAME_field.setUnique(false);
         NAME_field.setIsIdentity(true);
         table.addField(NAME_field);
-    
+
         FieldDefinition ROLE_field = new FieldDefinition();
         ROLE_field.setName("DROLE");
         ROLE_field.setTypeName("VARCHAR");
@@ -356,7 +356,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         ROLE_field.setUnique(false);
         ROLE_field.setIsIdentity(true);
         table.addField(ROLE_field);
-    
+
         FieldDefinition LOCATION_field = new FieldDefinition();
         LOCATION_field.setName("LOCATION");
         LOCATION_field.setTypeName("VARCHAR");
@@ -369,7 +369,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildDEPT_ADMINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_DEPT_ADMIN");
@@ -385,7 +385,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         //fieldName.setForeignKeyFieldName("CMP3_DEPARTMENT.NAME");
         table.addField(fieldName);
-    
+
         FieldDefinition ROLE_field = new FieldDefinition();
         ROLE_field.setName("DEPT_ROLE");
         ROLE_field.setTypeName("VARCHAR");
@@ -396,7 +396,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         ROLE_field.setIsIdentity(false);
         //ROLE_field.setForeignKeyFieldName("CMP3_DEPARTMENT.ROLE");
         table.addField(ROLE_field);
-    
+
         FieldDefinition LOCATION_field = new FieldDefinition();
         LOCATION_field.setName("DEPT_LOCATION");
         LOCATION_field.setTypeName("VARCHAR");
@@ -407,7 +407,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         LOCATION_field.setIsIdentity(false);
         //LOCATION_field.setForeignKeyFieldName("CMP3_DEPARTMENT.LOCATION");
         table.addField(LOCATION_field);
-        
+
         // SECTION: FIELD
         FieldDefinition fieldEMP = new FieldDefinition();
         fieldEMP.setName("ADMIN_EMPLOYEE_EMP_ID");
@@ -419,7 +419,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldEMP.setIsIdentity(false);
         //fieldEMP.setForeignKeyFieldName("CMP3_EMPLOYEE.EMP_ID");
         table.addField(fieldEMP);
-        
+
         FieldDefinition fieldPOOL_ID = new FieldDefinition();
         fieldPOOL_ID.setName("POOL_ID");
         fieldPOOL_ID.setTypeName("NUMERIC");
@@ -430,9 +430,9 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldPOOL_ID.setIsIdentity(false);
         table.addField(fieldPOOL_ID);
 
-        return table;   
+        return table;
     }
-    
+
     public static TableDefinition buildDEPT_COMPETENCYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("DEPT_COMPETENCIES");
@@ -446,7 +446,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         NAME_field.setUnique(false);
         NAME_field.setIsIdentity(false);
         table.addField(NAME_field);
-    
+
         FieldDefinition ROLE_field = new FieldDefinition();
         ROLE_field.setName("DROLE");
         ROLE_field.setTypeName("VARCHAR");
@@ -456,7 +456,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         ROLE_field.setUnique(false);
         ROLE_field.setIsIdentity(false);
         table.addField(ROLE_field);
-    
+
         FieldDefinition LOCATION_field = new FieldDefinition();
         LOCATION_field.setName("LOCATION");
         LOCATION_field.setTypeName("VARCHAR");
@@ -466,7 +466,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         LOCATION_field.setUnique(false);
         LOCATION_field.setIsIdentity(false);
         table.addField(LOCATION_field);
-        
+
         FieldDefinition DESCRIP_field = new FieldDefinition();
         DESCRIP_field.setName("DESCRIP");
         DESCRIP_field.setTypeName("VARCHAR");
@@ -476,7 +476,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         DESCRIP_field.setUnique(false);
         DESCRIP_field.setIsIdentity(false);
         table.addField(DESCRIP_field);
-        
+
         FieldDefinition RATING_field = new FieldDefinition();
         RATING_field.setName("RATING");
         RATING_field.setTypeName("NUMERIC");
@@ -487,13 +487,13 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         RATING_field.setIsIdentity(false);
         table.addField(RATING_field);
 
-        return table;   
+        return table;
     }
-    
+
     public static TableDefinition buildGENERALTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_GENERAL");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("GENERAL_ID");
         fieldID.setTypeName("NUMERIC");
@@ -503,14 +503,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildGOLFCLUBHEADTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_GOLF_CLUB_HEAD");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -523,11 +523,11 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildGOLFCLUBORDERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_GOLF_CLUB_ORDER");
-        
+
         FieldDefinition fieldHEAD_ID = new FieldDefinition();
         fieldHEAD_ID.setName("HEAD_ID");
         fieldHEAD_ID.setTypeName("NUMERIC");
@@ -547,14 +547,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldSHAFT_ID.setUnique(false);
         fieldSHAFT_ID.setIsIdentity(false);
         table.addField(fieldSHAFT_ID);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildGOLFCLUBSHAFTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_GOLF_CLUB_SHAFT");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -567,11 +567,11 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildGOLFCLUBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_GOLFCLUB");
-        
+
         FieldDefinition fieldHEAD_ID = new FieldDefinition();
         fieldHEAD_ID.setName("HEAD_ID");
         fieldHEAD_ID.setTypeName("NUMERIC");
@@ -591,14 +591,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldSHAFT_ID.setUnique(false);
         fieldSHAFT_ID.setIsIdentity(false);
         table.addField(fieldSHAFT_ID);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildLIEUTENANTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_LIEUTENANT");
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("F_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -608,7 +608,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("L_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -618,14 +618,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildLACKEYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_LACKEY");
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -635,7 +635,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("FIRSTNAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -645,7 +645,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("LASTNAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -655,14 +655,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildLACKEYCREWTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_LACKEYCREW");
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("RANK");
         fieldNAME.setTypeName("NUMERIC");
@@ -672,7 +672,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("FIRSTNAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -682,7 +682,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("LASTNAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -692,14 +692,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildLIEUTENANTGENERALTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_LIEUTENANT_GENERAL");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("GENERAL_GENERAL_ID");
         fieldID.setTypeName("NUMERIC");
@@ -710,14 +710,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldID.setIsIdentity(true);
         fieldID.setForeignKeyFieldName("JPA_GENERAL.GENERAL_ID");
         table.addField(fieldID);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildMAJORTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MAJOR");
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("F_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -727,7 +727,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("L_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -737,14 +737,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildMAJORGENERALTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MAJOR_GENERAL");
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("F_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -754,7 +754,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("L_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -764,14 +764,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildMASTERCORPORALTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MASTER_CORPORAL");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("SARGEANT_ID");
         fieldID.setTypeName("NUMERIC");
@@ -781,7 +781,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -791,14 +791,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildMASTERCORPORALCLONETable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MASTER_CORPORAL_CLONE");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("SARGEANTPK");
         fieldID.setTypeName("NUMERIC");
@@ -808,7 +808,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -818,14 +818,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildPRIVATETable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_PRIVATE");
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("PRIVATE_NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -835,7 +835,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("F_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -845,7 +845,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("L_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -855,14 +855,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildSARGEANTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_SARGEANT");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -872,7 +872,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setIsIdentity(true);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -882,14 +882,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setIsIdentity(false);
         table.addField(fieldNAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildSCIENTISTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_SCIENTIST");
-    
+
         FieldDefinition ID_NUMBER_field = new FieldDefinition();
         ID_NUMBER_field.setName("ID_NUMBER");
         ID_NUMBER_field.setTypeName("NUMERIC");
@@ -899,7 +899,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         ID_NUMBER_field.setUnique(false);
         ID_NUMBER_field.setIsIdentity(true);
         table.addField(ID_NUMBER_field);
-    
+
         FieldDefinition F_NAME_field = new FieldDefinition();
         F_NAME_field.setName("F_NAME");
         F_NAME_field.setTypeName("VARCHAR");
@@ -909,7 +909,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         F_NAME_field.setUnique(false);
         F_NAME_field.setIsIdentity(true);
         table.addField(F_NAME_field);
-    
+
         FieldDefinition L_NAME_Field = new FieldDefinition();
         L_NAME_Field.setName("L_NAME");
         L_NAME_Field.setTypeName("VARCHAR");
@@ -919,7 +919,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         L_NAME_Field.setUnique(false);
         L_NAME_Field.setIsIdentity(true);
         table.addField(L_NAME_Field);
-    
+
         FieldDefinition CUBE_ID_field = new FieldDefinition();
         CUBE_ID_field.setName("CUBE_ID");
         CUBE_ID_field.setTypeName("NUMERIC");
@@ -929,7 +929,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         CUBE_ID_field.setUnique(false);
         CUBE_ID_field.setIsIdentity(false);
         table.addField(CUBE_ID_field);
-    
+
         FieldDefinition CUBE_CODE_field = new FieldDefinition();
         CUBE_CODE_field.setName("CUBE_CODE");
         CUBE_CODE_field.setTypeName("VARCHAR");
@@ -939,7 +939,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         CUBE_CODE_field.setUnique(false);
         CUBE_CODE_field.setIsIdentity(false);
         table.addField(CUBE_CODE_field);
-    
+
         FieldDefinition DEPT_NAME_field = new FieldDefinition();
         DEPT_NAME_field.setName("DEPT_NAME");
         DEPT_NAME_field.setTypeName("VARCHAR");
@@ -949,7 +949,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         DEPT_NAME_field.setUnique(false);
         DEPT_NAME_field.setIsIdentity(false);
         table.addField(DEPT_NAME_field);
-    
+
         FieldDefinition DEPT_ROLE_field = new FieldDefinition();
         DEPT_ROLE_field.setName("DEPT_ROLE");
         DEPT_ROLE_field.setTypeName("VARCHAR");
@@ -959,7 +959,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         DEPT_ROLE_field.setUnique(false);
         DEPT_ROLE_field.setIsIdentity(false);
         table.addField(DEPT_ROLE_field);
-    
+
         FieldDefinition DEPT_LOCATION_field = new FieldDefinition();
         DEPT_LOCATION_field.setName("DEPT_LOCATION");
         DEPT_LOCATION_field.setTypeName("VARCHAR");
@@ -969,7 +969,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         DEPT_LOCATION_field.setUnique(false);
         DEPT_LOCATION_field.setIsIdentity(false);
         table.addField(DEPT_LOCATION_field);
-        
+
         FieldDefinition fieldDTYPE = new FieldDefinition();
         fieldDTYPE.setName("DTYPE");
         fieldDTYPE.setTypeName("VARCHAR2");
@@ -1000,14 +1000,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fkConstraint2.addTargetField("DROLE");
         fkConstraint2.addTargetField("LOCATION");
         table.addForeignKeyConstraint(fkConstraint2);
-       
+
         return table;
     }
-    
+
     public static TableDefinition buildSECONDLIEUTENANTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_SECOND_LIEUTENANT");
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("F_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -1017,7 +1017,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("L_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -1027,14 +1027,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildOFFICERCADETTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_OFFICER_CADET");
-        
+
         FieldDefinition fieldF_NAME = new FieldDefinition();
         fieldF_NAME.setName("F_NAME");
         fieldF_NAME.setTypeName("VARCHAR");
@@ -1044,7 +1044,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldF_NAME.setUnique(false);
         fieldF_NAME.setIsIdentity(false);
         table.addField(fieldF_NAME);
-        
+
         FieldDefinition fieldL_NAME = new FieldDefinition();
         fieldL_NAME.setName("L_NAME");
         fieldL_NAME.setTypeName("VARCHAR");
@@ -1054,14 +1054,14 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         fieldL_NAME.setUnique(false);
         fieldL_NAME.setIsIdentity(false);
         table.addField(fieldL_NAME);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildOFFICETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_OFFICE");
-   
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -1071,7 +1071,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         ID_field.setUnique(false);
         ID_field.setIsIdentity(true);
         table.addField(ID_field);
-        
+
         FieldDefinition NAME_field = new FieldDefinition();
         NAME_field.setName("NAME");
         NAME_field.setTypeName("VARCHAR");
@@ -1081,7 +1081,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         NAME_field.setUnique(false);
         NAME_field.setIsIdentity(false);
         table.addField(NAME_field);
-        
+
         FieldDefinition LOCATION_field = new FieldDefinition();
         LOCATION_field.setName("LOCATION");
         LOCATION_field.setTypeName("VARCHAR");
@@ -1091,7 +1091,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         LOCATION_field.setUnique(false);
         LOCATION_field.setIsIdentity(true);
         table.addField(LOCATION_field);
-        
+
         FieldDefinition DROLE_field = new FieldDefinition();
         DROLE_field.setName("DROLE");
         DROLE_field.setTypeName("VARCHAR");
@@ -1104,12 +1104,12 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
-    
+
+
     public static TableDefinition buildADMINPOOLTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ADMIN_POOL");
-   
+
         FieldDefinition ID_field = new FieldDefinition();
         ID_field.setName("ID");
         ID_field.setTypeName("NUMERIC");
@@ -1119,7 +1119,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         ID_field.setUnique(false);
         ID_field.setIsIdentity(true);
         table.addField(ID_field);
-        
+
         FieldDefinition DESCRIPTION_field = new FieldDefinition();
         DESCRIPTION_field.setName("DESCRIPTION");
         DESCRIPTION_field.setTypeName("VARCHAR");
@@ -1141,8 +1141,13 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         try {
             if (session.getPlatform().supportsUniqueKeyConstraints()
                     && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
-                session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_CUBICLE");
-                session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_DEPT");
+                if (session.getPlatform().isMySQL()) {
+                    session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop foreign key CMP3_SCIENTIST_CUBICLE");
+                    session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop foreign key CMP3_SCIENTIST_DEPT");
+                } else {
+                    session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_CUBICLE");
+                    session.executeNonSelectingSQL("Alter table CMP3_SCIENTIST drop constraint CMP3_SCIENTIST_DEPT");
+                }
             }
         } catch (Exception ignore) {}
         super.replaceTables(session);

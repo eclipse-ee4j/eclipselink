@@ -1476,6 +1476,19 @@
         <mkdir dir="${jpatest.basedir}/${run.dir}"/>
     </target>
 
+    <!-- Test target to initialize a clean database -->
+    <target name="clear-database" depends="config-classpath">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest"/>
+            <param name="TEST_AGENT" value="-Dignore"/>
+            <param name="TEST_WEAVING" value="-Dignore"/>
+            <param name="TEST_WEAVING_OPTION" value="-Dignore"/>
+            <param name="ORM_TESTING" value="-Dignore"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+    </target>
+
     <!-- Default test target, run the FullRegressionTestSuite -->
     <target name="test" depends="clean-test, config-classpath">
         <antcall target="run-test" inheritRefs="true">

@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     02/20/2009-1.1 Guy Pelletier 
+ *     02/20/2009-1.1 Guy Pelletier
  *       - 259829: TABLE_PER_CLASS with abstract classes does not work
- *     12/18/2009-2.1 Guy Pelletier 
+ *     12/18/2009-2.1 Guy Pelletier
  *       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
- *     01/26/2011-2.3 Guy Pelletier 
+ *     01/26/2011-2.3 Guy Pelletier
  *       - 307664:  Lifecycle callbacks not called for object from IndirectSet
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -59,7 +59,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildENGINEER_DESKTOPTable());
         addTableDefinition(buildLAPTOPTable());
         addTableDefinition(buildENGINEER_LAPTOPTable());
-        
+
         // Table per class testing, all tables prefixed with TPC_
         addTableDefinition(buildWEAPONTable());
         addTableDefinition(buildDIRECTWEAPONTable());
@@ -78,28 +78,28 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPERSONELCLUBTable());
         addTableDefinition(buildSMALLASSIGNMENTTable());
         addTableDefinition(buildNICKNAMESTable());
-        
+
         addTableDefinition(buildAPPLETable());
         addTableDefinition(buildMACBOOKTable());
         addTableDefinition(buildMACBOOKPROTable());
-        
+
         // bug 396587
         addTableDefinition(buildTPC_SUPERCLASSTable());
         addTableDefinition(buildTPC_SUBCLASSTable());
         addTableDefinition(buildJOINED_SUPERCLASSTable());
         addTableDefinition(buildJOINED_SUBCLASSTable());
         addTableDefinition(buildSTI_SUPERCLASSTable());
-        
+
         // Bug 404071
         addTableDefinition(buildCMP3_SEEDTable());
         addTableDefinition(buildCMP3_SEEDED_FRUITTable());
         addTableDefinition(buildCMP3_CITRUS_FRUITTable());
     }
-    
+
     public TableDefinition buildSTI_SUPERCLASSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_STI_SUPERCLASS");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -110,7 +110,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCLASSTYPE = new FieldDefinition();
         fieldCLASSTYPE.setName("CLASSTYPE");
         fieldCLASSTYPE.setTypeName("VARCHAR2");
@@ -121,7 +121,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldCLASSTYPE.setUnique(false);
         fieldCLASSTYPE.setShouldAllowNull(false);
         table.addField(fieldCLASSTYPE);
-        
+
         FieldDefinition fieldSUPERCLASS_ATTRIBUTE = new FieldDefinition();
         fieldSUPERCLASS_ATTRIBUTE.setName("SUPERCLASS_ATTRIBUTE");
         fieldSUPERCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
@@ -132,7 +132,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldSUPERCLASS_ATTRIBUTE.setUnique(false);
         fieldSUPERCLASS_ATTRIBUTE.setShouldAllowNull(false);
         table.addField(fieldSUPERCLASS_ATTRIBUTE);
-        
+
         FieldDefinition fieldSUBCLASS_ATTRIBUTE = new FieldDefinition();
         fieldSUBCLASS_ATTRIBUTE.setName("SUBCLASS_ATTRIBUTE");
         fieldSUBCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
@@ -146,11 +146,11 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildJOINED_SUPERCLASSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_JOINED_SUPERCLASS");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -172,7 +172,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldCLASSTYPE.setUnique(false);
         fieldCLASSTYPE.setShouldAllowNull(false);
         table.addField(fieldCLASSTYPE);
-        
+
         FieldDefinition fieldSUPERCLASS_ATTRIBUTE = new FieldDefinition();
         fieldSUPERCLASS_ATTRIBUTE.setName("SUPERCLASS_ATTRIBUTE");
         fieldSUPERCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
@@ -183,14 +183,14 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldSUPERCLASS_ATTRIBUTE.setUnique(false);
         fieldSUPERCLASS_ATTRIBUTE.setShouldAllowNull(false);
         table.addField(fieldSUPERCLASS_ATTRIBUTE);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildJOINED_SUBCLASSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_JOINED_SUBCLASS");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -201,7 +201,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSUBCLASS_ATTRIBUTE = new FieldDefinition();
         fieldSUBCLASS_ATTRIBUTE.setName("SUBCLASS_ATTRIBUTE");
         fieldSUBCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
@@ -212,7 +212,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldSUBCLASS_ATTRIBUTE.setUnique(false);
         fieldSUBCLASS_ATTRIBUTE.setShouldAllowNull(true);
         table.addField(fieldSUBCLASS_ATTRIBUTE);
-        
+
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         fkConstraint.setName("JPA_JOINED_SUBCLASS_FK1");
         fkConstraint.setTargetTable("JPA_JOINED_SUPERCLASS");
@@ -222,11 +222,11 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildTPC_SUPERCLASSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_TPC_SUPERCLASS");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -237,7 +237,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSUPERCLASS_ATTRIBUTE = new FieldDefinition();
         fieldSUPERCLASS_ATTRIBUTE.setName("SUPERCLASS_ATTRIBUTE");
         fieldSUPERCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
@@ -251,11 +251,11 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildTPC_SUBCLASSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_TPC_SUBCLASS");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -266,7 +266,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSUPERCLASS_ATTRIBUTE = new FieldDefinition();
         fieldSUPERCLASS_ATTRIBUTE.setName("SUPERCLASS_ATTRIBUTE");
         fieldSUPERCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
@@ -277,7 +277,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldSUPERCLASS_ATTRIBUTE.setUnique(false);
         fieldSUPERCLASS_ATTRIBUTE.setShouldAllowNull(false);
         table.addField(fieldSUPERCLASS_ATTRIBUTE);
-        
+
         FieldDefinition fieldSUBCLASS_ATTRIBUTE = new FieldDefinition();
         fieldSUBCLASS_ATTRIBUTE.setName("SUBCLASS_ATTRIBUTE");
         fieldSUBCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
@@ -291,7 +291,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildAPPLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_APPLE");
@@ -309,7 +309,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildMACBOOKTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MACBOOK");
@@ -325,7 +325,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("JPA_APPLE.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldRAM = new FieldDefinition();
         fieldRAM.setName("RAM");
         fieldRAM.setTypeName("NUMBER");
@@ -339,7 +339,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildMACBOOKPROTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MACBOOK_PRO");
@@ -355,7 +355,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("JPA_MACBOOK.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCOLOR = new FieldDefinition();
         fieldCOLOR.setName("COLOR");
         fieldCOLOR.setTypeName("VARCHAR2");
@@ -369,7 +369,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildBICYCLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_BICYCLE");
@@ -433,7 +433,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
     public TableDefinition buildBUS_TIRETable(){
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_BUS_CMP3_TIRE");
-        
+
         FieldDefinition fieldBusID = new FieldDefinition();
         fieldBusID.setName("Bus_ID");
         fieldBusID.setTypeName("NUMBER");
@@ -445,7 +445,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldBusID.setShouldAllowNull(false);
         fieldBusID.setForeignKeyFieldName("CMP3_BUS.BUS_ID");
         table.addField(fieldBusID);
-        
+
         FieldDefinition fieldTireID = new FieldDefinition();
         fieldTireID.setName("tires_ID");
         fieldTireID.setTypeName("NUMBER");
@@ -457,10 +457,10 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldTireID.setShouldAllowNull(false);
         fieldTireID.setForeignKeyFieldName("CMP3_TIRE.ID");
         table.addField(fieldTireID);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildBUSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_BUS");
@@ -527,7 +527,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSPORTSCARTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_SPORTS_CAR");
@@ -557,7 +557,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildJALOPYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_JALOPY");
@@ -615,7 +615,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-        
+
     public TableDefinition buildFUEL_VEHTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_FUEL_VEH");
@@ -664,7 +664,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldFUEL_TYP.setUnique(false);
         fieldFUEL_TYP.setShouldAllowNull(true);
         table.addField(fieldFUEL_TYP);
-        
+
         FieldDefinition fieldCOLOUR = new FieldDefinition();
         fieldCOLOUR.setName("COLOUR");
         fieldCOLOUR.setTypeName("VARCHAR2");
@@ -705,7 +705,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldTREAD.setUnique(false);
         fieldTREAD.setShouldAllowNull(true);
         table.addField(fieldTREAD);
-        
+
         FieldDefinition fieldRATING = new FieldDefinition();
         fieldRATING.setName("RATING");
         fieldRATING.setTypeName("VARCHAR2");
@@ -716,7 +716,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldRATING.setUnique(false);
         fieldRATING.setShouldAllowNull(true);
         table.addField(fieldRATING);
-        
+
         FieldDefinition fieldCOMMENT = new FieldDefinition();
         fieldCOMMENT.setName("COMMENT_ID");
         fieldCOMMENT.setTypeName("NUMBER");
@@ -731,7 +731,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildTIRERATINGCOMMENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_TIRE_RATING_COMMENT");
@@ -746,7 +746,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldDESCRIP = new FieldDefinition();
         fieldDESCRIP.setName("DESCRIP");
         fieldDESCRIP.setTypeName("VARCHAR2");
@@ -760,7 +760,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildNONFUEL_VEHTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_NONFUEL_VEH");
@@ -776,7 +776,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("CMP3_VEHICLE.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCOLOR = new FieldDefinition();
         fieldCOLOR.setName("COLOR");
         fieldCOLOR.setTypeName("VARCHAR2");
@@ -787,10 +787,10 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldCOLOR.setUnique(false);
         fieldCOLOR.setShouldAllowNull(true);
         table.addField(fieldCOLOR);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildENGINEERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_ENGINEER");
@@ -829,7 +829,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldCOMPANY_ID.setShouldAllowNull(true);
         fieldCOMPANY_ID.setForeignKeyFieldName("CMP3_COMPANY.ID");
         table.addField(fieldCOMPANY_ID);
-        
+
         return table;
     }
 
@@ -859,7 +859,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldCODE = new FieldDefinition();
         fieldCODE.setName("CODE");
         fieldCODE.setTypeName("VARCHAR2");
@@ -884,7 +884,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildPERSONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PERSON");
@@ -1026,7 +1026,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldOWNER_ID.setUnique(false);
         fieldOWNER_ID.setShouldAllowNull(true);
         table.addField(fieldOWNER_ID);
-        
+
         FieldDefinition fieldDIRECTORY_ID = new FieldDefinition();
         fieldDIRECTORY_ID.setName("DIRECTORY_ID");
         fieldDIRECTORY_ID.setTypeName("NUMBER");
@@ -1044,7 +1044,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         foreignKeyVEHICLE_COMPANY.addSourceField("OWNER_ID");
         foreignKeyVEHICLE_COMPANY.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyVEHICLE_COMPANY);
-        
+
         ForeignKeyConstraint foreignKeyVEHICLE_DIRECTORY = new ForeignKeyConstraint();
         foreignKeyVEHICLE_DIRECTORY.setName("VEHICLE_DIRECTORY_FK");
         foreignKeyVEHICLE_DIRECTORY.setTargetTable("CMP3_VEHICLE_DIRECTORY");
@@ -1055,7 +1055,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildVEHICLE_DIRECTORYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_VEHICLE_DIRECTORY");
@@ -1084,7 +1084,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildTIREINFOTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_TIRE");
@@ -1173,7 +1173,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public static TableDefinition buildAAA_STRINGSETTable() {
         TableDefinition table = new TableDefinition();
         table.setName("AAA_STRINGSET");
@@ -1188,7 +1188,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition DESCRIP_field = new FieldDefinition();
         DESCRIP_field.setName("STRINGSET");
         DESCRIP_field.setTypeName("VARCHAR");
@@ -1199,7 +1199,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         DESCRIP_field.setIsIdentity(false);
         table.addField(DESCRIP_field);
 
-        return table;   
+        return table;
     }
 
     public TableDefinition buildBBBTable() {
@@ -1285,7 +1285,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldPOSTLOADCOUNT.setUnique(false);
         fieldPOSTLOADCOUNT.setShouldAllowNull(true);
         table.addField(fieldPOSTLOADCOUNT);
-        
+
         FieldDefinition fieldELPOSTLOADCOUNT = new FieldDefinition();
         fieldELPOSTLOADCOUNT.setName("EL_POST_LOAD_COUNT");
         fieldELPOSTLOADCOUNT.setTypeName("NUMBER");
@@ -1296,7 +1296,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldELPOSTLOADCOUNT.setUnique(false);
         fieldELPOSTLOADCOUNT.setShouldAllowNull(true);
         table.addField(fieldELPOSTLOADCOUNT);
-        
+
         FieldDefinition aaaID = new FieldDefinition();
         aaaID.setName("AAA_ID");
         aaaID.setTypeName("NUMBER");
@@ -1311,7 +1311,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildCOMPUTERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_COMPUTER");
@@ -1383,10 +1383,10 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fkConstraint.addTargetField("MFR");
         fkConstraint.addTargetField("SNO");
         table.addForeignKeyConstraint(fkConstraint);
-        
+
         return table;
     }
-    
+
     // Engineer-Desktop many-to-many relationship table
     public TableDefinition buildENGINEER_DESKTOPTable() {
         TableDefinition table = new TableDefinition();
@@ -1404,7 +1404,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldEngineerId.setIsIdentity(false);
         fieldEngineerId.setForeignKeyFieldName("CMP3_ENGINEER.ID");
         table.addField(fieldEngineerId);
-    
+
         FieldDefinition fieldDesktopMFR = new FieldDefinition();
         fieldDesktopMFR.setName("DESKTOP_MFR");
         fieldDesktopMFR.setTypeName("VARCHAR");
@@ -1425,10 +1425,10 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldDesktopSNO.setUnique(false);
         fieldDesktopSNO.setShouldAllowNull(false);
         table.addField(fieldDesktopSNO);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildLAPTOPTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_LAPTOP");
@@ -1454,7 +1454,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldSNO.setShouldAllowNull(false);
         table.addField(fieldSNO);
 
-        // FOREIGN KEY (MFR, SNO) REFERENCES CMP3_COMPUTER (MFR, SNO) 
+        // FOREIGN KEY (MFR, SNO) REFERENCES CMP3_COMPUTER (MFR, SNO)
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         fkConstraint.setName("CMP3_LAPTOP_FK1");
         fkConstraint.addSourceField("MFR");
@@ -1462,7 +1462,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fkConstraint.setTargetTable("CMP3_COMPUTER");
         fkConstraint.addTargetField("MFR");
         fkConstraint.addTargetField("SNO");
-        
+
         table.addForeignKeyConstraint(fkConstraint);
         return table;
     }
@@ -1484,7 +1484,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldEngineerId.setIsIdentity(false);
         fieldEngineerId.setForeignKeyFieldName("CMP3_ENGINEER.ID");
         table.addField(fieldEngineerId);
-    
+
         FieldDefinition fieldLaptopMFR = new FieldDefinition();
         fieldLaptopMFR.setName("LAPTOP_MFR");
         fieldLaptopMFR.setTypeName("VARCHAR");
@@ -1506,7 +1506,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldLaptopSNO.setShouldAllowNull(false);
         table.addField(fieldLaptopSNO);
 
-        // FOREIGN KEY (LAPTOP_MFR, LAPTOP_SNO) REFERENCES CMP3_LAPTOP (MFR, SNO) 
+        // FOREIGN KEY (LAPTOP_MFR, LAPTOP_SNO) REFERENCES CMP3_LAPTOP (MFR, SNO)
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         fkConstraint.setName("CMP3_ENG_LAP_FK1");
         fkConstraint.addSourceField("LAPTOP_MFR");
@@ -1514,11 +1514,11 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fkConstraint.setTargetTable("CMP3_LAPTOP");
         fkConstraint.addTargetField("MFR");
         fkConstraint.addTargetField("SNO");
-        
+
         table.addForeignKeyConstraint(fkConstraint);
         return table;
     }
-    
+
     public TableDefinition buildWEAPONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_WEAPON");
@@ -1545,7 +1545,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildDIRECTWEAPONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_DIR_WEAPON");
@@ -1572,7 +1572,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildINDIRECTWEAPONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_IND_WEAPON");
@@ -1599,7 +1599,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildGUNTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_GUN");
@@ -1623,7 +1623,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldDESCRIP.setUnique(false);
         fieldDESCRIP.setShouldAllowNull(true);
         table.addField(fieldDESCRIP);
-        
+
         FieldDefinition fieldCALIBER = new FieldDefinition();
         fieldCALIBER.setName("CALIBER");
         fieldCALIBER.setTypeName("NUMBER");
@@ -1646,7 +1646,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildKNIFETable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_KNIFE");
@@ -1670,7 +1670,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldDESCRIP.setUnique(false);
         fieldDESCRIP.setShouldAllowNull(true);
         table.addField(fieldDESCRIP);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -1680,7 +1680,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldBLADE = new FieldDefinition();
         fieldBLADE.setName("BLADE");
         fieldBLADE.setTypeName("NUMBER");
@@ -1727,7 +1727,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldDESCRIP.setUnique(false);
         fieldDESCRIP.setShouldAllowNull(true);
         table.addField(fieldDESCRIP);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("E_TIME");
         fieldNAME.setTypeName("VARCHAR");
@@ -1740,7 +1740,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildBOMBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_BOMB");
@@ -1777,7 +1777,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildELIMINATIONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_ELIMINATION");
@@ -1801,7 +1801,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldDESCRIP = new FieldDefinition();
         fieldDESCRIP.setName("DESCRIP");
         fieldDESCRIP.setTypeName("VARCHAR");
@@ -1811,7 +1811,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldDESCRIP.setUnique(false);
         fieldDESCRIP.setShouldAllowNull(true);
         table.addField(fieldDESCRIP);
-        
+
         FieldDefinition fieldASSASSIN = new FieldDefinition();
         fieldASSASSIN.setName("ASSASSIN_ID");
         fieldASSASSIN.setTypeName("NUMBER");
@@ -1824,7 +1824,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildDIRECTELIMINATIONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_DIR_ELIMINATION");
@@ -1848,7 +1848,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldDESCRIP = new FieldDefinition();
         fieldDESCRIP.setName("DESCRIP");
         fieldDESCRIP.setTypeName("VARCHAR");
@@ -1858,7 +1858,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldDESCRIP.setUnique(false);
         fieldDESCRIP.setShouldAllowNull(true);
         table.addField(fieldDESCRIP);
-        
+
         FieldDefinition fieldASSASSIN = new FieldDefinition();
         fieldASSASSIN.setName("ASSASSIN_ID");
         fieldASSASSIN.setTypeName("NUMBER");
@@ -1868,7 +1868,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldASSASSIN.setUnique(false);
         fieldASSASSIN.setShouldAllowNull(false);
         table.addField(fieldASSASSIN);
-        
+
         FieldDefinition fieldWEAPON = new FieldDefinition();
         fieldWEAPON.setName("WEAPON_ID");
         fieldWEAPON.setTypeName("NUMBER");
@@ -1881,7 +1881,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildINDIRECTELIMINATIONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_IND_ELIMINATION");
@@ -1905,7 +1905,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(false);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldDESCRIP = new FieldDefinition();
         fieldDESCRIP.setName("DESCRIP");
         fieldDESCRIP.setTypeName("VARCHAR");
@@ -1915,7 +1915,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldDESCRIP.setUnique(false);
         fieldDESCRIP.setShouldAllowNull(true);
         table.addField(fieldDESCRIP);
-        
+
         FieldDefinition fieldASSASSIN = new FieldDefinition();
         fieldASSASSIN.setName("ASSASSIN_ID");
         fieldASSASSIN.setTypeName("NUMBER");
@@ -1925,7 +1925,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldASSASSIN.setUnique(false);
         fieldASSASSIN.setShouldAllowNull(false);
         table.addField(fieldASSASSIN);
-        
+
         FieldDefinition fieldWEAPON = new FieldDefinition();
         fieldWEAPON.setName("WEAPON_ID");
         fieldWEAPON.setTypeName("NUMBER");
@@ -1938,7 +1938,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildCONTRACTEDPERSONELTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_PERSONEL");
@@ -1962,7 +1962,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -1975,7 +1975,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildASSASSINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_ASSASSIN");
@@ -1999,7 +1999,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldWEAPON = new FieldDefinition();
         fieldWEAPON.setName("WEAPON_ID");
         fieldWEAPON.setTypeName("NUMBER");
@@ -2009,7 +2009,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldWEAPON.setUnique(false);
         fieldWEAPON.setShouldAllowNull(true);
         table.addField(fieldWEAPON);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -2022,7 +2022,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSPECIALASSASSINTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_SPECIAL_ASSASSIN");
@@ -2046,7 +2046,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldWEAPON = new FieldDefinition();
         fieldWEAPON.setName("WEAPON_ID");
         fieldWEAPON.setTypeName("NUMBER");
@@ -2056,7 +2056,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldWEAPON.setUnique(false);
         fieldWEAPON.setShouldAllowNull(true);
         table.addField(fieldWEAPON);
-        
+
         FieldDefinition fieldVERSION = new FieldDefinition();
         fieldVERSION.setName("SP_VERSION");
         fieldVERSION.setTypeName("NUMERIC");
@@ -2069,7 +2069,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSOCIALCLUBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_SOCIAL_CLUB");
@@ -2096,7 +2096,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildPERSONELCLUBTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_PERSONEL_CLUB");
@@ -2112,7 +2112,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         // Can't set foreign key field constraints.
         //fieldPERSONELID.setForeignKeyFieldName("CMP3_PERSONEL.ID");
         table.addField(fieldPERSONELID);
-    
+
         FieldDefinition fieldCLUBID = new FieldDefinition();
         fieldCLUBID.setName("CLUB_ID");
         fieldCLUBID.setTypeName("NUMERIC");
@@ -2127,7 +2127,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildNICKNAMESTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_NICKNAMES");
@@ -2143,7 +2143,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         // Can't set foreign key field constraints.
         //fieldPERSONELID.setForeignKeyFieldName("CMP3_PERSONEL.ID");
         table.addField(fieldPERSONELID);
-    
+
         FieldDefinition fieldNICKNAME = new FieldDefinition();
         fieldNICKNAME.setName("NICKNAME");
         fieldNICKNAME.setTypeName("VARCHAR");
@@ -2156,7 +2156,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildSMALLASSIGNMENTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("TPC_SMALL_ASSIGNMENT");
@@ -2170,7 +2170,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldSMALLID.setUnique(false);
         fieldSMALLID.setIsIdentity(false);
         table.addField(fieldSMALLID);
-    
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -2183,11 +2183,11 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
-    
+
     public TableDefinition buildCMP3_SEEDED_FRUITTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_SEEDED_FRUIT");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -2197,7 +2197,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -2207,7 +2207,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldCLASS_TYPE = new FieldDefinition();
         fieldCLASS_TYPE.setName("CLASS_TYPE");
         fieldCLASS_TYPE.setTypeName("VARCHAR");
@@ -2217,14 +2217,14 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldCLASS_TYPE.setUnique(false);
         fieldCLASS_TYPE.setShouldAllowNull(true);
         table.addField(fieldCLASS_TYPE);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCMP3_CITRUS_FRUITTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CITRUS_FRUIT");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -2235,7 +2235,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setForeignKeyFieldName("CMP3_SEEDED_FRUIT.ID");
         table.addField(fieldID);
-        
+
         FieldDefinition fieldGRADE = new FieldDefinition();
         fieldGRADE.setName("GRADE");
         fieldGRADE.setTypeName("NUMBER");
@@ -2245,14 +2245,14 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldGRADE.setUnique(false);
         fieldGRADE.setShouldAllowNull(true);
         table.addField(fieldGRADE);
-        
+
         return table;
     }
-    
+
     public TableDefinition buildCMP3_SEEDTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_SEED");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMBER");
@@ -2262,7 +2262,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
         fieldNAME.setTypeName("VARCHAR");
@@ -2272,7 +2272,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setUnique(false);
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
-        
+
         FieldDefinition fieldSEEDEDFRUIT_ID = new FieldDefinition();
         fieldSEEDEDFRUIT_ID.setName("SEEDEDFRUIT_ID");
         fieldSEEDEDFRUIT_ID.setTypeName("NUMBER");
@@ -2283,10 +2283,10 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldSEEDEDFRUIT_ID.setShouldAllowNull(true);
         fieldSEEDEDFRUIT_ID.setForeignKeyFieldName("CMP3_SEEDED_FRUIT.ID");
         table.addField(fieldSEEDEDFRUIT_ID);
-        
+
         return table;
     }
-    
+
     /**
      * Dropping old foreign keys from schema change.
      */
@@ -2294,7 +2294,11 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         try {
             if (session.getPlatform().supportsUniqueKeyConstraints()
                     && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
-                session.executeNonSelectingSQL("Alter table CMP3_ENGINEER_LAPTOP drop constraint CMP3_ENGINEER_LAPTOP_FK1");
+                if (session.getPlatform().isMySQL()) {
+                    session.executeNonSelectingSQL("Alter table CMP3_ENGINEER_LAPTOP drop foreign key CMP3_ENGINEER_LAPTOP_FK1");
+                } else {
+                    session.executeNonSelectingSQL("Alter table CMP3_ENGINEER_LAPTOP drop constraint CMP3_ENGINEER_LAPTOP_FK1");
+                }
             }
         } catch (Exception ignore) {}
         super.replaceTables(session);

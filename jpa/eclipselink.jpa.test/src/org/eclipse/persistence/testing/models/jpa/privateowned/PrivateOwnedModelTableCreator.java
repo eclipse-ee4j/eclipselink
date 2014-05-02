@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     02/26/09 dminsky - initial API and implementation
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.privateowned;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -28,7 +28,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         addTableDefinition(buildWHEELRIMTable());
         addTableDefinition(buildWHEELNUTTable());
     }
-    
+
     public static TableDefinition buildCHASSISTable() {
         // CREATE TABLE CMP3_PO_CHASSIS (ID NUMBER(10) NOT NULL, SERIALNUMBER NUMBER(19) NULL, PRIMARY KEY (ID))
         TableDefinition table = new TableDefinition();
@@ -44,7 +44,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setUnique(false);
         table.addField(fieldID);
-        
+
         FieldDefinition serialNumber = new FieldDefinition();
         serialNumber.setName("SERIALNUMBER");
         serialNumber.setTypeName("NUMERIC");
@@ -55,16 +55,16 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         serialNumber.setShouldAllowNull(true);
         serialNumber.setUnique(false);
         table.addField(serialNumber);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildVEHICLETable() {
         // CREATE TABLE CMP3_PO_VEHICLE (ID NUMBER(10) NOT NULL, MODEL VARCHAR2(255) NULL, CHASSIS_ID NUMBER(10) NULL, ENGINE_ID NUMBER(10) NULL, PRIMARY KEY (ID))
 
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PO_VEHICLE");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -75,7 +75,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setUnique(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldMODEL = new FieldDefinition();
         fieldMODEL.setName("MODEL");
         fieldMODEL.setTypeName("VARCHAR");
@@ -86,7 +86,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldMODEL.setShouldAllowNull(true);
         fieldMODEL.setUnique(false);
         table.addField(fieldMODEL);
-        
+
         FieldDefinition fieldDTYPE = new FieldDefinition();
         fieldDTYPE.setName("DTYPE");
         fieldDTYPE.setTypeName("VARCHAR");
@@ -108,7 +108,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldCHASSIS.setShouldAllowNull(true);
         fieldCHASSIS.setUnique(false);
         table.addField(fieldCHASSIS);
-        
+
         FieldDefinition fieldENGINE = new FieldDefinition();
         fieldENGINE.setName("ENGINE_ID");
         fieldENGINE.setTypeName("NUMERIC");
@@ -119,11 +119,11 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldENGINE.setShouldAllowNull(true);
         fieldENGINE.setUnique(false);
         table.addField(fieldENGINE);
-        
+
         // ALTER TABLE CMP3_PO_VEHICLE ADD CONSTRAINT FK_CMP3_PO_VEHICLE_ENGINE_ID FOREIGN KEY (ENGINE_ID) REFERENCES CMP3_PO_ENGINE (ID)
         ForeignKeyConstraint foreignKeyVEHICLE_ENGINE = new ForeignKeyConstraint();
         foreignKeyVEHICLE_ENGINE.setName("FK_PO_VEH_ENG_ID");
-        foreignKeyVEHICLE_ENGINE.setTargetTable("CMP3_PO_ENGINE"); 
+        foreignKeyVEHICLE_ENGINE.setTargetTable("CMP3_PO_ENGINE");
         foreignKeyVEHICLE_ENGINE.addSourceField("ENGINE_ID");
         foreignKeyVEHICLE_ENGINE.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyVEHICLE_ENGINE);
@@ -131,14 +131,14 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         // ALTER TABLE CMP3_PO_VEHICLE ADD CONSTRAINT FK_CMP3_PO_VEHICLE_CHASSIS_ID FOREIGN KEY (CHASSIS_ID) REFERENCES CMP3_PO_CHASSIS (ID)
         ForeignKeyConstraint foreignKeyVEHICLE_CHASSIS = new ForeignKeyConstraint();
         foreignKeyVEHICLE_CHASSIS.setName("FK_PO_VEH_CHAS_ID");
-        foreignKeyVEHICLE_CHASSIS.setTargetTable("CMP3_PO_CHASSIS"); 
+        foreignKeyVEHICLE_CHASSIS.setTargetTable("CMP3_PO_CHASSIS");
         foreignKeyVEHICLE_CHASSIS.addSourceField("CHASSIS_ID");
         foreignKeyVEHICLE_CHASSIS.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyVEHICLE_CHASSIS);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildENGINETable() {
         // CREATE TABLE CMP3_PO_ENGINE (ID NUMBER(10) NOT NULL, SERIALNUMBER NUMBER(19) NULL, PRIMARY KEY (ID))
         TableDefinition table = new TableDefinition();
@@ -154,7 +154,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setUnique(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSERIALNUMBER = new FieldDefinition();
         fieldSERIALNUMBER.setName("SERIALNUMBER");
         fieldSERIALNUMBER.setTypeName("NUMERIC");
@@ -165,7 +165,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldSERIALNUMBER.setShouldAllowNull(true);
         fieldSERIALNUMBER.setUnique(false);
         table.addField(fieldSERIALNUMBER);
-        
+
         FieldDefinition fieldVersion = new FieldDefinition();
         fieldVersion.setName("VERSION");
         fieldVersion.setTypeName("NUMERIC");
@@ -175,10 +175,10 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldVersion.setUnique(false);
         fieldVersion.setIsIdentity(false);
         table.addField(fieldVersion);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildMOUNTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PO_MOUNT");
@@ -193,7 +193,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setUnique(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldCHASSIS_ID = new FieldDefinition();
         fieldCHASSIS_ID.setName("ID2");
         fieldCHASSIS_ID.setTypeName("NUMERIC");
@@ -204,7 +204,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldCHASSIS_ID.setShouldAllowNull(false);
         fieldCHASSIS_ID.setUnique(false);
         table.addField(fieldCHASSIS_ID);
-        
+
         FieldDefinition fieldVEHICLE_ID = new FieldDefinition();
         fieldVEHICLE_ID.setName("VEHICLE_ID");
         fieldVEHICLE_ID.setTypeName("NUMERIC");
@@ -215,29 +215,29 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldVEHICLE_ID.setShouldAllowNull(false);
         fieldVEHICLE_ID.setUnique(false);
         table.addField(fieldVEHICLE_ID);
-        
+
         ForeignKeyConstraint foreignKeyMOUNT_VEHICLE = new ForeignKeyConstraint();
         foreignKeyMOUNT_VEHICLE.setName("PO_MOUNT_VEH_ID");
-        foreignKeyMOUNT_VEHICLE.setTargetTable("CMP3_PO_VEHICLE"); 
+        foreignKeyMOUNT_VEHICLE.setTargetTable("CMP3_PO_VEHICLE");
         foreignKeyMOUNT_VEHICLE.addSourceField("VEHICLE_ID");
         foreignKeyMOUNT_VEHICLE.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyMOUNT_VEHICLE);
-        
+
         ForeignKeyConstraint foreignKeyMOUNT_CHASSIS = new ForeignKeyConstraint();
         foreignKeyMOUNT_CHASSIS.setName("PO_MOUNT_CHA_ID");
-        foreignKeyMOUNT_CHASSIS.setTargetTable("CMP3_PO_CHASSIS"); 
+        foreignKeyMOUNT_CHASSIS.setTargetTable("CMP3_PO_CHASSIS");
         foreignKeyMOUNT_CHASSIS.addSourceField("ID2");
         foreignKeyMOUNT_CHASSIS.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyMOUNT_CHASSIS);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildSPARKPLUGTable() {
         // CREATE TABLE CMP3_PO_SPARK_PLUG (ID NUMBER(10) NOT NULL, SERIALNUMBER NUMBER(19) NULL, ENGINE_ID NUMBER(10) NULL, PRIMARY KEY (ID))
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PO_SPARK_PLUG");
-        
+
         FieldDefinition fieldID = new FieldDefinition();
         fieldID.setName("ID");
         fieldID.setTypeName("NUMERIC");
@@ -248,7 +248,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setUnique(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSERIALNUMBER = new FieldDefinition();
         fieldSERIALNUMBER.setName("SERIALNUMBER");
         fieldSERIALNUMBER.setTypeName("NUMERIC");
@@ -259,7 +259,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldSERIALNUMBER.setShouldAllowNull(true);
         fieldSERIALNUMBER.setUnique(false);
         table.addField(fieldSERIALNUMBER);
-        
+
         FieldDefinition fieldENGINE = new FieldDefinition();
         fieldENGINE.setName("ENGINE_ID");
         fieldENGINE.setTypeName("NUMERIC");
@@ -270,7 +270,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldENGINE.setShouldAllowNull(true);
         fieldENGINE.setUnique(false);
         table.addField(fieldENGINE);
-        
+
         FieldDefinition fieldVersion = new FieldDefinition();
         fieldVersion.setName("VERSION");
         fieldVersion.setTypeName("NUMERIC");
@@ -280,20 +280,20 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldVersion.setUnique(false);
         fieldVersion.setIsIdentity(false);
         table.addField(fieldVersion);
-        
+
         // ALTER TABLE CMP3_PO_SPARK_PLUG ADD CONSTRAINT CMP3_PO_SPARK_PLUG_ENGINE_ID FOREIGN KEY (ENGINE_ID) REFERENCES CMP3_PO_ENGINE (ID)
         ForeignKeyConstraint foreignKeySPARKPLUG_ENGINE = new ForeignKeyConstraint();
         foreignKeySPARKPLUG_ENGINE.setName("PO_SPK_PG_ENG_ID");
-        foreignKeySPARKPLUG_ENGINE.setTargetTable("CMP3_PO_ENGINE"); 
+        foreignKeySPARKPLUG_ENGINE.setTargetTable("CMP3_PO_ENGINE");
         foreignKeySPARKPLUG_ENGINE.addSourceField("ENGINE_ID");
         foreignKeySPARKPLUG_ENGINE.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeySPARKPLUG_ENGINE);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildWHEELTable() {
-        // CREATE TABLE CMP3_PO_WHEEL (ID NUMBER(10) NOT NULL, SERIALNUMBER NUMBER(19) NULL, WHEELRIM_ID NUMBER(10) NULL, 
+        // CREATE TABLE CMP3_PO_WHEEL (ID NUMBER(10) NOT NULL, SERIALNUMBER NUMBER(19) NULL, WHEELRIM_ID NUMBER(10) NULL,
         //    CHASSIS_ID NUMBER(10) NULL, MANUFACTURER VARCHAR2(255) NULL, TYPE VARCHAR2(255) NULL, PRIMARY KEY (ID))
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PO_WHEEL");
@@ -308,7 +308,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setUnique(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldSERIALNUMBER = new FieldDefinition();
         fieldSERIALNUMBER.setName("SERIALNUMBER");
         fieldSERIALNUMBER.setTypeName("NUMERIC");
@@ -319,7 +319,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldSERIALNUMBER.setShouldAllowNull(true);
         fieldSERIALNUMBER.setUnique(false);
         table.addField(fieldSERIALNUMBER);
-        
+
         FieldDefinition fieldWHEELRIM = new FieldDefinition();
         fieldWHEELRIM.setName("WHEELRIM_ID");
         fieldWHEELRIM.setTypeName("NUMERIC");
@@ -330,7 +330,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldWHEELRIM.setShouldAllowNull(true);
         fieldWHEELRIM.setUnique(false);
         table.addField(fieldWHEELRIM);
-        
+
         FieldDefinition fieldCHASSIS = new FieldDefinition();
         fieldCHASSIS.setName("CHASSIS_ID");
         fieldCHASSIS.setTypeName("NUMERIC");
@@ -341,7 +341,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldCHASSIS.setShouldAllowNull(true);
         fieldCHASSIS.setUnique(false);
         table.addField(fieldCHASSIS);
-        
+
         FieldDefinition fieldMANUFACTURER = new FieldDefinition();
         fieldMANUFACTURER.setName("MANUFACTURER");
         fieldMANUFACTURER.setTypeName("VARCHAR");
@@ -352,7 +352,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldMANUFACTURER.setShouldAllowNull(true);
         fieldMANUFACTURER.setUnique(false);
         table.addField(fieldMANUFACTURER);
-        
+
         FieldDefinition fieldTYPE = new FieldDefinition();
         fieldTYPE.setName("TYPE");
         fieldTYPE.setTypeName("VARCHAR");
@@ -363,26 +363,26 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldTYPE.setShouldAllowNull(true);
         fieldTYPE.setUnique(false);
         table.addField(fieldTYPE);
-        
+
         // ALTER TABLE CMP3_PO_WHEEL ADD CONSTRAINT FK_CMP3_PO_WHEEL_WHEELRIM_ID FOREIGN KEY (WHEELRIM_ID) REFERENCES CMP3_PO_WHEEL_RIM (ID)
         ForeignKeyConstraint foreignKeyWHEEL_WHEELRIM = new ForeignKeyConstraint();
         foreignKeyWHEEL_WHEELRIM.setName("FK_WL_WLRM_ID");
-        foreignKeyWHEEL_WHEELRIM.setTargetTable("CMP3_PO_WHEEL_RIM"); 
+        foreignKeyWHEEL_WHEELRIM.setTargetTable("CMP3_PO_WHEEL_RIM");
         foreignKeyWHEEL_WHEELRIM.addSourceField("WHEELRIM_ID");
         foreignKeyWHEEL_WHEELRIM.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyWHEEL_WHEELRIM);
-        
+
         // ALTER TABLE CMP3_PO_WHEEL ADD CONSTRAINT FK_CMP3_PO_WHEEL_CHASSIS_ID FOREIGN KEY (CHASSIS_ID) REFERENCES CMP3_PO_CHASSIS (ID)
         ForeignKeyConstraint foreignKeyWHEEL_CHASSIS = new ForeignKeyConstraint();
         foreignKeyWHEEL_CHASSIS.setName("FK_WEL_CHAS_ID");
-        foreignKeyWHEEL_CHASSIS.setTargetTable("CMP3_PO_CHASSIS"); 
+        foreignKeyWHEEL_CHASSIS.setTargetTable("CMP3_PO_CHASSIS");
         foreignKeyWHEEL_CHASSIS.addSourceField("CHASSIS_ID");
         foreignKeyWHEEL_CHASSIS.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyWHEEL_CHASSIS);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildWHEELRIMTable() {
         // CREATE TABLE CMP3_PO_WHEEL_RIM (ID NUMBER(10) NOT NULL, PRIMARY KEY (ID))
         TableDefinition table = new TableDefinition();
@@ -398,10 +398,10 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setUnique(false);
         table.addField(fieldID);
-        
+
         return table;
     }
-    
+
     public static TableDefinition buildWHEELNUTTable() {
         // CREATE TABLE CMP3_PO_WHEEL_NUT (ID NUMBER(10) NOT NULL, WHEEL_ID NUMBER(10) NULL, PRIMARY KEY (ID))
         TableDefinition table = new TableDefinition();
@@ -417,7 +417,7 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldID.setShouldAllowNull(false);
         fieldID.setUnique(false);
         table.addField(fieldID);
-        
+
         FieldDefinition fieldWHEEL = new FieldDefinition();
         fieldWHEEL.setName("WHEEL_ID");
         fieldWHEEL.setTypeName("NUMERIC");
@@ -428,18 +428,18 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldWHEEL.setShouldAllowNull(true);
         fieldWHEEL.setUnique(false);
         table.addField(fieldWHEEL);
-        
+
         // ALTER TABLE CMP3_PO_WHEEL_NUT ADD CONSTRAINT FK_CMP3_PO_WHEEL_NUT_WHEEL_ID FOREIGN KEY (WHEEL_ID) REFERENCES CMP3_PO_WHEEL (ID)
         ForeignKeyConstraint foreignKeyWHEELNUT_WHEEL = new ForeignKeyConstraint();
         foreignKeyWHEELNUT_WHEEL.setName("FK_WL_NUT_WHL_ID");
-        foreignKeyWHEELNUT_WHEEL.setTargetTable("CMP3_PO_WHEEL"); 
+        foreignKeyWHEELNUT_WHEEL.setTargetTable("CMP3_PO_WHEEL");
         foreignKeyWHEELNUT_WHEEL.addSourceField("WHEEL_ID");
         foreignKeyWHEELNUT_WHEEL.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyWHEELNUT_WHEEL);
-        
+
         return table;
     }
-    
+
     /**
      * Dropping old foreign keys from schema change.
      */
@@ -448,15 +448,24 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         if (session.getPlatform().supportsUniqueKeyConstraints()
                 && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
             try {
-                session.executeNonSelectingSQL("Alter table CMP3_PO_SPARK_PLUG drop constraint CMP3_PO_SPARK_PLUG_ENGINE_ID");
-                session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_ENGINE_ID");
-                session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_CHASSIS_ID");
-                session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_WHEELRIM_ID");
-                session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_CHASSIS_ID");
-                session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL_NUT drop constraint FK_CMP3_PO_WHEEL_NUT_WHEEL_ID");
+                if (session.getPlatform().isMySQL()) {
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_SPARK_PLUG drop foreign key CMP3_PO_SPARK_PLUG_ENGINE_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop foreign key FK_CMP3_PO_VEHICLE_ENGINE_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop foreign key FK_CMP3_PO_VEHICLE_CHASSIS_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop foreign key FK_CMP3_PO_WHEEL_WHEELRIM_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop foreign key FK_CMP3_PO_WHEEL_CHASSIS_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL_NUT drop foreign key FK_CMP3_PO_WHEEL_NUT_WHEEL_ID");
+                } else {
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_SPARK_PLUG drop constraint CMP3_PO_SPARK_PLUG_ENGINE_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_ENGINE_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_VEHICLE drop constraint FK_CMP3_PO_VEHICLE_CHASSIS_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_WHEELRIM_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL drop constraint FK_CMP3_PO_WHEEL_CHASSIS_ID");
+                    session.executeNonSelectingSQL("Alter table CMP3_PO_WHEEL_NUT drop constraint FK_CMP3_PO_WHEEL_NUT_WHEEL_ID");
+                }
             } catch (Exception ignore) {}
         }
         super.replaceTables(session);
     }
-    
+
 }

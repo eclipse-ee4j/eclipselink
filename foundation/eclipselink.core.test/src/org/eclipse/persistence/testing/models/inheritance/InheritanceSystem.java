@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.inheritance;
 
 import java.util.*;
@@ -43,15 +43,15 @@ public class InheritanceSystem extends TestSystem {
             computerDescriptor.getInheritancePolicy().setReadAllSubclassesViewName("AllComputers");
             vehicleDescriptor.getInheritancePolicy().setReadAllSubclassesViewName("AllVehicles");
         }
-        
+
         // Enable outer-join on AnimalMatt hierarchy.
         session.getDescriptor(Animal_Matt.class).getInheritancePolicy().setShouldOuterJoinSubclasses(true);
     }
-    
+
     public void createTables(DatabaseSession session) {
         dropTableConstraints(session);
         new InheritanceTableCreator().replaceTables(session);
-        
+
         SchemaManager schemaManager = new SchemaManager(session);
         if (session.getLogin().getPlatform().isOracle()) {
             schemaManager.replaceObject(Computer.oracleView());
@@ -65,7 +65,7 @@ public class InheritanceSystem extends TestSystem {
             //schemaManager.replaceObject(Vehicle.mySQLView());
         }
     }
-    
+
     /**
      * Drop table constraints
      */
@@ -75,54 +75,63 @@ public class InheritanceSystem extends TestSystem {
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table BUS CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
-                
+
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table CAR CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
-                
+
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table COMPANY CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
-                
+
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table FUEL_VEH CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
-                
+
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table NH_COMP CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
-                
+
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table INH_MF CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
-                
+
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table KING_DEVELOPER CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
-                
+
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table KING_PERSONG CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
-                
+
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table PARTNUMS CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
-                
+
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table VEHICLE CASCADE CONSTRAINTS"));
                 } catch (Exception e) {}
             }
-         
+
             // Drop old constraints.
             try {
                 if (session.getPlatform().supportsUniqueKeyConstraints()
                         && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {
-                    session.executeNonSelectingSQL("Alter TABLE PROJECT_WORKER_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_HD");
-                    session.executeNonSelectingSQL("Alter TABLE PROJECT_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_FK");
-                    session.executeNonSelectingSQL("Alter TABLE ALLIGATOR DROP CONSTRAINT FK_ALLIGATOR_VICTIM_ID");
-                    session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_FRND");
-                    session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_REP");
-                    session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_BS");
+                    if (session.getPlatform().isMySQL()) {
+                        session.executeNonSelectingSQL("Alter TABLE PROJECT_WORKER_BATCH DROP FOREIGN KEY PROJECT_WORKER_BATCH_HD");
+                        session.executeNonSelectingSQL("Alter TABLE PROJECT_BATCH DROP FOREIGN KEY PROJECT_WORKER_BATCH_FK");
+                        session.executeNonSelectingSQL("Alter TABLE ALLIGATOR DROP FOREIGN KEY FK_ALLIGATOR_VICTIM_ID");
+                        session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP FOREIGN KEY PERSON2_PERSON2_FRND");
+                        session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP FOREIGN KEY PERSON2_PERSON2_REP");
+                        session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP FOREIGN KEY PERSON2_PERSON2_BS");
+                    } else {
+                        session.executeNonSelectingSQL("Alter TABLE PROJECT_WORKER_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_HD");
+                        session.executeNonSelectingSQL("Alter TABLE PROJECT_BATCH DROP CONSTRAINT PROJECT_WORKER_BATCH_FK");
+                        session.executeNonSelectingSQL("Alter TABLE ALLIGATOR DROP CONSTRAINT FK_ALLIGATOR_VICTIM_ID");
+                        session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_FRND");
+                        session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_REP");
+                        session.executeNonSelectingSQL("Alter TABLE PERSON2 DROP CONSTRAINT PERSON2_PERSON2_BS");
+                    }
                 }
             } catch (Exception ignore) {}
         }
@@ -228,9 +237,9 @@ public class InheritanceSystem extends TestSystem {
         unitOfWork.registerObject(alligator);
         manager.registerObject(alligator, "example1");
         unitOfWork.commit();
-        
+
         //Added to test bug 6111278
-        
+
         unitOfWork = session.acquireUnitOfWork();
 		Entomologist bugguy = new Entomologist();
         bugguy.setId((int)System.currentTimeMillis());
