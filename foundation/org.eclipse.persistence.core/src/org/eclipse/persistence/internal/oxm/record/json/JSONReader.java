@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.xml.namespace.QName;
 
@@ -64,7 +63,6 @@ public class JSONReader extends XMLReaderAdapter {
 
     private static final String TRUE = "true";
     private static final String FALSE = "false";
-    private Properties properties;
     private String attributePrefix = null;
     private NamespaceResolver namespaces = null;
     private boolean includeRoot;
@@ -76,9 +74,10 @@ public class JSONReader extends XMLReaderAdapter {
         this(attrPrefix, nr, namespaceAware, includeRoot, namespaceSeparator, errorHandler, textWrapper, null);        
     }
 
+    @SuppressWarnings("StringEquality")
     public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass){
         this.attributePrefix = attrPrefix;
-    	if(attributePrefix == Constants.EMPTY_STRING){
+    	if (attributePrefix == Constants.EMPTY_STRING) {
     	    attributePrefix = null;    	    	
     	}
     	namespaces = nr;
@@ -94,9 +93,9 @@ public class JSONReader extends XMLReaderAdapter {
     	this.unmarshalClass = unmarshalClass;
     }
     
-    private JSONAttributes attributes = new JSONAttributes();
+    private final JSONAttributes attributes = new JSONAttributes();
 
-	@Override
+    @Override
     public void parse(InputSource input) throws IOException, SAXException {
         try {
             CharStream charStream;
@@ -295,7 +294,7 @@ public class JSONReader extends XMLReaderAdapter {
                	       break;
                     }
                 }
-                if(valueTree != null && valueTree.getType() == JSONLexer.NULL){
+                if (valueTree.getType() == JSONLexer.NULL) {
                     contentHandler.setNil(true);
                 }
                 
@@ -438,7 +437,8 @@ public class JSONReader extends XMLReaderAdapter {
         }
         }
     }
-    
+
+    @Override
     public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy){
     	return true;    	
     }
@@ -452,6 +452,7 @@ public class JSONReader extends XMLReaderAdapter {
     	isInCollection = false;
     }
     
+    @Override
     public boolean isInCollection(){
     	return isInCollection;
     }
@@ -463,85 +464,104 @@ public class JSONReader extends XMLReaderAdapter {
    		}
 
     	return((currentNode.getNonAttributeChildrenMap() == null 
-    			|| currentNode.getNonAttributeChildrenMap().size() ==0 
+    			|| currentNode.getNonAttributeChildrenMap().isEmpty()
     			|| (currentNode.getNonAttributeChildrenMap().size() == 1 &&  currentNode.getTextNode() != null))
     			&& textWrapper != null && textWrapper.equals(localName));
     }
     
-    private static String string(String string) {
-    	string = string.substring(1, string.length()-1);
-    	string = string.replace("\r\n", "\n");
-    	String returnString = "";                
+    /**
+     * Formats Java formatted string to a real String instance.
+     * @param Java escaped string with quotation marks
+     * @return string instance
+    */
+    static String string(String string) {
         
-    	int slashIndex = string.indexOf('\\');
-             
-        if(slashIndex == -1){
-            return string;
+        char[] inputStringChars = string.toCharArray();
+        
+        int lengthWithoutQuotation = inputStringChars.length-2;
+        StringBuilder returnStringBuilder = new StringBuilder(lengthWithoutQuotation);
+
+        int begin = 1;
+        int end = lengthWithoutQuotation;
+	
+        int position = begin;
+
+        while (position <= end) {
+            if (inputStringChars[position] == '\\') {
+                // append any regular string characters we passed by already
+                if (position > begin) {
+                    returnStringBuilder.append(inputStringChars, begin, position-begin);
+                }
+                char nextChar = inputStringChars[position+1];
+                switch (nextChar) {
+		   case 'b':{
+			   returnStringBuilder.append("\b");
+			   position += 2;
+			   break;
+		   }
+		   case 'r':{
+                           returnStringBuilder.append("\r");
+                           position += 2;
+			   break;
+		   }
+		   case 'f':{
+			   returnStringBuilder.append("\f");
+			   position += 2;
+			   break;
+		   }
+		   case 'n':{
+			   returnStringBuilder.append("\n");
+			   position += 2;
+			   break;
+		   }
+		   case 't': {
+			   returnStringBuilder.append("\t");
+			   position += 2;
+			   break;
+		   }
+		   case '"': {
+                            returnStringBuilder.append("\"");
+                            position += 2;
+                            break;
+		   }
+		   case '\\':{
+			   returnStringBuilder.append("\\");
+			   position += 2;
+			   break;
+		   }
+		   case '/':{
+			   returnStringBuilder.append("/");
+			   position += 2;
+			   break;
+		   }
+		   case 'u':{ //unicode encoded character
+			   String hexValue = String.valueOf(inputStringChars, position+2, 4);
+			   returnStringBuilder.append(Character.toString((char)Integer.parseInt(hexValue, 16)));
+			   position += 6;
+			   break;
+		   }
+                   //default - not needed, only characters above are allowed for escaping in Java strings
+                }
+                begin = position;
+            } else if (inputStringChars[position] == '\r' && inputStringChars[position+1] == '\n') {
+                // append any regular string characters we passed by already
+                if (position > begin) {
+                    returnStringBuilder.append(inputStringChars, begin, position-begin);
+                }
+                returnStringBuilder.append("\n");
+                position += 2;
+                begin = position;
+            } else {
+                position++;
+            }
         }
-      
-        int position = 0;
-        while(slashIndex > -1){              	        	
-        	String subString = string.substring(position, slashIndex);
-            returnString += subString;
-            position = slashIndex;
-            
-            char nextChar = string.charAt(slashIndex + 1);
-            switch (nextChar){
-               case 'b':{
-            	   position += 2;
-                   returnString += '\b';
-                   break;
-               }
-               case 'r':{
-            	   position += 2;
-                   returnString += '\r';
-                   break;
-               }
-               case 'f':{
-            	   position += 2;
-                   returnString += '\f';
-                   break;
-               }
-               case 'n':{
-            	   position += 2;
-                   returnString += '\n';
-                   break;
-               }
-               case 't': {
-            	   position += 2;
-                   returnString += '\t';
-                   break;
-               }
-               case '"': {
-            	    position += 2;
-                    returnString += '"';
-                    break;
-               }
-               case '\\':{
-            	   position += 2;
-                   returnString += '\\';
-                   break;
-               }
-               case '/':{
-            	   position += 2;
-                   returnString += '/';
-                   break;
-               }
-               case 'u':{
-            	   position += 6;
-                   String hexValue = string.substring(slashIndex+2, slashIndex+6);
-                   returnString += Character.toString((char)Integer.parseInt(hexValue, 16));
-                   break;
-               }
-            }            
-            slashIndex = string.indexOf('\\', position);
+
+        // add any remaining characters
+        if (position > begin) {
+            returnStringBuilder.append(inputStringChars, begin, position-begin);
         }
-        //If there is content after the last '\' then append it.
-        if(position < string.length()){
-        	String subString = string.substring(position, string.length());
-        	returnString += subString;
-        }
-        return returnString;
+
+	return returnStringBuilder.toString();
     }
     
     /**
@@ -612,7 +632,7 @@ public class JSONReader extends XMLReaderAdapter {
         }
                
         private void addSimpleAttribute(List attributes, String uri, String attributeLocalName,Tree childValueTree){
-        	 switch(childValueTree.getType()) {
+            switch(childValueTree.getType()) {
              case JSONLexer.STRING: {                 
                  String stringValue = JSONReader.string(childValueTree.getChild(0).getText());
             	 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue));
@@ -633,9 +653,10 @@ public class JSONReader extends XMLReaderAdapter {
              case JSONLexer.NULL: {
                  break;
              } 
-        	 }
+            }
         }
 
+        @Override
         public int getIndex(String uri, String localName) {
             if(null == localName) {
                 return -1;
@@ -728,8 +749,8 @@ public class JSONReader extends XMLReaderAdapter {
      */
     private static class ExtendedJSONParser extends JSONParser {
        
-    	private InputSource inputSource;
-    	private ErrorHandler errorHandler;
+    	private final InputSource inputSource;
+    	private final ErrorHandler errorHandler;
     	
     	public ExtendedJSONParser(TokenStream input, InputSource inputSource, ErrorHandler errorHandler) {
     		super(input);
@@ -755,6 +776,7 @@ public class JSONReader extends XMLReaderAdapter {
     		super(e);
     	}
     	
+        @Override
     	public SAXException getCause() {
             return (SAXException)super.getCause();
         }

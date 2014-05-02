@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,6 +43,7 @@ import org.eclipse.persistence.testing.jaxb.json.rootlevellist.RootLevelListTest
 import org.eclipse.persistence.testing.jaxb.json.wrapper.AllWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropDifferentTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropTestCases;
+import org.eclipse.persistence.testing.jaxb.json.multiline.MultiLineStringTestCases;
 import org.eclipse.persistence.testing.oxm.xmlconversionmanager.NumberTestCases;
 
 import junit.framework.Test;
@@ -83,6 +84,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTest(JSONWithPaddingTestCases.suite());
           suite.addTest(AnyTestCases.suite());
           suite.addTest(AllWrapperTestCases.suite());
+          suite.addTestSuite(MultiLineStringTestCases.class);
           
           return suite;
 	}
