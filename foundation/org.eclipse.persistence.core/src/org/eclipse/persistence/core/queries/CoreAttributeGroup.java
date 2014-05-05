@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.queries.CoreAttributeConverter;
 import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -126,7 +127,7 @@ public class CoreAttributeGroup<
     public CoreAttributeGroup() {
         this("");
     }
-    
+
     /**
      * Add a basic attribute or nested attribute with each String representing
      * an attribute on the path to what needs to be included in the
@@ -153,7 +154,7 @@ public class CoreAttributeGroup<
      * @param group - a collection of AttributeGroups to be added.
      */
     public void addAttribute(String attributeNameOrPath, Collection<? extends CoreAttributeGroup> groups) {
-        CoreAttributeItem item = getItem(convert(attributeNameOrPath), true);
+        CoreAttributeItem item = getItem(CoreAttributeConverter.convert(attributeNameOrPath), true);
         item.addGroups(groups);
     }
     
@@ -175,7 +176,7 @@ public class CoreAttributeGroup<
      * @param group - an AttributeGroup to be added.
      */
     public void addAttribute(String attributeNameOrPath, CoreAttributeGroup group) {
-        CoreAttributeItem item = getItem(convert(attributeNameOrPath), true);
+        CoreAttributeItem item = getItem(CoreAttributeConverter.convert(attributeNameOrPath), true);
         item.addSubGroup(group);
     }
 
@@ -199,7 +200,7 @@ public class CoreAttributeGroup<
      *            - an AttributeGroup to be added.
      */
     public void addAttributeKey(String attributeNameOrPath, CoreAttributeGroup group) {
-        CoreAttributeItem item = getItem(convert(attributeNameOrPath), true);
+        CoreAttributeItem item = getItem(CoreAttributeConverter.convert(attributeNameOrPath), true);
         item.addKeyGroup(group);
     }
 
@@ -268,7 +269,7 @@ public class CoreAttributeGroup<
      * Return if the attribute is defined in the group.
      */
     public boolean containsAttribute(String attributeNameOrPath) {
-        String[] path = convert(attributeNameOrPath);
+        String[] path = CoreAttributeConverter.convert(attributeNameOrPath);
 
         if (getItem(path, false) != null){
             return true;
@@ -298,37 +299,13 @@ public class CoreAttributeGroup<
      * Convert a provided name or path which could be a single attributeName, a
      * single string with dot separated attribute names, or an array of
      * attribute names defining the path.
-     * 
-     * @throws IllegalArgumentException if name is not valid attribute name or path
+     * @throws IllegalArgumentException if name is not valid attribute name or path.
      */
+    // Old prototype to keep 2.5 API. Use CoreAttributeConverter.convert internally.
     protected String[] convert(String... nameOrPath) {
-        if (nameOrPath == null || nameOrPath.length == 0 || (nameOrPath.length == 1 && (nameOrPath[0] == null || nameOrPath[0].length() == 0))) {
-            // TODO - improve error?
-            throw new IllegalArgumentException("Inavlid name or path: " + (nameOrPath.length == 1 ? nameOrPath[0] : null));
-        }
-
-        String[] path = nameOrPath;
-        if (nameOrPath.length > 1 || !nameOrPath[0].contains(".")) {
-            path = nameOrPath;
-        } else {
-            if (nameOrPath[0].endsWith(".")) {
-                throw new IllegalArgumentException("Invalid path: " + nameOrPath[0]);
-            }
-            path = nameOrPath[0].split("\\.");
-        }
-
-        if (path.length == 0) {
-            throw new IllegalArgumentException("Invalid path: " + nameOrPath[0]);
-        }
-
-        for (int index = 0; index < path.length; index++) {
-            if (path[index] == null || path[index].length() == 0 || !path[index].trim().equals(path[index])) {
-                throw new IllegalArgumentException("Invalid path: " + nameOrPath[0]);
-            }
-        }
-        return path;
+        return CoreAttributeConverter.convert(nameOrPath);
     }
-    
+
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this Descriptor to actual class-based
@@ -459,7 +436,7 @@ public class CoreAttributeGroup<
      * attribute.
      */
     public CoreAttributeGroup getGroup(String attributeNameOrPath) {
-        CoreAttributeItem item = getItem(convert(attributeNameOrPath), false);
+        CoreAttributeItem item = getItem(CoreAttributeConverter.convert(attributeNameOrPath), false);
         if (item != null) {
             return item.getGroup();
         }
@@ -477,7 +454,7 @@ public class CoreAttributeGroup<
      * @throws IllegalArgumentException if name is not valid attribute name or path
      */
     public ATTRIBUTE_ITEM getItem(String attributeNameOrPath) {
-        return getItem(convert(attributeNameOrPath), false);
+        return getItem(CoreAttributeConverter.convert(attributeNameOrPath), false);
     }
     
     /**

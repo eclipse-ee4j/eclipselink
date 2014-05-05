@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -15,10 +15,11 @@ package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.internal.core.queries.CoreAttributeConverter;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.queries.FetchGroup;
-
 import org.junit.Test;
+import static org.eclipse.persistence.internal.helper.StringHelper.DOT;
 
 /**
  * Simple tests to verify the functionality of FetchGroup API
@@ -39,7 +40,13 @@ public class FetchGroupAPITests extends TestCase {
     public static junit.framework.Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("FetchGroupAPITests");
-        
+
+        suite.addTest(new FetchGroupAPITests("verifyConverterWithValidSingleElements"));
+        suite.addTest(new FetchGroupAPITests("verifyConverterWithValidComplexElements"));
+        suite.addTest(new FetchGroupAPITests("verifyConverterWithValidArrays"));
+        suite.addTest(new FetchGroupAPITests("verifyConverterWithInvalidSingleElements"));
+        suite.addTest(new FetchGroupAPITests("verifyConverterWithInvalidComplexElements"));
+        suite.addTest(new FetchGroupAPITests("verifyConverterWithInvalidArrays"));
         suite.addTest(new FetchGroupAPITests("verifyDefaultConstructor"));
         suite.addTest(new FetchGroupAPITests("verifyNameConstructor"));
         suite.addTest(new FetchGroupAPITests("verifyNameConstructor_Null"));
@@ -57,10 +64,179 @@ public class FetchGroupAPITests extends TestCase {
         suite.addTest(new FetchGroupAPITests("verifyAddAttribute_Nested2"));
         suite.addTest(new FetchGroupAPITests("verifyAdd"));
         suite.addTest(new FetchGroupAPITests("verifyAdd_Nested"));
-        
+
         return suite;
     }
-    
+
+    /**
+     * Verify attribute converter with set of simple path elements.
+     * Every argument is a single {@link String} with valid path element without
+     * separator.
+     */
+    @Test
+    public void verifyConverterWithValidSingleElements() {
+        final String[][] elements = {
+                {"a"}, {"ab"}, {"abc"}, {"abcd"},
+                {"a b"}, {"a b c"}, {"ab cd"}};
+        for (String[] element : elements) {
+            String[] result = CoreAttributeConverter.convert(element);
+            assertNotNull("Converter returned null for input: \"" + element[0] + "\"", result);
+            assertEquals("Size of returned array differs from input: \"" + element[0] + "\"",
+                    element.length, result.length);
+            assertTrue("Returned String does not match input: \"" + element[0] + "\"",
+                    element[0].equals(result[0]));
+        }
+    }
+
+    /**
+     * Verify attribute converter with set of complex path elements.
+     * Every argument is a single {@link String} with valid path with
+     * one or more separators.
+     */
+    @Test
+    public void verifyConverterWithValidComplexElements() {
+        final String[][] paths = {
+                {"a", "b"}, {"a", "b", "c"}, {"a", "b", "c", "d"},
+                {"a b", "c d"}, {"a b", "c d", "e f"}};
+        for (String[] path : paths) {
+            int length = 0;
+            int i;
+            for (i = 0; i < path.length; i++) {
+                length += path[i].length() + 1;
+            }
+            StringBuilder element = new StringBuilder(length);
+            for (i = 0; i < path.length; i++) {
+                if (i > 0)
+                    element.append(DOT);
+                element.append(path[i]);
+            }
+            String elStr = element.toString();
+            String[] result = CoreAttributeConverter.convert(elStr);
+            assertNotNull("Converter returned null for input: \"" + elStr + "\"", result);
+            assertEquals("Size of returned array differs from input: \"" + elStr + "\"",
+                    path.length, result.length);
+            for (i = 0; i < path.length; i++) {
+                assertTrue("Returned String array does not match input: \"" + elStr + "\"",
+                        path[i].equals(result[i]));
+            }
+        }
+    }
+
+    /**
+     * Verify attribute converter with set of path elements as arrays.
+     * Every argument is a {@link String} array with valid path elements.
+     */
+    @Test
+    public void verifyConverterWithValidArrays() {
+        final String[][] paths = {
+                {"a", "b"}, {"a", "b", "c"}, {"a", "b", "c", "d"},
+                {"a b", "c d"}, {"a b", "c d", "e f"}};
+        for (String[] path : paths) {
+            String[] result = CoreAttributeConverter.convert(path);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < path.length; i++) {
+                if (i > 0) {
+                    sb.append(", ");
+                }
+                sb.append('"').append(path[i]).append('"');
+            }
+            assertNotNull("Converter returned null for input: " + sb.toString(), result);
+            assertEquals("Size of returned array differs from input: " + sb.toString(),
+                    path.length, result.length);
+            for (int i = 0; i < path.length; i++) {
+                assertTrue("Returned String array does not match input array: " + sb.toString(),
+                        path[i].equals(result[i]));
+            }
+        }
+    }
+
+    /**
+     * Verify attribute converter with set of invalid simple path elements.
+     * Every argument is a single {@link String} with invalid path element without
+     * separator.
+     */
+    @Test
+    public void verifyConverterWithInvalidSingleElements() {
+        final String[][] elements = {
+                {null}, {""}, {" "}, {" a"}, {"a "}, {" a "}, {" a b"}, {"a b "}, {" a b "}};
+        boolean exception = false;
+        for (String[] element : elements) try {
+            exception = false;
+            String[] result = CoreAttributeConverter.convert(element);
+        } catch (IllegalArgumentException ex) {
+            exception = true;
+        } finally {
+            assertTrue("Converter did not throw IllegalArgumentException on invalid input: \""
+                    + element[0] + "\"", exception);
+        }
+    }
+
+    /**
+     * Verify attribute converter with set of complex path elements.
+     * Every argument is a single {@link String} with valid path with
+     * one or more separators.
+     */
+    @Test
+    public void verifyConverterWithInvalidComplexElements() {
+        final String[][] paths = {
+                {"", "b"}, {"a", ""}, {" ", "b"}, {"a", " "}, {"", ""}, {" ", " "},
+                {" a", "b"}, {"a", " b"}, {"a ", "b"}, {"a", "b "},
+                {" a ", "b"}, {"a", " b "}};
+        boolean exception = false;
+        for (String[] path : paths) {
+            int length = 0;
+            int i;
+            for (i = 0; i < path.length; i++) {
+                length += path[i].length() + 1;
+            }
+            StringBuilder element = new StringBuilder(length);
+            for (i = 0; i < path.length; i++) {
+                if (i > 0)
+                    element.append(DOT);
+                element.append(path[i]);
+            }
+            String elStr = element.toString();
+            try {
+                exception = false;
+                String[] result = CoreAttributeConverter.convert(elStr);
+            } catch (IllegalArgumentException ex) {
+                exception = true;
+            } finally {
+                assertTrue("Converter did not throw IllegalArgumentException on invalid input: \""
+                        + elStr + "\"", exception);
+            }
+        }
+    }
+
+    /**
+     * Verify attribute converter with set of path elements as arrays.
+     * Every argument is a {@link String} array with valid path elements.
+     */
+    @Test
+    public void verifyConverterWithInvalidArrays() {
+        final String[][] paths = {
+                {"", "b"}, {"a", ""}, {" ", "b"}, {"a", " "}, {"", ""}, {" ", " "},
+                {" a", "b"}, {"a", " b"}, {"a ", "b"}, {"a", "b "},
+                {" a ", "b"}, {"a", " b "}};
+        boolean exception = false;
+        for (String[] path : paths) try {
+            exception = false;
+            String[] result = CoreAttributeConverter.convert(path);
+        } catch (IllegalArgumentException ex) {
+            exception = true;
+        } finally {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < path.length; i++) {
+                if (i > 0) {
+                    sb.append(", ");
+                }
+                sb.append('"').append(path[i]).append('"');
+            }
+            assertTrue("Converter did not throw IllegalArgumentException on invalid input: "
+                    + sb.toString(), exception);
+        }
+    }
+
     @Test
     public void verifyDefaultConstructor() {
         FetchGroup fg = new FetchGroup();

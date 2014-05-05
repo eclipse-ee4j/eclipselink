@@ -18,6 +18,21 @@ package org.eclipse.persistence.internal.helper;
  */
 public class StringHelper {
 
+    /** Horizontal tab. */
+    public static final char TAB = '\t';
+
+    /** Line feed. */
+    public static final char LF = '\n';
+
+    /** Form feed */
+    public static final char FF = '\f';
+
+    /** Carriage return */
+    public static final char CR = '\r';
+
+    /** Space. */
+    public static final char SPACE = ' ';
+
     /** Left brace. */
     public static final char LEFT_BRACE = '{';
 
@@ -29,6 +44,9 @@ public class StringHelper {
 
     /** Right bracket. */
     public static final char RIGHT_BRACKET = ')';
+
+    /** Dot. */
+    public static final char DOT = '.';
 
     /** Vertical bar. */
     public static final char VERTICAL_BAR = '|';
