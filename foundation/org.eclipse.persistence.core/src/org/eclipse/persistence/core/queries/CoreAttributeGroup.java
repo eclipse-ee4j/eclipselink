@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
@@ -41,6 +42,12 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 public class CoreAttributeGroup<
     ATTRIBUTE_ITEM extends CoreAttributeItem,
     DESCRIPTOR extends CoreDescriptor> implements Serializable, Cloneable {
+
+    /**
+     *  Name parts separator. Used in {@link #toStringItems()} method to build output string.
+     */
+    private static final String FIELD_SEP = ", ";
+
     /**
      * Name of the group. This is used in subclasses where the groups are stored
      * and can be used within a query by name as with FetchGroup. For dynamic
@@ -760,7 +767,17 @@ public class CoreAttributeGroup<
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "(" + getName() + ")" + toStringAdditionalInfo() + "{" + toStringItems() + "}";
+        String className = StringHelper.nonNullString(getClass().getSimpleName());
+        String name = StringHelper.nonNullString(getName());
+        String items = StringHelper.nonNullString(toStringItems());
+        String additionalInfo = StringHelper.nonNullString(toStringAdditionalInfo());
+        StringBuilder str = new StringBuilder(className.length() + name.length()
+                + additionalInfo.length() + items.length() + 4);
+        str.append(className);
+        str.append(StringHelper.LEFT_BRACKET).append(name).append(StringHelper.RIGHT_BRACKET);
+        str.append(additionalInfo);
+        str.append(StringHelper.LEFT_BRACE).append(items).append(StringHelper.RIGHT_BRACE);
+        return str.toString();
     }
 
     /**
@@ -774,23 +791,35 @@ public class CoreAttributeGroup<
      * Used by toString to print attribute items.
      */
     protected String toStringItems() {
-        String str = "";
-        if (this.items != null) {
-            Iterator<ATTRIBUTE_ITEM> it = this.items.values().iterator();
-            boolean isFirst = true;
-            while (it.hasNext()) {
-                if (isFirst) {
-                    isFirst = false;
-                } else {
-                    str += ", ";
-                }
-                str += it.next().toStringNoClassName();
+        // Calculate name length to avoid StringBuilder resizing
+        int length = 0;
+        String superClassGroupItems;
+        if (this.superClassGroup != null) {
+            superClassGroupItems = this.superClassGroup.toStringItems();
+            length += FIELD_SEP.length();
+            length += superClassGroupItems.length();
+        } else {
+            superClassGroupItems = null;
+        }
+        Collection<ATTRIBUTE_ITEM> values = this.items.values();
+        length += (values != null && values.size() > 0
+                ?  (values.size() - 1) * FIELD_SEP.length() : 0);
+        for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
+            length += it.next().toStringNoClassName().length();
+        }
+        // Build string to be returned
+        StringBuilder str = new StringBuilder(length > 0 ? length : 0);
+        for (Iterator<ATTRIBUTE_ITEM> it = values.iterator(); it.hasNext();) {
+            str.append(it.next().toStringNoClassName());
+            if (it.hasNext()) {
+                str.append(FIELD_SEP);
             }
         }
-        if (this.superClassGroup != null){
-            str += ", " + this.superClassGroup.toStringItems();
+        if (this.superClassGroup != null) {
+            str.append(FIELD_SEP);
+            str.append(superClassGroupItems);
         }
-        return str;
+        return str.toString();
     }
 
     static protected String toStringPath(String[] attributePath, int position) {
