@@ -167,8 +167,8 @@ public class JavaSECMPInitializer extends JPAInitializer {
         ClassLoader tempLoader = null;
         if (System.getSecurityManager() != null) {
             try {
-                Class[] argsClasses = new Class[] {this.getClass(), URL[].class, ClassLoader.class, Collection.class, boolean.class};
-                Object[] args = new Object[] {this, urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers};
+                Class[] argsClasses = new Class[] {URL[].class, ClassLoader.class, Collection.class, boolean.class};
+                Object[] args = new Object[] {urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers};
                 Constructor classLoaderConstructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(TempEntityLoader.class, argsClasses, true));
                 tempLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedInvokeConstructor(classLoaderConstructor, args));
             } catch (PrivilegedActionException privilegedException) {
