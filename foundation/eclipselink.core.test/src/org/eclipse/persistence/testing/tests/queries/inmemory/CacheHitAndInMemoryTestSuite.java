@@ -323,6 +323,9 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
         test2.setName("DescriptorUOWConformTest - miss");
         addTest(test2);
         addTest(new MemoryQueryLike());
+        
+        // Bug 320764
+        addTest(new UnitOfWorkConformReadObjectWithCriteriaTest()); 
     }
 
     public void addUOWConformTests() {

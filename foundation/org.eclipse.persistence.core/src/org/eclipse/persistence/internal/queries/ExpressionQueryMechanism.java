@@ -823,7 +823,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         // user specifies the most cautious one.
         int policyToUse = query.getInMemoryQueryIndirectionPolicyState();
         if (conforming && (policyToUse != InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION)) {
-            policyToUse = InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_CONFORMED;
+            // Bug 320764 - return not conformed by default, to avoid incorrect results being returned
+            policyToUse = InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED;
         }
         Object cachedObject = null;
         Expression selectionCriteria = getSelectionCriteria();
