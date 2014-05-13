@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -81,6 +81,10 @@ final class NumericTypeComparator implements Comparator<Class<?>> {
 		// Long
 		if (type1 == Long.TYPE || type1 == Long.class) return -1;
 		if (type2 == Long.TYPE || type2 == Long.class) return  1;
+
+		// Integer
+		if (type1 == Integer.TYPE || type1 == Integer.class) return -1;
+		if (type2 == Integer.TYPE || type2 == Integer.class) return 1;
 
 		return 1;
 	}
