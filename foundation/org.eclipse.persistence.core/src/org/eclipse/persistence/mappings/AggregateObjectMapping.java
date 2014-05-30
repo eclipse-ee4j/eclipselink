@@ -2130,10 +2130,28 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         AbstractRecord targetRow = buildTemplateInsertRow(session);
         for (Enumeration keyEnum = targetRow.keys(); keyEnum.hasMoreElements();) {
             DatabaseField field = (DatabaseField)keyEnum.nextElement();
-            Object value = targetRow.get(field);
-
-            //CR-3286097 - Should use add not put, to avoid linear search.
-            databaseRow.add(field, value);
+            if (field.isInsertable()) {
+                Object value = targetRow.get(field);
+                //CR-3286097 - Should use add not put, to avoid linear search.
+                databaseRow.add(field, value);
+            }
+        }
+    }
+    
+    @Override
+    public void writeUpdateFieldsIntoRow(AbstractRecord databaseRow, AbstractSession session) {
+        if (isReadOnly()) {
+            return;
+        }
+        
+        AbstractRecord targetRow = buildTemplateInsertRow(session);
+        for (Enumeration keyEnum = targetRow.keys(); keyEnum.hasMoreElements();) {
+            DatabaseField field = (DatabaseField)keyEnum.nextElement();
+            if (field.isUpdatable()) {
+                Object value = targetRow.get(field);
+                //CR-3286097 - Should use add not put, to avoid linear search.
+                databaseRow.add(field, value);
+            }
         }
     }
 

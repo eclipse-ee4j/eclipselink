@@ -44,6 +44,8 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         addTableDefinition(buildHockeyCoach_NICKNAMESTable());
         
         addTableDefinition(buildBODYTable());
+        
+        addTableDefinition(buildPLACETable());
     }
 
     public TableDefinition buildBODYTable() {
@@ -594,6 +596,68 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
         fieldID.setUnique(false);
         fieldID.setShouldAllowNull(false);
         table.addField(fieldID);
+        
+        return table;
+    }
+    
+    public TableDefinition buildPLACETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_PLACE");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(18);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldCOUNTRY_CODE = new FieldDefinition();
+        fieldCOUNTRY_CODE.setName("COUNTRY_CODE");
+        fieldCOUNTRY_CODE.setTypeName("VARCHAR2");
+        fieldCOUNTRY_CODE.setSize(3);
+        fieldCOUNTRY_CODE.setSubSize(0);
+        fieldCOUNTRY_CODE.setIsPrimaryKey(false);
+        fieldCOUNTRY_CODE.setIsIdentity(false);
+        fieldCOUNTRY_CODE.setUnique(false);
+        fieldCOUNTRY_CODE.setShouldAllowNull(true);
+        table.addField(fieldCOUNTRY_CODE);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(36);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldADDRESS_1 = new FieldDefinition();
+        fieldADDRESS_1.setName("ADDRESS_1");
+        fieldADDRESS_1.setTypeName("VARCHAR2");
+        fieldADDRESS_1.setSize(36);
+        fieldADDRESS_1.setSubSize(0);
+        fieldADDRESS_1.setIsPrimaryKey(false);
+        fieldADDRESS_1.setIsIdentity(false);
+        fieldADDRESS_1.setUnique(false);
+        fieldADDRESS_1.setShouldAllowNull(true);
+        table.addField(fieldADDRESS_1);
+        
+        FieldDefinition fieldADDRESS_2 = new FieldDefinition();
+        fieldADDRESS_2.setName("ADDRESS_2");
+        fieldADDRESS_2.setTypeName("VARCHAR2");
+        fieldADDRESS_2.setSize(36);
+        fieldADDRESS_2.setSubSize(0);
+        fieldADDRESS_2.setIsPrimaryKey(false);
+        fieldADDRESS_2.setIsIdentity(false);
+        fieldADDRESS_2.setUnique(false);
+        fieldADDRESS_2.setShouldAllowNull(true);
+        table.addField(fieldADDRESS_2);
         
         return table;
     }

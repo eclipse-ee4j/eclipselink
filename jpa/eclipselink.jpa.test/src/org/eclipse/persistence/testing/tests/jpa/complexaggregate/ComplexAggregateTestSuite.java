@@ -41,6 +41,8 @@ import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyPlayer;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyTeam;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.Name;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.PersonalVitals;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.Location;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.Place;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.Role;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.TeamVitals;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.Torso;
@@ -79,6 +81,7 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         suite.addTest(new ComplexAggregateTestSuite("testAggregateReadOnlyMapKey"));
         suite.addTest(new ComplexAggregateTestSuite("testComplexAggregateJoin"));
         suite.addTest(new ComplexAggregateTestSuite("testComplexAggregateBatch"));
+        suite.addTest(new ComplexAggregateTestSuite("testAggregateFieldAttributeOverrides"));
 
         return suite;
     }
@@ -1082,4 +1085,26 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
             }
         }
     }
+    
+    public void testAggregateFieldAttributeOverrides() {
+        clearCache();
+        DatabaseSessionImpl m_session = getDatabaseSession();
+
+        EntityManager em = createEntityManager();
+
+        beginTransaction(em);
+        
+        Place place = new Place();
+        place.setCountryCode("US");
+        place.setName("Nowhere");
+        place.setAddress1(new Location("12 Main Street", "US"));
+        place.setAddress2(new Location("34 Easy Street", "US"));
+        
+        em.persist(place);
+        
+        em.flush();
+        
+        rollbackTransaction(em);
+    }
+    
 }
