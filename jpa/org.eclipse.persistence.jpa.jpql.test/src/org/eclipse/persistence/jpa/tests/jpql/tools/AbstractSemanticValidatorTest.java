@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,7 +32,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see AbstractSemanticValidator
  *
- * @version 2.5
+ * @version 2.5.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -1144,6 +1144,45 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 			startPosition,
 			endPosition
 		);
+	}
+
+	@Test
+	public final void test_InExpression_InvalidExpression_1() throws Exception {
+
+		String jpqlQuery = "SELECT prod FROM Product prod WHERE TYPE(prod.project) IN(LargeProject, SmallProject)";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	@Ignore
+	// The semantic validator does not check the type of the left expression with the items
+	public final void test_InExpression_InvalidExpression_2() throws Exception {
+
+		String jpqlQuery = "SELECT prod FROM Product prod WHERE prod.project IN(2, 3)";
+
+		int startPosition1 = "SELECT prod FROM Product prod WHERE prod.project IN(".length();
+		int endPosition1   = "SELECT prod FROM Product prod WHERE prod.project IN(2".length();
+
+		int startPosition2 = "SELECT prod FROM Product prod WHERE prod.project IN(2, ".length();
+		int endPosition2   = "SELECT prod FROM Product prod WHERE prod.project IN(2, 3".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyTheseProblems(
+			problems,
+			new String[] { InExpression_InvalidExpression, InExpression_InvalidExpression },
+			new int[] { startPosition1, startPosition2 },
+			new int[] { endPosition1,   endPosition2 }
+		);
+	}
+
+	@Test
+	public final void test_InExpression_Valid_01() throws Exception {
+
+		String jpqlQuery = "SELECT k FROM Project k WHERE TYPE(k) IN (LargeProject, SmallProject)";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
 	}
 
 	@Test

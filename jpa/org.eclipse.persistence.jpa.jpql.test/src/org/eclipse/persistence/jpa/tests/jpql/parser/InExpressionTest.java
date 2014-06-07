@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -243,6 +243,47 @@ public final class InExpressionTest extends JPQLParserTest {
 				.in(
 					string("'JPQL'"),
 					string("'JPA'")
+				)
+			)
+		);
+
+		testInvalidQuery(query, selectStatement);
+	}
+
+	@Test
+	public void test_JPQLQuery_13() {
+
+		String query = "SELECT e FROM Employee e WHERE e.roomNumber IN(2, 3, 5)";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					path("e.roomNumber")
+				.in(
+					numeric(2),
+					numeric(3),
+					numeric(5)
+				)
+			)
+		);
+
+		testInvalidQuery(query, selectStatement);
+	}
+
+	@Test
+	public void test_JPQLQuery_14() {
+
+		String query = "SELECT prod FROM Product prod WHERE prod.project IN(LargeProject, SmallProject)";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("prod")),
+			from("Product", "prod"),
+			where(
+					path("prod.project")
+				.in(
+					isJPA1_0() ? variable("LargeProject") : entity("LargeProject"),
+					isJPA1_0() ? variable("SmallProject") : entity("SmallProject")
 				)
 			)
 		);
