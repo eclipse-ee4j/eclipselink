@@ -43,13 +43,6 @@
     <available file="../${ant.project.name}" type="dir" property="dbwsbldrorcltst.is.local"/>
     <fail unless="dbwsbldrorcltst.is.local" message="Not running from '${ant.project.name}' directory"/>
 
-    <condition property="is.java.version.16">
-        <equals arg1="${ant.java.version}" arg2="1.6"/>
-    </condition>
-    <fail unless="is.java.version.16"
-        message="'${ant.project.name}' requires Java version 1.6 or higher. You are currently using Java version ${ant.java.version}."
-    />
-
     <dirname  property="dbwsbldrorcltst.build.location_temp" file="${ant.file.eclipselink.dbws.builder.test.oracle}"/>
     <pathconvert targetos="unix" property="dbwsbldrorcltst.build.location">
         <path>
@@ -216,7 +209,6 @@
         </condition>
         <condition property="support.test">
             <and>
-                <isset property="is.java.version.16"/>
                 <isset property="is.oracle.platform"/>
                 <isset property="jdbc.jar.exist"/>
                 <isset property="dbwsbldrorcltst.jar.exist"/>
@@ -237,7 +229,6 @@
         </condition>
         <!-- Report unmet Run conditions -->
         <say message="Conditions not met to execute tests!" unless="support.test"/>
-        <say message="     Not JDK 6!"                      unless="is.java.version.16"/>
         <say message="     DB platform not set to Oracle!"  unless="is.oracle.platform"/>
         <say message="     jdbc.jar not found!"             unless="jdbc.jar.exist"/>
         <say message="     dbwsbldrorcltst.jar not found!"  unless="dbwsbldrorcltst.jar.exist"/>
