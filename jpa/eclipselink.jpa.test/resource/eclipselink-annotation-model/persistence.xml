@@ -164,6 +164,12 @@
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
         <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProductTrue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProductFalse</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProductHardwareTrue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProductHardwareFalse</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProductSoftwareTrue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProductSoftwareFalse</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     </persistence-unit>

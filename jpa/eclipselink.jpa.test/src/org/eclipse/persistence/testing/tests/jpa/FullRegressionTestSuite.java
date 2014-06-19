@@ -20,6 +20,7 @@ package org.eclipse.persistence.testing.tests.jpa;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
@@ -45,6 +46,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJ
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTestEnableSelective;
 import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.complexaggregate.ComplexAggregateTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.config.ConfigPUTestSuite;
@@ -279,6 +281,7 @@ public class FullRegressionTestSuite extends TestSuite {
 
         // JPA 2.0 Cacheable model
         fullSuite.addTest(CacheableModelJunitTest.suite());
+        fullSuite.addTest(CacheableModelJunitTestEnableSelective.suite());
 
         // JPA 2.0 Delimited Identifiers model
         fullSuite.addTest(DelimitedPUTestSuite.suite());

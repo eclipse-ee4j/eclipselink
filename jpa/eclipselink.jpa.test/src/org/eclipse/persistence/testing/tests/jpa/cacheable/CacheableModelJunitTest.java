@@ -14,6 +14,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     06/09/2010-2.0.3 Guy Pelletier 
  *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
+ *     06/19/2014-2.6: - Tomas Kraus (Oracle)
+ *       - 437578: Tests to verify @Cacheable inheritance in JPA 2.1
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
@@ -22,9 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Cache;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
+import javax.persistence.Cacheable;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import junit.framework.*;
@@ -52,6 +58,12 @@ import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueDerived
 import org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite;
+import org.eclipse.persistence.testing.models.jpa.cacheable.ProductFalse;
+import org.eclipse.persistence.testing.models.jpa.cacheable.ProductHardwareFalse;
+import org.eclipse.persistence.testing.models.jpa.cacheable.ProductHardwareTrue;
+import org.eclipse.persistence.testing.models.jpa.cacheable.ProductSoftwareFalse;
+import org.eclipse.persistence.testing.models.jpa.cacheable.ProductSoftwareTrue;
+import org.eclipse.persistence.testing.models.jpa.cacheable.ProductTrue;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable;
 import org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity;
 import org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable;
@@ -1928,7 +1940,91 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             }
         }
     }
-    
+
+    /**
+     * Test caching with <code>@Cacheable(false)</code> in parent class, <code>@Cacheable(true)</code> in child class
+     * and another child class which just inherits <code>@Cacheable</code> value from parent class.
+     * There is following class structure with <code>@Cacheable</code> settings:<ul>
+     * <li><code>ProductFalse</code> with <code>@Cacheable(false)</code></li>
+     * <li><code>ProductHardwareTrue</code> with <code>@Cacheable(false)</code> extends <code>ProductFalse</code></li>
+     * <li><code>ProductSoftwareFalse</code> with <code>@Cacheable</code> value inherited from parent extends <code>ProductFalse</code></li></ul>
+     * Abstract code to be reused in child test classes to verify caching for ENABLE_SELECTIVE
+     * and DISABLE_SELECTIVE shared cache mode.
+     */
+    protected void runTestCacheableInheritanceBasedOnFalse(EntityManagerFactory emf, EntityManager em) {
+        try {
+            assertNotNull("Could not create EntityManager", em);
+            EntityTransaction tx = em.getTransaction();
+            assertNotNull("Could not get transaction", tx);
+            tx.begin();
+            ProductFalse pf = new ProductFalse(1, 2);
+            em.persist(pf);
+            ProductHardwareTrue pht = new ProductHardwareTrue(2, 3, 1);
+            em.persist(pht);
+            ProductSoftwareFalse psf = new ProductSoftwareFalse(3, 2, 1);
+            em.persist(psf);
+            em.flush();
+            tx.commit();
+            int pfId = pf.getId();
+            int phtId = pht.getId();
+            int psfId = psf.getId();
+            Cache cache = emf.getCache();
+            assertNotNull("Could not get cache", cache);
+            boolean isPf = cache.contains(ProductFalse.class, pfId);
+            boolean isPht = cache.contains(ProductHardwareTrue.class, phtId);
+            boolean isPsf = cache.contains(ProductSoftwareFalse.class, psfId);
+            assertFalse("ProductFalse with @Cacheable(false) shall not be in the cache.", isPf);
+            assertTrue("ProductHardwareTrue with @Cacheable(false) shall be in the cache.", isPht);
+            assertFalse("ProductSoftwareFalse with @Cacheable inherited as false shall not be in the cache.", isPsf);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Test caching with <code>@Cacheable(true)</code> in parent class, <code>@Cacheable(false)</code> in child class
+     * and another child class which just inherits <code>@Cacheable</code> value from parent class.
+     * There is following class structure with <code>@Cacheable</code> settings:<ul>
+     * <li><code>ProductTrue</code> with <code>@Cacheable(true)</code></li>
+     * <li><code>ProductHardwareTrue</code> with <code>@Cacheable(false)</code> extends <code>ProductTrue</code></li>
+     * <li><code>ProductSoftwareFalse</code> with <code>@Cacheable</code> value inherited from parent extends <code>ProductTrue</code></li></ul>
+     * Abstract code to be reused in child test classes to verify caching for ENABLE_SELECTIVE
+     * and DISABLE_SELECTIVE shared cache mode.
+     */
+    protected void runTestCacheableInheritanceBasedOnTrue(EntityManagerFactory emf, EntityManager em) {
+        try {
+            assertNotNull("Could not create EntityManager", em);
+            EntityTransaction tx = em.getTransaction();
+            assertNotNull("Could not get transaction", tx);
+            tx.begin();
+            ProductTrue pt = new ProductTrue(1, 2);
+            em.persist(pt);
+            ProductHardwareFalse phf = new ProductHardwareFalse(2, 3, 1);
+            em.persist(phf);
+            ProductSoftwareTrue pst = new ProductSoftwareTrue(3, 2, 1);
+            em.persist(pst);
+            em.flush();
+            tx.commit();
+            int ptId = pt.getId();
+            int phfId = phf.getId();
+            int pstId = pst.getId();
+            Cache cache = emf.getCache();
+            assertNotNull("Could not get cache", cache);
+            boolean isPt = cache.contains(ProductTrue.class, ptId);
+            boolean isPhf = cache.contains(ProductHardwareFalse.class, phfId);
+            boolean isPst = cache.contains(ProductSoftwareTrue.class, pstId);
+            assertTrue("ProductTrue with @Cacheable(true) shall be in the cache.", isPt);
+            assertFalse("ProductHardwareFalse with @Cacheable(true) shall not be in the cache.", isPhf);
+            assertTrue("ProductSoftwareTrue with @Cacheable inherited as false shall be in the cache.", isPst);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
     /**
      * Convenience method.
      */

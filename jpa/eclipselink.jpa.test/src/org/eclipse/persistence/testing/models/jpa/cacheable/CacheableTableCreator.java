@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     07/16/2009-2.0 Guy Pelletier 
  *       - 277039: JPA 2.0 Cache Usage Settings
+ *     06/19/2014-2.6: Tomas Kraus
+ *       - 437578: New model to verify @Cacheable inheritance in JPA 2.1
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.cacheable;
 
@@ -37,6 +39,8 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCACHEABLEREL_PROTECTEDTable());
         addTableDefinition(buildCACHEABLEREL_FALSEDETAILTable());
         addTableDefinition(buildCACHEABLEREL_PROTECTEMBEDDABLETable());
+        addTableDefinition(buildProductFalseTable());
+        addTableDefinition(buildProductTrueTable());
     }
     
     public static TableDefinition buildCACHEABLE_FALSE_ENTITYTable() {
@@ -565,5 +569,36 @@ public class CacheableTableCreator extends TogglingFastTableCreator {
     
         return table;
     }
+
+    /**
+     * Build table for {@see org.eclipse.persistence.testing.models.jpa.cacheable.ProductFalse}
+     * class. 
+     * @return Initialized {@see TableDefinition} instance.
+     */
+    public static TableDefinition buildProductFalseTable() {
+        TableDefinition table = createTable("PRODUCT_FALSE");
+        table.addField(createNumericPk("ID"));
+        table.addField(createNumericColumn("QUANTITY"));
+        table.addField(createNumericColumn("MNUMBER"));
+        table.addField(createNumericColumn("VNUMBER"));
+        table.addField(createDTypeColumn());
+        return table;
+    }
+
+    /**
+     * Build table for {@see org.eclipse.persistence.testing.models.jpa.cacheable.ProductTrue}
+     * class. 
+     * @return Initialized {@see TableDefinition} instance.
+     */
+    public static TableDefinition buildProductTrueTable() {
+        TableDefinition table = createTable("PRODUCT_TRUE");
+        table.addField(createNumericPk("ID"));
+        table.addField(createNumericColumn("QUANTITY"));
+        table.addField(createNumericColumn("MNUMBER"));
+        table.addField(createNumericColumn("VNUMBER"));
+        table.addField(createDTypeColumn());
+        return table;
+    }
+
 }
 

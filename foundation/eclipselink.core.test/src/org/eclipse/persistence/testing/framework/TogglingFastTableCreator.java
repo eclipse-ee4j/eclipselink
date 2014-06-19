@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010 Dies Koper (Fujitsu) All rights reserved.
+ * Copyright (c) 2010, 2014 Dies Koper (Fujitsu). Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Created Feb 19, 2010 - Dies Koper (Fujitsu)
  *        bug 288715: Drop Table Restrictions: "table locked" errors when dropping
  *                    tables in several Core and many JPA LRG tests on Symfoware.
+ *     Jul 19, 2014 - Tomas Kraus (Oracle)
+ *        bug 437578: Added few helper methods to simplify table builder methods.
  ******************************************************************************/
 package org.eclipse.persistence.testing.framework;
 
@@ -24,6 +26,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
@@ -47,10 +50,14 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * This class should be positioned between the test's table creator class and
  * TableCreator by making the's test table creator extend this class.<br/>
  * 
- * @author Dies Koper
+ * @author Dies Koper, Tomas Kraus
  * 
  */
 public class TogglingFastTableCreator extends TableCreator {
+
+    /** Character to separate table name and column name in full column identifier. */
+    protected static final char TABLE_FIELD_SEPARATOR = '.';
+
     protected static Set fastTableCreators = new HashSet();
     protected static boolean useFastTableCreatorAfterInitialCreate = Boolean
             .getBoolean("eclipselink.test.toggle-fast-table-creator");
@@ -130,4 +137,109 @@ public class TogglingFastTableCreator extends TableCreator {
     public String getTableCreatorName() {
         return this.getClass().getName();
     }
+
+    /**
+     * Helper method to concatenate table name and column name into full column name.
+     * @param tableName Table name.
+     * @param columnName Column name.
+     * @return Full column name (prefixed with table name).
+     */
+    protected static String buildFullColumnName(String tableName, String columnName) {
+        StringBuilder sb = new StringBuilder(tableName.length() + columnName.length() + 1);
+        sb.append(tableName).append(TABLE_FIELD_SEPARATOR).append(columnName);
+        return sb.toString();
+
+    }
+
+    /**
+     * Helper method to create {@see TableDefinition} instance with given table name.
+     * @param name Table name.
+     * @return {@see TableDefinition} instance with name set.
+     */
+    protected static TableDefinition createTable(String name) { 
+        TableDefinition table = new TableDefinition();
+        table.setName(name);
+        return table;
+    }
+
+    /**
+     * Helper method to create {@see FieldDefinition} instance for unique
+     * numeric primary key with given name and size.
+     * @param name Column name.
+     * @param size Column numeric type size.
+     * @return Initialized {@see FieldDefinition} instance.
+     */
+    protected static FieldDefinition createNumericPk(String name, int size) {
+        FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setTypeName("NUMERIC");
+        field.setSize(size);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(true);
+        field.setIsIdentity(true);
+        return field;
+    }
+
+    /**
+     * Helper method to create {@see FieldDefinition} instance for unique
+     * numeric primary key with given name and default size of <code>15</code>.
+     * @param name Column name.
+     * @return Initialized {@see FieldDefinition} instance.
+     */
+    protected static FieldDefinition createNumericPk(String name) {
+        return createNumericPk(name, 15);
+    }
+
+    /**
+     * Helper method to create {@see FieldDefinition} instance for numeric column
+     * with given name and size and without any additional constraints.
+     * @param name Column name.
+     * @param size Column numeric type size.
+     * @param allowNull Allow <code>null</code> values for column.
+     * @return Initialized {@see FieldDefinition} instance.
+     */
+    protected static FieldDefinition createNumericColumn(String name, int size, boolean allowNull) {
+        FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setTypeName("NUMERIC");
+        field.setSize(size);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
+    }
+
+    /**
+     * Helper method to create {@see FieldDefinition} instance for numeric column
+     * with given name, size of <code>15</code>, with null value allowed and
+     * without any additional constraints.
+     * @param name Column name.
+     * @param size Column numeric type size of <code>15</code> with .
+     * @return Initialized {@see FieldDefinition} instance.
+     * @param allowNull Allow <code>null</code> values for column.
+     */
+    protected static FieldDefinition createNumericColumn(String name) {
+        return createNumericColumn(name, 15, true);
+    }
+
+    /**
+     * Helper method to create {@see FieldDefinition} instance for <code>DTYPE</code>
+     * column used for inheritance in model.
+     * @return Initialized {@see FieldDefinition} instance.
+     */
+    protected static FieldDefinition createDTypeColumn() {
+        FieldDefinition field = new FieldDefinition();
+        field.setName("DTYPE");
+        field.setTypeName("VARCHAR2");
+        field.setSize(15);
+        field.setSubSize(0);
+        field.setIsPrimaryKey(false);
+        field.setIsIdentity(false);
+        field.setUnique(false);
+        field.setShouldAllowNull(true);
+        return field;
+    }
+
 }
