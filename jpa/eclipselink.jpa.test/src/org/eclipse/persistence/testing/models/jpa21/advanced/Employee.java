@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,6 +16,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     02/13/2013-2.5 Guy Pelletier 
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
+ *     06/20/2014-2.5.2 Rick Curtis 
+ *       - 437760: AttributeOverride with no column name defined doesn't work.
  ******************************************************************************/   
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -301,7 +303,8 @@ public class Employee implements Serializable, Cloneable {
     
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name="startDate", column=@Column(name="START_DATE", nullable=false)),
+        // This should use the spec defined column name, not the column name defined in the EmploymentPeriod
+        @AttributeOverride(name="startDate", column=@Column(nullable=false)),
         @AttributeOverride(name="endDate", column=@Column(name="END_DATE", nullable=true))
     })
     public EmploymentPeriod getPeriod() {

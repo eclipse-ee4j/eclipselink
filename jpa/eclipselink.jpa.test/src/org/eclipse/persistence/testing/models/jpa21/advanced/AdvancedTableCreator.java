@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -24,6 +24,8 @@
  *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
  *     07/16/2013-2.5.1 Guy Pelletier 
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
+ *     06/20/2014-2.5.2 Rick Curtis 
+ *       - 437760: AttributeOverride with no column name defined doesn't work.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -274,7 +276,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addField(field);
     
         field = new FieldDefinition();
-        field.setName("START_DATE");
+        // use 'default' column name based off field of startDate
+        field.setName("STARTDATE");
         field.setTypeName("DATE");
         field.setSize(23);
         field.setShouldAllowNull(true);
