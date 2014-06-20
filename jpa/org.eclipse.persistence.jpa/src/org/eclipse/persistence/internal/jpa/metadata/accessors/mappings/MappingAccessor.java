@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -89,6 +89,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     07/16/2013-2.5.1 Guy Pelletier 
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
+ *     06/20/2014-2.5.2 Rick Curtis 
+ *       - 437760: AttributeOverride with no column name defined doesn't work.       
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -546,7 +548,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
         // Check if we have an attribute override first, otherwise process for a column
         ColumnMetadata column  = hasAttributeOverride(loggingCtx) ? getAttributeOverride(loggingCtx).getColumn() : getColumn(loggingCtx);
-        
+
         // Get the actual database field and apply any defaults.
         DatabaseField field = column.getDatabaseField();
            
@@ -1475,7 +1477,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // notation attribute names when looking for the mapping. It will
             // traverse the embeddable chain. 
             MappingAccessor mappingAccessor = embeddableDescriptor.getMappingAccessor(attributeName);
-                
+
+            String colName = attributeOverride.getColumn().getName();
+            if (colName == null || colName.isEmpty()) {
+                String prevName = mappingAccessor.getDefaultAttributeName();
+                attributeOverride.getColumn().setName(prevName);
+            }
+            
             if (mappingAccessor == null) {
                 throw ValidationException.embeddableAttributeOverrideNotFound(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
             } else if (! mappingAccessor.isBasic()) {
