@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     tware - initial implemenation
+ *     06/24/2014 - 438105 - 2.6.0 - Rick Curtis - Fix bug in EntityListenerInjectionManagerImpl constructor.
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.cdi;
 
@@ -40,14 +41,13 @@ public class EntityListenerInjectionManagerImpl implements EntityListenerInjecti
     protected Map<Object, InjectionTarget<Object>> injectionTargets = null;
     
     
-    public EntityListenerInjectionManagerImpl(Object beanManager) throws NamingException{
-        if (beanManager != null){
-            this.beanManager = (BeanManager) beanManager;
-        }else{
+    public EntityListenerInjectionManagerImpl(Object beanManagerInstance) throws NamingException {
+        if (beanManagerInstance == null) {
             Context context = new InitialContext();
-            
-            beanManager = (BeanManager) context.lookup("java:comp/BeanManager");
+            beanManagerInstance = context.lookup("java:comp/BeanManager");
         }
+        beanManager = (BeanManager) beanManagerInstance;
+
         injectionTargets = new HashMap<Object, InjectionTarget<Object>>();
     }
     
