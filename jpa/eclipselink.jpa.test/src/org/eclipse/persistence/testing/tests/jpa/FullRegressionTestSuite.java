@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,8 @@
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  *     03/23/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     06/25/2014-2.5.2 Rick Curtis 
+ *       - 438177: Test M2M map
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa;
 
@@ -102,6 +104,7 @@ import org.eclipse.persistence.testing.tests.jpa.relationships.IsolatedCacheTest
 import org.eclipse.persistence.testing.tests.jpa.relationships.RelationshipModelJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.UniAndBiDirectionalMappingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.VirtualAttributeTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.relationships.TestKeyTypeToManyRelationship;
 import org.eclipse.persistence.testing.tests.jpa.validation.QueryParameterValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.validation.ValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
@@ -212,6 +215,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(QueryParameterValidationTestSuite.suite());
         suite.addTest(UniAndBiDirectionalMappingTestSuite.suite());
         suite.addTest(RelationshipModelJUnitTestSuite.suite());
+        suite.addTest(TestKeyTypeToManyRelationship.suite());
         fullSuite.addTest(suite);
 
         // JPQL testing model.
