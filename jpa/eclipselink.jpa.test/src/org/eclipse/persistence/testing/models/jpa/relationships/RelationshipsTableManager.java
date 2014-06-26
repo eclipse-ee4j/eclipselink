@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,8 @@
  *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
  *     01/25/2011-2.3 Guy Pelletier 
  *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
+ *     06/25/2014-2.5.2 Rick Curtis 
+ *       - 438177: Test M2M map
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
@@ -54,6 +56,12 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         addTableDefinition(buildServiceCallTable());
         addTableDefinition(buildCustomerServiceRepTable());
         addTableDefinition(buildCustRepTable());
+        
+        addTableDefinition(buildMtoMEntityATable());
+        addTableDefinition(buildMtoMEntityBTable());
+        addTableDefinition(buildMtoMEntityJoinTable());
+        addTableDefinition(buildMtoMEntityDefaultJoinTable());
+        
     }
         
     public static TableCreator getCreator(){
@@ -973,6 +981,144 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         fieldCALL_ID.setUnique(false);
         fieldCALL_ID.setShouldAllowNull(false);
         table.addField(fieldCALL_ID);
+
+        return table;
+    }
+    
+    public static  TableDefinition buildMtoMEntityATable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("MTOMENTITYA");
+
+        FieldDefinition field_ID = new FieldDefinition();
+        field_ID.setName("ID");
+        field_ID.setTypeName("NUMBER");
+        field_ID.setSize(15);
+        field_ID.setSubSize(0);
+        field_ID.setIsPrimaryKey(true);
+        field_ID.setIsIdentity(false);
+        field_ID.setUnique(false);
+        field_ID.setShouldAllowNull(false);
+        table.addField(field_ID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public static  TableDefinition buildMtoMEntityBTable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("MTOMENTITYB");
+
+        FieldDefinition field_ID = new FieldDefinition();
+        field_ID.setName("ID");
+        field_ID.setTypeName("NUMBER");
+        field_ID.setSize(15);
+        field_ID.setSubSize(0);
+        field_ID.setIsPrimaryKey(true);
+        field_ID.setIsIdentity(false);
+        field_ID.setUnique(false);
+        field_ID.setShouldAllowNull(false);
+        table.addField(field_ID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        return table;
+    }
+    
+    public static  TableDefinition buildMtoMEntityJoinTable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("MM_MNMK_JT");
+
+        FieldDefinition fieldMtoMEntityA_ID = new FieldDefinition();
+        fieldMtoMEntityA_ID.setName("MtoMEntityA_ID");
+        fieldMtoMEntityA_ID.setTypeName("NUMBER");
+        fieldMtoMEntityA_ID.setSize(15);
+        fieldMtoMEntityA_ID.setSubSize(0);
+        fieldMtoMEntityA_ID.setIsPrimaryKey(true);
+        fieldMtoMEntityA_ID.setIsIdentity(false);
+        fieldMtoMEntityA_ID.setUnique(false);
+        fieldMtoMEntityA_ID.setShouldAllowNull(false);
+        table.addField(fieldMtoMEntityA_ID);
+
+        FieldDefinition fieldMtoMEntityB_ID = new FieldDefinition();
+        fieldMtoMEntityB_ID.setName("entityB_ID");
+        fieldMtoMEntityB_ID.setTypeName("NUMBER");
+        fieldMtoMEntityB_ID.setSize(15);
+        fieldMtoMEntityB_ID.setSubSize(0);
+        fieldMtoMEntityB_ID.setIsPrimaryKey(true);
+        fieldMtoMEntityB_ID.setIsIdentity(false);
+        fieldMtoMEntityB_ID.setUnique(false);
+        fieldMtoMEntityB_ID.setShouldAllowNull(false);
+        table.addField(fieldMtoMEntityB_ID);
+        
+        FieldDefinition fieldMtoMEntityB_Key_ID = new FieldDefinition();
+        fieldMtoMEntityB_Key_ID.setName("EntityB_Key");
+        fieldMtoMEntityB_Key_ID.setTypeName("NUMBER");
+        fieldMtoMEntityB_Key_ID.setSize(15);
+        fieldMtoMEntityB_Key_ID.setSubSize(0);
+        fieldMtoMEntityB_Key_ID.setIsPrimaryKey(false);
+        fieldMtoMEntityB_Key_ID.setIsIdentity(false);
+        fieldMtoMEntityB_Key_ID.setUnique(false);
+        fieldMtoMEntityB_Key_ID.setShouldAllowNull(true);
+        table.addField(fieldMtoMEntityB_Key_ID);
+
+        return table;
+    }
+    
+    public static  TableDefinition buildMtoMEntityDefaultJoinTable(){
+        TableDefinition table = new TableDefinition();
+        table.setName("MTOMENTITYA_MTOMENTITYB");
+
+        FieldDefinition fieldMtoMEntityA_ID = new FieldDefinition();
+        fieldMtoMEntityA_ID.setName("MtoMEntityA_ID");
+        fieldMtoMEntityA_ID.setTypeName("NUMBER");
+        fieldMtoMEntityA_ID.setSize(15);
+        fieldMtoMEntityA_ID.setSubSize(0);
+        fieldMtoMEntityA_ID.setIsPrimaryKey(true);
+        fieldMtoMEntityA_ID.setIsIdentity(false);
+        fieldMtoMEntityA_ID.setUnique(false);
+        fieldMtoMEntityA_ID.setShouldAllowNull(false);
+        table.addField(fieldMtoMEntityA_ID);
+
+        FieldDefinition fieldMtoMEntityB_ID = new FieldDefinition();
+        fieldMtoMEntityB_ID.setName("entityBDefault_ID");
+        fieldMtoMEntityB_ID.setTypeName("NUMBER");
+        fieldMtoMEntityB_ID.setSize(15);
+        fieldMtoMEntityB_ID.setSubSize(0);
+        fieldMtoMEntityB_ID.setIsPrimaryKey(true);
+        fieldMtoMEntityB_ID.setIsIdentity(false);
+        fieldMtoMEntityB_ID.setUnique(false);
+        fieldMtoMEntityB_ID.setShouldAllowNull(false);
+        table.addField(fieldMtoMEntityB_ID);
+        
+        FieldDefinition fieldMtoMEntityB_Key_ID = new FieldDefinition();
+        fieldMtoMEntityB_Key_ID.setName("entityBDefault_Key");
+        fieldMtoMEntityB_Key_ID.setTypeName("NUMBER");
+        fieldMtoMEntityB_Key_ID.setSize(15);
+        fieldMtoMEntityB_Key_ID.setSubSize(0);
+        fieldMtoMEntityB_Key_ID.setIsPrimaryKey(false);
+        fieldMtoMEntityB_Key_ID.setIsIdentity(false);
+        fieldMtoMEntityB_Key_ID.setUnique(false);
+        fieldMtoMEntityB_Key_ID.setShouldAllowNull(true);
+        table.addField(fieldMtoMEntityB_Key_ID);
 
         return table;
     }

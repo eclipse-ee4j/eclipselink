@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -30,6 +30,8 @@
  *       - 354678: Temp classloader is still being used during metadata processing
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
+ *     06/25/2014-2.5.2 Rick Curtis 
+ *       - 438177: Support M2M map with jointable
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -866,6 +868,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             builtField = field;
             DatabaseTable table;
             if (relationTable != null && field.hasTableName() && field.getTableName().equals(relationTable.getName())){
+                table = relationTable;
+            } else if (relationTable != null && !field.hasTableName()) {
                 table = relationTable;
             } else if (field.hasTableName()) {
                 table = getTable(field.getTableName());
