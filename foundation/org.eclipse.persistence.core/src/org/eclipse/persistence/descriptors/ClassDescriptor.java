@@ -4725,20 +4725,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     /**
-     * INTERNAL:
-     * Set entity @Cacheable annotation value in cache configuration object.
-     * @param cacheable Entity @Cacheable annotation value for current class
-     *        or <code>null</code> if @Cacheable annotation is not set. Parent
-     *        values are ignored, value shall refer to current class only.
-     *        This value should be set only when SharedCacheMode allows
-     *        to override caching on entity level (DISABLE_SELECTIVE
-     *        or ENABLE_SELECTIVE).
-     */
-    public void setCacheable(Boolean cacheable) {
-        getCachePolicy().setCacheable(cacheable);
-    }
-
-    /**
      * PUBLIC:
      * Controls how the Entity instances will be cached.  See the CacheIsolationType for details on the options.
      * @return the isolationType

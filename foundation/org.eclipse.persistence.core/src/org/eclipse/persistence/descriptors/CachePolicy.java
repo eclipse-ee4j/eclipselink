@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,8 +9,6 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation
- *     05/19/2014-2.6 Tomas Kraus
- *       - 437578: Added cacheable field and updated setting isolation from parent.
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -66,17 +64,6 @@ public class CachePolicy implements Cloneable, Serializable {
     protected boolean shouldAlwaysRefreshCacheOnRemote;
     protected boolean shouldDisableCacheHitsOnRemote;
 
-    // Used only to evaluate cache isolation type in this class methods.
-    /**
-     * Entity @Cacheable annotation value.
-     * This value contains Boolean value equal to annotation value or null when
-     * no annotation was set for entity. Parent values are ignored, value refers
-     * to current class only.
-     * This value is set only when SharedCacheMode allows to override caching
-     * on entity level (DISABLE_SELECTIVE  or ENABLE_SELECTIVE). Default value
-     * is <code>null</code> what means no annotation is present in current class.
-     */
-    private Boolean cacheable = null;
     // this attribute is used to determine what classes should be isolated from the shared cache
     // and the severity of their isolation.
     protected CacheIsolationType cacheIsolation;
@@ -159,9 +146,7 @@ public class CachePolicy implements Cloneable, Serializable {
     public void initializeFromParent(CachePolicy parentPolicy, ClassDescriptor descriptor, ClassDescriptor descriptorDescriptor, AbstractSession session) throws DescriptorException {
         // If the parent is isolated, then the child must also be isolated.
         if (!parentPolicy.isSharedIsolation()) {
-            // Do not override cache isolation when explicitly enabled by @Cacheable(true) annotation in current class.
-            boolean copyParrent = cacheable == null || cacheable == false;
-            if (!isIsolated() && (getCacheIsolation() != parentPolicy.getCacheIsolation()) && copyParrent) {
+            if (!isIsolated() && (getCacheIsolation() != parentPolicy.getCacheIsolation())) {
                 session.log(SessionLog.WARNING, SessionLog.METADATA, "overriding_cache_isolation",
                         new Object[]{descriptorDescriptor.getAlias(),
                                 parentPolicy.getCacheIsolation(), descriptor.getAlias(),
@@ -654,17 +639,6 @@ public class CachePolicy implements Cloneable, Serializable {
      */
     public void setRemoteIdentityMapSize(int identityMapSize) {
         remoteIdentityMapSize = identityMapSize;
-    }
-
-    /**
-     * INTERNAL:
-     * Set entity @Cacheable annotation value.
-     * @param cacheable Entity @Cacheable annotation value for current class
-     *        or <code>null</code> if @Cacheable annotation is not set. Parent
-     *        values are ignored, value shall refer to current class only.
-     */
-    public void setCacheable(Boolean cacheable) {
-        this.cacheable = cacheable;
     }
 
     /**

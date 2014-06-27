@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -105,8 +105,6 @@
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)       
- *     05/19/2014-2.6 Tomas Kraus
- *       - 437578: @Cacheable annotation value is passed to CachePolicy for ENABLE_SELECTIVE and DISABLE_SELECTIVE shared cache mode
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -881,8 +879,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 // ENABLE_SELECTIVE and Cacheable(false) or no setting, turn off the cache.
                 getDescriptor().useNoCache();
             }
-            // Cacheable annotation in current class can override default or inherited settings.
-            getDescriptor().setCacheableInDescriptor();
             // ENABLE_SELECTIVE and Cacheable(true), process the cache metadata.
             processCachingMetadata();
         } else if (getProject().isSharedCacheModeDisableSelective() || getProject().isSharedCacheModeUnspecified()) {
@@ -890,8 +886,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 // DISABLE_SELECTIVE and Cacheable(false), turn off cache.
                 getDescriptor().useNoCache();
             }
-            // Cacheable annotation in current class can override default or inherited settings.
-            getDescriptor().setCacheableInDescriptor();
             // DISABLE_SELECTIVE and Cacheable(true) or no setting, process the cache metadata.
             processCachingMetadata();
         }

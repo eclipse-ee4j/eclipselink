@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -100,8 +100,6 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
- *     05/19/2014-2.6 Tomas Kraus
- *       - 437578: @Cacheable annotation value is now passed to CachePolicy
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -181,12 +179,6 @@ public class MetadataDescriptor {
     // the attributes do not specify their own access methods.
     private AccessMethodsMetadata m_defaultAccessMethods;
     
-    /**
-     * Entity @Cacheable annotation value (cacheable value of this descriptor).
-     * This value contains Boolean value equal to annotation value or null when
-     * no annotation was set for entity. Parent values are ignored, value refers
-     * to current class only.
-     */
     private Boolean m_cacheable;
     private Boolean m_usesCascadedOptimisticLocking;
     
@@ -1395,7 +1387,7 @@ public class MetadataDescriptor {
     public boolean m_hasSerializedObjectPolicy() {
         return m_hasSerializedObjectPolicy;
     }
-
+    
     /**
      * INTERNAL:
      * Indicates that an explicit cacheable value of true has been set for 
@@ -1581,35 +1573,12 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
-     * Get entity @Cacheable annotation value.
-     * @return Entity @Cacheable annotation value. This value refers to current
-     *         class only and does not contain inherited value from parent
-     *         classes.
-     */
-    public Boolean getCacheable() {
-        return m_cacheable;
-    }
-
-    /**
-     * INTERNAL:
-     * Set entity @Cacheable annotation value.
-     * @param cacheable Entity @Cacheable annotation value. This value refers
-     *        to current class only and does not contain inherited value from
-     *        parent classes.
+     * Set the cacheable value of this descriptor.
      */
     public void setCacheable(Boolean cacheable) {
         m_cacheable = cacheable;
     }
     
-    /**
-     * INTERNAL:
-     * Pass entity @Cacheable annotation value to cache configuration object
-     * in class descriptor.
-     */
-    public void setCacheableInDescriptor() {
-        m_descriptor.setCacheable(m_cacheable);
-    }
-
     /**
      * INTERNAL:
      */
