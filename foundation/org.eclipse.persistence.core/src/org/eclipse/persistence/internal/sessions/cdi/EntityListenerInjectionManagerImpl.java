@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     tware - initial implemenation
+ *     07/01/2014-2.5.2 Rick Curtis 
+ *       - 438663: Fix injection ordering bug.
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.cdi;
 
@@ -58,9 +60,9 @@ public class EntityListenerInjectionManagerImpl implements EntityListenerInjecti
         synchronized (injectionTargets) {
             injectionTargets.put(entityListener, injectionTarget);
         }
-        injectionTarget.postConstruct(entityListener);
         creationalContext = beanManager.<Object>createCreationalContext(null);
         injectionTarget.inject(entityListener, creationalContext);
+        injectionTarget.postConstruct(entityListener);
         return entityListener;
     }
     
