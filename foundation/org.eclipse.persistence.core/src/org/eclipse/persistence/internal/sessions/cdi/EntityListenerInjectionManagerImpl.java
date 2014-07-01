@@ -10,6 +10,8 @@
  * Contributors:
  *     tware - initial implemenation
  *     06/24/2014 - 438105 - 2.6.0 - Rick Curtis - Fix bug in EntityListenerInjectionManagerImpl constructor.
+ *     07/01/2014-2.5.2 Rick Curtis 
+ *       - 438663: Fix injection ordering bug.
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.cdi;
 
@@ -58,9 +60,9 @@ public class EntityListenerInjectionManagerImpl implements EntityListenerInjecti
         synchronized (injectionTargets) {
             injectionTargets.put(entityListener, injectionTarget);
         }
-        injectionTarget.postConstruct(entityListener);
         creationalContext = beanManager.<Object>createCreationalContext(null);
         injectionTarget.inject(entityListener, creationalContext);
+        injectionTarget.postConstruct(entityListener);
         return entityListener;
     }
     
