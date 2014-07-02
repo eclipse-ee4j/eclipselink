@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.sessions.SimpleResultSetRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -297,41 +298,46 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * null means there is none.
      */
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
-        checkDescriptor(session);
-
-        Boolean useCustomQuery = Boolean.FALSE;
+        if (this.descriptor == null) {
+            checkDescriptor(session);
+        }
 
         if (this.isCustomQueryUsed == null) {
             // Check if user defined a custom query in the query manager.
             if (!this.isUserDefined) {
-                if (!isCallQuery()
-                        // By default all descriptors have a custom ("static") read-object query.
-                        // This allows the read-object query and SQL to be prepare once.
-                        && this.descriptor.getQueryManager().hasReadObjectQuery()) {
-                    // If the query require special SQL generation or execution do not use the static read object query.
-                    // PERF: the read-object query should always be static to ensure no regeneration of SQL.
-                    if ((!hasJoining() || !this.joinedAttributeManager.hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions()) && (redirector == null) && !doNotRedirect && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup())
-                            && (this.shouldUseSerializedObjectPolicy == shouldUseSerializedObjectPolicyDefault) 
-                            && this.wasDefaultLockMode && (shouldBindAllParameters == null) && (this.hintString == null)) {
-                        if ((this.selectionId != null) || (this.selectionObject != null)) {// Must be primary key.
-                            useCustomQuery = Boolean.TRUE;
-                        } else {
-                            Expression selectionCriteria = getSelectionCriteria();
-                            if (selectionCriteria != null) {
-                                AbstractRecord primaryKeyRow = this.descriptor.getObjectBuilder().extractPrimaryKeyRowFromExpression(selectionCriteria, translationRow, session);                
-                                // Only execute the query if the selection criteria has the primary key fields set
-                                if (primaryKeyRow != null) {
-                                    useCustomQuery = Boolean.TRUE;
+                if (!isCallQuery()) {
+                    DescriptorQueryManager descriptorQueryManager = this.descriptor.getQueryManager();
+        
+                    // By default all descriptors have a custom ("static") read-object query.
+                    // This allows the read-object query and SQL to be prepare once.
+                    if (descriptorQueryManager.hasReadObjectQuery()) {
+                        // If the query require special SQL generation or execution do not use the static read object query.
+                        // PERF: the read-object query should always be static to ensure no regeneration of SQL.
+                        if ((!hasJoining() || !this.joinedAttributeManager.hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions()) && (redirector == null) && !doNotRedirect && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup())
+                                && (this.shouldUseSerializedObjectPolicy == shouldUseSerializedObjectPolicyDefault) 
+                                && this.wasDefaultLockMode && (shouldBindAllParameters == null) && (this.hintString == null)) {
+                            if ((this.selectionId != null) || (this.selectionObject != null)) {// Must be primary key.
+                                this.isCustomQueryUsed = true;
+                            } else {
+                                Expression selectionCriteria = getSelectionCriteria();
+                                if (selectionCriteria != null) {
+                                    AbstractRecord primaryKeyRow = this.descriptor.getObjectBuilder().extractPrimaryKeyRowFromExpression(selectionCriteria, translationRow, session);                
+                                    // Only execute the query if the selection criteria has the primary key fields set
+                                    if (primaryKeyRow != null) {
+                                        this.isCustomQueryUsed = true;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            if (this.isCustomQueryUsed == null) {
+                this.isCustomQueryUsed = false;
+            }
         }
-
-        //#436871 - attempt to limit cases for race-condition
-        if (this.isCustomQueryUsed = useCustomQuery) {
+        
+        if (this.isCustomQueryUsed.booleanValue()) {
             ReadObjectQuery customQuery = this.descriptor.getQueryManager().getReadObjectQuery();
             if (this.accessors != null) {
                 customQuery = (ReadObjectQuery) customQuery.clone();
