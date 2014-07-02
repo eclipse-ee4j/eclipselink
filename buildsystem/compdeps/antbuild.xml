@@ -205,6 +205,9 @@
         <selectbundle basename="${asm.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${asm.criteria}" property="asm.version" versiononly="true"
         />
+        <selectbundle basename="${validation.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${validation.criteria}" property="validation.version" versiononly="true"
+                />
         <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
         <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid." unless="sun.xml.bind.version"/>
         <say  message="   jersey.version           = '${jersey.version}'"                                                           if="jersey.version"/>
@@ -223,18 +226,15 @@
         <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."               unless="antlr.version"/>
         <say  message="   asm.version              = '${asm.version}'"                                                              if="asm.version"/>
         <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."                   unless="asm.version"/>
+        <say  message="   validation.version       = '${validation.version}'"                                                       if="validation.version"/>
+        <say  message="   '${validation.prefix}_${validation.criteria}.jar' not found! Generated features will be invalid."     unless="validation.version"/>
 
         <echo message="Searching ${compdeps.2.jpa.plugins.dir}..."/>
         <selectbundle basename="${persistence.prefix}"  directory="${compdeps.2.jpa.plugins.dir}"
                      criterion="${persistence.criteria}" property="persistence.version" versiononly="true"
         />
-        <selectbundle basename="${validation.prefix}"  directory="${compdeps.2.jpa.plugins.dir}"
-                     criterion="${validation.criteria}" property="validation.version" versiononly="true"
-        />
         <say  message="   persistence.version      = '${persistence.version}'"                                                      if="persistence.version"/>
         <say  message="   '${persistence.prefix}_${persistence.criteria}.jar' not found! Generated features will be invalid."   unless="persistence.version"/>
-        <say  message="   validation.version       = '${validation.version}'"                                                       if="validation.version"/>
-        <say  message="   '${validation.prefix}_${validation.criteria}.jar' not found! Generated features will be invalid."     unless="validation.version"/>
 
         <echo message="Searching ${compdeps.2.sdo.plugins.dir}..."/>
         <selectbundle basename="${sdo.prefix}"  directory="${compdeps.2.sdo.plugins.dir}"
@@ -332,13 +332,13 @@
                           ${antlr.prefix}_${antlr.version}.jar,
                           ${antlr.prefix}.source_${antlr.version}.jar,
                           ${asm.prefix}_${asm.version}.jar,
-                          ${asm.prefix}.source_${asm.version}.jar"
-            />
+                          ${asm.prefix}.source_${asm.version}.jar,
+                          ${validation.prefix}_${validation.version}.jar"
+                    />
             <fileset
                 dir="${compdeps.2.jpa.plugins.dir}"
                 includes="${persistence.prefix}_${persistence.version}.jar,
-                          ${persistence.prefix}.source_${persistence.version}.jar,
-                          ${validation.prefix}_${validation.version}.jar"
+                          ${persistence.prefix}.source_${persistence.version}.jar"
             />
             <fileset
                 dir="${compdeps.2.sdo.plugins.dir}"

@@ -394,8 +394,8 @@
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.jar}'"/>
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.framework.jar}'"/>
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence20.jar}'"/>
-        <echo message="   '${jpatest.2.jpa.plugins.dir}/${beanvalidation.jar}'"/>
         <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${beanvalidation.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
@@ -409,8 +409,8 @@
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence20.jar}"/>
-            <pathelement path="${jpatest.2.jpa.plugins.dir}/${beanvalidation.jar}"/>
             <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${beanvalidation.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
@@ -432,8 +432,8 @@
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.jar}'"/>
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.framework.jar}'"/>
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence21.jar}'"/>
-        <echo message="   '${jpatest.2.jpa.plugins.dir}/${beanvalidation.jar}'"/>
         <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${beanvalidation.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
@@ -446,8 +446,8 @@
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence21.jar}"/>
-            <pathelement path="${jpatest.2.jpa.plugins.dir}/${beanvalidation.jar}"/>
             <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${beanvalidation.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
