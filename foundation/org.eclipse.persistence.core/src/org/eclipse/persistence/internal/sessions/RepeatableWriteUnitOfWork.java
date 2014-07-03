@@ -24,6 +24,7 @@ import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.exceptions.DatabaseException; 
@@ -300,7 +301,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         if (this.discoverUnregisteredNewObjectsWithoutPersist){
             super.discoverUnregisteredNewObjects(clones, newObjects, unregisteredExistingObjects, visitedObjects);
         }else{
-            Set<Object> cascadePersistErrors = new HashSet<Object>();
+            //Bug#438193 : Replace HashSet with IdentityHashSet below for cascadePersistErrors so that the comparison will be by reference and
+            //not by equals() which invokes hashCode()
+            Set<Object> cascadePersistErrors = new IdentityHashSet(); 
             for (Iterator clonesEnum = clones.keySet().iterator(); clonesEnum.hasNext(); ) {        
                 discoverAndPersistUnregisteredNewObjects(clonesEnum.next(), false, newObjects, unregisteredExistingObjects, visitedObjects, cascadePersistErrors);
             }

@@ -122,7 +122,14 @@ public class Door implements Serializable, Cloneable {
         return Helper.dateFromYearMonthDate(year, month, day);
     }
 
-    
+    public int hashCode() {
+        if (this.room != null) {
+            return this.room.hashCode();
+        } else {
+            return super.hashCode();
+        }
+    }
+
     public boolean isRoomInstanceInitialized() {
         try {
             Field f = this.getClass().getDeclaredField("room");

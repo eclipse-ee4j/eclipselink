@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -94,5 +95,20 @@ public class Room implements Serializable, Cloneable {
         }
         
         return false;
+    }
+
+    public int hashCode() {
+        return (this.height + 100);
+    }
+
+    public boolean isHeightSetGreaterThanZero() {
+        try {
+            Field f = this.getClass().getDeclaredField("height");
+            f.setAccessible(true);
+            
+            return f.getInt(this) > 0;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }

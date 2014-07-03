@@ -410,6 +410,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testDeleteAllProjects");
         tests.add("testEMFBuiltWithSession");
         tests.add("testLazyOneToOneFetchInitialization");
+        tests.add("testProxyFetchDuringCommit");
         tests.add("testSequenceObjectWithSchemaName");
         tests.add("testSharedExpressionInQueries");
         tests.add("testNestedBatchQueryHints");
@@ -12251,6 +12252,86 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
     
+    /*Bug#438193: Test for proxy object not being loaded during commit.  Prior to the fix, the proxy object
+     * could get loaded from the DB during commit due to RepeatableWriteUnitOfWork.discoverUnregisteredNewObjects() 
+     * invoking the object's hashCode() */
+    public void testProxyFetchDuringCommit() {
+        if (!isWeavingEnabled()) {
+            return;
+        }
+
+        Door door1 = null;
+        Room room1 = null;
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            //persist door
+            door1 = new Door();
+            door1.setId(11);
+            door1.setHeight(84);
+            door1.setWidth(48);
+            int year = 2013;
+            int month = 1;
+            int day = 30;
+            door1.setSaleDate(Helper.dateFromYearMonthDate(year, month - 1, day));
+            em.persist(door1);
+
+            //persist room
+            room1 = new Room();
+            room1.setId(12);
+            room1.setLength(20);
+            room1.setHeight(10);
+            room1.setWidth(18);
+            em.persist(room1);
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            closeEntityManager(em);
+            clearCache();
+        }
+
+        Door door2 = null;
+        Room room2 = null;
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            //find door
+            door2 = em.find(Door.class, door1.getId());
+            //update door with reference to room
+            room2 = em.getReference(Room.class, room1.getId());
+            door2.setRoom(room2);
+            commitTransaction(em);
+            //Cannot check if proxy is loaded with ProviderUtil.  Hence below call room2.isHeightSetGreaterThanZero() is
+            //added which uses introspection to get the value of the room's height attribute
+            assertFalse("Room is LOADED", room2.isHeightSetGreaterThanZero());
+        } catch (RuntimeException e) {
+            // Re-throw exception to ensure stacktrace appears in test result.
+            throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            //cleanup persisted entities
+            try {
+                //cleanup persisted entities
+                if (door1 != null) {
+                    beginTransaction(em);
+                    door1 = em.find(Door.class, door1.getId());
+                    em.remove(door1);
+                    commitTransaction(em);
+                }
+            } catch (Exception e) {
+               //Do nothing.  This is cleanup code
+            } finally {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                closeEntityManager(em);
+            }
+        }
+    }
+
     // Bug 368653
     public void testSequenceObjectWithSchemaName(){
         // platform that supports sequence objects is required for this test
