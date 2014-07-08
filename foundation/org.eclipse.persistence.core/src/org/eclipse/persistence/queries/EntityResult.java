@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -154,6 +154,10 @@ public class EntityResult extends SQLResult {
         // To do this let's collect the column based data for this entity from
         // the results and call build object with this new row.
         ClassDescriptor descriptor = query.getSession().getDescriptor(this.entityClass);
+        if (descriptor == null) {
+            throw new IllegalArgumentException("@EntityResult: entityClass points to unknown entity: "
+                    + (this.entityClass != null ? this.entityClass.getName() : "null"));
+        }
         DatabaseRecord entityRecord = new DatabaseRecord(descriptor.getFields().size());
         if (descriptor.hasInheritance()) {
             Object value = null;
