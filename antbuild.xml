@@ -950,7 +950,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${unified.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet"
+            additionalparam="-breakiterator -quiet -notimestamp"
             windowtitle="${eclipselink.javadoc.title}"
             >
             <classpath>
@@ -1045,7 +1045,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${eclipselink.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet"
+            additionalparam="-breakiterator -quiet -notimestamp"
             windowtitle="${eclipselink.javadoc.title}"
             >
             <classpath>
@@ -1119,7 +1119,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${nosql.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet"
+            additionalparam="-breakiterator -quiet -notimestamp"
             windowtitle="${nosql.javadoc.title}"
             >
             <classpath>
@@ -1154,7 +1154,7 @@
             packagenames="org.eclipse.persistence.**"
             destdir="${jpars.javadocs}"
             useexternalfile="yes"
-            additionalparam="-breakiterator -quiet"
+            additionalparam="-breakiterator -quiet -notimestamp"
             windowtitle="${jpars.javadoc.title}"
             >
             <classpath>
