@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,10 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features;
 
+/**
+ * The legacy initial feature set. Used if version number is not present.
+ */
 public class FeatureSetPreV2 implements FeatureSet {
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureSet#isSupported(org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public boolean isSupported(Feature feature) {
@@ -28,21 +31,8 @@ public class FeatureSetPreV2 implements FeatureSet {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureSet#getRequestValidator(org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature)
-     */
-    @Override
-    public FeatureRequestValidator getRequestValidator(Feature feature) {
-        switch (feature) {
-            case NO_PAGING:
-            case PAGING:
-            default:
-                return new FeatureRequestValidatorImpl();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureSet#getResponseBuilder(org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public FeatureResponseBuilder getResponseBuilder(Feature feature) {

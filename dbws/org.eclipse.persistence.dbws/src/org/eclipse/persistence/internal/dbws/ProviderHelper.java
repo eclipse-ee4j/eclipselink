@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,48 +14,11 @@
 package org.eclipse.persistence.internal.dbws;
 
 //javase imports
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
-import java.util.List;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-// Java extension imports
-import javax.activation.DataHandler;
-import javax.servlet.ServletContext;
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPBodyElement;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.soap.SOAPFaultException;
-import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
-import static javax.xml.ws.handler.MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
-
-// EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.dbws.DBWSAdapter;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
@@ -78,6 +41,43 @@ import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.Project;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.activation.DataHandler;
+import javax.servlet.ServletContext;
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPBodyElement;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
+import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
+import static javax.xml.ws.handler.MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
+import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.RECEIVER_QNAME;
+import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.SERVER_QNAME;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
@@ -88,8 +88,8 @@ import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
 import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
 
-import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.RECEIVER_QNAME;
-import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.SERVER_QNAME;
+// Java extension imports
+// EclipseLink imports
 
 /**
  * <p>
@@ -390,7 +390,7 @@ public class ProviderHelper extends XRServiceFactory {
                             else {
                                 // cant use e.getTextContent() - some DOM impls dont support it :-(
                                 //String val = e.getTextContent();
-                                StringBuffer sb = new StringBuffer();
+                                StringBuilder sb = new StringBuilder();
                                 NodeList childNodes = e.getChildNodes();
                                 for(int idx=0; idx < childNodes.getLength(); idx++ ) {
                                     if (childNodes.item(idx).getNodeType() == Node.TEXT_NODE ) {

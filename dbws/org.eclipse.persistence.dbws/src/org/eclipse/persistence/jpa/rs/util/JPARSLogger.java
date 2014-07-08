@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
+import org.eclipse.persistence.jpa.rs.DataStorage;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
+
+import javax.ws.rs.core.MediaType;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,13 +26,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.ws.rs.core.MediaType;
-
-import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
-import org.eclipse.persistence.jpa.rs.DataStorage;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 
 public class JPARSLogger {
 
@@ -188,9 +187,7 @@ public class JPARSLogger {
         if (params != null) {
             Object[] paramsWithRequestId = new Object[params.length + 1];
             paramsWithRequestId[0] = requestId;
-            for (int i = 0; i < params.length; i++) {
-                paramsWithRequestId[i + 1] = params[i];
-            }
+            System.arraycopy(params, 0, paramsWithRequestId, 1, params.length);
             return paramsWithRequestId;
         }
         return new Object[] { requestId };

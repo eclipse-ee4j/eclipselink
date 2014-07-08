@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,8 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.util;
 
-import static org.junit.Assert.fail;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.ClientResponse.Status;
+import com.sun.jersey.api.client.WebResource;
+import org.eclipse.persistence.jpa.rs.MatrixParameters;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.QueryParameters;
+import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
+import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 
+import javax.imageio.ImageIO;
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBException;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -26,23 +37,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBException;
-
-import org.eclipse.persistence.jpa.rs.MatrixParameters;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.QueryParameters;
-import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
-import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
-
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.ClientResponse.Status;
-import com.sun.jersey.api.client.WebResource;
+import static org.junit.Assert.fail;
 
 public class RestUtils {
+    private static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars.test.server");
+
     private static final String APPLICATION_LOCATION = "/eclipselink.jpars.test/persistence/";
     private static final String SERVER_URI_BASE = "server.uri.base";
     private static final String JPA_RS_VERSION_STRING = "jpars.version.string";
@@ -295,6 +296,10 @@ public class RestUtils {
             }
         }
         uri.append("/entity/" + type);
+
+        logger.info(os.toString());
+        logger.info(uri.toString());
+
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = null;
         if (mediaType.equals(MediaType.APPLICATION_JSON_TYPE)) {
@@ -739,7 +744,7 @@ public class RestUtils {
     }
 
     /**
-     * Rest paged find attribute.
+     * Rest find attribute query.
      *
      * @param context the context
      * @param id the id
@@ -752,7 +757,7 @@ public class RestUtils {
      * @throws RestCallFailedException the rest call failed exception
      * @throws URISyntaxException the URI syntax exception
      */
-    public static String restPagedFindAttribute(PersistenceContext context, Object id, String type, String attribute, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
+    public static String restFindAttribute(PersistenceContext context, Object id, String type, String attribute, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + context.getName() + "/entity/" + type + "/" + id + "/" + attribute);
         appendParametersAndHints(resourceURL, parameters, hints);

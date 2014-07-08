@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,13 +11,6 @@
  * 		dclarke/tware - initial 
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -32,6 +25,13 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.DatabaseSession;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * EclipseLink helper class used for converting composite key values passed into
@@ -112,7 +112,7 @@ public class IdHelper {
             index++;
         }
         Collections.sort(pkIndices);
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
         Iterator<SortableKey> sortableKeys = pkIndices.iterator();
         List<DatabaseField> refObjectdbFields = null;
         while (sortableKeys.hasNext()) {

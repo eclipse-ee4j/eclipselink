@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,20 +10,6 @@
  *
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
@@ -50,6 +36,19 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author gonural
@@ -266,12 +265,12 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     private Query getQuery(DatabaseQuery query, PersistenceContext context) {
         String method = query.isReadQuery() ? "get" : "post";
         String jpql = query.getJPQLString() == null ? "" : query.getJPQLString();
-        StringBuffer parameterString = new StringBuffer();
+        StringBuilder parameterString = new StringBuilder();
         Iterator<String> argumentsIterator = query.getArguments().iterator();
         while (argumentsIterator.hasNext()) {
             String argument = argumentsIterator.next();
             parameterString.append(";");
-            parameterString.append(argument + "={" + argument + "}");
+            parameterString.append(argument).append("={").append(argument).append("}");
         }
 
         String version = context.getVersion();

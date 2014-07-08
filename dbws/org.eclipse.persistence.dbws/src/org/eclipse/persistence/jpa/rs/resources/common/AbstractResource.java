@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,23 +10,6 @@
  *
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
-
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ServiceLoader;
-import java.util.UUID;
-
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Attribute;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Descriptor;
@@ -44,9 +27,26 @@ import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.list.LinkList;
 import org.eclipse.persistence.jpa.rs.util.list.QueryList;
+
+import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.ServiceLoader;
+import java.util.UUID;
 
 /**
  * @author gonural
@@ -56,9 +56,6 @@ import org.eclipse.persistence.jpa.rs.util.list.QueryList;
 public abstract class AbstractResource {
     public static final String SERVICE_VERSION_FORMAT = "v\\d\\.\\d";
     protected PersistenceContextFactory factory;
-
-    public static final String SERVICE_VERSION_1_0 = "v1.0";
-    public static final String SERVICE_VERSION_2_0 = "v2.0";
 
     /**
      * Sets the persistence factory.
@@ -144,7 +141,7 @@ public abstract class AbstractResource {
      * @return the query parameters
      *
      */
-    protected static Map<String, Object> getQueryParameters(UriInfo info) {
+    public static Map<String, Object> getQueryParameters(UriInfo info) {
         Map<String, Object> queryParameters = new HashMap<String, Object>();
         for (String key : info.getQueryParameters().keySet()) {
             queryParameters.put(key, info.getQueryParameters().getFirst(key));
@@ -159,10 +156,7 @@ public abstract class AbstractResource {
      * @return true, if is valid version
      */
     protected static boolean isValidVersion(String version) {
-        if ((version == null) || (SERVICE_VERSION_1_0.equals(version)) || (SERVICE_VERSION_2_0.equals(version))) {
-            return true;
-        }
-        return false;
+        return ServiceVersion.hasCode(version);
     }
 
     /**

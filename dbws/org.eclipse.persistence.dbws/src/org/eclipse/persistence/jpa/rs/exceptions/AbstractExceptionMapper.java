@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,14 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.exceptions;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jpa.rs.DataStorage;
+import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
+import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 import javax.naming.NamingException;
 import javax.persistence.EntityExistsException;
@@ -39,15 +39,14 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jpa.rs.DataStorage;
-import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
-import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AbstractExceptionMapper {
     @Context
@@ -99,7 +98,7 @@ public abstract class AbstractExceptionMapper {
             }
         }
 
-        if ((path != null) && (path.contains(AbstractResource.SERVICE_VERSION_2_0))) {
+        if ((path != null) && (path.contains(ServiceVersion.VERSION_2_0.getCode()))) {
             ErrorResponse errorResponse = new ErrorResponse(PROBLEM_TYPE, exception.getMessage(), String.valueOf(exception.getErrorCode()));
             errorResponse.setRequestId((String) DataStorage.get(DataStorage.REQUEST_ID));
             errorResponse.setHttpStatus(exception.getHttpStatusCode().getStatusCode());

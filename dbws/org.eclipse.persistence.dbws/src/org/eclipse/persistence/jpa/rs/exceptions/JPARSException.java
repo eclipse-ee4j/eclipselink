@@ -12,11 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.exceptions;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JPARSErrorCodes;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+
+import javax.ws.rs.core.Response.Status;
 
 public class JPARSException extends EclipseLinkException {
     private Status httpStatusCode;
@@ -65,7 +65,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Entity not found.
      *
-     * @param httpStatusCode the http status code
      * @param entityType the entity type
      * @param entityId the entity id
      * @param persistenceUnit the persistence unit
@@ -84,7 +83,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Class descriptor could not be found for entity.
      *
-     * @param httpStatusCode the http status code
      * @param entityType the entity type
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
@@ -103,7 +101,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Attribute could not be found for entity.
      *
-     * @param httpStatusCode the http status code
      * @param attributeName the attribute name
      * @param entityType the entity type
      * @param entityId the entity id
@@ -124,7 +121,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Selection query for attribute could not be found for entity.
      *
-     * @param httpStatusCode the http status code
      * @param attributeName the attribute name
      * @param entityType the entity type
      * @param entityId the entity id
@@ -145,7 +141,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Invalid paging request.
      *
-     * @param httpStatusCode the http status code
      * @return the JPARS exception
      */
     public static JPARSException invalidPagingRequest() {
@@ -160,9 +155,24 @@ public class JPARSException extends EclipseLinkException {
     }
 
     /**
+     * Invalid paging request.
+     *
+     * @return the JPARS exception
+     */
+    public static JPARSException paginationParameterForNotPageableResource() {
+        Object[] args = {};
+
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.PAGINATION_PARAMETER_USED_FOR_NOT_PAGEABLE_RESOURCE, args);
+        JPARSException exception = new JPARSException(msg);
+        exception.setErrorCode(JPARSErrorCodes.PAGINATION_PARAMETER_USED_FOR_NOT_PAGEABLE_RESOURCE);
+        exception.setHttpStatusCode(Status.BAD_REQUEST);
+
+        return exception;
+    }
+
+    /**
      * Database mapping could not be found for entity attribute.
      *
-     * @param httpStatusCode the http status code
      * @param attributeName the attribute name
      * @param entityType the entity type
      * @param entityId the entity id
@@ -183,7 +193,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Attribute could not be updated.
      *
-     * @param httpStatusCode the http status code
      * @param attributeName the attribute name
      * @param entityType the entity type
      * @param entityId the entity id
@@ -204,7 +213,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Invalid service version.
      *
-     * @param httpStatusCode the http status code
      * @param serviceVersion the service version
      * @return the JPARS exception
      */
@@ -222,7 +230,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Invalid remove attribute request.
      *
-     * @param httpStatusCode the http status code
      * @param attributeName the attribute name
      * @param entityType the entity type
      * @param entityId the entity id
@@ -243,7 +250,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Response could not be built for find attribute request.
      *
-     * @param httpStatusCode the http status code
      * @param attributeName the attribute name
      * @param entityType the entity type
      * @param entityId the entity id
@@ -264,7 +270,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Response could not be built for named query request.
      *
-     * @param httpStatusCode the http status code
      * @param query the query
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
@@ -283,7 +288,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Object referred by link does not exist.
      *
-     * @param httpStatusCode the http status code
      * @param entityType the entity type
      * @param entityId the entity id
      * @return the JPARS exception
@@ -302,7 +306,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Session bean lookup failed.
      *
-     * @param httpStatusCode the http status code
      * @param jndiName the jndi name
      * @return the JPARS exception
      */
@@ -320,7 +323,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Invalid configuration.
      *
-     * @param httpStatusCode the http status code
      * @return the JPARS exception
      */
     public static JPARSException invalidConfiguration() {
@@ -337,7 +339,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Entity is not idempotent.
      *
-     * @param httpStatusCode the http status code
      * @param entityType the entity type
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
@@ -356,7 +357,6 @@ public class JPARSException extends EclipseLinkException {
     /**
      * Persistence context could not be bootstrapped.
      *
-     * @param httpStatusCode the http status code
      * @param persistenceUnit the persistence unit
      * @return the JPARS exception
      */

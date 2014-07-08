@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -37,4 +37,9 @@ public class PersistenceWeaverBean {
     @SuppressWarnings("unused")
     @PersistenceUnit(unitName = "jpars_traveler-static")
     private EntityManagerFactory emf3;
+
+    @SuppressWarnings("unused")
+    @PersistenceUnit(unitName = "jpars_basket-static")
+    private EntityManagerFactory emf4;
+
 }

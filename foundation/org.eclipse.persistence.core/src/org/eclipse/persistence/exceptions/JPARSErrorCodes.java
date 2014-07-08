@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -31,6 +31,7 @@ public class JPARSErrorCodes {
     public static final int SESSION_BEAN_COULD_NOT_BE_FOUND = 61013;
     public static final int RESPONSE_COULD_NOT_BE_BUILT_FOR_NAMED_QUERY_REQUEST = 61014;
     public static final int INVALID_SERVICE_VERSION = 61015;
+    public static final int PAGINATION_PARAMETER_USED_FOR_NOT_PAGEABLE_RESOURCE = 61016;
 
     //
     public static final int AN_EXCEPTION_OCCURRED = 61999;

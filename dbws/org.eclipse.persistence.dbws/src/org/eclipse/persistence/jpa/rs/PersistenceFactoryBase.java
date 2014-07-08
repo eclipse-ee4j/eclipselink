@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,16 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -31,10 +21,17 @@ import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
-import org.eclipse.persistence.jpa.rs.features.FeatureSetPreV2;
-import org.eclipse.persistence.jpa.rs.features.FeatureSetV2;
-import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
+import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Manages the PersistenceContexts that are used by a JPA-RS deployment.  Provides a single point to bootstrap
@@ -54,19 +51,11 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
      * @return
      */
     public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, String version, boolean replace) {
-        PersistenceContext persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl) emf, baseURI);
-        persistenceContext.setBaseURI(baseURI);
-        persistenceContext.setVersion(version);
-        if (persistenceContext.isVersionGreaterOrEqualTo(AbstractResource.SERVICE_VERSION_2_0)) {
-            persistenceContext.setSupportedFeatureSet(new FeatureSetV2());
-        } else {
-            persistenceContext.setSupportedFeatureSet(new FeatureSetPreV2());
-        }
-        return persistenceContext;
+        return new PersistenceContext(name, (EntityManagerFactoryImpl) emf, baseURI, ServiceVersion.fromCode(version));
     }
 
     /**
-     * Stop the factory.  Remove all the PersistenceContexts.
+     * Stop the factory. Remove all the PersistenceContexts.
      */
     public void close() {
         synchronized (this) {

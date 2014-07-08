@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -7,25 +7,11 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- *
+ * Contributors:
+ *      Dmitry Kornilov - pagination related changes
  ******************************************************************************/
 
 package org.eclipse.persistence.jpa.rs.resources.common;
-
-import static org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller.mediaType;
-
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -35,11 +21,10 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
-import org.eclipse.persistence.jpa.rs.features.FeatureRequestValidator;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
-import org.eclipse.persistence.jpa.rs.features.clientinitiated.paging.PagingRequestValidator;
+import org.eclipse.persistence.jpa.rs.features.paging.PageableFieldValidator;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -51,9 +36,23 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
+import javax.persistence.EntityManager;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller.mediaType;
+
 /**
- * @author gonural
+ * Base class for entity resource.
  *
+ * @author gonural
  */
 public abstract class AbstractEntityResource extends AbstractResource {
     private static final String CLASS_NAME = AbstractEntityResource.class.getName();
@@ -67,9 +66,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             Object entityId = IdHelper.buildId(context, type, id);
             em = context.getEmf().createEntityManager(getMatrixParameters(uriInfo, persistenceUnit));
 
-            Object entity = null;
-
-            entity = em.find(context.getClass(type), entityId, getQueryParameters(uriInfo));
+            Object entity = em.find(context.getClass(type), entityId, getQueryParameters(uriInfo));
             DatabaseSession serverSession = context.getServerSession();
             ClassDescriptor descriptor = serverSession.getClassDescriptor(context.getClass(type));
             if (descriptor == null) {
@@ -81,15 +78,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, id, persistenceUnit);
             }
 
-            Object result = null;
-
             if (!attributeMapping.isCollectionMapping()) {
-                result = attributeMapping.getRealAttributeValueFromAttribute(attributeMapping.getAttributeValueFromObject(entity), entity, (AbstractSession) serverSession);
+                Object result = attributeMapping.getRealAttributeValueFromAttribute(attributeMapping.getAttributeValueFromObject(entity), entity, (AbstractSession) serverSession);
                 if (result == null) {
                     JPARSLogger.error("jpars_could_not_find_entity_for_attribute", new Object[] { attribute, type, id, persistenceUnit });
                     throw JPARSException.attributeCouldNotBeFoundForEntity(attribute, type, id, persistenceUnit);
                 }
-                return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+                return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
             }
 
             ReadQuery query = (ReadQuery) ((((ForeignReferenceMapping) attributeMapping).getSelectionQuery()).clone());
@@ -100,21 +95,25 @@ public abstract class AbstractEntityResource extends AbstractResource {
             FeatureSet featureSet = context.getSupportedFeatureSet();
             AbstractSession clientSession = context.getClientSession(em);
             if (featureSet.isSupported(Feature.PAGING)) {
-                FeatureRequestValidator requestValidator = featureSet.getRequestValidator(Feature.PAGING);
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put(PagingRequestValidator.DB_QUERY, query);
-                if (requestValidator.isRequested(uriInfo, null)) {
-                    if (!requestValidator.isRequestValid(uriInfo, map)) {
-                        throw JPARSException.invalidPagingRequest();
-                    }
-                    // check orderBy, and generate a warning if there is none 
+                PageableFieldValidator validator = new PageableFieldValidator(entity.getClass(), attribute, uriInfo);
+                if (validator.isFeatureApplicable()) {
+                    query.setMaxRows(validator.getLimit());
+                    query.setFirstResult(validator.getOffset());
+
+                    // We need to add limit and offset to query parameters because request builder reads it from there
+                    Map<String, Object> queryParams = getQueryParameters(uriInfo);
+                    queryParams.put(QueryParameters.JPARS_PAGING_LIMIT, String.valueOf(validator.getLimit()));
+                    queryParams.put(QueryParameters.JPARS_PAGING_OFFSET, String.valueOf(validator.getOffset()));
+
+                    // check orderBy, and generate a warning if there is none
                     checkOrderBy(query);
-                    result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
-                    return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
+
+                    Object result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
+                    return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, queryParams, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
                 }
             }
-            result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
-            return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+            Object result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
+            return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
         } finally {
@@ -145,7 +144,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     @SuppressWarnings("rawtypes")
-    protected Response createInternal(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, InputStream in) throws Exception {
+    protected Response createInternal(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, InputStream in) {
         JPARSLogger.entering(CLASS_NAME, "createInternal", new Object[] { "PUT", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
@@ -186,12 +185,10 @@ public abstract class AbstractEntityResource extends AbstractResource {
                                         if (value != null) {
                                             if (value instanceof ValueHolder) {
                                                 ValueHolder holder = (ValueHolder) value;
-                                                if (holder != null) {
-                                                    Object obj = holder.getValue();
-                                                    if (obj != null) {
-                                                        JPARSLogger.error("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
-                                                        throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
-                                                    }
+                                                Object obj = holder.getValue();
+                                                if (obj != null) {
+                                                    JPARSLogger.error("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
+                                                    throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
                                                 }
                                             } else if (value instanceof Collection) {
                                                 if (!(((Collection) value).isEmpty())) {
@@ -220,8 +217,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
         JPARSLogger.entering(CLASS_NAME, "updateInternal", new Object[] { "POST", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
-            Object entity = null;
-            entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
+            Object entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
             entity = context.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
         } catch (Exception ex) {
@@ -234,15 +230,14 @@ public abstract class AbstractEntityResource extends AbstractResource {
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Object entityId = IdHelper.buildId(context, type, id);
-            Object entity = null;
             String partner = getRelationshipPartner(getMatrixParameters(uriInfo, attribute), getQueryParameters(uriInfo));
             ClassDescriptor descriptor = context.getDescriptor(type);
-            DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
+            DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
                 JPARSLogger.error("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { attribute, type, id, persistenceUnit });
                 throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, id, persistenceUnit);
             }
-            entity = context.unmarshalEntity(((ForeignReferenceMapping) mapping).getReferenceDescriptor().getAlias(), mediaType(headers.getAcceptableMediaTypes()), in);
+            Object entity = context.unmarshalEntity(mapping.getReferenceDescriptor().getAlias(), mediaType(headers.getAcceptableMediaTypes()), in);
             Object result = context.updateOrAddAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, entityId, getQueryParameters(uriInfo), attribute, entity, partner);
             if (result == null) {
                 JPARSLogger.error("jpars_could_not_update_attribute", new Object[] { attribute, type, id, persistenceUnit });
@@ -266,14 +261,14 @@ public abstract class AbstractEntityResource extends AbstractResource {
             }
 
             if ((attribute == null) && (listItemId == null)) {
-                JPARSException.invalidRemoveAttributeRequest(attribute, type, id, persistenceUnit);
+                JPARSException.invalidRemoveAttributeRequest(null, type, id, persistenceUnit);
             }
 
             String partner = getRelationshipPartner(matrixParams, queryParams);
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Object entityId = IdHelper.buildId(context, type, id);
             ClassDescriptor descriptor = context.getDescriptor(type);
-            DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
+            DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
                 JPARSLogger.error("jpars_could_not_find_appropriate_mapping_for_update", new Object[] { attribute, type, id, persistenceUnit });
                 throw JPARSException.databaseMappingCouldNotBeFoundForEntityAttribute(attribute, type, id, persistenceUnit);
@@ -307,8 +302,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    private Response findAttributeResponse(PersistenceContext context, String attribute, String entityType, String id, String persistenceUnit, Object queryResults, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
-        Map<String, Object> queryParams = getQueryParameters(uriInfo);
+    private Response findAttributeResponse(PersistenceContext context, String attribute, String entityType, String id, String persistenceUnit, Object queryResults, Map<String, Object> queryParams, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
         if (queryResults != null) {
             Object results = responseBuilder.buildAttributeResponse(context, queryParams, attribute, queryResults, uriInfo);
             if (results != null) {
@@ -318,14 +312,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 throw JPARSException.responseCouldNotBeBuiltForFindAttributeRequest(attribute, entityType, id, persistenceUnit);
             }
         }
-        return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();
+        return Response.ok(new StreamingOutputMarshaller(context, null, headers.getAcceptableMediaTypes())).build();
     }
 
     private void checkOrderBy(ReadQuery query) {
-        List<Expression> orderBy = null;
         if (query.isReadAllQuery()) {
             ReadAllQuery readAllQuery = (ReadAllQuery) query;
-            orderBy = readAllQuery.getOrderByExpressions();
+            List<Expression> orderBy = readAllQuery.getOrderByExpressions();
             if ((orderBy == null) || (orderBy.isEmpty())) {
                 JPARSLogger.warning("no_orderby_clause_for_paging", new Object[] { query.toString() });
             }

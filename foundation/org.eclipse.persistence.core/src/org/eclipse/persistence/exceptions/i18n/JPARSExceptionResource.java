@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.exceptions.i18n;
 
-import java.util.ListResourceBundle;
-
 import org.eclipse.persistence.exceptions.JPARSErrorCodes;
+
+import java.util.ListResourceBundle;
 
 /*
  * English resource bundle for JPARSException
@@ -39,6 +39,7 @@ public class JPARSExceptionResource extends ListResourceBundle {
             { String.valueOf(JPARSErrorCodes.SESSION_BEAN_COULD_NOT_BE_FOUND), "Session bean lookup with JNDI name {0} has failed." },
             { String.valueOf(JPARSErrorCodes.RESPONSE_COULD_NOT_BE_BUILT_FOR_NAMED_QUERY_REQUEST), "Response for find named query request for query {0} in persistence unit {1} could not be built successfully." },
             { String.valueOf(JPARSErrorCodes.AN_EXCEPTION_OCCURRED), "{0} occurred." },
+            { String.valueOf(JPARSErrorCodes.PAGINATION_PARAMETER_USED_FOR_NOT_PAGEABLE_RESOURCE), "Pagination query parameter (limit or offset) used for non-pageable resource." },
     };
 
     @Override

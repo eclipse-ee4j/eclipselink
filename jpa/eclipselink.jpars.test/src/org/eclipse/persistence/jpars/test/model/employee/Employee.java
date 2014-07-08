@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,14 +10,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.model.employee;
 
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.FetchType.LAZY;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.eclipse.persistence.annotations.ConversionValue;
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.ObjectTypeConverter;
+import org.eclipse.persistence.annotations.PrivateOwned;
+import org.eclipse.persistence.jpa.rs.annotations.RestPageable;
+import org.eclipse.persistence.jpa.rs.annotations.RestPageableQueries;
+import org.eclipse.persistence.jpa.rs.annotations.RestPageableQuery;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -41,11 +40,14 @@ import javax.persistence.OneToOne;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import org.eclipse.persistence.annotations.ConversionValue;
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.PrivateOwned;
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.FetchType.LAZY;
 
 @NamedQueries({
         @NamedQuery(
@@ -67,6 +69,9 @@ import org.eclipse.persistence.annotations.PrivateOwned;
                 name = "Employee.findAll",
                 query = "SELECT e FROM Employee e ORDER BY e.id"),
         @NamedQuery(
+                name = "Employee.findAllPageable",
+                query = "SELECT e FROM Employee e ORDER BY e.id"),
+        @NamedQuery(
                 name = "Employee.deleteAll",
                 query = "DELETE FROM Employee e")
 })
@@ -76,6 +81,9 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 @ObjectTypeConverter(name = "gender", objectType = Gender.class, dataType = String.class, conversionValues = {
         @ConversionValue(dataValue = "M", objectValue = "Male"),
         @ConversionValue(dataValue = "F", objectValue = "Female") })
+@RestPageableQueries({
+    @RestPageableQuery(queryName = "Employee.findAllPageable", limit = 20)
+})
 public class Employee {
 
     @Id
@@ -136,6 +144,7 @@ public class Employee {
     private List<String> responsibilities = new ArrayList<String>();
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    @RestPageable(limit = 2)
     private Set<Expertise> expertiseAreas = new HashSet<Expertise>();
 
     @ManyToOne(cascade = PERSIST, fetch = LAZY)

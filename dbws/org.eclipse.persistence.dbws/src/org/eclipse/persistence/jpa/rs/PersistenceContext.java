@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,47 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * 		dclarke/tware - initial 
+ * 		dclarke/tware - initial
+ * 	    Dmitry Kornilov - Pagination related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
-
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.RollbackException;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -71,12 +34,14 @@ import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
+import org.eclipse.persistence.jpa.rs.annotations.RestPageableQueries;
+import org.eclipse.persistence.jpa.rs.annotations.RestPageableQuery;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
+import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
@@ -114,6 +79,43 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+import javax.persistence.RollbackException;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.stream.StreamSource;
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.security.AccessController;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A wrapper around the JPA and JAXB artifacts used to persist an application.
@@ -153,9 +155,21 @@ public class PersistenceContext {
 
     private Boolean weavingEnabled = null;
 
-    private String version = null;
+    private ServiceVersion version = ServiceVersion.NO_VERSION;
 
-    private FeatureSet supportedFeatureSet;
+    /**
+     * JPARS pageable queries map.
+     * Key: named query name
+     * Value: corresponding RestPageableQuery annotation
+     */
+    private Map<String, RestPageableQuery> pageableQueries;
+
+    /**
+     * JPARS pageable queries map.
+     * Key: named query name
+     * Value: corresponding RestPageableQuery annotation
+     */
+    private Map<String, RestPageableQuery> pageableQueries;
 
     protected PersistenceContext() {
     }
@@ -171,6 +185,8 @@ public class PersistenceContext {
         super();
         this.emf = emf;
         this.name = emfName;
+        this.baseURI = defaultURI;
+
         if (getServerSession().hasExternalTransactionController()) {
             transaction = new JTATransactionWrapper();
         } else {
@@ -185,7 +201,19 @@ public class PersistenceContext {
             JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, e.toString() }, e);
             emf.close();
         }
-        setBaseURI(defaultURI);
+    }
+
+    /**
+     * Instantiates a new persistence context.
+     *
+     * @param emfName the emf name
+     * @param emf the emf
+     * @param defaultURI the default uri
+     * @param version REST service version
+     */
+    public PersistenceContext(String emfName, EntityManagerFactoryImpl emf, URI defaultURI, ServiceVersion version) {
+        this(emfName, emf, defaultURI);
+        this.version = version;
     }
 
     /**
@@ -201,21 +229,12 @@ public class PersistenceContext {
     }
 
     /**
-     * Gets the version.
+     * Gets the version as it appears in URI.
      *
-     * @return the version
+     * @return The version.
      */
     public String getVersion() {
-        return version;
-    }
-
-    /**
-     * Sets the version.
-     *
-     * @param version the new version
-     */
-    public void setVersion(String version) {
-        this.version = version;
+        return version.getCode();
     }
 
     /**
@@ -223,20 +242,17 @@ public class PersistenceContext {
      * 
      * For each package in the EntityManagerFactory, a MetadataSource that is capable of building a JAXBContext
      * that creates the same mappings in JAXB is created.  These MetadataSources are used to constuct the JAXContext
-     * that is used for JSON and XML translation
+     * that is used for JSON and XML translation.
      * @param metadataSources
-     * @param persistenceUnitName
      * @param session
      */
-    @SuppressWarnings("rawtypes")
     protected void addDynamicXMLMetadataSources(List<Object> metadataSources, AbstractSession session) {
         Set<String> packages = new HashSet<String>();
-        Iterator<Class> i = session.getDescriptors().keySet().iterator();
-        while (i.hasNext()) {
-            Class<?> descriptorClass = i.next();
+        for (Class descriptorClass : session.getDescriptors().keySet()) {
             String packageName = "";
-            if (descriptorClass.getName().lastIndexOf('.') > 0) {
-                packageName = descriptorClass.getName().substring(0, descriptorClass.getName().lastIndexOf('.'));
+            int lastDotIndex = descriptorClass.getName().lastIndexOf('.');
+            if (lastDotIndex > 0) {
+                packageName = descriptorClass.getName().substring(0, lastDotIndex);
             }
             if (!packages.contains(packageName)) {
                 packages.add(packageName);
@@ -249,8 +265,8 @@ public class PersistenceContext {
     }
 
     /**
-     * A part of the facade over the JPA API
-     * Persist an entity in JPA and commit
+     * A part of the facade over the JPA API.
+     * Persist an entity in JPA and commit.
      * @param tenantId
      * @param entity
      * @throws Exception 
@@ -272,7 +288,7 @@ public class PersistenceContext {
     }
 
     /**
-     * Create a JAXBContext based on the EntityManagerFactory for this PersistenceContext
+     * Create a JAXBContext based on the EntityManagerFactory for this PersistenceContext.
      * @param session
      * @return
      */
@@ -293,8 +309,8 @@ public class PersistenceContext {
     }
 
     /**
-     * A part of the facade over the JPA API
-     * Create an EntityManagerFactory using the given PersistenceUnitInfo and properties
+     * A part of the facade over the JPA API.
+     * Create an EntityManagerFactory using the given PersistenceUnitInfo and properties.
      * @param info
      * @param properties
      * @return
@@ -318,7 +334,6 @@ public class PersistenceContext {
     /**
      * Build the set of properties used to create the JAXBContext based on the EntityManagerFactory that
      * this PersistenceContext wraps
-     * @param persistenceUnitName
      * @param session
      * @return
      * @throws IOException
@@ -360,7 +375,7 @@ public class PersistenceContext {
         metadataLocations.add(new ErrorResponseMetadataSource());
 
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataLocations);
-        properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, new PreLoginMappingAdapter((AbstractSession) session));
+        properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, new PreLoginMappingAdapter(session));
 
         // Bug 410095 - JSON_WRAPPER_AS_ARRAY_NAME property doesn't work when jaxb context is created using DynamicJAXBContextFactory
         //properties.put(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
@@ -474,13 +489,13 @@ public class PersistenceContext {
         try {
             ClassDescriptor descriptor = getServerSession().getClassDescriptor(getClass(entityName));
             DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
-            Object object = null;
+            Object object;
             if (mapping == null) {
                 return null;
             } else if (mapping.isObjectReferenceMapping() || mapping.isCollectionMapping()) {
                 DatabaseMapping partnerMapping = null;
                 if (partner != null) {
-                    ClassDescriptor referenceDescriptor = ((ForeignReferenceMapping) mapping).getReferenceDescriptor();
+                    ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
                     partnerMapping = referenceDescriptor.getMappingForAttributeName(partner);
                     if (partnerMapping == null) {
                         return null;
@@ -518,9 +533,9 @@ public class PersistenceContext {
      * @param tenantId the tenant id
      * @param entityName the entity name
      * @param id the id
-     * @param properties the properties
      * @param attribute the attribute
-     * @param attributeValue the attribute value
+     * @param listItemId
+     * @param entity
      * @param partner the partner
      * @return the object
      *  
@@ -540,22 +555,21 @@ public class PersistenceContext {
             } else if (mapping.isObjectReferenceMapping() || mapping.isCollectionMapping()) {
                 DatabaseMapping partnerMapping = null;
                 Object originalAttributeValue = null;
-                ClassDescriptor referenceDescriptor = ((ForeignReferenceMapping) mapping).getReferenceDescriptor();
+                ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
                 if (partner != null) {
                     partnerMapping = referenceDescriptor.getMappingForAttributeName(partner);
                     if (partnerMapping == null) {
                         return null;
                     }
                 }
-                Field[] fields = null;
+                Field[] fields;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     fields = AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
                 } else {
                     fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
                 }
 
-                for (int i = 0; i < fields.length; i++) {
-                    Field field = fields[i];
+                for (Field field : fields) {
                     fieldName = field.getName();
                     if (fieldName.equals(attribute)) {
                         try {
@@ -571,10 +585,6 @@ public class PersistenceContext {
                                     Object member = this.find(referenceDescriptor.getAlias(), realListItemId);
                                     ((Collection) attributeValue).remove(member);
                                 }
-                            } else if (attributeValue instanceof Object) {
-                                attributeValue = null;
-                            } else {
-                                attributeValue = 0;
                             }
                             break;
                         } catch (Exception e) {
@@ -609,7 +619,7 @@ public class PersistenceContext {
                 String name = pd.getName();
                 if (propertyName.equals(name)) {
                     Method getter = pd.getReadMethod();
-                    Object value = null;
+                    Object value;
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         value = AccessController.doPrivileged(new PrivilegedMethodInvoker(getter, entity));
                     } else {
@@ -672,8 +682,7 @@ public class PersistenceContext {
      */
     public DatabaseSession getServerSession() {
         // Fix for bug 390786 - JPA-RS: ClassCastException retrieving metadata for Composite Persistence Unit
-        DatabaseSession dbSession = JpaHelper.getDatabaseSession(emf);
-        return dbSession;
+        return JpaHelper.getDatabaseSession(emf);
     }
 
     /**
@@ -683,7 +692,7 @@ public class PersistenceContext {
      * @return the client session
      */
     public AbstractSession getClientSession(EntityManager em) {
-        UnitOfWork uow = ((JpaEntityManager) JpaHelper.getEntityManager(em)).getUnitOfWork();
+        UnitOfWork uow = JpaHelper.getEntityManager(em).getUnitOfWork();
         return (AbstractSession) uow;
     }
 
@@ -699,7 +708,7 @@ public class PersistenceContext {
         DatabaseSession session = getServerSession();
         ClassDescriptor descriptor = session.getDescriptorForAlias(entityName);
         if (descriptor == null) {
-            for (Object ajaxBSession : ((JAXBContext) getJAXBContext()).getXMLContext().getSessions()) {
+            for (Object ajaxBSession : getJAXBContext().getXMLContext().getSessions()) {
                 descriptor = ((Session) ajaxBSession).getClassDescriptorForAlias(entityName);
                 if (descriptor != null) {
                     break;
@@ -734,8 +743,7 @@ public class PersistenceContext {
     @SuppressWarnings("rawtypes")
     public ClassDescriptor getJAXBDescriptorForClass(Class clazz) {
         ClassDescriptor descriptor = null;
-        for (Object ajaxBSession : ((JAXBContext) getJAXBContext())
-                .getXMLContext().getSessions()) {
+        for (Object ajaxBSession : getJAXBContext().getXMLContext().getSessions()) {
             descriptor = ((Session) ajaxBSession).getClassDescriptor(clazz);
             if (descriptor != null) {
                 break;
@@ -784,7 +792,7 @@ public class PersistenceContext {
     @SuppressWarnings("rawtypes")
     public Object merge(Map<String, String> tenantId, Object entity) {
         EntityManager em = getEmf().createEntityManager(tenantId);
-        Object mergedEntity = null;
+        Object mergedEntity;
         try {
             transaction.beginTransaction(em);
             if (entity instanceof List) {
@@ -825,7 +833,7 @@ public class PersistenceContext {
      */
     public DynamicEntity newEntity(Map<String, String> tenantId, String type) {
         JPADynamicHelper helper = new JPADynamicHelper(getEmf());
-        DynamicEntity entity = null;
+        DynamicEntity entity;
         try {
             entity = helper.newDynamicEntity(type);
         } catch (IllegalArgumentException e) {
@@ -955,15 +963,6 @@ public class PersistenceContext {
         return query;
     }
 
-    /**
-     * Sets the base uri.
-     *
-     * @param baseURI the new base uri
-     */
-    public void setBaseURI(URI baseURI) {
-        this.baseURI = baseURI;
-    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void setMappingValueInObject(Object object, Object attributeValue, DatabaseMapping mapping, DatabaseMapping partner) {
         if (mapping.isObjectReferenceMapping()) {
@@ -1050,7 +1049,7 @@ public class PersistenceContext {
                 if (event.getSeverity() != ValidationEvent.WARNING) {
                     // ValidationEventLocator eventLocator = event.getLocator();
                     // Throwable throwable = event.getLinkedException();
-                    // nothing is really useful to check for us in eventLocator 
+                    // nothing is really useful to check for us in eventLocator
                     // and linked exception, just return false;
                     return false;
                 }
@@ -1174,7 +1173,7 @@ public class PersistenceContext {
         if (mediaType == MediaType.APPLICATION_XML_TYPE && object instanceof List) {
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
-            XMLStreamWriter writer = null;
+            XMLStreamWriter writer;
             try {
                 writer = outputFactory.createXMLStreamWriter(output);
                 writer.writeStartDocument();
@@ -1202,9 +1201,8 @@ public class PersistenceContext {
     @SuppressWarnings("rawtypes")
     protected void preMarshallEntity(Object object) {
         if (object instanceof List) {
-            Iterator i = ((List) object).iterator();
-            while (i.hasNext()) {
-                preMarshallIndividualEntity(i.next());
+            for (Object o : ((List) object)) {
+                preMarshallIndividualEntity(o);
             }
         } else {
             preMarshallIndividualEntity(object);
@@ -1220,38 +1218,32 @@ public class PersistenceContext {
     protected void preMarshallIndividualEntity(Object entity) {
         if (entity instanceof ReportQueryResultListItem) {
             ReportQueryResultListItem item = (ReportQueryResultListItem) entity;
-            List<JAXBElement> fields = item.getFields();
-            for (int i = 0; i < fields.size(); i++) {
+            for (JAXBElement field : item.getFields()) {
                 // one or more fields in the MultiResultQueryListItem might be a domain object,
                 // so, we need to set the relationshipInfo for those domain objects.
-                setRelationshipInfo(fields.get(i).getValue());
+                setRelationshipInfo(field.getValue());
             }
         } else if (entity instanceof SingleResultQueryList) {
             SingleResultQueryList item = (SingleResultQueryList) entity;
-            List<JAXBElement> fields = item.getFields();
-            for (int i = 0; i < fields.size(); i++) {
+            for (JAXBElement field : item.getFields()) {
                 // one or more fields in the SingleResultQueryList might be a domain object,
                 // so, we need to set the relationshipInfo for those domain objects.
-                setRelationshipInfo(fields.get(i).getValue());
+                setRelationshipInfo(field.getValue());
             }
         } else if (entity instanceof ReportQueryResultList) {
             ReportQueryResultList list = (ReportQueryResultList) entity;
-            List<ReportQueryResultListItem> items = list.getItems();
-            for (int i = 0; i < items.size(); i++) {
-                ReportQueryResultListItem item = items.get(i);
-                List<JAXBElement> fields = item.getFields();
-                for (int index = 0; index < fields.size(); index++) {
+            for (ReportQueryResultListItem item : list.getItems()) {
+                for (JAXBElement field : item.getFields()) {
                     // one or more fields in the MultiResultQueryList might be a domain object,
                     // so, we need to set the relationshipInfo for those domain objects.
-                    setRelationshipInfo(fields.get(index).getValue());
+                    setRelationshipInfo(field.getValue());
                 }
             }
         } else if (entity instanceof ReadAllQueryResultCollection) {
             ReadAllQueryResultCollection list = (ReadAllQueryResultCollection) entity;
             List<Object> items = list.getItems();
             if ((items != null) && (!items.isEmpty())) {
-                for (int i = 0; i < items.size(); i++) {
-                    Object item = items.get(i);
+                for (Object item : items) {
                     setRelationshipInfo(item);
                 }
             }
@@ -1259,8 +1251,7 @@ public class PersistenceContext {
             ReportQueryResultCollection list = (ReportQueryResultCollection) entity;
             List<ReportQueryResultListItem> items = list.getItems();
             if ((items != null) && (!items.isEmpty())) {
-                for (int i = 0; i < items.size(); i++) {
-                    ReportQueryResultListItem item = items.get(i);
+                for (ReportQueryResultListItem item : items) {
                     setRelationshipInfo(item);
                 }
             }
@@ -1302,9 +1293,7 @@ public class PersistenceContext {
     @SuppressWarnings("rawtypes")
     protected void postMarshallEntity(Object object) {
         if (object instanceof List) {
-            Iterator i = ((List) object).iterator();
-            while (i.hasNext()) {
-                Object entity = i.next();
+            for (Object entity : ((List) object)) {
                 if (entity instanceof PersistenceWeavedRest) {
                     ((PersistenceWeavedRest) entity)._persistence_setRelationships(new ArrayList<RelationshipInfo>());
                 }
@@ -1375,46 +1364,83 @@ public class PersistenceContext {
     }
 
     /**
-     * Checks if is version greater or equal to.
+     * Gets the supported feature set.
      *
-     * @param version the version
-     * @return true, if is version greater or equal to
+     * @return the supported feature set.
      */
-    public boolean isVersionGreaterOrEqualTo(String version) {
-        String currentVersion = this.version;
-        if ((currentVersion != null) && (!currentVersion.isEmpty())) {
-            if ((version != null) && (!version.isEmpty())) {
-                try {
-                    int current = new Integer(currentVersion.replace("v", "").replace(".", "")).intValue();
-                    int requested = new Integer(version.replace("v", "").replace(".", "")).intValue();
-                    if (current >= requested) {
-                        return true;
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    return false;
+    public FeatureSet getSupportedFeatureSet() {
+        return version.getFeatureSet();
+    }
+
+    /**
+     * Finds out is given query pageable or not.
+     *
+     * @param queryName named query to check.
+     * @return true if pageable, false if not.
+     */
+    public boolean isQueryPageable(String queryName) {
+        return getPageableQueries().get(queryName) != null;
+    }
+
+    /**
+     * Gets REST pageable query details by query name.
+     *
+     * @param queryName named query name.
+     * @return RestPageableQuery or null if query couldn't be found.
+     */
+    public RestPageableQuery getPageableQuery(String queryName) {
+        return getPageableQueries().get(queryName);
+    }
+
+    /**
+     * Sets the version.
+     *
+     * @param version the new version.
+     */
+    public void setVersion(String version) {
+        this.version = ServiceVersion.fromCode(version);
+    }
+
+    /**
+     * Sets the base uri.
+     *
+     * @param baseURI the new base uri
+     */
+    public void setBaseURI(URI baseURI) {
+        this.baseURI = baseURI;
+    }
+
+    /**
+     * Getter for pageableQueries property with lazy initialization.
+     *
+     * @return The initialized pageableQueries property.
+     */
+    private Map<String, RestPageableQuery> getPageableQueries() {
+        // Lazy initialization
+        if (pageableQueries == null) {
+            initPageableQueries();
+        }
+
+        return pageableQueries;
+    }
+
+    /**
+     * Initializes pageableQueries map by reading RestPageableQueries entity annotations.
+     */
+    private void initPageableQueries() {
+        pageableQueries = new HashMap<String, RestPageableQuery>();
+
+        // Iterate on all entity classes
+        for (Class clazz : getServerSession().getProject().getDescriptors().keySet()) {
+            if (clazz.isAnnotationPresent(RestPageableQueries.class)) {
+                final RestPageableQueries restPageableQueries = (RestPageableQueries) clazz.getAnnotation(RestPageableQueries.class);
+
+                // Process each RestPageableQuery annotation in the list
+                for (RestPageableQuery restPageableQuery : restPageableQueries.value()) {
+                    pageableQueries.put(restPageableQuery.queryName(), restPageableQuery);
                 }
             }
         }
-        return false;
-    }
-
-    /**
-     * Gets the supported feature set.
-     *
-     * @return the supported feature set
-     */
-    public FeatureSet getSupportedFeatureSet() {
-        return supportedFeatureSet;
-    }
-
-    /**
-     * Sets the supported feature set.
-     *
-     * @param supportedFeatureSet the new supported feature set
-     */
-    public void setSupportedFeatureSet(FeatureSet supportedFeatureSet) {
-        this.supportedFeatureSet = supportedFeatureSet;
     }
 
     /* (non-Javadoc)

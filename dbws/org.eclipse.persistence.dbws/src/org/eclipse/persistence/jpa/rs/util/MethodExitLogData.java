@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -30,7 +30,7 @@ public class MethodExitLogData {
      */
     @Override
     public String toString() {
-        StringBuffer message = new StringBuffer();
+        StringBuilder message = new StringBuilder();
         if (result != null) {
             for (int i = 0; i < result.length; i++) {
                 Object object = result[i];

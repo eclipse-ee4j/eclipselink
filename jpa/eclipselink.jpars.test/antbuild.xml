@@ -245,7 +245,7 @@
 
     <!-- Run targets -->
     <target name="test" depends="compile-jpars-tests" description="run jpars tests">
-        <property name="SERVER_URL" value="http://localhost:8080"/>
+        <property name="SERVER_URL" value="http://localhost:7001"/>
         <property name="JPARS_VERSION" value="v1.0"/>
         <echo message="Server url is ${SERVER_URL}"/>
         <echo message="jpars version is ${JPARS_VERSION}"/>
@@ -263,6 +263,7 @@
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/lib"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/auction"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/basket"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/dynamic"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/employee"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/traveler"/>
@@ -279,6 +280,9 @@
         </copy>
         <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/auction">
             <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/auction" includes="*.class"/>
+        </copy>
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/basket">
+            <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/basket" includes="*.class"/>
         </copy>
         <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/multitenant">
             <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/multitenant" includes="*.class"/>
@@ -322,6 +326,7 @@
                 <jvmarg value="-Ddb.user=${db.user}"/>
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
                 <jvmarg value="-javaagent:../${jparstest.2.base.dir}/${eclipselink.jar}"/>
+                <!--jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/-->
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="tempFileDir" value="${tmp.dir}"/>
                 <sysproperty key="ignoreCRLF" value="true"/>

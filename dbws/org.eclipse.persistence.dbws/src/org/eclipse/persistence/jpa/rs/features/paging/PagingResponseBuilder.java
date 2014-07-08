@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,17 +10,7 @@
  * Contributors:
  *      gonural - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.features.clientinitiated.paging;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
+package org.eclipse.persistence.jpa.rs.features.paging;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
@@ -37,8 +27,17 @@ import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
 public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
-    private static String NO_PREVIOUS_CHUNK = "-1";
+    private static final String NO_PREVIOUS_CHUNK = "-1";
 
     /* (non-Javadoc)
      * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
@@ -69,15 +68,12 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
         if (results instanceof Collection) {
             if (containsDomainObjects(results)) {
-                ReadAllQueryResultCollection collection = (ReadAllQueryResultCollection) results;
-                if (collection != null) {
-                    List<Object> items = collection.getItems();
-                    if ((items != null) && (!items.isEmpty())) {
-                        ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
-                        response.setItems(items);
-                        response.setCount(collection.getItems().size());
-                        return populatePagedCollectionLinks(queryParams, uriInfo, response);
-                    }
+                List<Object> items = (Vector)results;
+                if ((items != null) && (!items.isEmpty())) {
+                    ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
+                    response.setItems(items);
+                    response.setCount(items.size());
+                    return populatePagedCollectionLinks(queryParams, uriInfo, response);
                 }
             }
         }
@@ -87,8 +83,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     @SuppressWarnings("rawtypes")
     private boolean containsDomainObjects(Object object) {
         Collection collection = (Collection) object;
-        for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-            Object collectionItem = iterator.next();
+        for (Object collectionItem : collection) {
             if (PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass())) {
                 return true;
             }
@@ -103,8 +98,12 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
             ItemLinks itemLinks = new ItemLinks();
             PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
             String entityId = IdHelper.stringifyId(result, descriptor.getAlias(), context);
-            String href = context.getBaseURI() + context.getVersion() + "/" + context.getName() + "/entity/" + descriptor.getAlias() + "/" + entityId;
-            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
+
+            StringBuilder href = new StringBuilder(context.getBaseURI().toString());
+            href.append(context.getVersion()).append("/").append(context.getName()).append("/entity/")
+                    .append(descriptor.getAlias()).append("/").append(entityId);
+
+            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href.toString()));
             entity._persistence_setLinks(itemLinks);
             return entity;
         }
@@ -116,15 +115,13 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         List<LinkV2> links = new ArrayList<LinkV2>();
         int limit = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_LIMIT));
         int offset = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_OFFSET));
-        String nextOffset = null;
-        String prevOffset = null;
+
+        String nextOffset;
+        String prevOffset;
         if (limit > offset) {
             nextOffset = String.valueOf(limit);
             prevOffset = NO_PREVIOUS_CHUNK;
         } else {
-            if (limit == offset) {
-                prevOffset = "0";
-            }
             nextOffset = String.valueOf(limit + offset);
             prevOffset = String.valueOf(offset - limit);
         }
