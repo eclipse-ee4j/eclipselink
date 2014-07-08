@@ -21,13 +21,13 @@
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.util.Vector;
+
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.logging.SessionLog;
-
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.*;
 
@@ -98,6 +98,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_ROOMTable());
         addTableDefinition(buildCMP3_DOORTable());
         addTableDefinition(buildCMP3_PRODUCTTable());
+        addTableDefinition(buildCmp3EmbedVisitorTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -2725,6 +2726,16 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
  
         return table;
     }
+
+    public static TableDefinition buildCmp3EmbedVisitorTable() {
+        TableDefinition table = createTable("CMP3_EMBED_VISITOR");
+        table.addField(createNumericPk("ID"));
+        table.addField(createStringColumn("NAME"));
+        table.addField(createStringColumn("CODE", 3, true));
+        table.addField(createStringColumn("COUNTRY"));
+        return table;
+    }
+
     @Override
     public void replaceTables(DatabaseSession session) {
         if (session.getPlatform().isPervasive()) {

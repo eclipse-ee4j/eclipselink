@@ -369,5 +369,11 @@
             <property name="eclipselink.session-name" value="additional-criteria"/>
         </properties>
     </persistence-unit>
-    
+
+    <persistence-unit name="embeddable">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+
 </persistence>

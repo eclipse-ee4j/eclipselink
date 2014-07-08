@@ -213,7 +213,7 @@ public class TogglingFastTableCreator extends TableCreator {
 
     /**
      * Helper method to create {@see FieldDefinition} instance for numeric column
-     * with given name, size of <code>15</code>, with null value allowed and
+     * with given name, size of <code>15</code>, with <code>null</code> value allowed and
      * without any additional constraints.
      * @param name Column name.
      * @param size Column numeric type size of <code>15</code> with .
@@ -240,6 +240,37 @@ public class TogglingFastTableCreator extends TableCreator {
         field.setUnique(false);
         field.setShouldAllowNull(true);
         return field;
+    }
+
+    /**
+     * Helper method to create {@see FieldDefinition} instance for {@link String} column
+     * with given name and size and without any additional constraints.
+     * @param name Column name.
+     * @param size Column numeric type size.
+     * @param allowNull Allow <code>null</code> values for column.
+     * @return Initialized {@see FieldDefinition} instance.
+     */
+    protected static FieldDefinition createStringColumn(String name, int size, boolean allowNull) {
+        FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setTypeName("VARCHAR");
+        field.setSize(size);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
+    }
+
+    /**
+     * Helper method to create {@see FieldDefinition} instance for {@link String} column
+     * with given name size of <code>32</code>, with <code>null</code> value allowed and
+     * without any additional constraints.
+     * @param name Column name.
+     * @return Initialized {@see FieldDefinition} instance.
+     */
+    protected static FieldDefinition createStringColumn(String name) {
+        return createStringColumn(name, 32, true);
     }
 
 }
