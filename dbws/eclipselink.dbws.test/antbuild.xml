@@ -36,9 +36,13 @@
     <available file="../${ant.project.name}" type="dir" property="dbws_test.is.local"/>
     <fail unless="dbws_test.is.local" message="Not running from '${ant.project.name}' directory"/>
 
-    <condition property="is.java.version.16">
-        <equals arg1="${ant.java.version}" arg2="1.6"/>
+    <!-- Detect compatible version of JDK (>= 1.6). -->
+    <condition property="compat.jdk" value="true">
+        <matches string="${java.version}" pattern="1.(?:[6-9]|[1-9]\d)(?:.\d+)*.*"/>
     </condition>
+    <echo message="JDK version detected: '${java.version}'"/>
+    <fail message="An non-compatible version of JDK was detected! Build won't run properly unless running at least 1.6 of JDK!." unless="compat.jdk"/>
+
     <!-- Sets the warning message appropriately -->
     <condition property="jdk_message" value="Warning: Minimum of JDK6 is required for this component to build." else="java.version='${java.version}'">
         <contains string="${java.version}" substring="1.5"/>
@@ -112,7 +116,7 @@
     <available file="./${eclipselink.dbws.test.common.jar}" property="dbws_test.common.jar.exist"/>
     <condition property="support.test">
         <and>
-            <isset property="is.java.version.16"/>
+            <isset property="compat.jdk"/>
             <isset property="jdbc.jar.exist"/>
             <isset property="db.platform"/>
             <matches
