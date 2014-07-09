@@ -397,7 +397,7 @@
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="all"/>
     </target>
 
-    <target name="build-dbws-utils" unless="compat.jdk">
+    <target name="build-dbws-utils" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
     </target>
 
@@ -500,7 +500,7 @@
         <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>
     </target>
 
-    <target name="build-dbws-utils-test"  unless="compat.jdk">
+    <target name="build-dbws-utils-test" if="compat.jdk">
         <!-- Compiling dbws tests requires JDK 1.6 -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="build"/>
     </target>
@@ -1403,22 +1403,22 @@
     <target name="test-jaxb" description="run the moxy (jaxb) tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-jaxb-against-jar"/>
     </target>
-    <target name="test-dbws" description="run the DBWS core tests"  unless="compat.jdk">
+    <target name="test-dbws" description="run the DBWS core tests" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="test"/>
     </target>
-    <target name="test-dbws-srg" description="run the DBWS srg tests"  unless="compat.jdk">
+    <target name="test-dbws-srg" description="run the DBWS srg tests" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="test"/>
     </target>
-    <target name="test-dbws-builder" description="run the DBWS builder tests"  unless="compat.jdk">
+    <target name="test-dbws-builder" description="run the DBWS builder tests" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="test"/>
     </target>
-    <target name="test-dbws-builder-srg" description="run the DBWS builder srg tests"  unless="compat.jdk">
+    <target name="test-dbws-builder-srg" description="run the DBWS builder srg tests" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="test"/>
     </target>
-    <target name="test-dbws-oracle" description="run the DBWS core tests against Oracle"  unless="compat.jdk">
+    <target name="test-dbws-oracle" description="run the DBWS core tests against Oracle" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test.oracle}" target="test"/>
     </target>
-    <target name="test-dbws-builder-oracle" description="run the DBWS builder tests against Oracle"  unless="compat.jdk">
+    <target name="test-dbws-builder-oracle" description="run the DBWS builder tests against Oracle" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test.oracle}" target="test"/>
     </target>
 </project>
