@@ -16,10 +16,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ComplexType implements TypeDefParticleOwner {
+/**
+ * A Value Object class representing XML Schema's complexType.
+ */
+public final class ComplexType implements TypeDefParticleOwner {
     private String name;
     private boolean mixed;
-    private boolean abstractValue;    
+    private boolean abstractValue;
     private AnyAttribute anyAttribute;
     private TypeDefParticle typeDefParticle;
     private Choice choice;

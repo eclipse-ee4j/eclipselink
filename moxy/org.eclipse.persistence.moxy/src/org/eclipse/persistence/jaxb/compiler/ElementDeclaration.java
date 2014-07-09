@@ -287,10 +287,10 @@ public class ElementDeclaration {
     public TypeMappingInfo getTypeMappingInfo() {
         return this.typeMappingInfo;
     }
-    
+
     /**
      * Set the TypeMappingInfo object if this ElementDeclaration was created from a TypeMappingInfo
-     * @param The TypeMappingInfo object used to create this ElementDeclaration
+     * @param info The TypeMappingInfo object used to create this ElementDeclaration
      */
     public void setTypeMappingInfo(TypeMappingInfo info) {
         this.typeMappingInfo = info;

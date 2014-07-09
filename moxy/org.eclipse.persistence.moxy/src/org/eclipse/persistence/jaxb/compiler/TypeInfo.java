@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -411,8 +411,8 @@ public class TypeInfo {
 
     /**
      * Return the xmladapter class for a given bound type class name.
-     * 
-     * @param boundType
+     *
+     * @param boundTypeName
      * @return
      */
     public JavaClass getPackageLevelAdapterClass(String boundTypeName) {
@@ -835,8 +835,8 @@ public class TypeInfo {
 
     /**
      * Sets the XmlCustomizer class name on this TypeInfo.
-     * 
-     * @param xmlCustomizer
+     *
+     * @param xmlCustomizerClassName
      * @see DescriptorCustomizer
      */
     public void setXmlCustomizer(String xmlCustomizerClassName) {

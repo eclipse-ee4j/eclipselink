@@ -220,14 +220,14 @@ public class SchemaModelProject extends Project {
         allMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "all");
         descriptor.addMapping(allMapping);
 
-        XMLCompositeObjectMapping complextContentMapping = new XMLCompositeObjectMapping();
+        XMLCompositeObjectMapping complexContentMapping = new XMLCompositeObjectMapping();
 
-        complextContentMapping.setReferenceClass(ComplexContent.class);
-        complextContentMapping.setAttributeName("complexContent");
-        complextContentMapping.setGetMethodName("getComplexContent");
-        complextContentMapping.setSetMethodName("setComplexContent");
-        complextContentMapping.setXPath(Constants.SCHEMA_PREFIX + ":complexContent");
-        descriptor.addMapping(complextContentMapping);
+        complexContentMapping.setReferenceClass(ComplexContent.class);
+        complexContentMapping.setAttributeName("complexContent");
+        complexContentMapping.setGetMethodName("getComplexContent");
+        complexContentMapping.setSetMethodName("setComplexContent");
+        complexContentMapping.setXPath(Constants.SCHEMA_PREFIX + ":complexContent");
+        descriptor.addMapping(complexContentMapping);
 
         XMLCompositeObjectMapping simpleContentMapping = new XMLCompositeObjectMapping();
         simpleContentMapping.setReferenceClass(SimpleContent.class);
@@ -473,6 +473,54 @@ public class SchemaModelProject extends Project {
         maxExclusiveMapping.setXPath(Constants.SCHEMA_PREFIX + ":maxExclusive/@value");
         descriptor.addMapping(maxExclusiveMapping);
 
+        XMLDirectMapping totalDigitsMapping = new XMLDirectMapping();
+        totalDigitsMapping.setAttributeName("totalDigits");
+        totalDigitsMapping.setSetMethodName("setTotalDigits");
+        totalDigitsMapping.setGetMethodName("getTotalDigits");
+        totalDigitsMapping.setXPath(Constants.SCHEMA_PREFIX + ":totalDigits/@value");
+        descriptor.addMapping(totalDigitsMapping);
+
+        XMLDirectMapping fractionDigitsMapping = new XMLDirectMapping();
+        fractionDigitsMapping.setAttributeName("fractionDigits");
+        fractionDigitsMapping.setSetMethodName("setFractionDigits");
+        fractionDigitsMapping.setGetMethodName("getFractionDigits");
+        fractionDigitsMapping.setXPath(Constants.SCHEMA_PREFIX + ":fractionDigits/@value");
+        descriptor.addMapping(fractionDigitsMapping);
+
+        XMLDirectMapping patternMapping = new XMLDirectMapping();
+        patternMapping.setAttributeName("pattern");
+        patternMapping.setSetMethodName("setPattern");
+        patternMapping.setGetMethodName("getPattern");
+        patternMapping.setXPath(Constants.SCHEMA_PREFIX + ":pattern/@value");
+        descriptor.addMapping(patternMapping);
+
+        XMLCompositeDirectCollectionMapping patternListMapping = new XMLCompositeDirectCollectionMapping();
+        patternListMapping.setAttributeName("patterns");
+        patternListMapping.useCollectionClass(java.util.ArrayList.class);
+        patternListMapping.setXPath(Constants.SCHEMA_PREFIX + ":pattern/@value");
+        descriptor.addMapping(patternListMapping);
+
+        XMLDirectMapping lengthMapping = new XMLDirectMapping();
+        lengthMapping.setAttributeName("length");
+        lengthMapping.setSetMethodName("setLength");
+        lengthMapping.setGetMethodName("getLength");
+        lengthMapping.setXPath(Constants.SCHEMA_PREFIX + ":length/@value");
+        descriptor.addMapping(lengthMapping);
+
+        XMLDirectMapping minLengthMapping = new XMLDirectMapping();
+        minLengthMapping.setAttributeName("minLength");
+        minLengthMapping.setSetMethodName("setMinLength");
+        minLengthMapping.setGetMethodName("getMinLength");
+        minLengthMapping.setXPath(Constants.SCHEMA_PREFIX + ":minLength/@value");
+        descriptor.addMapping(minLengthMapping);
+
+        XMLDirectMapping maxLengthMapping = new XMLDirectMapping();
+        maxLengthMapping.setAttributeName("maxLength");
+        maxLengthMapping.setSetMethodName("setMaxLength");
+        maxLengthMapping.setGetMethodName("getMaxLength");
+        maxLengthMapping.setXPath(Constants.SCHEMA_PREFIX + ":maxLength/@value");
+        descriptor.addMapping(maxLengthMapping);
+
         XMLCompositeDirectCollectionMapping enumerationFacetsMapping = new XMLCompositeDirectCollectionMapping();
         enumerationFacetsMapping.setAttributeName("enumerationFacets");
         enumerationFacetsMapping.useCollectionClass(java.util.ArrayList.class);
@@ -618,6 +666,8 @@ public class SchemaModelProject extends Project {
         attributesMapMapping.setGetMethodName("getAttributesMap");
         attributesMapMapping.setSetMethodName("setAttributesMap");
         descriptor.addMapping(attributesMapMapping);
+
+
 
         return descriptor;
     }

@@ -1,14 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property,
+ *                             added Bean Validation support.
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -16,12 +18,9 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ValidatorFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.MarshalException;
@@ -38,7 +37,15 @@ import javax.xml.validation.Schema;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.jaxb.attachment.AttachmentMarshallerAdapter;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
@@ -63,7 +70,6 @@ import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
-import org.eclipse.persistence.jaxb.attachment.*;
 
 /**
  * INTERNAL:
@@ -88,6 +94,12 @@ import org.eclipse.persistence.jaxb.attachment.*;
  */
 
 public class JAXBMarshaller implements javax.xml.bind.Marshaller {
+
+    private final JAXBBeanValidator beanValidator;
+
+    private BeanValidationMode beanValidationMode;
+    private ValidatorFactory preferredValidatorFactory;
+    private Class<?>[] beanValidationGroups = JAXBBeanValidator.DEFAULT_GROUP_ARRAY;
 
     private ValidationEventHandler validationEventHandler;
     private XMLMarshaller xmlMarshaller;
@@ -125,6 +137,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     public JAXBMarshaller(XMLMarshaller newXMLMarshaller, JAXBIntrospector newIntrospector) {
         super();
         validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
+        beanValidationMode = BeanValidationMode.AUTO;
+        beanValidator = JAXBBeanValidator.getMarshallingBeanValidator();
         xmlMarshaller = newXMLMarshaller;
         xmlMarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
         xmlMarshaller.setEncoding("UTF-8");
@@ -310,6 +324,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 return new ObjectGraphImpl((CoreAttributeGroup)graph);
             }
             return graph;
+        } else if (MarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
+            return this.beanValidationMode;
+        } else if (MarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
+            return this.preferredValidatorFactory;
+        } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
+            return this.beanValidationGroups;
         }
         throw new PropertyException(key);
     }
@@ -330,9 +350,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             }
         }
 
-        Object oxmObject = modifyObjectIfNeeded(object);
+        Object oxmObject = validateAndTransformIfNeeded(object); // xml bindings + object
         try {
             xmlMarshaller.marshal(oxmObject, contentHandler);
+        } catch (BeanValidationException bve) {
+            throw new MarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception e) {
             throw new MarshalException(e);
         }
@@ -367,11 +389,13 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             }
         }
 
-        Object oxmObject = modifyObjectIfNeeded(object);
+        Object oxmObject = validateAndTransformIfNeeded(object); // xml bindings + object
         try {
             XMLEventWriterRecord record = new XMLEventWriterRecord(eventWriter);
             record.setMarshaller(this.xmlMarshaller);
             this.xmlMarshaller.marshal(oxmObject, record);
+        } catch (BeanValidationException bve) {
+            throw new MarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception ex) {
             throw new MarshalException(ex);
         }
@@ -421,9 +445,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             }
         }
 
-        Object oxmObject = modifyObjectIfNeeded(object);
+        Object oxmObject = validateAndTransformIfNeeded(object); // xml bindings + object
         try {
             xmlMarshaller.marshal(oxmObject, node);
+        } catch (BeanValidationException bve) {
+            throw new MarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception e) {
             throw new MarshalException(e);
         }
@@ -447,9 +473,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             }
         }
 
-        Object oxmObject = modifyObjectIfNeeded(object);
+        Object oxmObject = validateAndTransformIfNeeded(object); // xml bindings + object
         try {
             xmlMarshaller.marshal(oxmObject, outputStream);
+        } catch (BeanValidationException bve) {
+            throw new MarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception e) {
             throw new MarshalException(e);
         }
@@ -465,10 +493,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             FileOutputStream outputStream = new FileOutputStream(file);
             try {
-                marshal(object, outputStream);
+                marshal(object, outputStream); // link to the other one
             } finally {
                 outputStream.close();
             }
+        } catch (BeanValidationException bve) {
+            throw new MarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception ex) {
             throw new MarshalException(ex);
         }
@@ -478,10 +508,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || result == null) {
             throw new IllegalArgumentException();
         }
-        object = modifyObjectIfNeeded(object);
+        object = validateAndTransformIfNeeded(object); // xml bindings + json object
 
         try {
             xmlMarshaller.marshal(object, result);
+        } catch (BeanValidationException bve) {
+            throw new MarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception e) {
             throw new MarshalException(e);
         }
@@ -527,11 +559,13 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             }
         }
 
-        Object oxmObject = modifyObjectIfNeeded(object);
+        Object oxmObject = validateAndTransformIfNeeded(object); // xml bindings + object
         try {
             XMLStreamWriterRecord record = new XMLStreamWriterRecord(streamWriter);
             record.setMarshaller(this.xmlMarshaller);
             this.xmlMarshaller.marshal(oxmObject, record);
+        } catch (BeanValidationException bve) {
+            throw new MarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception ex) {
             throw new MarshalException(ex);
         }
@@ -542,29 +576,35 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             }
         }
     }
-    
-    private Object modifyObjectIfNeeded(Object obj){    	
-    	if(obj instanceof Collection){
-    		Collection objectList = (Collection)obj;    		
-    		List newList = new ArrayList(objectList.size());
-    		for(Object o:objectList){
-    			newList.add(modifySingleObjectIfNeeded(o));
-    		} 
-    		return newList;
-        }else if(obj.getClass().isArray()){
+
+    private Object validateAndTransformIfNeeded(Object obj) throws BeanValidationException {
+        Object result = modifyObjectIfNeeded(obj);
+        if (beanValidator.shouldValidate(obj, beanValidationMode, preferredValidatorFactory)) beanValidator.validate(result, beanValidationGroups);
+        return result;
+    }
+
+    private Object modifyObjectIfNeeded(Object obj) {
+        if (obj instanceof Collection) {
+            Collection objectList = (Collection) obj;
+            List newList = new ArrayList(objectList.size());
+            for (Object o : objectList) {
+                newList.add(modifySingleObjectIfNeeded(o));
+            }
+            return newList;
+        } else if (obj.getClass().isArray()) {
             int arraySize = Array.getLength(obj);
             List newList = new ArrayList(arraySize);
-            for(int x=0; x<arraySize; x++) {
+            for (int x = 0; x < arraySize; x++) {
                 newList.add(modifySingleObjectIfNeeded(Array.get(obj, x)));
             }
             return newList;
-        }else{
-    		return modifySingleObjectIfNeeded(obj);
-    	}    	
+        } else {
+            return modifySingleObjectIfNeeded(obj);
+        }
     }
-    
+
     private Object modifySingleObjectIfNeeded(Object obj){
-    	// let the JAXBIntrospector determine if the object is a JAXBElement
+	// let the JAXBIntrospector determine if the object is a JAXBElement
         if (obj instanceof JAXBElement) {
             // use the JAXBElement's properties to populate an XMLRoot
             return createXMLRootFromJAXBElement((JAXBElement) obj);
@@ -676,9 +716,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             }
         }
 
-        Object oxmObject = modifyObjectIfNeeded(object);
+        Object oxmObject = validateAndTransformIfNeeded(object); // xml bindings + object
         try {
             xmlMarshaller.marshal(oxmObject, writer);
+        } catch (BeanValidationException bve) {
+            throw new MarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception e) {
             throw new MarshalException(e);
         }
@@ -694,11 +736,13 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || record == null) {
             throw new IllegalArgumentException();
         }
-        object = modifyObjectIfNeeded(object);
+        object = validateAndTransformIfNeeded(object); // xml bindings + object
 
         try {
             record.setMarshaller(xmlMarshaller);
             xmlMarshaller.marshal(object, record);
+        } catch (BeanValidationException bve) {
+            throw new MarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception e) {
             throw new MarshalException(e);
         }
@@ -765,7 +809,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         ((JAXBMarshalListener) xmlMarshaller.getMarshalListener()).setListener(listener);
     }
 
-    public void setMarshalCallbacks(java.util.HashMap callbacks) {
+    public void setMarshalCallbacks(Map callbacks) {
         if(callbacks == null || callbacks.isEmpty()) {
             return;
         }
@@ -860,18 +904,18 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
                 xmlMarshaller.setAttributePrefix((String)value);
             } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
-            	 if(value == null){
-                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
-                 }    
-                xmlMarshaller.setIncludeRoot((Boolean)value);                
+		 if(value == null){
+			throw new PropertyException(key, Constants.EMPTY_STRING);
+                 }
+                xmlMarshaller.setIncludeRoot((Boolean)value);
             } else if(MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){
                 if(value == null || (((String)value).length() == 0)){
                     throw new PropertyException(key, Constants.EMPTY_STRING);
-                }                  
-                xmlMarshaller.setValueWrapper((String)value); 
+                }
+                xmlMarshaller.setValueWrapper((String)value);
             } else if(MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){
-            	if(value == null){
-                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
+		if(value == null){
+			throw new PropertyException(key, Constants.EMPTY_STRING);
                  }
                 xmlMarshaller.setNamespaceSeparator((Character)value);
             } else if(MarshallerProperties.OBJECT_GRAPH.equals(key)) {
@@ -884,6 +928,21 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 } else {
                     throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
                 }
+            } else if (MarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
+                if(value == null){
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                this.beanValidationMode = ((BeanValidationMode)value);
+            } else if (MarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
+                if(value == null){
+                    // Allow null value for preferred validation factory.
+                }
+                this.preferredValidatorFactory = ((ValidatorFactory)value);
+            } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
+                if(value == null){
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                this.beanValidationGroups = ((Class<?>[]) value);
             } else {
                 throw new PropertyException(key, value);
             }
@@ -896,7 +955,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         this.xmlMarshaller.setSchema(schema);
     }
 
-    private HashMap<String, Class> getClassToGeneratedClasses() {
+    private Map<String, Class> getClassToGeneratedClasses() {
         return jaxbContext.getClassToGeneratedClasses();
     }
 
@@ -910,6 +969,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     public XMLMarshaller getXMLMarshaller() {
         return this.xmlMarshaller;
+    }
+
+    public Set<? extends ConstraintViolation<?>> getConstraintViolations() {
+        return beanValidator.getConstraintViolations();
     }
 
     private static class CharacterEscapeHandlerWrapper extends org.eclipse.persistence.internal.oxm.record.CharacterEscapeHandlerWrapper implements CharacterEscapeHandler {

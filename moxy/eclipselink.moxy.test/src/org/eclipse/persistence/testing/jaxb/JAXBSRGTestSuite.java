@@ -16,14 +16,14 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestSuite;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBDOMTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
 
 public class JAXBSRGTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("JAXB SRG Test Suite");
-        suite.addTest(SchemaGenTestSuite.suite()); 
-        suite.addTest(JAXBSAXTestSuite.suite()); 
+
+        suite.addTest(SchemaGenTestSuite.suite());
+        suite.addTest(JAXBSAXTestSuite.suite());
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlrootelement.XmlRootElementNamespaceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlrootelement.XmlRootElementNoNamespaceTestCases.class);
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelement.XmlElementNamespaceTestCases.class);

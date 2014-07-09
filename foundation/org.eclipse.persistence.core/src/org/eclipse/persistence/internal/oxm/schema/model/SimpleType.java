@@ -36,12 +36,16 @@ public class SimpleType implements Restrictable {
     }
 
     public void setRestriction(Restriction restriction) {
-        this.restriction = restriction;
-        if (restriction != null) {
-            restriction.setOwner(this);
+        if (restriction == null)
+            return;
+
+        restriction.setOwner(this);
+        if (this.restriction == null) {
+            this.restriction = restriction;
+        } else {
+            this.restriction.mergeWith(restriction);
         }
 
-        //set Owner
     }
 
     public Restriction getRestriction() {

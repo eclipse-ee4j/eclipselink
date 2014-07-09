@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -411,12 +411,12 @@ public class XMLProcessor {
             ArrayList<JavaClass> jClassList = classIt.next();
             JavaClass[] jClassArray = (JavaClass[]) jClassList.toArray(new JavaClass[jClassList.size()]);
             aProcessor.buildNewTypeInfo(jClassArray);
-            aProcessor.processJavaClasses(jClassArray);
+            aProcessor.checkForCallbackMethods();
         }
 
-        // need to ensure that any bound types (from XmlJavaTypeAdapter) have TypeInfo 
+        // need to ensure that any bound types (from XmlJavaTypeAdapter) have TypeInfo
         // objects built for them - SchemaGenerator will require a descriptor for each
-        Map<String, TypeInfo> typeInfos = (Map<String, TypeInfo>) aProcessor.getTypeInfo().clone();
+        Map<String, TypeInfo> typeInfos = (Map<String, TypeInfo>) ((HashMap)aProcessor.getTypeInfos()).clone();
         for (Entry<String, TypeInfo> entry : typeInfos.entrySet()) {
             JavaClass[] jClassArray;
             for (Property prop : entry.getValue().getPropertyList()) {
@@ -428,13 +428,13 @@ public class XMLProcessor {
         }
 
         // now trigger the annotations processor to process the classes
-        ArrayList<JavaClass> jClasses = aProcessor.getTypeInfoClasses();
+        List<JavaClass> jClasses = aProcessor.getTypeInfoClasses();
 
         // If multiple bindings (packages) are supplied, re-process super classes
         // (in case super and sub classes were in different packages)
         if (xmlBindingMap.size() > 1) {
             for (JavaClass c : jClasses) {
-                TypeInfo ti = aProcessor.getTypeInfo().get(c.getQualifiedName());
+                TypeInfo ti = aProcessor.getTypeInfos().get(c.getQualifiedName());
                 aProcessor.processPropertiesSuperClass(c, ti);
             }
         }
@@ -442,7 +442,7 @@ public class XMLProcessor {
         aProcessor.processPropertyTypes(jClasses.toArray(new JavaClass[jClasses.size()]));
         aProcessor.finalizeProperties();
         aProcessor.createElementsForTypeMappingInfo();
-        aProcessor.processJavaClasses(null);
+        aProcessor.checkForCallbackMethods();
     }
 
     private XMLNameTransformer getXMLNameTransformerClassFromString(String transformerClassName){
@@ -747,7 +747,7 @@ public class XMLProcessor {
             }
             oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
-            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfos().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
@@ -1007,7 +1007,7 @@ public class XMLProcessor {
             }
             oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
-            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfos().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
@@ -1205,7 +1205,7 @@ public class XMLProcessor {
             }
             oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
-            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfos().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
@@ -1511,7 +1511,7 @@ public class XMLProcessor {
             }
             oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
-            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfos().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
@@ -1653,7 +1653,7 @@ public class XMLProcessor {
             }
             oldProperty.setHasXmlElementType(true);
             // may need to generate a type info for the type
-            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfo().get(pType.getQualifiedName()) == null) {
+            if (aProcessor.shouldGenerateTypeInfo(pType) && aProcessor.getTypeInfos().get(pType.getQualifiedName()) == null) {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
@@ -2044,7 +2044,7 @@ public class XMLProcessor {
         }
         JavaClass type = prop.getActualType();
         //if a class level adapter is present on the target class, set it
-        TypeInfo targetInfo = aProcessor.getTypeInfo().get(type.getQualifiedName());
+        TypeInfo targetInfo = aProcessor.getTypeInfos().get(type.getQualifiedName());
         if(targetInfo != null) {
             if(targetInfo.getXmlJavaTypeAdapter() != null) {
                 prop.setXmlJavaTypeAdapter(targetInfo.getXmlJavaTypeAdapter());

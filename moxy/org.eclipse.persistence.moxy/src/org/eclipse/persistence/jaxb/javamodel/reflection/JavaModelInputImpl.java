@@ -43,6 +43,7 @@ public class JavaModelInputImpl implements JavaModelInput {
 
     private JavaClass[] jClasses;
     private JavaModel jModel;
+    private boolean facets;
 
     /**
      * This constructor builds an array of JavaClass objects from an array
@@ -108,4 +109,11 @@ public class JavaModelInputImpl implements JavaModelInput {
         return jModel;
     }
 
+    public boolean isFacets() {
+        return facets;
+    }
+
+    public void setFacets(boolean facets) {
+        this.facets = facets;
+    }
 }

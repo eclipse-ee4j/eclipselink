@@ -18,6 +18,7 @@ set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.xml.bind_2.2.0.v201105210648.
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.activation_1.1.0.v201108011116.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\com.sun.xml.bind_2.2.0.v201004141950.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\com.sun.tools.xjc_2.2.0.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.validation_1.1.0.v201304101302.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set JAVA_ARGS=%*
 

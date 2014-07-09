@@ -24,3 +24,7 @@ foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/Version.java
 /jpa/eclipselink.jpa.test/jpa-performance.jar
 /jpa/eclipselink.jpa.test/jpa-performance2.jar
 /foundation/targets/target.oracle/oracle.libs/*.jar
+*.iml
+.idea*
+out/
+eclipselink_extracted/*

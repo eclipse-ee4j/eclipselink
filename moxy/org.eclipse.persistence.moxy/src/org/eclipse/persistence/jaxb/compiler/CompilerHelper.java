@@ -462,10 +462,10 @@ public class CompilerHelper {
         }
         return xmlBindingsModelContext;
     }
-    
-    public static JavaClass getNextMappedSuperClass(JavaClass cls, HashMap<String, TypeInfo> typeInfo, Helper helper) {
+
+    public static JavaClass getNextMappedSuperClass(JavaClass cls, Map<String, TypeInfo> typeInfo, Helper helper) {
         JavaClass superClass = cls.getSuperclass();
-        
+
         if(superClass == null || helper.isBuiltInJavaType(cls) || superClass.getRawName().equals("java.lang.Object")){
             return null;
         }

@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property
+ *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property,
+ *                             added Bean Validation support.
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -24,8 +25,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ValidatorFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
@@ -41,6 +45,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -68,8 +73,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jaxb.JAXBErrorHandler;
-import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
@@ -97,18 +100,27 @@ import org.eclipse.persistence.internal.jaxb.many.ManyValue;
  */
 public class JAXBUnmarshaller implements Unmarshaller {
 
+    private final JAXBBeanValidator beanValidator;
+
+    private BeanValidationMode beanValidationMode;
+    private ValidatorFactory preferredValidatorFactory;
+    private Class<?>[] beanValidationGroups = JAXBBeanValidator.DEFAULT_GROUP_ARRAY;
+
     private ValidationEventHandler validationEventHandler;
     private XMLUnmarshaller xmlUnmarshaller;
     private JAXBContext jaxbContext;
+
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
-    
+
     private static final String SUN_ID_RESOLVER = "com.sun.xml.bind.IDResolver";
     private static final String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
 
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
         validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
+        beanValidationMode = BeanValidationMode.AUTO;
+        beanValidator = JAXBBeanValidator.getUnmarshallingBeanValidator();
         xmlUnmarshaller = newXMLUnmarshaller;
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
@@ -120,18 +132,22 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     public Object unmarshal(File file) throws JAXBException {
-        try {           
+        try {
             Object value = xmlUnmarshaller.unmarshal(file);
-            return createJAXBElementOrUnwrapIfRequired(value);
+            return validateAndTransformIfRequired(value); // xml object
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (BeanValidationException bve) {
+            throw new UnmarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         }
     }
 
+
+
     public Object unmarshal(InputStream inputStream) throws JAXBException {
-        try {        
+        try {
             if (xmlUnmarshaller.isAutoDetectMediaType() || xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON || null == jaxbContext.getXMLInputFactory() || XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
-                return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(inputStream));
+                return validateAndTransformIfRequired(xmlUnmarshaller.unmarshal(inputStream)); // xml bindings + object inside inputStream
             } else {
                 if (null == inputStream) {
                     throw XMLMarshalException.nullArgumentException();
@@ -144,6 +160,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
         } catch(JAXBException jaxbException) {
             throw jaxbException;
+        } catch (BeanValidationException bve) {
+            throw new UnmarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         } catch (Exception exception) {
@@ -154,28 +172,32 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(URL url) throws JAXBException {
         try {
             Object value = xmlUnmarshaller.unmarshal(url);
-            return createJAXBElementOrUnwrapIfRequired(value);
+            return validateAndTransformIfRequired(value); // xml bindings + object
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (BeanValidationException bve) {
+            throw new UnmarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         }
     }
 
     public Object unmarshal(InputSource inputSource) throws JAXBException {
         try {
             Object value = xmlUnmarshaller.unmarshal(inputSource);
-            return createJAXBElementOrUnwrapIfRequired(value);
+            return validateAndTransformIfRequired(value); // xml bindings + object
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (BeanValidationException bve) {
+            throw new UnmarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         }
     }
 
     public Object unmarshal(Reader reader) throws JAXBException {
-      
+
         try {
             if (xmlUnmarshaller.isAutoDetectMediaType()   || xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON || null == jaxbContext.getXMLInputFactory() || XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
-        	
-        	return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(reader));
-            } else {               
+
+                return validateAndTransformIfRequired(xmlUnmarshaller.unmarshal(reader)); // xml bindings + object inside reader
+            } else {
                 if (null == reader) {
                     throw XMLMarshalException.nullArgumentException();
                 }
@@ -188,6 +210,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw jaxbException;
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (BeanValidationException bve) {
+            throw new UnmarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         } catch (Exception exception) {
             throw new UnmarshalException(exception);
         }
@@ -196,10 +220,17 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(Node node) throws JAXBException {
         try {
             Object value = xmlUnmarshaller.unmarshal(node);
-            return createJAXBElementOrUnwrapIfRequired(value);
+            return validateAndTransformIfRequired(value); // xml bindings + object
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (BeanValidationException bve) {
+            throw new UnmarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         }
+    }
+
+    private JAXBElement validateAndBuildJAXBElement(Object obj, Class declaredClass) throws BeanValidationException {
+        if (beanValidator.shouldValidate(obj, beanValidationMode, preferredValidatorFactory)) beanValidator.validate(obj, beanValidationGroups);
+        return buildJAXBElementFromObject(obj, declaredClass);
     }
 
     /**
@@ -225,7 +256,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
             return jaxbElement;
         }
-
 
         if(obj instanceof JAXBElement) {
             return (JAXBElement) obj;
@@ -259,9 +289,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
             qname = new QName(rootNamespaceUri, rootName);
         }
         if(declaredClass != null){
-        	return jaxbContext.createJAXBElement(qname, declaredClass, obj);
+            return jaxbContext.createJAXBElement(qname, declaredClass, obj);
         }else{
-        	return jaxbContext.createJAXBElement(qname, obj.getClass(), obj);
+            return jaxbContext.createJAXBElement(qname, obj.getClass(), obj);
         }
     }
 
@@ -277,7 +307,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     classToUnmarshalTo = generatedClass;
                 }
             }
-            return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(node, classToUnmarshalTo), javaClass);
+            return validateAndBuildJAXBElement(xmlUnmarshaller.unmarshal(node, classToUnmarshalTo), javaClass); // xmlbindings + object
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         }
@@ -286,9 +316,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(Source source) throws JAXBException {
         try {
             Object value = xmlUnmarshaller.unmarshal(source);
-            return createJAXBElementOrUnwrapIfRequired(value);
+            return validateAndTransformIfRequired(value); // xml bindings + object
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (BeanValidationException bve) {
+            throw new UnmarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         }
     }
 
@@ -297,9 +329,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
-        
-        try {        	 
-            return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(source, classToUnmarshalTo), javaClass);
+
+        try {
+            return validateAndBuildJAXBElement(xmlUnmarshaller.unmarshal(source, classToUnmarshalTo), javaClass); // json object + xml bindings
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         }
@@ -313,7 +345,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 classToUnmarshalTo = generatedClass;
             }
         }
-        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(source, classToUnmarshalTo), declaredType);
+        return validateAndBuildJAXBElement(xmlUnmarshaller.unmarshal(source, classToUnmarshalTo), declaredType); // never used in tests. (I guess its only for ParameterizedTypes)
     }
 
     public JAXBElement unmarshal(Source source, Type type) throws JAXBException {
@@ -409,7 +441,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 return primitiveContentHandler.getJaxbElement();
             }
             Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
-            JAXBElement unmarshalled = buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
+            JAXBElement unmarshalled = validateAndBuildJAXBElement(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass); // xmlbindings + object (xmlelement) + "nomappings.SomeClass" + "jaxb.stax.EndEventRoot"
 
             if(classToUnmarshalTo != javaClass){
                 JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), javaClass, unmarshalled.getScope(), unmarshalled.getValue());
@@ -417,7 +449,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
             return unmarshalled;
         } catch (XMLMarshalException xmlMarshalException) {
-            throw handleXMLMarshalException(xmlMarshalException);
+            throw handleXMLMarshalException(xmlMarshalException); // Exception [EclipseLink-25004] cvc-maxInclusive-valid: Value '1234567' is not facet-valid with respect to maxInclusive '999999' for type 'id-type'.
         } catch (Exception e) {
             throw new JAXBException(e);
         }
@@ -484,11 +516,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
 
             if(null != xmlDescriptor && null == getSchema()) {
-            	 RootLevelXmlAdapter adapter= null;
-                 if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
-                 	adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
-                 }
-            	UnmarshalRecord wrapper = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) xmlUnmarshaller.getXMLContext().getSession());
+                RootLevelXmlAdapter adapter= null;
+                if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
+                    adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+                }
+                UnmarshalRecord wrapper = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) xmlUnmarshaller.getXMLContext().getSession());
                 org.eclipse.persistence.internal.oxm.record.UnmarshalRecord unmarshalRecord = (org.eclipse.persistence.internal.oxm.record.UnmarshalRecord) wrapper.getUnmarshalRecord();
                 XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
                 unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
@@ -502,11 +534,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     value = unmarshalRecord.getCurrentObject();
                 }
                 if(value instanceof WrappedValue){
-                	value = ((WrappedValue)value).getValue();
+                    value = ((WrappedValue)value).getValue();
                 }
-                
+
                 if(value instanceof ManyValue){
-                	value = ((ManyValue)value).getItem();
+                    value = ((ManyValue)value).getItem();
                 }
                 if(adapter != null) {
                     try {
@@ -528,14 +560,14 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
             RootLevelXmlAdapter adapter= null;
             if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
-            	adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+                adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
             }
             Class unmarshalClass = null;
             if(jaxbContext.getTypeMappingInfoToGeneratedType().size() >0){
-            	unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);	
+                unmarshalClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(type);
             }
-            
-            if(unmarshalClass != null){   
+
+            if(unmarshalClass != null){
                 JAXBElement unmarshalled = unmarshal(streamReader, unmarshalClass);
                 Class declaredClass = null;
                 if(type.getType() instanceof Class){
@@ -584,9 +616,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
             XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
             XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
             Object value = xmlUnmarshaller.unmarshal(staxReader, inputSource);
-            return createJAXBElementOrUnwrapIfRequired(value);
+            return validateAndTransformIfRequired(value); // xml bindings + object
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (BeanValidationException bve) {
+            throw new UnmarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         }
     }
 
@@ -598,7 +632,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
             XMLEventReaderReader staxReader = new XMLEventReaderReader(xmlUnmarshaller);
             XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(eventReader);
-            JAXBElement unmarshalled =  buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
+            JAXBElement unmarshalled =  validateAndBuildJAXBElement(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass); // json object + xml bindings
 
             if(classToUnmarshalTo != javaClass){
                 JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), javaClass, unmarshalled.getScope(), unmarshalled.getValue());
@@ -700,9 +734,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
             XMLEventReaderReader staxReader = new XMLEventReaderReader(xmlUnmarshaller);
             XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(eventReader);
             Object value = xmlUnmarshaller.unmarshal(staxReader, inputSource);
-            return createJAXBElementOrUnwrapIfRequired(value);
+            return validateAndTransformIfRequired(value); // xml bindings + object
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (BeanValidationException bve) {
+            throw new UnmarshalException(bve.getMessage(), String.valueOf(bve.getErrorCode()), bve);
         }
     }
 
@@ -752,7 +788,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 mType = MediaType.getMediaType((String)value);
             }
             if(mType == null){
-		throw new PropertyException(key, Constants.EMPTY_STRING);
+                throw new PropertyException(key, Constants.EMPTY_STRING);
             }
             xmlUnmarshaller.setMediaType(mType);
         } else if (key.equals(UnmarshallerProperties.UNMARSHALLING_CASE_INSENSITIVE)){
@@ -761,21 +797,21 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
             xmlUnmarshaller.setCaseInsensitive((Boolean)value);
         } else if (key.equals(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)){
-		if(value == null){
-		    throw new PropertyException(key, Constants.EMPTY_STRING);
-        	}        
-        	xmlUnmarshaller.setAutoDetectMediaType((Boolean)value);     
+            if(value == null){
+                throw new PropertyException(key, Constants.EMPTY_STRING);
+            }
+            xmlUnmarshaller.setAutoDetectMediaType((Boolean)value);
         } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)){
-        	xmlUnmarshaller.setAttributePrefix((String)value);
+            xmlUnmarshaller.setAttributePrefix((String)value);
         } else if (UnmarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
-        	if(value == null){
-        	    throw new PropertyException(key, Constants.EMPTY_STRING);
-        	}        
-        	xmlUnmarshaller.setIncludeRoot((Boolean)value);            
+            if(value == null){
+                throw new PropertyException(key, Constants.EMPTY_STRING);
+            }
+            xmlUnmarshaller.setIncludeRoot((Boolean)value);
         } else if (UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER.equals(key)){
-        	if (value == null){
-        		xmlUnmarshaller.setNamespaceResolver(null);
-        	} else if (value instanceof Map){
+            if (value == null){
+                xmlUnmarshaller.setNamespaceResolver(null);
+            } else if (value instanceof Map){
                 Map<String, String> namespaces = (Map<String, String>)value;
                 NamespaceResolver nr = new NamespaceResolver();
                 Iterator<Entry<String, String>> namesapcesIter = namespaces.entrySet().iterator();
@@ -785,26 +821,26 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 }
                 xmlUnmarshaller.setNamespaceResolver(nr);
             } else if (value instanceof NamespacePrefixMapper){
-            	xmlUnmarshaller.setNamespaceResolver(new PrefixMapperNamespaceResolver((NamespacePrefixMapper)value, null));
+                xmlUnmarshaller.setNamespaceResolver(new PrefixMapperNamespaceResolver((NamespacePrefixMapper)value, null));
             }
-        } else if (UnmarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){        	
+        } else if (UnmarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){
             xmlUnmarshaller.setValueWrapper((String)value);
-        } else if (UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){  
-        	if(value == null){
-        	    throw new PropertyException(key, Constants.EMPTY_STRING);
-        	}
-        	xmlUnmarshaller.setNamespaceSeparator((Character)value);            
+        } else if (UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){
+            if(value == null){
+                throw new PropertyException(key, Constants.EMPTY_STRING);
+            }
+            xmlUnmarshaller.setNamespaceSeparator((Character)value);
         } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
-        	if(value == null){
-          		setIDResolver(null);
-        	}else {
-                    setIDResolver(new IDResolverWrapper(value));
-        	}
+            if(value == null){
+                setIDResolver(null);
+            }else {
+                setIDResolver(new IDResolverWrapper(value));
+            }
         } else if (UnmarshallerProperties.OBJECT_GRAPH.equals(key)) {
             if(value instanceof ObjectGraphImpl) {
-                xmlUnmarshaller.setUnmarshalAttributeGroup(((ObjectGraphImpl)value).getAttributeGroup());
+                xmlUnmarshaller.setUnmarshalAttributeGroup(((ObjectGraphImpl) value).getAttributeGroup());
             } else if(value instanceof String || value == null) {
                 xmlUnmarshaller.setUnmarshalAttributeGroup(value);
             } else {
@@ -812,6 +848,21 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
         } else if (UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
             xmlUnmarshaller.setWrapperAsCollectionName((Boolean) value);
+        } else if (UnmarshallerProperties.BEAN_VALIDATION_MODE.equals(key)){
+            if(value == null){
+                throw new PropertyException(key, Constants.EMPTY_STRING);
+            }
+            this.beanValidationMode = ((BeanValidationMode) value);
+        } else if (UnmarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
+            if(value == null){
+                // Allow null value for preferred validation factory.
+            }
+            this.preferredValidatorFactory = ((ValidatorFactory)value);
+        } else if (UnmarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
+            if(value == null){
+                // Allow null value for preferred validation factory.
+            }
+            this.beanValidationGroups = ((Class<?>[]) value);
         } else {
             throw new PropertyException(key, value);
         }
@@ -840,9 +891,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }  else if (key.equals(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR)) {
             return xmlUnmarshaller.getNamespaceSeparator();
         } else if (key.equals(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER)) {
-        	if(xmlUnmarshaller.getNamespaceResolver() == null){
-        		return null;
-        	}
+            if(xmlUnmarshaller.getNamespaceResolver() == null){
+                return null;
+            }
             if (xmlUnmarshaller.getNamespaceResolver() instanceof PrefixMapperNamespaceResolver) {
                 PrefixMapperNamespaceResolver wrapper = (PrefixMapperNamespaceResolver) xmlUnmarshaller.getNamespaceResolver();
                 return wrapper.getPrefixMapper();
@@ -864,7 +915,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
             IDResolverWrapper wrapper = (IDResolverWrapper) xmlUnmarshaller.getIDResolver();
             if(wrapper == null){
-            	return null;
+                return null;
             }
             return wrapper.getResolver();
         } else if (UnmarshallerProperties.OBJECT_GRAPH.equals(key)) {
@@ -875,6 +926,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return graph;
         } else if(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
             return xmlUnmarshaller.isWrapperAsCollectionName();
+        } else if (UnmarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
+            return this.beanValidationMode;
+        } else if (UnmarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
+            return this.preferredValidatorFactory;
+        } else if (UnmarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
+            return this.beanValidationGroups;
         }
         throw new PropertyException(key);
     }
@@ -931,11 +988,16 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    public void setUnmarshalCallbacks(java.util.HashMap callbacks) {
+    public void setUnmarshalCallbacks(Map callbacks) {
         ((JAXBUnmarshalListener)xmlUnmarshaller.getUnmarshalListener()).setClassBasedUnmarshalEvents(callbacks);
     }
 
-    private Object createJAXBElementOrUnwrapIfRequired(Object value){
+    private Object validateAndTransformIfRequired(Object value) throws BeanValidationException {
+        if (beanValidator.shouldValidate(value, beanValidationMode, preferredValidatorFactory)) beanValidator.validate(value, beanValidationGroups);
+        return createJAXBElementOrUnwrapIfRequired(value);
+    }
+
+    private Object createJAXBElementOrUnwrapIfRequired(Object value) {
         if(value instanceof Root){
             JAXBElement jaxbElement = jaxbContext.createJAXBElementFromXMLRoot((Root)value, Object.class);
             jaxbElement.setNil(((Root) value).isNil());
@@ -970,13 +1032,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
         }
         if(jaxbContext.getTypeToTypeMappingInfo() != null){
-              TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(originalClass);
-              if(tmi != null && jaxbContext.getTypeMappingInfoToGeneratedType() != null) {
-                  Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
-                  if(generatedClass != null){
-                      classToUnmarshalTo = generatedClass;
-                  }
-              }
+            TypeMappingInfo tmi = jaxbContext.getTypeToTypeMappingInfo().get(originalClass);
+            if(tmi != null && jaxbContext.getTypeMappingInfoToGeneratedType() != null) {
+                Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(tmi);
+                if(generatedClass != null){
+                    classToUnmarshalTo = generatedClass;
+                }
+            }
         }
         return classToUnmarshalTo;
     }
@@ -987,12 +1049,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
         } else {
             return new UnmarshalException(xmlMarshalException);
         }
-    }   
+    }
 
 
     /**
      * Return this Unmarshaller's custom IDResolver.
-     * 
+     *
      * @see IDResolver
      * @since 2.3.3
      * @return the custom IDResolver, or null if one has not been specified.
@@ -1003,12 +1065,16 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     /**
      * Set this Unmarshaller's custom IDResolver.
-     * 
+     *
      * @see IDResolver
      * @since 2.3.3
      */
     public void setIDResolver(IDResolver idResolver) {
         getXMLUnmarshaller().setIDResolver(idResolver);
+    }
+
+    public Set<? extends ConstraintViolation<?>> getConstraintViolations() {
+        return beanValidator.getConstraintViolations();
     }
 
     private static class PrimitiveContentHandler<T> extends DefaultHandler {
@@ -1042,7 +1108,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 }
             } else {
                 int colonIndex = xsiType.indexOf(':');
-                
+
                 String typePrefix;
                 String typeName;
                 if(colonIndex == -1) {
@@ -1055,7 +1121,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 String typeNamespace = namespaces.get(typePrefix);
                 QName typeQName = new QName(typeNamespace, typeName);
                 value = (T) xcm.convertObject(stringBuilder.toString(), clazz, typeQName);
-                
+
             }
 
             QName qName;

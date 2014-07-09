@@ -78,7 +78,6 @@ import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
 import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
@@ -442,7 +441,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map containing which Class (by name) corresponds to which generated class.
      */
-    public HashMap<String, Class> getClassToGeneratedClasses() {
+    public Map<String, Class> getClassToGeneratedClasses() {
         return contextState.getClassToGeneratedClasses();
     }
 
@@ -466,7 +465,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * INTERNAL:
      * Get the map of which QName corresponds to which declared class.
      */
-    public HashMap<QName, Class> getQNamesToDeclaredClasses() {
+    public Map<QName, Class> getQNamesToDeclaredClasses() {
         return contextState.getQNamesToDeclaredClasses();
     }
 
@@ -537,7 +536,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * If the JAXBContext was not created with the constructor that takes a Type[] then
      * this Map will be empty.
      */
-    public HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
+    public Map<java.lang.reflect.Type, QName> getTypeToSchemaType() {
         return contextState.getTypeToSchemaType();
     }
 
@@ -860,7 +859,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             if (foundMetadata) {
                 Class[] classArray = new Class[classes.size()];
                 for (int i = 0; i < classes.size(); i++) {
-                    classArray[i] = (Class) classes.get(i);
+                    classArray[i] = classes.get(i);
                 }
                 return createContextState(classArray, xmlBindingMap);
             }
@@ -925,6 +924,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             jModel.setHasXmlBindings(xmlBindings != null || !xmlBindings.isEmpty());
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(classesToBeBound, jModel);
+            if (properties != null) enableFacetsIfPropertySetTrue(inputImpl, properties);
             try {
                 Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace, enableXmlAccessorFactory);
                 return createContextState(generator, loader, classesToBeBound, properties);
@@ -1081,19 +1081,25 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 jModel = new JavaModelImpl(loader);
             }
 
-            jModel.setHasXmlBindings(xmlBindings != null || !xmlBindings.isEmpty());
-            // create Map of package names to metadata complete indicators
-            Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
-            for (String packageName : xmlBindings.keySet()) {
-                if (xmlBindings.get(packageName).isXmlMappingMetadataComplete()) {
-                    metadataComplete.put(packageName, true);
+            if (xmlBindings != null) {
+                jModel.setHasXmlBindings(!xmlBindings.isEmpty());
+                // create Map of package names to metadata complete indicators
+                Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
+                for (String packageName : xmlBindings.keySet()) {
+                    if (xmlBindings.get(packageName).isXmlMappingMetadataComplete()) {
+                        metadataComplete.put(packageName, true);
+                    }
                 }
-            }
-            if (metadataComplete.size() > 0) {
-                jModel.setMetadataCompletePackageMap(metadataComplete);
+
+                if (metadataComplete.size() > 0) {
+                    jModel.setMetadataCompletePackageMap(metadataComplete);
+                }
+            } else {
+                jModel.setHasXmlBindings(false);
             }
 
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
+            if (properties != null) enableFacetsIfPropertySetTrue(inputImpl, properties);
             try {
                 Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace, enableXmlAccessorFactory);
                 JAXBContextState contextState = createContextState(generator, loader, typesToBeBound, properties);
@@ -1115,8 +1121,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             proj.convertClassNamesToClasses(conversionManager.getLoader());
             // need to make sure that the java class is set properly on each
             // descriptor when using java classname - req'd for JOT api implementation
-            for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext();) {
-                ClassDescriptor descriptor = descriptorIt.next();
+            for (ClassDescriptor descriptor : (Iterable<ClassDescriptor>) proj.getOrderedDescriptors()) {
                 if (descriptor.getJavaClass() == null) {
                     descriptor.setJavaClass(conversionManager.convertClassNameToClass(descriptor.getJavaClassName()));
                 }
@@ -1198,9 +1203,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         private XMLContext xmlContext;
         private org.eclipse.persistence.jaxb.compiler.Generator generator;
         private Map<QName, Class> qNameToGeneratedClasses;
-        private HashMap<String, Class> classToGeneratedClasses;
-        private HashMap<QName, Class> qNamesToDeclaredClasses;
-        private HashMap<Type, QName> typeToSchemaType;
+        private Map<String, Class> classToGeneratedClasses;
+        private Map<QName, Class> qNamesToDeclaredClasses;
+        private Map<Type, QName> typeToSchemaType;
         private TypeMappingInfo[] boundTypes;
         private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedType;
         private Map<Type, TypeMappingInfo> typeToTypeMappingInfo;
@@ -1238,7 +1243,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             this.qNameToGeneratedClasses = generator.getMappingsGenerator().getQNamesToGeneratedClasses();
             this.classToGeneratedClasses = generator.getMappingsGenerator().getClassToGeneratedClasses();
             this.qNamesToDeclaredClasses = generator.getMappingsGenerator().getQNamesToDeclaredClasses();
-            this.typeMappingInfoToGeneratedType = generator.getAnnotationsProcessor().getTypeMappingInfoToGeneratedClasses();
+            this.typeMappingInfoToGeneratedType = generator.getAnnotationsProcessor().getTypeMappingInfosToGeneratedClasses();
             this.setTypeMappingInfoToJavaTypeAdapaters(createAdaptersForAdapterClasses(generator.getAnnotationsProcessor().getTypeMappingInfoToAdapterClasses()));
             this.boundTypes = boundTypes;
             if (properties != null) {
@@ -1310,11 +1315,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             Vector mappings = desc.getMappings();
 
-            for (int i = 0; i < mappings.size(); i++) {
-                DatabaseMapping nextMapping = (DatabaseMapping) mappings.get(i);
+            for (Object mapping : mappings) {
+                DatabaseMapping nextMapping = (DatabaseMapping) mapping;
                 Vector fields = nextMapping.getFields();
                 updateResolverForFields(fields, nr);
-                Descriptor refDesc = (Descriptor) ((DatabaseMapping) nextMapping).getReferenceDescriptor();
+                Descriptor refDesc = (Descriptor) nextMapping.getReferenceDescriptor();
                 if (refDesc != null && !processed.contains(refDesc)) {
                     processXMLDescriptor(processed, refDesc, nr);
                 }
@@ -1330,9 +1335,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         private void updateResolverForFields(Collection fields, org.eclipse.persistence.internal.oxm.NamespaceResolver nr) {
-            Iterator fieldIter = fields.iterator();
-            while (fieldIter.hasNext()) {
-                Field field = (XMLField) fieldIter.next();
+            for (Object field1 : fields) {
+                Field field = (XMLField) field1;
                 XPathFragment currentFragment = field.getXPathFragment();
 
                 while (currentFragment != null) {
@@ -1349,7 +1353,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
         }
 
-        private HashMap<String, Class> getClassToGeneratedClasses() {
+        private Map<String, Class> getClassToGeneratedClasses() {
             return classToGeneratedClasses;
         }
 
@@ -1361,7 +1365,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             return this.xmlContext;
         }
 
-        private HashMap<java.lang.reflect.Type, QName> getTypeToSchemaType() {
+        private Map<java.lang.reflect.Type, QName> getTypeToSchemaType() {
             if (typeToSchemaType == null) {
                 initTypeToSchemaType();
             }
@@ -1384,10 +1388,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             if (typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() > 0) {
                 return new HashMap<TypeMappingInfo, QName>();
             }
-            return generator.getAnnotationsProcessor().getTypeMappingInfoToSchemaType();
+            return generator.getAnnotationsProcessor().getTypeMappingInfosToSchemaTypes();
         }
 
-        private HashMap<QName, Class> getQNamesToDeclaredClasses() {
+        private Map<QName, Class> getQNamesToDeclaredClasses() {
             return qNamesToDeclaredClasses;
         }
 
@@ -1446,7 +1450,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                         type = generator.getAnnotationsProcessor().getGeneratedClassesToCollectionClasses().get(javaClass);
 
                         if (type == null) {
-                            JavaClass arrayClass = (JavaClass) generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
+                            JavaClass arrayClass = generator.getAnnotationsProcessor().getGeneratedClassesToArrayClasses().get(javaClass);
                             if (arrayClass != null) {
                                 String arrayClassName = arrayClass.getName();
                                 try {
@@ -1540,6 +1544,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.OBJECT_GRAPH, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_MODE, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_FACTORY, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_GROUPS, marshaller);
             }
 
             return marshaller;
@@ -1568,6 +1575,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnUnmarshaller(JAXBContextProperties.OBJECT_GRAPH, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.UNMARSHALLING_CASE_INSENSITIVE, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_MODE, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_FACTORY, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_GROUPS, unmarshaller);
             }
             return unmarshaller;
         }
@@ -1601,5 +1611,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
         }
 
+    }
+
+    private static void enableFacetsIfPropertySetTrue(JavaModelInputImpl inputImpl, Map properties) {
+        Object propertyValue = properties.get(JAXBContextProperties.GENERATE_FACETS);
+        if (propertyValue != null) inputImpl.setFacets((Boolean) propertyValue);
     }
 }

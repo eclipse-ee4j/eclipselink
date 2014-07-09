@@ -1,0 +1,154 @@
+<xsd:schema
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="rs"
+        xmlns:rs="rs"
+        elementFormDefault="qualified">
+
+    <xsd:element name="main" type="rs:Main"/>
+
+    <xsd:complexType name="Main">
+        <xsd:sequence>
+            <xsd:element name="numbers" type="rs:Numbers"/>
+            <xsd:element maxOccurs="2" minOccurs="1" name="strings" type="rs:Strings"/>
+            <xsd:element nillable="true" name="unsignedByte" type="rs:unsignedByte"/>
+            <xsd:element nillable="false" name="byteArray" type="rs:byteArray"/>
+            <xsd:element name="someCollection" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Numbers">
+        <xsd:sequence>
+            <xsd:element name="minInclusive" type="rs:minInclusive"/>
+            <xsd:element name="maxInclusive" type="rs:maxInclusive"/>
+            <xsd:element name="minExclusive" type="rs:minExclusive"/>
+            <xsd:element name="maxExclusive" type="rs:maxExclusive"/>
+            <xsd:element name="minMaxExclusive" type="rs:minMaxExclusive"/>
+            <xsd:element maxOccurs="1" minOccurs="1" name="NumberWithHiddenValueAttribute" type="rs:NumberWithHiddenValueAttribute"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:simpleType name="Number">
+        <xsd:restriction base="xsd:string">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="5"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="NumberWithHiddenValueAttribute">
+        <xsd:simpleContent>
+            <xsd:extension base="rs:Number">
+                <xsd:attribute name="code" type="xsd:string" use="required"/>
+                <xsd:attribute name = "whatNumber" type="xsd:long" use="required"/>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="Strings">
+        <xsd:sequence>
+            <xsd:element name="regexShorthands" type="rs:regexShorthands"/>
+            <xsd:element name="idType" type="rs:idType"/>
+            <xsd:element name="genericString" type="rs:minMaxLength"/>
+            <xsd:element name="maxLength" type="rs:maxLength"/>
+            <xsd:element name="minLength" type="rs:minLength"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="regexShorthands">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="\i"/>
+            <xsd:pattern value="\I"/>
+            <xsd:pattern value="\c"/>
+            <xsd:pattern value="\C"/>
+            <xsd:pattern value="\d"/>
+            <xsd:pattern value="\D"/>
+            <!--'This shorthand translates to a pattern with ampersand characters, which causes the Java Matcher behave non-deterministically and malfunction from time to time!'-->
+            <!--<xsd:pattern value="\w"/>-->
+            <!--'This shorthand translates to a pattern with ampersand characters, which causes the Java Matcher behave non-deterministically and malfunction from time to time!'-->
+            <!--<xsd:pattern value="\W"/>-->
+            <xsd:pattern value="\s"/>
+            <xsd:pattern value="\S"/>
+            <!--'This expression is not supported in the current option setting.'-->
+            <!--<xsd:pattern value="\b"/>-->
+            <!--'This expression is not supported in the current option setting.'-->
+            <!--<xsd:pattern value="\B"/>-->
+            <xsd:pattern value="\h"/>
+            <xsd:pattern value="\H"/>
+            <!--'This expression is not supported in the current option setting.'-->
+            <!--<xsd:pattern value="\v"/>-->
+            <xsd:pattern value="\V"/>
+            <!--'This expression is not supported in the current option setting.'-->
+            <!--<xsd:pattern value="\X"/>-->
+            <xsd:pattern value="\R"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="minMaxLength">
+        <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+            <xsd:maxLength value="1024"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="maxLength">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="1024"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="minLength">
+        <xsd:restriction base="xsd:string">
+            <xsd:minLength value="0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="unsignedByte">
+        <xsd:restriction base="xsd:unsignedByte">
+            <xsd:pattern value="[0-9]"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="maxInclusive">
+        <xsd:restriction base="xsd:long">
+            <xsd:maxInclusive value="1000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="minInclusive">
+        <xsd:restriction base="xsd:long">
+            <xsd:minInclusive value="1000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="maxExclusive">
+        <xsd:restriction base="xsd:long">
+            <xsd:maxExclusive value="1000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="minExclusive">
+        <xsd:restriction base="xsd:long">
+            <xsd:minExclusive value="0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="minMaxExclusive">
+        <xsd:restriction base="xsd:long">
+            <xsd:minExclusive value="0"/>
+            <xsd:maxExclusive value="9223372"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="byteArray">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:maxLength value="18" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="idType">
+        <xsd:restriction base="xsd:ID">
+            <xsd:maxLength value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>

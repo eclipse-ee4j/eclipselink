@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.jaxb.compiler.facets.Facet;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -78,7 +79,8 @@ public class Property implements Cloneable {
     private boolean isAnyElement = false;
     private Helper helper;
     private Map<Object, Object> userProperties;
-    
+    private List<Facet> facets = new ArrayList<Facet>();
+
     //Original get and set methods for this property
     //Used to keep track of overrides
     private String originalGetMethodName;
@@ -122,8 +124,6 @@ public class Property implements Cloneable {
     private String variableAttributeName;
     private String variableClassName;
     private boolean variableNodeAttribute;
-      
-  
 
 	// XmlMap specific attributes
     private JavaClass keyType;
@@ -153,10 +153,13 @@ public class Property implements Cloneable {
 
     private static JavaClass XML_ADAPTER_CLASS;
     private static JavaClass OBJECT_CLASS;
-    
+
     private boolean isTyped;
-    
-    
+    private Integer minOccurs;
+    private Integer maxOccurs;
+    private boolean notNullAnnotated;
+
+
     public Property() {}
 
     public Property(Helper helper) {
@@ -1490,5 +1493,35 @@ public class Property implements Cloneable {
         this.isTyped = isTyped;
     }
 
+    public List<Facet> getFacets() {
+        return facets;
+    }
 
+    public void addFacet(Facet facet) {
+        facets.add(facet);
+    }
+
+    public void setMinOccurs(int minOccurs) {
+        this.minOccurs = minOccurs;
+    }
+
+    public Integer getMinOccurs() {
+        return minOccurs;
+    }
+
+    public void setMaxOccurs(int maxOccurs) {
+        this.maxOccurs = maxOccurs;
+    }
+
+    public Integer getMaxOccurs() {
+        return maxOccurs;
+    }
+
+    public void setNotNullAnnotated(boolean notNullAnnotated) {
+        this.notNullAnnotated = notNullAnnotated;
+    }
+
+    public boolean isNotNullAnnotated() {
+        return notNullAnnotated;
+    }
 }

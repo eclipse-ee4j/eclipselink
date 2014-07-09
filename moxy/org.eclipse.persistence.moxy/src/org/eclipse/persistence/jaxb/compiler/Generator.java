@@ -17,10 +17,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
 
@@ -33,6 +33,7 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -76,6 +77,7 @@ public class Generator {
      */
     public Generator(JavaModelInput jModelInput) {
         helper = new Helper(jModelInput.getJavaModel());
+        if (jModelInput instanceof JavaModelInputImpl) helper.setFacets(((JavaModelInputImpl) jModelInput).isFacets());
         annotationsProcessor = new AnnotationsProcessor(helper);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
@@ -100,7 +102,7 @@ public class Generator {
         annotationsProcessor.setDefaultTargetNamespace(defaultTargetNamespace);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
-        if (xmlBindings != null && xmlBindings.size() > 0) {
+        if (xmlBindings != null && !xmlBindings.isEmpty()) {
             new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput, null, null);
         } else {
             annotationsProcessor.processClassesAndProperties(jModelInput.getJavaClasses(), null);
@@ -130,12 +132,16 @@ public class Generator {
      *  
      * If xmlBindings is null or empty, AnnotationsProcessor will be used to process 
      * annotations as per usual.
-     *  
+     *
      * @param jModelInput
-     * @param javaClassToType
+     * @param defaultTargetNamespace
+     * @param enableXmlAccessorFactory
+     * @param javaClasses
+     * @param typeMappingInfos
+     * @param typeToTypeMappingInfo
      * @param xmlBindings map of XmlBindings keyed on package name
      * @param cLoader
-     */    
+     */
     public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace, boolean enableXmlAccessorFactory) {
         helper = new Helper(jModelInput.getJavaModel());
         annotationsProcessor = new AnnotationsProcessor(helper);
@@ -144,10 +150,10 @@ public class Generator {
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
         this.typeToTypeMappingInfo = typeToTypeMappingInfo;
-        if (xmlBindings != null && xmlBindings.size() > 0) {
+        if (xmlBindings != null && !xmlBindings.isEmpty()) {
             new XMLProcessor(xmlBindings).processXML(annotationsProcessor, jModelInput, typeMappingInfos, javaClasses);
         } else {
-        	annotationsProcessor.processClassesAndProperties(javaClasses, typeMappingInfos);
+		annotationsProcessor.processClassesAndProperties(javaClasses, typeMappingInfos);
         }
     }
 
@@ -163,43 +169,33 @@ public class Generator {
     }
 
     /**
-     * 
+     *
      */
     public boolean hasMarshalCallbacks() {
-        return getMarshalCallbacks()!=null && getMarshalCallbacks().size()>0;
+        return getMarshalCallbacks()!=null && !getMarshalCallbacks().isEmpty();
     }
-    
+
     public boolean hasUnmarshalCallbacks() {
-        return getUnmarshalCallbacks()!=null && getUnmarshalCallbacks().size()>0;
-    }
-    
-    /**
-     * INTERNAL:
-     * 
-     * @param javaClass
-     * @return
-     */
-    public SchemaTypeInfo addClass(JavaClass javaClass) {
-        return annotationsProcessor.addClass(javaClass);
+        return getUnmarshalCallbacks()!=null && !getUnmarshalCallbacks().isEmpty();
     }
 
     public CoreProject generateProject() throws Exception {
         mappingsGenerator.getClassToGeneratedClasses().putAll(annotationsProcessor.getArrayClassesToGeneratedClasses());
-        CoreProject p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getLocalElements(), annotationsProcessor.getTypeMappingInfoToGeneratedClasses(), annotationsProcessor.getTypeMappingInfoToAdapterClasses(),annotationsProcessor.isDefaultNamespaceAllowed());
+        CoreProject p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfos(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getLocalElements(), annotationsProcessor.getTypeMappingInfosToGeneratedClasses(), annotationsProcessor.getTypeMappingInfoToAdapterClasses(),annotationsProcessor.isDefaultNamespaceAllowed());
         annotationsProcessor.getArrayClassesToGeneratedClasses().putAll(mappingsGenerator.getClassToGeneratedClasses());
         return p;
     }
 
     public java.util.Collection<Schema> generateSchema() {
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), null, annotationsProcessor.getArrayClassesToGeneratedClasses());
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfos(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), null, annotationsProcessor.getArrayClassesToGeneratedClasses());
         return schemaGenerator.getAllSchemas();
     }
-    
-    public HashMap<String, SchemaTypeInfo> generateSchemaFiles(String schemaPath, Map<QName, Type> additionalGlobalElements) throws FileNotFoundException {
+
+    public Map<String, SchemaTypeInfo> generateSchemaFiles(String schemaPath, Map<QName, Type> additionalGlobalElements) throws FileNotFoundException {
         // process any additional global elements
         processAdditionalElements(additionalGlobalElements, annotationsProcessor);
 
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses());
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfos(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses());
         CoreProject proj = new SchemaModelProject();
         XMLContext context = new XMLContext((Project)proj);
         XMLMarshaller marshaller = context.createMarshaller();
@@ -209,18 +205,18 @@ public class Generator {
         for(Schema schema : schemas) {
             File file = new File(schemaPath + "/" + schema.getName());
             NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();
-            schemaNamespaces.put(Constants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
+            schemaNamespaces.put(Constants.SCHEMA_PREFIX, XMLConstants.W3C_XML_SCHEMA_NS_URI);
             schemaDescriptor.setNamespaceResolver(schemaNamespaces);
             marshaller.marshal(schema, new FileOutputStream(file));
         }
         return schemaGenerator.getSchemaTypeInfo();
     }
 
-    public HashMap<String, SchemaTypeInfo> generateSchemaFiles(SchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) {
+    public Map<String, SchemaTypeInfo> generateSchemaFiles(SchemaOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) {
         // process any additional global elements
         processAdditionalElements(additionalGlobalElements, annotationsProcessor);
-        
-        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses(), outputResolver);
+
+        schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfos(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses(), outputResolver);
         CoreProject proj = new SchemaModelProject();
         XMLContext context = new XMLContext((Project)proj);
         XMLMarshaller marshaller = context.createMarshaller();
@@ -231,7 +227,7 @@ public class Generator {
         for(Schema schema : schemas) {
             try {
                 NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();
-                schemaNamespaces.put(Constants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
+                schemaNamespaces.put(Constants.SCHEMA_PREFIX, XMLConstants.W3C_XML_SCHEMA_NS_URI);
                 schemaDescriptor.setNamespaceResolver(schemaNamespaces);
                 // make sure we don't call into the provided output resolver more than once
                 javax.xml.transform.Result target;
@@ -270,8 +266,8 @@ public class Generator {
                 }
 
                 if(tmi != null) {
-                    if(annotationsProcessor.getTypeMappingInfoToGeneratedClasses().get(tmi) != null) {
-                        type =  annotationsProcessor.getTypeMappingInfoToGeneratedClasses().get(tmi);
+                    if(annotationsProcessor.getTypeMappingInfosToGeneratedClasses().get(tmi) != null) {
+                        type =  annotationsProcessor.getTypeMappingInfosToGeneratedClasses().get(tmi);
                     }
                 }
                 JavaClass jClass = null;
@@ -287,15 +283,15 @@ public class Generator {
             }
         }
     }
-    
-    public java.util.HashMap getUnmarshalCallbacks() {
+
+    public Map getUnmarshalCallbacks() {
         return annotationsProcessor.getUnmarshalCallbacks();
     }
 
-    public java.util.HashMap getMarshalCallbacks() {
+    public Map getMarshalCallbacks() {
         return annotationsProcessor.getMarshalCallbacks();
     }
-    
+
     public MappingsGenerator getMappingsGenerator() {
     	return this.mappingsGenerator;
     }

@@ -559,8 +559,8 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
         List<XPathNode> attributeChildren = rootXPathNode.getAttributeChildren();
         if (null != attributeChildren) {
             ObjectMarshalContext objectMarshalContext = ObjectMarshalContext.getInstance();
-            for (int x = 0, attributeChildrenSize=attributeChildren.size(); x < attributeChildrenSize; x++) {
-                hasValue = attributeChildren.get(x).marshal(marshalRecord, object, session, namespaceResolver, null, objectMarshalContext, null) || hasValue;
+            for (XPathNode anAttributeChildren : attributeChildren) {
+                hasValue = anAttributeChildren.marshal(marshalRecord, object, session, namespaceResolver, null, objectMarshalContext, null) || hasValue;
             }
         }
 

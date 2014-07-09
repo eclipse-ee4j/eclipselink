@@ -86,6 +86,31 @@
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
+        <!-- dependency properties -->
+        <property name="javax.validation.lib"       value="${moxy.2.base.dir}/jpa/plugins/${javax.validation.jar}"/>
+        <property name="jaxb-api.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-api.jar}"/>
+        <property name="jaxb-xjc.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
+        <property name="jaxb-core.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-core.jar}"/>
+
+        <!-- dependency tests -->
+        <available file="${javax.validation.lib}"                               property="javax.validation.bundle.exist"/>
+        <!--<fail message="Cannot find javax.validation: '${javax.validation.lib}'" unless="javax.validation.bundle.exist"/>-->
+        <available file="${jaxb-api.lib}"                                       property="jaxb-api.bundle.exist"/>
+        <fail message="Cannot find jaxb-api: '${jaxb-api.lib}'"                 unless="jaxb-api.bundle.exist"/>
+        <available file="${jaxb-xjc.lib}"                                       property="jaxb-xjc.bundle.exist"/>
+        <fail message="Cannot find jaxb-xjc: '${jaxb-xjc.lib}'"                 unless="jaxb-xjc.bundle.exist"/>
+
+        <!-- Set Compile Path-->
+        <path id="dynamic.compile.path">
+            <pathelement path="${javax.validation.lib}"/>
+            <pathelement path="${jaxb-api.lib}"/>
+            <pathelement path="${jaxb-xjc.lib}"/>
+            <pathelement path="${jaxb-core.lib}"/>
+            <fileset
+                    dir="${moxy.2.common.plugins.dir}"
+                    includes="${eclipselink.global.depend}"/>
+        </path>
+
         <condition property="compiled_classes.dir" value="${classes.dir}" else="target/classes">
             <available file="${classes.dir}" type="dir"/>
         </condition>
@@ -120,6 +145,15 @@
             <fileset dir="${resource.dir}">
                 <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
+            <fileset dir="${moxy.2.common.plugins.dir}">
+                <include name="${javax.validation.lib}"/>
+            </fileset>
+            <fileset dir="${moxy.2.common.plugins.dir}">
+                <include name="${jaxb-xjc.lib}"/>
+            </fileset>
+            <fileset dir="${moxy.2.common.plugins.dir}">
+                <include name="${jaxb-core.lib}"/>
+            </fileset>
         </jar>
     </target>
 
@@ -139,19 +173,6 @@
                 <include name="org/eclipse/persistence/**/*.xsd"/>
             </fileset>
         </jar>
-    </target>
-
-    <target name="bnd-deps" if="bnd.bld" depends="init" description="take existing source and classes from checked in bundles, and repackage with new manifest">
-        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bnd.path}"/>
-        <bnd
-            classpath="${moxy.2.common.plugins.dir}/${jaxb-api.jar}"
-            eclipse="false"
-            sourcepath="${moxy.2.common.plugins.dir}/${jaxb-api.src.jar}"
-            failok="false"
-            exceptions="true"
-            files="./javax.xml.bind.bnd"
-            output="${moxy.2.common.plugins.dir}/javax.xml.bind_2.2.0.v${build.date}${build.time}.jar"/>
-        <copy file="${moxy.2.common.plugins.dir}/${jaxb-api.src.jar}" tofile="${moxy.2.common.plugins.dir}/javax.xml.bind.source_2.2.0.v${build.date}${build.time}.jar" failonerror="false"/>
     </target>
 
 </project>

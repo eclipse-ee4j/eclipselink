@@ -15,15 +15,26 @@ Export-Package: org.eclipse.persistence.internal.jaxb;version="2.6.0",
 Bundle-Name: EclipseLink MOXy
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.moxy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.6.0";visibility:=reexport,
  org.eclipse.persistence.asm;bundle-version="5.0.1";resolution:=optional
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.6.0.qualifier
 Bundle-ManifestVersion: 2
-Import-Package: com.sun.xml.bind;resolution:=optional,
- com.sun.xml.bind.annotation;resolution:=optional,
+Import-Package: com.sun.xml.bind,
+ com.sun.xml.bind.annotation,
+ com.sun.xml.bind.api,
+ com.sun.xml.bind.api.impl,
  javax.activation;resolution:=optional,
+ javax.validation;resolution:=optional;version="1.1.0",
+ javax.validation.constraints;resolution:=optional;version="1.1.0",
+ javax.validation.groups;resolution:=optional;version="1.1.0",
+ com.sun.codemodel,
+ com.sun.xml.xsom,
+ com.sun.xml.xsom.impl,
+ com.sun.xml.xsom.impl.parser,
+ com.sun.tools.xjc,
+ com.sun.tools.xjc.model,
+ com.sun.tools.xjc.outline,
  javax.json;resolution:=optional,
  javax.json.stream;resolution:=optional,
  javax.ws.rs;resolution:=optional,

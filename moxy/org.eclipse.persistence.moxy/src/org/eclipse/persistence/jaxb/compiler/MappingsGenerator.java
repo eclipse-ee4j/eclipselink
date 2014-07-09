@@ -182,19 +182,19 @@ public class MappingsGenerator {
     public static final QName RESERVED_QNAME = new QName("urn:ECLIPSELINK_RESERVEDURI", "RESERVEDNAME");
 
     String outputDir = ".";
-    private HashMap<String, QName> userDefinedSchemaTypes;
+    private Map<String, QName> userDefinedSchemaTypes;
     private Helper helper;
     private JavaClass jotArrayList;
     private JavaClass jotHashSet;
     private JavaClass jotHashMap;
     private JavaClass jotLinkedList;
     private JavaClass jotTreeSet;
-    private HashMap<String, PackageInfo> packageToPackageInfoMappings;
-    private HashMap<String, TypeInfo> typeInfo;
-    private HashMap<QName, Class> qNamesToGeneratedClasses;
-    private HashMap<String, Class> classToGeneratedClasses;
-    private HashMap<QName, Class> qNamesToDeclaredClasses;
-    private HashMap<QName, ElementDeclaration> globalElements;
+    private Map<String, PackageInfo> packageToPackageInfoMappings;
+    private Map<String, TypeInfo> typeInfo;
+    private Map<QName, Class> qNamesToGeneratedClasses;
+    private Map<String, Class> classToGeneratedClasses;
+    private Map<QName, Class> qNamesToDeclaredClasses;
+    private Map<QName, ElementDeclaration> globalElements;
     private List<ElementDeclaration> localElements;
     private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClasses;
     private Map<MapEntryGeneratedKey, Class> generatedMapEntryClasses;
@@ -217,7 +217,7 @@ public class MappingsGenerator {
         isDefaultNamespaceAllowed = true;
     }
 
-    public CoreProject generateProject(ArrayList<JavaClass> typeInfoClasses, HashMap<String, TypeInfo> typeInfo, HashMap<String, QName> userDefinedSchemaTypes, HashMap<String, PackageInfo> packageToPackageInfoMappings, HashMap<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses,  boolean isDefaultNamespaceAllowed) throws Exception {
+    public CoreProject generateProject(List<JavaClass> typeInfoClasses, Map<String, TypeInfo> typeInfo, Map<String, QName> userDefinedSchemaTypes, Map<String, PackageInfo> packageToPackageInfoMappings, Map<QName, ElementDeclaration> globalElements, List<ElementDeclaration> localElements, Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClass, Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses,  boolean isDefaultNamespaceAllowed) throws Exception {
         this.typeInfo = typeInfo;
         this.userDefinedSchemaTypes = userDefinedSchemaTypes;
         this.packageToPackageInfoMappings = packageToPackageInfoMappings;
@@ -1918,7 +1918,7 @@ public class MappingsGenerator {
      * name of the Class.
      *
      * @param src
-     * @param tgt
+     * @param tgtCanonicalName
      * @return
      */
     protected boolean areEquals(JavaClass src, String tgtCanonicalName) {
@@ -3233,14 +3233,14 @@ public class MappingsGenerator {
         return generatedClass;
     }
 
-    public HashMap<QName, Class> getQNamesToGeneratedClasses() {
+    public Map<QName, Class> getQNamesToGeneratedClasses() {
         return qNamesToGeneratedClasses;
     }
 
-    public HashMap<String, Class> getClassToGeneratedClasses() {
+    public Map<String, Class> getClassToGeneratedClasses() {
         return classToGeneratedClasses;
     }
-    public HashMap<QName, Class> getQNamesToDeclaredClasses() {
+    public Map<QName, Class> getQNamesToDeclaredClasses() {
         return qNamesToDeclaredClasses;
     }
 

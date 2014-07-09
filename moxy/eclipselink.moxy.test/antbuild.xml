@@ -35,7 +35,8 @@
 *     rbarkhouse - 06 Apr 2011 - Separate JavadocAnnotationExamples from JAXBTestSuite
 *     dmahar     - Jan 2012 - remove update-package-names targets
 *     bdoughan   - Sep 2012 - Added RESTful tests and necessary dependencies
-*     mvalovy    - Mar 2014 - Added JAXBPerformanceTestSuite
+*     mvalovy    - Mar-Jul 2014 - Added Bean Validation support, JAXBTestSuite5
+                   and JAXBPerformanceTestSuite
 #******************************************************************************/-->
 
 <project name="eclipselink.moxy.test" default="test" basedir=".">
@@ -61,31 +62,39 @@
     <!-- Temporary until eclipselink.jar property is globally renamed -->
     <property name="eclipselink.jar"               value="eclipselink.jar"/>
 
-    <!-- Allows a user to overide certain user specific properties. -->
+    <!-- Allows a user to override certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="${moxytest.build.location}/antbuild.properties"/>
     <propertyset id="parser.properties">
         <propertyref prefix="javax.xml"/>
     </propertyset>
 
-        <property name="custom.tasks.lib" value="${moxytest.2.buildsys.dir}/ant_customizations.jar"/>
-        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
-        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+    <property name="custom.tasks.lib" value="${moxytest.2.buildsys.dir}/ant_customizations.jar"/>
+    <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+    <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
 
-        <selectbundle basename="org.eclipse.persistence.nosql" directory="${moxytest.build.location}/${moxytest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,9.0.0)" property="oep.nosql.lib" includepath="true"
-        />
-        <echo message="oep.nosql.lib ='${oep.nosql.lib}'"/>
+    <selectbundle basename="org.eclipse.persistence.nosql" directory="${moxytest.build.location}/${moxytest.2.common.plugins.dir}" separator="_"
+                  criterion="[2.0.0,9.0.0)" property="oep.nosql.lib" includepath="true"
+            />
+    <echo message="oep.nosql.lib ='${oep.nosql.lib}'"/>
 
     <property name="eclipselink.lib" value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
+    <property name="xjc-beanval.lib"    value="${moxytest.2.trunk.dir}/beanval/target/${xjc-beanval.jar}"/>
     <property name="jaxb-xjc.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
     <property name="jaxb-api.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
     <property name="jaxb-impl.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
+    <property name="jaxb-core.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-core.jar}"/>
+    <property name="javax.validation.lib"   value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
+    <property name="hibernate-validator.lib"   value="${moxytest.2.common.plugins.dir}/${hibernate-validator.jar}"/>
+    <property name="jboss-logging.lib"   value="${moxytest.2.common.plugins.dir}/${jboss-logging.jar}"/>
+    <property name="javax.el-api.lib"   value="${moxytest.2.common.plugins.dir}/${javax.el-api.jar}"/>
+    <property name="javax.el.lib"   value="${moxytest.2.common.plugins.dir}/${javax.el.jar}"/>
+    <property name="classmate.lib"   value="${moxytest.2.common.plugins.dir}/${classmate.jar}"/>
 
     <path id="xml.parser.path">
         <fileset
-            dir="${xml.parser.jar.dir}"
-            includes="${xml.parser.jar}"/>
+                dir="${xml.parser.jar.dir}"
+                includes="${xml.parser.jar}"/>
     </path>
     <!-- Compile/run paths -->
     <path id="jaxb.compile.path">
@@ -106,6 +115,8 @@
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
+        <pathelement path="${jaxb-core.lib}"/>
+        <pathelement path="${javax.validation.lib}"/>
     </path>
     <path id="jaxb.run.path">
         <path refid="xml.parser.path"/>
@@ -120,8 +131,15 @@
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${resource.dir}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/org.eclipse.persistence.asm"/>
+        <pathelement path="${xjc-beanval.lib}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
+        <pathelement path="${jaxb-core.lib}"/>
+        <pathelement path="${hibernate-validator.lib}"/>
+        <pathelement path="${jboss-logging.lib}"/>
+        <pathelement path="${javax.el-api.lib}"/>
+        <pathelement path="${javax.el.lib}"/>
+        <pathelement path="${classmate.lib}"/>
     </path>
     <path id="oxm.compile.path">
         <path refid="xml.parser.path"/>
@@ -171,6 +189,8 @@
         <pathelement path="${eclipselink.lib}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
+        <pathelement path="${jaxb-core.lib}"/>
+        <pathelement path="${javax.validation.lib}"/>
     </path>
     <path id="jaxb.run.against.jar.path">
         <path refid="xml.parser.path"/>
@@ -185,8 +205,16 @@
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${eclipselink.lib}"/>
+        <pathelement path="${xjc-beanval.lib}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
+        <pathelement path="${jaxb-core.lib}"/>
+        <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${hibernate-validator.lib}"/>
+        <pathelement path="${jboss-logging.lib}"/>
+        <pathelement path="${javax.el-api.lib}"/>
+        <pathelement path="${javax.el.lib}"/>
+        <pathelement path="${classmate.lib}"/>
     </path>
     <path id="oxm.compile.against.jar.path">
         <path refid="xml.parser.path"/>
@@ -372,6 +400,7 @@
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite2.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite3.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite4.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite5.java"/>
                         <!--<include name="org/eclipse/persistence/testing/jaxb/JAXBPerformanceTestSuite.java"/>-->
                         <include name="org/eclipse/persistence/testing/jaxb/listofobjects/JAXBListOfObjectsSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/annotations/AnnotationsTestSuite.java"/>
@@ -400,6 +429,7 @@
             <mkdir dir="${report.dir}/srg/jaxb"/>
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -436,7 +466,7 @@
                     <formatter type="xml"/>
                 </batchtest>
                 <classpath>
-                  <path refid="@{runpathref}"/>
+                    <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
         </sequential>
@@ -477,7 +507,7 @@
                     <formatter type="xml"/>
                 </batchtest>
                 <classpath>
-                  <path refid="@{runpathref}"/>
+                    <path refid="@{runpathref}"/>
                 </classpath>
             </junit>
         </sequential>
@@ -680,15 +710,15 @@
         <sequential>
             <mkdir dir="${classes.dir}"/>
             <javac srcdir="${src.dir}"
-                destdir="${classes.dir}"
-                debug="${javac.debug}"
-                debuglevel="${javac.debuglevel}"
-                encoding="UTF-8"
-                optimize="${javac.optimize}"
-                source="${javac.version}"
-                deprecation="${javac.deprecation}"
-                failonerror="false"
-                includes="org/eclipse/persistence/testing/@{subcomponent}/**/*.java">
+                   destdir="${classes.dir}"
+                   debug="${javac.debug}"
+                   debuglevel="${javac.debuglevel}"
+                   encoding="UTF-8"
+                   optimize="${javac.optimize}"
+                   source="${javac.version}"
+                   deprecation="${javac.deprecation}"
+                   failonerror="false"
+                   includes="org/eclipse/persistence/testing/@{subcomponent}/**/*.java">
                 <classpath>
                     <path refid="@{compilepathref}"/>
                 </classpath>

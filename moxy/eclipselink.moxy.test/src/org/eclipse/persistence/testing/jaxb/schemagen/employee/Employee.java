@@ -9,28 +9,34 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.schemagen.employee;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name="employee-data")
 @XmlType(name = "employee-type", propOrder = {"firstName", "birthday", "id", "age", "lastName", "address", "department", 
     "startTime", "phoneNumbers", "responsibilities", "peeps"})
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Employee 
+public class Employee
 {
+    @DecimalMax(value="10")
     @XmlAttribute(name="id", required=true)
     public int id;
-    
+
+    @Size(min=2, max=10)
     @XmlElement(required = true)
     public String firstName;
 
     public String lastName;
-    
+
+    @Valid
     @XmlMixed
     public Address address;
-    
+
     @XmlAttribute
     public Department department;
     

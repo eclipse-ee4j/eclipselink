@@ -17,25 +17,25 @@
       %license
    </license>
 
-   <plugin
-         id="com.sun.xml.bind"
-         download-size="0"
-         install-size="0"
-         version="@SUN_XML_BIND_VERSION@"
-         unpack="false"/>
+    <plugin
+            id="com.sun.xml.bind"
+            download-size="0"
+            install-size="0"
+            version="@JAXB_CORE_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="com.sun.tools.xjc"
+            download-size="0"
+            install-size="0"
+            version="@XJC_VERSION@"
+            unpack="false"/>
 
    <plugin
          id="com.sun.jersey"
          download-size="0"
          install-size="0"
          version="@JERSEY_VERSION@"
-         unpack="false"/>
-
-   <plugin
-         id="com.sun.xml.bind.source"
-         download-size="0"
-         install-size="0"
-         version="@SUN_XML_BIND_VERSION@"
          unpack="false"/>
 
    <plugin

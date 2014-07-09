@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Blaise Doughan - 2.3.3 - initial implementation
+ *     Marcel Valovy  - 2.6   - added case insensitive unmarshalling property
+ *                            - added bean validation related properties
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -187,4 +189,31 @@ public class MarshallerProperties {
      */
     public static final String JSON_WRAPPER_AS_ARRAY_NAME = JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME;
 
+    /**
+     * Property for setting bean validation mode.
+     * Valid values {@link BeanValidationMode#AUTO} (default),{@link BeanValidationMode#CALLBACK}, {@link BeanValidationMode#NONE}.
+     *
+     * @since 2.6
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#BEAN_VALIDATION_MODE
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#BEAN_VALIDATION_MODE
+     */
+    public static final String BEAN_VALIDATION_MODE = JAXBContextProperties.BEAN_VALIDATION_MODE;
+
+    /**
+     * Property for setting preferred or custom validator factory. Must implement javax.validation.ValidatorFactory.
+     *
+     * @since 2.6
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#BEAN_VALIDATION_FACTORY
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#BEAN_VALIDATION_FACTORY
+     */
+    public static final String BEAN_VALIDATION_FACTORY = JAXBContextProperties.BEAN_VALIDATION_FACTORY;
+
+    /**
+     * Allows to set bean validation target groups. Must be of type Class<?>[].
+     *
+     * @since 2.6
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#BEAN_VALIDATION_GROUPS
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#BEAN_VALIDATION_GROUPS
+     */
+    public static final String BEAN_VALIDATION_GROUPS = JAXBContextProperties.BEAN_VALIDATION_GROUPS;
 }

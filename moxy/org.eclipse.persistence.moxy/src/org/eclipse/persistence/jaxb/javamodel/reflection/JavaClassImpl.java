@@ -34,6 +34,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -79,9 +80,8 @@ public class JavaClassImpl implements JavaClass {
     }
     public Collection getActualTypeArguments() {
         ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
-        if (jType instanceof ParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) jType;
-            Type[] params = pType.getActualTypeArguments();
+        if (jType != null) {
+            Type[] params = jType.getActualTypeArguments();
             for (Type type : params) {
                 if (type instanceof ParameterizedType) {
                     ParameterizedType pt = (ParameterizedType) type;
@@ -132,8 +132,8 @@ public class JavaClassImpl implements JavaClass {
         return null;
     }
 
-    public Collection getAnnotations() {
-        ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
+    public Collection<JavaAnnotation> getAnnotations() {
+        List<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
         if (!isMetadataComplete) {
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {
@@ -143,8 +143,8 @@ public class JavaClassImpl implements JavaClass {
         return annotationCollection;
     }
 
-    public Collection getDeclaredClasses() {
-        ArrayList<JavaClass> classCollection = new ArrayList<JavaClass>();
+    public Collection<JavaClass> getDeclaredClasses() {
+        List<JavaClass> classCollection = new ArrayList<JavaClass>();
         Class[] classes = jClass.getDeclaredClasses();
         for (Class javaClass : classes) {
             classCollection.add(javaModelImpl.getClass(javaClass));
@@ -160,11 +160,11 @@ public class JavaClassImpl implements JavaClass {
         }
     }
 
-    public Collection getDeclaredFields() {
-        ArrayList<JavaField> fieldCollection = new ArrayList<JavaField>();
+    public Collection<JavaField> getDeclaredFields() {
+        List<JavaField> fieldCollection = new ArrayList<JavaField>();
         Field[] fields = PrivilegedAccessHelper.getDeclaredFields(jClass);
-               
-        for (Field field : fields) {        	
+
+        for (Field field : fields) {
             field.setAccessible(true);
             fieldCollection.add(getJavaField(field));
         }
@@ -461,10 +461,7 @@ public class JavaClassImpl implements JavaClass {
             return false;
         }
         JavaClassImpl jClass = (JavaClassImpl)arg0;
-        if(jClass.getSuperClassOverride() != null) {
-            return true;
-        }
-        return hasCustomSuperClass(jClass.getSuperclass());
+        return jClass.getSuperClassOverride() != null || hasCustomSuperClass(jClass.getSuperclass());
     }
 
     public boolean isEnum() {
@@ -556,7 +553,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public Collection getDeclaredAnnotations() {
-        ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
+        List<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
         if (!isMetadataComplete) {
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getDeclaredAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {

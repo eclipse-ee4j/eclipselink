@@ -340,7 +340,7 @@
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-Declipselink.full=true"/>
-             <!-- arg value="-X"/ -->
+             <!--<arg value="-X"/>-->
              <arg value="verify"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">

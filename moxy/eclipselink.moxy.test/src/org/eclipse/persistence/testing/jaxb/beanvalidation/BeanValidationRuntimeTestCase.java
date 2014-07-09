@@ -1,0 +1,240 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Marcel Valovy - 2.6 - initial implementation
+ ******************************************************************************/
+package org.eclipse.persistence.testing.jaxb.beanvalidation;
+
+import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.jaxb.BeanValidationMode;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom.Department;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom.Drivers;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom.DrivingLicense;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom.Employee;
+import org.junit.After;
+import org.junit.Before;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
+import javax.validation.groups.Default;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import java.io.File;
+import java.util.AbstractSequentialList;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Tests the Bean Validation for MOXy Runtime, with Target groups.
+ * Tests include:
+ *  - setting properties (mode, preferred validation factory) through JAXBContext,
+ *      marshaller and unmarshaller, and overriding them,
+ *  - validation on valid objects before marshalling and after unmarshalling,
+ *  - validation on invalid objects before marshalling and after unmarshalling,
+ *  - validation with Target groups,
+ *  - retrieval of correct error messages when constraint violations happen.
+ *  Everything is tested with both XML and JSON marshalling and unmarshalling.
+ *
+ * @author Marcel Valovy - marcel.valovy@oracle.com
+ */
+public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
+
+    private static final File FILE_VALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employee.xml");
+    private static final File FILE_INVALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employeeInvalid.xml");
+    private static final File FILE_JSON_VALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employee.json");
+    private static final File FILE_JSON_INVALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employeeInvalid.json");
+    private static final Class[] EMPLOYEE = new Class[]{Employee.class};
+    private static final boolean DEBUG = true;
+
+    private boolean toggle = true; // Value is sensitive to the order of methods in testBeanValidation() method.
+    private ValidatorFactory preferredValidatorFactory;
+    private JAXBMarshaller marshallerValidOn;
+    private JAXBMarshaller marshallerValidOff;
+    private JAXBUnmarshaller unmarshallerValidOn;
+    private JAXBUnmarshaller unmarshallerValidOff;
+    private Employee employeeValid = new Employee()
+            .withId(0xCAFEBABE)
+            .withAge(15)
+            .withPersonalName("Richard")
+            .withPhoneNumber("(420)287-4422")
+            .withDepartment(Department.JavaEE)
+            .withDrivingLicense(new DrivingLicense(3326, new GregorianCalendar(2029, 12, 31).getTime()));
+    private Employee employeeInvalid = new Employee()
+            .withAge(15)
+            .withPersonalName("Wo")
+            .withPhoneNumber("287-4422")
+            .withDrivingLicense(new DrivingLicense(1234567, new GregorianCalendar(2010, 5, 20).getTime()));
+    private AbstractSequentialList<String> violationMessages = new LinkedList<String>(){ // Order is good just for debug. The CVs themselves aren't ordered.
+        {
+            add("may not be null");                             // id
+            add("must be greater than or equal to 18");         // age
+            add("size must be between 3 and 15");               // personalName
+            add("must match \"\\(\\d{3}\\)\\d{3}-\\d{4}\"");    // phoneNumber
+            add("may not be null");                             // department
+            add("must be in the future");                       // drivingLicense.validThrough
+            add("numeric value out of bounds (<6 digits>.<0 digits> expected)"); // drivingLicense.id
+        }};
+    private AbstractSequentialList<String> violationMessagesWithoutGroup = new LinkedList<String>(){
+        {
+            add("may not be null");                             // id
+            add("size must be between 3 and 15");               // personalName
+            add("must match \"\\(\\d{3}\\)\\d{3}-\\d{4}\"");    // phoneNumber
+            add("may not be null");                             // department
+        }};
+
+
+    public void testBeanValidation() throws Exception{
+        validEmployee(FILE_VALID);
+        invalidEmployee(FILE_INVALID);
+        switchToJson();
+        validEmployee(FILE_JSON_VALID);
+        invalidEmployee(FILE_JSON_INVALID);
+    }
+
+    private void validEmployee(File file) throws Exception {
+
+        toggleDriversGroupOnOff();
+
+        marshallerValidOn.marshal(employeeValid, file);
+        assertTrue(marshallerValidOn.getConstraintViolations().isEmpty());
+
+        Employee employeeUnm = (Employee) unmarshallerValidOn.unmarshal(file);
+        assertTrue(unmarshallerValidOn.getConstraintViolations().isEmpty());
+
+        assertEquals(employeeValid, employeeUnm);
+    }
+
+    private void invalidEmployee(File fileInvalid) throws Exception {
+
+        JAXBException exception = null;
+        toggleDriversGroupOnOff();
+
+        /* Marshal w/ validation - doesn't pass (we want to check that). */
+        try {
+            marshallerValidOn.marshal(employeeInvalid, fileInvalid);
+        } catch (JAXBException e) {
+            exception = e;
+        }
+        assertNotNull(exception);
+        assertEquals(String.valueOf(BeanValidationException.CONSTRAINT_VIOLATION), exception.getErrorCode());
+        if (DEBUG) System.out.println(exception.getMessage());
+        checkValidationMessages(marshallerValidOn.getConstraintViolations(), violationMessages);
+
+        /* Marshal w/o validation - creates file for the next part of the test. */
+        marshallerValidOff.marshal(employeeInvalid, fileInvalid);
+        Set<? extends ConstraintViolation<?>> marshalCV = marshallerValidOff.getConstraintViolations();
+        assertTrue(marshalCV.isEmpty());
+
+        /* Unmarshal w/ validation - doesn't pass (we want to check that). */
+        exception = null;
+        try { unmarshallerValidOn.unmarshal(fileInvalid); }
+        catch (JAXBException e) { exception = e; }
+        assertNotNull(exception);
+        assertEquals(String.valueOf(BeanValidationException.CONSTRAINT_VIOLATION), exception.getErrorCode());
+        if (DEBUG) System.out.println(exception.getMessage());
+        checkValidationMessages(unmarshallerValidOn.getConstraintViolations(), violationMessages);
+
+        /* Unmarshal w/ validation AND no groups - doesn't pass (we want to check that). */
+        toggleDriversGroupOnOff();
+        exception = null;
+
+        try { unmarshallerValidOn.unmarshal(fileInvalid); }
+        catch (JAXBException e) { exception = e; }
+        assertNotNull(exception);
+        assertEquals(String.valueOf(BeanValidationException.CONSTRAINT_VIOLATION), exception.getErrorCode());
+        if (DEBUG) System.out.println(exception.getMessage());
+        checkValidationMessages(unmarshallerValidOn.getConstraintViolations(), violationMessagesWithoutGroup);
+        toggleDriversGroupOnOff();
+
+        /* Unmarshal w/o validation - testing that invalid objects are correctly unmarshalled when validation is NONE. */
+        Employee employeeUnm = (Employee) unmarshallerValidOff.unmarshal(fileInvalid);
+        assertTrue(unmarshallerValidOff.getConstraintViolations().isEmpty());
+
+        /* Final check that the validation feature did not affect original behavior of JAXB. */
+        assertEquals(employeeInvalid, employeeUnm);
+    }
+
+    private void checkValidationMessages(Set<? extends ConstraintViolation<?>> constraintViolations, List<String> expectedMessages) {
+        List<String> violationMessages = new ArrayList<String>();
+        for (ConstraintViolation<?> cv : constraintViolations)
+            violationMessages.add(cv.getMessage());
+        assertSame(expectedMessages.size(), violationMessages.size());
+        assertTrue(violationMessages.containsAll(expectedMessages));
+    }
+
+    private void toggleDriversGroupOnOff() throws PropertyException {
+        if (toggle ^= true) {
+            marshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[]{Default.class, Drivers.class});
+            unmarshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[] { Default.class, Drivers.class });
+        } else {
+            marshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[0]);
+            unmarshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[0]);
+        }
+    }
+
+    private void switchToJson() throws PropertyException {
+        marshallerValidOn.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
+        marshallerValidOn.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
+        unmarshallerValidOn.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
+        unmarshallerValidOn.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
+        marshallerValidOff.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
+        marshallerValidOff.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
+        unmarshallerValidOff.setProperty(JAXBContextProperties.MEDIA_TYPE, "application/json");
+        unmarshallerValidOff.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        preferredValidatorFactory = Validation.buildDefaultValidatorFactory();
+
+        JAXBContext ctx = JAXBContextFactory.createContext(EMPLOYEE, null);
+        marshallerValidOn = (JAXBMarshaller) ctx.createMarshaller();
+        marshallerValidOn.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshallerValidOff = (JAXBMarshaller) ctx.createMarshaller();
+        marshallerValidOff.setProperty(UnmarshallerProperties.BEAN_VALIDATION_MODE, BeanValidationMode.NONE); // tests setting the property through mar
+        marshallerValidOff.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        JAXBContext ctxValidationOff = JAXBContextFactory.createContext(EMPLOYEE,
+                new HashMap<String, Object>(){{
+                    put(JAXBContextProperties.BEAN_VALIDATION_MODE, BeanValidationMode.NONE);
+                    put(JAXBContextProperties.BEAN_VALIDATION_FACTORY, preferredValidatorFactory);}});
+        unmarshallerValidOn = (JAXBUnmarshaller) ctxValidationOff.createUnmarshaller();
+        unmarshallerValidOn.setProperty(UnmarshallerProperties.BEAN_VALIDATION_MODE, BeanValidationMode.CALLBACK); // tests setting the property through unm
+        unmarshallerValidOff = (JAXBUnmarshaller) ctxValidationOff.createUnmarshaller();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        assertTrue(FILE_VALID.delete());
+        assertTrue(FILE_INVALID.delete());
+        assertTrue(FILE_JSON_VALID.delete());
+        assertTrue(FILE_JSON_INVALID.delete());
+        marshallerValidOn = marshallerValidOff = null;
+        unmarshallerValidOn = unmarshallerValidOff = null;
+        employeeValid = employeeInvalid = null;
+        violationMessages = null;
+        preferredValidatorFactory = null;
+    }
+
+
+}

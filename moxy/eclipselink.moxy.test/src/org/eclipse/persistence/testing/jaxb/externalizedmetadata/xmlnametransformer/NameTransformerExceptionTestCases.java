@@ -57,13 +57,13 @@ public class NameTransformerExceptionTestCases extends OXTestCase{
     public void testExceptionDuringTransform(){
     	 Type[] types = new Type[1];
          types[0] = Employee.class;
-         try{            
+         try{
              JAXBContext jaxbContext = JAXBContextFactory.createContext(types, getPropertiesWithException(), Thread.currentThread().getContextClassLoader());
-         } catch (javax.xml.bind.JAXBException e) {	
-        	 e.printStackTrace();
-        	 
-         	Exception linkedException = (Exception) e.getLinkedException();
-         	Exception nestedExcpetion = (Exception) e.getCause();
+         } catch (javax.xml.bind.JAXBException e) {
+//        	 e.printStackTrace();
+
+		Exception linkedException = (Exception) e.getLinkedException();
+		Exception nestedExcpetion = (Exception) e.getCause();
          	assertTrue(nestedExcpetion instanceof JAXBException);
          
  		    assertEquals(JAXBException.EXCEPTION_DURING_NAME_TRANSFORMATION,((JAXBException)nestedExcpetion).getErrorCode());

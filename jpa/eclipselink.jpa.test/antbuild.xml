@@ -70,20 +70,20 @@
     <!-- Allows a user to overide certain user specific properties. -->
     <!-- local property overrides -->
     <condition property="custom.bld.properties.message" value="Loading user-defined overrides from '${user.home}/build.properties'..."
-                                                     else="No user-defined overrides found to load ('${user.home}/build.properties' non-existant).">
+               else="No user-defined overrides found to load ('${user.home}/build.properties' non-existant).">
         <available file="${user.home}/build.properties"/>
     </condition>
     <echo message="${custom.bld.properties.message}"/>
     <property file="${user.home}/build.properties"/>
     <condition property="custom.tst.properties.message" value="Loading user-defined test overrides from '${user.home}/test.properties'..."
-                                                     else="No user-defined test overrides found to load ('${user.home}/test.properties' non-existant).">
+               else="No user-defined test overrides found to load ('${user.home}/test.properties' non-existant).">
         <available file="${user.home}/test.properties"/>
     </condition>
     <echo message="${custom.tst.properties.message}"/>
     <property file="${user.home}/test.properties"/>
     <!-- Allows overriding defaults where access to user.home isn't allowed -->
     <condition property="custom.local.properties.message" value="Loading local overrides from '${basedir}/local.build.properties'..."
-                                                     else="No Local overrides found to load. ('${basedir}/local.build.properties' non-existant).">
+               else="No Local overrides found to load. ('${basedir}/local.build.properties' non-existant).">
         <available file="${basedir}/local.build.properties"/>
     </condition>
     <echo message="${custom.local.properties.message}"/>
@@ -394,8 +394,8 @@
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.jar}'"/>
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.framework.jar}'"/>
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence20.jar}'"/>
-        <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${beanvalidation.jar}'"/>
+        <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
@@ -409,8 +409,8 @@
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence20.jar}"/>
-            <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${beanvalidation.jar}"/>
+            <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
@@ -432,8 +432,8 @@
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.jar}'"/>
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.framework.jar}'"/>
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence21.jar}'"/>
-        <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${beanvalidation.jar}'"/>
+        <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
@@ -446,8 +446,8 @@
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence21.jar}"/>
-            <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${beanvalidation.jar}"/>
+            <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
@@ -3320,12 +3320,12 @@
              failonerror="false"
              dir="${run.dir}">
             <jvmarg value="${jvmarg.performance.baseline.version}"/>
-                <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-                <jvmarg value="-Ddb.driver=${db.driver}"/>
-                <jvmarg value="-Ddb.url=${db.url}"/>
-                <jvmarg value="-Ddb.user=${db.user}"/>
-                <jvmarg value="-Ddb.pwd=${db.pwd}"/>
-                <jvmarg value="-Ddb.platform=${db.platform}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${db.url}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.platform=${db.platform}"/>
             <jvmarg value="-Dserver.platform=${server.platform}"/>
             <jvmarg value="-Dserver.user=${server.user}"/>
             <jvmarg value="-Dserver.password=${server.pwd}"/>

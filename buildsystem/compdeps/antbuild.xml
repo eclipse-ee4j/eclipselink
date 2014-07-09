@@ -131,7 +131,11 @@
 
         <!-- Feature Dependency variables -->
         <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
-        <property name="sun.xml.bind.prefix" value="com.sun.xml.bind"/>
+        <property name="javax.xml.bind.prefix" value="javax.xml.bind"/>
+        <property name="javax.xml.bind.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="sun.tools.xjc.prefix" value="jaxb-xjc"/>
+        <property name="sun.tools.xjc.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="sun.xml.bind.prefix" value="jaxb-core"/>
         <property name="sun.xml.bind.criteria" value="[0.0.1,5.0.0)"/>
         <property name="jersey.prefix" value="com.sun.jersey"/>
         <property name="jersey.criteria" value="[1.8.0,5.0.0)"/>
@@ -178,9 +182,40 @@
 
     <target name="resolve-feature-dependencies" if="eclipse.install.exist" depends="init">
         <echo message="Searching ${compdeps.2.common.plugins.dir}..."/>
-        <selectbundle basename="${sun.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}"
-                     criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
+        <selectbundle basename="${javax.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${javax.xml.bind.criteria}" property="javax.xml.bind.version" versiononly="true"
         />
+
+        <!--START OF HOTFIX for JAXB-CORE and JAXB-XJC dependencies.
+            When JAXB-RI builds will generate correct OSGi headers, update the
+            dependencies and remove this hotfix.-->
+        <unjar overwrite="true"
+               src="${compdeps.2.common.plugins.dir}/jaxb-core_2.2.11.v201406210428.jar"
+               dest="${compdeps.2.common.plugins.dir}/tmpfix.osgi.core"
+        />
+        <jar update="false"
+             destfile="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux/jaxb-core_2.2.11.v201406210428.jar"
+             basedir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.core"
+             manifest="${compdeps.2.common.plugins.dir}/tmpfix.osgi.manifest.core/MANIFEST.MF"
+        />
+        <selectbundle basename="${sun.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux"
+                      criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
+        />
+
+        <unjar overwrite="true"
+               src="${compdeps.2.common.plugins.dir}/jaxb-xjc_2.2.11.v201406210428.jar"
+               dest="${compdeps.2.common.plugins.dir}/tmpfix.osgi.xjc"
+        />
+        <jar update="false"
+             destfile="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux/jaxb-xjc_2.2.11.v201406210428.jar"
+             basedir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.xjc"
+             manifest="${compdeps.2.common.plugins.dir}/tmpfix.osgi.manifest.xjc/MANIFEST.MF"
+        />
+        <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux"
+                      criterion="${sun.tools.xjc.criteria}" property="sun.tools.xjc.version" versiononly="true"
+        />
+        <!--END OF HOTFIX.-->
+
         <selectbundle basename="${jersey.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${jersey.criteria}" property="jersey.version" versiononly="true"
         />
@@ -207,9 +242,13 @@
         />
         <selectbundle basename="${validation.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${validation.criteria}" property="validation.version" versiononly="true"
-                />
+        />
+        <say  message="   javax.xml.bind.version   = '${javax.xml.bind.version}'"                                                   if="javax.xml.bind.version"/>
+        <say  message="   '{$javax.xml.bind.prefix}_{$javax.xml.bind.criteria}' not found! Generated features will be invalid."   unless="javax.xml.bind.version"/>
+        <say  message="   sun.tools.xjc.version    = '${sun.tools.xjc.version}'"                                                    if="sun.tools.xjc.version"/>
+        <say  message="   '${sun.tools.xjc.prefix}_${sun.tools.xjc.criteria}.jar' not found! Generated features will be invalid." unless="sun.tools.xjc.version"/>
         <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
-        <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid." unless="sun.xml.bind.version"/>
+        <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid."   unless="sun.xml.bind.version"/>
         <say  message="   jersey.version           = '${jersey.version}'"                                                           if="jersey.version"/>
         <say  message="   '${jersey.prefix}_${jersey.criteria}.jar' not found! Generated features will be invalid."             unless="jersey.version"/>
         <say  message="   ejb.version              = '${ejb.version}'"                                                              if="ejb.version"/>
@@ -282,7 +321,9 @@
         <filter token="VERSION"              value="${compdeps.version}"/>
         <filter token="QUALIFIER"            value="${compdeps.qualifier}"/>
         <!--          Filters for dependencies in feature.xml files -->
-        <filter token="SUN_XML_BIND_VERSION" value="${sun.xml.bind.version}"/>
+        <filter token="XJC_VERSION"          value="${sun.tools.xjc.version}"/>
+        <filter token="JAXB_CORE_VERSION"    value="${sun.xml.bind.version}"/>
+        <filter token="JAVAX_XML_BIND_VERSION"  value="${javax.xml.bind.version}"/>
         <filter token="JERSEY_VERSION"       value="${jersey.version}"/>
         <filter token="EJB_VERSION"          value="${ejb.version}"/>
         <filter token="JMS_VERSION"          value="${jms.version}"/>
@@ -321,9 +362,7 @@
         <copy todir="${p2.bundle.dir}">
             <fileset
                 dir="${compdeps.2.common.plugins.dir}"
-                includes="${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar,
-                          ${sun.xml.bind.prefix}.source_${sun.xml.bind.version}.jar,
-                          ${jersey.prefix}_${jersey.version}.jar,
+                includes="${jersey.prefix}_${jersey.version}.jar,
                           ${ejb.prefix}_${ejb.version}.jar,
                           ${jms.prefix}_${jms.version}.jar,
                           ${resource.prefix}_${resource.version}.jar,
@@ -334,7 +373,12 @@
                           ${asm.prefix}_${asm.version}.jar,
                           ${asm.prefix}.source_${asm.version}.jar,
                           ${validation.prefix}_${validation.version}.jar"
-                    />
+            />
+            <fileset
+                    dir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux/"
+                    includes="${sun.tools.xjc.prefix}_${sun.tools.xjc.version}.jar,
+                          ${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar"
+            />
             <fileset
                 dir="${compdeps.2.jpa.plugins.dir}"
                 includes="${persistence.prefix}_${persistence.version}.jar,
@@ -351,6 +395,15 @@
                           ${wsdl.prefix}_${wsdl.version}.jar"
             />
         </copy>
+        <!--START OF HOTFIX
+            We don't want to have the new jar files anywhere in EclipseLink
+            because of licence issues.-->
+        <delete includeemptydirs="true">
+            <fileset dir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux" includes="**/*"/>
+            <fileset dir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.xjc" includes="**/*"/>
+            <fileset dir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.core" includes="**/*"/>
+        </delete>
+        <!--END OF HOTFIX-->
     </target>
 
     <target name="configure-tooling" if="eclipse.install.exist" depends="init">

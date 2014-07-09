@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+******************************************************************************
+Copyright (c) 1998, 2014 Oracle. All rights reserved.
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+which accompanies this distribution.
+The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+and the Eclipse Distribution License is available at
+http://www.eclipse.org/org/documents/edl-v10.php.
+
+Contributors:
+Marcel Valovy - 2014 - 2.6 - Initial implementation.
+*****************************************************************************/
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://jaxb.dev.java.net/plugin/bean-validation"
+           elementFormDefault="qualified">
+    <xs:annotation>
+        <xs:documentation>
+            JAXB customization schema for Bean Validation Plugin.
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:element name="facet">
+        <xs:complexType>
+            <xs:attribute name="message" type="xs:string"/>
+            <xs:attribute name="groups" type="xs:string"/>
+            <xs:attribute name="type" type="xs:string" use="required"/>
+            <xs:attribute name="value" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    Allows setting "value", use only for user custom annotations.
+                  </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

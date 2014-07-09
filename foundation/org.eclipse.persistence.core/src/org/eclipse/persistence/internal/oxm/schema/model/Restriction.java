@@ -1,16 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.schema.model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Restriction implements SimpleDerivation {
     private String baseType;//QName lateR??
@@ -27,12 +30,23 @@ public class Restriction implements SimpleDerivation {
     private String maxInclusive;
     private String minExclusive;
     private String maxExclusive;
+    private String totalDigits;
+    private String fractionDigits;
+    private String pattern;
+    private java.util.List<String> patterns = new ArrayList<String>();
+    private String length;
+    private String minLength;
+    private String maxLength;
 
     //private List facets
     private java.util.List attributes;
     private Restrictable owner;
 
     public Restriction() {
+    }
+
+    public Restriction(String baseType) {
+        this.baseType = baseType;
     }
 
     public void setMinInclusive(String minInclusive) {
@@ -164,5 +178,114 @@ public class Restriction implements SimpleDerivation {
 
     public void setAnyAttribute(AnyAttribute any) {
         anyAttribute = any;
+    }
+
+    public String getTotalDigits() {
+        return totalDigits;
+    }
+
+    public void setTotalDigits(String totalDigits) {
+        this.totalDigits = totalDigits;
+    }
+
+    public void setTotalDigits(int totalDigits) {
+        this.totalDigits = String.valueOf(totalDigits);
+    }
+
+    public String getFractionDigits() {
+        return fractionDigits;
+    }
+
+    public void setFractionDigits(String fractionDigits) {
+        this.fractionDigits = fractionDigits;
+    }
+
+    public void setFractionDigits(int fractionDigits) {
+        this.fractionDigits = String.valueOf(fractionDigits);
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+
+    public List<String> getPatterns() {
+        return patterns;
+    }
+
+    public void setPatterns(List<String> patterns) {
+        this.patterns = patterns;
+    }
+
+    public void addPattern(String regexp) {
+        this.patterns.add(regexp);
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
+    }
+
+    public void setLength(int length) {
+        this.length = String.valueOf(length);
+    }
+
+    public String getMinLength() {
+        return minLength;
+    }
+
+    public void setMinLength(String minLength) {
+        this.minLength = minLength;
+    }
+
+    public void setMinLength(int minLength) {
+        this.minLength = String.valueOf(minLength);
+    }
+
+    public String getMaxLength() {
+        return maxLength;
+    }
+
+    public void setMaxLength(String maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    public void setMaxLength(int maxLength) {
+        this.maxLength = String.valueOf(maxLength);
+    }
+
+    /**
+     * Overwrites attributes of this restriction with attributes of the argument,
+     * if they are not null.
+     *
+     * @param restriction
+     */
+    public void mergeWith(Restriction restriction) {
+        if (restriction.getAll() != null) this.setAll(restriction.getAll());
+        if (restriction.getAnyAttribute() != null) this.setAnyAttribute(restriction.getAnyAttribute());
+        // if (restriction.getBaseType()) // this one doesn't make sense to do
+        // if (restriction.getSimpleType()) // this one doesn't make sense to do
+        if (restriction.getTypeDefParticle() != null) this.setTypeDefParticle(restriction.getTypeDefParticle()); // not sure if this one makes sense
+        if (restriction.getSequence() != null) this.setSequence(restriction.getSequence());
+        if (restriction.getChoice() != null) this.setChoice(restriction.getChoice());
+        if (restriction.getEnumerationFacets() != null) this.setEnumerationFacets(restriction.getEnumerationFacets());
+
+        if (restriction.getPatterns() != null) this.setPatterns(restriction.getPatterns());
+        if (restriction.getPattern() != null) this.setPattern(restriction.getPattern());
+        if (restriction.getMaxInclusive() != null) this.setMaxInclusive(restriction.getMaxInclusive());
+        if (restriction.getMinInclusive() != null) this.setMinInclusive(restriction.getMinInclusive());
+        if (restriction.getMaxExclusive() != null) this.setMaxExclusive(restriction.getMaxExclusive());
+        if (restriction.getMinExclusive() != null) this.setMinExclusive(restriction.getMinExclusive());
+        if (restriction.getTotalDigits() != null) this.setFractionDigits(restriction.getTotalDigits());
+        if (restriction.getFractionDigits() != null) this.setFractionDigits(restriction.getFractionDigits());
+        if (restriction.getLength() != null) this.setLength(restriction.getLength());
+        if (restriction.getMinLength() != null) this.setMinLength(restriction.getMinLength());
+        if (restriction.getMaxLength() != null) this.setMaxLength(restriction.getMaxLength());
     }
 }

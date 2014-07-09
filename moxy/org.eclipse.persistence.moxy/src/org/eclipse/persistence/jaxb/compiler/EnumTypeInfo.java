@@ -27,9 +27,9 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
  * <li>Hold onto the restriction base type for schema generation</li>
  * <li>Hold onto a map of Object Enum values to String values for Mapping generation</li>
  * </ul>
- * 
+ *
  * @see org.eclipse.persistence.jaxb.compiler.TypeInfo
- * @see org.eclipse.persistence.jaxb.AnnotationsProcessor
+ * @see org.eclipse.persistence.jaxb.compiler.AnnotationsProcessor
  * @author mmacivor
  *
  */

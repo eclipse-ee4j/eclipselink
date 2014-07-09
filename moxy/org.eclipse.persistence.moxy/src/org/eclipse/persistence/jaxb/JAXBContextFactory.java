@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -141,15 +141,15 @@ public class JAXBContextFactory {
      */
     public static javax.xml.bind.JAXBContext createContext(Type[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         Map<Type, TypeMappingInfo> typeToTypeMappingInfo = new HashMap<Type, TypeMappingInfo>();
-        TypeMappingInfo[] typeMappingInfo = new TypeMappingInfo[typesToBeBound.length];
+        TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[typesToBeBound.length];
         for(int i = 0; i < typesToBeBound.length; i++) {
             TypeMappingInfo tmi = new TypeMappingInfo();
             tmi.setType(typesToBeBound[i]);
             typeToTypeMappingInfo.put(typesToBeBound[i], tmi);
-            typeMappingInfo[i] = tmi;
+            typeMappingInfos[i] = tmi;
         }
 
-        JAXBContext context = (JAXBContext)createContext(typeMappingInfo, properties, classLoader);
+        JAXBContext context = (JAXBContext)createContext(typeMappingInfos, properties, classLoader);
         context.setTypeToTypeMappingInfo(typeToTypeMappingInfo);
 
         return context;
@@ -216,41 +216,39 @@ public class JAXBContextFactory {
                 } catch (ClassCastException x) {
                     throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
                 }
-                if (metadataFiles != null) {
-                    for(Entry<String, Object> entry : metadataFiles.entrySet()) {
-                        String key = null;
-                        List<XmlBindings> xmlBindings = new ArrayList<XmlBindings>();
-                        try {
-                            key = entry.getKey();
-                            if (key == null) {
-                                throw org.eclipse.persistence.exceptions.JAXBException.nullMapKey();
-                            }
-                        } catch (ClassCastException cce) {
-                            throw org.eclipse.persistence.exceptions.JAXBException.incorrectKeyParameterType();
+                for(Entry<String, Object> entry : metadataFiles.entrySet()) {
+                    String key = null;
+                    List<XmlBindings> xmlBindings = new ArrayList<XmlBindings>();
+                    try {
+                        key = entry.getKey();
+                        if (key == null) {
+                            throw org.eclipse.persistence.exceptions.JAXBException.nullMapKey();
                         }
-                        Object metadataSource = entry.getValue();
-                        if (metadataSource == null) {
-                            throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource(key);
-                        }
-                        if(metadataSource instanceof List) {
-                            for(Object next: (List)metadataSource) {
-                                XmlBindings binding = getXmlBindings(next, classLoader, properties);
-                                if(binding != null) {
-                                    xmlBindings.add(binding);
-                                }
-                            }
-                        } else {
-                            XmlBindings binding = getXmlBindings(metadataSource, classLoader, properties);
+                    } catch (ClassCastException cce) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.incorrectKeyParameterType();
+                    }
+                    Object metadataSource = entry.getValue();
+                    if (metadataSource == null) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource(key);
+                    }
+                    if(metadataSource instanceof List) {
+                        for(Object next: (List)metadataSource) {
+                            XmlBindings binding = getXmlBindings(next, classLoader, properties);
                             if(binding != null) {
                                 xmlBindings.add(binding);
                             }
                         }
-                        if (xmlBindings != null) {
-                            bindings.put(key, xmlBindings);
+                    } else {
+                        XmlBindings binding = getXmlBindings(metadataSource, classLoader, properties);
+                        if(binding != null) {
+                            xmlBindings.add(binding);
                         }
                     }
+                    if (xmlBindings != null) {
+                        bindings.put(key, xmlBindings);
+                    }
                 }
-            // handle List<Object>
+                // handle List<Object>
             } else if (value instanceof List) {
                 for (Object metadataSource : (List) value) {
                     if (metadataSource == null) {
@@ -280,23 +278,22 @@ public class JAXBContextFactory {
      * @return
      */
     private static Map<String, List<XmlBindings>> processBindingFile(Map<String, List<XmlBindings>> originalBindings, Object bindingHandle, ClassLoader classLoader, Map<String, Object> properties) {
-        Map<String, List<XmlBindings>> bindingMap = originalBindings;
         XmlBindings binding = getXmlBindings(bindingHandle, classLoader, properties);
         if (binding != null) {
             String key = binding.getPackageName();
             if (key.equals(XMLProcessor.DEFAULT)) {
                 throw org.eclipse.persistence.exceptions.JAXBException.packageNotSetForBindingException();
             }
-            List<XmlBindings> existingBindings = bindingMap.get(key);
+            List<XmlBindings> existingBindings = originalBindings.get(key);
             if(existingBindings != null) {
                 existingBindings.add(binding);
             } else {
                 existingBindings = new ArrayList<XmlBindings>();
                 existingBindings.add(binding);
-                bindingMap.put(key, existingBindings);
+                originalBindings.put(key, existingBindings);
             }
         }
-        return bindingMap;
+        return originalBindings;
     }
 
     /**
@@ -307,11 +304,10 @@ public class JAXBContextFactory {
      * @param metadata assumed to be one of:  File, InputSource, InputStream, Reader, Source
      */
     private static XmlBindings getXmlBindings(Object metadata, ClassLoader classLoader, Map<String, Object> properties) {
-    	JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
+	JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
         InputStream openedStream = null;
 
-    	try{
-    		
+	try {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML);
             unmarshaller.setProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE, true);

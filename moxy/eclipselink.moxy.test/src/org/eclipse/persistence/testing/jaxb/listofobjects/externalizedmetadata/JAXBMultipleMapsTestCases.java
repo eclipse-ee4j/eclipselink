@@ -127,10 +127,10 @@ public class JAXBMultipleMapsTestCases extends JAXBListOfObjectsTestCases {
 	}
 
 	public void testTypeToSchemaTypeMap(){
-		HashMap<Type, javax.xml.namespace.QName> typesMap = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeToSchemaType();		
+		Map<Type, javax.xml.namespace.QName> typesMap = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getTypeToSchemaType();
 		int mapSize = typesMap.size();
 		assertEquals(7, mapSize);
-		
+
 		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[0]));
 		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[1]));
 		assertNotNull("Type was not found in TypeToSchemaType map.", typesMap.get(types[2]));

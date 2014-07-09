@@ -52,8 +52,8 @@ public abstract class Customer {
      * Bridge for {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl#equals(Object)} and
      * {@link org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl#equals(Object)}
      *
-     * @param o CustomerImpl object.
-     * @return true if the CustomerImpl classes' attributes match the same values.
+     * @param o Employee object.
+     * @return true if the Employee classes' attributes match the same values.
      */
     public boolean equals(Object o) {
         if (this == o) return true;

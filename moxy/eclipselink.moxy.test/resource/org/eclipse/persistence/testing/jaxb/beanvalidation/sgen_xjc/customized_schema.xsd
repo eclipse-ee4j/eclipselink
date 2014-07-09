@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+           xmlns:bv="http://jaxb.dev.java.net/plugin/bean-validation"
+           targetNamespace="cs" elementFormDefault="qualified"
+           jxb:extensionBindingPrefixes="bv"
+           jxb:version="2.1">
+
+    <xs:annotation>
+        <xs:appinfo>
+            <jxb:bindings node="/xs:schema/xs:complexType/xs:sequence/xs:element[@name='generic']">
+                <bv:facet type="maxLength" message="Hello, world!" groups="org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationBindingsTestCase.Binding Team , org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationBindingsTestCase.Rocket Team"/>
+                <bv:facet type="pattern" message="Hello." groups="Object"/>
+                <bv:facet type="future" message="Welcome to the Future!" groups="org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationBindingsTestCase.BindingTeam"/>
+                <bv:facet type="past" message="Farewell from the ancestors." groups="org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationBindingsTestCase.Ancestors"/>
+                <bv:facet type="assertTrue" message="True fan of the team!" groups="org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationBindingsTestCase.BindingTeam"/>
+                <bv:facet type="assertFalse" message="false" groups="Object"/>
+                <bv:facet type="org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationBindingsTestCase.CustomAnnotation" value="I am a custom annotation and this is my value."/>
+            </jxb:bindings>
+        </xs:appinfo>
+    </xs:annotation>
+   <xs:complexType name="Custom">
+      <xs:sequence>
+         <xs:element name="generic">
+            <xs:simpleType>
+               <xs:restriction base="xs:string">
+                   <xs:pattern value="10"/>
+                   <xs:pattern value="7"/>
+                   <xs:maxLength value="4"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:element>
+      </xs:sequence>
+   </xs:complexType>
+</xs:schema>

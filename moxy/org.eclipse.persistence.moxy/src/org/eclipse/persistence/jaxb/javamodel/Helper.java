@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import javax.xml.bind.JAXBElement;
@@ -56,7 +57,8 @@ public class Helper {
     protected ClassLoader loader;
     protected JavaModel jModel;
     private HashMap xmlToJavaTypeMap;
-    
+    private boolean facets;
+
     public final static String APBYTE = "byte[]";
     public final static String BIGDECIMAL = "java.math.BigDecimal";
     public final static String BIGINTEGER = "java.math.BigInteger";
@@ -342,7 +344,7 @@ public class Helper {
     /**
      * Convenience method to determine if a class exists in a given ArrayList.
      */
-    public boolean classExistsInArray(JavaClass theClass, ArrayList<JavaClass> existingClasses) {
+    public boolean classExistsInArray(JavaClass theClass, List<JavaClass> existingClasses) {
         for (JavaClass jClass : existingClasses) {
             if (areClassesEqual(jClass, theClass)) {
                 return true;
@@ -421,5 +423,13 @@ public class Helper {
     
     public boolean isMapType(JavaClass type) {
         return MAP_CLASS.isAssignableFrom(type);
+    }
+
+    public boolean isFacets() {
+        return facets;
+    }
+
+    public void setFacets(boolean facets) {
+        this.facets = facets;
     }
 }

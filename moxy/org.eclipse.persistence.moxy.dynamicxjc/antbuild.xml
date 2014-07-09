@@ -106,7 +106,7 @@
         <property name="moxy.lib"           value="${dynamic.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
         <property name="jaxb-api.lib"       value="${dynamic.2.common.plugins.dir}/${jaxb-api.jar}"/>
         <property name="jaxb-xjc.lib"       value="${dynamic.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
-        <property name="jaxb-impl.lib"      value="${dynamic.2.common.plugins.dir}/${jaxb-impl.jar}"/>
+        <property name="jaxb-core.lib"      value="${dynamic.2.common.plugins.dir}/${jaxb-core.jar}"/>
 
         <!-- dependency tests -->
         <available file="${core.lib}"                  property="core.bundle.exist"/>
@@ -117,15 +117,15 @@
         <fail message="Cannot find jaxb-api: '${jaxb-api.lib}'" unless="jaxb-api.bundle.exist"/>
         <available file="${jaxb-xjc.lib}"              property="jaxb-xjc.bundle.exist"/>
         <fail message="Cannot find jaxb-xjc: '${jaxb-xjc.lib}'" unless="jaxb-xjc.bundle.exist"/>
-        <available file="${jaxb-impl.lib}"             property="jaxb-impl.bundle.exist"/>
-        <fail message="Cannot find jaxb-impl: '${jaxb-impl.lib}'" unless="jaxb-impl.bundle.exist"/>
+        <available file="${jaxb-core.lib}"             property="jaxb-core.bundle.exist"/>
+        <fail message="Cannot find jaxb-core: '${jaxb-core.lib}'" unless="jaxb-core.bundle.exist"/>
 
         <!-- Set Compile Path-->
         <path id="dynamic.compile.path">
             <pathelement path="${jaxb-api.lib}"/>
             <pathelement path="${dynamic.2.common.plugins.dir}/${asm}"/>
             <pathelement path="${jaxb-xjc.lib}"/>
-            <pathelement path="${jaxb-impl.lib}"/>
+            <pathelement path="${jaxb-core.lib}"/>
             <pathelement path="${core.lib}"/>
             <pathelement path="${moxy.lib}"/>
             <fileset

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:y="addressNamespace" xmlns:x="employeeNamespace" targetNamespace="employeeNamespace">
+   <xsd:import schemaLocation="someExistingSchema.xsd" namespace="addressNamespace"/>
+   <xsd:complexType name="employee-type">
+      <xsd:sequence>
+         <xsd:element name="firstName" type="xsd:string"/>
+         <xsd:element name="birthday" type="xsd:date" minOccurs="0"/>
+         <xsd:element name="age" type="xsd:int"/>
+         <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="address" type="y:address-type" minOccurs="0"/>
+         <xsd:element name="startTime" type="xsd:time" minOccurs="0"/>
+         <xsd:element name="responsibilities" minOccurs="0">
+            <xsd:simpleType>
+               <xsd:list itemType="xsd:string"/>
+            </xsd:simpleType>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
+   </xsd:complexType>
+   <xsd:element name="employee-data" type="x:employee-type"/>
+</xsd:schema>

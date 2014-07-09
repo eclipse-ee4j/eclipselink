@@ -40,6 +40,7 @@ public class SchemaGenTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("JAXB 2.0 Schema Generation Test Suite");
         suite.addTestSuite(SchemaGenEmployeeTestCases.class);
+        suite.addTestSuite(SchemaGenXmlPathTestCases.class); // added twice, delete this one, should be at the end
         suite.addTestSuite(SchemaGenXMLTypeTestCases.class);
         suite.addTestSuite(SchemaGenXMLRootElementTestCases.class);
         suite.addTestSuite(DeploymentXMLSchemaGenTestCases.class);
