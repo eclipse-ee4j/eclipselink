@@ -193,7 +193,7 @@
                src="${compdeps.2.common.plugins.dir}/jaxb-core_2.2.11.v201406210428.jar"
                dest="${compdeps.2.common.plugins.dir}/tmpfix.osgi.core"
         />
-        <mkdir dir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux"/>
+
         <jar update="false"
              destfile="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux/jaxb-core_2.2.11.v201406210428.jar"
              basedir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.core"
