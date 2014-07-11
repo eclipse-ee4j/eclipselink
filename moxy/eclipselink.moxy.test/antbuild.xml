@@ -387,6 +387,7 @@
             <mkdir dir="${report.dir}/jaxb"/>
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -429,7 +430,6 @@
             <mkdir dir="${report.dir}/srg/jaxb"/>
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
-                <jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
