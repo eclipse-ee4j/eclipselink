@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation.
+ * All rights reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 and Eclipse Distribution License
+ * v. 1.0 which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     07/08/2014-2.5 Jody Grassel (IBM Corporation)
+ *       - 439163: JSE Bootstrapping does not handle "wsjar" URLs referencing war-contained resources
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
@@ -88,6 +90,13 @@ public class PersistenceUnitProcessor {
      * to set the ArchiveFactory
      */
     public static ArchiveFactory ARCHIVE_FACTORY = null;
+
+    /** Path to application classes directory in WAR file. */
+    private static final String WEBINF_CLASSES_STR = "WEB-INF/classes/";
+
+    /** Length of application classes directory path String. */
+    private static final int WEBINF_CLASSES_LEN = WEBINF_CLASSES_STR.length();
+
     /**
      * Entries in a zip file are directory entries using slashes to separate 
      * them. Build a class name using '.' instead of slash and removing the 
@@ -184,7 +193,17 @@ public class PersistenceUnitProcessor {
             if (separator == -1) {
                 separator = spec.length();
             } else {
-                separator = separator + 2;
+                // If this doesn't reference a war file with a properly located persistence.xml,
+                // then chop off everything after the "!/" marker and assume it is a normal jar.
+                // Else, if the wsjar URL references a file with a ".war" extension, and its entry
+                // starts with WEB-INF/classes/, then the calculated persistence unit root should
+                // be wsjar:path/to/a.war!/WEB-INF/classes/ as per JPA 2.1 Spec section 8.2 "Persistence Unit Packaging".
+                separator += 2;
+                // Filter out invalid scenarios such as wsjar:file:/a/path/to/my.war!/foo/WEB-INF/classes/META-INF/persistence.xml
+                if (spec.regionMatches(true, separator - 6, ".war", 0, 4) &&
+                        spec.regionMatches(true, separator, WEBINF_CLASSES_STR, 0, WEBINF_CLASSES_LEN)) {
+                    separator += WEBINF_CLASSES_LEN;
+                }
             }
             result = new URL("jar", "", spec.substring(0, separator));
         } else if ("bundleentry".equals(protocol)) {
