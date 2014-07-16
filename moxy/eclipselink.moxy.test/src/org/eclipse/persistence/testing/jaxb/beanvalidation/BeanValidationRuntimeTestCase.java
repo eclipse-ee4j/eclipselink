@@ -64,7 +64,13 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
     private static final File FILE_JSON_VALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employee.json");
     private static final File FILE_JSON_INVALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employeeInvalid.json");
     private static final Class[] EMPLOYEE = new Class[]{Employee.class};
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
+    private static final String JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
+    private static final String JAVAX_VALIDATION_CONSTRAINTS_MIN_MESSAGE = "{javax.validation.constraints.Min.message}";
+    private static final String JAVAX_VALIDATION_CONSTRAINTS_SIZE_MESSAGE = "{javax.validation.constraints.Size.message}";
+    private static final String JAVAX_VALIDATION_CONSTRAINTS_PATTERN_MESSAGE = "{javax.validation.constraints.Pattern.message}";
+    private static final String JAVAX_VALIDATION_CONSTRAINTS_FUTURE_MESSAGE = "{javax.validation.constraints.Future.message}";
+    private static final String JAVAX_VALIDATION_CONSTRAINTS_DIGITS_MESSAGE = "{javax.validation.constraints.Digits.message}";
 
     private boolean toggle = true; // Value is sensitive to the order of methods in testBeanValidation() method.
     private ValidatorFactory preferredValidatorFactory;
@@ -86,20 +92,20 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
             .withDrivingLicense(new DrivingLicense(1234567, new GregorianCalendar(2010, 5, 20).getTime()));
     private AbstractSequentialList<String> violationMessages = new LinkedList<String>(){ // Order is good just for debug. The CVs themselves aren't ordered.
         {
-            add("may not be null");                             // id
-            add("must be greater than or equal to 18");         // age
-            add("size must be between 3 and 15");               // personalName
-            add("must match \"\\(\\d{3}\\)\\d{3}-\\d{4}\"");    // phoneNumber
-            add("may not be null");                             // department
-            add("must be in the future");                       // drivingLicense.validThrough
-            add("numeric value out of bounds (<6 digits>.<0 digits> expected)"); // drivingLicense.id
+            add(JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE);   // id
+            add(JAVAX_VALIDATION_CONSTRAINTS_MIN_MESSAGE);        // age
+            add(JAVAX_VALIDATION_CONSTRAINTS_SIZE_MESSAGE);       // personalName
+            add(JAVAX_VALIDATION_CONSTRAINTS_PATTERN_MESSAGE);    // phoneNumber
+            add(JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE);   // department
+            add(JAVAX_VALIDATION_CONSTRAINTS_FUTURE_MESSAGE);     // drivingLicense.validThrough
+            add(JAVAX_VALIDATION_CONSTRAINTS_DIGITS_MESSAGE);     // drivingLicense.id
         }};
     private AbstractSequentialList<String> violationMessagesWithoutGroup = new LinkedList<String>(){
         {
-            add("may not be null");                             // id
-            add("size must be between 3 and 15");               // personalName
-            add("must match \"\\(\\d{3}\\)\\d{3}-\\d{4}\"");    // phoneNumber
-            add("may not be null");                             // department
+            add(JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE);   // id
+            add(JAVAX_VALIDATION_CONSTRAINTS_SIZE_MESSAGE);       // personalName
+            add(JAVAX_VALIDATION_CONSTRAINTS_PATTERN_MESSAGE);    // phoneNumber
+            add(JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE);   // department
         }};
 
 
@@ -176,8 +182,9 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
 
     private void checkValidationMessages(Set<? extends ConstraintViolation<?>> constraintViolations, List<String> expectedMessages) {
         List<String> violationMessages = new ArrayList<String>();
-        for (ConstraintViolation<?> cv : constraintViolations)
-            violationMessages.add(cv.getMessage());
+        for (final ConstraintViolation<?> cv : constraintViolations)
+            violationMessages.add(cv.getMessageTemplate());
+
         assertSame(expectedMessages.size(), violationMessages.size());
         assertTrue(violationMessages.containsAll(expectedMessages));
     }
@@ -211,7 +218,7 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
         marshallerValidOn = (JAXBMarshaller) ctx.createMarshaller();
         marshallerValidOn.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshallerValidOff = (JAXBMarshaller) ctx.createMarshaller();
-        marshallerValidOff.setProperty(UnmarshallerProperties.BEAN_VALIDATION_MODE, BeanValidationMode.NONE); // tests setting the property through mar
+        marshallerValidOff.setProperty(MarshallerProperties.BEAN_VALIDATION_MODE, BeanValidationMode.NONE); // tests setting the property through mar
         marshallerValidOff.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         JAXBContext ctxValidationOff = JAXBContextFactory.createContext(EMPLOYEE,
@@ -235,6 +242,5 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
         violationMessages = null;
         preferredValidatorFactory = null;
     }
-
 
 }

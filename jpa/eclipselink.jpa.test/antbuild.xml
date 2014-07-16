@@ -223,7 +223,7 @@
 
     <available file="${jpatest.2.common.plugins.dir}/${modelgen.jar}" property="modelgen.jar.exist"/>
 
-    <available file="../../../extension.lib.external/${validation.impl.jar}" property="validate.jar.exist"/>
+    <available file="${jpatest.2.common.plugins.dir}/${validation-impl.jar}" property="validate.jar.exist"/>
 
     <target name="set-server-properties">
         <property file="${user.home}/${server.name}.properties"/>
@@ -394,7 +394,7 @@
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.jar}'"/>
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.framework.jar}'"/>
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence20.jar}'"/>
-        <echo message="   '${jpatest.2.common.plugins.dir}/${beanvalidation.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${javax.validation.jar}'"/>
         <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
@@ -409,7 +409,7 @@
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence20.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${beanvalidation.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
             <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
@@ -432,7 +432,7 @@
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.jar}'"/>
         <echo message="   '${jpatest.2.coretest.dir}/${coretest.framework.jar}'"/>
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence21.jar}'"/>
-        <echo message="   '${jpatest.2.common.plugins.dir}/${beanvalidation.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${javax.validation.jar}'"/>
         <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
@@ -446,7 +446,7 @@
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence21.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${beanvalidation.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
             <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
@@ -1404,10 +1404,12 @@
         </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.classpath"/>
-            <pathelement path="../../../extension.lib.external/${validation.impl.jar}"/>
-            <pathelement path="../../../extension.lib.external/${slf4j.api.jar}"/>
-            <pathelement path="../../../extension.lib.external/${slf4j.jdk.jar}"/>
-            <pathelement path="../../../extension.lib.external/${validation.api.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${validation-impl.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jboss-logging.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.el-api.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.el.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${classmate.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
         </path>
         <path id="run.jpa21.classpath">
             <pathelement path="${jpatest.basedir}/${classes21.dir}"/>
@@ -1573,7 +1575,7 @@
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
-    <!-- Runs JPA 2.0 BeanValidation tests, make sure you have validate jar which includes javax.validation.*, validate classes, slfj jdk and api classes under your classpath -->
+    <!-- Runs JPA 2.0 BeanValidation tests. -->
     <target name="run-bean-validation-tests" depends="config-classpath" if="validate.jar.exist">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest"/>

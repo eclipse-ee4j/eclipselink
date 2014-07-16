@@ -85,7 +85,7 @@
     <property name="jaxb-impl.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
     <property name="jaxb-core.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-core.jar}"/>
     <property name="javax.validation.lib"   value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
-    <property name="hibernate-validator.lib"   value="${moxytest.2.common.plugins.dir}/${hibernate-validator.jar}"/>
+    <property name="validation-impl.lib"   value="${moxytest.2.common.plugins.dir}/${validation-impl.jar}"/>
     <property name="jboss-logging.lib"   value="${moxytest.2.common.plugins.dir}/${jboss-logging.jar}"/>
     <property name="javax.el-api.lib"   value="${moxytest.2.common.plugins.dir}/${javax.el-api.jar}"/>
     <property name="javax.el.lib"   value="${moxytest.2.common.plugins.dir}/${javax.el.jar}"/>
@@ -135,7 +135,7 @@
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
-        <pathelement path="${hibernate-validator.lib}"/>
+        <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
         <pathelement path="${javax.el-api.lib}"/>
         <pathelement path="${javax.el.lib}"/>
@@ -210,7 +210,7 @@
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
         <pathelement path="${javax.validation.lib}"/>
-        <pathelement path="${hibernate-validator.lib}"/>
+        <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
         <pathelement path="${javax.el-api.lib}"/>
         <pathelement path="${javax.el.lib}"/>

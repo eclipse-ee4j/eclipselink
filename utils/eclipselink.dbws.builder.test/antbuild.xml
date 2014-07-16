@@ -140,6 +140,7 @@
         <property name="ddlparser.lib"    value="${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}"/>
         <property name="persistence.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${persistence.jar}"/>
+        <property name="javax.validation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.validation.jar}"/>
 
         <!-- dependency tests -->
         <available file="${junit.lib}"            property="junit.lib.exist"/>
@@ -150,6 +151,7 @@
         <available file="${wsdl.lib}"             property="wsdl.lib.exist"/>
         <available file="${ddlparser.lib}"        property="ddlparser.lib.exist"/>
         <available file="${dbwsbldr.lib}"         property="dbwsbldr.lib.exist"/>
+        <available file="${javax.validation.lib}" property="javax.validation.lib.exist"/>
         <fail message="Cannot find: '${junit.lib}'"       unless="junit.lib.exist"/>
         <fail message="Cannot find: '${eclipselink.lib}'" unless="eclipselink.exist"/>
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.exist"/>
@@ -158,6 +160,7 @@
         <fail message="Cannot find: '${wsdl.lib}'"        unless="wsdl.lib.exist"/>
         <fail message="Cannot find: '${ddlparser.lib}'"   unless="ddlparser.lib.exist"/>
         <fail message="Cannot find: '${dbwsbldr.lib}'"    unless="dbwsbldr.lib.exist"/>
+        <fail message="Cannot find: '${javax.validation.lib}'"    unless="javax.validation.lib.exist"/>
 
         <!-- Set Compile Path -->
         <path id="dbwsbldrtest.compile.path">
@@ -198,6 +201,7 @@
             <pathelement path="./${dbwsbldrtest.jar}"/>
             <pathelement path="${activation.lib}"/>
             <pathelement path="${mail.lib}"/>
+            <pathelement path="${javax.validation.lib}"/>
         </path>
 
         <!-- Set Run Condition -->
