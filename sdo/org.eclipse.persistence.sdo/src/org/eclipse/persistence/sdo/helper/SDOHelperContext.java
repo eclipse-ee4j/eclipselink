@@ -1228,9 +1228,11 @@ public class SDOHelperContext implements HelperContext {
         private static final String APPLICATION_ACCESS_CLASS_NAME = "weblogic.application.ApplicationAccess";
         private static final String GET_APPLICATION_ACCESS_METHOD_NAME = "getApplicationAccess";
         private static final String GET_APPLICATION_NAME_METHOD_NAME = "getApplicationName";
+        private static final String GET_APPLICATION_VERSION_METHOD_NAME = "getApplicationVersion";
 
         private Object applicationAccessInstance;
         private Method getApplicationNameMethod;
+        private Method getApplicationVersionMethod;
 
         public ApplicationAccessWLS() {
             try {
@@ -1239,6 +1241,7 @@ public class SDOHelperContext implements HelperContext {
                 applicationAccessInstance = PrivilegedAccessHelper.invokeMethod(getApplicationAccessMethod, applicationAccessClass);
                 Class [] methodParameterTypes = new Class[] {ClassLoader.class};
                 getApplicationNameMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, GET_APPLICATION_NAME_METHOD_NAME, methodParameterTypes, true);
+                getApplicationVersionMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, GET_APPLICATION_VERSION_METHOD_NAME, methodParameterTypes, true);
             } catch(Exception e) {
             }
         }
@@ -1249,7 +1252,15 @@ public class SDOHelperContext implements HelperContext {
             }
             try {
                 Object[] parameters = new Object[] {classLoader};
-                return (String) PrivilegedAccessHelper.invokeMethod(getApplicationNameMethod, applicationAccessInstance, parameters);
+                String appName = (String) PrivilegedAccessHelper.invokeMethod(getApplicationNameMethod, applicationAccessInstance, parameters);
+                if (appName != null) {
+                    String appVersion = (String) PrivilegedAccessHelper.invokeMethod(getApplicationVersionMethod, applicationAccessInstance, parameters);
+                    if (appVersion != null) {
+                        return appName + "#" + appVersion;
+                    }
+                }
+                
+                return appName;
             } catch(Exception e) {
                 return null;
             }
