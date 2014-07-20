@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -17,6 +17,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Calendar;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
@@ -277,7 +279,11 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     public static void compareXMLRootObjects(XMLRoot controlObj, XMLRoot testObj) {
         assertEquals(controlObj.getLocalName(), testObj.getLocalName());
         assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
-        assertEquals(controlObj.getObject(), testObj.getObject());
+        if (null != controlObj.getObject() && null != testObj.getObject() && controlObj.getObject() instanceof java.util.Calendar && testObj.getObject() instanceof java.util.Calendar) {
+            assertTrue(((Calendar)controlObj.getObject()).getTimeInMillis() == ((Calendar)testObj.getObject()).getTimeInMillis());
+        } else {
+            assertEquals(controlObj.getObject(), testObj.getObject());
+        }
         assertEquals(controlObj.getSchemaType(), testObj.getSchemaType());
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -3104,7 +3104,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_0MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_dateTime_0ms() {
@@ -3113,7 +3113,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_0MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_dateTime_1ms() {
@@ -3122,7 +3122,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_1MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_dateTime_10ms() {
@@ -3131,7 +3131,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_10MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_dateTime_100ms() {
@@ -3140,7 +3140,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_100MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_date_null() {
@@ -3156,7 +3156,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_null() {
@@ -3172,7 +3172,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_0MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_0ms() {
@@ -3181,7 +3181,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_0MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_1ms() {
@@ -3190,7 +3190,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_1MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_10ms() {
@@ -3199,7 +3199,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_10MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_100ms() {
@@ -3208,7 +3208,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_100MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_date_null() {
@@ -3224,7 +3224,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_date_negative1() {
@@ -3271,7 +3271,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_0MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_0ms() {
@@ -3280,7 +3280,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_0MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_1ms() {
@@ -3289,7 +3289,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_1MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_10ms() {
@@ -3298,7 +3298,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_10MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_100ms() {
@@ -3307,7 +3307,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_100MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_negative1() {
@@ -3365,7 +3365,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_0MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_0ms() {
@@ -3374,7 +3374,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_0MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_1ms() {
@@ -3383,7 +3383,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_1MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_10ms() {
@@ -3392,7 +3392,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_10MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_100ms() {
@@ -3401,7 +3401,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_100MS);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.TIME_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_negative1() {
@@ -3448,7 +3448,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_DAY);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_DAY_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gDay_negative1() {
@@ -3475,7 +3475,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_MONTH);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_MONTH_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gMonth_negative1() {
@@ -3502,7 +3502,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_MONTH_DAY);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_MONTH_DAY_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gMonthDay_negative1() {
@@ -3529,7 +3529,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_YEAR);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_YEAR_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gYear_negative1() {
@@ -3556,7 +3556,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_YEAR_MONTH);
         java.util.Calendar test = (java.util.Calendar)xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_YEAR_MONTH_QNAME);
-        this.assertEquals(control, test);
+        this.assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gYearMonth_negative1() {

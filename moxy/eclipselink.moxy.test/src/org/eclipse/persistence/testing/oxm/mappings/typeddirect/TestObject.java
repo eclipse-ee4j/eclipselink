@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -188,17 +188,17 @@ public class TestObject {
 
 		equal = equal && equalByteArrays(aTestObject.getBase64(), this.getBase64());
 		equal = equal && equalByteArrays(aTestObject.getHex(), this.getHex());
-		
-		equal = equal && (aTestObject.getDate().equals(this.getDate()));
-		equal = equal && (aTestObject.getTime().equals(this.getTime()));
-		equal = equal && (aTestObject.getDateTime().equals(this.getDateTime()));
+
+		equal = equal && (aTestObject.getDate().getTimeInMillis() == this.getDate().getTimeInMillis());
+		equal = equal && (aTestObject.getTime().getTimeInMillis() == this.getTime().getTimeInMillis());
+		equal = equal && (aTestObject.getDateTime().getTimeInMillis() == this.getDateTime().getTimeInMillis());
 
 		equal = equal && equalByteArrayVectors(aTestObject.getBase64Vector(), this.getBase64Vector());
 		equal = equal && equalByteArrayVectors(aTestObject.getHexVector(), this.getHexVector());
-		
-		equal = equal && (aTestObject.getDateVector().equals(this.getDateVector()));
-		equal = equal && (aTestObject.getTimeVector().equals(this.getTimeVector()));
-		equal = equal && (aTestObject.getDateTimeVector().equals(this.getDateTimeVector()));
+
+		equal = equal && (fixCalendar(aTestObject.getDateVector()).equals(fixCalendar(this.getDateVector())));
+		equal = equal && (fixCalendar(aTestObject.getTimeVector()).equals(fixCalendar(this.getTimeVector())));
+		equal = equal && (fixCalendar(aTestObject.getDateTimeVector()).equals(fixCalendar(this.getDateTimeVector())));
 
         equal = equal && (aTestObject.getTypedDate().equals(this.getTypedDate()));
         equal = equal && (aTestObject.getUntypedDate().equals(this.getUntypedDate()));
@@ -239,5 +239,25 @@ public class TestObject {
 
 		return true;
 	}
+
+	private Vector fixCalendar(Vector v) {
+
+	      if (null == v) {
+	          return null;
+	      }
+
+	      Vector result = new Vector();
+	      for (Object item : v) {
+	          if (null != item && item instanceof java.util.Calendar) {
+	              Calendar normalizedCalendar = Calendar.getInstance();
+	              normalizedCalendar.setTimeInMillis(((Calendar)item).getTimeInMillis());
+	              result.add(normalizedCalendar);
+	          } else {
+	              result.add(item);
+	          }
+	      }
+
+	      return result;
+	  }
 
 }

@@ -53,7 +53,9 @@ public class DrivingLicense {
         if (id != that.id) {
             return false;
         }
-        if (validThrough != null ? !validThrough.equals(that.validThrough) : that.validThrough != null) {
+        if (validThrough != null && that.validThrough != null && !(validThrough.getTime() == that.validThrough.getTime())) {
+            return false;
+        } else if ((validThrough == null && that.validThrough != null) || (validThrough != null && that.validThrough == null)) {
             return false;
         }
 

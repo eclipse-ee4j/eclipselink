@@ -34,7 +34,7 @@ public class DatatypeEmployee {
             System.err.println("deptNumber NOT EQUAL");
             return false;
         }
-        if (!test.birthDate.equals(this.birthDate)) {
+        if (!(test.birthDate.getTimeInMillis() == this.birthDate.getTimeInMillis())) {
             System.out.println("TEST:");
             System.out.println(test.birthDate);
             System.out.println("\nCTRL:");
