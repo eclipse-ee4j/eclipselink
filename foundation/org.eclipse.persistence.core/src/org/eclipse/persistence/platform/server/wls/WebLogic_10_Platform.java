@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -26,6 +26,8 @@
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>
  *     01/01/2011-2.2 Michael O'Brien 
  *       - 333160: ModuleName string extraction code does not handle -1 not found index in 1 of 3 cases 
+ *     07/21/2014-2.6.0 Lukas Jungmann
+ *       - 440018: Failed to find mbean server warning in the wls admin server log
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.wls;
 
@@ -52,7 +54,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * This includes WebLogic 10.3 behavior.
  */
 public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnabledPlatform {
-    // see http://e-docs.bea.com/wls/docs90/jmx/accessWLS.html#1119237
+    // see http://docs.oracle.com/middleware/1213/wls/JMXCU/understandwls.htm#i1127767
     /** This JNDI address is for JMX MBean registration */
     private static final String JMX_JNDI_RUNTIME_REGISTER = "java:comp/env/jmx/runtime";
     /* 
@@ -185,11 +187,22 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
             Context initialContext = null;        
             try {
                 initialContext = new InitialContext();
-                mBeanServer = (MBeanServer) initialContext.lookup(JMX_JNDI_RUNTIME_REGISTER);                
-                if(null == mBeanServer) {
-                    getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
-                            "failed_to_find_mbean_server", "null returned from JNDI lookup of " + JMX_JNDI_RUNTIME_REGISTER);
-                } else {
+                try {
+                    //  
+                    mBeanServer = (MBeanServer) initialContext.lookup(JMX_JNDI_RUNTIME_REGISTER);
+                    if (null == mBeanServer) {
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                                "failed_to_find_mbean_server", "null returned from JNDI lookup of " + JMX_JNDI_RUNTIME_REGISTER);
+                    }
+                } catch (NamingException ne1) {
+                    //#440018 Fallback for the case when the JMX client classes are not located in a Java EE module
+                    mBeanServer = (MBeanServer) initialContext.lookup(JMX_JNDI_RUNTIME_UNREGISTER);
+                    if (null == mBeanServer) {
+                        getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, 
+                                "failed_to_find_mbean_server", "null returned from JNDI lookup of " + JMX_JNDI_RUNTIME_UNREGISTER);
+                    }
+                }
+                if (mBeanServer != null) {
                     // Verify that this is a weblogic.management.jmx.mbeanserver.WLSMBeanServer
                     if(mBeanServer.toString().indexOf("WLSMBeanServer") < 0) {
                         // MBeanServer is not a WebLogic type - likely a com.sun.jmx.mbeanserver.JmxMBeanServer
