@@ -152,7 +152,7 @@
         <available file="${ddlparser.lib}"        property="ddlparser.lib.exist"/>
         <available file="${dbwsbldr.lib}"         property="dbwsbldr.lib.exist"/>
         <available file="${javax.validation.lib}" property="javax.validation.lib.exist"/>
-        <fail message="Cannot find: '${junit.lib}'"       unless="junit.lib.exist"/>
+        <!--fail message="Cannot find: '${junit.lib}'"       unless="junit.lib.exist"/-->
         <fail message="Cannot find: '${eclipselink.lib}'" unless="eclipselink.exist"/>
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.exist"/>
         <fail message="Cannot find: '${asm.lib}'"         unless="asm.bundle.exist"/>
