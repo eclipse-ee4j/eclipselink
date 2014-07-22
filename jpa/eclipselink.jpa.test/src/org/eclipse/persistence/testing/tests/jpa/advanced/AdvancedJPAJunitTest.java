@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -2794,6 +2794,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             List<Project> results = query.getResultList();
 
+            // XXX - size here may vary depending on the model
             if (isWeavingEnabled() && counter.getSqlStatements().size() > 9) {
                 fail("Should have been 9 queries but was: " + counter.getSqlStatements().size());
             }
@@ -2806,8 +2807,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 }
             }
 
-            if (isWeavingEnabled() && counter.getSqlStatements().size() > 17) {
-                fail("Should have been 17 queries but was: " + counter.getSqlStatements().size());
+            if (isWeavingEnabled() && counter.getSqlStatements().size() > 18) {
+                fail("Should have been 18 queries but was: " + counter.getSqlStatements().size());
             }
         } finally {
             rollbackTransaction(em);
