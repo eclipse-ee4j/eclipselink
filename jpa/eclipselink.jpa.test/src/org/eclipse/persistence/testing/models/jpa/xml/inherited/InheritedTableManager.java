@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -103,7 +103,7 @@ public class InheritedTableManager extends TableCreator {
         FieldDefinition BEST_BEFORE_DATE_field = new FieldDefinition();
         BEST_BEFORE_DATE_field.setName("BB_DATE");
         BEST_BEFORE_DATE_field.setTypeName("DATETIME");
-        BEST_BEFORE_DATE_field.setSize(23);
+        BEST_BEFORE_DATE_field.setSize(6);
         BEST_BEFORE_DATE_field.setIsPrimaryKey(false);
         BEST_BEFORE_DATE_field.setUnique(false);
         BEST_BEFORE_DATE_field.setIsIdentity(false);
@@ -183,7 +183,7 @@ public class InheritedTableManager extends TableCreator {
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
-        VERSION_field.setSize(23);
+        VERSION_field.setSize(6);
         VERSION_field.setIsPrimaryKey(false);
         VERSION_field.setUnique(false);
         VERSION_field.setIsIdentity(false);
@@ -323,7 +323,7 @@ public class InheritedTableManager extends TableCreator {
         FieldDefinition BORN_ON_DATE_field = new FieldDefinition();
         BORN_ON_DATE_field.setName("BORN");
         BORN_ON_DATE_field.setTypeName("DATETIME");
-        BORN_ON_DATE_field.setSize(23);
+        BORN_ON_DATE_field.setSize(6);
         BORN_ON_DATE_field.setIsPrimaryKey(false);
         BORN_ON_DATE_field.setUnique(false);
         BORN_ON_DATE_field.setIsIdentity(false);
@@ -412,7 +412,7 @@ public class InheritedTableManager extends TableCreator {
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
-        VERSION_field.setSize(23);
+        VERSION_field.setSize(6);
         VERSION_field.setIsPrimaryKey(false);
         VERSION_field.setUnique(false);
         VERSION_field.setIsIdentity(false);
@@ -562,7 +562,7 @@ public class InheritedTableManager extends TableCreator {
         FieldDefinition BOTTLED_DATE_field = new FieldDefinition();
         BOTTLED_DATE_field.setName("BOTTLED_DATE");
         BOTTLED_DATE_field.setTypeName("DATETIME");
-        BOTTLED_DATE_field.setSize(23);
+        BOTTLED_DATE_field.setSize(6);
         BOTTLED_DATE_field.setIsPrimaryKey(false);
         BOTTLED_DATE_field.setUnique(false);
         BOTTLED_DATE_field.setIsIdentity(false);
@@ -583,7 +583,7 @@ public class InheritedTableManager extends TableCreator {
         FieldDefinition VERSION_field = new FieldDefinition();
         VERSION_field.setName("VERSION");
         VERSION_field.setTypeName("DATETIME");
-        VERSION_field.setSize(23);
+        VERSION_field.setSize(6);
         VERSION_field.setIsPrimaryKey(false);
         VERSION_field.setUnique(false);
         VERSION_field.setIsIdentity(false);

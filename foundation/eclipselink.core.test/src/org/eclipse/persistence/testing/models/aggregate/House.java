@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -125,7 +125,7 @@ public class House {
         definition.addPrimaryKeyField("LOCATION", String.class, 180);
         definition.addField("DESCRIPTIONS", String.class, 200);
         definition.addField("INS_ID", java.math.BigDecimal.class, 15);
-        definition.addField("VERSION", java.sql.Timestamp.class, 200);
+        definition.addField("VERSION", java.sql.Timestamp.class, 6);
         definition.addField("TYPE", String.class, 4);
         return definition;
     }

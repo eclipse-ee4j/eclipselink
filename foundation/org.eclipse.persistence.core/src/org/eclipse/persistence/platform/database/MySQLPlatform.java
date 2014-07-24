@@ -16,21 +16,32 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     04/30/2014-2.6 Lukas Jungmann
  *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+ *     07/23/2014-2.6 Lukas Jungmann
+ *       - 440278: Support fractional seconds in time values
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.StoredProcedureCall;
@@ -53,13 +64,31 @@ public class MySQLPlatform extends DatabasePlatform {
     
     private static final String LIMIT = " LIMIT ";
     
+    /** Support fractional seconds in time values since MySQL v. 5.6.4. */
+    private boolean isFractionalTimeSupported;
+    private boolean isConnectionDataInitialized;
+
     public MySQLPlatform(){
         super();
         this.pingSQL = "SELECT 1";
         this.startDelimiter = "`";
         this.endDelimiter = "`";
     }
-    
+
+    @Override
+    public void initializeConnectionData(Connection connection) throws SQLException {
+        if (this.isConnectionDataInitialized) {
+            return;
+        }
+        String databaseVersion = connection.getMetaData().getDatabaseProductVersion();
+        this.isFractionalTimeSupported = Helper.compareVersions(databaseVersion, "5.6.4") >= 0;
+        this.isConnectionDataInitialized = true;
+    }
+
+    public boolean isFractionalTimeSupported() {
+        return isFractionalTimeSupported;
+    }
+
     /**
      * Appends an MySQL specific date if usesNativeSQL is true otherwise use the ODBC format.
      * Native FORMAT: 'YYYY-MM-DD'
@@ -151,8 +180,16 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGTEXT", false));
         
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME", false));
+        FieldTypeDefinition fd = new FieldTypeDefinition("TIME");
+        if (!isFractionalTimeSupported) {
+            fd.setIsSizeAllowed(false);
+        }
+        fieldTypeMapping.put(java.sql.Time.class, fd);
+        fd = new FieldTypeDefinition("DATETIME");
+        if (!isFractionalTimeSupported) {
+            fd.setIsSizeAllowed(false);
+        }
+        fieldTypeMapping.put(java.sql.Timestamp.class, fd);
 
         return fieldTypeMapping;
     }

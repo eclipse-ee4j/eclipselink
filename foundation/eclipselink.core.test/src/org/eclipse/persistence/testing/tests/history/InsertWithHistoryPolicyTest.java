@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,7 +15,10 @@ package org.eclipse.persistence.testing.tests.history;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.mapping.Baby;
 import org.eclipse.persistence.testing.models.mapping.BabyMonitor;
@@ -38,8 +41,13 @@ public class InsertWithHistoryPolicyTest extends TestCase {
     }
 
     protected void setup() {
-        if(getSession().getPlatform().isMySQL() || getSession().getPlatform().isSybase()) {
-            throwWarning("This test will not work with MySQL or Sybase because it doesn't support millisecond granularity.");
+        DatabasePlatform platform = getSession().getPlatform();
+        if (platform.isMySQL()) {
+            if (!((MySQLPlatform) platform).isFractionalTimeSupported()) {
+                throwWarning("This test will not work with MySQL pre-5.6.4 because it doesn't support millisecond granularity.");
+            }
+        } else if (platform.isSybase()) {
+            throwWarning("This test will not work with Sybase because it doesn't support millisecond granularity.");
         }
         
         org.eclipse.persistence.sessions.Project project = new BiDirectionInserOrderTestProject();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -508,6 +508,8 @@ public class HistoryPolicy implements Cloneable, Serializable {
     public void addStartFieldName(String startFieldName) {
         DatabaseField startField = new DatabaseField(startFieldName);
         startField.setType(ClassConstants.TIMESTAMP);
+        // #440278
+        startField.setLength(6);
 
         if (startFields == null) {
             startFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
@@ -549,6 +551,8 @@ public class HistoryPolicy implements Cloneable, Serializable {
     public void addEndFieldName(String endFieldName) {
         DatabaseField endField = new DatabaseField(endFieldName);
         endField.setType(ClassConstants.TIMESTAMP);
+        // #440278
+        endField.setLength(6);
 
         if (endFields == null) {
             endFields = new ArrayList();

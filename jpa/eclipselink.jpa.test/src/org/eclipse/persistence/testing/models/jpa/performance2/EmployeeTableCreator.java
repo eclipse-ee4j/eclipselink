@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -485,7 +485,7 @@ public class EmployeeTableCreator extends TableCreator {
         FieldDefinition field7 = new FieldDefinition();
         field7.setName("MILESTONE");
         field7.setTypeName("DATETIME");
-        field7.setSize(23);
+        field7.setSize(6);
         field7.setShouldAllowNull(true);
         field7.setIsPrimaryKey(false);
         field7.setUnique(false);

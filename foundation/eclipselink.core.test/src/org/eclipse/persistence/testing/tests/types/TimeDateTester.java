@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -124,11 +124,10 @@ public class TimeDateTester extends TypeTester {
         TableDefinition definition = TypeTester.tableDefinition();
 
         definition.setName("TIMEDATE");
-
-        definition.addField("UTILDATE", Timestamp.class);
+        definition.addField("UTILDATE", Timestamp.class, 6);
         definition.addField("SQLDATE", java.sql.Date.class);
         definition.addField("TTIME", Time.class);
-        definition.addField("TSTAMP", Timestamp.class);
+        definition.addField("TSTAMP", Timestamp.class, 6);
         return definition;
     }
 

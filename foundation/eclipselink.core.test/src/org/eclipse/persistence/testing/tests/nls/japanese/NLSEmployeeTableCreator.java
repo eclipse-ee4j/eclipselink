@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -234,7 +234,7 @@ public class NLSEmployeeTableCreator extends org.eclipse.persistence.tools.schem
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field5 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field5.setName("\u3066\u3068\u3042\u3064\u3068_\u3068\u3051\u3059\u304a");//("START_TIME");
         field5.setTypeName("TIME");
-        field5.setSize(23);
+        field5.setSize(6);
         field5.setShouldAllowNull(true);
         field5.setIsPrimaryKey(false);
         field5.setUnique(false);
@@ -245,7 +245,7 @@ public class NLSEmployeeTableCreator extends org.eclipse.persistence.tools.schem
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field6 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field6.setName("\u304a\u305b\u3048_\u3068\u3051\u3059\u304a");//("END_TIME");
         field6.setTypeName("TIME");
-        field6.setSize(23);
+        field6.setSize(6);
         field6.setShouldAllowNull(true);
         field6.setIsPrimaryKey(false);
         field6.setUnique(false);
@@ -338,7 +338,7 @@ public class NLSEmployeeTableCreator extends org.eclipse.persistence.tools.schem
         org.eclipse.persistence.tools.schemaframework.FieldDefinition field2 = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
         field2.setName("\u3059\u3051\u3057\u304a\u3066\u3068\u305d\u305b\u304a");//("MILESTONE");
         field2.setTypeName("DATETIME");
-        field2.setSize(23);
+        field2.setSize(6);
         field2.setShouldAllowNull(true);
         field2.setIsPrimaryKey(false);
         field2.setUnique(false);
