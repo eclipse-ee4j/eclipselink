@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,45 +14,25 @@ package org.eclipse.persistence.testing.jaxb.binder.adapter;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import javax.xml.bind.Binder;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import junit.framework.TestCase;
+
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
-import junit.framework.TestCase;
 
 /**
  * Tests JAXBBinder marshal/unmarshal with an XmlJavaTypeAdapter.
@@ -79,10 +59,10 @@ public class BinderWithAdapterTestCases  extends TestCase {
     public void testUnmarshal() {
         try {
             String src = "org/eclipse/persistence/testing/jaxb/binder/adapter/element.xml";
-            Document doc = documentBuilderFactory.newDocumentBuilder().parse(new FileInputStream(new File(src)));
-            
+            Document doc = documentBuilderFactory.newDocumentBuilder().parse(Thread.currentThread().getContextClassLoader().getResourceAsStream(src));
+
             JAXBElement<Element> result = binder.unmarshal(doc, Element.class);
-            
+
             Element returnedElt = result.getValue();
             Element controlElt = getControlObject();
             
@@ -99,9 +79,21 @@ public class BinderWithAdapterTestCases  extends TestCase {
         elt.value.put(101, "KTM");
         elt.value.put(69, "CBR");
 
+        InputStream srcFileInputStream = null;
+
         try {
             String src = "org/eclipse/persistence/testing/jaxb/binder/adapter/element.xml";
-            Document controlDoc = documentBuilderFactory.newDocumentBuilder().parse(new FileInputStream(new File(src)));
+
+            try {
+                srcFileInputStream = new FileInputStream(new File(src));
+            } catch (FileNotFoundException fnfe) {
+                srcFileInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(src);
+                if (null == srcFileInputStream) {
+                    throw fnfe;
+                }
+            }
+
+            Document controlDoc = documentBuilderFactory.newDocumentBuilder().parse(srcFileInputStream);
 
             Document doc = documentBuilderFactory.newDocumentBuilder().newDocument();
             binder.marshal(elt, doc);
@@ -119,6 +111,14 @@ public class BinderWithAdapterTestCases  extends TestCase {
             assertTrue("Marshalled document does not match the control document.", comparer.isNodeEqual(controlDoc, doc));
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            if (null != srcFileInputStream) {
+                try {
+                    srcFileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

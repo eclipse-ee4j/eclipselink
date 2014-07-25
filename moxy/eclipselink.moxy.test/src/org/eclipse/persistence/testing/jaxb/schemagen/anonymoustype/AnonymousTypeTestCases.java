@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,19 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.schemagen.anonymoustype;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 
 import junit.framework.TestCase;
 
@@ -54,9 +49,13 @@ public class AnonymousTypeTestCases extends TestCase {
 
         MySchemaOutputResolver mysr = new MySchemaOutputResolver();
         cxt.generateSchema(mysr);
-        
+
         assertTrue("Expected two schemas to be generated, but there were [" + mysr.schemaFiles.size() + "]", mysr.schemaFiles.size() == 2);
-        ExternalizedMetadataTestCases.compareSchemas(mysr.schemaFiles.get(TNS), new File(TNS_XSD));
-        ExternalizedMetadataTestCases.compareSchemas(mysr.schemaFiles.get(TYPES_TNS), new File(TYPES_XSD));
+        ExternalizedMetadataTestCases.compareSchemas(mysr.schemaFiles.get(TNS), getFile(TNS_XSD));
+        ExternalizedMetadataTestCases.compareSchemas(mysr.schemaFiles.get(TYPES_TNS), getFile(TYPES_XSD));
+    }
+
+    private File getFile(String resourceName) {
+        return new File(Thread.currentThread().getContextClassLoader().getResource(resourceName).getPath());
     }
 }

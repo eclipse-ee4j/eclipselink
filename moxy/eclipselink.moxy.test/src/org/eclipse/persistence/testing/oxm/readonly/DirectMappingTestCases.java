@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -65,7 +65,7 @@ public class DirectMappingTestCases extends OXTestCase {
         XMLMarshaller marshaller = context.createMarshaller();
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
 
-        InputStream in = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/readonly/employee.xml");
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/readonly/employee.xml");
         Employee emp = (Employee)unmarshaller.unmarshal(in);
         if (emp.firstName == null) {
             fail("read only attribute was not set on a read");
@@ -86,7 +86,7 @@ public class DirectMappingTestCases extends OXTestCase {
         XMLMarshaller marshaller = context.createMarshaller();
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
 
-        InputStream in = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/readonly/employee.xml");
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/readonly/employee.xml");
         Employee emp = (Employee)unmarshaller.unmarshal(in);
         if (emp.firstName == null) {
             fail("read only attribute was not set on a read");
@@ -116,7 +116,7 @@ public class DirectMappingTestCases extends OXTestCase {
     }*/
 
     private Document parse(String resource) throws Exception {
-        InputStream stream = getClass().getClassLoader().getResourceAsStream(resource);
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
         Document document = parser.parse(stream);
         removeEmptyTextNodes(document);
         return document;

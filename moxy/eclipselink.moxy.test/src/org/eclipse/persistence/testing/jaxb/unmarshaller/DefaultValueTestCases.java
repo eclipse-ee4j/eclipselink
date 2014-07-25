@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,7 +38,7 @@ public class DefaultValueTestCases extends JAXBTestCases {
     public void setUp() throws Exception {
         super.setUp();
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        schema = sf.newSchema(new File(XSD_RESOURCE)); 
+        schema = sf.newSchema(Thread.currentThread().getContextClassLoader().getResource(XSD_RESOURCE));
     }
 
 

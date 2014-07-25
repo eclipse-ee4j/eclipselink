@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,10 +40,10 @@ public class BinderWithJAXBElementTestCases extends TestCase {
     public void testAbsentNode() throws Exception {
         String xml = "<employee><id>123</id><!-- Comment 1 --><name>Matt</name></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/jaxbelement/employee.xml";
-        Document controlDocument = parser.parse(new File(controlSource));
-        
+        Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
+
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{Employee.class}, null);
-        
+
         Binder binder = ctx.createBinder();
         
         JAXBElement emp = binder.unmarshal(parser.parse(new StringReader(xml)), Employee.class);

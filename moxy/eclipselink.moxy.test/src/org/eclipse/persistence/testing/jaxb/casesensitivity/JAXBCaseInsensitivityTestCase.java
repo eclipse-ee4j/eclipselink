@@ -12,6 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.casesensitivity;
 
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
@@ -19,13 +27,6 @@ import org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.Customer
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Tests the functionality correctness of the case insensitive unmarshalling feature.
@@ -35,7 +36,7 @@ import java.util.Map;
  */
 public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
 
-    private static final File FILE = new File("org/eclipse/persistence/testing/jaxb/casesensitivity/customer.xml");
+    private static final URL CUSTOMER_FILE_URL = Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/casesensitivity/customer.xml");
     private static final Class[] CAMEL_CASE_CUSTOMER = new Class[]{CustomerImpl.class};
     private static final Class[] UPPER_CASE_CUSTOMER = new Class[]{org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl.class};
     private static final boolean DEBUG = false;
@@ -65,7 +66,7 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
     /* Case-insensitive part */
     private CustomerImpl unmarshalCorrectCaseInsensitive() throws JAXBException {
 
-        CustomerImpl correctCaseCustomer = (CustomerImpl) unmarshallerCorrectCaseInsensitive.unmarshal(FILE);
+        CustomerImpl correctCaseCustomer = (CustomerImpl) unmarshallerCorrectCaseInsensitive.unmarshal(CUSTOMER_FILE_URL);
         if (DEBUG) System.out.println(correctCaseCustomer);
 
         return correctCaseCustomer;
@@ -74,7 +75,7 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
     private org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl unmarshalOtherCaseInsensitive() throws JAXBException {
 
         org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl otherCaseCustomer
-                = (org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl) unmarshallerOtherCaseInsensitive.unmarshal(FILE);
+                = (org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl) unmarshallerOtherCaseInsensitive.unmarshal(CUSTOMER_FILE_URL);
         if (DEBUG) System.out.println(otherCaseCustomer);
 
         return otherCaseCustomer;
@@ -83,7 +84,7 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
     /* Case-sensitive part */
     private CustomerImpl unmarshalCorrectCaseSensitive() throws JAXBException {
 
-        CustomerImpl correctCaseCustomer = (CustomerImpl) unmarshallerCorrectCaseSensitive.unmarshal(FILE);
+        CustomerImpl correctCaseCustomer = (CustomerImpl) unmarshallerCorrectCaseSensitive.unmarshal(CUSTOMER_FILE_URL);
         if (DEBUG) System.out.println(correctCaseCustomer);
 
         return correctCaseCustomer;
@@ -92,7 +93,7 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
     private org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl unmarshalOtherCaseSensitive() throws JAXBException {
 
         org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl otherCaseCustomer
-                = (org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl) unmarshallerOtherCaseSensitive.unmarshal(FILE);
+                = (org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.CustomerImpl) unmarshallerOtherCaseSensitive.unmarshal(CUSTOMER_FILE_URL);
         if (DEBUG) System.out.println(otherCaseCustomer);
 
         return otherCaseCustomer;

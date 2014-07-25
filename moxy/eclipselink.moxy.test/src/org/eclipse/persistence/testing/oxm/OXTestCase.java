@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -388,25 +388,26 @@ public abstract class OXTestCase extends XMLTestCase {
     	if(controlValue instanceof JAXBElement && testValue instanceof JAXBElement){
     		compareJAXBElementObjects((JAXBElement)controlValue, (JAXBElement)testValue);
     	}else{
-    		super.compareValues(controlValue, testValue);
-    	}
+		super.compareValues(controlValue, testValue);
+	}
     }
-    protected String loadFileToString(String fileName){             
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);        
+
+    protected String loadFileToString(String fileName){
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
         return loadInputStreamToString(inputStream);
     }
 
     protected String loadInputStreamToString(InputStream inputStream){
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String lineSep = System.getProperty("line.separator");
 
-        try {            
+        try {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String str;
-            //Don't add teh lineSep the first time
+            //Don't add the lineSep the first time
             if(bufferedReader.ready()){
-            	sb.append(bufferedReader.readLine());
+		sb.append(bufferedReader.readLine());
             }
             while (bufferedReader.ready()) {         
             	sb.append(lineSep);

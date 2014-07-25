@@ -71,16 +71,16 @@ public class JSONReader extends XMLReaderAdapter {
     private boolean isInCollection;
 
     public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper){
-        this(attrPrefix, nr, namespaceAware, includeRoot, namespaceSeparator, errorHandler, textWrapper, null);        
+        this(attrPrefix, nr, namespaceAware, includeRoot, namespaceSeparator, errorHandler, textWrapper, null);
     }
 
     @SuppressWarnings("StringEquality")
     public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass){
         this.attributePrefix = attrPrefix;
-    	if (attributePrefix == Constants.EMPTY_STRING) {
-    	    attributePrefix = null;    	    	
-    	}
-    	namespaces = nr;
+	if (attributePrefix == Constants.EMPTY_STRING) {
+	    attributePrefix = null;
+	}
+	namespaces = nr;
     	this.namespaceAware = namespaceAware;
     	if(namespaceSeparator == null){
             this.namespaceSeparator = Constants.DOT;
@@ -90,9 +90,9 @@ public class JSONReader extends XMLReaderAdapter {
     	this.includeRoot = includeRoot;   
     	this.setErrorHandler(errorHandler);
     	this.textWrapper = textWrapper;
-    	this.unmarshalClass = unmarshalClass;
+	this.unmarshalClass = unmarshalClass;
     }
-    
+
     private final JSONAttributes attributes = new JSONAttributes();
 
     @Override
@@ -112,7 +112,10 @@ public class JSONReader extends XMLReaderAdapter {
                     try {
                         inputStream = new FileInputStream(input.getSystemId());
                     } catch(FileNotFoundException fileNotFoundException) {
-                        throw malformedURLException;
+                        inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(input.getSystemId());
+                        if (null == inputStream) {
+                            throw malformedURLException;
+                        }
                     }
                 }
                 charStream = new ANTLRInputStream(inputStream);
@@ -291,13 +294,13 @@ public class JSONReader extends XMLReaderAdapter {
                 	}                	
                     NodeValue nv = ((UnmarshalRecord)contentHandler).getAttributeChildNodeValue(uri, localName);
                     if(attributePrefix == null && nv !=null ){
-               	       break;
+		       break;
                     }
                 }
                 if (valueTree.getType() == JSONLexer.NULL) {
                     contentHandler.setNil(true);
                 }
-                
+
                 contentHandler.startElement(uri, localName, localName, attributes.setTree(valueTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
                 parse(valueTree);
                 contentHandler.endElement(uri, localName, localName);                
@@ -440,7 +443,7 @@ public class JSONReader extends XMLReaderAdapter {
 
     @Override
     public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy){
-    	return true;    	
+	return true;
     }
     
     
@@ -449,41 +452,41 @@ public class JSONReader extends XMLReaderAdapter {
     }
        
     private void endCollection(){
-    	isInCollection = false;
+	isInCollection = false;
     }
-    
+
     @Override
     public boolean isInCollection(){
-    	return isInCollection;
+	return isInCollection;
     }
     
     private boolean isTextValue(String localName){
    		XPathNode currentNode = ((UnmarshalRecord)contentHandler).getXPathNode();	
    		if(currentNode == null){
    			return textWrapper != null && textWrapper.equals(localName);
-   		}
+		}
 
-    	return((currentNode.getNonAttributeChildrenMap() == null 
-    			|| currentNode.getNonAttributeChildrenMap().isEmpty()
-    			|| (currentNode.getNonAttributeChildrenMap().size() == 1 &&  currentNode.getTextNode() != null))
-    			&& textWrapper != null && textWrapper.equals(localName));
+	return((currentNode.getNonAttributeChildrenMap() == null
+			|| currentNode.getNonAttributeChildrenMap().isEmpty()
+			|| (currentNode.getNonAttributeChildrenMap().size() == 1 &&  currentNode.getTextNode() != null))
+			&& textWrapper != null && textWrapper.equals(localName));
     }
-    
+
     /**
      * Formats Java formatted string to a real String instance.
      * @param Java escaped string with quotation marks
      * @return string instance
     */
     static String string(String string) {
-        
+
         char[] inputStringChars = string.toCharArray();
-        
+
         int lengthWithoutQuotation = inputStringChars.length-2;
         StringBuilder returnStringBuilder = new StringBuilder(lengthWithoutQuotation);
 
         int begin = 1;
         int end = lengthWithoutQuotation;
-	
+
         int position = begin;
 
         while (position <= end) {
@@ -563,7 +566,7 @@ public class JSONReader extends XMLReaderAdapter {
 
 	return returnStringBuilder.toString();
     }
-    
+
     /**
      * INTERNAL:
      * @since 2.4
@@ -630,12 +633,12 @@ public class JSONReader extends XMLReaderAdapter {
             this.namespaceAware = namespaceAware;
             return this;
         }
-               
+
         private void addSimpleAttribute(List attributes, String uri, String attributeLocalName,Tree childValueTree){
             switch(childValueTree.getType()) {
-             case JSONLexer.STRING: {                 
+             case JSONLexer.STRING: {
                  String stringValue = JSONReader.string(childValueTree.getChild(0).getText());
-            	 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue));
+		 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue));
                  break;
              }
              case JSONLexer.NUMBER: {
@@ -652,7 +655,7 @@ public class JSONReader extends XMLReaderAdapter {
              }
              case JSONLexer.NULL: {
                  break;
-             } 
+             }
             }
         }
 
@@ -748,12 +751,12 @@ public class JSONReader extends XMLReaderAdapter {
      * this is a subclass to throw errors that may occur instead of just logging them.
      */
     private static class ExtendedJSONParser extends JSONParser {
-       
-    	private final InputSource inputSource;
-    	private final ErrorHandler errorHandler;
-    	
-    	public ExtendedJSONParser(TokenStream input, InputSource inputSource, ErrorHandler errorHandler) {
-    		super(input);
+
+	private final InputSource inputSource;
+	private final ErrorHandler errorHandler;
+
+	public ExtendedJSONParser(TokenStream input, InputSource inputSource, ErrorHandler errorHandler) {
+		super(input);
     		this.inputSource = inputSource;
     		this.errorHandler = errorHandler;
     	}
@@ -773,14 +776,14 @@ public class JSONReader extends XMLReaderAdapter {
     private static class SAXExceptionWrapper extends RuntimeException {
     	
     	SAXExceptionWrapper(SAXException e){
-    		super(e);
-    	}
-    	
+		super(e);
+	}
+
         @Override
-    	public SAXException getCause() {
+	public SAXException getCause() {
             return (SAXException)super.getCause();
         }
-   
+
     }
 
 }

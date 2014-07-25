@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.schemagen.imports;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +33,6 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.address.Address;
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.relativeschemalocation.test.Foo;
@@ -40,17 +40,21 @@ import org.eclipse.persistence.testing.jaxb.schemagen.imports.relativeschemaloca
 import org.xml.sax.SAXException;
 
 public class SchemaGenImportTestCases extends TestCase {
-    static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/imports.xml";
-    static String INVALID_XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/invalid_imports.xml";
-    static String EMPLOYEE_XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/employee.xsd";
-    static String ADDRESS_XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/address.xsd";
-    static String EMPLOYEE_NS = "employeeNamespace";
-    static String ADDRESS_NS = "addressNamespace";
-    static String FILE = "file:///";
-    static String FOO_URI = "http://test.org"; 
-    static String FOO_SCHEMA = "org/eclipse/persistence/testing/jaxb/schemagen/imports/foo.xsd"; 
-    static String BAR_URI = "http://test2.org"; 
-    static String BAR_SCHEMA = "org/eclipse/persistence/testing/jaxb/schemagen/imports/bar.xsd"; 
+
+    private static final String PACKAGE_RESOURCE = "org/eclipse/persistence/testing/jaxb/schemagen/imports/";
+    private static final String IMPORTS_XML = "imports.xml";
+    private static final String XML_RESOURCE = PACKAGE_RESOURCE + IMPORTS_XML;
+    private static final String INVALID_XML_RESOURCE = PACKAGE_RESOURCE + "invalid_imports.xml";
+    private static final String EMPLOYEE_XSD_RESOURCE = PACKAGE_RESOURCE + "employee.xsd";
+    private static final String ADDRESS_XSD_RESOURCE = PACKAGE_RESOURCE + "address.xsd";
+
+    private static final String EMPLOYEE_NS = "employeeNamespace";
+    private static final String ADDRESS_NS = "addressNamespace";
+    private static final String FILE = "file:///";
+    private static final String FOO_URI = "http://test.org";
+    private static final String FOO_SCHEMA = PACKAGE_RESOURCE + "foo.xsd";
+    private static final String BAR_URI = "http://test2.org";
+    private static final String BAR_SCHEMA = PACKAGE_RESOURCE + "bar.xsd";
 
     public SchemaGenImportTestCases(String name) throws Exception {
         super(name);
@@ -76,14 +80,14 @@ public class SchemaGenImportTestCases extends TestCase {
         StreamSource ss;
         Validator validator = employeeSchema.newValidator();
         try {
-            ss = new StreamSource(new File(XML_RESOURCE)); 
+            ss = new StreamSource(getFile(XML_RESOURCE));
             validator.validate(ss);
         } catch (Exception ex) {
             ex.printStackTrace();
             fail("An unexpected exception occurred");
         }
         try {
-            ss = new StreamSource(new File(INVALID_XML_RESOURCE)); 
+            ss = new StreamSource(getFile(INVALID_XML_RESOURCE));
             validator.validate(ss);
         } catch (Exception ex) {
             return;
@@ -109,13 +113,25 @@ public class SchemaGenImportTestCases extends TestCase {
             if (namespaceURI == null) {
                 namespaceURI = "";
             } else if (namespaceURI.equals(EMPLOYEE_NS)) {
-                schemaFile = new File(EMPLOYEE_XSD_RESOURCE);
+                schemaFile = new File(getRelativePath() + EMPLOYEE_XSD_RESOURCE);
             } else if (namespaceURI.equals(ADDRESS_NS)) {
-                schemaFile = new File(ADDRESS_XSD_RESOURCE);
+                schemaFile = new File(getRelativePath() + ADDRESS_XSD_RESOURCE);
             }
             schemaFiles.put(namespaceURI, schemaFile);
             res = new StreamResult(schemaFile);
             return res;
+        }
+
+        private String getRelativePath() {
+            URL importsURL = SchemaGenImportTestCases.class.getResource(IMPORTS_XML);
+            URL rootURL = SchemaGenImportTestCases.class.getResource("/");
+
+            //this condition can be improved in JDK7 with java.nio.file.Path.startsWith
+            if (!importsURL.getPath().startsWith(rootURL.getPath())) {
+                return "";
+            } else {
+                return rootURL.getPath();
+            }
         }
     }
 
@@ -146,11 +162,15 @@ public class SchemaGenImportTestCases extends TestCase {
         File barFile = map.get(BAR_URI);
         assertTrue("No schema was generated for Foo", fooFile != null);
         assertTrue("No schema was generated for Bar", barFile != null);
-        
-        ExternalizedMetadataTestCases.compareSchemas(fooFile, new File(FOO_SCHEMA));
-        ExternalizedMetadataTestCases.compareSchemas(barFile, new File(BAR_SCHEMA));
+
+        ExternalizedMetadataTestCases.compareSchemas(fooFile, getFile(FOO_SCHEMA));
+        ExternalizedMetadataTestCases.compareSchemas(barFile, getFile(BAR_SCHEMA));
     }
-    
+
+    private static File getFile(String resourceName) {
+        return new File(Thread.currentThread().getContextClassLoader().getResource(resourceName).getPath());
+    }
+
     /**
      * SchemaOutputResolver for writing out the generated schema.  Returns a StreamResult
      * wrapping a StringWriter.
@@ -176,7 +196,7 @@ public class SchemaGenImportTestCases extends TestCase {
         private String modifyFileName(String namespaceURI) throws IOException {
             String fileName = namespaceURI.substring(7);
             fileName = fileName.replaceAll("/", "_");
-            return  fileName + ".xsd"; 
+            return  fileName + ".xsd";
         }
     }
 }

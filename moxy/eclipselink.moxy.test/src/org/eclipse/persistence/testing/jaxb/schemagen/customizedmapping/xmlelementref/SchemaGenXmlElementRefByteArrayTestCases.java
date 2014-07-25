@@ -13,8 +13,8 @@
 package org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +26,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.oxm.XMLConstants;
-
 import junit.framework.TestCase;
+
+import org.eclipse.persistence.jaxb.JAXBContext;
 
 public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
     static String tmpdir;
@@ -65,17 +64,26 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
     public void testGenerateSchema() {
         generateSchema();
 
+        InputStream src = null;
         try {
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
             Validator validator = theSchema.newValidator();
-            String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementref/bytearray.xml";
-            StreamSource ss = new StreamSource(new File(src)); 
+            src = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementref/bytearray.xml");
+            StreamSource ss = new StreamSource(src);
             validator.validate(ss);
         } catch (Exception ex) {
             fail("Schema validation failed unexpectedly: " + ex.toString());
+        } finally {
+            if (null != src) {
+                try {
+                    src.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        
+
     }
     class MySchemaOutputResolver extends SchemaOutputResolver {
         // keep a list of processed schemas for the validation phase of the test(s)

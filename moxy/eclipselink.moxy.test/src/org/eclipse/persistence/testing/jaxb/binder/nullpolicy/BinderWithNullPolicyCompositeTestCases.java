@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,10 +41,10 @@ public class BinderWithNullPolicyCompositeTestCases extends TestCase {
     public void testEmptyNode() throws Exception {
         String xml = "<employee><!-- Comment 1 --><name>Matt</name><!-- Comment 2 --><address><street>123 Fake Street</street><city>Kanata</city></address><phone>123-4567</phone><phone>234-5678</phone></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/emptynodecomposite.xml";
-        Document controlDocument = parser.parse(new File(controlSource));
-        
+        Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
+
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeCompositeA.class}, null);
-        
+
         Binder binder = ctx.createBinder();
         
         EmployeeCompositeA emp = (EmployeeCompositeA)binder.unmarshal(parser.parse(new StringReader(xml)));

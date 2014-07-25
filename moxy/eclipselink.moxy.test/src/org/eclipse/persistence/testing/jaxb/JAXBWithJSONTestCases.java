@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,7 +29,6 @@ import javax.json.JsonReader;
 import javax.json.JsonStructure;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonParser;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -37,7 +36,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
@@ -45,7 +43,6 @@ import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.json.JsonGeneratorResult;
 import org.eclipse.persistence.oxm.json.JsonObjectBuilderResult;
 import org.eclipse.persistence.oxm.json.JsonStructureSource;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MyStreamSchemaOutputResolver;
 import org.xml.sax.InputSource;
 
 public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
@@ -211,20 +208,31 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     public void testJSONUnmarshalFromSource() throws Exception {
         if(isUnmarshalTest()){
-    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
 
-    
-            Source source = new StreamSource(controlJSONLocation);
-            Object testObject = null;
-            if(getUnmarshalClass() != null){
-                testObject = getJSONUnmarshaller().unmarshal(source, getUnmarshalClass());
-            }else{
-                testObject = getJSONUnmarshaller().unmarshal(source);
+            InputStream controlJSONInputStream = null;
+            try {
+                controlJSONInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+                Source source = new StreamSource(controlJSONInputStream);
+                Object testObject = null;
+                if (getUnmarshalClass() != null) {
+                    testObject = getJSONUnmarshaller().unmarshal(source, getUnmarshalClass());
+                } else {
+                    testObject = getJSONUnmarshaller().unmarshal(source);
+                }
+                jsonToObjectTest(testObject);
+            } finally {
+                if (null != controlJSONInputStream) {
+                    try {
+                        controlJSONInputStream.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-            jsonToObjectTest(testObject);
         }
     }
-    
+
     public void testJSONUnmarshalFromJsonStructureSource() throws Exception {
         if(isUnmarshalTest()){
             getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());

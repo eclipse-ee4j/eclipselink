@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class JAXBCaseInsensitivityPerfTestCase extends junit.framework.TestCase {
 
-    private static final File FILE = new File("org/eclipse/persistence/testing/jaxb/casesensitivity/loremIpsum.xml");
+    private static final File FILE = new File(Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/casesensitivity/loremIpsum.xml").getPath());
 
     private static final int WARM_UP = 10000;
     private static final int LAPS    = 100000;

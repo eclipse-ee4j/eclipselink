@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,8 +36,8 @@ public class AnonymousTypeInheritanceTestCases  extends TestCase {
 
         MySchemaOutputResolver mysr = new MySchemaOutputResolver();
         cxt.generateSchema(mysr);
-        
+
         assertTrue("Expected 1 schema to be generated, but there were [" + mysr.schemaFiles.size() + "]", mysr.schemaFiles.size() == 1);
-        ExternalizedMetadataTestCases.compareSchemas(mysr.schemaFiles.get(""), new File(CONTROL_XSD));
+        ExternalizedMetadataTestCases.compareSchemas(mysr.schemaFiles.get(""), new File(Thread.currentThread().getContextClassLoader().getResource(CONTROL_XSD).getPath()));
     }
 }

@@ -57,6 +57,7 @@
     <property name="moxytest.2.common.plugins.dir" value="${moxytest.2.trunk.dir}/plugins"/>
     <property name="moxytest.2.moxy.dir"           value="${moxytest.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
     <property name="moxytest.2.core.dir"           value="${moxytest.2.trunk.dir}/foundation/org.eclipse.persistence.core"/>
+    <property name="moxytest.2.dynamic.dir"        value="${moxytest.2.trunk.dir}/moxy/org.eclipse.persistence.moxy.dynamicxjc"/>
     <property name="moxytest.2.buildsys.dir"       value="${moxytest.2.trunk.dir}/buildsystem"/>
     <property name="moxytest.plugins.dir"          value="../plugins"/>
     <!-- Temporary until eclipselink.jar property is globally renamed -->
@@ -109,9 +110,10 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${junit.lib}"/>
-        <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
@@ -125,7 +127,11 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
-        <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${antlr.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
+        <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
+        <pathelement path="${moxytest.2.moxy.dir}/${resource.dir}"/>
+        <pathelement path="${moxytest.2.dynamic.dir}/${classes.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
@@ -135,11 +141,13 @@
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
+        <pathelement path="${junit.lib}"/>
         <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
         <pathelement path="${javax.el-api.lib}"/>
         <pathelement path="${javax.el.lib}"/>
         <pathelement path="${classmate.lib}"/>
+        <pathelement path="${javax.validation.lib}"/>
     </path>
     <path id="oxm.compile.path">
         <path refid="xml.parser.path"/>
@@ -152,7 +160,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${junit.lib}"/>
-        <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
     </path>
     <path id="oxm.run.path">
@@ -164,11 +172,14 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
-        <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${asm.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${antlr.jar}"/>
+        <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${resource.dir}"/>
+        <pathelement path="${junit.lib}"/>
     </path>
 
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->

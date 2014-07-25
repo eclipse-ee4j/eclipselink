@@ -31,7 +31,7 @@ public class XmlAnyMixedTestCases extends TestCase {
         try {
             JAXBContext jc = JAXBContextFactory.createContext(new Class[]{Main.class}, null);
             Unmarshaller um = jc.createUnmarshaller();
-            Object o = um.unmarshal(new File("org/eclipse/persistence/testing/jaxb/xmlAnyMixed/rootAnyMixed.xml"));
+            Object o = um.unmarshal(Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/xmlAnyMixed/rootAnyMixed.xml"));
             Marshaller m = jc.createMarshaller();
             StringWriter sw = new StringWriter();
             m.marshal(o, sw);

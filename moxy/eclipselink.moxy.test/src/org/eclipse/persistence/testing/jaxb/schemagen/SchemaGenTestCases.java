@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.schemagen;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +30,10 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import junit.framework.TestCase;
+
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml.Employee;
-
-import junit.framework.TestCase;
 
 public class SchemaGenTestCases extends TestCase {
     protected static String tmpdir = (System.getenv("T_WORK") == null ? "" : (System.getenv("T_WORK") + "/"));
@@ -120,17 +119,25 @@ public class SchemaGenTestCases extends TestCase {
     protected String validateAgainstSchema(String src, int schemaIndex, MySchemaOutputResolver outputResolver) {
         SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema theSchema;
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(src);
         try {
             theSchema = sFact.newSchema(outputResolver.schemaFiles.get(schemaIndex));
             Validator validator = theSchema.newValidator();
-            StreamSource ss = new StreamSource(new File(src)); 
+            StreamSource ss = new StreamSource(is);
             validator.validate(ss);
         } catch (Exception e) {
             return e.getMessage();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         return null;
     }
-    
+
     /**
      * SchemaOutputResolver for writing out the generated schema.
      *

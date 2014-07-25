@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -57,35 +57,45 @@ public class SchemaGenEmployeeTestCases extends TestCase {
     public void testEmployeeSchemaGeneration() throws Exception {
         boolean exception = false;
         String msg = null;
-        String src = "org/eclipse/persistence/testing/jaxb/schemagen/employee/employee.xml";
+        InputStream employeeXml = null;
         String tmpdir = System.getenv("T_WORK");
         if (tmpdir == null) {
             tmpdir = System.getProperty("java.io.tmpdir");
         }
 
         try {
+            employeeXml = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/employee/employee.xml");
+
             Class[] jClasses = new Class[] { Address.class, Employee.class, PhoneNumber.class, Department.class, MyTestType.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
             Validator validator = theSchema.newValidator();
-            StreamSource ss = new StreamSource(new File(src)); 
+            StreamSource ss = new StreamSource(employeeXml);
             validator.validate(ss);
         } catch (Exception ex) {
             exception = true;
             msg = ex.toString();
+        } finally {
+            if (null != employeeXml) {
+                try {
+                    employeeXml.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         assertTrue("Schema validation failed unexpectedly: " + msg, exception==false);
-                        
+
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setIgnoringElementContentWhitespace(true);
         builderFactory.setNamespaceAware(true);
         DocumentBuilder parser = builderFactory.newDocumentBuilder();
-            
-        InputStream stream = new FileInputStream(new File("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema1.xsd"));
+
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/schemagen/employee/schema1.xsd");
         Document control = parser.parse(stream);
-            
+
         stream = new FileInputStream(new File(tmpdir + "/schema1.xsd"));
         Document test = parser.parse(stream);
             
