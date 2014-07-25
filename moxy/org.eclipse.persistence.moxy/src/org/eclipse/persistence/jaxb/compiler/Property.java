@@ -28,13 +28,11 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.compiler.facets.Facet;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.jaxb.GenericsClassHelper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.jaxb.javamodel.Helper;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.jaxb.javamodel.*;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
@@ -85,7 +83,7 @@ public class Property implements Cloneable {
     //Used to keep track of overrides
     private String originalGetMethodName;
     private String originalSetMethodName;
-    
+
     private String getMethodName;
     private String setMethodName;
     private boolean isRequired = false;
@@ -127,7 +125,7 @@ public class Property implements Cloneable {
 
 	// XmlMap specific attributes
     private JavaClass keyType;
-	private JavaClass valueType;	
+	private JavaClass valueType;
 	public static final String DEFAULT_KEY_NAME =  "key";
 	public static final String DEFAULT_VALUE_NAME =  "value";
 	private boolean isMap = false;
@@ -184,22 +182,20 @@ public class Property implements Cloneable {
      * @param adapterCls
      */
     public void setAdapterClass(JavaClass adapterCls) {
-        // Looking for XmlAdapter inheritance
-        JavaClass xmlAdapterChild = adapterCls;
-        while (xmlAdapterChild.getSuperclass() != null && !XML_ADAPTER_CLASS.getQualifiedName().equals(xmlAdapterChild.getSuperclass().getQualifiedName())) {
-            xmlAdapterChild = xmlAdapterChild.getSuperclass();
-        }
-        Type xmlAdapterType = xmlAdapterChild.getGenericSuperclass();
-        if (xmlAdapterType != null) { // generic XmlAdapter found
-            ParameterizedType parameterizedSuperClass = (ParameterizedType) xmlAdapterType;
-            Type[] typeArguments = parameterizedSuperClass.getActualTypeArguments();
-            if (typeArguments[0] == typeArguments[1]) // adapter doesn't change the type -> no need to continue
+
+        if (adapterCls.instanceOf() == JavaClassInstanceOf.JAVA_CLASS_IMPL) {
+            Type[] parameterizedTypeArguments = GenericsClassHelper.getParameterizedTypeArguments(((JavaClassImpl)adapterCls).getJavaClass(), XmlAdapter.class);
+            if (null != parameterizedTypeArguments && null != parameterizedTypeArguments[0]) {
+                JavaClass valueTypeClass = getJavaClassFromType(parameterizedTypeArguments[0]);
+                JavaClass boundType = getJavaClassFromType(parameterizedTypeArguments[1]);
+
+                if (valueTypeClass.isInterface()) {
+                    valueTypeClass = OBJECT_CLASS; // during unmarshalling we'll need to instantiate this, so -> no interfaces
+                }
+
+                setTypeFromAdapterClass(valueTypeClass, boundType);
                 return;
-            JavaClass valueTypeClass = getJavaClassFromType(typeArguments[0]);
-            if (valueTypeClass.isInterface())
-                valueTypeClass = OBJECT_CLASS; // during unmarshalling we'll need to instantiate this, so -> no interfaces
-            setTypeFromAdapterClass(valueTypeClass, getJavaClassFromType(typeArguments[1]));
-            return;
+            }
         }
 
         // If no generic superclass was found, use the old method of looking at
