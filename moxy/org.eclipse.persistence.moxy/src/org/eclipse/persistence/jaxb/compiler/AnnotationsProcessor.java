@@ -141,6 +141,7 @@ import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
+import org.eclipse.persistence.oxm.annotations.XmlElementNillable;
 import org.eclipse.persistence.oxm.annotations.XmlElementsJoinNodes;
 import org.eclipse.persistence.oxm.annotations.XmlLocation;
 import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
@@ -217,6 +218,7 @@ public final class AnnotationsProcessor {
 
     private List<JavaClass> typeInfoClasses;
     private Map<String, PackageInfo> packageToPackageInfoMappings;
+	private HashMap<String, XmlNillableInfo> packageToXmlNillableInfoMappings;
     private Map<String, MarshalCallback> marshalCallbacks;
     private Map<String, QName> userDefinedSchemaTypes;
     private Map<String, TypeInfo> typeInfos;
@@ -562,6 +564,9 @@ public final class AnnotationsProcessor {
                 info.setXmlTransient(true);
             }
 
+			// handle @XmlElementNillable
+            processXmlElementNillable(javaClass, info);
+
             // handle @XmlExtensible
             processXmlExtensible(javaClass, info);
 
@@ -643,6 +648,27 @@ public final class AnnotationsProcessor {
             typeInfos.put(info.getJavaClassName(), info);
         }
         return typeInfos;
+    }
+
+	private void processXmlElementNillable(JavaClass javaClass, TypeInfo info) {
+        if (helper.isAnnotationPresent(javaClass, XmlElementNillable.class)) {
+            XmlElementNillable xmlElementNillable = (XmlElementNillable) helper.getAnnotation(javaClass, XmlElementNillable.class);
+            info.setXmlElementNillable(xmlElementNillable.nillable());
+        } else if (hasExternalPackageMapping(javaClass)) {
+            info.setXmlElementNillable(packageToXmlNillableInfoMappings.get(javaClass.getPackageName()).getXmlElementNillable().isNillable());
+        } else if (helper.isAnnotationPresent(javaClass.getPackage(), XmlElementNillable.class)) {
+            XmlElementNillable xmlElementNillable = (XmlElementNillable) helper.getAnnotation(javaClass.getPackage(), XmlElementNillable.class);
+            info.setXmlElementNillable(xmlElementNillable.nillable());
+        }
+    }
+
+    private boolean hasExternalPackageMapping(JavaClass javaClass) {
+
+        if (null == packageToXmlNillableInfoMappings || !packageToXmlNillableInfoMappings.containsKey(javaClass.getPackageName())) {
+            return false;
+        }
+
+        return null != packageToXmlNillableInfoMappings.get(javaClass.getPackageName()).getXmlElementNillable();
     }
 
     private void processNamedObjectGraphs(JavaClass javaClass, TypeInfo info) {
@@ -1655,6 +1681,14 @@ public final class AnnotationsProcessor {
      * @param property
      */
     private void processXmlElement(Property property, TypeInfo info) {
+
+	    if (helper.isAnnotationPresent(property.getElement(), XmlElementNillable.class)) {
+            XmlElementNillable elementNillable = (XmlElementNillable) helper.getAnnotation(property.getElement(), XmlElementNillable.class);
+            property.setNillable(elementNillable.nillable());
+        } else if (info.isXmlElementNillable()) {
+            property.setNillable(true);
+        }
+
         if (helper.isAnnotationPresent(property.getElement(), XmlElement.class)) {
             XmlElement element = (XmlElement) helper.getAnnotation(property.getElement(), XmlElement.class);
             property.setIsRequired(element.required());
@@ -2718,7 +2752,7 @@ public final class AnnotationsProcessor {
         }
         // handle XmlJoinNode(s)
         processXmlJoinNodes(property);
-        processXmlNullPolicy(property);
+        processXmlNullPolicy(property, cls, info);
 
         // Handle XmlLocation
         JavaHasAnnotations elem = propertyElement;
@@ -2843,16 +2877,17 @@ public final class AnnotationsProcessor {
         return src.getRawName().equals(tgt.getCanonicalName());
     }
 
-    private void processXmlNullPolicy(Property property) {
-        if (helper.isAnnotationPresent(property.getElement(), XmlNullPolicy.class)) {
-            XmlNullPolicy nullPolicy = (XmlNullPolicy) helper.getAnnotation(property.getElement(), XmlNullPolicy.class);
-            org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy policy = new org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy();
-            policy.setEmptyNodeRepresentsNull(nullPolicy.emptyNodeRepresentsNull());
-            policy.setIsSetPerformedForAbsentNode(nullPolicy.isSetPerformedForAbsentNode());
-            policy.setXsiNilRepresentsNull(nullPolicy.xsiNilRepresentsNull());
-            policy.setNullRepresentationForXml(org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation.valueOf(nullPolicy.nullRepresentationForXml().toString()));
-            property.setNullPolicy(policy);
-
+    private void processXmlNullPolicy(Property property, JavaClass cls, TypeInfo info) {
+        if (propertyHasXmlNullPolicyAnnotation(property)) {
+            setNullPolicyOnProperty(property, helper.getAnnotation(property.getElement(), XmlNullPolicy.class));
+        } else if (existsExternalMappingWithJavaTypeXmlNullPolicy(info)) {
+            property.setNullPolicy(info.getXmlNullPolicy());
+        } else if (javaTypeHasXmlNullPolicyAnnotation(cls)) {
+            setNullPolicyOnProperty(property, helper.getAnnotation(cls, XmlNullPolicy.class));
+        } else if (existsExternaMappingWithPackageXmlNullPolicy(cls)) {
+            property.setNullPolicy(packageToXmlNillableInfoMappings.get(cls.getPackageName()).getXmlNullPolicy());
+        } else if (helper.isAnnotationPresent(cls.getPackage(), XmlNullPolicy.class)) {
+            setNullPolicyOnProperty(property, helper.getAnnotation(cls.getPackage(), XmlNullPolicy.class));
         } else if (helper.isAnnotationPresent(property.getElement(), XmlIsSetNullPolicy.class)) {
             XmlIsSetNullPolicy nullPolicy = (XmlIsSetNullPolicy) helper.getAnnotation(property.getElement(), XmlIsSetNullPolicy.class);
             org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy policy = new org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy();
@@ -2868,6 +2903,37 @@ public final class AnnotationsProcessor {
             }
             property.setNullPolicy(policy);
         }
+    }
+
+	private boolean existsExternaMappingWithPackageXmlNullPolicy(JavaClass cls) {
+
+        if (null == packageToXmlNillableInfoMappings || !packageToXmlNillableInfoMappings.containsKey(cls.getPackageName())) {
+            return false;
+        }
+
+        return null != packageToXmlNillableInfoMappings.get(cls.getPackageName()).getXmlNullPolicy();
+    }
+
+    private boolean javaTypeHasXmlNullPolicyAnnotation(JavaClass cls) {
+        return helper.isAnnotationPresent(cls, XmlNullPolicy.class);
+    }
+
+    private boolean existsExternalMappingWithJavaTypeXmlNullPolicy(TypeInfo info) {
+        return null != info.getXmlNullPolicy();
+    }
+
+    private boolean propertyHasXmlNullPolicyAnnotation(Property property) {
+        return helper.isAnnotationPresent(property.getElement(), XmlNullPolicy.class);
+    }
+
+    private void setNullPolicyOnProperty(Property property, Annotation nullPolicyAnnotation) {
+        XmlNullPolicy nullPolicy = (XmlNullPolicy) nullPolicyAnnotation;
+        org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy policy = new org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy();
+        policy.setEmptyNodeRepresentsNull(nullPolicy.emptyNodeRepresentsNull());
+        policy.setIsSetPerformedForAbsentNode(nullPolicy.isSetPerformedForAbsentNode());
+        policy.setXsiNilRepresentsNull(Boolean.valueOf(nullPolicy.xsiNilRepresentsNull()));
+        policy.setNullRepresentationForXml(org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation.valueOf(nullPolicy.nullRepresentationForXml().toString()));
+        property.setNullPolicy(policy);
     }
 
     /**
@@ -3487,15 +3553,54 @@ public final class AnnotationsProcessor {
      * @return
      */
     public void addPackageToNamespaceMapping(String packageName, NamespaceInfo nsInfo) {
+      PackageInfo info = getPackageInfoWithLazyInit(packageName);
+        info.setNamespaceInfo(nsInfo);
+    }
+
+    /**
+     * Add a package name/XmlElementNillable entry to the map. This method will
+     * lazy-load the map if necessary.
+     *
+     * @return
+     */
+    public void addPackageToXmlElementNillable(String packageName, org.eclipse.persistence.jaxb.xmlmodel.XmlElementNillable xmlElementNillable) {
+        XmlNillableInfo info = getXmlNillableInfoWithLazyInit(packageName);
+        info.setXmlElementNillable(xmlElementNillable);
+    }
+
+    /**
+     * Add a package name/XmlNullPolicy entry to the map. This method will
+     * lazy-load the map if necessary.
+     *
+     * @return
+     */
+    public void addPackageToXmlNullPolicy(String packageName, org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy xmlNullPolicy) {
+        XmlNillableInfo info = getXmlNillableInfoWithLazyInit(packageName);
+        info.setXmlNullPolicy(xmlNullPolicy);
+    }
+
+    private XmlNillableInfo getXmlNillableInfoWithLazyInit(String packageName) {
+        if (packageToXmlNillableInfoMappings == null) {
+            packageToXmlNillableInfoMappings = new HashMap<String, XmlNillableInfo>();
+        }
+        XmlNillableInfo info = packageToXmlNillableInfoMappings.get(packageName);
+        if (info == null) {
+            info = new XmlNillableInfo();
+            packageToXmlNillableInfoMappings.put(packageName, info);
+        }
+        return info;
+    }
+
+    private PackageInfo getPackageInfoWithLazyInit(String packageName) {
         if (packageToPackageInfoMappings == null) {
             packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
         }
         PackageInfo info = packageToPackageInfoMappings.get(packageName);
-        if(info == null) {
+        if (info == null) {
             info = new PackageInfo();
             packageToPackageInfoMappings.put(packageName, info);
         }
-        info.setNamespaceInfo(nsInfo);
+        return info;
     }
 
     public void addPackageToPackageInfoMapping(String packageName, PackageInfo packageInfo) {

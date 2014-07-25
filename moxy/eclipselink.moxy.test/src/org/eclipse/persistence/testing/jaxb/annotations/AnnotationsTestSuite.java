@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,8 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods.XmlAccessMethodsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor.XmlClassExtractorTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlelementnillable.XmlElementNillableFieldLevelOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlelementnillable.XmlElementNillablePackageLevelTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlelementnillable.XmlElementNillableTypeLevelOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlelementnillable.XmlElementNillableTypeLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdRefMissingIdEventHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdRefMissingIdTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.self.XmlIdRefSelfTestCases;
@@ -27,20 +34,22 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.class
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.upper.JAXBUpperNameTransformerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.DefaultNoNodeTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyNoXmlElementTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyPackageLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyTypeLevelOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyTypeLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.PredicateTestSuite;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.adapter.CustomerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.XmlPathsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.override.XmlPathsOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlproperty.XmlPropertyTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.SimpleRootTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XMLTransformationNoArgCtorTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XMLTransformationNoArgCtorXMLBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationMethodTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationTestCases;
-import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.SimpleRootTestCases;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+
 
 public class AnnotationsTestSuite extends TestSuite {
 
@@ -68,6 +77,13 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(XmlNullPolicyTestCases.class);
         suite.addTestSuite(DefaultNoNodeTestCases.class);
         suite.addTestSuite(XmlNullPolicyNoXmlElementTestCases.class);
+        suite.addTestSuite(XmlNullPolicyPackageLevelTestCases.class);
+        suite.addTestSuite(XmlNullPolicyTypeLevelTestCases.class);
+        suite.addTestSuite(XmlNullPolicyTypeLevelOverrideTestCases.class);
+        suite.addTestSuite(XmlElementNillablePackageLevelTestCases.class);
+        suite.addTestSuite(XmlElementNillableTypeLevelTestCases.class);
+        suite.addTestSuite(XmlElementNillableTypeLevelOverrideTestCases.class);
+        suite.addTestSuite(XmlElementNillableFieldLevelOverrideTestCases.class);
         suite.addTestSuite(JAXBDefaultNameTransformerTestCases.class);
         suite.addTestSuite(JAXBUpperNameTransformerTestCases.class);
         suite.addTestSuite(JAXBClassLevelUpperNameTransformerTestCases.class);
@@ -78,7 +94,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(XMLTransformationNoArgCtorTestCases.class);
         suite.addTestSuite(XMLTransformationNoArgCtorXMLBindingsTestCases.class);
         suite.addTestSuite(XmlTransformationMethodTestCases.class);
-		suite.addTestSuite(SimpleRootTestCases.class);
+        suite.addTestSuite(SimpleRootTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty.ContainerPropertyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.PropertyTypeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.required.RequiredAnnotationTestCases.class);

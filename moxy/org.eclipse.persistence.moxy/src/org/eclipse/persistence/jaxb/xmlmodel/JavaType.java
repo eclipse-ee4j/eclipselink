@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,21 +9,26 @@
  *
  * Contributors:
  * dmccann - June 29/2009 - 2.0 - Initial implementation
+ * Martin Vojtek - July 8/2014 - 2.6 - Added XmlNullPolicy and XmlElementNillable
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.xmlmodel;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlList;
 
 
 /**
- * <p>Java class for anonymous complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p>
+ * Java class for anonymous complex type.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -48,6 +53,8 @@ import javax.xml.bind.annotation.XmlList;
  *           &lt;/complexType>
  *         &lt;/element>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-named-object-graphs" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-null-policy" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-nillable" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="super-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
@@ -92,6 +99,10 @@ public class JavaType {
     protected JavaType.JavaAttributes javaAttributes;
     @javax.xml.bind.annotation.XmlElement(name = "xml-named-object-graphs")
     protected XmlNamedObjectGraphs xmlNamedObjectGraphs;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-null-policy")
+    protected XmlNullPolicy xmlNullPolicy;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-element-nillable")
+    protected XmlElementNillable xmlElementNillable;
     @javax.xml.bind.annotation.XmlAttribute(name = "name")
     protected String name;
     @javax.xml.bind.annotation.XmlAttribute(name = "super-type")
@@ -335,8 +346,50 @@ public class JavaType {
     }
 
     /**
+     * Gets the value of the xmlNullPolicy property.
+     *
+     * @return possible object is {@link XmlNullPolicy }
+     *
+     */
+    public XmlNullPolicy getXmlNullPolicy() {
+        return xmlNullPolicy;
+    }
+
+    /**
+     * Sets the value of the xmlNullPolicy property.
+     *
+     * @param value
+     *            allowed object is {@link XmlNullPolicy }
+     *
+     */
+    public void setXmlNullPolicy(XmlNullPolicy value) {
+        this.xmlNullPolicy = value;
+    }
+
+    /**
+     * Gets the value of the xmlElementNillable property.
+     *
+     * @return possible object is {@link XmlElementNillable }
+     *
+     */
+    public XmlElementNillable getXmlElementNillable() {
+        return xmlElementNillable;
+    }
+
+    /**
+     * Sets the value of the xmlElementNillable property.
+     *
+     * @param value
+     *            allowed object is {@link XmlElementNillable }
+     *
+     */
+    public void setXmlElementNillable(XmlElementNillable value) {
+        this.xmlElementNillable = value;
+    }
+
+    /**
      * Gets the value of the name property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }

@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -26,19 +26,23 @@ import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 
-import org.eclipse.persistence.oxm.XMLNameTransformer;
+
 
 import org.eclipse.persistence.jaxb.DefaultXMLNameTransformer;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
-import org.eclipse.persistence.jaxb.xmlmodel.XmlNamedObjectGraph;
+
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
+
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlNamedObjectGraph;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
+import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 /**
  * INTERNAL:
@@ -95,6 +99,8 @@ public class TypeInfo {
     private boolean isPreBuilt;
     private boolean isPostBuilt;
     private boolean isSetXmlTransient;
+    private boolean isXmlElementNillable;
+    private XmlNullPolicy xmlNullPolicy;
 
     private List<String> xmlSeeAlso;
     private XmlRootElement xmlRootElement;
@@ -138,6 +144,7 @@ public class TypeInfo {
         propertyList = new ArrayList<Property>();
         xmlNameTransformer = DEFAULT_NAME_TRANSFORMER;
         isSetXmlTransient = false;
+        isXmlElementNillable = false;
         isPreBuilt = false;
         isPostBuilt = false;
         this.javaClass = javaClass;
@@ -617,8 +624,44 @@ public class TypeInfo {
     }
 
     /**
+     * Indicates if XmlElementNillable is set.
+     *
+     * @return
+     */
+    public boolean isXmlElementNillable() {
+        return isXmlElementNillable;
+    }
+
+    /**
+     * Set the XmlElementNillable for this TypeInfo.
+     *
+     * @param isXmlElementNillable
+     */
+    public void setXmlElementNillable(boolean isXmlElementNillable) {
+        this.isXmlElementNillable = isXmlElementNillable;
+    }
+
+    /**
+     * Return XmlNullPolicy for this TypeInfo.
+     *
+     * @return xmlNullPolicy
+     */
+    public XmlNullPolicy getXmlNullPolicy() {
+        return xmlNullPolicy;
+    }
+
+    /**
+     * Set the XmlNullPolicy for this TypeInfo.
+     *
+     * @param xmlNullPolicy
+     */
+    public void setXmlNullPolicy(XmlNullPolicy xmlNullPolicy) {
+        this.xmlNullPolicy = xmlNullPolicy;
+    }
+
+    /**
      * Indicates if xmlSeeAlso has been set, i.e. is non-null
-     * 
+     *
      * @return true is xmlSeeAlso has been set, i.e. is non-null, false otherwise
      */
     public boolean isSetXmlSeeAlso() {
@@ -842,7 +885,7 @@ public class TypeInfo {
     public void setXmlCustomizer(String xmlCustomizerClassName) {
         this.xmlCustomizer = xmlCustomizerClassName;
     }
-    
+
     /**
      * Indicates if the name of the XmlAnyElement property has been set.
      * 

@@ -9,6 +9,7 @@
  *
  * Contributors:
  * dmccann - June 17/2009 - 2.0 - Initial implementation
+ * Martin Vojtek - July 8/2014 - 2.6 - XmlNullPolicy and XmlElementNillable
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
@@ -19,8 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -38,14 +39,18 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlNamedObjectGraph;
+import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlRegistries;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElementNillable;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRefs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
@@ -57,23 +62,21 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapters;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMap;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlNamedObjectGraph;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlProperties.XmlProperty;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransient;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
-import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlRegistries;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlProperties.XmlProperty;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVariableNode;
-import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 /**
  * INTERNAL:
@@ -150,10 +153,20 @@ public class XMLProcessor {
             if (nsInfo != null) {
                 aProcessor.addPackageToNamespaceMapping(packageName, nsInfo);
             }
-            
+
+            // handle @XmlElementNillable override
+            if (null != xmlBindings.getXmlElementNillable()) {
+                aProcessor.addPackageToXmlElementNillable(packageName, xmlBindings.getXmlElementNillable());
+            }
+
+            // handle @XmlNullPolicy override
+            if (null != xmlBindings.getXmlNullPolicy()) {
+                aProcessor.addPackageToXmlNullPolicy(packageName, xmlBindings.getXmlNullPolicy());
+            }
+
             // handle xml-registries
             // add an entry to the map of registries keyed on factory class name for each
-            XmlRegistries xmlRegs = xmlBindings.getXmlRegistries();  
+            XmlRegistries xmlRegs = xmlBindings.getXmlRegistries();
             if (xmlRegs != null) {
                 for (XmlRegistry xmlReg : xmlRegs.getXmlRegistry()) {
                     aProcessor.addXmlRegistry(xmlReg.getName(), xmlReg);
@@ -230,10 +243,22 @@ public class XMLProcessor {
                     if (javaType.getXmlJavaTypeAdapter() != null) {
                         info.setXmlJavaTypeAdapter(javaType.getXmlJavaTypeAdapter());
                     }
-                    
+
+                    // handle class-level @XmlNullPolicy override
+                    XmlNullPolicy xmlNullPolicy = javaType.getXmlNullPolicy();
+                    if (null != xmlNullPolicy) {
+                        info.setXmlNullPolicy(xmlNullPolicy);
+                    }
+
+                    // handle class-level @XmlElementNillable override
+                    XmlElementNillable xmlElementNillable = javaType.getXmlElementNillable();
+                    if (null != xmlElementNillable) {
+                        info.setXmlElementNillable(xmlElementNillable.isNillable());
+                    }
+
                     // handle class-level @XmlNameTransformer
                     String transformerClassName = javaType.getXmlNameTransformer();
-                    
+
                     XMLNameTransformer transformer = getXMLNameTransformerClassFromString(transformerClassName);
                     if(transformer != null){
                         info.setXmlNameTransformer(transformer);
@@ -446,7 +471,7 @@ public class XMLProcessor {
     }
 
     private XMLNameTransformer getXMLNameTransformerClassFromString(String transformerClassName){
-    	XMLNameTransformer transformer = null;
+	XMLNameTransformer transformer = null;
         if(transformerClassName != null){
            Class nameTransformerClass;
 
@@ -753,7 +778,7 @@ public class XMLProcessor {
         }
         return oldProperty;
     }
-    
+
     /**
      * Handle xml-any-attribute.
      * 
@@ -1011,7 +1036,7 @@ public class XMLProcessor {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
-        
+
         reapplyPackageAndClassAdapters(oldProperty, typeInfo);
         // handle XmlJavaTypeAdapter
         if (xmlAttribute.getXmlJavaTypeAdapter() != null) {
@@ -1515,7 +1540,7 @@ public class XMLProcessor {
                 aProcessor.buildNewTypeInfo(new JavaClass[] { pType });
             }
         }
-        
+
         reapplyPackageAndClassAdapters(oldProperty, info);
         // handle XmlJavaTypeAdapter
         if (xmlValue.getXmlJavaTypeAdapter() != null) {
@@ -1659,7 +1684,7 @@ public class XMLProcessor {
         }
         return oldProperty;
     }
-    
+
     /**
      * Convenience method for building a Map of package to classes.
      * 
@@ -2109,8 +2134,31 @@ public class XMLProcessor {
             } else if(nextBindings.getXmlJavaTypeAdapters() != null){
                 mergeXmlJavaTypeAdapters(rootBindings.getXmlJavaTypeAdapters(), nextBindings.getXmlJavaTypeAdapters());
             }
+
+            if (rootBindings.getXmlNullPolicy() == null) {
+                rootBindings.setXmlNullPolicy(nextBindings.getXmlNullPolicy());
+            } else if (nextBindings.getXmlNullPolicy() != null) {
+                mergeXmlNullPolicy(rootBindings.getXmlNullPolicy(), nextBindings.getXmlNullPolicy());
+            }
+
+            if (rootBindings.getXmlElementNillable() == null) {
+                rootBindings.setXmlElementNillable(nextBindings.getXmlElementNillable());
+            } else if (nextBindings.getXmlElementNillable() != null) {
+                mergeXmlElementNillable(rootBindings.getXmlElementNillable(), nextBindings.getXmlElementNillable());
+            }
         }
         return rootBindings;
+    }
+
+    private static void mergeXmlElementNillable(XmlElementNillable xmlElementNillable, XmlElementNillable overrideXmlElementNillable) {
+        xmlElementNillable.setNillable(overrideXmlElementNillable.isNillable());
+    }
+
+    private static void mergeXmlNullPolicy(XmlNullPolicy xmlNullPolicy, XmlNullPolicy overrideXmlNullPolicy) {
+        xmlNullPolicy.setEmptyNodeRepresentsNull(overrideXmlNullPolicy.isEmptyNodeRepresentsNull());
+        xmlNullPolicy.setIsSetPerformedForAbsentNode(overrideXmlNullPolicy.isIsSetPerformedForAbsentNode());
+        xmlNullPolicy.setNullRepresentationForXml(overrideXmlNullPolicy.getNullRepresentationForXml());
+        xmlNullPolicy.setXsiNilRepresentsNull(overrideXmlNullPolicy.isXsiNilRepresentsNull());
     }
 
     private static void mergeXmlJavaTypeAdapters(XmlJavaTypeAdapters xmlJavaTypeAdapters, XmlJavaTypeAdapters overrideAdapters) {

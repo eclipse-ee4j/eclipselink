@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ******************************************************************************
- Copyright (c) 1998, 2010 Oracle. All rights reserved.
- This program and the accompanying materials are made available under the 
- terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- which accompanies this distribution. 
+ Copyright (c) 1998, 2014 Oracle. All rights reserved.
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ which accompanies this distribution.
  The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- and the Eclipse Distribution License is available at 
+ and the Eclipse Distribution License is available at
  http://www.eclipse.org/org/documents/edl-v10.php.
 
  Contributors:
      dmccann - December 22/2010 - 2.3 - Initial implementation
+     Martin Vojtek - July 7/2014 - 2.6 - Added XmlNullPolicy and XmlElementNillable
 *****************************************************************************/
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
-    targetNamespace="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" 
+    targetNamespace="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
     elementFormDefault="qualified"
     attributeFormDefault="unqualified"
-    version="2.5">
+    version="2.6">
 
     <xs:element name="xml-bindings">
         <xs:complexType>
@@ -48,6 +49,8 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element ref="xml-null-policy" minOccurs="0" />
+                <xs:element ref="xml-element-nillable" minOccurs="0" />
             </xs:all>
             <xs:attribute name="xml-accessor-type" type="xml-access-type" default="PUBLIC_MEMBER" />
             <xs:attribute name="xml-accessor-order" type="xml-access-order" default="UNDEFINED" />
@@ -94,6 +97,8 @@
                     </xs:complexType>
                 </xs:element>
                 <xs:element ref="xml-named-object-graphs" minOccurs="0"/>
+                <xs:element ref="xml-null-policy" minOccurs="0" />
+                <xs:element ref="xml-element-nillable" minOccurs="0" />
             </xs:all>
             <xs:attribute name="name" type="xs:string" />
             <xs:attribute name="super-type" type="xs:string" default="##default" />
@@ -171,7 +176,7 @@
             <xs:enumeration value="2.4"/>
             <xs:enumeration value="2.5"/>
         </xs:restriction>
-    </xs:simpleType> 
+    </xs:simpleType>
 
     <!-- @Target(value=PACKAGE) -->
     <xs:element name="xml-schema">
@@ -204,6 +209,11 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    <xs:element name="xml-element-nillable">
+        <xs:complexType>
+            <xs:attribute name="nillable" type="xs:boolean" default="true" use="optional" />
+        </xs:complexType>
+    </xs:element>
 
     <!-- @Target(value={FIELD,METHOD,PACKAGE}) -->
     <xs:element name="xml-schema-type">
@@ -221,7 +231,7 @@
                 <xs:extension base="java-attribute">
                     <xs:attribute name="value" type="xs:string" use="required" />
                     <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
-                    <xs:attribute name="value-type" type="xs:string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />                    
+                    <xs:attribute name="value-type" type="xs:string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
@@ -296,7 +306,7 @@
             </xs:simpleContent>
         </xs:complexType>
     </xs:element>
-    
+
     <!-- @Target(value={FIELD,METHOD}) -->
     <xs:element name="xml-any-attribute" substitutionGroup="java-attribute">
         <xs:complexType>
@@ -319,7 +329,7 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:all>
-                        <xs:element ref="xml-abstract-null-policy" minOccurs="0" />                        
+                        <xs:element ref="xml-abstract-null-policy" minOccurs="0" />
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
                         <xs:element ref="xml-properties" minOccurs="0" />
@@ -393,7 +403,7 @@
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                    <xs:all>
-                        <xs:element ref="xml-abstract-null-policy" minOccurs="0" />                        
+                        <xs:element ref="xml-abstract-null-policy" minOccurs="0" />
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-element-wrapper" minOccurs="0"/>
                         <xs:element name="xml-inverse-reference" minOccurs="0">
@@ -546,7 +556,7 @@
                     </xs:complexType>
                 </xs:element>
             </xs:all>
-        </xs:complexType> 
+        </xs:complexType>
     </xs:element>
     <xs:element name="xml-abstract-null-policy" type="xml-abstract-null-policy" />
     <xs:complexType name="xml-abstract-null-policy" abstract="true">

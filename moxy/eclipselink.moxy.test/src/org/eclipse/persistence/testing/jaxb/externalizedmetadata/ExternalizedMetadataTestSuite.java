@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.ExceptionHandlingTestSuite;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.JAXBContextFactoryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.MappingsTestSuite;
@@ -42,8 +45,8 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.list
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.list.XmlAdapterListsTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.negative.XmlAdapterNegativeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.AdapterOnPackageTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.property.AdapterOnPropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.packagelevel.unspecified.XmlAdapterUnspecifiedClassTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.property.AdapterOnPropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.ClassLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.PackageLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.PropertyLevelTestCases;
@@ -55,8 +58,8 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.X
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementBaseTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementDomHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementListTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs2.XmlAnyElementWithEltRefsNonGlobalTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.XmlAnyElementWithEltRefsTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs2.XmlAnyElementWithEltRefsNonGlobalTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs3.XmlAnyElementWithEltRefsViaAnnotationTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattachmentref.XmlAttachmentRefCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute.XmlAttributeTestCases;
@@ -65,6 +68,11 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer.X
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlcustomizer.XmlCustomizerWithOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmldiscriminator.XmlDiscriminatorTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement.XmlElementTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementnillable.XmlElementNillablePackageLevelOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementnillable.XmlElementNillablePackageLevelTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementnillable.XmlElementNillablePackageTypeOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementnillable.XmlElementNillableTypeLevelOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementnillable.XmlElementNillableTypeLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.XmlElementRefTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.XmlElementRefWithWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.XmlElementRefsTestCases;
@@ -94,6 +102,11 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransfor
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.NameTransformerTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.XmlMappingDefaultNameTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.XmlMappingSpecifiedNameTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnullpolicy.XmlNullPolicyPackageLevelOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnullpolicy.XmlNullPolicyPackageLevelTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnullpolicy.XmlNullPolicyPackageTypeOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnullpolicy.XmlNullPolicyTypeLevelOverrideTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnullpolicy.XmlNullPolicyTypeLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry.XmlRegistryNonLocalTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry.XmlRegistryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlrootelement.XmlRootElementTestCases;
@@ -118,9 +131,6 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlVal
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPricesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementArrayTestCases;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * Suite for testing eclipselink-oxm.xml processing.
@@ -236,9 +246,19 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(PropertyAccessTestCases.class);
         suite.addTestSuite(UnspecifiedTestCases.class);
         suite.addTestSuite(XmlTransientUnsetPropTestCases.class);
+        suite.addTestSuite(XmlElementNillablePackageLevelOverrideTestCases.class);
+        suite.addTestSuite(XmlElementNillablePackageLevelTestCases.class);
+        suite.addTestSuite(XmlElementNillablePackageTypeOverrideTestCases.class);
+        suite.addTestSuite(XmlElementNillableTypeLevelOverrideTestCases.class);
+        suite.addTestSuite(XmlElementNillableTypeLevelTestCases.class);
+        suite.addTestSuite(XmlNullPolicyPackageLevelOverrideTestCases.class);
+        suite.addTestSuite(XmlNullPolicyPackageLevelTestCases.class);
+        suite.addTestSuite(XmlNullPolicyPackageTypeOverrideTestCases.class);
+        suite.addTestSuite(XmlNullPolicyTypeLevelOverrideTestCases.class);
+        suite.addTestSuite(XmlNullPolicyTypeLevelTestCases.class);
         return suite;
     }
-    
+
     public static void main(String[] args) {
         String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestSuite" };
         junit.textui.TestRunner.main(arguments);

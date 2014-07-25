@@ -9,11 +9,13 @@
  *
  * Contributors:
  * dmccann - June 29/2009 - 2.0 - Initial implementation
+ * Martin Vojtek - July 8/2014 - 2.6 - Added XmlNullPolicy and XmlElementNillable
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.xmlmodel;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -22,10 +24,13 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p>
+ * Java class for anonymous complex type.
+ *
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -68,6 +73,8 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-null-policy" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-nillable" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="xml-accessor-type" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-type" default="PUBLIC_MEMBER" />
  *       &lt;attribute name="xml-accessor-order" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-order" default="UNDEFINED" />
@@ -102,6 +109,10 @@ public class XmlBindings {
     protected XmlBindings.XmlEnums xmlEnums;
     @XmlElement(name = "java-types")
     protected XmlBindings.JavaTypes javaTypes;
+    @XmlElement(name = "xml-null-policy")
+    protected XmlNullPolicy xmlNullPolicy;
+    @XmlElement(name = "xml-element-nillable")
+    protected XmlElementNillable xmlElementNillable;
     @XmlAttribute(name = "xml-accessor-type")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
     @XmlAttribute(name = "xml-accessor-order")
@@ -282,8 +293,50 @@ public class XmlBindings {
     }
 
     /**
+     * Gets the value of the xmlNullPolicy property.
+     *
+     * @return possible object is {@link XmlNullPolicy }
+     *
+     */
+    public XmlNullPolicy getXmlNullPolicy() {
+        return xmlNullPolicy;
+    }
+
+    /**
+     * Sets the value of the xmlNullPolicy property.
+     *
+     * @param value
+     *            allowed object is {@link XmlNullPolicy }
+     *
+     */
+    public void setXmlNullPolicy(XmlNullPolicy value) {
+        this.xmlNullPolicy = value;
+    }
+
+    /**
+     * Gets the value of the xmlElementNillable property.
+     *
+     * @return possible object is {@link XmlElementNillable }
+     *
+     */
+    public XmlElementNillable getXmlElementNillable() {
+        return xmlElementNillable;
+    }
+
+    /**
+     * Sets the value of the xmlElementNillable property.
+     *
+     * @param value
+     *            allowed object is {@link XmlElementNillable }
+     *
+     */
+    public void setXmlElementNillable(XmlElementNillable value) {
+        this.xmlElementNillable = value;
+    }
+
+    /**
      * Gets the value of the xmlAccessorType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
