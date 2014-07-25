@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.oxm.xmlroot.nil;
 
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class XMLRootNilTestCases extends XMLMappingTestCases {
@@ -21,6 +22,9 @@ public class XMLRootNilTestCases extends XMLMappingTestCases {
 
     public XMLRootNilTestCases(String name) throws Exception {
         super(name);
+        if (null == System.getProperty(OXTestCase.PLATFORM_KEY)) {
+            System.setProperty(OXTestCase.PLATFORM_KEY, OXTestCase.PLATFORM_DOM);
+        }
         setControlDocument(XML_RESOURCE);
         setProject(new NilProject());
     }
@@ -30,6 +34,7 @@ public class XMLRootNilTestCases extends XMLMappingTestCases {
         return null;
     }
 
+    @Override
     public Object getControlObject() {
         XMLRoot xmlRoot = new XMLRoot();
         xmlRoot.setLocalName("bar");

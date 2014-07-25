@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -87,7 +87,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void setupControlDocs() throws Exception{
         if(this.controlDocumentLocation != null) {
-            InputStream inputStream = ClassLoader.getSystemResourceAsStream(controlDocumentLocation);
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlDocumentLocation);
             resourceName = controlDocumentLocation;
             controlDocument = parser.parse(inputStream);
             if (shouldRemoveEmptyTextNodesFromControlDoc()) {
@@ -97,7 +97,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         }
 
         if(this.writeControlDocumentLocation != null) {
-            InputStream inputStream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(writeControlDocumentLocation);
             writeControlDocument = parser.parse(inputStream);
             if (shouldRemoveEmptyTextNodesFromControlDoc()) {
                 removeEmptyTextNodes(writeControlDocument);
@@ -206,16 +206,16 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void testXMLToObjectFromInputStream() throws Exception {
         if(isUnmarshalTest()) {
-            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            InputStream instream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(resourceName);
             Object testObject = xmlUnmarshaller.unmarshal(instream);
             instream.close();
             xmlToObjectTest(testObject);
         }
     }
-    
+
     public void testXMLToObjectFromNode() throws Exception {
         if(isUnmarshalTest()) {
-            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
+            InputStream instream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(resourceName);
             Node node  = parser.parse(instream);
             Object testObject = xmlUnmarshaller.unmarshal(node);
             instream.close();
@@ -225,7 +225,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
         if(isUnmarshalTest()  && null != XML_INPUT_FACTORY) {
-            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            InputStream instream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(resourceName);
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
             XMLStreamReaderReader staxReader = new XMLStreamReaderReader();
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
@@ -236,10 +236,10 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             xmlToObjectTest(testObject);
         }
     }
-    
+
     public void testXMLToObjectFromXMLEventReader() throws Exception {
         if(isUnmarshalTest()  && null != XML_INPUT_FACTORY) {
-            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+            InputStream instream = Thread.currentThread().getContextClassLoader().getSystemResourceAsStream(resourceName);
             XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
             XMLEventReaderReader staxReader = new XMLEventReaderReader();
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
@@ -628,7 +628,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
     public void testXMLToObjectFromURL() throws Exception {
         if(isUnmarshalTest()) {
-            java.net.URL url = ClassLoader.getSystemResource(resourceName);
+            java.net.URL url = Thread.currentThread().getContextClassLoader().getResource(resourceName);
             Object testObject = xmlUnmarshaller.unmarshal(url);
             xmlToObjectTest(testObject);
         }
@@ -644,7 +644,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             XMLUnmarshallerHandler xmlUnmarshallerHandler = xmlUnmarshaller.getUnmarshallerHandler();
             xmlReader.setContentHandler(xmlUnmarshallerHandler);
 
-            InputStream inputStream = ClassLoader.getSystemResourceAsStream(resourceName);
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
             InputSource inputSource = new InputSource(inputStream);
             xmlReader.parse(inputSource);
 

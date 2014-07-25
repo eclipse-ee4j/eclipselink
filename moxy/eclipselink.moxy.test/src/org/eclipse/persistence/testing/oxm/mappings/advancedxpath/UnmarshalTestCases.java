@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -17,9 +17,12 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 public class UnmarshalTestCases extends XMLMappingTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/advancedxpath/unmarshal.xml";
-    
+
     public UnmarshalTestCases(String name) throws Exception {
         super(name);
+        if (!System.getProperties().contains("platformType")) {
+            System.setProperty("platformType", "DOM");
+        }
         this.setProject(new CustomerProject());
         this.setControlDocument(XML_RESOURCE);
     }

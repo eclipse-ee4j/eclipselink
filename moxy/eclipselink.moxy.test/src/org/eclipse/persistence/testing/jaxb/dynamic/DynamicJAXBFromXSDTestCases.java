@@ -1024,7 +1024,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String XPATH_POSITION = RESOURCE_DIR + "xpathposition.xsd";
     private static final String DATETIME_ARRAY = RESOURCE_DIR + "dateTimeArray.xsd";
 
-    private static final String ECLIPSELINK_SCHEMA = "org/eclipse/persistence/jaxb/eclipselink_oxm_2_5.xsd";
+    private static final String ECLIPSELINK_SCHEMA = "org/eclipse/persistence/jaxb/eclipselink_oxm_2_6.xsd";
 
     // Test Instance Docs
     private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";

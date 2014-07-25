@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -15,12 +15,15 @@ package org.eclipse.persistence.testing.oxm.readonly;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMResult;
+
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.testing.oxm.*;
+
 import java.util.*;
 import java.io.*;
+
 import org.w3c.dom.Document;
 
 public class DirectMappingTestCases extends OXTestCase {
@@ -42,7 +45,7 @@ public class DirectMappingTestCases extends OXTestCase {
         XMLMarshaller marshaller = context.createMarshaller();
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
 
-        InputStream in = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/readonly/employee.xml");
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/readonly/employee.xml");
         Employee emp = (Employee)unmarshaller.unmarshal(in);
         if (emp.firstName == null) {
             fail("read only attribute was not set on a read");

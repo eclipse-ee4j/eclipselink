@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -110,10 +110,8 @@ public class XMLChoiceCollectionMappingMixedTestCases extends XMLWithJSONMapping
   
   public void testReadDeploymentXML() {
 	  try {
-          // Read the deploymentXML-file.xml back in with XMLProjectReader							
-          FileReader fileReader = new FileReader(DEPLOYMENT_XML_RESOURCE);
-          Project newProject = XMLProjectReader.read(fileReader);
-          fileReader.close();
+          // Read the deploymentXML-file.xml back in with XMLProjectReader
+          Project newProject = XMLProjectReader.read(DEPLOYMENT_XML_RESOURCE, Thread.currentThread().getContextClassLoader());
           XMLContext ctx = new XMLContext(newProject);
 		  XMLUnmarshaller unmarshaller = ctx.createUnmarshaller();
 	      InputStream instream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);

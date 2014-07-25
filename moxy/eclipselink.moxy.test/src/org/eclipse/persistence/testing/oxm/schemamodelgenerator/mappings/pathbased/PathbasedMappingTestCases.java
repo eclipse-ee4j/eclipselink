@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -63,7 +63,7 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
 
-            XMLContext xCtx = new XMLContext("org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased");
+            XMLContext xCtx = new XMLContext("org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased", Thread.currentThread().getContextClassLoader());
             Project prj = xCtx.getSession(0).getProject();
             loginProject(prj);
 
@@ -81,13 +81,16 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
             assertNotNull("Schema to Document conversion failed", tDoc);
             assertNotNull("A problem occurred loading the control schema", cDoc);
             assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
-            
+
             SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            javax.xml.validation.Schema theSchema = sFact.newSchema(new File(TMP_DIR + "generatedSchema.xsd"));
+
+            File schemaFile = new File(TMP_DIR + "generatedSchema.xsd");
+
+            javax.xml.validation.Schema theSchema = sFact.newSchema(schemaFile);
             Validator validator = theSchema.newValidator();
-            StreamSource ss = new StreamSource(new File(XML_RESOURCE)); 
+            StreamSource ss = new StreamSource(new File(Thread.currentThread().getContextClassLoader().getResource(XML_RESOURCE).toURI()));
             validator.validate(ss);
-    	} catch (Exception ex) {
+	} catch (Exception ex) {
             exception = true;
             msg = ex.toString();
             ex.printStackTrace();
