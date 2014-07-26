@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,8 @@ package org.eclipse.persistence.testing.sdo.helper.datahelper;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -139,10 +141,13 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         Date dateObj = dataHelper.toDate("0001-01-01-05:00");
 
         SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.applyPattern("MM/dd/yyyy G");
+        sdf.applyPattern("MM/dd/yyyy");
 
-        String controlString = "01/01/0001 AD";
+        String controlString = "01/01/0001";
 
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateObj);
+        assertTrue(cal.get(Calendar.ERA) == GregorianCalendar.AD);
         assertEquals(controlString, sdf.format(dateObj));
     }
 
@@ -152,10 +157,13 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         Date dateObj = dataHelper.toDate("-2006-03-31T03:30:45.001-05:00");
 
         SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.applyPattern("MM/dd/yyyy G");
+        sdf.applyPattern("MM/dd/yyyy");
 
-        String controlString = "03/31/2006 BC";
-
+        String controlString = "03/31/2006";
+        
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateObj);
+        assertTrue(cal.get(Calendar.ERA) == GregorianCalendar.BC);
         assertEquals(controlString, sdf.format(dateObj));
     }
 

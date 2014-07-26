@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -49,6 +49,11 @@ public class Employee {
   public boolean equals(Object object) {
     try {
       Employee employee = (Employee) object;
+      if (null != this.getIdentifier() && null != employee.getIdentifier() && this.getIdentifier() instanceof java.util.Calendar && employee.getIdentifier() instanceof java.util.Calendar) {
+    	  if (((java.util.Calendar)this.getIdentifier()).getTimeInMillis() != ((java.util.Calendar)employee.getIdentifier()).getTimeInMillis()) {
+    		  return false;
+    	  }
+      } else 
       if(!this.getIdentifier().equals(employee.getIdentifier())) {return false;}
       if(!this.getFirstName().equals(employee.getFirstName())) {return false;}
       if(!this.getLastName().equals(employee.getLastName())) {return false;}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -51,7 +51,7 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
         Calendar aCalendar = (Calendar)dataHelper.convertFromStringValue(b, Calendar.class, null);
         assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected same time in millis", controlCalendar.getTimeInMillis() == aCalendar.getTimeInMillis());
     }
 
     public void testConverFromString_NoQname() {
@@ -75,7 +75,7 @@ public class DataHelperConvertFromStringTest extends DataHelperTestCases {
         Calendar aCalendar = (Calendar)dataHelper.convertFromStringValue(b, Calendar.class, null);
         assertTrue("Expected YEAR: " + controlCalendar.get(Calendar.YEAR) + ", but was: " + aCalendar.get(Calendar.YEAR), controlCalendar.get(Calendar.YEAR) == aCalendar.get(Calendar.YEAR));
         assertTrue("Expected TimeZone: " + controlCalendar.getTimeZone() + ", but was: " + aCalendar.getTimeZone(), controlCalendar.getTimeZone().equals(aCalendar.getTimeZone()));
-        assertTrue("Expected toString: " + controlCalendar.toString() + ", but was: " + aCalendar.toString(), controlCalendar.toString().equals(aCalendar.toString()));
+        assertTrue("Expected same time in millis", controlCalendar.getTimeInMillis() == aCalendar.getTimeInMillis());
     }
 
     public void testConverFromString_Type() {
