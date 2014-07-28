@@ -945,7 +945,7 @@
         <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
-            maxmemory="384m"
+            maxmemory="768m"
             Verbose="false"
             packagenames="org.eclipse.persistence.**"
             destdir="${unified.javadocs}"
@@ -1040,7 +1040,7 @@
         <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
-            maxmemory="384m"
+            maxmemory="768m"
             Verbose="false"
             packagenames="org.eclipse.persistence.**"
             destdir="${eclipselink.javadocs}"
@@ -1114,7 +1114,7 @@
         <property name="nosql.javadoc.title" value="${nosql.javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
         <delete dir="${nosql.javadocs}" failonerror="false"/>
         <javadoc
-            maxmemory="384m"
+            maxmemory="768m"
             Verbose="false"
             packagenames="org.eclipse.persistence.**"
             destdir="${nosql.javadocs}"
@@ -1149,7 +1149,7 @@
         <property name="jpars.javadoc.title" value="${jpars.javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
         <delete dir="${jpars.javadocs}" failonerror="false"/>
         <javadoc
-            maxmemory="384m"
+            maxmemory="768m"
             Verbose="false"
             packagenames="org.eclipse.persistence.**"
             destdir="${jpars.javadocs}"
