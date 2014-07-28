@@ -551,7 +551,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         FieldDefinition field5 = new FieldDefinition();
         field5.setName("START_TIME");
         field5.setTypeName("TIME");
-        field5.setSize(23);
+        field5.setSize(6);
         field5.setShouldAllowNull(true);
         field5.setIsPrimaryKey(false);
         field5.setUnique(false);
@@ -561,7 +561,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         FieldDefinition field6 = new FieldDefinition();
         field6.setName("END_TIME");
         field6.setTypeName("TIME");
-        field6.setSize(23);
+        field6.setSize(6);
         field6.setShouldAllowNull(true);
         field6.setIsPrimaryKey(false);
         field6.setUnique(false);
@@ -571,7 +571,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         FieldDefinition fieldOvertimeStart = new FieldDefinition();
         fieldOvertimeStart.setName("START_OVERTIME");
         fieldOvertimeStart.setTypeName("TIME");
-        fieldOvertimeStart.setSize(23);
+        fieldOvertimeStart.setSize(6);
         fieldOvertimeStart.setShouldAllowNull(true);
         fieldOvertimeStart.setIsPrimaryKey(false);
         fieldOvertimeStart.setUnique(false);
@@ -581,7 +581,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         FieldDefinition fieldOvertimeEnd = new FieldDefinition();
         fieldOvertimeEnd.setName("END_OVERTIME");
         fieldOvertimeEnd.setTypeName("TIME");
-        fieldOvertimeEnd.setSize(23);
+        fieldOvertimeEnd.setSize(6);
         fieldOvertimeEnd.setShouldAllowNull(true);
         fieldOvertimeEnd.setIsPrimaryKey(false);
         fieldOvertimeEnd.setUnique(false);

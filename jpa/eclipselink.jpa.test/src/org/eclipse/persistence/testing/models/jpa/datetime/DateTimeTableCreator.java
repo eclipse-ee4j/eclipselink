@@ -51,6 +51,7 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         FieldDefinition fieldCITY = new FieldDefinition();
         fieldCITY.setName("SQL_TIME");
         fieldCITY.setTypeName("TIME");
+        fieldCITY.setSize(6);
         fieldCITY.setIsPrimaryKey(false);
         fieldCITY.setIsIdentity(false);
         fieldCITY.setUnique(false);
@@ -60,6 +61,7 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         FieldDefinition fieldPROVINCE = new FieldDefinition();
         fieldPROVINCE.setName("SQL_TS");
         fieldPROVINCE.setTypeName("TIMESTAMP");
+        fieldPROVINCE.setSize(6);
         fieldPROVINCE.setIsPrimaryKey(false);
         fieldPROVINCE.setIsIdentity(false);
         fieldPROVINCE.setUnique(false);
@@ -69,6 +71,7 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         FieldDefinition fieldPOSTALCODE = new FieldDefinition();
         fieldPOSTALCODE.setName("UTIL_DATE");
         fieldPOSTALCODE.setTypeName("TIMESTAMP");
+        fieldPOSTALCODE.setSize(6);
         fieldPOSTALCODE.setIsPrimaryKey(false);
         fieldPOSTALCODE.setIsIdentity(false);
         fieldPOSTALCODE.setUnique(false);
@@ -78,6 +81,7 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         FieldDefinition fieldCalToCal = new FieldDefinition();
         fieldCalToCal.setName("CAL");
         fieldCalToCal.setTypeName("TIMESTAMP");
+        fieldCalToCal.setSize(6);
         fieldCalToCal.setIsPrimaryKey(false);
         fieldCalToCal.setIsIdentity(false);
         fieldCalToCal.setUnique(false);
