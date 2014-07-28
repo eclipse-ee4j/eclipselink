@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -137,9 +137,9 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	T date(String jdbcDate);
 
 	/**
-	 * Creates the expression <code><b>x ÷ y</b></code>.
+	 * Creates the expression <code><b>x / y</b></code>.
 	 *
-	 * @param builder The right side of the addition expression
+	 * @param builder The right side of the division expression
 	 * @return This This builder
 	 */
 	T divide(T builder);
@@ -273,9 +273,9 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	T mod(T parameter1, T parameter2);
 
 	/**
-	 * Creates the expression <code><b>x × y</b></code>.
+	 * Creates the expression <code><b>x * y</b></code>.
 	 *
-	 * @param builder The right side of the addition expression
+	 * @param builder The right side of the multiply expression
 	 * @return This This builder
 	 */
 	T multiply(T builder);
