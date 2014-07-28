@@ -164,13 +164,6 @@ public class PersistenceContext {
      */
     private Map<String, RestPageableQuery> pageableQueries;
 
-    /**
-     * JPARS pageable queries map.
-     * Key: named query name
-     * Value: corresponding RestPageableQuery annotation
-     */
-    private Map<String, RestPageableQuery> pageableQueries;
-
     protected PersistenceContext() {
     }
 
