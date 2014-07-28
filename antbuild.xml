@@ -141,8 +141,7 @@
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
     <property name="git.hash"   value="NA"/>
-    <condition property="version.qualifier" value="qualifier"
-                                             else="v${build.date}-${git.hash}">
+    <condition property="version.qualifier" value="qualifier" else="v${build.date}-${git.hash}">
         <equals arg1="${git.hash}" arg2="NA"/>
     </condition>
     <property name="version.string"      value="${release.version}.${version.qualifier}"/>
@@ -154,15 +153,20 @@
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-xjc.jar}"/>
         <pathelement path="${eclipselink.plugins}/${persistence10.jar}"/>
         <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${json-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${javax.validation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${ejb.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jms.jar}"/>
         <pathelement path="${eclipselink.plugins}/${stax_api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${transaction.jar}"/>
         <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
         <pathelement path="${eclipselink.plugins}/${wsrs.jar}"/>
+        <pathelement path="${java.class.path}"/>
     </path>
     <path id="nosql.javadoc.path">
         <path refid="javadoc.path"/>
@@ -925,7 +929,6 @@
     </target>
 
     <target name="build-unified-javadocs" depends="check-oracle-dependencies">
-        <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
         <path id="unified.javadoc.path">
             <path refid="javadoc.path"/>
             <path refid="nosql.javadoc.path"/>
@@ -937,7 +940,8 @@
             <pathelement path="${ucp.lib}"/>
             <pathelement path="${dms.lib}"/>
         </path>
-        <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
+        <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
+        <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, ${javadoc.postfixTitle}"/>
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
         <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
         <delete dir="${unified.javadocs}" failonerror="false"/>
@@ -952,6 +956,7 @@
             useexternalfile="yes"
             additionalparam="-breakiterator -quiet -notimestamp"
             windowtitle="${eclipselink.javadoc.title}"
+            failonerror="true"
             >
             <classpath>
                 <path refid="unified.javadoc.path"/>
@@ -1032,7 +1037,7 @@
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
     <target name="build-main-javadocs">
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
-        <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
+        <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, ${javadoc.postfixTitle}"/>
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
         <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
         <delete dir="${eclipselink.javadocs}" failonerror="false"/>
@@ -1047,6 +1052,7 @@
             useexternalfile="yes"
             additionalparam="-breakiterator -quiet -notimestamp"
             windowtitle="${eclipselink.javadoc.title}"
+            failonerror="true"
             >
             <classpath>
                 <path refid="javadoc.path"/>
@@ -1256,7 +1262,6 @@
             <zipfileset dir="${eclipselink.plugins}" prefix="eclipselink/jlib/moxy">
                 <include name="${jaxb-api.jar}"/>
                 <include name="${jaxb-xjc.jar}"/>
-                <include name="${jaxb-impl.jar}"/>
             </zipfileset>
             <!-- grab the sdo jar -->
             <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj.sdo.jar}" prefix="eclipselink/jlib/sdo"/>

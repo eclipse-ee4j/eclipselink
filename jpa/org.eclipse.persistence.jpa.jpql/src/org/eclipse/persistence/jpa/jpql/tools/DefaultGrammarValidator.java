@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,9 +22,9 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
  * This validator is responsible to validate a JPQL query grammatically purely based on the JPA
  * specification document.
  *
- * @see <a href="http://jcp.org/en/jsr/detail?id=220">JSR 220: Enterprise JavaBeans™ 3.0</a>
- * @see <a href="http://jcp.org/en/jsr/detail?id=317">JSR 317: Java™ Persistence 2.0</a>
- * @see <a href="http://jcp.org/en/jsr/detail?id=338">JSR 338: Java™ Persistence 2.1</a>
+ * @see <a href="http://jcp.org/en/jsr/detail?id=220">JSR 220: Enterprise JavaBeans 3.0</a>
+ * @see <a href="http://jcp.org/en/jsr/detail?id=317">JSR 317: Java Persistence 2.0</a>
+ * @see <a href="http://jcp.org/en/jsr/detail?id=338">JSR 338: Java Persistence 2.1</a>
  * @see DefaultSemanticValidator
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
