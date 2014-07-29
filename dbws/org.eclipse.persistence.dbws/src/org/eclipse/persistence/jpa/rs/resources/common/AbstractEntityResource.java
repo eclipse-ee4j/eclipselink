@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - pagination related changes
+ *      Dmitry Kornilov - pagination and fields filtering related changes
  ******************************************************************************/
 
 package org.eclipse.persistence.jpa.rs.resources.common;
@@ -24,6 +24,7 @@ import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
+import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilteringValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PageableFieldValidator;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
@@ -129,14 +130,27 @@ public abstract class AbstractEntityResource extends AbstractResource {
         JPARSLogger.entering(CLASS_NAME, "findInternal", new Object[] { "GET", version, persistenceUnit, type, id, uriInfo.getRequestUri().toASCIIString() });
 
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
-            Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
-            Object entityId = IdHelper.buildId(context, type, id);
-            Object entity = context.find(discriminators, type, entityId, getQueryParameters(uriInfo));
+            final PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
+            final Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
+            final Object entityId = IdHelper.buildId(context, type, id);
+            final Object entity = context.find(discriminators, type, entityId, getQueryParameters(uriInfo));
             if (entity == null) {
                 JPARSLogger.error("jpars_could_not_find_entity_for_key", new Object[] { type, id, persistenceUnit });
                 throw JPARSException.entityNotFound(type, id, persistenceUnit);
             }
+
+            // Fields filtering
+            if (context.getSupportedFeatureSet().isSupported(Feature.FIELDS_FILTERING)) {
+                final FieldsFilteringValidator fieldsFilteringValidator = new FieldsFilteringValidator(context, uriInfo, entity);
+                if (fieldsFilteringValidator.isFeatureApplicable()) {
+                    final StreamingOutputMarshaller marshaller = new StreamingOutputMarshaller(context,
+                            singleEntityResponse(context, entity, uriInfo),
+                            headers.getAcceptableMediaTypes(),
+                            fieldsFilteringValidator.getFields());
+                    return Response.ok(marshaller).build();
+                }
+            }
+
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);

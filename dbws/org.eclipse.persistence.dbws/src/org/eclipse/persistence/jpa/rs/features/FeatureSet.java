@@ -18,8 +18,14 @@ package org.eclipse.persistence.jpa.rs.features;
  */
 public interface FeatureSet {
     public enum Feature {
-        NO_PAGING,  /* not pageable resurces */
-        PAGING      /* pageable resources */
+        /* Not pageable resources */
+        NO_PAGING,
+
+        /* Pageable resources */
+        PAGING,
+
+        /* Fields filtering (fields, exclFields query parameters) */
+        FIELDS_FILTERING
     }
 
     /**

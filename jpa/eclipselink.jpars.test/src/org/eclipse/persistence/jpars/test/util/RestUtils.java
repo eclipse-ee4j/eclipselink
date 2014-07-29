@@ -161,10 +161,34 @@ public class RestUtils {
         uri.append(RestUtils.getServerURI() + context.getName());
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
-                uri.append(";" + key + "=" + tenantId.get(key));
+                uri.append(";").append(key).append("=").append(tenantId.get(key));
             }
         }
-        uri.append("/entity/" + type + "/" + id);
+        uri.append("/entity/").append(type).append("/").append(id);
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        String result = response.getEntity(String.class);
+        if (status != Status.OK) {
+            restCallFailed(context, status, result, outputMediaType);
+        }
+        return result;
+    }
+
+    /**
+     * REST GET entity with hints.
+     *
+     * @param context persistent context
+     * @param id entity ID
+     * @param type entity type
+     * @param hints hints list
+     * @param outputMediaType media type
+     * @return response in string
+     */
+    public static String restReadWithHints(PersistenceContext context, Object id, String type, Map<String, String> hints, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
+        StringBuilder uri = new StringBuilder();
+        uri.append(RestUtils.getServerURI()).append(context.getName()).append("/entity/").append(type).append("/").append(id);
+        appendParametersAndHints(uri, null, hints);
         WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();

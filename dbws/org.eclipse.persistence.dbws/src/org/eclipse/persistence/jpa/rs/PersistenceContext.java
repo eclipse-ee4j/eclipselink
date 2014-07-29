@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.ObjectGraph;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jpa.JpaHelper;
@@ -1134,17 +1135,39 @@ public class PersistenceContext {
         JPARSLogger.exiting(CLASS_NAME, "marshallEntity", this, object, mediaType);
     }
 
+    public void marshallEntity(Object object, List<String> fields, MediaType mediaType, OutputStream output) throws JAXBException {
+        JPARSLogger.entering(CLASS_NAME, "marshallEntity", new Object[] { object, fields, mediaType });
+        marshall(object, mediaType, output, true, fields);
+        JPARSLogger.exiting(CLASS_NAME, "marshallEntity", this, object, mediaType);
+    }
+
     /**
-     * Marshall an entity to either JSON or XML
+     * Marshall an entity to either JSON or XML.
+     *
      * @param object
      * @param mediaType
      * @param output
-     * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending 
+     * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending.
      * the actual objects in the relationships
      * @throws JAXBException
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void marshall(Object object, MediaType mediaType, OutputStream output, boolean sendRelationships) throws JAXBException {
+        marshall(object, mediaType, output, sendRelationships, null);
+    }
+
+    /**
+     * Marshall an entity to either JSON or XML.
+     *
+     * @param object
+     * @param mediaType
+     * @param output
+     * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending
+     *                          the actual objects in the relationships.
+     * @param fields            A list of fields to marshall.
+     * @throws JAXBException
+     */
+    public void marshall(final Object object, final MediaType mediaType, final OutputStream output, boolean sendRelationships, final List<String> fields) throws JAXBException {
         if (sendRelationships) {
             preMarshallEntity(object);
         }
@@ -1161,6 +1184,10 @@ public class PersistenceContext {
 
         for (XmlAdapter adapter : getAdapters()) {
             marshaller.setAdapter(adapter);
+        }
+
+        if (fields != null) {
+            marshaller.setProperty(MarshallerProperties.OBJECT_GRAPH, createObjectGraph(object, fields));
         }
 
         if (mediaType == MediaType.APPLICATION_XML_TYPE && object instanceof List) {
@@ -1434,6 +1461,22 @@ public class PersistenceContext {
                 }
             }
         }
+    }
+
+    /**
+     * Creates {@link ObjectGraph} from the given list of entity attributes.
+     *
+     * @param entity An entity to create object graph for.
+     * @param fields A list of entity attributes.
+     * @return Object graph
+     */
+    private ObjectGraph createObjectGraph(final Object entity, final List<String> fields) {
+        ObjectGraph objectGraph = getJAXBContext().createObjectGraph(entity.getClass());
+        objectGraph.addAttributeNodes("_persistence_links", "_persistence_relationshipInfo");
+        for (String field : fields) {
+            objectGraph.addAttributeNodes(field);
+        }
+        return objectGraph;
     }
 
     /* (non-Javadoc)

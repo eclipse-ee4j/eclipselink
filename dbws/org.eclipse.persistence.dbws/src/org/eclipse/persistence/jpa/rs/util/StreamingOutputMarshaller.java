@@ -13,13 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
-import java.beans.PropertyChangeListener;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.List;
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
+import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
@@ -28,14 +28,13 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
-import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
-import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
+import java.beans.PropertyChangeListener;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.List;
 
 /**
  * Simple {@link StreamingOutput} implementation that uses the provided
@@ -49,11 +48,25 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     private PersistenceContext context;
     private Object result;
     private MediaType mediaType;
+    private List<String> fields;
 
     public StreamingOutputMarshaller(PersistenceContext context, Object result, MediaType acceptedType) {
         this.context = context;
         this.result = result;
         this.mediaType = acceptedType;
+    }
+
+    /**
+     * This constructor is used for fields filtering. Only attributes included in fields parameter are marshalled.
+     *
+     * @param context persistence context.
+     * @param result entity to process.
+     * @param acceptedTypes
+     * @param fields a list of fields of 'result' entity to marshall.
+     */
+    public StreamingOutputMarshaller(PersistenceContext context, Object result, List<MediaType> acceptedTypes, List<String> fields) {
+        this(context, result, acceptedTypes);
+        this.fields = fields;
     }
 
     public StreamingOutputMarshaller(PersistenceContext context, Object result, List<MediaType> acceptedTypes) {
@@ -83,7 +96,11 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                             context.marshallEntity(result, mediaType, output);
                         }
                     } else {
-                        context.marshallEntity(result, mediaType, output);
+                        if (fields != null) {
+                            context.marshallEntity(result, fields, mediaType, output);
+                        } else {
+                            context.marshallEntity(result, mediaType, output);
+                        }
                     }
                     return;
                 } catch (Exception ex) {

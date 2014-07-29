@@ -28,6 +28,7 @@ public class FeatureSetV2 implements FeatureSet {
         switch (feature) {
             case NO_PAGING:
             case PAGING:
+            case FIELDS_FILTERING:
                 return true;
             default:
                 return false;
@@ -42,7 +43,6 @@ public class FeatureSetV2 implements FeatureSet {
         switch (feature) {
             case PAGING:
                 return new PagingResponseBuilder();
-            case NO_PAGING:
             default:
                 return new SelfLinksResponseBuilder();
         }

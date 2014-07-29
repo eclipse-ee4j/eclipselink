@@ -46,8 +46,8 @@ public class ServerPageableTest {
     private static final String JPA_RS_VERSION_STRING = "jpars.version.string";
     private static final String DEFAULT_PU = "jpars_basket-static";
 
-    private static PersistenceContext context = null;
-    private static PersistenceFactoryBase factory = null;
+    private static PersistenceContext context;
+    private static PersistenceFactoryBase factory;
 
     @BeforeClass
     public static void setup() throws Exception {
