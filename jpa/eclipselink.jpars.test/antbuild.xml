@@ -67,8 +67,8 @@
     <property file="${jparstest.build.location}/antbuild.properties"/>
     <property file="${user.home}/${test.properties}"/>
     <property file="${user.home}/test.properties"/>
-    <property file="${eclipselink.jpars.test}/${test.properties}"/>
-    <property file="${eclipselink.jpars.test}/test.properties"/>
+    <property file="${jparstest.build.location}/${test.properties}"/>
+    <property file="${jparstest.build.location}/test.properties"/>
 
     <!-- Clean all build generated content. -->
     <target name="clean" description="Clean the build">
@@ -107,59 +107,48 @@
 
         <!-- Test for Third-party dependencies -->
         <selectbundle basename="javax.xml.bind" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="jaxb-api.lib" includepath="true"
-        />
+                      criterion="[2.0.0,3.0.0)" property="jaxb-api.lib" includepath="true"/>
         <selectbundle basename="javax.persistence" directory="${jparstest.build.location}/${jparstest.2.jpa.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="persistence20.lib" includepath="true"
-        />
+                      criterion="[2.0.0,3.0.0)" property="persistence20.lib" includepath="true"/>
         <selectbundle basename="com.sun.jersey" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[1.0.0,2.0.0)" property="jersey.lib" includepath="true"
-        />
+                      criterion="[1.0.0,2.0.0)" property="jersey.lib" includepath="true"/>
         <selectbundle basename="javax.ws.rs" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[1.0.0,2.0.0)" property="javax.ws.rs.lib" includepath="true"
-        />
+                      criterion="[1.0.0,2.0.0)" property="javax.ws.rs.lib" includepath="true"/>
         <selectbundle basename="javax.ejb" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[3.0.0,4.0.0)" property="javax.ejb.lib" includepath="true"
-        />
+                      criterion="[3.0.0,4.0.0)" property="javax.ejb.lib" includepath="true"/>
         <selectbundle basename="javax.servlet" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="javax.servlet.lib" includepath="true"
-        />
+                      criterion="[2.0.0,3.0.0)" property="javax.servlet.lib" includepath="true"/>
+        <selectbundle basename="javax.validation" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+                      criterion="[1.0.0,2.0.0)" property="validation.lib" includepath="true"/>
+
         <available file="${jaxb-api.lib}"      property="jaxb-api.lib.exist"/>
         <available file="${persistence20.lib}" property="persistence20.lib.exist"/>
         <available file="${jersey.lib}"        property="jersey.lib.exist"/>
         <available file="${javax.ws.rs.lib}"   property="javax.ws.rs.lib.exist"/>
+        <available file="${validation.lib}"    property="validation.lib.exist"/>
         <echo message="jaxb-api.lib          ='${jaxb-api.lib}'"/>
         <echo message="persistence20.lib     ='${persistence20.lib}'"/>
         <echo message="jersey.lib            ='${jersey.lib}'"/>
         <echo message="javax.ws.rs.lib       ='${javax.ws.rs.lib}'"/>
+        <echo message="validation.lib        ='${validation.lib}'"/>
 
         <!-- Test for Eclipselink dependencies -->
         <selectbundle basename="org.eclipse.persistence.antlr" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,4.0.0)" property="antlr.lib" includepath="true"
-        />
-        <selectbundle basename="org.eclipse.persistence.asm" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,4.0.0)" property="asm.lib" includepath="true"
-        />
+                      criterion="[2.0.0,4.0.0)" property="antlr.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.jpa.jpql" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="hermes.lib" includepath="true"
-        />
+                      criterion="[2.0.0,3.0.0)" property="hermes.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.core" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="core.lib" includepath="true"
-        />
+                      criterion="[2.0.0,3.0.0)" property="core.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.moxy" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="moxy.lib" includepath="true"
-        />
+                      criterion="[2.0.0,3.0.0)" property="moxy.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.jpa" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="jpa.lib" includepath="true"
-        />
+                      criterion="[2.0.0,3.0.0)" property="jpa.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.jpars" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="jpars.lib" includepath="true"
-        />
+                      criterion="[2.0.0,3.0.0)" property="jpars.lib" includepath="true"/>
         <selectbundle basename="org.eclipse.persistence.dbws" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="dbws.lib" includepath="true"
-        />
+                      criterion="[2.0.0,3.0.0)" property="dbws.lib" includepath="true"/>
+
         <available file="${antlr.lib}"        property="antlr.bundle.exist"/>
-        <available file="${asm.lib}"          property="asm.bundle.exist"/>
         <available file="${hermes.lib}"       property="hermes.bundle.exist"/>
         <available file="${core.lib}"         property="core.bundle.exist"/>
         <available file="${moxy.lib}"         property="moxy.bundle.exist"/>
@@ -167,13 +156,12 @@
         <available file="${jpars.lib}"        property="jpars.bundle.exist"/>
         <available file="${jparstest.2.base.dir}/${eclipselink.jar}"      property="eclipselink.jar.exist"/>
         <echo message="antlr.lib             ='${antlr.lib}'"/>
-        <echo message="asm.lib               ='${asm.lib}'"/>
         <echo message="hermes.lib            ='${hermes.lib}'"/>
         <echo message="core.lib              ='${core.lib}'"/>
         <echo message="moxy.lib              ='${moxy.lib}'"/>
         <echo message="jpa.lib               ='${jpa.lib}'"/>
         <echo message="jpars.lib             ='${jpars.lib}'"/>
-        <echo message="javax.ejb.lib             ='${javax.ejb.lib}'"/>
+        <echo message="javax.ejb.lib         ='${javax.ejb.lib}'"/>
 
         <!-- path to OSGi Bundle compile dependencies -->
         <path id="jparstest.bundle.compile.path">
@@ -193,19 +181,16 @@
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${javax.ejb.lib}"/>
             <pathelement path="${javax.servlet.lib}"/>
+            <pathelement path="${validation.lib}"/>
         </path>
         <!-- Run path without product components -->
         <path id="jparstest.thirdparty.run.path">
             <pathelement path="${resource.dir}"/>
             <pathelement path="${classes.dir}"/>
             <pathelement path="${antlr.lib}"/>
-            <pathelement path="${asm.lib}"/>
             <pathelement path="${hermes.lib}"/>
-            <fileset
-                dir="${jparstest.2.common.plugins.dir}"
-                includes="
-                   ${eclipselink.core.depend}
-                "/>
+            <fileset dir="${jparstest.2.common.plugins.dir}"
+                     includes="${eclipselink.core.depend}"/>
         </path>
 
         <!-- Set Compile/Run Paths using product OSGi bundles -->
@@ -317,6 +302,7 @@
             <copy todir="${jparstest.build.location}/${classes.dir}/META-INF">
                 <fileset dir="${jparstest.build.location}/${src.dir}/META-INF" includes="**"/>
             </copy>
+
             <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
             <junit printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
