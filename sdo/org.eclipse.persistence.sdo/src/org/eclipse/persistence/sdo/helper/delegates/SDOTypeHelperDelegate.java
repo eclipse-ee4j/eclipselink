@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,10 +18,13 @@ import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -49,6 +52,8 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
  * </ul>
  */
 public class SDOTypeHelperDelegate implements SDOTypeHelper {
+
+    private static final Logger LOGGER = Logger.getLogger(SDOTypeHelperDelegate.class.getName());
 
     /** Map containing user defined types */
     private Map typesHashMap;
@@ -123,6 +128,18 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private static SDOWrapperType SDO_LONGOBJECT_WRAPPER;
     private static SDOWrapperType SDO_SHORTOBJECT_WRAPPER;
 
+    /**
+     * Debug info.
+     *
+     * Content should be the same as in searchSources within {@link SDOTypeHelperDelegate#getType(Class)}
+     */
+    private final static String[] SEARCH_SOURCES_NAMES = {
+            "interfacesToSDOTypeHashMap",
+            "sdoTypeForSimpleJavaType",
+            "typesHashMap",
+            "anonymousTypes",
+            "commonjHashMap"};
+
     // create these maps once to avoid threading issues
     static {
         initSDOTypeForSimpleJavaTypeMap();
@@ -134,7 +151,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
         initCommonjHashMap();
         initCommonjJavaHashMap();
-        
+
         reset();
     }
 
@@ -204,8 +221,8 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         SDO_YEARMONTHDAY_WRAPPER.addDescriptorToProject(project);
 
         SDO_STRING_WRAPPER.addDescriptorToProject(project);
-        SDO_DATETIME_WRAPPER.addDescriptorToProject(project);        
-        
+        SDO_DATETIME_WRAPPER.addDescriptorToProject(project);
+
         SDO_BOOLEANOBJECT_WRAPPER.addDescriptorToProject(project);
         SDO_BYTEOBJECT_WRAPPER.addDescriptorToProject(project);
         SDO_CHARACTEROBJECT_WRAPPER.addDescriptorToProject(project);
@@ -566,52 +583,73 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      *    type.getInstanceClass();
      * @return the Type for this interfaceClass or null if not found.
      */
+    @SuppressWarnings("unchecked")
     public SDOType getType(Class interfaceClass) {
-        // Check interfaces-to-types map first:
-        SDOType type = (SDOType) getInterfacesToSDOTypeHashMap().get(interfaceClass);
-        if (type != null) {
-            return type;
-        }
+        LOGGER.info("Looking for : " + interfaceClass);
 
-        type = getTypeForSimpleJavaType(interfaceClass);
-        if (type != null) {
-            return type;
-        }
-        
-        //types keyed on qname
-        Iterator iter = getTypesHashMap().keySet().iterator();
-        while (iter.hasNext()) {
-            QName key = (QName)iter.next();
-            SDOType value = (SDOType) getTypesHashMap().get(key);
+        final Object[] searchSources = new Object[] {
+                interfacesToSDOTypeHashMap,
+                sdoTypeForSimpleJavaType,
+                getTypesHashMap().values(),
+                anonymousTypes,
+                commonjHashMap.values()};
 
-            if (value.getInstanceClass() == interfaceClass) {
-                return value;
+        for (int i = 0; i < searchSources.length; i++) {
+            Object searchSource = searchSources[i];
+            if (searchSource == null)
+                continue;
+            SDOType type;
+            if (searchSource instanceof Map) {
+                type = ((Map<Class<?>, SDOType>)searchSource).get(interfaceClass);
+            } else { // collection
+                type = getFromCollection(((Collection<SDOType>)searchSource), interfaceClass);
+            }
+            if (type != null) {
+                LOGGER.info(interfaceClass + " was found in: " + SEARCH_SOURCES_NAMES[i] + '.');
+                return type;
             }
         }
 
-        //Check in list of anonymous types
-        iter = getAnonymousTypes().iterator();
-        while(iter.hasNext()) {
-            SDOType value = (SDOType)iter.next();
-            
-            if(value.getInstanceClass() == interfaceClass) {
-                return value;
+        if (LOGGER.isLoggable(Level.INFO)) {
+            final StringBuilder log = new StringBuilder();
+            log.append("Not found: ").append(interfaceClass).append('\n');
+            for (int i = 0; i < searchSources.length; i++) { // let's show content of all search sources
+                log.append("Content of ")
+                        .append(SEARCH_SOURCES_NAMES[i])
+                        .append(": ");
+                final Object searchSource = searchSources[i];
+                if (searchSource == null) {
+                    log.append("null");
+                } else {
+                    if (searchSource instanceof Map) {
+                        log.append(((Map) searchSource).keySet());
+                    } else { // collection
+                        for (SDOType sdoType : (Collection<SDOType>) searchSource) {
+                            log.append(sdoType.getInstanceClass()).append(", ");
+                        }
+                    }
+                }
+                log.append('\n');
             }
+            LOGGER.info(log.toString());
         }
 
-        //Check in the commonjHashMap as well.
-        iter = this.commonjHashMap.keySet().iterator();
-        while (iter.hasNext()) {
-            Object key = iter.next();
-            SDOType value = (SDOType) commonjHashMap.get(key);
+        return null;
+    }
 
-            if (value.getInstanceClass() == interfaceClass) {
-                return value;
+    /**
+     * Looking for interfaceClass within the given collection
+     * @param collection of SDOTypes
+     * @param interfaceClass which contains SDOType we are looking for
+     * @return SDOType with a given interfaceClass or null
+     */
+    private SDOType getFromCollection(Collection<SDOType> collection, Class interfaceClass) {
+        for (SDOType sdoType : collection) {
+            if (sdoType.getInstanceClass() == interfaceClass) {
+                return sdoType;
             }
         }
-       
-
-        return null; 
+        return null;
     }
 
     public SDOType getTypeForImplClass(Class implClass) {
@@ -852,7 +890,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
 
         newProperty.setAppInfoElements((List) dataObject.get(SDOConstants.APPINFO));
-        
+
         if (dataObject.isSet("containment")) {
             newProperty.setContainment(dataObject.getBoolean("containment"));
         } else {
@@ -1018,7 +1056,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         if (propertyDO == null) {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("defineOpenContentProperty", "propertyDO"));
         }
-        
+
         String name = propertyDO.getString("name");
         Property propertyToReturn = aHelperContext.getXSDHelper().getGlobalProperty(uri, name, true);
         if (propertyToReturn == null) {
@@ -1036,7 +1074,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             Object propDOType = propertyDO.get("type");
             SDOType existingType = (SDOType) propertyToReturn.getType();
             boolean typeMismatch = false;
-            
+
             if (propDOType instanceof SDOType) {
                 SDOType newType = (SDOType) propDOType;
                 if (!newType.getQName().equals(existingType.getQName())) {
@@ -1048,12 +1086,12 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
                     typeMismatch = true;
                 }
             }
-            
+
             if (typeMismatch) {
                 throw new IllegalArgumentException("Should not be able to redefine a Property with a different Type.");
             }
         }
-        
+
         return propertyToReturn;
     }
 
