@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -55,6 +55,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     07/16/2013-2.5.1 Guy Pelletier 
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
+ *     07/01/2014-2.5.3 Rick Curtis 
+ *       - 375101: Date and Calendar should not require @Temporal.       
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -579,6 +581,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         return getMapKeyTemporal();
     }
     
+    @Override
+    public void setTemporal(TemporalMetadata metadata, boolean isForMapKey) {
+        m_mapKeyTemporal = metadata;
+    }
     /**
      * INTERNAL:
      * Return true if this accessor has enumerated metadata.

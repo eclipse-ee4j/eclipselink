@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -31,6 +31,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     07/01/2014-2.5.3  Rick Curtis 
+ *       - 375101: Date and Calendar should not require @Temporal.    
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -241,6 +243,11 @@ public abstract class DirectAccessor extends MappingAccessor {
      */
     public TemporalMetadata getTemporal() {
         return m_temporal;
+    }
+    
+    @Override
+    public void setTemporal(TemporalMetadata metadata, boolean isForMapKey) {
+        m_temporal = metadata;
     }
     
     /**

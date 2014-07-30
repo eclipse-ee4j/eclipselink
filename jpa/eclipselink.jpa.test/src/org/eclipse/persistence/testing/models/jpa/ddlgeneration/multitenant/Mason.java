@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,6 +10,8 @@
  * Contributors:
  *     31/05/2012-2.4 Guy Pelletier  
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+ *     07/07/2014-2.5.3 Rick Curtis 
+ *       - 375101: Date and Calendar should not require @Temporal.
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant;
 
@@ -26,8 +28,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyTemporal;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.annotations.Multitenant;
 
@@ -43,9 +47,13 @@ public class Mason {
     public String name;
     public Trowel trowel;
     public Map<Date, String> awards;
+    public Map<Date, Integer> hoursWorked;
+    public Map<Date, Mason> uniSelf;
 
     public Mason() {
         awards = new HashMap<Date, String>();
+        hoursWorked = new HashMap<Date, Integer>();
+        uniSelf = new HashMap<Date, Mason>();
     }
 
     public void addAward(Date awardDate, String award) {
@@ -61,6 +69,16 @@ public class Mason {
     @Column(name="AWARD")
     public Map<Date, String> getAwards() {
         return awards;
+    }
+
+    
+    public void addHoursWorked(Date d, Integer time){
+        hoursWorked.put(d, time);
+    }
+    
+    @ElementCollection
+    public Map<Date, Integer> getHoursWorked() {
+        return hoursWorked;
     }
     
     @Id
@@ -83,6 +101,10 @@ public class Mason {
         this.awards = awards;
     }
     
+    public void setHoursWorked(Map<Date, Integer> h) {
+        hoursWorked = h;
+    }
+    
     public void setId(int id) {
         this.id = id;
     }
@@ -93,5 +115,18 @@ public class Mason {
     
     public void setTrowel(Trowel trowel) {
         this.trowel = trowel;
+    }
+
+    public void addUniSelf(Date d, Mason m){
+        uniSelf.put(d, m);
+    }
+    @OneToMany
+    @MapKeyTemporal(TemporalType.TIMESTAMP)
+    public Map<Date, Mason> getUniSelf() {
+        return uniSelf;
+    }
+
+    public void setUniSelf(Map<Date, Mason> uniSelf) {
+        this.uniSelf = uniSelf;
     }
 }
