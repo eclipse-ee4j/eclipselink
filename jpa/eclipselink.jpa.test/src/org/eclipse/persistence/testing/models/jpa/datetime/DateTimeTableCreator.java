@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/07/2014-2.5.3 Rick Curtis 
+ *       - 375101: Date and Calendar should not require @Temporal.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.datetime;
 
@@ -22,6 +24,7 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         setName("EJB3DateTimeProject");
 
         addTableDefinition(buildDateTimeTable());
+        addTableDefinition(buildDateTimeSelfTable());
     }
 
     public static TableDefinition buildDateTimeTable() {
@@ -88,6 +91,42 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         fieldCalToCal.setShouldAllowNull(true);
         table.addField(fieldCalToCal);
 
+        return table;
+    }
+    
+    public static TableDefinition buildDateTimeSelfTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_DATE_TIME_CMP3_DATE_TIME");
+    
+        FieldDefinition field0 = new FieldDefinition();
+        field0.setName("DateTime_DT_ID");
+        field0.setTypeName("NUMERIC");
+        field0.setSize(15);
+        field0.setShouldAllowNull(false);
+        field0.setIsPrimaryKey(false);
+        field0.setUnique(false);
+        field0.setIsIdentity(false);
+        table.addField(field0);
+    
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("UNISELFMAP_DT_ID");
+        field1.setTypeName("NUMERIC");
+        field1.setSize(15);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+        
+        FieldDefinition field2 = new FieldDefinition();
+        field2.setName("UNISELFMAP_KEY");
+        field2.setTypeName("TIMESTAMP");
+        field2.setShouldAllowNull(true);
+        field2.setIsPrimaryKey(false);
+        field2.setUnique(false);
+        field2.setIsIdentity(false);
+        table.addField(field2);
+    
         return table;
     }
 

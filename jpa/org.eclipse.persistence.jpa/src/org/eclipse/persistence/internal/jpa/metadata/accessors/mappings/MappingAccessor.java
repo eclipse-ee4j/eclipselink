@@ -91,6 +91,8 @@
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
  *     06/20/2014-2.5.2 Rick Curtis 
  *       - 437760: AttributeOverride with no column name defined doesn't work.       
+ *     07/01/2014-2.5.3 Rick Curtis 
+ *       - 375101: Date and Calendar should not require @Temporal.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -107,7 +109,6 @@ import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.annotations.ReturnInsert;
 import org.eclipse.persistence.annotations.ReturnUpdate;
 import org.eclipse.persistence.exceptions.ValidationException;
-
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -118,7 +119,6 @@ import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirection
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -147,7 +147,6 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
-
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.ContainerMapping;
@@ -857,7 +856,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
             if (referenceClass == null) {
                 throw ValidationException.unableToDetermineMapKeyClass(getAttributeName(), getJavaClass());
-            }            
+            }        
         
             // 266912:  Use of parameterized generic types like Map<X,Y> 
             // inherits from class<T> in a MappedSuperclass field will cause 
@@ -1038,6 +1037,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public TemporalMetadata getTemporal(boolean isForMapKey) {
         return null;
+    }
+    
+    /**
+     * INTERNAL: Set the temporal metadata for this accessor.
+     * 
+     * @see DirectAccessor
+     * @see CollectionAccessor
+     */
+    protected void setTemporal(TemporalMetadata metadata, boolean isForMapKey) {
+
     }
     
     /**
@@ -2003,10 +2012,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected void processTemporal(TemporalMetadata temporal, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
         if (temporal == null) {
-            // We have a temporal type on either a basic mapping or the key to
-            // a collection mapping. Since the temporal type was not specified, 
-            // per the JPA spec we must throw an exception.
-            throw ValidationException.noTemporalTypeSpecified(getAttributeName(), getJavaClass());
+            // We need to have a temporal type on either a basic mapping or the key to a collection
+            // mapping. Since the temporal type was not specified, per the JPA spec we *should* throw an
+            // exception.. but lets be a little nice to our users and default to timestamp.
+            MetadataAnnotation annotation = new MetadataAnnotation();
+            annotation.setName("javax.persistence.Temporal");
+            annotation.addAttribute("value", "TIMESTAMP");
+            temporal = new TemporalMetadata(annotation, this);
+
+            // This call handles both @Temporal and @MapKeyTemporal
+            setTemporal(temporal, isForMapKey);
         }
         
         temporal.process(mapping, this, referenceClass, isForMapKey);

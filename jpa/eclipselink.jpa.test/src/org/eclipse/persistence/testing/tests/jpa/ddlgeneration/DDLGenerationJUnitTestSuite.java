@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates, Frank Schwarz. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, Frank Schwarz, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -36,7 +36,9 @@
  *     31/05/2012-2.4 Guy Pelletier  
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
  *     09/10/2008-2.4.1 Daryl Davis
- *       - 386939: @ManyToMany Map<Entity,Entity> unidirectional reverses Key and Value fields on Update 
+ *       - 386939: @ManyToMany Map<Entity,Entity> unidirectional reverses Key and Value fields on Update
+ *     07/07/2014-2.5.3 Rick Curtis 
+ *       - 375101: Date and Calendar should not require @Temporal. 
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -2172,6 +2174,11 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             mason.setName("FromTenantDDL");
             mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), "Best pointer");
             mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), "Least screw-ups");
+            
+            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), Integer.valueOf(10));
+            mason.addHoursWorked(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), Integer.valueOf(11));
+            
+            mason.addUniSelf(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), mason);
             
             Trowel trowel = new Trowel();
             trowel.setType("Pointing");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,22 +9,36 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/01/2014-2.5.3 Rick Curtis 
+ *       - 375101: Date and Calendar should not require @Temporal.    
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.datetime;
 
-import java.io.Serializable;
+import static javax.persistence.GenerationType.TABLE;
 
-import java.util.Date;
+import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.TemporalType.TIMESTAMP;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="CMP3_DATE_TIME")
-
 public class DateTime implements Serializable {
     private Integer id;
     private java.sql.Date date;
@@ -32,6 +46,8 @@ public class DateTime implements Serializable {
     private Timestamp timestamp;
     private Date utilDate;
     private Calendar calendar;
+    
+    private Map<Date, DateTime> uniSelfMap;
 
     public DateTime() {
     }
@@ -42,6 +58,9 @@ public class DateTime implements Serializable {
         this.timestamp = timestamp;
         this.utilDate = utilDate;
         this.calendar = calendar;
+        
+        uniSelfMap = new HashMap<Date, DateTime>();
+        uniSelfMap.put(new Date(), this);
     }
 
     @Id
@@ -89,7 +108,7 @@ public class DateTime implements Serializable {
     }
 
     @Column(name="UTIL_DATE")
-    @Temporal(TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getUtilDate() { 
         return utilDate; 
     }
@@ -99,7 +118,7 @@ public class DateTime implements Serializable {
     }
 
     @Column(name="CAL")
-    @Temporal(TIMESTAMP)
+    // No @Temporal to test defaulting
     public Calendar getCalendar() { 
         return calendar; 
     }
@@ -107,4 +126,16 @@ public class DateTime implements Serializable {
     public void setCalendar(Calendar date) { 
         this.calendar = date; 
     }
+
+    @OneToMany(cascade = CascadeType.ALL)
+    // No @MapKeyTemporal to test defaulting
+    public Map<Date, DateTime> getUniSelfMap() {
+        return uniSelfMap;
+    }
+
+    public void setUniSelfMap(Map<Date, DateTime> u) {
+        uniSelfMap = u;
+    }
+    
+    
 }
