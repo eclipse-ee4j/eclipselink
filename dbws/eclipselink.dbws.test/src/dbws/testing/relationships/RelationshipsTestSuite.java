@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,7 @@ package dbws.testing.relationships;
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.Vector;
+import java.util.TimeZone;
 import org.w3c.dom.Document;
 
 //JUnit4 imports
@@ -51,6 +52,7 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
 
 import dbws.testing.AllTests;
+import dbws.testing.DBWSTestHelper;
 
 //testing imports
 import static dbws.testing.DBWSTestHelper.DATABASE_DDL_CREATE_KEY;
@@ -65,10 +67,18 @@ import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
 import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
 
 public class RelationshipsTestSuite {
+    
+    private static final String TIMEZONE_OFFSET;
+    
     static {
-        System.setProperty("user.timezone", "Canada/Eastern");
+        int offsetInMillis = TimeZone.getDefault().getRawOffset();
+        String offset = String.format("%02d:%02d", 
+                Math.abs(offsetInMillis / 3600000), 
+                Math.abs((offsetInMillis / 60000) % 60)
+        );
+        TIMEZONE_OFFSET = (offsetInMillis >= 0 ? "+" : "-") + offset;
     }
-
+            
     static final String CREATE_DDL =
         "CREATE TABLE IF NOT EXISTS XR_ADDRESS (" +
         "            ADDRESS_ID NUMERIC(15) NOT NULL," +
@@ -733,9 +743,9 @@ public class RelationshipsTestSuite {
         "</object-persistence>";
 
     // test fixtures
-    public static XMLComparer comparer = new XMLComparer();
-    public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-    public static XMLParser xmlParser = xmlPlatform.newXMLParser();
+    public static final XMLComparer comparer = new XMLComparer();
+    public static final XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+    public static final XMLParser xmlParser = xmlPlatform.newXMLParser();
     public static XRServiceAdapter xrService = null;
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -831,7 +841,7 @@ public class RelationshipsTestSuite {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void getAllEmployees() {
+    public void getAllEmployees() {        
       Invocation invocation = new Invocation("getAllEmployees");
       Operation op = xrService.getOperation(invocation.getName());
       Object result = op.invoke(xrService, invocation);
@@ -845,8 +855,12 @@ public class RelationshipsTestSuite {
       XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
       marshaller.marshal(xrDynamicEntityCol, doc);
       Document controlDoc = xmlParser.parse(new StringReader(EMPLOYEE_COLLECTION_XML));
-      assertTrue("control document not same as XRService instance document",
-          comparer.isNodeEqual(controlDoc, doc));
+      
+      assertTrue(
+        "control document: \n" + DBWSTestHelper.documentToString(controlDoc) +
+        "\n not same as XRService instance document: " + DBWSTestHelper.documentToString(doc), 
+        comparer.isNodeEqual(controlDoc, doc)
+      );
     }
 
     public static final String EMPLOYEE_COLLECTION_XML =
@@ -874,10 +888,10 @@ public class RelationshipsTestSuite {
                   "<type>Work</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1995-01-01</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>F</gender>" +
             "<salary>500001</salary>" +
             "<version>1</version>" +
@@ -912,10 +926,10 @@ public class RelationshipsTestSuite {
             "<responsibilities>" +
                "<responsibility>Write code documentation.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1995-05-01</start-date>" +
             "<end-date>2001-07-31</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>F</gender>" +
             "<salary>87000</salary>" +
             "<version>1</version>" +
@@ -955,10 +969,10 @@ public class RelationshipsTestSuite {
             "<responsibilities>" +
                "<responsibility>Have to fix the Database problem.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1995-01-01</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>M</gender>" +
             "<salary>49631</salary>" +
             "<version>1</version>" +
@@ -988,10 +1002,10 @@ public class RelationshipsTestSuite {
             "<responsibilities>" +
                "<responsibility>Write user specifications.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1995-01-12</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>M</gender>" +
             "<salary>54300</salary>" +
             "<version>1</version>" +
@@ -1023,10 +1037,10 @@ public class RelationshipsTestSuite {
                   "<type>Work Fax</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1993-01-01</start-date>" +
             "<end-date>1996-01-01</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>F</gender>" +
             "<salary>75000</salary>" +
             "<version>1</version>" +
@@ -1048,10 +1062,10 @@ public class RelationshipsTestSuite {
                   "<type>Home</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1993-01-01</start-date>" +
             "<end-date>1996-01-01</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>F</gender>" +
             "<salary>31000</salary>" +
             "<version>1</version>" +
@@ -1078,10 +1092,10 @@ public class RelationshipsTestSuite {
                   "<type>Work Fax</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1991-11-11</start-date>" +
             "<end-date>2006-08-31</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>F</gender>" +
             "<salary>56232</salary>" +
             "<version>1</version>" +
@@ -1111,10 +1125,10 @@ public class RelationshipsTestSuite {
             "<responsibilities>" +
                "<responsibility>Write lots of Java code.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1995-01-01</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>M</gender>" +
             "<salary>43000</salary>" +
             "<version>1</version>" +
@@ -1141,10 +1155,10 @@ public class RelationshipsTestSuite {
                   "<type>ISDN</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1995-01-01</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>M</gender>" +
             "<salary>500000</salary>" +
             "<version>1</version>" +
@@ -1170,10 +1184,10 @@ public class RelationshipsTestSuite {
                "<responsibility>Clean the kitchen.</responsibility>" +
                "<responsibility>Make the coffee.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1993-01-01</start-date>" +
             "<end-date>1996-01-01</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>M</gender>" +
             "<salary>35000</salary>" +
             "<version>1</version>" +
@@ -1204,10 +1218,10 @@ public class RelationshipsTestSuite {
                "<responsibility>Fire people for goofing off.</responsibility>" +
                "<responsibility>Hire people when more people are required.</responsibility>" +
             "</responsibilities>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1991-11-11</start-date>" +
             "<end-date>2006-08-31</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>M</gender>" +
             "<salary>53000</salary>" +
             "<version>1</version>" +
@@ -1234,10 +1248,10 @@ public class RelationshipsTestSuite {
                   "<type>Home</type>" +
                "</phone>" +
             "</phones>" +
-            "<start-time>00:00:00-05:00</start-time>" +
+            "<start-time>00:00:00"+TIMEZONE_OFFSET+"</start-time>" +
             "<start-date>1995-01-12</start-date>" +
             "<end-date>2001-12-31</end-date>" +
-            "<end-time>00:00:00-05:00</end-time>" +
+            "<end-time>00:00:00"+TIMEZONE_OFFSET+"</end-time>" +
             "<gender>M</gender>" +
             "<salary>50000</salary>" +
             "<version>1</version>" +
