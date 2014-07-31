@@ -223,7 +223,15 @@
 
     <available file="${jpatest.2.common.plugins.dir}/${modelgen.jar}" property="modelgen.jar.exist"/>
 
-    <available file="${jpatest.2.common.plugins.dir}/${validation-impl.jar}" property="validate.jar.exist"/>
+    <condition property="validate.jar.exists">
+        <and>
+            <available file="${eclipselink.external.libs}/${validation-impl.jar}" />
+            <available file="${eclipselink.external.libs}/${jboss-logging.jar}" />
+            <available file="${eclipselink.external.libs}/${javax.el-api.jar}" />
+            <available file="${eclipselink.external.libs}/${javax.el.jar}" />
+            <available file="${eclipselink.external.libs}/${classmate.jar}" />
+        </and>
+    </condition>
 
     <target name="set-server-properties">
         <property file="${user.home}/${server.name}.properties"/>
@@ -1404,12 +1412,12 @@
         </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.classpath"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${validation-impl.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${jboss-logging.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.el-api.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.el.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${classmate.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
+            <pathelement path="${eclipselink.external.libs}/${validation-impl.jar}"/>
+            <pathelement path="${eclipselink.external.libs}/${jboss-logging.jar}"/>
+            <pathelement path="${eclipselink.external.libs}/${javax.el-api.jar}"/>
+            <pathelement path="${eclipselink.external.libs}/${javax.el.jar}"/>
+            <pathelement path="${eclipselink.external.libs}/${classmate.jar}"/>
+            <pathelement path="${eclipselink.external.libs}/${javax.validation.jar}"/>
         </path>
         <path id="run.jpa21.classpath">
             <pathelement path="${jpatest.basedir}/${classes21.dir}"/>
@@ -1576,7 +1584,7 @@
     </target>
 
     <!-- Runs JPA 2.0 BeanValidation tests. -->
-    <target name="run-bean-validation-tests" depends="config-classpath" if="validate.jar.exist">
+    <target name="run-bean-validation-tests" depends="config-classpath" if="validate.jar.exists">
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest"/>
             <param name="TEST_AGENT" value="${test.agent}"/>

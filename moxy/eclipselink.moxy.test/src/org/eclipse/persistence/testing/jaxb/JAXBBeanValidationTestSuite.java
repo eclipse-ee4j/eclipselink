@@ -16,18 +16,16 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationBindingsTestCase;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationRuntimeTestCase;
-import org.eclipse.persistence.testing.jaxb.casesensitivity.JAXBCaseInsensitivityTestCase;
 
 /**
  * @author Marcel Valovy - marcel.valovy@oracle.com
  * @since 2.6
  */
-public class JAXBTestSuite5 {
+public class JAXBBeanValidationTestSuite {
 
     public static Test suite() {
-        TestSuite suite = new TestSuite("JAXB20 Compiler Test Suite5");
+        TestSuite suite = new TestSuite("JAXB20 Compiler Bean Validation Test Suite");
 
-        suite.addTestSuite(JAXBCaseInsensitivityTestCase.class);
         suite.addTestSuite(BeanValidationRuntimeTestCase.class);
         suite.addTestSuite(BeanValidationBindingsTestCase.class);
 
@@ -36,7 +34,7 @@ public class JAXBTestSuite5 {
 
 
     public static void main(String[] args) {
-        String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.JAXBTestSuite5" };
+        String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.JAXBBeanValidationTestSuite" };
         junit.textui.TestRunner.main(arguments);
     }
 

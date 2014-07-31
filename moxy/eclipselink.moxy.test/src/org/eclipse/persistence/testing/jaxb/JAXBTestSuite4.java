@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb;
 
+import org.eclipse.persistence.testing.jaxb.casesensitivity.JAXBCaseInsensitivityTestCase;
 import org.eclipse.persistence.testing.jaxb.collections.CollectionsTestSuite;
 import org.eclipse.persistence.testing.jaxb.defaultvalue.DefaultValueTestSuite;
 import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeNSTestCases;
@@ -81,6 +82,7 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(TypeAttributeInheritanceTestCases.class);
         suite.addTestSuite(OtherRootTestCases.class);
         suite.addTest(TypeVariableTestSuite.suite());
+        suite.addTestSuite(JAXBCaseInsensitivityTestCase.class);
 	    
 	    return suite;
 	}

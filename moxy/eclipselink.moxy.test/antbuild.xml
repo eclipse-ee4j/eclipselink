@@ -35,7 +35,7 @@
 *     rbarkhouse - 06 Apr 2011 - Separate JavadocAnnotationExamples from JAXBTestSuite
 *     dmahar     - Jan 2012 - remove update-package-names targets
 *     bdoughan   - Sep 2012 - Added RESTful tests and necessary dependencies
-*     mvalovy    - Mar-Jul 2014 - Added Bean Validation support, JAXBTestSuite5
+*     mvalovy    - Mar-Jul 2014 - Added Bean Validation support, JAXBBeanValidationTestSuite
                    and JAXBPerformanceTestSuite
 #******************************************************************************/-->
 
@@ -86,11 +86,21 @@
     <property name="jaxb-impl.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
     <property name="jaxb-core.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-core.jar}"/>
     <property name="javax.validation.lib"   value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
-    <property name="validation-impl.lib"   value="${moxytest.2.common.plugins.dir}/${validation-impl.jar}"/>
-    <property name="jboss-logging.lib"   value="${moxytest.2.common.plugins.dir}/${jboss-logging.jar}"/>
-    <property name="javax.el-api.lib"   value="${moxytest.2.common.plugins.dir}/${javax.el-api.jar}"/>
-    <property name="javax.el.lib"   value="${moxytest.2.common.plugins.dir}/${javax.el.jar}"/>
-    <property name="classmate.lib"   value="${moxytest.2.common.plugins.dir}/${classmate.jar}"/>
+    <property name="validation-impl.lib"   value="${eclipselink.external.libs}/${validation-impl.jar}"/>
+    <property name="jboss-logging.lib"   value="${eclipselink.external.libs}/${jboss-logging.jar}"/>
+    <property name="javax.el-api.lib"   value="${eclipselink.external.libs}/${javax.el-api.jar}"/>
+    <property name="javax.el.lib"   value="${eclipselink.external.libs}/${javax.el.jar}"/>
+    <property name="classmate.lib"   value="${eclipselink.external.libs}/${classmate.jar}"/>
+
+    <condition property="validate.jar.exists">
+        <and>
+            <available file="${eclipselink.external.libs}/${validation-impl.jar}" />
+            <available file="${eclipselink.external.libs}/${jboss-logging.jar}" />
+            <available file="${eclipselink.external.libs}/${javax.el-api.jar}" />
+            <available file="${eclipselink.external.libs}/${javax.el.jar}" />
+            <available file="${eclipselink.external.libs}/${classmate.jar}" />
+        </and>
+    </condition>
 
     <path id="xml.parser.path">
         <fileset
@@ -394,6 +404,7 @@
     <macrodef name="run_jaxb_tests">
         <attribute name="runpathref"/>
         <sequential>
+            <echo message="Bean Validation jars found: ${validate.jar.exists}."/>
             <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/jaxb"/>
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
@@ -412,8 +423,7 @@
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite2.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite3.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite4.java"/>
-                        <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite5.java"/>
-                        <!--<include name="org/eclipse/persistence/testing/jaxb/JAXBPerformanceTestSuite.java"/>-->
+                        <include name="org/eclipse/persistence/testing/jaxb/JAXBBeanValidationTestSuite.java" if="validate.jar.exists"/>
                         <include name="org/eclipse/persistence/testing/jaxb/listofobjects/JAXBListOfObjectsSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/annotations/AnnotationsTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/externalizedmetadata/ExternalizedMetadataTestSuite.java"/>
@@ -425,6 +435,7 @@
                         <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/json/JSONTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/rs/RESTfulTestSuite.java"/>
+                        <!--<include name="org/eclipse/persistence/testing/jaxb/JAXBPerformanceTestSuite.java"/>-->
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
