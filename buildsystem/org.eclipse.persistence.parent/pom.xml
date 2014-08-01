@@ -36,6 +36,7 @@
         <orbit.drop>R20130827064939</orbit.drop>
         <!-- orbit.drop>R20130517111416</orbit.drop -->
         <eclipse.drop>kepler</eclipse.drop>
+        <findbugs.threshold>High</findbugs.threshold>
     </properties>
 
     <!-- Default modules set and added to by all profiles -->
@@ -325,20 +326,19 @@
         </testResources>
         <finalName>${project.artifactId}_${release.version}.${build.qualifier}</finalName>
     </build>
-
-    <!-- pluginRepositories>
-        <pluginRepository>
-            <id>tycho-0.16.0-staged</id>
-            <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-207/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>tycho-public</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>maven-eclipse</id>
-            <url>http://repo1.maven.org</url>
-        </pluginRepository>
-    </pluginRepositories -->
-
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>${findbugs.threshold}</threshold>
+                    <htmlOutput>true</htmlOutput>
+                    <xmlOutput>true</xmlOutput>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

@@ -133,6 +133,9 @@
     <fail message="An non-compatible version of JDK was detected! Build won't run properly unless running at least 1.6 of JDK!." unless="compat.jdk"/>
     <echo message="JDBC driver JAR: '${jdbc.driver.jar}'"/>
 
+    <!-- controls which goals to invoke with maven (default is 'verify') -->
+    <property name="maven.goals" value="verify"/>
+
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
     <tstamp>
@@ -336,7 +339,7 @@
         <echo message="    -DforceContextQualifier=${version.qualifier}"/>
         <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
         <echo message="    -Declipselink.full=true"/>
-        <echo message="    verify"/>
+        <echo message="    ${maven.goals}"/>
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
@@ -344,8 +347,7 @@
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-Declipselink.full=true"/>
-             <!--<arg value="-X"/>-->
-             <arg value="verify"/>
+             <arg line="${maven.goals}"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
                    <include name="plexus-classworlds-*.jar"/>
@@ -444,7 +446,7 @@
         <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
         <echo message="    -D${oracle.target}=true"/>
         <echo message="    -Doracle.p2.url=${oracle.p2.url}"/>
-        <echo message="    verify"/>
+        <echo message="    ${maven.goals}"/>
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
@@ -453,8 +455,7 @@
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-D${oracle.target}=true"/>
              <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
-             <!-- arg value="-X"/ -->
-             <arg value="verify"/>
+             <arg line="${maven.goals}"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
                    <include name="plexus-classworlds-*.jar"/>
