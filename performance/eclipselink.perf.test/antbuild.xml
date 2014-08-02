@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names or explicit classpath fragments
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Martin Vojtek   - initial implementation
+#******************************************************************************/-->
+
+<project name="eclipselink.perf.test" default="test" basedir=".">
+
+    <dirname  property="perftest.build.location_temp" file="${ant.file.eclipselink.perf.test}"/>
+    <pathconvert targetos="unix" property="perftest.build.location">
+        <path>
+            <pathelement location="${perftest.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <echo message="perftest.build.location = '${perftest.build.location}'"/>
+    <condition property="perftest.2.trunk.dir" value="../.." else="..">
+        <contains string="${perftest.build.location}" substring="performance/${ant.project.name}"/>
+    </condition>
+    <echo message="perftest.2.trunk.dir = '${perftest.2.trunk.dir}'"/>
+    <property name="perftest.2.common.plugins.dir" value="${perftest.2.trunk.dir}/plugins"/>
+    <property name="perftest.2.moxy.dir"           value="${perftest.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
+    <property name="perftest.2.core.dir"           value="${perftest.2.trunk.dir}/foundation/org.eclipse.persistence.core"/>
+    <property name="perftest.2.jpa.dir"            value="${perftest.2.trunk.dir}/jpa/org.eclipse.persistence.jpa"/>
+    <!-- Temporary until eclipselink.jar property is globally renamed -->
+    <property name="eclipselink.jar"               value="eclipselink.jar"/>
+
+    <!-- Allows a user to override certain user specific properties. -->
+    <property file="${user.home}/build.properties"/>
+    <property file="${perftest.build.location}/antbuild.properties"/>
+
+    <property name="asm.lib" value="${perftest.2.common.plugins.dir}/${asm.jar}"/>
+    <property name="eclipselink.lib" value="${perftest.2.trunk.dir}/${eclipselink.jar}"/>
+    <property name="javax.validation.lib"   value="${perftest.2.common.plugins.dir}/${javax.validation.jar}"/>
+    <property name="jpa21.lib"   value="${perftest.2.trunk.dir}/jpa/plugins/${persistence21.jar}"/>
+
+    <!-- Compile/run paths -->
+    <path id="perf.compile.path">
+        <pathelement path="${jmh-core.lib}"/>
+        <pathelement path="${jmh-generator-annprocess.lib}"/>
+        <pathelement path="${perftest.2.jpa.dir}/target/${classes.dir}"/>
+    </path>
+    <path id="perf.run.path">
+        <pathelement path="${jmh-core.lib}"/>
+        <pathelement path="${jmh-generator-annprocess.lib}"/>
+        <pathelement path="${commons-math.lib}"/>
+        <pathelement path="${jpa21.lib}"/>
+        <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${asm.lib}"/>
+        <pathelement path="${perftest.2.moxy.dir}/target/${classes.dir}"/>
+        <pathelement path="${perftest.2.core.dir}/target/${classes.dir}"/>
+        <pathelement path="${perftest.2.jpa.dir}/target/${classes.dir}"/>
+        <pathelement path="${classes.dir}"/>
+        <pathelement path="${resource.dir}"/>
+    </path>
+
+    <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
+    <path id="perf.compile.against.jar.path">
+        <pathelement path="${jmh-core.lib}"/>
+        <pathelement path="${jmh-generator-annprocess.lib}"/>
+        <pathelement path="${eclipselink.lib}"/>
+    </path>
+    <path id="perf.run.against.jar.path">
+        <pathelement path="${jmh-core.lib}"/>
+        <pathelement path="${jmh-generator-annprocess.lib}"/>
+        <pathelement path="${commons-math.lib}"/>
+        <pathelement path="${jpa21.lib}"/>
+        <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${asm.lib}"/>
+        <pathelement path="${eclipselink.lib}"/>
+        <pathelement path="${classes.dir}"/>
+        <pathelement path="${resource.dir}"/>
+    </path>
+
+    <!-- Test targets -->
+    <target name="test" depends="clean, clean-reports, compile-and-run-tests" description="run perf tests"/>
+    <target name="test-against-jar" depends="clean, clean-reports, compile-and-run-tests-against-jar" description="run perf tests against eclipselink.jar"/>
+
+    <!-- Build targets -->
+    <target name="compile-tests" depends="clean" description="build perf test classes">
+        <compile_perf_tests subcomponent="perf" compilepathref="perf.compile.path"/>
+    </target>
+    <target name="compile-tests-against-jar" depends="clean" description="build perf test classes against eclipselink.jar">
+        <echo message="Compiling performance tests..."/>
+        <compile_perf_tests subcomponent="perf" compilepathref="perf.compile.against.jar.path"/>
+        <echo message=""/>
+    </target>
+
+    <!-- Build & Run targets -->
+    <target name="compile-and-run-tests" depends="compile-tests" description="build and run perf tests">
+        <run_perf_tests runpathref="perf.run.path"/>
+    </target>
+
+    <target name="compile-and-run-tests-against-jar" depends="compile-tests-against-jar" description="build and run perf tests against eclipselink.jar">
+        <run_perf_tests runpathref="perf.run.against.jar.path"/>
+    </target>
+
+    <!-- Clean targets -->
+    <target name="clean" description="clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+        </delete>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+
+    <target name="clean-reports" description="clean jmh report directory">
+        <delete dir="${report.dir}" includeEmptyDirs="true" failonerror="false"/>
+        <mkdir dir="${report.dir}"/>
+    </target>
+
+    <macrodef name="run_perf_tests">
+        <attribute name="runpathref" />
+        <sequential>
+            <run_perf_test runpathref="@{runpathref}" clsname="org.eclipse.persistence.testing.perf.Benchmarks"/>
+        </sequential>
+    </macrodef>
+
+    <!-- Test run macros -->
+    <macrodef name="run_perf_test">
+        <attribute name="runpathref"/>
+        <attribute name="clsname"/>
+        <sequential>
+            <java classname="@{clsname}" dir="${report.dir}" fork="true" failonerror="false">
+                <classpath>
+                    <path refid="@{runpathref}"/>
+                </classpath>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <!-- Compile macros -->
+    <macrodef name="compile_perf_tests">
+        <attribute name="subcomponent"/>
+        <attribute name="compilepathref"/>
+        <sequential>
+            <mkdir dir="${classes.dir}"/>
+            <javac srcdir="${src.dir}"
+                   destdir="${classes.dir}"
+                   debug="${javac.debug}"
+                   debuglevel="${javac.debuglevel}"
+                   encoding="UTF-8"
+                   optimize="${javac.optimize}"
+                   source="${javac.version}"
+                   deprecation="${javac.deprecation}"
+                   failonerror="false"
+                   includes="org/eclipse/persistence/testing/@{subcomponent}/**/*.java">
+                <classpath>
+                    <path refid="@{compilepathref}"/>
+                </classpath>
+            </javac>
+
+            <copy todir="${classes.dir}">
+                <fileset dir="${src.dir}">
+                    <include name="**/*.properties" />
+                </fileset>
+            </copy>
+        </sequential>
+    </macrodef>
+</project>

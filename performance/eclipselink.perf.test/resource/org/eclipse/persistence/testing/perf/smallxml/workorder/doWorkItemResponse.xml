@@ -1,0 +1,3 @@
+<org:doWorkItemResponse xmlns:org="http://org.eclipse.persistence.testing.perf/workItem">
+  <return>false</return>
+</org:doWorkItemResponse>

@@ -1548,4 +1548,7 @@
     <target name="test-dbws-builder-oracle" description="run the DBWS builder tests against Oracle" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test.oracle}" target="test"/>
     </target>
+    <target name="test-perf" description="run the performance tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test"/>
+    </target>
 </project>
