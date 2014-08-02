@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -256,7 +256,7 @@ public class SimpleTypes_OneToMany {
     public void verifyNewSimpleA() throws Exception {
         DynamicEntity newA = dynamicHelper.getType("SimpleA").newDynamicEntity();
         assertNotNull(newA);
-        assertEquals(newA.get("id"), 0);
+        assertEquals(((Number) newA.get("id")).intValue(), 0);
         assertFalse(newA.isSet("value1"));
         assertEquals(Vector.class, newA.get("b").getClass());
         Object b = newA.get("b");

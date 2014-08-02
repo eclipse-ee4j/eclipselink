@@ -333,6 +333,10 @@
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="${test.class}"/>
         </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <!-- Runs SRG (SRGTestModel). -->
@@ -340,6 +344,7 @@
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.SRGTestModel"/>
         </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <!-- Runs non-LRG tests -->
@@ -407,6 +412,7 @@
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
         </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <!-- Prompt runner test target, runs test.class from test.properties (default is LRG). -->
@@ -472,18 +478,22 @@
                 <path refid="core_test.run.path"/>
             </classpath>
             <formatter type="xml"/>
-            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/test-results">
+            <formatter type="plain"/>
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
+    </target>
+
+    <target name="generate-report">
         <junitreport todir="${core_test.report.dir}">
             <fileset dir="${core_test.report.dir}">
-                <include name="test-results.xml"/>
+                <include name="*-test-results.xml"/>
             </fileset>
             <report format="noframes" todir="${core_test.report.dir}"/>
         </junitreport>
         <!-- fail message="Some of the junit tests failed.  See the ${report.dir}/junit-noframes.html file for details." if="junit.failed"/ -->
     </target>
-
+        
     <!-- Runs the test using the PromptTestRunner -->
     <target name="run-test-prompt" depends="init_paths, process-resource">
         <condition property="jvmarg.performance.baseline.version" value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}">

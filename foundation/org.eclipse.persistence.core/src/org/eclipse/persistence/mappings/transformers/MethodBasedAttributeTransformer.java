@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -70,38 +70,36 @@ public class MethodBasedAttributeTransformer implements AttributeTransformer {
      */
     public void initialize(AbstractTransformationMapping mapping) {
         this.mapping = mapping;
+        final Class javaClass = this.mapping.getDescriptor().getJavaClass();
         try {
-            // look for the one-argument version first
+            // look for the one-argument version with Record first
             Class[] parameterTypes = new Class[1];
             parameterTypes[0] = ClassConstants.Record_Class;
-            attributeTransformationMethod = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodName, parameterTypes);
-        } catch (Exception ex) {
+            attributeTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, parameterTypes);
+        } catch (NoSuchMethodException ex) {
             try {
-                //now look for the one-argument version with Record
-                Class[] parameterTypes = new Class[1];
+                // if the one-argument version is not there, look for the two-argument version
+                Class[] parameterTypes = new Class[2];
                 parameterTypes[0] = ClassConstants.Record_Class;
-                attributeTransformationMethod = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodName, parameterTypes);
-            } catch (Exception ex2) {
+                parameterTypes[1] = ClassConstants.PublicInterfaceSession_Class;
+                attributeTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, parameterTypes);
+            } catch (NoSuchMethodException ex2) {
                 try {
-                    // if the one-argument version is not there, look for the two-argument version
+                    //now look for the 2 argument version using Record and sessions Session
                     Class[] parameterTypes = new Class[2];
                     parameterTypes[0] = ClassConstants.Record_Class;
-                    parameterTypes[1] = ClassConstants.PublicInterfaceSession_Class;
-                    attributeTransformationMethod = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodName, parameterTypes);
-                } catch (Exception ex3) {
-                    try {
-                        //now look for the 2 argument version using Record and sessions Session
-                        Class[] parameterTypes = new Class[2];
-                        parameterTypes[0] = ClassConstants.Record_Class;
-                        parameterTypes[1] = ClassConstants.SessionsSession_Class;
-                        attributeTransformationMethod = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodName, parameterTypes);
-                    } catch (NoSuchMethodException exception) {
-                        throw DescriptorException.noSuchMethodOnInitializingAttributeMethod(mapping.getAttributeMethodName(), mapping, exception);
-                    } catch (SecurityException exception) {
-                        throw DescriptorException.securityOnInitializingAttributeMethod(mapping.getAttributeMethodName(), mapping, exception);
-                    }
+                    parameterTypes[1] = ClassConstants.SessionsSession_Class;
+                    attributeTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, parameterTypes);
+                } catch (NoSuchMethodException ex3) {
+                    throw DescriptorException.noSuchMethodOnInitializingAttributeMethod(this.mapping.getAttributeMethodName(), mapping, ex3);
+                } catch (SecurityException se) {
+                    throw DescriptorException.securityOnInitializingAttributeMethod(this.mapping.getAttributeMethodName(), mapping, se);
                 }
+            } catch (SecurityException se) {
+                throw DescriptorException.securityOnInitializingAttributeMethod(this.mapping.getAttributeMethodName(), mapping, se);
             }
+        } catch (SecurityException se) {
+            throw DescriptorException.securityOnInitializingAttributeMethod(this.mapping.getAttributeMethodName(), mapping, se);
         }
         if (attributeTransformationMethod.getReturnType() == ClassConstants.Void_Class) {
             throw DescriptorException.returnTypeInGetAttributeAccessor(methodName, mapping);

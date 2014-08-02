@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -107,7 +107,6 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.schemaframework.StoredProcedureGeneratorModel");
             tests.add("org.eclipse.persistence.testing.tests.proxyindirection.ProxyIndirectionTestModel");
             tests.add("org.eclipse.persistence.testing.tests.localization.LocalizationTestModel");
-            tests.add("org.eclipse.persistence.testing.tests.security.SecurityTestModel");
             tests.add("org.eclipse.persistence.testing.tests.history.HistoryTestRunModel");
             tests.add("org.eclipse.persistence.testing.tests.isolatedsession.IsolatedSessionTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.writechanges.UnitOfWorkWriteChangesTestModel");

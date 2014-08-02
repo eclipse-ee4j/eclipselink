@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -145,11 +145,11 @@ public class SimpleTypes_MultiTable {
         DynamicEntity a = simpleTypeA.newDynamicEntity();
 
         assertNotNull(a);
-        assertEquals(a.get("id"), 0);
+        assertEquals(((Number) a.get("id")).intValue(), 0);
         assertFalse(a.isSet("value1"));
         assertEquals(a.get("value2"), false);
         assertFalse(a.isSet("value3"));
-        assertEquals(a.get("value4"), 0.0);
+        assertEquals(((Number) a.get("value4")).doubleValue(), 0.0);
         assertFalse(a.isSet("value5"));
     }
 

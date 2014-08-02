@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -123,7 +123,6 @@ public class ValidationModel extends TestModel {
         suite.addTest(new ReferenceTableNotSpecifiedTest()); //ian added
         suite.addTest(new RelationKeyFieldNotProperlySpecifiedTest()); //ian added
         suite.addTest(new ReturnTypeInGetAttributeAccessorTest()); //ian added
-        suite.addTest(new SecurityOnFindMethodTest());
         suite.addTest(new NoSuchMethodOnInitializingAttributeMethodTest()); //ian added
         suite.addTest(new MultipleWriteMappingsForFieldTest()); //ian added
         suite.addTest(new AttributeNameNotSpecifiedTest()); //vesna added

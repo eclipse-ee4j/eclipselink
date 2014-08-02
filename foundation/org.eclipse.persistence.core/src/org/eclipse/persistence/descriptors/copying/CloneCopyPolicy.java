@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -165,10 +165,11 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
      * Validate and build the methods.
      */
     public void initialize(Session session) throws DescriptorException {
+        final Class javaClass = this.getDescriptor().getJavaClass();
         try {
             // Must allow for null clone method for 9.0.4 deployment XML.
             if (this.getMethodName() != null) {
-                this.setMethod(Helper.getDeclaredMethod(this.getDescriptor().getJavaClass(), this.getMethodName(), new Class[0]));
+                this.setMethod(Helper.getDeclaredMethod(javaClass, this.getMethodName(), new Class[0]));
             }
         } catch (NoSuchMethodException exception) {
             session.getIntegrityChecker().handleError(DescriptorException.noSuchMethodWhileInitializingCopyPolicy(this.getMethodName(), this.getDescriptor(), exception));
@@ -177,7 +178,7 @@ public class CloneCopyPolicy extends AbstractCopyPolicy {
         }
         if (this.getWorkingCopyMethodName() != null) {
             try {
-                this.setWorkingCopyMethod(Helper.getDeclaredMethod(this.getDescriptor().getJavaClass(), this.getWorkingCopyMethodName(), new Class[0]));
+                this.setWorkingCopyMethod(Helper.getDeclaredMethod(javaClass, this.getWorkingCopyMethodName(), new Class[0]));
             } catch (NoSuchMethodException exception) {
                 session.getIntegrityChecker().handleError(DescriptorException.noSuchMethodWhileInitializingCopyPolicy(this.getMethodName(), this.getDescriptor(), exception));
             } catch (SecurityException exception) {

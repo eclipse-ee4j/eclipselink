@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -45,27 +45,32 @@ public class MethodBasedFieldTransformer implements FieldTransformer {
 
     public void initialize(AbstractTransformationMapping mapping) {
         this.mapping = mapping;
+        final Class javaClass = this.mapping.getDescriptor().getJavaClass();
         try {
             // look for the zero-argument version first
-            fieldTransformationMethod = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodName, new Class[0]);
-        } catch (Exception ex) {
+            fieldTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, new Class[0]);
+        } catch (NoSuchMethodException ex) {
             try {
                 // if the zero-argument version is not there, look for the one-argument version
                 Class[] methodParameterTypes = new Class[1];
                 methodParameterTypes[0] = ClassConstants.PublicInterfaceSession_Class;
-                fieldTransformationMethod = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodName, methodParameterTypes);
-            } catch (Exception ex2) {
+                fieldTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, methodParameterTypes);
+            } catch (NoSuchMethodException ex2) {
                 try {
                     //if the one-argument version is absent, try with sessions.Session
                     Class[] methodParameterTypes = new Class[1];
                     methodParameterTypes[0] = ClassConstants.SessionsSession_Class;
-                    fieldTransformationMethod = Helper.getDeclaredMethod(mapping.getDescriptor().getJavaClass(), methodName, methodParameterTypes);
+                    fieldTransformationMethod = Helper.getDeclaredMethod(javaClass, methodName, methodParameterTypes);
                 } catch (NoSuchMethodException exception) {
-                    throw DescriptorException.noSuchMethodWhileConvertingToMethod(methodName, mapping, exception);
+                    throw DescriptorException.noSuchMethodWhileConvertingToMethod(methodName, this.mapping, exception);
                 } catch (SecurityException exception) {
-                    throw DescriptorException.securityWhileConvertingToMethod(methodName, mapping, exception);
+                    throw DescriptorException.securityWhileConvertingToMethod(methodName, this.mapping, exception);
                 }
+            } catch (SecurityException exception) {
+                throw DescriptorException.securityWhileConvertingToMethod(methodName, this.mapping, exception);
             }
+        } catch (SecurityException exception) {
+            throw DescriptorException.securityWhileConvertingToMethod(methodName, this.mapping, exception);
         }
     }
     

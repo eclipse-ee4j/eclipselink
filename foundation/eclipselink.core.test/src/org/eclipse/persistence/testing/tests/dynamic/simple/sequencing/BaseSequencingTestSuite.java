@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -140,14 +140,14 @@ public abstract class BaseSequencingTestSuite  {
 
         UnitOfWork uow = session.acquireUnitOfWork();
 
-        assertEquals(0, simpleInstance.get("id"));
+        assertEquals(0, ((Number) simpleInstance.get("id")).intValue());
         uow.registerNewObject(simpleInstance);
-        assertEquals(0, simpleInstance.get("id"));
+        assertEquals(0, ((Number) simpleInstance.get("id")).intValue());
 
         // uow.assignSequenceNumber(simpleInstance);
 
         uow.commit();
-        assertEquals(expectedId, simpleInstance.get("id"));
+        assertEquals(expectedId, ((Number)simpleInstance.get("id")).intValue());
 
         return simpleInstance;
     }
