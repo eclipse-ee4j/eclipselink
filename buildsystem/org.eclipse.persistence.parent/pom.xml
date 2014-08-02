@@ -36,6 +36,7 @@
         <orbit.drop>R20130827064939</orbit.drop>
         <!-- orbit.drop>R20130517111416</orbit.drop -->
         <eclipse.drop>kepler</eclipse.drop>
+        <findbugs.version>2.5.5</findbugs.version>
         <findbugs.threshold>High</findbugs.threshold>
     </properties>
 
@@ -307,6 +308,17 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>${findbugs.version}</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>${findbugs.threshold}</threshold>
+                    <xmlOutput>true</xmlOutput>
+                    <findbugsXmlOutputDirectory>${basedir}/target/findbugs</findbugsXmlOutputDirectory>
+                </configuration>
+            </plugin>
         </plugins>
         <directory>../../target</directory>
         <sourceDirectory>${src}</sourceDirectory>
@@ -326,19 +338,4 @@
         </testResources>
         <finalName>${project.artifactId}_${release.version}.${build.qualifier}</finalName>
     </build>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.5.2</version>
-                <configuration>
-                    <effort>Max</effort>
-                    <threshold>${findbugs.threshold}</threshold>
-                    <htmlOutput>true</htmlOutput>
-                    <xmlOutput>true</xmlOutput>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
 </project>
