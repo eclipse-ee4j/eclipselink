@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -761,7 +761,6 @@ public class Helper extends CoreHelper implements Serializable {
     
     /**
      * Copy an array of strings to a new array
-     * avoids the use of Arrays.copy() because it is not supported in JDK 1.5
      * @param original
      * @return
      */
@@ -769,17 +768,15 @@ public class Helper extends CoreHelper implements Serializable {
         if (original == null){
             return null;
         }
-        String[] copy = new String[original.length];
-        for (int i=0;i<original.length;i++){
-            copy[i] = original[i];
-        }
+        int length = original.length;
+        String[] copy = new String[length];
+        System.arraycopy(original, 0, copy, 0, length);
         return copy;
     }
     
     
     /**
      * Copy an array of int to a new array
-     * avoids the use of Arrays.copy() because it is not supported in JDK 1.5
      * @param original
      * @return
      */
@@ -787,10 +784,9 @@ public class Helper extends CoreHelper implements Serializable {
         if (original == null){
             return null;
         }
-        int[] copy = new int[original.length];
-        for (int i=0;i<original.length;i++){
-            copy[i] = original[i];
-        }
+        int length = original.length;
+        int[] copy = new int[length];
+        System.arraycopy(original, 0, copy, 0, length);
         return copy;
     }
 
