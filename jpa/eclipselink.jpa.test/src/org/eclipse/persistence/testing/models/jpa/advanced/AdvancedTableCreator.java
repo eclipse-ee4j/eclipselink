@@ -22,12 +22,14 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.util.Vector;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.*;
 
@@ -2741,7 +2743,15 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         if (session.getPlatform().isPervasive()) {
             adjustForeignKeyFieldTypes(session);
         }
-        super.replaceTables(session);
+        try {
+            super.replaceTables(session);
+        } catch (DatabaseException de) {
+            SessionLogEntry sle = new SessionLogEntry(null, SessionLog.WARNING, null, de);
+            sle.setMessage("Test setup failed, retrying...");
+            session.getSessionLog().log(sle);
+            //give it one more try in case of some possibly random failure
+            super.replaceTables(session);
+        }
     }
 
     private void adjustForeignKeyFieldTypes(DatabaseSession session) {
