@@ -11,7 +11,7 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.persistence 2.1.0"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_1.1.1.v20101004-1200.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ejb_3.1.0.v201205171433.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ejb_3.1.0.v201205171433.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.ejb/src"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.transaction/src"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.2.0.v201302191141.jar"/>
 	<classpathentry kind="output" path="classes"/>

@@ -771,7 +771,6 @@
                 <exclude name="javax.persistence*.jar"/>
                 <exclude name="*nosql*"/>
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
-                <exclude name="javax.ejb_3.0.0.v200906010428.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
                 <exclude name="com.sun*.jar"/>
                 <exclude name="*dynamic*.jar"/>
