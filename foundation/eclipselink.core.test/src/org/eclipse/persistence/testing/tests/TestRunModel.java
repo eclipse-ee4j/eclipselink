@@ -101,7 +101,6 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLBasicTestModel");
             tests.add("org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLTestModel");
             tests.add("org.eclipse.persistence.testing.tests.unitofwork.changeflag.EmployeeChangeTrackingTestModel");
-            tests.add("org.eclipse.persistence.testing.tests.jms.JMSTestModel");
             tests.add("org.eclipse.persistence.testing.tests.helper.HelperTestModel");
             tests.add("org.eclipse.persistence.testing.tests.schemaframework.AutoTableGeneratorBasicTestModel");
             tests.add("org.eclipse.persistence.testing.tests.schemaframework.StoredProcedureGeneratorModel");
