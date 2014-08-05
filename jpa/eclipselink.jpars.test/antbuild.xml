@@ -31,6 +31,7 @@
 * Contributors:
 *     bdoughan, dtwelves, egwin - initial API and implementation from SDO test project
 *     tware - modified for jpa rs tests
+*     Dmitry Kornilov - remoteDebug property added
 #******************************************************************************/-->
 <project name="eclipselink.jpars.test" default="test" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="jparstest.is.local"/>
@@ -56,10 +57,10 @@
     <condition property="jparstest.2.jpa.plugins.dir" value="${jparstest.2.base.dir}/jpa/plugins" else="../plugins">
         <available file="${jparstest.2.base.dir}/jpa/plugins" type="dir"/>
     </condition>
-    <property name="jparstest.2.buildsys.dir"       value="${jparstest.2.base.dir}/buildsystem"/>
+    <property name="jparstest.2.buildsys.dir" value="${jparstest.2.base.dir}/buildsystem"/>
 
     <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
-                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+               else="Custom properties file '${user.home}/build.properties' not found to load.">
         <available file="${user.home}/build.properties"/>
     </condition>
     <echo message="${custom.properties.message}"/>
@@ -229,6 +230,7 @@
     </target>
 
     <!-- Run targets -->
+    <!-- Use -DremoteDebug=true to enable remote debugging on 8787 port -->
     <target name="test" depends="compile-jpars-tests" description="run jpars tests">
         <property name="SERVER_URL" value="http://localhost:7001"/>
         <property name="JPARS_VERSION" value="v1.0"/>
@@ -303,6 +305,14 @@
                 <fileset dir="${jparstest.build.location}/${src.dir}/META-INF" includes="**"/>
             </copy>
 
+            <!-- Use -DremoteDebug=true to enable remote debugging on 8787 port -->
+            <property name="remoteDebug" value="false"/>
+            <condition property="remoteDebugJvmArgs"
+                       value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"
+                       else="-ea">
+                <istrue value="${remoteDebug}"/>
+            </condition>
+
             <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
             <junit printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
@@ -312,6 +322,7 @@
                 <jvmarg value="-Ddb.user=${db.user}"/>
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
                 <jvmarg value="-javaagent:../${jparstest.2.base.dir}/${eclipselink.jar}"/>
+                <jvmarg value="${remoteDebugJvmArgs}"/>
                 <!--jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/-->
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="tempFileDir" value="${tmp.dir}"/>
@@ -325,7 +336,7 @@
                 <sysproperty key="jpars.version.string" value="${JPARS_VERSION}"/>
                 <batchtest todir="${report.dir}">
                     <fileset dir="${src.dir}">
-                        <include name="${jpars.test.class}"/>
+                        <include name="${test.class}"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
