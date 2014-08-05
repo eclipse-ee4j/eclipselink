@@ -158,14 +158,12 @@
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-xjc.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${persistence10.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${persistence21.jar}"/>
         <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
         <pathelement path="${eclipselink.plugins}/${json-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${javax.validation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${ejb.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jms.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${stax_api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${transaction.jar}"/>
         <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
         <pathelement path="${eclipselink.plugins}/${wsrs.jar}"/>
@@ -1247,21 +1245,19 @@
                 <include name="readme.html"/>
             </zipfileset>
             <!-- modelgen processor jar -->
-            <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.modelgen.prefix}*_${version.string}.jar" prefix="eclipselink/jlib/jpa"/>
+            <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.modelgen.prefix}_${version.string}.jar, ${eclipselink.modelgen.prefix}.source_${version.string}.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.1 jars -->
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*2.1*.jar" prefix="eclipselink/jlib/jpa"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="${persistence21.jar}, ${persistence21.src.jar}" prefix="eclipselink/jlib/jpa"/>
             <!-- JPA RS jar -->
-            <zipfileset dir="${eclipselink.plugins}/" includes="org.eclipse.persistence.jpars*.jar" prefix="eclipselink/jlib/jpa"/>
+            <zipfileset dir="${eclipselink.plugins}/" includes="org.eclipse.persistence.jpars_*.jar, org.eclipse.persistence.jpars.source*.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
-                <include name="${activation.jar}"/>
                 <include name="${mail.jar}"/>
-                <include name="${stax_api.jar}"/>
-            </zipfileset>
-            <!-- moxy jar's and zips -->
-            <zipfileset dir="${eclipselink.plugins}" prefix="eclipselink/jlib/moxy">
                 <include name="${jaxb-api.jar}"/>
+                <include name="${jaxb-core.jar}"/>
                 <include name="${jaxb-xjc.jar}"/>
+                <include name="${javax.validation.jar}"/>
+                <include name="${json-api.jar}"/>
             </zipfileset>
             <!-- grab the sdo jar -->
             <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj.sdo.jar}" prefix="eclipselink/jlib/sdo"/>
@@ -1271,12 +1267,12 @@
             <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.jar}, *oracleddl*.jar" prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.plugins}"      includes="${servlet.jar}"               prefix="eclipselink/utils/dbws"/>
             <!-- workbench jars -->
-            <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
+<!--            <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
             <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
             <zipfileset dir="${eclipselink.util.workbench.lib}/run/" includes="connector.jar"      prefix="eclipselink/utils/workbench/jlib"/>
             <zipfileset dir="${eclipselink.util.workbench}/config/"  includes="*, platforms/*"     prefix="eclipselink/utils/workbench/config"/>
             <zipfileset dir="${eclipselink.util.workbench}"          includes="readme.html"        prefix="eclipselink/utils/workbench"/>
-            <zipfileset dir="${eclipselink.util.workbench}/bin/"     includes="*"                  prefix="eclipselink/utils/workbench/bin" filemode="755"/>
+            <zipfileset dir="${eclipselink.util.workbench}/bin/"     includes="*"                  prefix="eclipselink/utils/workbench/bin" filemode="755"/>-->
         </zip>
     </target>
 
