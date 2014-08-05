@@ -122,10 +122,10 @@ public class ServerFieldsFilteringTest {
     }
 
     @Test
-    public void testExclFieldsJson() throws URISyntaxException {
-        // exclFields parameter
+    public void testExcludeFieldsJson() throws URISyntaxException {
+        // excludeFields parameter
         final Map<String, String> hints = new HashMap<String, String>(1);
-        hints.put("exclFields", "basketItems,name");
+        hints.put("excludeFields", "basketItems,name");
 
         // Get BasketItem with id = 1
         String queryResult = RestUtils.restReadWithHints(context, 1, Basket.class.getSimpleName(), hints, MediaType.APPLICATION_JSON_TYPE);
@@ -137,10 +137,10 @@ public class ServerFieldsFilteringTest {
     }
 
     @Test
-    public void testExclFieldsXml() throws URISyntaxException {
-        // exclFields parameter
+    public void testExcludeFieldsXml() throws URISyntaxException {
+        // excludeFields parameter
         final Map<String, String> hints = new HashMap<String, String>(1);
-        hints.put("exclFields", "basketItems,name");
+        hints.put("excludeFields", "basketItems,name");
 
         // Get BasketItem with id = 1
         String queryResult = RestUtils.restReadWithHints(context, 1, Basket.class.getSimpleName(), hints, MediaType.APPLICATION_XML_TYPE);
@@ -150,5 +150,17 @@ public class ServerFieldsFilteringTest {
         assertTrue(queryResult.contains("<id>1</id>"));
         assertFalse(queryResult.contains("<basketItems>"));
         assertFalse(queryResult.contains("</basketItems>"));
+    }
+
+    @Test(expected = Exception.class)
+    public void testBothParametersPresent() throws URISyntaxException {
+        // excludeFields parameter
+        final Map<String, String> hints = new HashMap<String, String>(1);
+        hints.put("excludeFields", "basketItems,name");
+        hints.put("fields", "name,id");
+
+        // Get BasketItem with id = 1. Exception must be thrown because both 'fields' and 'excludeFields' parameters
+        // cannot be present in the same request.
+        RestUtils.restReadWithHints(context, 1, Basket.class.getSimpleName(), hints, MediaType.APPLICATION_XML_TYPE);
     }
 }

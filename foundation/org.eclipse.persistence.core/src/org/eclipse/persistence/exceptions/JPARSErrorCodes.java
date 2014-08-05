@@ -32,6 +32,7 @@ public class JPARSErrorCodes {
     public static final int RESPONSE_COULD_NOT_BE_BUILT_FOR_NAMED_QUERY_REQUEST = 61014;
     public static final int INVALID_SERVICE_VERSION = 61015;
     public static final int PAGINATION_PARAMETER_USED_FOR_NOT_PAGEABLE_RESOURCE = 61016;
+    public static final int FIELDS_FILTERING_BOTH_PARAMETERS_PRESENT = 61017;
 
     //
     public static final int AN_EXCEPTION_OCCURRED = 61999;

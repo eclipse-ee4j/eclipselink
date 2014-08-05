@@ -171,6 +171,22 @@ public class JPARSException extends EclipseLinkException {
     }
 
     /**
+     * Both fields and excludeFields parameters are present in request.
+     *
+     * @return the JPARS exception
+     */
+    public static JPARSException fieldsFilteringBothParametersPresent() {
+        Object[] args = {};
+
+        String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.FIELDS_FILTERING_BOTH_PARAMETERS_PRESENT, args);
+        JPARSException exception = new JPARSException(msg);
+        exception.setErrorCode(JPARSErrorCodes.FIELDS_FILTERING_BOTH_PARAMETERS_PRESENT);
+        exception.setHttpStatusCode(Status.BAD_REQUEST);
+
+        return exception;
+    }
+
+    /**
      * Database mapping could not be found for entity attribute.
      *
      * @param attributeName the attribute name

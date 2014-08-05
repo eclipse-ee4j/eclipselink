@@ -31,9 +31,8 @@ import java.util.Map;
  */
 public final class FieldsFilteringValidator {
     public static final String FIELDS_PARAM_NAME = "fields";
-    public static final String EXCL_FIELDS_PARAM_NAME = "exclFields";
+    public static final String EXCL_FIELDS_PARAM_NAME = "excludeFields";
 
-    private final UriInfo uri;
     private final Object entity;
     private final PersistenceContext context;
     private final Map<String, Object> queryParameters;
@@ -46,7 +45,6 @@ public final class FieldsFilteringValidator {
      */
     public FieldsFilteringValidator(PersistenceContext context, UriInfo uri, Object entity) {
         queryParameters = AbstractResource.getQueryParameters(uri);
-        this.uri = uri;
         this.entity = entity;
         this.context = context;
     }
@@ -62,18 +60,17 @@ public final class FieldsFilteringValidator {
             return false;
         }
 
-        // Throw exception if both 'fields' and 'exclFields' present
+        // Throw exception if both 'fields' and 'excludeFields' present
         if (queryParameters.containsKey(FIELDS_PARAM_NAME) && queryParameters.containsKey(EXCL_FIELDS_PARAM_NAME)) {
-            // TODO throw the right exception
-            throw new IllegalArgumentException("");
+            throw JPARSException.fieldsFilteringBothParametersPresent();
         }
 
         if (queryParameters.containsKey(FIELDS_PARAM_NAME)) {
             // fields
             fields = Arrays.asList(((String) queryParameters.get(FIELDS_PARAM_NAME)).split("\\s*,\\s*"));
         } else {
-            // exclFields
-            List<String> exclFields = Arrays.asList(((String) queryParameters.get(EXCL_FIELDS_PARAM_NAME)).split("\\s*,\\s*"));
+            // excludeFields
+            List<String> excludeFields = Arrays.asList(((String) queryParameters.get(EXCL_FIELDS_PARAM_NAME)).split("\\s*,\\s*"));
 
             // Get attribute mappings from class descriptor. We just need an attributes list actually
             List<DatabaseMapping> mappings = context.getServerSession().getProject().getDescriptors().get(entity.getClass()).getMappings();
@@ -81,7 +78,7 @@ public final class FieldsFilteringValidator {
             // Build fields list as all fields without the excluded ones
             fields = new ArrayList<String>();
             for (DatabaseMapping mapping : mappings) {
-                if (!exclFields.contains(mapping.getAttributeName())) {
+                if (!excludeFields.contains(mapping.getAttributeName())) {
                     fields.add(mapping.getAttributeName());
                 }
             }

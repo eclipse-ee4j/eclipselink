@@ -24,7 +24,7 @@ public interface FeatureSet {
         /* Pageable resources */
         PAGING,
 
-        /* Fields filtering (fields, exclFields query parameters) */
+        /* Fields filtering (fields, excludeFields query parameters) */
         FIELDS_FILTERING
     }
 
