@@ -2,7 +2,7 @@ Export-Package: commonj*;version="${version.string}",org.eclipse.persistence*;ve
 Implementation-Version: ${version.string}
 Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink SDO
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo
 Require-Bundle: org.eclipse.persistence.core;bundle-version="${release.version}";visibility:=reexport,\
  org.eclipse.persistence.asm;bundle-version="${release.version}";resolution:=optional,\
