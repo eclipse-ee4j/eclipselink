@@ -1140,7 +1140,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     Class elim = (Class)AccessController.doPrivileged(new PrivilegedClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
                     Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(elim, new Class[] {String.class}, false));
-                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
+                    return (EntityListenerInjectionManager) AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
             } else {
                 Class elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()); 
                 Constructor constructor = PrivilegedAccessHelper.getConstructorFor(elim, new Class[] {Object.class}, false);

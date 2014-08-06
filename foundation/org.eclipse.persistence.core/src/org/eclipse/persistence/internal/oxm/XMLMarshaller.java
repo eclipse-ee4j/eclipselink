@@ -71,7 +71,7 @@ public abstract class XMLMarshaller<
     ABSTRACT_SESSION extends CoreAbstractSession,
     CHARACTER_ESCAPE_HANDLER extends CharacterEscapeHandler,
     CONTEXT extends Context<ABSTRACT_SESSION, DESCRIPTOR, ?, ?, ?, SESSION, ?>,
-    DESCRIPTOR extends Descriptor,
+    DESCRIPTOR extends Descriptor<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
     MARSHALLER_LISTENER extends Marshaller.Listener,
     MEDIA_TYPE extends MediaType,
     NAMESPACE_PREFIX_MAPPER extends NamespacePrefixMapper,

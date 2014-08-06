@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -84,7 +84,7 @@ public class ConverterClass implements Converter, ClassNameConversionRequired {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     attributeConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, classLoader));
-                    attributeConverter = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeConverterClass));
+                    attributeConverter = (AttributeConverter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeConverterClass));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
                 }
