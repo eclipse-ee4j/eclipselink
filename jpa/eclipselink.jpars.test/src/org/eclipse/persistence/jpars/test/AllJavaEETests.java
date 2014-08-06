@@ -17,13 +17,14 @@ import org.eclipse.persistence.jpars.test.server.ServerCrudTest;
 import org.eclipse.persistence.jpars.test.server.ServerEmployeeTest;
 import org.eclipse.persistence.jpars.test.server.ServerEmployeeTestV2;
 import org.eclipse.persistence.jpars.test.server.ServerFieldsFilteringTest;
+import org.eclipse.persistence.jpars.test.server.ServerLinksTest;
 import org.eclipse.persistence.jpars.test.server.ServerPageableTest;
 import org.eclipse.persistence.jpars.test.server.ServerTravelerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(VersionedTestSuite.class)
-@SuiteClasses({ ServerEmployeeTestV2.class, ServerCrudTest.class, ServerEmployeeTest.class, ServerTravelerTest.class, ServerPageableTest.class, ServerFieldsFilteringTest.class })
+@SuiteClasses({ ServerEmployeeTestV2.class, ServerCrudTest.class, ServerEmployeeTest.class, ServerTravelerTest.class, ServerPageableTest.class, ServerFieldsFilteringTest.class, ServerLinksTest.class })
 public class AllJavaEETests {
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,13 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features.core.selflinks;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
@@ -27,11 +20,18 @@ import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
+import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
+
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
@@ -72,8 +72,9 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
             ItemLinks itemLinks = new ItemLinks();
             ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
             PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
-            String href = context.getBaseURI() + context.getVersion() + "/" + context.getName() + "/entity/" + descriptor.getAlias() + "/" + IdHelper.stringifyId(result, descriptor.getAlias(), context);
+            String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
             itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
+            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_CANONICAL, href));
             entity._persistence_setLinks(itemLinks);
         }
         return result;
@@ -119,9 +120,9 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
         if ((result instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
             PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
-            String entityId = IdHelper.stringifyId(result, descriptor.getAlias(), context);
-            String href = context.getBaseURI() + context.getVersion() + "/" + context.getName() + "/entity/" + descriptor.getAlias() + "/" + entityId;
+            String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
             itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
+            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_CANONICAL, href));
             entity._persistence_setLinks(itemLinks);
             return entity;
         }

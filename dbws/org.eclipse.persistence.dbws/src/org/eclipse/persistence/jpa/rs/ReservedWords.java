@@ -28,6 +28,7 @@ public class ReservedWords {
     public static final String JPARS_REL_NEXT = "next";
     public static final String JPARS_REL_PREV = "prev";
     public static final String JPARS_REL_SELF = "self";
+    public static final String JPARS_REL_CANONICAL = "canonical";
 
     public static final String NO_ROUTE_JAXB_ELEMENT_LABEL = "result";
     // 

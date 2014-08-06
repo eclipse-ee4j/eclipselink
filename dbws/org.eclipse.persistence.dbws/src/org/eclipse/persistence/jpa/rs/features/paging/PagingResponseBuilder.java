@@ -21,6 +21,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
+import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
@@ -97,13 +98,9 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         if ((result instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
             ItemLinks itemLinks = new ItemLinks();
             PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
-            String entityId = IdHelper.stringifyId(result, descriptor.getAlias(), context);
-
-            StringBuilder href = new StringBuilder(context.getBaseURI().toString());
-            href.append(context.getVersion()).append("/").append(context.getName()).append("/entity/")
-                    .append(descriptor.getAlias()).append("/").append(entityId);
-
-            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href.toString()));
+            String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
+            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
+            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_CANONICAL, href));
             entity._persistence_setLinks(itemLinks);
             return entity;
         }
