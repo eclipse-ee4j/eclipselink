@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -13,16 +13,14 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -79,7 +77,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         this.defaultNamespaceURI = namespaceResolver.defaultNamespaceURI;
         Map<String, String> namespaceResolverPrefixesToNamespaces = namespaceResolver.prefixesToNamespaces;
         if(namespaceResolverPrefixesToNamespaces != null) {
-            this.prefixesToNamespaces = new HashMap<String, String>(namespaceResolverPrefixesToNamespaces.size());
+            this.prefixesToNamespaces = new LinkedHashMap<String, String>(namespaceResolverPrefixesToNamespaces.size());
             this.prefixesToNamespaces.putAll(namespaceResolver.prefixesToNamespaces);
         }
         this.prefixCounter = namespaceResolver.prefixCounter;
@@ -88,7 +86,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
 
     public Map<String, String> getPrefixesToNamespaces() {
         if(null == prefixesToNamespaces) {
-            prefixesToNamespaces = new HashMap<String, String>();
+            prefixesToNamespaces = new LinkedHashMap<String, String>();
         }
         return prefixesToNamespaces;
     }
@@ -194,7 +192,35 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         if(null == prefix || 0 == prefix.length()) {
             defaultNamespaceURI = namespaceURI;
         } else {
+            //Replace same namespace with given prefix and put them to the end of list.
+
+            //If you have prefix xmlns:oxm="namespace1" defined on the schema root,
+            //and you (programmatically via namespace resolver) inject prefix xmlns:myns="namespace1" on some element (more deeply)
+            //in the schema, you want this element (in the xml instance) to be prefixed with this myns (because it was defined more closely to the given element).
+            //This can probably be setup in different way (declaratively maybe with some JAXB spec support or MOXy external xml mechanism).
+            //This behavior is preserved, but it is now working independently on the JDK (because we are using HashMap and we are changing the order
+            //of items in the LinkedHashMap so the resolver always find the prefix which is more closely (in xml schema) to the given element.
+            ///@see XMLRootComplexDifferentPrefixTestCases
+            Map<String, String> removedItems = null;
+            if (getPrefixesToNamespaces().containsValue(namespaceURI.intern())) {
+                removedItems = new LinkedHashMap<String, String>();
+                for (Map.Entry<String, String> prefixEntry : getPrefixesToNamespaces().entrySet()) {
+                    if (namespaceURI.intern().equals(prefixEntry.getValue())) {
+                        removedItems.put(prefixEntry.getKey(), prefixEntry.getValue());
+                    }
+                }
+            }
+            if (null != removedItems) {
+                for (String key : removedItems.keySet()) {
+                    getPrefixesToNamespaces().remove(key);
+                }
+            }
             getPrefixesToNamespaces().put(prefix, namespaceURI.intern());
+            if (null != removedItems) {
+                for (Map.Entry<String, String> removedEntry : removedItems.entrySet()) {
+                    getPrefixesToNamespaces().put(removedEntry.getKey(), removedEntry.getValue());
+                }
+            }
         }
     }
 
@@ -236,7 +262,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @param  names A Vector of namespace URIs
      */
     public void setNamespaces(Vector names) {
-        prefixesToNamespaces = new HashMap<String, String>(names.size());
+        prefixesToNamespaces = new LinkedHashMap<String, String>(names.size());
         for(Namespace namespace : (Vector<Namespace>) names) {
             if ((namespace.getPrefix() != null) && (namespace.getNamespaceURI() != null)) {
                 prefixesToNamespaces.put(namespace.getPrefix(), namespace.getNamespaceURI());

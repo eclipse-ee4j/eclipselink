@@ -13,7 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
 import com.sun.tools.xjc.Driver;
+
 import junit.framework.Assert;
+
 import org.eclipse.persistence.jaxb.compiler.Generator;
 
 import javax.tools.Diagnostic;
@@ -27,6 +29,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 
@@ -38,6 +41,7 @@ import javax.tools.ToolProvider;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlValue;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.OutputStreamWriter;
@@ -47,6 +51,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import static org.eclipse.persistence.testing.jaxb.beanvalidation.ContentComparator.equalsXML;
@@ -58,11 +63,34 @@ import static org.eclipse.persistence.testing.jaxb.beanvalidation.ContentCompara
  */
 public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
 
-    private static final String PATH_TO_SCHEMA_DIRECTORY = "org/eclipse/persistence/testing/jaxb/beanvalidation/sgen_xjc";
-    private static final String GOLDEN_FILE_PATH = PATH_TO_SCHEMA_DIRECTORY + "/golden_file.xsd";
-    private static final String RICH_SCHEMA_PATH = PATH_TO_SCHEMA_DIRECTORY + "/rich_schema.xsd";
-    private static final String CUSTOMIZED_SCHEMA_PATH = PATH_TO_SCHEMA_DIRECTORY + "/customized_schema.xsd";
-    private static final String GENERATED_SCHEMA_PATH = PATH_TO_SCHEMA_DIRECTORY + "/schema1.xsd";
+    private static final String GOLDEN_FILE_RESOURCE_PATH = "org/eclipse/persistence/testing/jaxb/beanvalidation/sgen_xjc/golden_file.xsd";
+    private static String PATH_TO_SCHEMA_DIRECTORY;
+    private static String GOLDEN_FILE_PATH;
+    private static String RICH_SCHEMA_PATH;
+    private static String CUSTOMIZED_SCHEMA_PATH;
+    private static String GENERATED_SCHEMA_PATH;
+    private static String TARGET_PATH;
+    private static final int DIRS_TO_ROOT = GOLDEN_FILE_RESOURCE_PATH.length() - GOLDEN_FILE_RESOURCE_PATH.replace("/", "").length();
+
+    public BeanValidationBindingsTestCase() {
+        try {
+            //context class loader and already exists file path is needed to run this test case from within IDE like Eclipse
+            PATH_TO_SCHEMA_DIRECTORY = new File(Thread.currentThread().getContextClassLoader().getResource(GOLDEN_FILE_RESOURCE_PATH).toURI()).getParentFile().getAbsolutePath();
+            GOLDEN_FILE_PATH = PATH_TO_SCHEMA_DIRECTORY + "/golden_file.xsd";
+            RICH_SCHEMA_PATH = PATH_TO_SCHEMA_DIRECTORY + "/rich_schema.xsd";
+            CUSTOMIZED_SCHEMA_PATH = PATH_TO_SCHEMA_DIRECTORY + "/customized_schema.xsd";
+            GENERATED_SCHEMA_PATH = PATH_TO_SCHEMA_DIRECTORY + "/schema1.xsd";
+
+            File alreadyExistsFile = new File(Thread.currentThread().getContextClassLoader().getResource(GOLDEN_FILE_RESOURCE_PATH).toURI());
+            for (int i = 0; i < DIRS_TO_ROOT + 1; i++) {
+                alreadyExistsFile = alreadyExistsFile.getParentFile();
+            }
+
+            TARGET_PATH = alreadyExistsFile.getAbsolutePath();
+        } catch (URISyntaxException e) {
+            fail(String.format("Unable to initialize %s test case", BeanValidationBindingsTestCase.class.getName()));
+        }
+    }
 
     // Handles error case where no BV annotations would be generated on class fields and would still pass the equality test.
     boolean annotationsGenerated;
@@ -160,7 +188,6 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
      * Tests that the XJC detects all facets and generates their respective
      * annotations correctly.
      */
-    @SuppressWarnings({ "UnusedAssignment", "UnusedDeclaration" })
     public void testAllFacetsAndAnnotations() throws Exception {
         pkg = "rs";
 
@@ -314,7 +341,8 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
         DiagnosticCollector<? super JavaFileObject> diag = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fm = compiler.getStandardFileManager(diag, null, null);
         Iterable<? extends JavaFileObject> compilationUnits = fm.getJavaFileObjectsFromFiles(Arrays.asList(compileList));
-        JavaCompiler.CompilationTask task = compiler.getTask(new OutputStreamWriter(System.out),fm,diag, null, null, compilationUnits);
+        Iterable options = Arrays.asList("-d", TARGET_PATH);
+        JavaCompiler.CompilationTask task = compiler.getTask(new OutputStreamWriter(System.out),fm,diag, options, null, compilationUnits);
 
         if (!task.call()) {
             for (Diagnostic diagnostic : diag.getDiagnostics())
@@ -337,7 +365,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
     }
 
     private Class<?>[] loadCompiledClasses(String... loadList) throws ClassNotFoundException {
-        ClassLoader cl = this.getClass().getClassLoader();
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Class<?>[] loadedClasses = new Class[loadList.length];
         for (int i = 0; i < loadedClasses.length; i++)
             loadedClasses[i] = cl.loadClass(loadList[i]);
@@ -386,7 +414,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
             return file.delete();
         } else
         // The directory is now empty so delete it
-            return file.delete();
+        return file.delete();
     }
 
     public interface BindingTeam{}

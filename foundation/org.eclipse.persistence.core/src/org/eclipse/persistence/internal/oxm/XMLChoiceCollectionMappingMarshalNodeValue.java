@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -38,13 +38,44 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;
     private Map<Field, NodeValue> fieldToNodeValues;
-    private Map<Class, NodeValue> classToNodeValues;
+    private Map<Class, List<FieldNodeValue>> classToNodeValues;
     private NodeValue choiceElementNodeValue;
     private Field xmlField;
     private boolean isMixedNodeValue;
     private boolean isAny;
     private NodeValue anyNodeValue;
     private int index = -1;
+
+    /**
+     * This class is needed to hold field and nodeValue relationship.
+     * If we have choice with different fields with the same (java class) type (e.g. via XmlAdapter),
+     * there is need to know to which field we are holding the nodeValue.
+     *
+     * It is used in getNodeValueForValue method. If we knew only class relationship to nodeValue,
+     * there is no way how to say that this nodeValue is related to the first or second field (or any other field with given java class).
+     *
+     * @see AdapterWithElementsTestCases
+     *
+     *
+     * @author Martin Vojtek (martin.vojtek@oracle.com)
+     *
+     */
+    private static class FieldNodeValue {
+        private final Field field;
+        private final NodeValue nodeValue;
+        public FieldNodeValue(Field field, NodeValue nodeValue) {
+            super();
+            this.field = field;
+            this.nodeValue = nodeValue;
+        }
+        public Field getField() {
+            return field;
+        }
+        public NodeValue getNodeValue() {
+            return nodeValue;
+        }
+
+    }
 
     public XMLChoiceCollectionMappingMarshalNodeValue(ChoiceCollectionMapping mapping, Field xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
@@ -64,21 +95,33 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
         return choiceElementNodeValue.isOwningNode(xPathFragment);
     }
 
+
     public void setFieldToNodeValues(Map<Field, NodeValue> fieldToNodeValues) {
         this.fieldToNodeValues = fieldToNodeValues;
-        this.classToNodeValues = new HashMap<Class, NodeValue>();
+        this.classToNodeValues = new HashMap<Class, List<FieldNodeValue>>();
         for(Field nextField:fieldToNodeValues.keySet()) {
             Class associatedClass = ((Map<Field, Class>)this.xmlChoiceCollectionMapping.getFieldToClassMappings()).get(nextField);
-            this.classToNodeValues.put(associatedClass, fieldToNodeValues.get(nextField));
+
+            if (classToNodeValues.containsKey(associatedClass)) {
+                classToNodeValues.get(associatedClass).add(new FieldNodeValue(nextField, fieldToNodeValues.get(nextField)));
+            } else {
+                List<FieldNodeValue> newFieldToNodeValuesList = new ArrayList<FieldNodeValue>();
+                newFieldToNodeValuesList.add(new FieldNodeValue(nextField, fieldToNodeValues.get(nextField)));
+                this.classToNodeValues.put(associatedClass, newFieldToNodeValuesList);
+            }
+
+
         }
-        
+
         Collection classes = this.classToNodeValues.keySet();
         for(Class nextClass:((Map<Class, Mapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
             //Create node values for any classes that aren't already processed
             if(!(classes.contains(nextClass))) {
-            	Field field = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
+		Field field = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
                 NodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, xmlField, (Mapping) xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().get(nextClass));
-                this.classToNodeValues.put(nextClass, nodeValue);
+                List<FieldNodeValue> newFieldToNodeValuesList = new ArrayList<FieldNodeValue>();
+                newFieldToNodeValuesList.add(new FieldNodeValue(field, nodeValue));
+                this.classToNodeValues.put(nextClass, newFieldToNodeValuesList);
                 NodeValue nodeValueForField = fieldToNodeValues.get(field);
                 nodeValue.setXPathNode(nodeValueForField.getXPathNode());
             }
@@ -297,7 +340,25 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
             Class theClass = value.getClass();
             while(associatedField == null) {
                 associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
-                nodeValue = classToNodeValues.get(theClass);
+                List<FieldNodeValue> fieldNodes = classToNodeValues.get(theClass);
+
+                nodeValue = null;
+                if (null != fieldNodes) {
+
+                    //match also field
+                    if (null != associatedField && fieldNodes.size() > 1) {
+                        for (FieldNodeValue fieldNode : fieldNodes) {
+                            if (fieldNode.getField().equals(associatedField)) {
+                                nodeValue = fieldNode.getNodeValue();
+                            }
+                        }
+                    }
+
+                    if (null == nodeValue && fieldNodes.size() > 0) {
+                        nodeValue = fieldNodes.get(0).getNodeValue();
+                    }
+                }
+
                 if(theClass.getSuperclass() != null) {
                     theClass = theClass.getSuperclass();
                 } else {

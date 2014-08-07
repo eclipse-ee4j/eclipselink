@@ -9,20 +9,21 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 
 /**
  * INTERNAL:
@@ -290,10 +291,12 @@ public class XPathNode {
                 }
             }
             if (null == nonAttributeChildrenMap) {
-                nonAttributeChildrenMap = new HashMap();
+                //The reason behind LinkedHashMap is the order of items when for-cycling HashMap.getEntrySet() or HashMap.getKeySet().
+                //This change fixes non-determinism (implementation in JDK8 has changed so the order is different (sometimes) than in JDK6 and JDK7).
+                nonAttributeChildrenMap = new LinkedHashMap();
             }
             if(anXPathFragment !=null && Constants.SCHEMA_TYPE_ATTRIBUTE.equals(anXPathFragment.getLocalName())){
-            	hasTypeChild = true;
+		hasTypeChild = true;
             }
             children = nonAttributeChildren;
             childrenMap = nonAttributeChildrenMap;

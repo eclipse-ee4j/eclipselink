@@ -23,6 +23,15 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLConstants;
 
 public class DataHelperToDateTest extends DataHelperTestCases {
+
+    private static final String TIMEZONE_OFFSET;
+
+    static {
+        int offsetInMillis = TimeZone.getDefault().getRawOffset();
+        String offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
+        TIMEZONE_OFFSET = (offsetInMillis >= 0 ? "+" : "-") + offset;
+    }
+
     public DataHelperToDateTest(String name) {
         super(name);
     }
@@ -138,7 +147,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
     public void testToDateBeforeGregorianChange() {
         // Ensure that if we are converting to a Date that occurred before the
         // Gregorian switchover (October 15, 1582) we do not shift the date.
-        Date dateObj = dataHelper.toDate("0001-01-01-05:00");
+        Date dateObj = dataHelper.toDate("0001-01-01"+TIMEZONE_OFFSET);
 
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("MM/dd/yyyy");
@@ -154,7 +163,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
     public void testToDateBeforeGregorianChangeBC() {
         // Ensure that if we are converting to a Date that occurred before the
         // Gregorian switchover (October 15, 1582) we do not shift the date.
-        Date dateObj = dataHelper.toDate("-2006-03-31T03:30:45.001-05:00");
+        Date dateObj = dataHelper.toDate("-2006-03-31T03:30:45.001"+TIMEZONE_OFFSET);
 
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("MM/dd/yyyy");

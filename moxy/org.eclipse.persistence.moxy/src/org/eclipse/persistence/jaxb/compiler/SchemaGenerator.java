@@ -76,9 +76,9 @@ import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethodsSchema;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethodsSchema;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.sessions.Session;
@@ -178,7 +178,7 @@ public class SchemaGenerator {
         if (namespaceInfo.getLocation() != null && !namespaceInfo.getLocation().equals(GENERATE)) {
             return;
         }
-        Schema schema = getSchemaForNamespace(info.getClassNamespace());
+        Schema schema = getSchemaForNamespace(info.getClassNamespace(), myClass.getPackageName());
         info.setSchema(schema);
 
         String typeName = info.getSchemaTypeName();
@@ -537,7 +537,7 @@ public class SchemaGenerator {
                     // add an element
                 } else if (!(ownerTypeInfo.getXmlValueProperty() != null && ownerTypeInfo.getXmlValueProperty() == next)) {
                     Element element = buildElement(next, parentCompositor instanceof All, currentSchema, ownerTypeInfo);
-                    addElementToSchema(element, next.getSchemaName().getNamespaceURI(), next.isPositional(), parentCompositor, currentSchema);
+                    addElementToSchema(element, next.getSchemaName().getNamespaceURI(), next.isPositional(), parentCompositor, currentSchema, ownerTypeInfo.getJavaClass().getPackageName());
                 }
             }
         }
@@ -653,6 +653,10 @@ public class SchemaGenerator {
                 || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type));
     }
 
+    private Schema getSchemaForNamespace(String namespace) {
+        return getSchemaForNamespace(namespace, null);
+    }
+
     /**
      * Return the Schema for a given namespace.  If no schema exists for the
      * given namespace, one will be created.
@@ -660,7 +664,7 @@ public class SchemaGenerator {
      * @param namespace
      * @return
      */
-    private Schema getSchemaForNamespace(String namespace) {
+    private Schema getSchemaForNamespace(String namespace, String packageName) {
         if (schemaForNamespace == null) {
             schemaForNamespace = new HashMap<String, Schema>();
             allSchemas = new ArrayList<Schema>();
@@ -670,7 +674,7 @@ public class SchemaGenerator {
             schema = new Schema();
             String schemaName = SCHEMA + schemaCount + SCHEMA_EXT;
 
-            NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(namespace);
+            NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(namespace, packageName);
             if (namespaceInfo != null) {
                 if (namespaceInfo.getLocation() != null && !namespaceInfo.getLocation().equals(GENERATE)) {
                     return null;
@@ -732,6 +736,21 @@ public class SchemaGenerator {
     }
 
     public NamespaceInfo getNamespaceInfoForNamespace(String namespace) {
+
+        return getNamespaceInfoForNamespace(namespace, null);
+    }
+
+    public NamespaceInfo getNamespaceInfoForNamespace(String namespace, String packageName) {
+
+        if (null != packageName) {
+            if (packageToPackageInfoMappings.containsKey(packageName)) {
+                PackageInfo packageInfo = packageToPackageInfoMappings.get(packageName);
+                if (packageInfo.getNamespace().equals(namespace)) {
+                    return packageInfo.getNamespaceInfo();
+                }
+            }
+        }
+
         Collection<PackageInfo> packageInfo = packageToPackageInfoMappings.values();
         for (PackageInfo info : packageInfo) {
             if (info.getNamespace().equals(namespace)) {
@@ -2136,7 +2155,7 @@ public class SchemaGenerator {
         if (lookupNamespace == null) {
             lookupNamespace = EMPTY_STRING;
         }
-        NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace);
+        NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace, getPackageName(typeInfo));
         boolean isElementFormQualified = false;
         if (namespaceInfo != null) {
             isElementFormQualified = namespaceInfo.isElementFormQualified();
@@ -2188,6 +2207,13 @@ public class SchemaGenerator {
             }
         }
         return element;
+    }
+
+    private String getPackageName(TypeInfo typeInfo) {
+        if (null != typeInfo && null != typeInfo.getDescriptor() && null != typeInfo.getDescriptor() && null != typeInfo.getDescriptor().getJavaClass() && null != typeInfo.getDescriptor().getJavaClass().getPackage()) {
+            return typeInfo.getDescriptor().getJavaClass().getPackage().getName();
+        }
+        return null;
     }
 
     private void processFacet(Element element, Facet facet) {
@@ -2274,12 +2300,12 @@ public class SchemaGenerator {
      * @param schema the schema currently being built
      * @param compositor the TypeInfo that owns the given Property
      */
-    private void addElementToSchema(Element element, String elementURI, boolean isPositional, TypeDefParticle compositor, Schema schema) {
+    private void addElementToSchema(Element element, String elementURI, boolean isPositional, TypeDefParticle compositor, Schema schema, String packageName) {
         String lookupNamespace = schema.getTargetNamespace();
         if (lookupNamespace == null) {
             lookupNamespace = EMPTY_STRING;
         }
-        NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace);
+        NamespaceInfo namespaceInfo = getNamespaceInfoForNamespace(lookupNamespace, packageName);
         boolean isElementFormQualified = false;
         if (namespaceInfo != null) {
             isElementFormQualified = namespaceInfo.isElementFormQualified();
@@ -2343,7 +2369,7 @@ public class SchemaGenerator {
             if (isAttribute) {
                 addAttributeToSchema(buildAttribute(schemaName, Constants.SCHEMA_PREFIX + COLON + Constants.ANY_SIMPLE_TYPE), schemaName, currentSchema, type);
             } else {
-                addElementToSchema(buildElement(schemaName.getLocalPart(), Constants.SCHEMA_PREFIX + COLON + Constants.ANY_SIMPLE_TYPE, currentParticle instanceof All), schemaName.getNamespaceURI(), false, currentParticle, currentSchema);
+                addElementToSchema(buildElement(schemaName.getLocalPart(), Constants.SCHEMA_PREFIX + COLON + Constants.ANY_SIMPLE_TYPE, currentParticle instanceof All), schemaName.getNamespaceURI(), false, currentParticle, currentSchema, null);
             }
         }
     }

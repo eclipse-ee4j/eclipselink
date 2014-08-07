@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -475,7 +476,9 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, firstField);
                         XMLChoiceCollectionMappingMarshalNodeValue marshalValue = new XMLChoiceCollectionMappingMarshalNodeValue(xmlChoiceMapping, firstField);
 
-                        HashMap<Field, NodeValue> fieldToNodeValues = new HashMap<Field, NodeValue>();
+                        //The reason behind LinkedHashMap is the order of items when for-cycling HashMap.getEntrySet() or HashMap.getKeySet().
+                        //This change fixes non-determinism (implementation in JDK8 has changed so the order is different (sometimes) than in JDK6 and JDK7).
+                        HashMap<Field, NodeValue> fieldToNodeValues = new LinkedHashMap<Field, NodeValue>();
                         unmarshalValue.setContainerNodeValue(unmarshalValue);
                         unmarshalValue.setFieldToNodeValues(fieldToNodeValues);
                         if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == firstEntry.getValue())) {

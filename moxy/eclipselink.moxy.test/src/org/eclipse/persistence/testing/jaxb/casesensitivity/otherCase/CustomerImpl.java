@@ -26,8 +26,8 @@ public class CustomerImpl extends org.eclipse.persistence.testing.jaxb.casesensi
 
     private int ID;
     private int age;
-    private String personalNAME;
-    private String persoNalNaMe; /* collision - this one prevails */
+    private String personalNAME; /* collision - this one prevails */
+    private String persoNalNaMe;
 
     public int getID() {
         return ID;
@@ -88,7 +88,7 @@ public class CustomerImpl extends org.eclipse.persistence.testing.jaxb.casesensi
 
     @Override
     public String getNameBridge() {
-        return persoNalNaMe;
+        return personalNAME;
     }
 
 }

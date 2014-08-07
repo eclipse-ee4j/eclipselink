@@ -75,7 +75,7 @@ public class BinderWithAdapterTestCases  extends TestCase {
     public void testMarshal() {
         Element elt = new Element();
         elt.key = 0;
-        elt.value = new HashMap<Integer, String>();
+        elt.value = new TreeMap<Integer, String>();
         elt.value.put(101, "KTM");
         elt.value.put(69, "CBR");
 

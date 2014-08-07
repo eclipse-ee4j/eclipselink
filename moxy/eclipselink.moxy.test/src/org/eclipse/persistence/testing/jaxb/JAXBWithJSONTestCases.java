@@ -402,12 +402,23 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     protected void compareStringToControlFile(String test, String testString, String controlFileLocation) {
     	compareStringToControlFile(test, testString, controlFileLocation, shouldRemoveEmptyTextNodesFromControlDoc());
     }
-    
+
     protected void compareStringToControlFile(String test, String testString, String controlFileLocation, boolean removeWhitespace) {
-        String expectedString = loadFileToString(controlFileLocation);
+        String expectedString = null;
+
+        if (null == controlFileLocation) {
+            expectedString = getControlJSONDocumentContent();
+        } else {
+            expectedString = loadFileToString(controlFileLocation);
+        }
+
         compareStrings(testString, testString, expectedString, removeWhitespace);
     }
-    
+
+    protected String getControlJSONDocumentContent() {
+        return null;
+    }
+
     protected void compareStrings(String test, String testString, String expectedString, boolean removeWhitespace) {
         log(test);
         if(removeWhitespace){
@@ -434,7 +445,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     protected Object getJSONReadControlObject(){
-    	return getReadControlObject();
+	return getReadControlObject();
     }
 
     private URL getJSONURL() {

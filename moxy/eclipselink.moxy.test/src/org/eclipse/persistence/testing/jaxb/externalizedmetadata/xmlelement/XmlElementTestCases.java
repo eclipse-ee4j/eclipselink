@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,12 +13,14 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -32,16 +34,17 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 /**
  * Tests XmlElement via eclipselink-oxm.xml
  *
  */
 public class XmlElementTestCases extends JAXBWithJSONTestCases {
-    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/employee.xml";
-    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/employee.json";
+
     private static final String XML_RESOURCE_INVALID = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/employee-invalid.xml";
-    
+
     /**
      * This is the preferred (and only) constructor.
      * 
@@ -50,11 +53,9 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
      */
     public XmlElementTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);
-        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] { Employee.class});
     }
-    
+
 	 public Map getProperties(){
 			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/eclipselink-oxm.xml");
 
@@ -193,4 +194,41 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
 		emp.myUtilDate = cal;
 		return emp;
 	}
+
+	@Override
+    protected String getControlJSONDocumentContent() {
+        return "{\"employee\":{\n" +
+                "  \"firstName\":\"firstName\",\n" +
+                "  \"last-name\":\"LastName\",\n" +
+                "  \"id\":66,\n" +
+                "  \"aUtilDate\":\"1976-02-17T06:15:30"+TIMEZONE_OFFSET+"\",\n" +
+                "  \"myInt\":66\n" +
+                "}}";
+    }
+
+    public boolean isUnmarshalTest() {
+         return false;
+    }
+
+    @Override
+    protected Document getControlDocument() {
+        String contents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<employee xmlns:ns0=\"http://www.example.com/utils\">" +
+                "<firstName>firstName</firstName>" +
+                "<last-name>LastName</last-name>" +
+                "<id>66</id>" +
+                "<ns0:aUtilDate>1976-02-17T06:15:30"+TIMEZONE_OFFSET+"</ns0:aUtilDate>" +
+                "<myInt>66</myInt>" +
+                "</employee>";
+
+        StringReader reader = new StringReader(contents);
+        InputSource is = new InputSource(reader);
+        Document doc = null;
+        try {
+            doc = parser.parse(is);
+        } catch (Exception e) {
+            fail("An error occurred setting up the control document");
+        }
+        return doc;
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,9 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlgregoriancalendar;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -24,16 +26,31 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
 
-	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlgregoriancalendar/xmlgregorian.xml";
-    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlgregoriancalendar/xmlgregorian.json";
+    private static final String CONTROL_XML_DOCUMENT;
+
+    static {
+        CONTROL_XML_DOCUMENT = "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+            "<root>" +
+            "<thing xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:date\">1977-02-13</thing>" +
+            "<things xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:date\">1977-02-13</things>" +
+            "<things xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:date\">1982-05-30</things>" +
+            "<things xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:time\">09:30:05</things>" +
+            "<things xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:dateTime\">1985-09-23T10:33:05.001</things>" +
+            "<things xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:dateTime\">1977-02-13T08:30:02.000</things>" +
+            "<things xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:dateTime\">1977-02-13T08:30:02</things>" +
+            "<things xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:dateTime\">2013-02-20T10:29:58"+TIMEZONE_OFFSET+"</things>" +
+            "<gregCal>1985-09-23T10:33:05.001</gregCal>" +
+            "<gregCalTime>09:30:05</gregCalTime>" +
+            "</root>";
+    }
 
     public XMLGregorianCalendarObjectTestCases(String name) throws Exception {
 		super(name);
-		setControlDocument(XML_RESOURCE);
-		setControlJSON(JSON_RESOURCE);
 		setClasses(new Class[] {XMLGregorianCalendarHolder.class});
 	}
 
@@ -77,6 +94,61 @@ public class XMLGregorianCalendarObjectTestCases extends JAXBWithJSONTestCases{
 		}
 		return holder;
 	}
+
+	public boolean isUnmarshalTest() {
+        return false;
+    }
+
+	@Override
+    protected String getControlJSONDocumentContent() {
+        return "{\"root\":{\n" +
+                "   \"thing\":{\n" +
+                "      \"type\":\"date\",\n" +
+                "      \"value\":\"1977-02-13\"\n" +
+                "   },\n" +
+                "   \"things\":[{\n" +
+                "      \"type\":\"date\",\n" +
+                "      \"value\":\"1977-02-13\"\n" +
+                "     },{\n" +
+                "      \"type\":\"date\",\n" +
+                "      \"value\":\"1982-05-30\"\n" +
+                "     },{\n" +
+                "      \"type\":\"time\",\n" +
+                "      \"value\":\"09:30:05\"\n" +
+                "     },{\n" +
+                "      \"type\":\"dateTime\",\n" +
+                "      \"value\":\"1985-09-23T10:33:05.001\"\n" +
+                "     },\n" +
+                "     {\n" +
+                "      \"type\":\"dateTime\",\n" +
+                "      \"value\":\"1977-02-13T08:30:02.000\"\n" +
+                "     },\n" +
+                "     {\n" +
+                "      \"type\":\"dateTime\",\n" +
+                "      \"value\":\"1977-02-13T08:30:02\"\n" +
+                "     },    \n" +
+                "     {\n" +
+                "      \"type\":\"dateTime\",\n" +
+                "      \"value\":\"2013-02-20T10:29:58"+TIMEZONE_OFFSET+"\"\n" +
+                "     }\n" +
+                "   ],\n" +
+                "   \"gregCal\":\"1985-09-23T10:33:05.001\",\n" +
+                "   \"gregCalTime\":\"09:30:05\"\n" +
+                "}}";
+    }
+
+	@Override
+    protected Document getControlDocument() {
+        StringReader reader = new StringReader(CONTROL_XML_DOCUMENT);
+        InputSource is = new InputSource(reader);
+        Document doc = null;
+        try {
+            doc = parser.parse(is);
+        } catch (Exception e) {
+            fail("An error occurred setting up the control document");
+        }
+        return doc;
+    }
     
 	@Override
 	public Object getReadControlObject() {

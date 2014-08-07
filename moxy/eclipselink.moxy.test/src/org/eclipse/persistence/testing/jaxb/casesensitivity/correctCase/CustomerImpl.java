@@ -27,7 +27,7 @@ public class CustomerImpl extends org.eclipse.persistence.testing.jaxb.casesensi
     private int id;
     private int age;
     private String personalName;
-    private String persoNalNaMe; /* collision - this one prevails */
+    private String personalname; /* collision - this one prevails */
 
     public int getId() {
         return id;
@@ -56,13 +56,13 @@ public class CustomerImpl extends org.eclipse.persistence.testing.jaxb.casesensi
         this.personalName = personalName;
     }
 
-    public String getPersoNalNaMe() {
-        return persoNalNaMe;
+    public String getPersonalname() {
+        return personalname;
     }
 
     @XmlElement
-    public void setPersoNalNaMe(String persoNalNaMe) {
-        this.persoNalNaMe = persoNalNaMe;
+    public void setPersonalname(String personalname) {
+        this.personalname = personalname;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class CustomerImpl extends org.eclipse.persistence.testing.jaxb.casesensi
         return "CustomerImpl_correctCase{" +
                 "id=" + id +
                 ", age=" + age +
-                ", persoNalNAMe='" + persoNalNaMe + '\'' +
+                ", personalname='" + personalname + '\'' +
                 ", personalName='" + personalName + '\'' +
                 '}';
     }
@@ -87,7 +87,7 @@ public class CustomerImpl extends org.eclipse.persistence.testing.jaxb.casesensi
 
     @Override
     public String getNameBridge() {
-        return persoNalNaMe;
+        return personalname;
     }
 
 }

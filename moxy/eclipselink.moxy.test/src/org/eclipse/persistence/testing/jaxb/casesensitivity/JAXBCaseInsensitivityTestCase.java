@@ -104,7 +104,7 @@ public class JAXBCaseInsensitivityTestCase extends junit.framework.TestCase {
         baseCustomer = new CustomerImpl();
         baseCustomer.setId(1234007);
         baseCustomer.setAge(24);
-        baseCustomer.setPersoNalNaMe("collisionBabe");
+        baseCustomer.setPersonalname("collisionBabe");
         baseCustomer.setPersonalName("cafeBabe");
 
         /* Create and assign case-insensitive unmarshallers */

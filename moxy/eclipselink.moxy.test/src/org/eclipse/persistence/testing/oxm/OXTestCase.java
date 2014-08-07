@@ -26,6 +26,7 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLEventReader;
@@ -55,7 +56,6 @@ import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRunt
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -71,6 +71,8 @@ public abstract class OXTestCase extends XMLTestCase {
     protected static Constructor staxResultEventWriterConstructor;
     protected static Constructor staxSourceStreamReaderConstructor;
     protected static Constructor staxSourceEventReaderConstructor;
+
+    protected static final String TIMEZONE_OFFSET;
 
     static {
         try {
@@ -95,9 +97,13 @@ public abstract class OXTestCase extends XMLTestCase {
         } catch(Exception ex) {
             staxSourceClass = null;
         }
+
+        int offsetInMillis = TimeZone.getDefault().getRawOffset();
+        String offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
+        TIMEZONE_OFFSET = (offsetInMillis >= 0 ? "+" : "-") + offset;
     }
-	
-    public boolean useLogging = false;    
+
+    public boolean useLogging = false;
     public static enum Platform { DOM, SAX, DOC_PRES };
     public static enum Metadata { JAVA, XML_TOPLINK, XML_ECLIPSELINK };
     public static Platform platform;;

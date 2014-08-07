@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -13,8 +13,8 @@
 package org.eclipse.persistence.internal.oxm.schema.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -47,13 +47,16 @@ public class Schema {
         namespaceResolver = new NamespaceResolver();
         imports = new ArrayList();
         includes = new ArrayList();
-        topLevelSimpleTypes = new HashMap();
-        topLevelComplexTypes = new HashMap();
-        topLevelElements = new HashMap();
-        topLevelAttributes = new HashMap();
-        attributesMap = new HashMap();
-        attributeGroups = new HashMap();
-        groups = new HashMap();
+        //LinkedHashMaps are needed to force determinism of generated schemas.
+        //It is important to generate always the same schema (e.g. with SchemaGenerator) with given input Schema.
+        //Without LinkedHashMap it would be JDK dependent and the output schema would be different with different JDKs used.
+        topLevelSimpleTypes = new LinkedHashMap();
+        topLevelComplexTypes = new LinkedHashMap();
+        topLevelElements = new LinkedHashMap();
+        topLevelAttributes = new LinkedHashMap();
+        attributesMap = new LinkedHashMap();
+        attributeGroups = new LinkedHashMap();
+        groups = new LinkedHashMap();
     }
 
     public void setTargetNamespace(String targetNamespace) {
@@ -71,6 +74,7 @@ public class Schema {
     public String getDefaultNamespace() {
         return this.defaultNamespace;
     }
+
     public void setTopLevelSimpleTypes(Map topLevelSimpleTypes) {
         this.topLevelSimpleTypes = topLevelSimpleTypes;
     }

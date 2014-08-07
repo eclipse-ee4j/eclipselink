@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,21 +12,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.schematype;
 
+import java.io.StringReader;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 public class SchemaTypeTestCases extends JAXBWithJSONTestCases {
 
-    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/schematype.xml";
-    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/schematype.json";
-
     public SchemaTypeTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);
-        setControlJSON(JSON_RESOURCE);
         setTypes(new Class[] {Root.class});
     }
 
@@ -46,6 +46,45 @@ public class SchemaTypeTestCases extends JAXBWithJSONTestCases {
         } catch (DatatypeConfigurationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    protected String getControlJSONDocumentContent() {
+        return "{\"root\":{\n" +
+                "    \"date\":{\n" +
+                "        \"list\":[\"08:30:00"+TIMEZONE_OFFSET+"\",\"17:00:00"+TIMEZONE_OFFSET+"\"]\n" +
+                "\t},\n" +
+                "     \"single\":{\n" +
+                "        \"date\":\"1975-02-21\"\n" +
+                "    }\n" +
+                "}}";
+    }
+
+    public boolean isUnmarshalTest() {
+         return false;
+    }
+
+    @Override
+    protected Document getControlDocument() {
+        String contents = "<root>" +
+                "<date>" +
+                "<list>08:30:00"+TIMEZONE_OFFSET+"</list>" +
+                "<list>17:00:00"+TIMEZONE_OFFSET+"</list>" +
+                "</date>" +
+                "<single>" +
+                "<date>1975-02-21</date>" +
+                "</single>" +
+                "</root>";
+
+        StringReader reader = new StringReader(contents);
+        InputSource is = new InputSource(reader);
+        Document doc = null;
+        try {
+            doc = parser.parse(is);
+        } catch (Exception e) {
+            fail("An error occurred setting up the control document");
+        }
+        return doc;
     }
 
 }
