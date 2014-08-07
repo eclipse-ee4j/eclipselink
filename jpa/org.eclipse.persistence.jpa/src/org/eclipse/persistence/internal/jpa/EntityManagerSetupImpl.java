@@ -3684,7 +3684,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className); 
                 Field[] fields = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    fields = AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
+                    fields = (Field[]) AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
                 } else {
                     fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
                 }

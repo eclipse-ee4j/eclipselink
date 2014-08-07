@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -114,7 +114,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
 //                In general, a persistence context will be synchronized to the database as described below. However, a
 //                persistence context of type SynchronizationType.UNSYNCHRONIZED or an application-managed
 //                persistence context that has been created outside the scope of the current transaction will only be
-//                synchronized to the database if it has been joined to the current transaction by the application’s use of
+//                synchronized to the database if it has been joined to the current transaction by the application's use of
 //                the EntityManager joinTransaction method.
 //                ..
 //                If there is no transaction active
