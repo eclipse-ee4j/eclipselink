@@ -512,7 +512,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = cq.from(Employee.class);
             //Cast to Expression<Comparable> since empId is BigDec and getId is Integer.  between requires Comparable types; Number is not comparable
-            cq.where( qb.between(root.<Comparable>get("id"), qb.literal(empId), qb.literal(employee.getId()) ) );
+            cq.where( qb.between(root.<Comparable>get("id"), qb.<Comparable>literal(empId), qb.<Comparable>literal(employee.getId()) ) );
             List result = em.createQuery(cq).getResultList();
 
             Assert.assertTrue("Between test failed", comparer.compareObjects(result, expectedResult));
@@ -2450,7 +2450,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        cq.where(qb.between(root.<Comparable>get("id"), qb.parameter(BigDecimal.class, "1"), qb.parameter(Integer.class, "2")));
+        cq.where(qb.between(root.get("id").as(Comparable.class), qb.parameter(BigDecimal.class, "1").as(Comparable.class), qb.parameter(Integer.class, "2").as(Comparable.class)));
         beginTransaction(em);
         try {
             List result = em.createQuery(cq).setParameter("1", empId1).setParameter("2", emp2.getId()).getResultList();

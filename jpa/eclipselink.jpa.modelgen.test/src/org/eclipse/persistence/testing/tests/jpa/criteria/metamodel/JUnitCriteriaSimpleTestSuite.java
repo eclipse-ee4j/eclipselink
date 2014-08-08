@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -384,7 +384,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
         //Cast to Expression<Comparable> since empId is BigDec and getId is Integer.  between requires Comparable types; Number is not comparable
-        cq.where( qb.between(root.get(Employee_.id).as(Comparable.class), qb.literal(empId), qb.literal(employee.getId()) ) );
+        cq.where( qb.between(root.get(Employee_.id).as(Comparable.class), qb.literal(empId).as(Comparable.class), qb.literal(employee.getId()).as(Comparable.class)));
         beginTransaction(em);
         try {
             List result = em.createQuery(cq).getResultList();
@@ -2313,7 +2313,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = cq.from(getEntityManagerFactory().getMetamodel().entity(Employee.class));
-        cq.where(qb.between(root.get(Employee_.id).as(Comparable.class), qb.parameter(BigDecimal.class, "1"), qb.parameter(Integer.class, "2")));
+        cq.where(qb.between(root.get(Employee_.id).as(Comparable.class), qb.parameter(BigDecimal.class, "1").as(Comparable.class), qb.parameter(Integer.class, "2").as(Comparable.class)));
         beginTransaction(em);
         try {
             List result = em.createQuery(cq).setParameter("1", empId1).setParameter("2", emp2.getId()).getResultList();

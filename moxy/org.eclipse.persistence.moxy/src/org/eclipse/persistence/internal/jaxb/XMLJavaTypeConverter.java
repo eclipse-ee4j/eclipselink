@@ -264,7 +264,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         	} catch (IllegalAccessException e) {
 	            Constructor ctor = null;
 	            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-	            	ctor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlAdapterClass, new Class[0], true));	            			            
+	            	ctor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlAdapterClass, new Class[0], true));	            			            
 	            } else {
 	            	ctor = PrivilegedAccessHelper.getDeclaredConstructorFor(xmlAdapterClass, new Class[0], true);
 	            }

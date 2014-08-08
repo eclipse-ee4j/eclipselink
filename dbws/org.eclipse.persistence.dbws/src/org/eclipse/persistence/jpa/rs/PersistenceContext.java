@@ -558,7 +558,7 @@ public class PersistenceContext {
                 }
                 Field[] fields;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    fields = AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
+                    fields = (Field[]) AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
                 } else {
                     fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
                 }
