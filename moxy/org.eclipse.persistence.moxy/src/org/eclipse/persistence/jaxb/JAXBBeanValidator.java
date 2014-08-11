@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * JAXB Bean Validator. Serves three purposes:
@@ -40,25 +41,102 @@ import java.util.Set;
  */
 class JAXBBeanValidator {
 
-    public static final Class<?>[] DEFAULT_GROUP_ARRAY = new Class<?>[] { Default.class };
+    /**
+     * Represents the Default validation group. Storing it in constant saves resources.
+     */
+    static final Class<?>[] DEFAULT_GROUP_ARRAY = new Class<?>[] { Default.class };
+
+    /**
+     * Represents the difference between words 'marshalling' and 'unmarshalling';
+     */
+    private static final String PREFIX_UNMARSHALLING = "un";
+
+    /**
+     * Used to prevent endless invocation loops between unmarshaller - validator - unmarshaller.
+     */
+    private static final ReentrantLock lock = new ReentrantLock();
+
+    /**
+     * Stores {@link #PREFIX_UNMARSHALLING} if this instance belongs to
+     * {@link org.eclipse.persistence.jaxb.JAXBUnmarshaller}, otherwise stores empty String.
+     */
     private final String prefix;
-    private Set<? extends ConstraintViolation<?>> constraintViolations = Collections.emptySet();
-    private boolean shouldValidate;
+
+    /**
+     * Stores the {@link javax.validation.Validator} implementation. Once found, the reference is preserved.
+     */
     private Validator validator;
+
+    /**
+     * Stores constraint violations returned by last call to {@link Validator#validate(Object, Class[])}.
+     * <p>After each {@link #validate(Object, Class[])} call, the reference is replaced.
+     */
+    private Set<? extends ConstraintViolation<?>> constraintViolations = Collections.emptySet();
+
+    /**
+     * Computed value saying if the validation can proceed under current conditions, represented by:
+     * <blockquote><pre>
+     *     - {@link #beanValidationMode}
+     *     - {@link javax.validation.Validator} implementation present on classpath
+     * </blockquote></pre>
+     * <p>
+     * Value is recomputed only on {@link #changeInternalState()} call.
+     */
+    private boolean canValidate;
+
+    /**
+     * Represents a state where {@link #beanValidationMode} mode is set to
+     * {@link org.eclipse.persistence.jaxb.BeanValidationMode#AUTO} and BV implementation could not be found.
+     */
     private boolean stopSearchingForValidator;
-    private BeanValidationMode beanValidationMode = BeanValidationMode.NONE; // Initial value NONE will save resources by not triggering internalStateChange() when validation is off.
+
+    /**
+     * This field will usually be {@code null}. However, user may pass his own instance of
+     * {@link javax.validation.ValidatorFactory} to
+     * {@link #shouldValidate(Object, BeanValidationMode, javax.validation.ValidatorFactory)}, and it will be assigned
+     * to this field.
+     * <p>
+     * If not null, {@link #validator} field will be assigned only by calling method
+     * {@link javax.validation.ValidatorFactory#getValidator()} the instance assigned to this field.
+     */
     private ValidatorFactory preferredValidatorFactory;
 
+    /**
+     * Setting initial value to "NONE" will not trigger internalStateChange() when validation is off and save resources.
+     */
+    private BeanValidationMode beanValidationMode = BeanValidationMode.NONE;
+
+    /**
+     * Private constructor. Only to be called by factory methods.
+     */
     private JAXBBeanValidator(String prefix) {
         this.prefix = prefix;
     }
 
+    /**
+     * Factory method.
+     * <p>
+     * The only difference between this method and {@link #getUnmarshallingBeanValidator} is not having
+     * {@link #PREFIX_UNMARSHALLING} in String messages constructed for exceptions.
+     *
+     * @return
+     *          a new instance of {@link JAXBBeanValidator}.
+     */
     static JAXBBeanValidator getMarshallingBeanValidator(){
         return new JAXBBeanValidator("");
     }
 
+    /**
+     * Factory method.
+     * <p>
+     * The only difference between this method and {@link #getMarshallingBeanValidator} is having
+     * {@link #PREFIX_UNMARSHALLING} in String messages constructed for exceptions.
+     *
+     * @return
+     *          a new instance of {@link JAXBBeanValidator}.
+     */
     static JAXBBeanValidator getUnmarshallingBeanValidator(){
-        return new JAXBBeanValidator("un");
+        return new JAXBBeanValidator(PREFIX_UNMARSHALLING);
     }
 
     /**
@@ -79,28 +157,38 @@ class JAXBBeanValidator {
      *
      * @param beanValidationMode Bean validation mode - allowed values AUTO, CALLBACK, NONE.
      * @param value Some objects should not be validated, e.g. XmlBindings.
-     * @param preferredValidatorFactory May be null. Will use this factory as the preferred provider, if null, will use javax defaults.
+     * @param preferredValidatorFactory May be null. Will use this factory as the preferred provider,
+     *                                  if null, will use javax defaults.
      * @return True if should proceed with validation, else false.
-     * @throws BeanValidationException Either {@link BeanValidationException#illegalValidationMode} or {@link BeanValidationException#providerNotFound}.
+     * @throws BeanValidationException
+     *  {@link BeanValidationException#illegalValidationMode} or {@link BeanValidationException#providerNotFound}.
      * @since 2.6
      */
-    boolean shouldValidate(Object value, BeanValidationMode beanValidationMode, ValidatorFactory preferredValidatorFactory) throws BeanValidationException {
-        if (value instanceof XmlBindings) return false; // Do not validate XmlBindings.
+    boolean shouldValidate (Object value, BeanValidationMode beanValidationMode,
+                            ValidatorFactory preferredValidatorFactory) throws BeanValidationException {
+        /* Do not validate XmlBindings. */
+        if (value instanceof XmlBindings) return false;
 
-        if (this.beanValidationMode != beanValidationMode) { // The Bean Validation mode was changed (or it's the first time this method is called on current instance).
+        /* Stops the endless invocation loop which may occur when calling
+         * Validation#buildDefaultValidatorFactory in a case when the user sets
+         * custom validation configuration through "validation.xml" file and
+         * the validation implementation tries to unmarshal the file with MOXy. */
+       if (lock.isHeldByCurrentThread()) return false;
+
+        /* The beanValidationMode was changed externally (or it's the first time this method is called). */
+        if (this.beanValidationMode != beanValidationMode) {
             this.beanValidationMode = beanValidationMode;
             this.preferredValidatorFactory = preferredValidatorFactory;
             changeInternalState();
         }
-        return shouldValidate;
+        return canValidate;
     }
 
     /**
      * INTERNAL:
      *
      * Validates the value, as per BV spec.
-     * Stores the constraintViolations in instance field. The field's value is
-     * not preserved through calls and gets replaced by new constraintViolations.
+     * Stores the result of validation in {@link #constraintViolations}.
      *
      * @param value Object to be validated.
      * @param groups Target groups as per BV spec. Must not be null, may be empty.
@@ -127,11 +215,11 @@ class JAXBBeanValidator {
      * Internal states:
      *  Mode/Field Value          | NONE        | AUTO         | CALLBACK
      *  --------------------------|-------------|--------------|--------------
-     *  shouldValidate            | false       | true/false   | true/false
+     *  canValidate               | false       | true/false   | true/false
      *  stopSearchingForValidator | false       | true/false   | false
      *  constraintViolations      | EmptySet<>  | n/a          | n/a
      *
-     *  n/a ... not altered.
+     *  n/a ... state remains the same.
      *
      * @throws BeanValidationException illegalValidationMode or providerNotFound
      */
@@ -139,12 +227,12 @@ class JAXBBeanValidator {
         stopSearchingForValidator = false; // Reset the switch.
         switch (beanValidationMode) {
         case NONE:
-            shouldValidate = false;
+            canValidate = false;
             constraintViolations = Collections.emptySet(); // Clear the reference from previous (un)marshal calls.
             break;
         case CALLBACK:
         case AUTO:
-            shouldValidate = initValidator();
+            canValidate = initValidator();
             break;
         default:
             throw BeanValidationException.illegalValidationMode(prefix, beanValidationMode.toString());
@@ -190,7 +278,15 @@ class JAXBBeanValidator {
      * @return Preferred ValidatorFactory if set, else {@link Validation#buildDefaultValidatorFactory()}.
      */
     private ValidatorFactory getValidatorFactory() {
-        return preferredValidatorFactory != null ? preferredValidatorFactory : Validation.buildDefaultValidatorFactory();
+        if (preferredValidatorFactory != null) {
+            return preferredValidatorFactory;
+        }
+        lock.lock();
+        try {
+            return Validation.buildDefaultValidatorFactory();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -202,8 +298,10 @@ class JAXBBeanValidator {
      *
      * @return BeanValidationException, containing ConstraintViolationException.
      */
+    @SuppressWarnings({"RedundantCast", "unchecked"})
     private BeanValidationException buildConstraintViolationException() throws BeanValidationException {
-        ConstraintViolationException cve = new ConstraintViolationException((Set<ConstraintViolation<?>>) /* do NOT remove the cast */ constraintViolations);
+        ConstraintViolationException cve = new ConstraintViolationException(
+                (Set<ConstraintViolation<?>>) /* do NOT remove the cast */ constraintViolations);
         return BeanValidationException.constraintViolation(createConstraintViolationExceptionArgs(), cve);
     }
 
@@ -230,7 +328,12 @@ class JAXBBeanValidator {
         };
         args[0] = prefix;
         Object bean = cv.getRootBean();
-        args[1] = bean.getClass().toString().substring("class ".length()) + "@" + Integer.toHexString(System.identityHashCode(bean)); // Can't use toString because of security reasons; identityHashCode can't throw NPE.
+        // NOTE: Don't use bean.toString(), it could leak secure information.
+        // Use identityHashCode, it:
+        //      1) prevents NPE which could be caused by a poorly implemented hashCode
+        //      2) serves as a better mean of identification of the bean.
+        args[1] = bean.getClass().toString().substring("class ".length())
+                + "@" + Integer.toHexString(System.identityHashCode(bean));
         args[2] = violatedConstraints;
         for (;;) {
             violatedConstraints.add(new ConstraintViolationInfo(cv.getMessage(), cv.getPropertyPath()));
@@ -248,9 +351,22 @@ class JAXBBeanValidator {
      * on which field a Validation Constraint was violated and includes it's violationDescription.
      */
     private static class ConstraintViolationInfo {
+        /**
+         * Description of constraint violation.
+         */
         private final String violationDescription;
+
+        /**
+         * Path to element on which the constraint violation occurred.
+         */
         private final Path propertyPath;
 
+        /**
+         * Private constructor. Only to be used from within {@link org.eclipse.persistence.jaxb.JAXBBeanValidator}.
+         *
+         * @param message description of constraint violation
+         * @param propertyPath path to element on which the constraint violation occurred
+         */
         private ConstraintViolationInfo(String message, Path propertyPath){
             this.violationDescription = message;
             this.propertyPath = propertyPath;
@@ -258,10 +374,7 @@ class JAXBBeanValidator {
 
         @Override
         public String toString() {
-            return new StringBuilder()
-                    .append("Violated constraint on property ").append(propertyPath)
-                    .append(": \"").append(violationDescription).append("\".")
-                    .toString();
+            return "Violated constraint on property " + propertyPath + ": \"" + violationDescription + "\".";
         }
     }
 
