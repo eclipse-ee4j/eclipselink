@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -116,6 +116,7 @@ public class SDOHelperContext implements HelperContext {
     private static final String WLS_MBEAN_SERVER = "MBeanServer";
     private static final String WLS_EXECUTE_THREAD_GET_METHOD_NAME = "getExecuteThread";
     private static final String WLS_APPLICATION_NAME = "ApplicationName";
+    private static final String WLS_APPLICATION_VERSION = "ApplicationVersion";
     private static final String WLS_APPLICATION_NAME_GET_METHOD_NAME = "getApplicationName";
     private static final String WLS_ACTIVE_VERSION_STATE = "ActiveVersionState";
     private static final Class[] WLS_PARAMETER_TYPES = {};
@@ -743,9 +744,18 @@ public class SDOHelperContext implements HelperContext {
                     try {
                         ObjectName appRuntime = appRuntimes[i];
                         Object appName = wlsMBeanServer.getAttribute(appRuntime, WLS_APPLICATION_NAME);
-                        if (appName != null && appName.toString().equals(applicationName)) {
-                            wlsMBeanServer.addNotificationListener(appRuntime, new MyNotificationListener(applicationName, WLS_IDENTIFIER), null, null);
-                            break;
+                        Object appVersion = wlsMBeanServer.getAttribute(appRuntime, WLS_APPLICATION_VERSION);
+                        String appIdentifier = null;
+                        if (appName != null) {
+                            if (appVersion != null) {
+                                appIdentifier = appName.toString() + "#" + appVersion.toString();
+                            } else {
+                                appIdentifier = appName.toString();
+                            }
+                            if (appIdentifier != null && appIdentifier.equals(applicationName)) {
+                                wlsMBeanServer.addNotificationListener(appRuntime, new MyNotificationListener(applicationName, WLS_IDENTIFIER), null, null);
+                                break;
+                            }
                         }
                     } catch (Exception ex) {}
                 }
