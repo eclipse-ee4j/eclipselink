@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Required for testing that JAXBBeanValidator doesn't end up in endless loop between
 Unmarshaller - Validator - Unmarshaller. -->
-<!--In order to run this test, developer still needs to force Bean Validation provider
-(e.g. HV) to use MOXy. This cannot be committed since some of our tests depend on JAXB-RI
- as default JAXB provider. The solution I used was to modify HV and repackage it.-->
+<!-- Having this file deactivated prevents HV from flooding logs each time it discovers this file. -->
 <validation-config
         xmlns="http://jboss.org/xml/ns/javax/validation/configuration"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

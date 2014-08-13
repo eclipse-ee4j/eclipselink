@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationBindingsTestCase;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationRuntimeTestCase;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationSpecialtiesTestCase;
 
 /**
  * @author Marcel Valovy - marcel.valovy@oracle.com
@@ -28,6 +29,7 @@ public class JAXBBeanValidationTestSuite {
 
         suite.addTestSuite(BeanValidationRuntimeTestCase.class);
         suite.addTestSuite(BeanValidationBindingsTestCase.class);
+        suite.addTestSuite(BeanValidationSpecialtiesTestCase.class);
 
         return suite;
     }

@@ -59,18 +59,19 @@ import java.util.Set;
  */
 public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
 
-    private static final File FILE_VALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employee.xml");
-    private static final File FILE_INVALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employeeInvalid.xml");
-    private static final File FILE_JSON_VALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employee.json");
-    private static final File FILE_JSON_INVALID = new File("org/eclipse/persistence/testing/jaxb/beanvalidation/rt/employeeInvalid.json");
+    private static final String RESOURCES_PATH = "org/eclipse/persistence/testing/jaxb/beanvalidation/rt/";
+    private static final File FILE_VALID = new File(RESOURCES_PATH + "employee.xml");
+    private static final File FILE_INVALID = new File(RESOURCES_PATH + "employeeInvalid.xml");
+    private static final File FILE_JSON_VALID = new File(RESOURCES_PATH + "employee.json");
+    private static final File FILE_JSON_INVALID = new File(RESOURCES_PATH + "employeeInvalid.json");
+    private static final String JAVAX_NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
+    private static final String JAVAX_MIN_MESSAGE = "{javax.validation.constraints.Min.message}";
+    private static final String JAVAX_SIZE_MESSAGE = "{javax.validation.constraints.Size.message}";
+    private static final String JAVAX_PATTERN_MESSAGE = "{javax.validation.constraints.Pattern.message}";
+    private static final String JAVAX_FUTURE_MESSAGE = "{javax.validation.constraints.Future.message}";
+    private static final String JAVAX_DIGITS_MESSAGE = "{javax.validation.constraints.Digits.message}";
     private static final Class[] EMPLOYEE = new Class[]{Employee.class};
     private static final boolean DEBUG = false;
-    private static final String JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
-    private static final String JAVAX_VALIDATION_CONSTRAINTS_MIN_MESSAGE = "{javax.validation.constraints.Min.message}";
-    private static final String JAVAX_VALIDATION_CONSTRAINTS_SIZE_MESSAGE = "{javax.validation.constraints.Size.message}";
-    private static final String JAVAX_VALIDATION_CONSTRAINTS_PATTERN_MESSAGE = "{javax.validation.constraints.Pattern.message}";
-    private static final String JAVAX_VALIDATION_CONSTRAINTS_FUTURE_MESSAGE = "{javax.validation.constraints.Future.message}";
-    private static final String JAVAX_VALIDATION_CONSTRAINTS_DIGITS_MESSAGE = "{javax.validation.constraints.Digits.message}";
 
     private boolean toggle = true; // Value is sensitive to the order of methods in testBeanValidation() method.
     private ValidatorFactory preferredValidatorFactory;
@@ -90,24 +91,24 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
             .withPersonalName("Wo")
             .withPhoneNumber("287-4422")
             .withDrivingLicense(new DrivingLicense(1234567, new GregorianCalendar(2010, 5, 20).getTime()));
-    private AbstractSequentialList<String> violationMessages = new LinkedList<String>(){ // Order is good just for debug. The CVs themselves aren't ordered.
+    // Order is good just for debug. The CVs themselves aren't ordered.
+    private AbstractSequentialList<String> violationMessages = new LinkedList<String>(){
         {
-            add(JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE);   // id
-            add(JAVAX_VALIDATION_CONSTRAINTS_MIN_MESSAGE);        // age
-            add(JAVAX_VALIDATION_CONSTRAINTS_SIZE_MESSAGE);       // personalName
-            add(JAVAX_VALIDATION_CONSTRAINTS_PATTERN_MESSAGE);    // phoneNumber
-            add(JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE);   // department
-            add(JAVAX_VALIDATION_CONSTRAINTS_FUTURE_MESSAGE);     // drivingLicense.validThrough
-            add(JAVAX_VALIDATION_CONSTRAINTS_DIGITS_MESSAGE);     // drivingLicense.id
+            add(JAVAX_NOT_NULL_MESSAGE);   // id
+            add(JAVAX_MIN_MESSAGE);        // age
+            add(JAVAX_SIZE_MESSAGE);       // personalName
+            add(JAVAX_PATTERN_MESSAGE);    // phoneNumber
+            add(JAVAX_NOT_NULL_MESSAGE);   // department
+            add(JAVAX_FUTURE_MESSAGE);     // drivingLicense.validThrough
+            add(JAVAX_DIGITS_MESSAGE);     // drivingLicense.id
         }};
     private AbstractSequentialList<String> violationMessagesWithoutGroup = new LinkedList<String>(){
         {
-            add(JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE);   // id
-            add(JAVAX_VALIDATION_CONSTRAINTS_SIZE_MESSAGE);       // personalName
-            add(JAVAX_VALIDATION_CONSTRAINTS_PATTERN_MESSAGE);    // phoneNumber
-            add(JAVAX_VALIDATION_CONSTRAINTS_NOT_NULL_MESSAGE);   // department
+            add(JAVAX_NOT_NULL_MESSAGE);   // id
+            add(JAVAX_SIZE_MESSAGE);       // personalName
+            add(JAVAX_PATTERN_MESSAGE);    // phoneNumber
+            add(JAVAX_NOT_NULL_MESSAGE);   // department
         }};
-
 
     public void testBeanValidation() throws Exception{
         validEmployee(FILE_VALID);
@@ -218,7 +219,8 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
         marshallerValidOn = (JAXBMarshaller) ctx.createMarshaller();
         marshallerValidOn.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshallerValidOff = (JAXBMarshaller) ctx.createMarshaller();
-        marshallerValidOff.setProperty(MarshallerProperties.BEAN_VALIDATION_MODE, BeanValidationMode.NONE); // tests setting the property through mar
+        /* tests setting the property through marshaller */
+        marshallerValidOff.setProperty(MarshallerProperties.BEAN_VALIDATION_MODE, BeanValidationMode.NONE);
         marshallerValidOff.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         JAXBContext ctxValidationOff = JAXBContextFactory.createContext(EMPLOYEE,
@@ -226,7 +228,8 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
                     put(JAXBContextProperties.BEAN_VALIDATION_MODE, BeanValidationMode.NONE);
                     put(JAXBContextProperties.BEAN_VALIDATION_FACTORY, preferredValidatorFactory);}});
         unmarshallerValidOn = (JAXBUnmarshaller) ctxValidationOff.createUnmarshaller();
-        unmarshallerValidOn.setProperty(UnmarshallerProperties.BEAN_VALIDATION_MODE, BeanValidationMode.CALLBACK); // tests setting the property through unm
+        /* tests setting the property through unmarshaller */
+        unmarshallerValidOn.setProperty(UnmarshallerProperties.BEAN_VALIDATION_MODE, BeanValidationMode.CALLBACK);
         unmarshallerValidOff = (JAXBUnmarshaller) ctxValidationOff.createUnmarshaller();
     }
 
