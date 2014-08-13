@@ -338,7 +338,11 @@ public class QueryImpl {
                 if (!this.databaseQuery.isPrepared()) {
                     // prepare the query before cloning, this ensures we do not
                     // have to continually prepare on each usage
-                    this.databaseQuery.checkPrepare(this.entityManager.getActiveSessionIfExists(), new DatabaseRecord());
+                    try {
+                        this.databaseQuery.checkPrepare(this.entityManager.getActiveSessionIfExists(), new DatabaseRecord());
+                    } catch(RuntimeException re){
+                        throw new IllegalArgumentException(re);
+                    }
                 }
                 if (this.databaseQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.databaseQuery).getLockModeType() != null){
                     this.lockMode = LockModeType.valueOf(((ObjectLevelReadQuery)this.databaseQuery).getLockModeType());

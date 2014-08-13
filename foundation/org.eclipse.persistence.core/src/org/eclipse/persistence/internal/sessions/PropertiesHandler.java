@@ -12,6 +12,8 @@
  *      Gordon Yorke - VM managed entity detachment
  *     Eduard Bartsch, SAP - Fix for Bug 351186 - ConcurrentModificationException Exception in PropertiesHandler 
  *     Rick Curtis - Add support for WebSphere Liberty platform.
+ *     08/11/2014-2.5 Rick Curtis 
+ *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -202,6 +204,7 @@ public class PropertiesHandler {
             addProp(new IdValidationProp());
             addProp(new ConnectionPoolProp());
             addProp(new BooleanProp(PersistenceUnitProperties.JDBC_RESULT_SET_ACCESS_OPTIMIZATION, Boolean.toString(ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault)));
+            addProp(new BooleanProp(PersistenceUnitProperties.JPQL_TOLERATE, "false"));
         }
         
         Prop(String name) {

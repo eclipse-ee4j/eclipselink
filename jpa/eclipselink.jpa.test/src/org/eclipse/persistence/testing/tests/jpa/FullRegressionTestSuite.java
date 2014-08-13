@@ -17,12 +17,15 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     06/25/2014-2.5.2 Rick Curtis 
  *       - 438177: Test M2M map
+ *     08/11/2014-2.5 Rick Curtis 
+ *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.testing.models.jpa.advanced.InvalidNamedQueryTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
@@ -145,6 +148,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(ConfigPUTestSuite.suite());
         suite.addTest(NamedQueryJUnitTest.suite());
         suite.addTest(EntityEmbeddableTest.suite());
+        suite.addTest(InvalidNamedQueryTest.suite());
         fullSuite.addTest(suite);
 
         // FieldAccess advanced model

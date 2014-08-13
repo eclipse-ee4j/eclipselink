@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -27,6 +27,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/11/2012-2.5 Guy Pelletier  
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+ *     08/11/2014-2.5 Rick Curtis 
+ *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
@@ -618,8 +620,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void prepareInternal(AbstractSession session) {
         setSession(session);
-        prepare();
-        setSession(null);
+        try {
+            prepare();
+        } finally {
+            setSession(null);   
+        }
     }
     
     /**

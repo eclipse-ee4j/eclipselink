@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -48,6 +48,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/19/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     08/11/2014-2.5 Rick Curtis 
+ *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -1661,7 +1663,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
                 session.setName(this.sessionName);
                 updateTunerPreDeploy(predeployProperties, classLoaderToUse);
-
+                updateTolerateInvalidJPQL(predeployProperties);
+                
                 if (this.compositeEmSetupImpl == null) {
                     // session name and ServerPlatform must be set prior to setting the loggers.
                     if (this.staticWeaveInfo == null) {
@@ -2200,10 +2203,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Update whether session ShouldOptimizeResultSetAccess.
      */
     protected void updateShouldOptimizeResultSetAccess(Map m) {
-	    String resultSetAccessOptimization = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.JDBC_RESULT_SET_ACCESS_OPTIMIZATION, m, this.session);
-	    if (resultSetAccessOptimization != null) {
-	    	this.session.setShouldOptimizeResultSetAccess(resultSetAccessOptimization.equals("true"));
-	    }
+       String resultSetAccessOptimization = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.JDBC_RESULT_SET_ACCESS_OPTIMIZATION, m, this.session);
+       if (resultSetAccessOptimization != null) {
+          this.session.setShouldOptimizeResultSetAccess(resultSetAccessOptimization.equals("true"));
+       }
+    }
+    
+
+    /**
+     * Update whether session should tolerate invalid JPQL at creation time.
+     */
+    protected void updateTolerateInvalidJPQL(Map m) {
+        String config =
+            PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.JPQL_TOLERATE, m, this.session);
+        // Tolerate invalid JPQL is ignored if running in validation only mode
+        if (config != null && isValidationOnly(m) == false) {
+            this.session.setTolerateInvalidJPQL(config.equals("true"));
+        }
     }
     
     /**
@@ -2665,6 +2681,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateDatabaseEventListener(m, loader);
             updateSerializer(m, loader);
             updateShouldOptimizeResultSetAccess(m);
+            updateTolerateInvalidJPQL(m);
             
             // Customizers should be processed last
             processDescriptorCustomizers(m, loader);
