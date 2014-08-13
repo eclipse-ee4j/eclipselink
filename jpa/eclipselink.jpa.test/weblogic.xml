@@ -99,7 +99,11 @@
                 <path refid="wls.path"/>
             </classpath>
         </java>
-        <copy file="${junit.lib}" todir="${weblogic.domain}/lib"/>
+        <copy todir="${weblogic.domain}/lib" flatten="true">
+            <path>
+                <pathelement path="${junit.lib}"/>
+            </path>
+        </copy>
         <antcall target="copy-eclipselink-jar-to-domain-lib" inheritRefs="true"/>
         <antcall target="copy-jdbc-driver-jar-to-domain-lib" inheritRefs="true"/>
     </target>
@@ -147,7 +151,7 @@
             <arg line="${jpatest.basedir}/${temp.dir}/wls_start.py"/>
             <classpath>
                 <!--this path is used for WebLogic JPA2.0 support-->
-                <pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/>
+                <!--<pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/>-->
                 <fileset dir="${server.lib}" includes="${server.depend}"/>
                 <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
             </classpath>

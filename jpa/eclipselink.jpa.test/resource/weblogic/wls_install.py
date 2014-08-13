@@ -9,7 +9,10 @@
 # Open a domain template.
 #===========================================================================
 
-readTemplate("%%WL_HOME%%/common/templates/domains/wls.jar")
+try:
+   readTemplate("%%WL_HOME%%/common/templates/wls/wls.jar")
+except:
+   readTemplate("%%WL_HOME%%/common/templates/domains/wls.jar")
 
 #===========================================================================
 # Configure the Administration Server and SSL port.

@@ -30,7 +30,7 @@ set('JNDINames',jarray.array([String('jdbc/EclipseLinkDS')], String))
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS')
 cmo.setUrl('jdbc:derby://localhost:1527/ECLIPSELINK;create=true;ServerName=localhost;databaseName=ECLIPSELINK')
 cmo.setDriverName('org.apache.derby.jdbc.ClientXADataSource')
-set('PasswordEncrypted','password')
+set('PasswordEncrypted','%%DBPWD%%')
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCConnectionPoolParams/EclipseLinkDS')
 cmo.setTestTableName('SQL SELECT 1 FROM SYS.SYSTABLES\r\n\r\n')
@@ -39,7 +39,7 @@ cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverPara
 cmo.createProperty('user')
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS/Properties/user')
-cmo.setValue('user')
+cmo.setValue('%%DBUSR%%')
 
 cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS')
 cmo.createProperty('portNumber')
@@ -87,7 +87,7 @@ set('JNDINames',jarray.array([String('jdbc/ELNonJTADS')], String))
 cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS')
 cmo.setUrl('jdbc:derby://localhost:1527/ECLIPSELINK;create=true;ServerName=localhost;databaseName=ECLIPSELINK')
 cmo.setDriverName('org.apache.derby.jdbc.ClientDataSource')
-set('PasswordEncrypted','password')
+set('PasswordEncrypted','%%DBPWD%%')
 
 cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCConnectionPoolParams/ELNonJTADS')
 cmo.setTestTableName('SQL SELECT 1 FROM SYS.SYSTABLES\r\n\r\n')
@@ -96,7 +96,7 @@ cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELN
 cmo.createProperty('user')
 
 cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS/Properties/ELNonJTADS/Properties/user')
-cmo.setValue('user')
+cmo.setValue('%%DBUSR%%')
 
 cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS/Properties/ELNonJTADS')
 cmo.createProperty('portNumber')

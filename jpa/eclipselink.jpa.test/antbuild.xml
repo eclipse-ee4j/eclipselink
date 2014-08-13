@@ -97,6 +97,7 @@
     <!-- Allows specific suites/configurations to override defaults and add custom test (runtime) properties -->
     <property file="${jpatest.basedir}/${test.properties}"/>
     <property file="${jpatest.basedir}/test.properties"/>
+    <property name="eclipselink.jpa.test.dir" value="${jpatest.basedir}"/>
 
     <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
     <!-- To run from another location be sure to override jpatest.basedir appropriately -->
