@@ -705,7 +705,7 @@
     </target>
 
     <!--  =====     Milestone Publish   =====  -->
-    <target name="publish-milestone" depends="publish-milestone-artifacts, publish-milestone-maven, publish-milestone-nexus, publish-milestone-p2-site"/>
+    <target name="publish-milestone" depends="publish-milestone-artifacts, publish-milestone-nexus, publish-milestone-p2-site"/>
     <target name="publish-milestone-artifacts">
         <!-- Publish from nightly published location to Milestone dir -->
         <mkdir dir="${download.dir}"/>
