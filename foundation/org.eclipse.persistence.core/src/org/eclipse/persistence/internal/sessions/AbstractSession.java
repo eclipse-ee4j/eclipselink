@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,14 +23,26 @@
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  *     11/29/2012-2.5 Guy Pelletier 
  *       - 395406: Fix nightly static weave test errors
+ *     08/11/2014-2.5 Rick Curtis 
+ *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
-import java.io.*;
-import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
@@ -39,39 +51,34 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.TablePerMultitenantPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
-import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
-import org.eclipse.persistence.internal.indirection.ProtectedValueHolder;
-import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.server.ServerPlatform;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.internal.history.*;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ExceptionHandler;
+import org.eclipse.persistence.exceptions.IntegrityChecker;
+import org.eclipse.persistence.exceptions.IntegrityException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.CopyGroup;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
-import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.SessionEventManager;
-import org.eclipse.persistence.sessions.ExternalTransactionController;
-import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.logging.SessionLogEntry;
-import org.eclipse.persistence.logging.DefaultSessionLog;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.QueryCounter;
+import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
+import org.eclipse.persistence.internal.history.HistoricalSession;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
+import org.eclipse.persistence.internal.indirection.ProtectedValueHolder;
+import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -81,9 +88,41 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.cdi.DisabledEntityListenerInjectionManager;
 import org.eclipse.persistence.internal.sessions.cdi.EntityListenerInjectionManager;
-import org.eclipse.persistence.sessions.coordination.CommandProcessor;
-import org.eclipse.persistence.sessions.coordination.CommandManager;
+import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.queries.AttributeGroup;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.JPAQueryBuilder;
+import org.eclipse.persistence.queries.JPQLCall;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
+import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.SessionEventManager;
+import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.Command;
+import org.eclipse.persistence.sessions.coordination.CommandManager;
+import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 
@@ -292,6 +331,12 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * Optimization specified by the session is ignored if incompatible with other query settings. 
      */
     protected boolean shouldOptimizeResultSetAccess; 
+    
+    /**
+     * Indicates whether Session creation should tolerate an invalid NamedQuery. If true, an exception
+     * will be thrown on .createNamedQuery(..) rather than at init time.
+     */
+    protected boolean tolerateInvalidJPQL = false;
     
     /**
      * INTERNAL:
@@ -4306,10 +4351,20 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     protected void processJPAQuery(DatabaseQuery jpaQuery) {
         // This is a hack, to allow the core Session to initialize JPA queries, without have a dependency on JPA.
         // They need to be initialized after login, as the database platform must be known.
-        jpaQuery.prepareInternal(this);
+        try {
+            jpaQuery.prepareInternal(this);
+        } catch (RuntimeException re) {
+            // If jpql-tolerate-error==true, any problems will be ignored at query prep time and the runtime will
+            // continue chugging along. The invalid query will be left in place so that an exception
+            // will be thrown at runtime if a user attempts to use it.
+            if (!tolerateInvalidJPQL) {
+                throw re;
+            }
+        }
         DatabaseQuery databaseQuery = (DatabaseQuery) jpaQuery.getProperty("databasequery");
-        databaseQuery = (databaseQuery == null)? jpaQuery : databaseQuery;
-        addQuery(databaseQuery, false); // this should be true but for backward compatibility it is set to false.
+        databaseQuery = (databaseQuery == null) ? jpaQuery : databaseQuery;
+        addQuery(databaseQuery, false); // this should be true but for backward compatibility it
+                                        // is set to false.
     }
     
     /**
@@ -5229,4 +5284,22 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    public boolean shouldOptimizeResultSetAccess() {
        return this.shouldOptimizeResultSetAccess;
    }   
+   
+   /**
+    * ADVANCED: Indicates whether an invalid NamedQuery will be tolerated at init time.  
+    * 
+    * Default is false. 
+    */
+   public void setTolerateInvalidJPQL(boolean b) {
+       this.tolerateInvalidJPQL = b;
+   }
+   
+   /**
+    * ADVANCED: Indicates whether an invalid NamedQuery will be tolerated at init time.  
+    * 
+    * Default is false. 
+    */
+   public boolean shouldTolerateInvalidJPQL() {
+       return this.tolerateInvalidJPQL;
+   }  
 }

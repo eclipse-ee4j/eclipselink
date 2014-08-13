@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -27,6 +27,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/19/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     08/11/2014-2.5 Rick Curtis 
+ *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -3095,6 +3097,8 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String WEAVING_REST = "eclipselink.weaving.rest";
+    
+    public static final String JPQL_TOLERATE = "eclipselink.tolerate-invalid-jpql";
 
     /**
      * INTERNAL: Return the overridden log string.

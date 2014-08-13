@@ -20,6 +20,7 @@ package org.eclipse.persistence.internal.jpa;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.LockModeType;
+import javax.persistence.PersistenceException;
 
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.EntityResult;

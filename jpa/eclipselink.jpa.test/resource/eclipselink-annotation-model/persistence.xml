@@ -363,5 +363,32 @@
             <property name="eclipselink.session-name" value="additional-criteria"/>
         </properties>
     </persistence-unit>
-    
+
+	<persistence-unit name="invalid-named-query">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
+		<class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+	</persistence-unit>
+	
+	<persistence-unit name="invalid-named-query-tolerate">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
+		<class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="eclipselink.tolerate-invalid-jpql" value="true"/>
+		</properties>
+	</persistence-unit>
+	
+	<persistence-unit name="invalid-named-query-validation-only">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
+		<class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="eclipselink.tolerate-invalid-jpql" value="true"/>
+			<property name="eclipselink.validation-only" value="true"/>
+		</properties>
+	</persistence-unit>
 </persistence>
