@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -31,6 +31,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     08/18/2014-2.5 Jody Grassel (IBM Corporation)
+ *       - 440802: xml-mapping-metadata-complete does not exclude @Entity annotated entities
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -313,6 +315,12 @@ public class MetadataProcessor {
             
             // This will override any global settings.
             embeddable.getEntityMappings().processEntityMappingsDefaults(embeddable);
+        }
+
+        // Check if the xml-mapping-metadata-complete was declared.  If so, then ignore <class> entries defined
+        // in the persistence unit, as by definition only elements declared in ORM XML are to be permitted.
+        if (m_project.getPersistenceUnitMetadata() != null && m_project.getPersistenceUnitMetadata().isXMLMappingMetadataComplete()) {
+            return;
         }
         
         // 4 - Iterate through the classes that are referenced from the
