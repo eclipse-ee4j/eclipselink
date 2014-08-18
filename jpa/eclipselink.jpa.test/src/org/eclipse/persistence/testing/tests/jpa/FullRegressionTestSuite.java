@@ -19,6 +19,8 @@
  *       - 438177: Test M2M map
  *     08/11/2014-2.5 Rick Curtis 
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+ *     08/18/2014-2.5 Jody Grassel (IBM Corporation)
+ *       - 440802: xml-mapping-metadata-complete does not exclude @Entity annotated entities
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa;
 
@@ -112,6 +114,7 @@ import org.eclipse.persistence.testing.tests.jpa.relationships.TestKeyTypeToMany
 import org.eclipse.persistence.testing.tests.jpa.validation.QueryParameterValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.validation.ValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.xml.xmlmetadatacomplete.XMLMappingMetadataCompleteJunitTestCase;
 
 public class FullRegressionTestSuite extends TestSuite {
 
@@ -331,6 +334,9 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(ExtensibilityTests.suite());
         fullSuite.addTest(suite);
 
+        // XML Mapping Metadata Complete
+        fullSuite.addTest(XMLMappingMetadataCompleteJunitTestCase.suite());
+        
         return fullSuite;
     }
 }

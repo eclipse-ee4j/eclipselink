@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="1.0" 
+    xmlns="http://java.sun.com/xml/ns/persistence/orm" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
+    <persistence-unit-metadata>
+        <xml-mapping-metadata-complete/>
+    </persistence-unit-metadata>
+    
+    <entity name="XMLOnlyEntity" class="org.eclipse.persistence.testing.models.jpa.xml.xmlmetadatacomplete.XMLOnlyEntity">
+        <attributes>
+            <id name="id"/>
+            <basic name="strData"/>
+        </attributes>
+    </entity>
+</entity-mappings>

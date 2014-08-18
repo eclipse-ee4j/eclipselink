@@ -547,6 +547,7 @@
             <fileset file="${jpatest.basedir}/${eclipselink.xml.extended.composite.advanced.model.member_2}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.xml.extended.composite.advanced.model.member_3}.jar"/>
             <fileset file="${jpatest.basedir}/eclipselink-remote.jar"/>
+        	 <fileset file="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
         </delete>
     </target>
 
@@ -588,6 +589,7 @@
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_2}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_3}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/eclipselink-remote"/>
+    	<mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}"/>    	
     </target>
 
     <target name="model-compile" description="compile models that need canonical processing">
@@ -766,7 +768,7 @@
     <target name="package" depends="config-classpath, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation,
     package-composite-advanced, package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3,
     package-xml-composite-advanced, package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
-    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility, package-jpa-remote" description="build EclipseLink jar">
+    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility, package-jpa-remote, package-xml-mapping-metadata-complete" description="build EclipseLink jar">
         <jar jarfile="${jpatest.basedir}/${jpatest.framework.jar}">
            <fileset dir="${jpatest.basedir}/${classes.dir}"  includes="org/eclipse/persistence/testing/framework/**/*.class"/>
         </jar>
@@ -863,6 +865,29 @@
             </fileset>
         </jar>
     </target>
+	
+	<target name="package-xml-mapping-metadata-complete" depends="">
+	    <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}/META-INF">
+	        <fileset dir="${jpatest.basedir}/resource/${eclipselink.xml.mapping.metadata.complete}" includes="*.xml"/>
+	    </copy>
+	    <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}/">
+	        <fileset dir="${jpatest.basedir}/resource/${eclipselink.xml.mapping.metadata.complete}" includes="org/eclipse/persistence/testing/models/jpa/xml/xmlmetadatacomplete/*"/>
+	    </copy>
+		<copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}">
+            <fileset dir="${jpatest.basedir}/${classes.dir}"
+	                 includes="org/eclipse/persistence/testing/models/jpa/xml/xmlmetadatacomplete/**"/>
+		</copy>
+	    <antcall target="prepare-spring-xmls" inheritRefs="true">
+	        <param name="MODEL_NAME" value="${eclipselink.xml.mapping.metadata.complete}"/>
+	    </antcall>
+	    <antcall target="prepare-osgi-xmls" inheritRefs="true">
+	        <param name="MODEL_NAME" value="${eclipselink.xml.mapping.metadata.complete}"/>
+	    </antcall>
+	    <jar jarfile="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar">
+	        <fileset dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}">
+	        </fileset>
+	    </jar>
+	</target>
 
     <target name="package-ddl" depends="">
         <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.ddl.generation.model}/META-INF">
@@ -1376,6 +1401,7 @@
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_2}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jpatest.basedir}/eclipselink-remote.jar"/>
+        	<pathelement path="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
         </path>
         <path id="jpa21.run.classpath">
             <pathelement path="${jpatest.basedir}/${classes.dir}"/>
@@ -1410,6 +1436,7 @@
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_2}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jpatest.basedir}/eclipselink-remote.jar"/>
+        	<pathelement path="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
         </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.classpath"/>
@@ -1744,6 +1771,7 @@
             <pathelement path="${jpatest.basedir}/${classes.dir}"/>
             <pathelement path="${jpatest.basedir}/${jpatest.framework.jar}"/>
             <pathelement path="${jpatest.basedir}/${jpa.test.jar}"/>
+        	<pathelement path="${jpatest.basedir}/woven-${eclipselink.xml.mapping.metadata.complete}.jar"/>
             <path refid="compile.path"/>
         </path>
         <path id="run.extended.classpath.static">
@@ -2395,6 +2423,14 @@
                     <path refid="run.extended.classpath"/>
                </classpath>
         </weave>
+    	
+    	<weave source= "${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"
+    	       target = "${jpatest.basedir}/woven-${eclipselink.xml.mapping.metadata.complete}.jar"
+    	       loglevel="${logging.level}">
+    	       <classpath>
+    	           <path refid="run.classpath"/>
+    	       </classpath>
+    	</weave>
     </target>
 
     <target name="run-weaver-server-test">
