@@ -273,6 +273,8 @@
     <target name="test-jaxb" depends="clean-jaxb-reports, compile-and-run-jaxb-tests, jaxb-junit-report" description="build and run moxy (jaxb) tests and generate junit report"/>
     <target name="test-oxm" depends="clean-oxm-reports, compile-and-run-oxm-tests, oxm-junit-report" description="build and run moxy (oxm) tests and generate junit report"/>
     <target name="test-tl-deploymentxml" depends="clean-oxm-reports, compile-and-run-oxm-deploymentxml-tl-tests, oxm-junit-report" description="build and run moxy (oxm) tl deployment xml tests and generate junit report"/>
+    <target name="test-package-installer-zip" depends="clean-installer-reports, compile-tests, run-installer-tests, installer-junit-report" description="build and run moxy (installer) tests and generate junit report"/>
+
     <!-- The following tests build and run against eclipselink.jar -->
     <target name="test-against-jar" depends="clean-reports, compile-and-run-tests-against-jar, moxy-junit-report" description="run moxy tests against eclipselink.jar and generate junit report"/>
     <target name="test-srg-against-jar" depends="compile-and-run-srg-tests-against-jar, moxy-srg-junit-report" description="run moxy srg tests against eclipselink.jar and generate junit report"/>
@@ -313,6 +315,29 @@
     </target>
     <target name="compile-and-run-oxm-deploymentxml-tl-tests" depends="compile-tests" description="build and run moxy (oxm) tl deployment xml tests">
         <run_oxm_deploymentxml_tl_tests runpathref="oxm.run.path"/>
+    </target>
+    <target name="run-installer-tests">
+        <tempfile property="unzip.temp.file" destDir="${java.io.tmpdir}" prefix="build"/>
+        <mkdir dir="${unzip.temp.file}"/>
+        <echo>${unzip.temp.file}</echo>
+        <unzip src="${moxytest.2.trunk.dir}/${eclipselink.zip.file}" dest="${unzip.temp.file}"/>
+        <chmod dir="${unzip.temp.file}/eclipselink/bin" perm="+x" includes="**/*"/>
+
+        <delete dir="${report.dir}/installer" includeEmptyDirs="true" failonerror="false"/>
+        <mkdir dir="${report.dir}/installer"/>
+        <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+            <env key="ECLIPSELINK_UNZIP_DIR" value="${unzip.temp.file}"/>
+            <batchtest todir="${report.dir}/installer">
+                <fileset dir="${src.dir}">
+                    <include name="org/eclipse/persistence/testing/jaxb/installer/InstallerTestSuite.java"/>
+                </fileset>
+                <formatter type="xml"/>
+            </batchtest>
+            <classpath>
+                <path refid="jaxb.run.path"/>
+            </classpath>
+        </junit>
+        <delete dir="${unzip.temp.file}" includeEmptyDirs="true" failonerror="false"/>
     </target>
     <!-- The following targets build and run against eclipselink.jar -->
     <target name="compile-and-run-tests-against-jar" depends="compile-tests-against-jar" description="build and run moxy tests against eclipselink.jar">
@@ -360,7 +385,14 @@
             <report format="noframes" todir="${report.dir}/oxm"/>
         </junitreport>
     </target>
-
+    <target name="installer-junit-report" description="create installer junit report">
+        <junitreport todir="${report.dir}/installer">
+            <fileset dir="${report.dir}/installer">
+                <include name="**/*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${report.dir}/installer"/>
+        </junitreport>
+    </target>
 
     <target name="moxy-srg-junit-report" description="create moxy srg junit report">
         <junitreport todir="${report.dir}/srg">
@@ -384,6 +416,7 @@
         <delete dir="${report.dir}/oxm" includeEmptyDirs="true" failonerror="false"/>
         <mkdir dir="${report.dir}/jaxb"/>
         <mkdir dir="${report.dir}/oxm"/>
+        <mkdir dir="${report.dir}/installer"/>
     </target>
     <target name="clean-oxm-reports" description="clean moxy (oxm) junit report directory">
         <delete dir="${report.dir}/oxm" includeEmptyDirs="true" failonerror="false"/>
@@ -392,6 +425,10 @@
     <target name="clean-jaxb-reports" description="clean moxy (jaxb) junit report directory">
         <delete dir="${report.dir}/jaxb" includeEmptyDirs="true" failonerror="false"/>
         <mkdir dir="${report.dir}/jaxb"/>
+    </target>
+    <target name="clean-installer-reports" description="clean moxy (installer) junit report directory">
+        <delete dir="${report.dir}/installer" includeEmptyDirs="true" failonerror="false"/>
+        <mkdir dir="${report.dir}/installer"/>
     </target>
     <target name="clean" description="clean the build">
         <delete includeEmptyDirs="true" failonerror="false">

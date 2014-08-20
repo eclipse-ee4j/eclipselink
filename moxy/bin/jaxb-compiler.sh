@@ -8,7 +8,7 @@ JVM_ARGS="-Xmx256m"
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../jlib/moxy/javax.xml.bind_2.2.0.v201105210648.jar:\
+CLASSPATH=`dirname $0`/../jlib/moxy/jaxb-core_2.2.11.v201407311112.jar:\
 `dirname $0`/../jlib/moxy/jaxb-core_2.2.11.v201406210428.jar:\
 `dirname $0`/../jlib/moxy/jaxb-xjc_2.2.11.v201406210428.jar:\
 `dirname $0`/../jlib/moxy/javax.json-1.0.jar:\
@@ -16,4 +16,4 @@ CLASSPATH=`dirname $0`/../jlib/moxy/javax.xml.bind_2.2.0.v201105210648.jar:\
 `dirname $0`/../jlib/eclipselink.jar
 JAVA_ARGS="$@"
 
-${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} -Djava.endorsed.dirs=../jlib/moxy org.eclipse.persistence.jaxb.xjc.MOXyXJC ${JAVA_ARGS}
+${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} -Djava.endorsed.dirs=../jlib/moxy/api org.eclipse.persistence.jaxb.xjc.MOXyXJC ${JAVA_ARGS}

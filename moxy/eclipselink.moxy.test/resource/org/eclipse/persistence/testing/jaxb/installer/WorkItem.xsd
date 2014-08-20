@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://org.eclipse.persistence.testing.perf/workItem" xmlns:tns="http://org.eclipse.persistence.testing.perf/workItem" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="doWorkItem" type="tns:doWorkItem"/>
+
+  <xs:element name="doWorkItemResponse" type="tns:doWorkItemResponse"/>
+
+  <xs:complexType name="doWorkItem">
+    <xs:sequence>
+      <xs:element name="workLocation" type="xs:int"/>
+      <xs:element name="wid" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="doWorkItemResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

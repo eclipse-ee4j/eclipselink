@@ -28,3 +28,4 @@ foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/Version.java
 .idea*
 out/
 eclipselink_extracted/*
+/eclipselink.zip

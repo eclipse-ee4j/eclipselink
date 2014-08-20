@@ -1254,11 +1254,13 @@
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${mail.jar}"/>
-                <include name="${jaxb-api.jar}"/>
                 <include name="${jaxb-core.jar}"/>
                 <include name="${jaxb-xjc.jar}"/>
                 <include name="${javax.validation.jar}"/>
                 <include name="${json-api.jar}"/>
+            </zipfileset>
+            <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy/api">
+                <include name="${jaxb-api.jar}"/>
             </zipfileset>
             <!-- grab the sdo jar -->
             <zipfileset dir="${eclipselink.sdo.base}/${plugins.dir}/" includes="${commonj.sdo.jar}" prefix="eclipselink/jlib/sdo"/>
@@ -1275,6 +1277,9 @@
             <zipfileset dir="${eclipselink.util.workbench}"          includes="readme.html"        prefix="eclipselink/utils/workbench"/>
             <zipfileset dir="${eclipselink.util.workbench}/bin/"     includes="*"                  prefix="eclipselink/utils/workbench/bin" filemode="755"/>-->
         </zip>
+        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-package-installer-zip" >
+            <property name="eclipselink.zip.file" value="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+        </ant>
     </target>
 
     <target name="package-eclipselink-nosql-install">
