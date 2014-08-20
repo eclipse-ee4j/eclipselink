@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2009, 2014 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,6 +8,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
+ *     08/20/2014-2.5 Rick Curtis 
+ *       - 441890: Cache Validator instances.
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
@@ -23,7 +25,9 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.lang.annotation.ElementType;
 
 /**
@@ -36,7 +40,8 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private final Class[] groupPreUpdate;
     private final Class[] groupPreRemove;
     private static final Class[] groupDefault = new Class[]{Default.class}; 
-
+    private final Map<ClassDescriptor, Validator> validatorMap;
+    
     public BeanValidationListener(ValidatorFactory validatorFactory, Class[] groupPrePersit, Class[] groupPreUpdate, Class[] groupPreRemove) {
         this.validatorFactory = validatorFactory;
         //For prePersit and preUpdate, default the group to validation group Default if user has not specified one
@@ -44,6 +49,8 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         this.groupPreUpdate = groupPreUpdate != null ? groupPreUpdate : groupDefault;
         //No validation performed on preRemove if user has not explicitly specified a validation group
         this.groupPreRemove = groupPreRemove;
+        
+        validatorMap = new ConcurrentHashMap<ClassDescriptor, Validator>();
     }
 
     @Override
@@ -96,8 +103,20 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     }
 
     private Validator getValidator(DescriptorEvent event) {
-        TraversableResolver traversableResolver = new AutomaticLifeCycleValidationTraversableResolver(event);
-        return validatorFactory.usingContext().traversableResolver(traversableResolver).getValidator();
+        ClassDescriptor descriptor = event.getDescriptor();
+        Validator res = validatorMap.get(descriptor);
+        if (res == null) {
+            TraversableResolver traversableResolver = new AutomaticLifeCycleValidationTraversableResolver(descriptor);
+            res = validatorFactory.usingContext().traversableResolver(traversableResolver).getValidator();
+
+            Validator t = validatorMap.put(descriptor, res);
+            if (t != null) {
+                // Threading collision, use existing
+                res = t;
+            }
+        }
+
+        return res;
     }
 
 
@@ -107,10 +126,10 @@ public class BeanValidationListener extends DescriptorEventAdapter {
      */
     private static class AutomaticLifeCycleValidationTraversableResolver implements TraversableResolver {
 
-        private ClassDescriptor descriptor;
+        private final ClassDescriptor descriptor;
 
-        AutomaticLifeCycleValidationTraversableResolver(DescriptorEvent event) {
-            descriptor = event.getClassDescriptor();
+        AutomaticLifeCycleValidationTraversableResolver(ClassDescriptor eventDescriptor) {
+            descriptor = eventDescriptor;
         }
 
 
