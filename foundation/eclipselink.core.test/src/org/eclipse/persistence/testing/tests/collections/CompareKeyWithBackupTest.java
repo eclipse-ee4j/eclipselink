@@ -31,10 +31,15 @@ public class CompareKeyWithBackupTest extends TestCase {
 
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        originalRestaurant = null;
         beginTransaction();
-        originalRestaurant = (Restaurant)getSession().readObject(Restaurant.class);
-        while ((originalRestaurant != null) && (originalRestaurant.getMenus().size() < 1)) {
-            originalRestaurant = (Restaurant)getSession().readObject(Restaurant.class);
+        Vector<Restaurant> restaurants = getSession().readAllObjects(Restaurant.class);
+        Iterator<Restaurant> iterator = restaurants.iterator();
+        while (originalRestaurant == null && iterator.hasNext()) {
+            Restaurant restaurant = iterator.next();
+            if (restaurant.getMenus().size() > 0) {
+                originalRestaurant = restaurant;
+            }
         }
         if (originalRestaurant == null) {
             throw new TestErrorException("Unable to SetUp Test need to add restaurant with a menu");
