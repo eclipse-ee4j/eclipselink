@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes.collection;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -41,61 +42,26 @@ public class Root {
         this.addresses = addresses;
         this.phoneNumbers = phoneNumbers;
     }
-    
+
+    @Override
     public boolean equals(Object o) {
-        Root r;
-        try {
-            r = (Root) o;
-        } catch (ClassCastException cce) {
-            return false;
-        }
-        try {
-            if (this.clients.size() != r.clients.size()) {
-                return false;
-            }
-            if (this.addresses.size() != r.addresses.size()) {
-                return false;
-            }
-            if (this.phoneNumbers.size() != r.phoneNumbers.size()) {
-                return false;
-            }
-            boolean foundIt;
-            for (Client c : this.clients) {
-                foundIt = false;
-                for (Client c1 : r.clients) {
-                    if (c1.equals(c)) {
-                        foundIt = true;
-                    }
-                }
-                if (!foundIt) {
-                    return false;
-                }
-            }
-            for (Address a : this.addresses) {
-                foundIt = false;
-                for (Address a1 : r.addresses) {
-                    if (a1.equals(a)) {
-                        foundIt = true;
-                    }
-                }
-                if (!foundIt) {
-                    return false;
-                }
-            }
-            for (PhoneNumber p : this.phoneNumbers) {
-                foundIt = false;
-                for (PhoneNumber p1 : r.phoneNumbers) {
-                    if (p1.equals(p)) {
-                        foundIt = true;
-                    }
-                }
-                if (!foundIt) {
-                    return false;
-                }
-            }
-        } catch (Exception x) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Root root = (Root) o;
+
+        if (addresses != null ? !Arrays.equals(addresses.toArray(), root.addresses.toArray()) : root.addresses != null) return false;
+        if (clients != null ? !Arrays.equals(clients.toArray(), root.clients.toArray()) : root.clients != null) return false;
+        if (phoneNumbers != null ? !Arrays.equals(phoneNumbers.toArray(), root.phoneNumbers.toArray()) : root.phoneNumbers != null) return false;
+
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = clients != null ? Arrays.hashCode(clients.toArray()) : 0;
+        result = 31 * result + (addresses != null ? Arrays.hashCode(addresses.toArray()) : 0);
+        result = 31 * result + (phoneNumbers != null ? Arrays.hashCode(phoneNumbers.toArray()) : 0);
+        return result;
     }
 }

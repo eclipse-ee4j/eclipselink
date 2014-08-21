@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -21,12 +21,22 @@ public class Root {
 
     @XmlElement(name = "thing", required = true)
     protected BytesHolderWithXmlId thing;
-   
-    
-    public boolean equals(Object obj){
-        if(!(obj instanceof Root)){
-            return false;
-        }
-        return thing.equals(((Root)obj).thing);
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Root root = (Root) o;
+
+        if (thing != null ? !thing.equals(root.thing) : root.thing != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return thing != null ? thing.hashCode() : 0;
     }
 }

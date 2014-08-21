@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,13 +35,19 @@ class AppleRef {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof AppleRef)) {
-            return false;
-        }
-        AppleRef a = (AppleRef) obj;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        return this.ref.equals(a.ref);
+        AppleRef appleRef = (AppleRef) o;
+
+        if (ref != null ? !ref.equals(appleRef.ref) : appleRef.ref != null) return false;
+
+        return true;
     }
 
+    @Override
+    public int hashCode() {
+        return ref != null ? ref.hashCode() : 0;
+    }
 }

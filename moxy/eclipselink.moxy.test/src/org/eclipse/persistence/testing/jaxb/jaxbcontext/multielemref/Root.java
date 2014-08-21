@@ -29,4 +29,23 @@ public class Root {
     @XmlElementRef
     public List<Parent> things = new ArrayList<Parent>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Root root = (Root) o;
+
+        if (thing != null ? !thing.equals(root.thing) : root.thing != null) return false;
+        if (things != null ? !things.equals(root.things) : root.things != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = thing != null ? thing.hashCode() : 0;
+        result = 31 * result + (things != null ? things.hashCode() : 0);
+        return result;
+    }
 }

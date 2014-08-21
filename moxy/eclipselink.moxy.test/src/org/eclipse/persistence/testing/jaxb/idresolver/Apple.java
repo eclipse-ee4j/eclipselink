@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,26 +44,26 @@ class Apple {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Apple)) {
-            return false;
-        }
-        Apple a = (Apple) obj;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        if (!this.id.equals(a.id)) {
-            return false;
-        }
-        if (!this.appleChar.equals(a.appleChar)) {
-            return false;
-        }
-        if (!this.type.equals(a.type)) {
-            return false;
-        }
-        if (this.processed != a.processed) {
-            return false;
-        }
+        Apple apple = (Apple) o;
+
+        if (processed != apple.processed) return false;
+        if (appleChar != null ? !appleChar.equals(apple.appleChar) : apple.appleChar != null) return false;
+        if (id != null ? !id.equals(apple.id) : apple.id != null) return false;
+        if (type != null ? !type.equals(apple.type) : apple.type != null) return false;
 
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (appleChar != null ? appleChar.hashCode() : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (processed ? 1 : 0);
+        return result;
+    }
 }

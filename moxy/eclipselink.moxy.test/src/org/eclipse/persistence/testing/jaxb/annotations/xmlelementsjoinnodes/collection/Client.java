@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -53,18 +53,22 @@ public class Client {
         this.id = id;
         this.preferredContactMethods = preferredContactMethods;
     }
-    
+
+    @Override
     public boolean equals(Object o) {
-        Client c;
-        try {
-            c = (Client) o;
-        } catch (ClassCastException cce) {
-            return false;
-        }
-        try {
-            return this.id.equals(c.id) && this.preferredContactMethods.equals(c.preferredContactMethods);
-        } catch (Exception x) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Client client = (Client) o;
+
+        if (id != null ? !id.equals(client.id) : client.id != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        return result;
     }
 }

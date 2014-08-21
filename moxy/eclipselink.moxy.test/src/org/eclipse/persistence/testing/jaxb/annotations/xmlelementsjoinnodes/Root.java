@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,9 +44,18 @@ public class Root {
         this.clients = clients;
         this.addresses = addresses;
         this.phoneNumbers = phoneNumbers;
-        this.companies = companies;        
+        this.companies = companies;
     }
-    
+
+    @Override
+    public int hashCode() {
+        int result = clients != null ? clients.hashCode() : 0;
+        result = 31 * result + (addresses != null ? addresses.hashCode() : 0);
+        result = 31 * result + (phoneNumbers != null ? phoneNumbers.hashCode() : 0);
+        result = 31 * result + (companies != null ? companies.hashCode() : 0);
+        return result;
+    }
+
     public boolean equals(Object o) {
         Root r;
         try {

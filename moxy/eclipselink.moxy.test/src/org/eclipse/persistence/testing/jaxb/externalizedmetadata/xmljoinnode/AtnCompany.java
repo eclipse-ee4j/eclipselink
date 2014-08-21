@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AtnCompany {
@@ -25,20 +26,26 @@ public class AtnCompany {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        AtnCompany other = (AtnCompany) obj;
-        if (employees == null) {
-            if (other.employees != null)
-                return false;
-        } else if (!employees.equals(other.employees))
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AtnCompany that = (AtnCompany) o;
+
+        if (employees != null ? !Arrays.equals(employees.toArray(), that.employees.toArray()) : that.employees != null) return false;
+
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        return employees != null ? Arrays.hashCode(employees.toArray()) : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "AtnCompany{" +
+                "employees=" + employees +
+                '}';
+    }
 }

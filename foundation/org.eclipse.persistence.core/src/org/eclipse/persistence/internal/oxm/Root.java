@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -236,4 +236,43 @@ public class Root {
         this.nil = nil;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Root root = (Root) o;
+
+        if (nil != root.nil) return false;
+        if (declaredType != null ? !declaredType.equals(root.declaredType) : root.declaredType != null) return false;
+        if (encoding != null ? !encoding.equals(root.encoding) : root.encoding != null) return false;
+        if (localName != null ? !localName.equals(root.localName) : root.localName != null) return false;
+        if (namespaceUri != null ? !namespaceUri.equals(root.namespaceUri) : root.namespaceUri != null) return false;
+        if (noNamespaceSchemaLocation != null ? !noNamespaceSchemaLocation.equals(root.noNamespaceSchemaLocation) : root.noNamespaceSchemaLocation != null)
+            return false;
+        if (prefix != null ? !prefix.equals(root.prefix) : root.prefix != null) return false;
+        if (rootObject != null ? !rootObject.equals(root.rootObject) : root.rootObject != null) return false;
+        if (schemaLocation != null ? !schemaLocation.equals(root.schemaLocation) : root.schemaLocation != null)
+            return false;
+        if (schemaType != null ? !schemaType.equals(root.schemaType) : root.schemaType != null) return false;
+        if (xmlVersion != null ? !xmlVersion.equals(root.xmlVersion) : root.xmlVersion != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = rootObject != null ? rootObject.hashCode() : 0;
+        result = 31 * result + (localName != null ? localName.hashCode() : 0);
+        result = 31 * result + (namespaceUri != null ? namespaceUri.hashCode() : 0);
+        result = 31 * result + (prefix != null ? prefix.hashCode() : 0);
+        result = 31 * result + (encoding != null ? encoding.hashCode() : 0);
+        result = 31 * result + (xmlVersion != null ? xmlVersion.hashCode() : 0);
+        result = 31 * result + (schemaLocation != null ? schemaLocation.hashCode() : 0);
+        result = 31 * result + (noNamespaceSchemaLocation != null ? noNamespaceSchemaLocation.hashCode() : 0);
+        result = 31 * result + (schemaType != null ? schemaType.hashCode() : 0);
+        result = 31 * result + (declaredType != null ? declaredType.hashCode() : 0);
+        result = 31 * result + (nil ? 1 : 0);
+        return result;
+    }
 }

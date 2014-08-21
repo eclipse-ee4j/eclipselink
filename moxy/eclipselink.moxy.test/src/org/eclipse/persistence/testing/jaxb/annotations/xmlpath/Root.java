@@ -55,4 +55,11 @@ public class Root {
             return true;
         }
     }
+
+    @Override
+    public int hashCode() {
+        int result = employees != null ? employees.hashCode() : 0;
+        result = 31 * result + (addresses != null ? addresses.hashCode() : 0);
+        return result;
+    }
 }

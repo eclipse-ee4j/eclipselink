@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlidref;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -40,27 +40,61 @@ public class Employee {
     @XmlElement(name="phone-id")
     public Collection<PhoneNumber> phones;
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == null || !(obj instanceof Employee)) {
             return false;
         }
         Employee emp = (Employee) obj;
-        if (this.address == null) {
-            return emp.address == null;
+        if (this.address == null && emp.address != null) {
+            return false;
         }
         if (emp.address == null) {
             return false;
         }
-        boolean equal = true;
-        equal = equal && address.equals(emp.address);
-        
-        Iterator<PhoneNumber> phones1 = phones.iterator();
-        Iterator<PhoneNumber> phones2 = emp.phones.iterator();
-        
-        while(phones1.hasNext() && phones2.hasNext()) {
-            equal = phones1.next().equals(phones2.next()) && equal;
+        if (!address.equals(emp.address)) {
+            return false;
         }
-        
-        return equal;
+
+        PhoneNumber[] phoneNumbers1 = new PhoneNumber[phones.size()];
+        phones.toArray(phoneNumbers1);
+        PhoneNumber[] phoneNumbers2 = new PhoneNumber[emp.phones.size()];
+        emp.phones.toArray(phoneNumbers2);
+
+        return Arrays.equals(phoneNumbers1, phoneNumbers2);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = address != null ? address.hashCode() : 0;
+        if (phones != null) {
+            result = 31 * result + Arrays.hashCode(phones.toArray());
+        }
+        return result;
+    }
+
+    public boolean equalsWithoutCyclicDependency(Object obj) {
+        if (obj == null || !(obj instanceof Employee)) {
+            return false;
+        }
+        Employee emp = (Employee) obj;
+        if (this.address == null && emp.address != null) {
+            return false;
+        }
+        if (emp.address == null) {
+            return false;
+        }
+        if (!address.equals(emp.address)) {
+            return false;
+        }
+        return phones.size() == emp.phones.size();
+    }
+
+    public int hashCodeWithoutCyclicDependency() {
+        int result = address != null ? address.hashCode() : 0;
+        if (phones != null) {
+            result = 31 * result + phones.size();
+        }
+        return result;
     }
 }

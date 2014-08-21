@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,9 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlvalue;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlValue;
+import java.util.Arrays;
 
 public class BytesHolderWithXmlId {
 
@@ -57,5 +59,11 @@ public class BytesHolderWithXmlId {
         }
         return true;
     }
-       
+
+    @Override
+    public int hashCode() {
+        int result = theBytes != null ? Arrays.hashCode(theBytes) : 0;
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        return result;
+    }
 }

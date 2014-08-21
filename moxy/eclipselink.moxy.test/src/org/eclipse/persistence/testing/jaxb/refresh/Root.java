@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,15 +28,19 @@ public class Root {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if(null == obj || obj.getClass() != this.getClass()) {
-            return false;
-        }
-        Root test = (Root) obj;
-        if(null == name) {
-            return null == test.getName();
-        }
-        return name.equals(test.getName());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Root root = (Root) o;
+
+        if (name != null ? !name.equals(root.name) : root.name != null) return false;
+
+        return true;
     }
 
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,50 +41,38 @@ public class TestObject {
 
     @Override
     public String toString() {
-        return "TestObject [processed=" + processed + ", id=" + id + "]";
+        return "TestObject{" +
+                "processed=" + processed +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", single=" + single +
+                ", refs=" + refs +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TestObject that = (TestObject) o;
+
+        if (id != that.id) return false;
+        if (processed != that.processed) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (refs != null ? !refs.equals(that.refs) : that.refs != null) return false;
+        if (single != null ? !single.equals(that.single) : that.single != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + (processed ? 1231 : 1237);
-        result = prime * result + ((refs == null) ? 0 : refs.hashCode());
-        result = prime * result + ((single == null) ? 0 : single.hashCode());
+        int result = (processed ? 1 : 0);
+        result = 31 * result + id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (single != null ? single.hashCode() : 0);
+        result = 31 * result + (refs != null ? refs.hashCode() : 0);
         return result;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        TestObject other = (TestObject) obj;
-        if (id != other.id)
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (processed != other.processed)
-            return false;
-        if (refs == null) {
-            if (other.refs != null)
-                return false;
-        } else if (!refs.equals(other.refs))
-            return false;
-        if (single == null) {
-            if (other.single != null)
-                return false;
-        } else if (!single.equals(other.single))
-            return false;
-        return true;
-    }
-
 }

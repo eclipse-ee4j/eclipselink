@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -45,5 +44,10 @@ public class Root {
         	return true;
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return things != null ? things.hashCode() : 0;
     }
 }

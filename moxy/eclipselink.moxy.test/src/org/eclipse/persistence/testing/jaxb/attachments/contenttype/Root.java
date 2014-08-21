@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,7 +15,6 @@
 import java.awt.Image;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -41,4 +40,23 @@ public class Root {
         this.image = image;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Root root = (Root) o;
+
+        if (image != null ? !image.equals(root.image) : root.image != null) return false;
+        if (mimeType != null ? !mimeType.equals(root.mimeType) : root.mimeType != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mimeType != null ? mimeType.hashCode() : 0;
+        result = 31 * result + (image != null ? image.hashCode() : 0);
+        return result;
+    }
 }

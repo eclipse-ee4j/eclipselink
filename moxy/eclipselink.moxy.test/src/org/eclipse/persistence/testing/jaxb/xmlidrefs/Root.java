@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -26,35 +26,23 @@ public class Root {
     @XmlElement(name="phone-number")
     public List<PhoneNumber> phoneNumbers;
 
-    public boolean equals(Object object) {
-        try {
-            if(null == object) {
-                return false;
-            }
-            Root testRoot = (Root) object;
-            if(null == employee && null != testRoot.employee) {
-                return false;
-            }
-            if(!employee.equals(testRoot.employee)) {
-                return false;
-            }
-            List testRootPhoneNumbers = testRoot.phoneNumbers;
-            if(phoneNumbers == null) {
-                return testRootPhoneNumbers == null;
-            }
-            int phonesSize = phoneNumbers.size();
-            if(phonesSize != testRootPhoneNumbers.size()) {
-                return false;
-            }
-            for(int x=0; x<phonesSize; x++) {
-                if(!phoneNumbers.get(x).equals(testRootPhoneNumbers.get(x))) {
-                    return false;
-                }
-            }
-            return true;
-        } catch(Exception e) {
-            return false;
-        }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Root root = (Root) o;
+
+        if (employee != null ? !employee.equals(root.employee) : root.employee != null) return false;
+        if (phoneNumbers != null ? !phoneNumbers.equals(root.phoneNumbers) : root.phoneNumbers != null) return false;
+
+        return true;
     }
 
+    @Override
+    public int hashCode() {
+        int result = employee != null ? employee.hashCode() : 0;
+        result = 31 * result + (phoneNumbers != null ? phoneNumbers.hashCode() : 0);
+        return result;
+    }
 }

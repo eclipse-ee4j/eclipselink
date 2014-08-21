@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,7 +16,6 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.platform.xml.XMLComparer;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Element;
 
 @XmlRootElement(namespace = "namespace")
@@ -42,4 +41,19 @@ public class Root {
         return comp.isNodeEqual(child, ((Root)obj).child);
     }
 
+    @Override
+    public int hashCode() {
+        int result = child == null ? 0 : child.getTagName() == null ? 0 : child.getTagName().hashCode();
+        if (child != null && child.getNamespaceURI() != null) {
+            result = result * 31 + child.getNamespaceURI().hashCode();
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Root{" +
+                "child=" + (child == null ? "null_child_value" : (child.getNamespaceURI() + child.getTagName())) +
+                '}';
+    }
 }

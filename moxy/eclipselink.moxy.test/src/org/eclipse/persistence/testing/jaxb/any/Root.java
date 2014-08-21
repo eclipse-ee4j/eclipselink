@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,13 +40,23 @@ public class Root {
  public void setAny(Object value) {
      this.any = value;
  }
- 
+
+    @Override
+    public int hashCode() {
+        JAXBElement element = (JAXBElement) this.any;
+        int result = element.getName() == null ? 0 :
+                element.getName().getLocalPart() == null ? 0 : element.getName().getLocalPart().hashCode()
+                        * 31 + element.getName().getNamespaceURI() == null ? 0 : element.getName().getNamespaceURI().hashCode();
+        result = result * 31 + (element.getDeclaredType() == null ? 0 : element.getDeclaredType().hashCode());
+        return result;
+    }
+
  public boolean equals(Object obj){
 	 Root compareObject = ((Root)obj);
-	 
+
 	 return compareJAXBElementObjects((JAXBElement)this.any, (JAXBElement)compareObject.any);
  }
- 
+
  public boolean compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
 	 if(!controlObj.getName().getLocalPart().equals(testObj.getName().getLocalPart())){
 		 return false;

@@ -29,14 +29,23 @@ public class Root {
 		return "ClassA: " + theClassA + " ClassB:" + theClassB;
 	}
 
-	public boolean equals(Object object) {
-		Root obj = ((Root)object);
-		if(!obj.theClassA.equals(theClassA)){
-			return false;
-		}	
-		if(!obj.theClassB.equals(theClassB)){
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Root root = (Root) o;
+
+        if (theClassA != null ? !theClassA.equals(root.theClassA) : root.theClassA != null) return false;
+        if (theClassB != null ? !theClassB.equals(root.theClassB) : root.theClassB != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = theClassA != null ? theClassA.hashCode() : 0;
+        result = 31 * result + (theClassB != null ? theClassB.hashCode() : 0);
+        return result;
+    }
 }
