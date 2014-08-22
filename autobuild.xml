@@ -57,6 +57,9 @@
     <taskdef  name="say"           classname="${custom.echo.task.class}"     classpath="${custom.tasks.lib}"/>
 
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
+            depends="clean, build, extract-build-artifacts, test-lrg, extract-test-results"
+    />
+    <target name="build-nightly-nopblish"    description="Trigger the nightly automated build and lrg tests without publish"
             depends="clean, build, test-lrg"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
@@ -267,8 +270,6 @@
         <ant antfile="antbuild.xml" dir="${build.location}"          target="build-all-but-ext"/>
         <ant antfile="antbuild.xml" dir="${build.location}/features" target="build-features-create-signzip"/>
         <ant antfile="antbuild.xml" dir="${build.location}"          target="package-all"/>
-        <!-- Extract build artifacts from Hudson Workspace and make them accessible to publish -->
-        <antcall target="extract-build-artifacts"/>
     </target>
 
     <target name="build-oracle-extension">
@@ -327,8 +328,6 @@
         </ant>
         <!-- delete file="${coretest.prop.file}"/ -->
 
-        <!-- Extract test artifacts from Hudson Workspace and make them accessible to publish -->
-        <antcall target="extract-test-results"/>
     </target>
 
     <target name="test-browser" depends="init">
@@ -364,6 +363,7 @@
         </ant>
     </target>
 
+    <!-- Extract build artifacts from Hudson Workspace and make them accessible to publish -->
     <target name="extract-build-artifacts" depends="generate-nightly-p2-site">
         <!-- New Publish Architecture -->
         <echo message="Extracting Build artifacts..."/>
@@ -390,6 +390,7 @@
         </antcall>
     </target>
 
+    <!-- Extract test artifacts from Hudson Workspace and make them accessible to publish -->
     <target name="extract-test-results" depends="common-init">
         <!-- 'Publish' from Hudson to Build -->
         <property name="host" value="Eclipse"/>
