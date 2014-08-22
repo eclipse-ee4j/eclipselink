@@ -59,7 +59,7 @@
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
             depends="clean, build, extract-build-artifacts, test-lrg, extract-test-results"
     />
-    <target name="build-nightly-nopblish"    description="Trigger the nightly automated build and lrg tests without publish"
+    <target name="build-nightly-nopublish"    description="Trigger the nightly automated build and lrg tests without publish"
             depends="clean, build, test-lrg"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
