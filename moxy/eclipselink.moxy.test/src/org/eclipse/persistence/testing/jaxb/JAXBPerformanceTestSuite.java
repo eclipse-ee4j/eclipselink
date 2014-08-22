@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.jaxb.casesensitivity.JAXBCaseInsensitivityPerfTestCase;
+import org.eclipse.persistence.testing.jaxb.referenceresolver.PerformanceReferenceResolverTestCase;
 
 public class JAXBPerformanceTestSuite extends TestCase {
 
@@ -23,6 +24,7 @@ public class JAXBPerformanceTestSuite extends TestCase {
         TestSuite suite = new TestSuite("JAXB20 Performance Test Suite");
 
         suite.addTestSuite(JAXBCaseInsensitivityPerfTestCase.class);
+        suite.addTestSuite(PerformanceReferenceResolverTestCase.class);
 
         return suite;
 
