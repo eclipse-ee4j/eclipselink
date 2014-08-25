@@ -186,36 +186,13 @@
                       criterion="${javax.xml.bind.criteria}" property="javax.xml.bind.version" versiononly="true"
         />
 
-        <!--START OF HOTFIX for JAXB-CORE and JAXB-XJC dependencies.
-            When JAXB-RI builds will generate correct OSGi headers, update the
-            dependencies and remove this hotfix.-->
-        <unjar overwrite="true"
-               src="${compdeps.2.common.plugins.dir}/jaxb-core_2.2.11.v201406210428.jar"
-               dest="${compdeps.2.common.plugins.dir}/tmpfix.osgi.core"
-        />
-
-        <jar update="false"
-             destfile="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux/jaxb-core_2.2.11.v201406210428.jar"
-             basedir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.core"
-             manifest="${compdeps.2.common.plugins.dir}/tmpfix.osgi.manifest.core/MANIFEST.MF"
-        />
-        <selectbundle basename="${sun.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux"
+        <selectbundle basename="${sun.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
         />
 
-        <unjar overwrite="true"
-               src="${compdeps.2.common.plugins.dir}/jaxb-xjc_2.2.11.v201406210428.jar"
-               dest="${compdeps.2.common.plugins.dir}/tmpfix.osgi.xjc"
-        />
-        <jar update="false"
-             destfile="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux/jaxb-xjc_2.2.11.v201406210428.jar"
-             basedir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.xjc"
-             manifest="${compdeps.2.common.plugins.dir}/tmpfix.osgi.manifest.xjc/MANIFEST.MF"
-        />
-        <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux"
+        <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${sun.tools.xjc.criteria}" property="sun.tools.xjc.version" versiononly="true"
         />
-        <!--END OF HOTFIX.-->
 
         <selectbundle basename="${jersey.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${jersey.criteria}" property="jersey.version" versiononly="true"
@@ -373,12 +350,11 @@
                           ${antlr.prefix}.source_${antlr.version}.jar,
                           ${asm.prefix}_${asm.version}.jar,
                           ${asm.prefix}.source_${asm.version}.jar,
-                          ${validation.prefix}_${validation.version}.jar"
-            />
-            <fileset
-                    dir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux/"
-                    includes="${sun.tools.xjc.prefix}_${sun.tools.xjc.version}.jar,
-                          ${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar"
+                          ${validation.prefix}_${validation.version}.jar,
+                          ${sun.tools.xjc.prefix}_${sun.tools.xjc.version}.jar,
+                          ${sun.tools.xjc.prefix}.source_${sun.tools.xjc.version}.jar,
+                          ${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar,
+                          ${sun.xml.bind.prefix}.source_${sun.xml.bind.version}.jar"
             />
             <fileset
                 dir="${compdeps.2.jpa.plugins.dir}"
@@ -396,15 +372,6 @@
                           ${wsdl.prefix}_${wsdl.version}.jar"
             />
         </copy>
-        <!--START OF HOTFIX
-            We don't want to have the new jar files anywhere in EclipseLink
-            because of licence issues.-->
-        <delete includeemptydirs="true">
-            <fileset dir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.aux" includes="**/*"/>
-            <fileset dir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.xjc" includes="**/*"/>
-            <fileset dir="${compdeps.2.common.plugins.dir}/tmpfix.osgi.core" includes="**/*"/>
-        </delete>
-        <!--END OF HOTFIX-->
     </target>
 
     <target name="configure-tooling" if="eclipse.install.exist" depends="init">

@@ -1,6 +1,0 @@
-# Git doesn't commit empty directories.
-# When this directory is missing, there will be failures caused on non-UNIX environments.
-# Ignore everything in this directory
-*
-# Except this file
-!.gitignore

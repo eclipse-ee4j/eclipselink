@@ -7,12 +7,15 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.xml.bind_2.2.0.v201004141950.jar" sourcepath="/ECLIPSELINK_HOME/plugins/com.sun.xml.bind.source_2.2.0.v201004141950.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.xml.bind_2.2.11.v201406210428.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.mail_1.4.0.v201005080615.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_1.1.1.v20101004-1200.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.xml.bind_2.2.0.v201105210648.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.xml.bind.source_2.2.0.v201005080402.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.xml.bind_2.2.0.v201105210648.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.json-1.0.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-core_2.2.11.v201407311112.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-core.source_2.2.11.v201407311112.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-xjc_2.2.11.v201407311112.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-xjc.source_2.2.11.v201407311112.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy.dynamicxjc"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

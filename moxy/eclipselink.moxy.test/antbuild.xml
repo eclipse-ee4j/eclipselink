@@ -124,7 +124,7 @@
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
-        <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
@@ -144,8 +144,7 @@
         <pathelement path="${moxytest.2.dynamic.dir}/${classes.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
-        <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
-        <pathelement path="${moxytest.2.core.dir}/${resource.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/org.eclipse.persistence.asm"/>
         <pathelement path="${xjc-beanval.lib}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
@@ -171,7 +170,7 @@
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
-        <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
     </path>
     <path id="oxm.run.path">
         <path refid="xml.parser.path"/>
@@ -187,8 +186,7 @@
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
-        <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
-        <pathelement path="${moxytest.2.core.dir}/${resource.dir}"/>
+        <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${junit.lib}"/>
     </path>
 
