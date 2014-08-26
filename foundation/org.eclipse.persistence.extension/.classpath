@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
-	<classpathentry kind="lib" path="C:/Engineering/extension.lib.external/jgroups.jar"/>
+    <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jgroups.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
