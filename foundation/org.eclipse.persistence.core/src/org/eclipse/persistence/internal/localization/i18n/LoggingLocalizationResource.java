@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -471,7 +471,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "sop_object_not_found", "Serialized sopObject is not found in [{0}] in [{1}]"},
         { "sop_object_wrong_version", "Removing serialized sopObject from the row because it has a wrong version [{0}] in [{1}] in [{2}]"},
         { "sop_object_wrong_pk", "Removing serialized sopObject from the row because it has a wrong primary key [{0}] in [{1}] in [{2}]"},
-        
+        // 282751
+        { "removing_unique_constraint", "Removing UNIQUE constraint definition from [{0}] because it is also a primary key."},
         // MESSAGES end
         
         
@@ -760,7 +761,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metamodel_type_collection_empty_during_lookup.MSGID", "TOP-50251" },        
         { "entity_not_available_during_merge.MSGID", "TOP-50247"},
         
-        { "unknown_ddl_generation_property.MSGID", "TOP-50252" }
+        { "unknown_ddl_generation_property.MSGID", "TOP-50252" },
+        // 282751
+        { "removing_unique_constraint.MSGID", "TOP-50253"}
         
         /**
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 

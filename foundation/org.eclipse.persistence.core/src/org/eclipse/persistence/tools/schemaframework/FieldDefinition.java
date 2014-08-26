@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,13 +12,18 @@
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.Writer;
 import java.util.Map;
 
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>
@@ -158,7 +163,13 @@ public class FieldDefinition implements Serializable, Cloneable {
                 }
                 if (isUnique()) {
                     if (platform.supportsUniqueColumns()) {
-                        platform.printFieldUnique(writer, shouldPrintFieldIdentityClause);
+                        // #282751: do not add UNIQUE if the field is also simple primary key
+                        if (!isPrimaryKey() || table.getPrimaryKeyFieldNames().size() > 1) {
+                            platform.printFieldUnique(writer, shouldPrintFieldIdentityClause);
+                        } else {
+                            setUnique(false);
+                            session.log(SessionLog.WARNING, SessionLog.DDL, "removing_unique_constraint", qualifiedName);
+                        }
                     } else {
                         // Need to move the unique column to be a constraint.
                         setUnique(false);
