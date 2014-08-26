@@ -585,7 +585,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      */
     @SuppressWarnings("unchecked")
     public SDOType getType(Class interfaceClass) {
-        LOGGER.info("Looking for : " + interfaceClass);
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.info("Looking for : " + interfaceClass);
+        }
 
         final Object[] searchSources = new Object[] {
                 interfacesToSDOTypeHashMap,
@@ -605,7 +607,9 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
                 type = getFromCollection(((Collection<SDOType>)searchSource), interfaceClass);
             }
             if (type != null) {
-                LOGGER.info(interfaceClass + " was found in: " + SEARCH_SOURCES_NAMES[i] + '.');
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info(interfaceClass + " was found in: " + SEARCH_SOURCES_NAMES[i] + '.');
+                }
                 return type;
             }
         }

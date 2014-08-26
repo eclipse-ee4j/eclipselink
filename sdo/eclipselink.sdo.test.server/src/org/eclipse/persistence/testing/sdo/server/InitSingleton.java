@@ -17,7 +17,9 @@ import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -41,7 +43,9 @@ public class InitSingleton {
             SDOHelperContext.getHelperContext().getXSDHelper().define(url.openStream(), path.substring(0, path.lastIndexOf('/') + 1));
             LOGGER.info("\n********** initialized **********\n");
         } catch (Exception e) {
-            LOGGER.info("init() failed with error: " + e.getMessage());
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.info("init() failed with error: " + e.getMessage());
+            }
             e.printStackTrace();
             throw new DeptServiceInitException(e);
         }

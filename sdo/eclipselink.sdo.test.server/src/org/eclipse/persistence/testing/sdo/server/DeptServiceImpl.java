@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.sdo.server;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Remote;
@@ -29,8 +30,10 @@ public class DeptServiceImpl implements DeptService {
     }
 
     public Dept getDept(Integer deptno) {
-        LOGGER.info("\n********** getDept() Called **********\n");
-        LOGGER.info("deptno: " + deptno);
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.info("\n********** getDept() Called **********\n");
+            LOGGER.info("deptno: " + deptno);
+        }
         Dept dept = (Dept) SDOHelperContext.getHelperContext().getDataFactory().create(Dept.class);
         dept.setDeptno(deptno);
         dept.setDname("Dname" + deptno);
