@@ -29,6 +29,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.AdvancedFetchGroupTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.ChestProtector;
+import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Helmet;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.HockeyGear;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.Pads;
 import org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup.GoalieGear.AgeGroup;
@@ -59,6 +60,8 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupOnPads"));
         suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupOnChestProtector"));
         suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupOnPadsFromInheritanceParent"));
+        // Bug 434120
+        suite.addTest(new AdvancedFetchGroupJunitTest("testFetchGroupMergeMapAttribute"));
         
         return suite;
     }
@@ -196,6 +199,56 @@ public class AdvancedFetchGroupJunitTest extends JUnitTestCase {
             } finally {
                 closeEntityManager(em);
             }
+        }
+    }
+    
+    public void testFetchGroupMergeMapAttribute() {
+        if (!isWeavingEnabled()) {
+            return;
+        }
+        
+        // test data - manual creation
+        int helmetId = 1;
+        Helmet helmet = null;
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            em.createNativeQuery("DELETE FROM JPA_HELMET_PROPERTIES WHERE HELMET_ID=" + helmetId).executeUpdate();
+            em.createNativeQuery("DELETE FROM JPA_HELMET WHERE ID=" + helmetId).executeUpdate();
+            em.createNativeQuery("INSERT INTO JPA_HELMET (ID, COLOR) VALUES (" + helmetId + ", 'red')").executeUpdate();
+            commitTransaction(em);
+        } catch (Exception e) {
+            fail("Error creating test data: " + e.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // test
+        em = createEntityManager();
+        try {
+            beginTransaction(em);
+            helmet = em.find(Helmet.class, helmetId);
+            assertNotNull("Found Helmet entity with id: " + helmetId + " should be non-null", helmet);
+            em.clear();
+            
+            helmet.getColor();
+            helmet.addProperty("random", "This parrot is deceased");
+            Helmet helmetMerged = em.merge(helmet);
+            
+            commitTransaction(em);
+        } catch (Exception e) {
+            fail("Error merging an Entity with a Map attribute: " + e.getMessage());
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            beginTransaction(em);
+            helmet = em.find(Helmet.class, helmetId);
+            if (helmet != null) {
+                em.remove(helmet);
+            }
+            commitTransaction(em);
+            closeEntityManager(em);
         }
     }
     

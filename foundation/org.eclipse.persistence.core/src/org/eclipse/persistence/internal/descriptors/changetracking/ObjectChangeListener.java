@@ -30,6 +30,13 @@ public class ObjectChangeListener implements PropertyChangeListener, Serializabl
     // ie when EclipseLink call setters.
     protected boolean ignoreEvents = false;
     
+    // this is used to treat ignoreEvents as a nestable call. In numerous
+    // places EclipseLink will disable events, do some work and re-enable. Within
+    // that work there may be other disable/enable pairs. This flag will allow EclipseLink
+    // to nest the disable/enable pairs and ensure the event is only enabled when the original
+    // caller finally enables the events.
+    protected int ignoreDepth = 0;
+
     protected boolean hasChanges;
 
     /**
@@ -45,6 +52,7 @@ public class ObjectChangeListener implements PropertyChangeListener, Serializabl
      * This method will set this listener to ignore events not issues by EclipseLink
      */
     public void ignoreEvents(){
+        ++ignoreDepth;
         this.ignoreEvents = true;
     }
     
@@ -53,7 +61,10 @@ public class ObjectChangeListener implements PropertyChangeListener, Serializabl
      * This method will set this listener to ignore events not issues by EclipseLink
      */
     public void processEvents(){
-        this.ignoreEvents = false;
+        --ignoreDepth;
+        if (ignoreDepth == 0) {
+            this.ignoreEvents = false;
+        }
     }
     
     /**

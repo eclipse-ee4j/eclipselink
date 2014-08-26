@@ -23,6 +23,8 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildHOCKEYGEARTable());
         addTableDefinition(buildPADSTable());
         addTableDefinition(buildCHESTPROTECTORTable());
+        addTableDefinition(buildHELMETTable());
+        addTableDefinition(buildHELMET_PROPERTIESTable());
     }
     
     public static TableDefinition buildHOCKEYGEARTable(){
@@ -165,5 +167,70 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
 
         return table;
     }
+    
+    public static TableDefinition buildHELMETTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_HELMET");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldCOLOR = new FieldDefinition();
+        fieldCOLOR.setName("COLOR");
+        fieldCOLOR.setTypeName("VARCHAR");
+        fieldCOLOR.setSize(42);
+        fieldCOLOR.setShouldAllowNull(true);
+        fieldCOLOR.setIsPrimaryKey(false);
+        fieldCOLOR.setUnique(false);
+        fieldCOLOR.setIsIdentity(false);
+        table.addField(fieldCOLOR);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildHELMET_PROPERTIESTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_HELMET_PROPERTIES");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("HELMET_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldPROPERTY_NAME = new FieldDefinition();
+        fieldPROPERTY_NAME.setName("PROPERTY_NAME");
+        fieldPROPERTY_NAME.setTypeName("VARCHAR");
+        fieldPROPERTY_NAME.setSize(42);
+        fieldPROPERTY_NAME.setShouldAllowNull(true);
+        fieldPROPERTY_NAME.setIsPrimaryKey(false);
+        fieldPROPERTY_NAME.setUnique(false);
+        fieldPROPERTY_NAME.setIsIdentity(false);
+        table.addField(fieldPROPERTY_NAME);
+        
+        FieldDefinition fieldPROPERTY_VALUE = new FieldDefinition();
+        fieldPROPERTY_VALUE.setName("PROPERTY_VALUE");
+        fieldPROPERTY_VALUE.setTypeName("VARCHAR");
+        fieldPROPERTY_VALUE.setSize(42);
+        fieldPROPERTY_VALUE.setShouldAllowNull(true);
+        fieldPROPERTY_VALUE.setIsPrimaryKey(false);
+        fieldPROPERTY_VALUE.setUnique(false);
+        fieldPROPERTY_VALUE.setIsIdentity(false);
+        table.addField(fieldPROPERTY_VALUE);
+        
+        return table;
+    }
+    
 }
 
