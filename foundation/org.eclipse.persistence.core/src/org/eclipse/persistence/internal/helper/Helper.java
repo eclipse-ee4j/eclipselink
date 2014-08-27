@@ -10,7 +10,7 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     dminsky - added countOccurrencesOf(Object, List) API
- *     08/23/2010-2.2 Michael O'Brien 
+ *     08/23/2010-2.2 Michael O'Brien
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
@@ -276,7 +276,7 @@ public class Helper extends CoreHelper implements Serializable {
      */
     public static String buildHexStringFromBytes(byte[] bytes) {
         char[] hexArray = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         int tempByte;
         for (int byteIndex = 0; byteIndex < (bytes).length; byteIndex++) {
             tempByte = (bytes)[byteIndex];
@@ -287,7 +287,7 @@ public class Helper extends CoreHelper implements Serializable {
             if (tempByte > 16) {
                 throw ConversionException.couldNotBeConverted(bytes, ClassConstants.STRING);
             }
-            stringBuffer.append(hexArray[tempByte]);
+            stringBuilder.append(hexArray[tempByte]);
 
             tempByte = (bytes)[byteIndex];
             if (tempByte < 0) {
@@ -297,9 +297,9 @@ public class Helper extends CoreHelper implements Serializable {
             if (tempByte > 16) {
                 throw ConversionException.couldNotBeConverted(bytes, ClassConstants.STRING);
             }
-            stringBuffer.append(hexArray[tempByte]);
+            stringBuilder.append(hexArray[tempByte]);
         }
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
     /**
@@ -758,7 +758,7 @@ public class Helper extends CoreHelper implements Serializable {
 
         return newVector;
     }
-    
+
     /**
      * Copy an array of strings to a new array
      * @param original
@@ -773,8 +773,8 @@ public class Helper extends CoreHelper implements Serializable {
         System.arraycopy(original, 0, copy, 0, length);
         return copy;
     }
-    
-    
+
+
     /**
      * Copy an array of int to a new array
      * @param original
@@ -913,7 +913,7 @@ public class Helper extends CoreHelper implements Serializable {
         } catch (FileNotFoundException fnfException) {
             return false;
         } finally {
-        	Helper.close(reader);
+		Helper.close(reader);
         }
 
         return true;
@@ -923,7 +923,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Double up \ to allow printing of directories for source code generation.
      */
     public static String doubleSlashes(String path) {
-        StringBuffer buffer = new StringBuffer(path.length() + 5);
+        StringBuilder buffer = new StringBuilder(path.length() + 5);
         for (int index = 0; index < path.length(); index++) {
             char charater = path.charAt(index);
             buffer.append(charater);
@@ -1182,18 +1182,18 @@ public class Helper extends CoreHelper implements Serializable {
         returnVector.addElement(theObject);
         return returnVector;
     }
-        
+
     /**
      * Used by our byte code weaving to enable users who are debugging to output
      * the generated class to a file
-     * 
+     *
      * @param className
      * @param classBytes
      * @param outputPath
      */
     public static void outputClassFile(String className, byte[] classBytes,
             String outputPath) {
-        StringBuffer directoryName = new StringBuffer();
+        StringBuilder directoryName = new StringBuilder();
         StringTokenizer tokenizer = new StringTokenizer(className, "\n\\/");
         String token = null;
         while (tokenizer.hasMoreTokens()) {
@@ -1326,7 +1326,7 @@ public class Helper extends CoreHelper implements Serializable {
         }
 
         // Remove the necessary number of characters
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int numberOfCharsToBeRemoved = s1.length() - maximumStringLength;
         int s1Index = 0;
         while ((numberOfCharsToBeRemoved > 0) && (s1Index < s1Size)) {
@@ -1361,7 +1361,7 @@ public class Helper extends CoreHelper implements Serializable {
         }
 
         // Remove the necessary number of characters
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int numberOfCharsToBeRemoved = s1.length() - maximumStringLength;
         int s1Index = 0;
         while ((numberOfCharsToBeRemoved > 0) && (s1Index < s1Size)) {
@@ -1391,7 +1391,7 @@ public class Helper extends CoreHelper implements Serializable {
      */
     public static String removeVowels(String s1) {
         // Remove the vowels
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int s1Size = s1.length();
         int s1Index = 0;
         while (s1Index < s1Size) {
@@ -1458,8 +1458,8 @@ public class Helper extends CoreHelper implements Serializable {
         // Remove the necessary number of characters
         int s1Size = s1.length();
         int s2Size = s2.length();
-        StringBuffer buf1 = new StringBuffer();
-        StringBuffer buf2 = new StringBuffer();
+        StringBuilder buf1 = new StringBuilder();
+        StringBuilder buf2 = new StringBuilder();
         int numberOfCharsToBeRemoved = size - maximumStringLength;
         int s1Index = 0;
         int s2Index = 0;
@@ -1657,7 +1657,7 @@ public class Helper extends CoreHelper implements Serializable {
             millisString = buildZeroPrefixAndTruncTrailZeros(calendar.get(Calendar.MILLISECOND), 3);
         }
 
-        StringBuffer timestampBuf = new StringBuffer();
+        StringBuilder timestampBuf = new StringBuilder();
         timestampBuf.append(printDate(calendar, useLocalTime));
         timestampBuf.append(" ");
         timestampBuf.append(printTime(calendar, useLocalTime));
@@ -1683,7 +1683,7 @@ public class Helper extends CoreHelper implements Serializable {
             nanosString = buildZeroPrefixAndTruncTrailZeros(timestamp.getNanos(), 9);
         }
 
-        StringBuffer timestampBuf = new StringBuffer();
+        StringBuilder timestampBuf = new StringBuilder();
         timestampBuf.append(printDate(calendar));
         timestampBuf.append(" ");
         timestampBuf.append(printTime(calendar));
@@ -1764,7 +1764,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Print the Calendar without the nanos portion.
      */
     public static String printCalendarWithoutNanos(Calendar calendar) {
-        StringBuffer timestampBuf = new StringBuffer();
+        StringBuilder timestampBuf = new StringBuilder();
         timestampBuf.append(printDate(calendar));
         timestampBuf.append(" ");
         timestampBuf.append(printTime(calendar));
@@ -2106,7 +2106,7 @@ public class Helper extends CoreHelper implements Serializable {
             return originalString;
         }
         String vowels = "AaEeIiOoUu";
-        StringBuffer newStringBufferTmp = new StringBuffer(originalString.length());
+        StringBuilder newStringBufferTmp = new StringBuilder(originalString.length());
 
         //need to remove the extra characters
         int counter = originalString.length() - size;
@@ -2122,7 +2122,7 @@ public class Helper extends CoreHelper implements Serializable {
                     //if the exceeded characters (counter) of vowel haven been removed, the total
                     //string size should be equal to the limits, so append the reversed remaining string
                     //to the new string, break the loop and return the shrunk string.
-                    StringBuffer newStringBuffer = new StringBuffer(size);
+                    StringBuilder newStringBuffer = new StringBuilder(size);
                     newStringBuffer.append(originalString.substring(0, index));
                     //need to reverse the string
                     //bug fix: 3016423. append(BunfferString) is jdk1.4 version api. Use append(String) instead

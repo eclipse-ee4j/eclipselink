@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,6 +58,7 @@ public abstract class Marshaller<
         this.charEscapeHandler = (CHARACTER_ESCAPE_HANDLER) marshaller.getCharacterEscapeHandler();
         this.context = (CONTEXT) marshaller.getContext();
         this.encoding = marshaller.getEncoding();
+        this.encoding = encoding.intern();
         this.equalUsingIdenity = marshaller.isEqualUsingIdenity();
         this.errorHandler = marshaller.getErrorHandler();
         this.formattedOutput = marshaller.isFormattedOutput();

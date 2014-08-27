@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1631,7 +1631,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     @Override
     public String buildBase64StringFromBytes(byte[] bytes) {
         byte[] convertedBytes = Base64.base64Encode(bytes);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < convertedBytes.length; i++) {
             buffer.append((char) convertedBytes[i]);
         }
@@ -1949,7 +1949,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     @Override
     public String collapseStringValue(String value) {
         int length = value.length();
-        
+
         int start = 0;
         while(start < length) {
             if(isWhitespace(value.charAt(start), true)) {
@@ -1960,15 +1960,15 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         if(start == length) {
             return value;
         }
-        
-        StringBuffer collapsedString = new StringBuffer(length);
+
+        StringBuilder collapsedString = new StringBuilder(length);
         if(start != 0) {
             for(int i = 0; i < start; i++) {
                 collapsedString.append(value.charAt(i));
             }
             collapsedString.append(' ');
         }
-        
+
         boolean inSequence = true;
         for(int i = start + 1; i < length; i++) {
             char nextCharacter = value.charAt(i);
@@ -2057,9 +2057,9 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
                 containerPolicy.addInto(bytes, container, session);
             }
             return container;
-        }       
+        }
         throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.ABYTE);
     }
-    
+
 
 }

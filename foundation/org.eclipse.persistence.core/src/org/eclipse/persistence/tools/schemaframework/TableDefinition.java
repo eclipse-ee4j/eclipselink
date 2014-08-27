@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Dies Koper - avoid generating constraints on platforms that do not support constraint generation
  *     Dies Koper - add support for creating indices on tables
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
@@ -604,7 +604,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         String adjustedTableName = tableName;
         if(adjustedTableName.indexOf(' ') != -1 || adjustedTableName.indexOf('\"') != -1 || adjustedTableName.indexOf('`') != -1) {
             //if table name has spaces and/or is quoted, remove this from the constraint name.
-            StringBuffer buff = new StringBuffer();
+            StringBuilder buff = new StringBuilder();
             for(int i = 0; i < tableName.length(); i++) {
                 char c = tableName.charAt(i);
                 if(c != ' ' && c != '\"' && c != '`') {
@@ -613,7 +613,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
             }
             adjustedTableName = buff.toString();
         }
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         for(int i = 0; i < fieldName.length(); i++) {
             char c = fieldName.charAt(i);
             if(c != ' ' && c != '\"' && c != '`') {
@@ -730,7 +730,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         String adjustedTableName = tableName;
         if(adjustedTableName.indexOf(' ') != -1 || adjustedTableName.indexOf('\"') != -1 || adjustedTableName.indexOf('`') != -1) {
             //if table name has spaces and/or is quoted, remove this from the constraint name.
-            StringBuffer buff = new StringBuffer();
+            StringBuilder buff = new StringBuilder();
             for(int i = 0; i < tableName.length(); i++) {
                 char c = tableName.charAt(i);
                 if(c != ' ' && c != '\"' && c != '`') {
@@ -739,7 +739,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
             }
             adjustedTableName = buff.toString();
         }
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         for(int i = 0; i < key.length(); i++) {
             char c = key.charAt(i);
             if(c != ' ' && c != '\"' && c != '`') {

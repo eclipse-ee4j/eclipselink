@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -823,7 +823,7 @@ public abstract class RuntimeServices {
                  }
                  try {
                      //Note: String.matches(String regex) since jdk1.4
-                     if (classNameLowerCase.matches(new StringBuffer().append("^.*").append(filterValue).append(".*$").toString())) {
+                     if (classNameLowerCase.matches(new StringBuilder().append("^.*").append(filterValue).append(".*$").toString())) {
                          if (!outputVector.contains(className)) {
                              outputVector.add(className);
                          }

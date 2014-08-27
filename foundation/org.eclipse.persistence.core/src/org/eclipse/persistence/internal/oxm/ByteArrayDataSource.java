@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -34,19 +34,19 @@ public class ByteArrayDataSource implements DataSource {
     public String getName() {
         return "";
     }
-    
+
     public java.io.OutputStream getOutputStream() {
         return new ByteArrayOutputStream(bytes.length);
     }
-    
+
     public java.io.InputStream getInputStream() {
         return new ByteArrayInputStream(bytes);
     }
-    
+
     public String getContentType() {
         if(contentType.startsWith("multipart") && contentType.indexOf("boundary") == -1) {
             //parse the bytes for the header and extract the boundary. Add it into the content type.
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(bytes));
             while(true) {
                 try {

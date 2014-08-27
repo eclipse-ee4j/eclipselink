@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
 import java.math.*;
@@ -652,28 +652,35 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * of bytes is converted to a hex string.
      */
     protected String convertObjectToString(Object sourceObject) throws ConversionException {
-        if (sourceObject.getClass() == ClassConstants.UTILDATE) {
+
+        Class sourceObjectClass = sourceObject.getClass();
+
+        if (sourceObject instanceof java.lang.Number) {
+            return sourceObject.toString();
+        } else if (sourceObjectClass == ClassConstants.BOOLEAN) {
+            return sourceObject.toString();
+        } else if (sourceObjectClass == ClassConstants.UTILDATE) {
             return Helper.printTimestamp(Helper.timestampFromDate((java.util.Date)sourceObject));
-        } else if (sourceObject instanceof Calendar) {
+        } else if (sourceObject instanceof java.util.Calendar) {
             return Helper.printCalendar((Calendar)sourceObject);
-        } else if (sourceObject instanceof java.sql.Timestamp) {
+        } else if (sourceObjectClass == ClassConstants.TIMESTAMP) {
             return Helper.printTimestamp((java.sql.Timestamp)sourceObject);
         } else if (sourceObject instanceof java.sql.Date) {
             return Helper.printDate((java.sql.Date)sourceObject);
         } else if (sourceObject instanceof java.sql.Time) {
             return Helper.printTime((java.sql.Time)sourceObject);
-        } else if (sourceObject instanceof byte[]) {
+        } else if (sourceObjectClass == ClassConstants.APBYTE) {
             return Helper.buildHexStringFromBytes((byte[])sourceObject);
             //Bug#3854296 Added support to convert Byte[], char[] and Character[] to String correctly
-        } else if (sourceObject instanceof Byte[]) {
+        } else if (sourceObjectClass == ClassConstants.ABYTE) {
             return Helper.buildHexStringFromBytes(convertObjectToByteArray(sourceObject));
-        } else if (sourceObject instanceof char[]) {
+        } else if (sourceObjectClass == ClassConstants.APCHAR) {
             return new String((char[])sourceObject);
-        } else if (sourceObject instanceof Character[]) {
+        } else if (sourceObjectClass == ClassConstants.ACHAR) {
             return new String(convertObjectToCharArray(sourceObject));
         } else if (sourceObject instanceof Class) {
             return ((Class)sourceObject).getName();
-        } else if (sourceObject instanceof Character) {
+        } else if (sourceObjectClass == ClassConstants.CHAR) {
             return sourceObject.toString();
         } else if (sourceObject instanceof Clob) {
             Clob clob = (Clob)sourceObject;

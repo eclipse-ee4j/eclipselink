@@ -508,6 +508,7 @@ public final class AnnotationsProcessor {
         localElements = new ArrayList<ElementDeclaration>();
 
         javaClassToTypeMappingInfos = new HashMap<JavaClass, List<TypeMappingInfo>>();
+        typeMappingInfoToAdapterClasses = new HashMap<TypeMappingInfo, Class>();
         if (typeMappingInfos != null) {
             for (int i = 0; i < typeMappingInfos.length; i++) {
                 List<TypeMappingInfo> infos = javaClassToTypeMappingInfos.get(classes[i]);
@@ -516,16 +517,12 @@ public final class AnnotationsProcessor {
                     javaClassToTypeMappingInfos.put(classes[i], infos);
                 }
                 infos.add(typeMappingInfos[i]);
-            }
-        }
-        typeMappingInfoToAdapterClasses = new HashMap<TypeMappingInfo, Class>();
-        if (typeMappingInfos != null) {
-            for (TypeMappingInfo next : typeMappingInfos) {
-                java.lang.annotation.Annotation[] annotations = getAnnotations(next);
+
+                java.lang.annotation.Annotation[] annotations = getAnnotations(typeMappingInfos[i]);
                 if (annotations != null) {
                     for (java.lang.annotation.Annotation nextAnnotation : annotations) {
                         if (nextAnnotation instanceof XmlJavaTypeAdapter) {
-                            typeMappingInfoToAdapterClasses.put(next, ((XmlJavaTypeAdapter) nextAnnotation).value());
+                            typeMappingInfoToAdapterClasses.put(typeMappingInfos[i], ((XmlJavaTypeAdapter) nextAnnotation).value());
                         }
                     }
                 }

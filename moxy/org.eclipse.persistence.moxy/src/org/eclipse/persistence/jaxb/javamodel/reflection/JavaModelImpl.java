@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -33,7 +33,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
  * <li>Return a JavaClass based on a Class or Class name</li>
  * <li>Return a JDK Annotation for a given JavaAnnotation</li>
  * </ul>
- * 
+ *
  * @since Oracle TopLink 11.1.1.0.0
  * @see org.eclipse.persistence.jaxb.javamodel.JavaModel
  */
@@ -44,15 +44,23 @@ public class JavaModelImpl implements JavaModel {
     private Map<String, Boolean> metadataCompletePackages;
     private Map<String, JavaClassImpl> cachedJavaClasses;
     private boolean hasXmlBindings = false;
-    
+    private boolean isJaxbClassLoader = false;
+
     public JavaModelImpl(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+        setClassLoader(classLoader);
         this.annotationHelper = new AnnotationHelper();
     }
-    
+
     public JavaModelImpl(ClassLoader classLoader, AnnotationHelper annotationHelper) {
-    	this.classLoader = classLoader;
-    	this.annotationHelper = annotationHelper;
+        setClassLoader(classLoader);
+        this.annotationHelper = annotationHelper;
+    }
+
+    private void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+        if (classLoader instanceof JaxbClassLoader) {
+            isJaxbClassLoader = true;
+        }
     }
 
     public JavaClass getClass(Class<?> jClass) {
@@ -69,7 +77,7 @@ public class JavaModelImpl implements JavaModel {
             if (metadataCompletePackages != null && metadataCompletePackages.containsKey(javaClass.getPackageName())) {
                 javaClass.setIsMetadataComplete(metadataCompletePackages.get(javaClass.getPackageName()));
             }
-            if(classLoader instanceof JaxbClassLoader) {
+            if(isJaxbClassLoader) {
                 ((JaxbClassLoader) classLoader).putClass(jClass.getCanonicalName(), jClass);
             }
             return javaClass;

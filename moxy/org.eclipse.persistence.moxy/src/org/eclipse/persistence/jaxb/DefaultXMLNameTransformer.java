@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Denise Smith - April 7, 2011 
+ *     Denise Smith - April 7, 2011
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -51,7 +51,7 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
     /**
      * By default convert class names to xml names based the rules defined in
      * the JAXB specification
-     */ 
+     */
     public String transformTypeName(String className) {
         String typeName = EMPTY_STRING;
         if (className.indexOf(DOLLAR_SIGN_CHAR) != -1) {
@@ -62,7 +62,7 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
 
         //now capitalize any characters that occur after a "break"
         boolean inBreak = false;
-        StringBuffer toReturn = new StringBuffer(typeName.length());
+        StringBuilder toReturn = new StringBuilder(typeName.length());
         for (int i = 0; i < typeName.length(); i++) {
             char next = typeName.charAt(i);
             if (Character.isDigit(next)) {

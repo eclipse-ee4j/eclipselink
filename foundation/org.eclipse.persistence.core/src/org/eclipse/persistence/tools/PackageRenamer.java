@@ -4,12 +4,12 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.tools;
 
 import java.util.*;
@@ -96,13 +96,13 @@ public class PackageRenamer {
     }
 
     protected String bannerText() {
-        StringBuffer stringBuffer = new StringBuffer(300);
-        stringBuffer.append(CR);
-        stringBuffer.append("NOTE: The package renamer is meant to be run on plain text files. ");
-        stringBuffer.append(CR);
-        stringBuffer.append("A rename will NOT be done on binary files.");
-        stringBuffer.append(CR);
-        return stringBuffer.toString();
+        StringBuilder stringBuilder = new StringBuilder(CR.length()*3+66+42);
+        stringBuilder.append(CR);
+        stringBuilder.append("NOTE: The package renamer is meant to be run on plain text files. ");
+        stringBuilder.append(CR);
+        stringBuilder.append("A rename will NOT be done on binary files.");
+        stringBuilder.append(CR);
+        return stringBuilder.toString();
     }
 
     /**

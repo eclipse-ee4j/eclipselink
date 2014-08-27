@@ -1094,8 +1094,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 if (metadataComplete.size() > 0) {
                     jModel.setMetadataCompletePackageMap(metadataComplete);
                 }
-            } else {
-                jModel.setHasXmlBindings(false);
             }
 
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
@@ -1581,18 +1579,18 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
             return unmarshaller;
         }
-        
+
         public JAXBBinder createBinder(JAXBContext context) {
-        	XMLMarshaller marshaller = null;
-        	XMLUnmarshaller unmarshaller = null;
-        	try {
-        		marshaller = createMarshaller(context).getXMLMarshaller();
-        		unmarshaller = createUnmarshaller(context).getXMLUnmarshaller();
-        	} catch (javax.xml.bind.JAXBException e) {
-        		// log something
-        		marshaller = context.getXMLContext().createMarshaller();
-        		unmarshaller = context.getXMLContext().createUnmarshaller();
-        	}
+		XMLMarshaller marshaller = null;
+		XMLUnmarshaller unmarshaller = null;
+		try {
+			marshaller = createMarshaller(context).getXMLMarshaller();
+			unmarshaller = createUnmarshaller(context).getXMLUnmarshaller();
+		} catch (javax.xml.bind.JAXBException e) {
+			// log something
+			marshaller = context.getXMLContext().createMarshaller();
+			unmarshaller = context.getXMLContext().createUnmarshaller();
+		}
         	
         	return new JAXBBinder(context, marshaller, unmarshaller);
         }

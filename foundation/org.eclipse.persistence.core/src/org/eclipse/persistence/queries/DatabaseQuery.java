@@ -1131,14 +1131,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public List<ClassDescriptor> getDescriptors() {
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * TopLink_sessionName_domainClass.  Cached in properties
      */
      public String getDomainClassNounName(String sessionName) {
         if (getProperty("DMSDomainClassNounName") == null) {
-            StringBuffer buffer = new StringBuffer("EclipseLink");
+            StringBuilder buffer = new StringBuilder("EclipseLink");
             if (sessionName != null) {
                 buffer.append(sessionName);
             }
@@ -1150,7 +1150,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         }
         return (String)getProperty("DMSDomainClassNounName");
      }
-    
+
     /**
      * PUBLIC: Return the name of the query
      */
@@ -1205,7 +1205,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public String getQueryNounName(String sessionName) {
         if (getProperty("DMSQueryNounName") == null) {
-            StringBuffer buffer = new StringBuffer(getDomainClassNounName(sessionName));
+            StringBuilder buffer = new StringBuilder(getDomainClassNounName(sessionName));
             buffer.append("_");
             buffer.append(getClass().getSimpleName());
             if (getName() != null) {
@@ -1216,7 +1216,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         }
         return (String)getProperty("DMSQueryNounName");
     }
-    
+
     /**
      * INTERNAL: Return the mechanism assigned to the query
      */
@@ -1333,7 +1333,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         }
         Object sensorName = sensorNames.get(operationName);
         if (sensorName == null) {
-            StringBuffer buffer = new StringBuffer(getQueryNounName(sessionName));
+            StringBuilder buffer = new StringBuilder(getQueryNounName(sessionName));
             buffer.append("_");
             buffer.append(operationName);
             sensorName = buffer.toString();
@@ -1341,7 +1341,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         }
         return (String)sensorName;
     }
-    
+
     /**
      * INTERNAL: Return the current session.
      */

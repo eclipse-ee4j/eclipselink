@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -456,14 +456,15 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         listener.setMarshalledObject(xmlDocument.getRootObject());
         listener.setMarshalledObjectRootQName(new QName(xmlDocument.getRootElementURI(), xmlDocument.getRootElementName()));
         listener.setRootMarshalRecord(writerRecord);
-        
+
         try{
             anXMLMarshaller.marshal(xmlDocument, writerRecord);
+            writerRecord.flush();
         }catch(XMLMarshalException xme){
             if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){
-    		    if(aHelperContext != ((SDOType)xmlDocument.getRootObject().getType()).getHelperContext()){
-    			     throw SDOException.dataObjectNotFromHelperContext();
-    		   }    	
+		    if(aHelperContext != ((SDOType)xmlDocument.getRootObject().getType()).getHelperContext()){
+			     throw SDOException.dataObjectNotFromHelperContext();
+		   }
             }
     	} finally{
     	    listener.setMarshalledObject(null);
@@ -509,12 +510,14 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
                 marshalRecord.setMarshaller(anXMLMarshaller);
                 listener.setRootMarshalRecord(marshalRecord);
                 anXMLMarshaller.marshal(xmlDocument, marshalRecord);
+                marshalRecord.flush();
             } else if(result instanceof DOMResult) {
                 NodeRecord marshalRecord = new NodeRecord();
                 marshalRecord.setDOM(((DOMResult)result).getNode());
                 marshalRecord.setMarshaller(anXMLMarshaller);
                 listener.setRootMarshalRecord(marshalRecord);
                 anXMLMarshaller.marshal(xmlDocument, marshalRecord);
+                marshalRecord.flush();
             } else {
                 StringWriter writer = new StringWriter();
                 this.save(xmlDocument, writer, options);
@@ -589,14 +592,15 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         listener.setMarshalledObject(rootObject);
         listener.setMarshalledObjectRootQName(new QName(rootElementURI, rootElementName));
         listener.setRootMarshalRecord(writerRecord);
-  
+
         try{
             anXMLMarshaller.marshal(xmlDocument, writerRecord);
+            writerRecord.flush();
         }catch(XMLMarshalException xme){
             if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){
-    		    if(aHelperContext != ((SDOType)rootObject.getType()).getHelperContext()){
-    			     throw SDOException.dataObjectNotFromHelperContext();
-    		   }    	
+		    if(aHelperContext != ((SDOType)rootObject.getType()).getHelperContext()){
+			     throw SDOException.dataObjectNotFromHelperContext();
+		   }
             }
     	}finally{
     	    listener.setMarshalledObject(null);

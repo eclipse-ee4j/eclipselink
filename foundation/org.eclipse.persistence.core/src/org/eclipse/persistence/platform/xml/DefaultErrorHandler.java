@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -24,15 +24,23 @@ import org.xml.sax.SAXParseException;
  *
  */
 public class DefaultErrorHandler implements ErrorHandler {
-    
+
+    private static final DefaultErrorHandler instance = new DefaultErrorHandler();
+
+    private DefaultErrorHandler() {}
+
+    public static DefaultErrorHandler getInstance() {
+        return instance;
+    }
+
     public void error(SAXParseException ex) throws SAXParseException {
         throw ex;
     }
-    
+
     public void warning(SAXParseException ex) throws SAXParseException {
         throw ex;
     }
-    
+
     public void fatalError(SAXParseException ex) throws SAXParseException {
         throw ex;
     }

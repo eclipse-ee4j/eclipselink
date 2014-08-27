@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
-
-import java.io.Writer;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
@@ -60,10 +60,13 @@ import org.xml.sax.ext.LexicalHandler;
  */
 public class WriterRecord extends MarshalRecord<XMLMarshaller> {
 
-    protected Writer writer;
+    protected StringBuilder builder = new StringBuilder(3072);
     protected boolean isStartElementOpen = false;
     protected boolean isProcessingCData = false;
     protected CharsetEncoder encoder;
+    String charset = "UNKNOWN_CHARSET";
+    private static final String defaultCharset = Constants.DEFAULT_XML_ENCODING.intern();
+    private Writer writer;
 
     /**
      * Return the Writer that the object will be marshalled to.
@@ -85,30 +88,22 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      */
     public void startDocument(String encoding, String version) {
-        try {
-            writer.write("<?xml version=\"");
-            writer.write(version);
-            writer.write('\"');
+            builder.append("<?xml version=\"");
+            builder.append(version);
+            builder.append('\"');
             if (null != encoding) {
-                writer.write(" encoding=\"");
-                writer.write(encoding);
-                writer.write('\"');
+                builder.append(" encoding=\"");
+                builder.append(encoding);
+                builder.append('\"');
             }
-            writer.write("?>");
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+            builder.append("?>");
     }
 
     /**
      * INTERNAL
      */
     public void writeHeader() {
-        try {
-            writer.write(getMarshaller().getXmlHeader());
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+            builder.append(getMarshaller().getXmlHeader());
     }
 
     /**
@@ -121,37 +116,29 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
-        try {
             if (isStartElementOpen) {
-                writer.write('>');
+                builder.append('>');
             }
             isStartElementOpen = true;
-            writer.write('<');
-            writer.write(getNameForFragment(xPathFragment));
+            builder.append('<');
+            builder.append(getNameForFragment(xPathFragment));
             if(xPathFragment.isGeneratedPrefix()){
-    		    namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
-    	    }
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+                namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+            }
     }
 
     /**
      * INTERNAL:
      */
     public void element(XPathFragment frag) {
-        try {
             if (isStartElementOpen) {
-                writer.write('>');
+                builder.append('>');
                 isStartElementOpen = false;
             }
-            writer.write('<');
-            writer.write(getNameForFragment(frag));
-            writer.write('/');
-            writer.write('>');
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+            builder.append('<');
+            builder.append(getNameForFragment(frag));
+            builder.append('/');
+            builder.append('>');
     }
 
     /**
@@ -172,16 +159,12 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      */
     public void attribute(String namespaceURI, String localName, String qName, String value) {
-        try {
-            writer.write(' ');
-            writer.write(qName);
-            writer.write('=');
-            writer.write('\"');
-            writeValue(value, true, this.writer);
-            writer.write('\"');
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+            builder.append(' ');
+            builder.append(qName);
+            builder.append('=');
+            builder.append('\"');
+            writeValue(value, true, this.builder);
+            builder.append('\"');
     }
 
     /**
@@ -193,128 +176,115 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
      * INTERNAL:
      */
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
-        try {
             if (isStartElementOpen) {
-                writer.write('/');
-                writer.write('>');
+                builder.append('/');
+                builder.append('>');
                 isStartElementOpen = false;
             } else {
-                writer.write('<');
-                writer.write('/');
-                writer.write(getNameForFragment(xPathFragment));
-                writer.write('>');
+                builder.append('<');
+                builder.append('/');
+                builder.append(getNameForFragment(xPathFragment));
+                builder.append('>');
             }
             isStartElementOpen = false;
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
     }
 
     /**
      * INTERNAL:
      */
     public void characters(String value) {
-        try {
             if (isStartElementOpen) {
                 isStartElementOpen = false;
-                writer.write('>');
+                builder.append('>');
             }
             writeValue(value);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
     }
 
     /**
      * INTERNAL:
      */
     public void cdata(String value) {
-        try {
             if(isStartElementOpen) {
                 isStartElementOpen = false;
-                writer.write('>');
+                builder.append('>');
             }
-            writer.write("<![CDATA[");
-            writer.write(value);
-            writer.write("]]>");
-        } catch(IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+            builder.append("<![CDATA[");
+            builder.append(value);
+            builder.append("]]>");
     }
 
     /**
      * INTERNAL:
      */
     protected void writeValue(String value) {
-        writeValue(value, false, this.writer);
+        writeValue(value, false, this.builder);
     }
 
     /**
      * INTERNAL:
      */
-    protected void writeValue(String value, boolean isAttribute, Writer writer) {
+    protected void writeValue(String value, boolean isAttribute, StringBuilder writer) {
         CharacterEscapeHandler escapeHandler = null;
         if (marshaller != null) {
             escapeHandler = marshaller.getCharacterEscapeHandler();
         }
         if (escapeHandler != null) {
             try {
-                escapeHandler.escape(value.toCharArray(), 0, value.length(), isAttribute, writer);
+                StringWriter sw = new StringWriter();
+                escapeHandler.escape(value.toCharArray(), 0, value.length(), isAttribute, sw);
+                writer.append(sw.toString());
             } catch (IOException e) {
                 throw XMLMarshalException.marshalException(e);
             }
             return;
         }
 
-        try {
-            if((null != encoder && encoder.maxBytesPerChar() < 4) || value.indexOf('"') > -1 || value.indexOf('&') > -1 || value.indexOf('<') > -1 || value.indexOf('\n') > -1 || value.indexOf('\r') > -1) {
-                  char[] chars = value.toCharArray();
-                  for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
-                      char character = chars[x];
-                      switch (character) {
-                      case '&': {
-                          writer.write("&amp;");
-                          break;
-                      }
-                      case '<': {
-                          writer.write("&lt;");
-                          break;
-                      }
-                      case '"': {
-                          writer.write("&quot;");
-                          break;
-                      }
-                      case '\n' : {
-                          if(isAttribute) {
-                              writer.write("&#xa;");
-                          } else {
-                              writer.write('\n');
-                          }
-                          break;
-                      }
-                      case '\r': {
-                          writer.write("&#xd;");
-                          break;
-                      }
-                      default:
-                          if(null == encoder) {
-                              encoder = Constants.DEFAULT_CHARSET.newEncoder();
-                          }
-                          if(encoder.canEncode(character)) {
-                              writer.write(character);
-                          } else {
-                              writer.write("&#");
-                              writer.write(String.valueOf((int) character));
-                              writer.write(';');
-                          }
-                      }
-                  }
-            } else {
-                writer.write(value);
-            }
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
+        if(null == encoder) {
+            encoder = Constants.DEFAULT_CHARSET.newEncoder();
+            charset = defaultCharset;
         }
+      char[] chars = value.toCharArray();
+      for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
+          char character = chars[x];
+          switch (character) {
+          case '&': {
+              writer.append("&amp;");
+              break;
+          }
+          case '<': {
+              writer.append("&lt;");
+              break;
+          }
+          case '"': {
+              writer.append("&quot;");
+              break;
+          }
+          case '\n' : {
+              if(isAttribute) {
+                  writer.append("&#xa;");
+              } else {
+                  writer.append('\n');
+              }
+              break;
+          }
+          case '\r': {
+              writer.append("&#xd;");
+              break;
+          }
+          default:
+              if (charset == defaultCharset) {
+                  writer.append(character);
+              } else {
+                  if(encoder.canEncode(character)) {
+                      writer.append(character);
+                  } else {
+                      writer.append("&#");
+                      writer.append(Integer.toString(character));
+                      writer.append(';');
+                  }
+              }
+          }
+      }
     }
 
     /**
@@ -374,38 +344,30 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
 
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-            try {
                 if (isStartElementOpen) {
-                    writer.write('>');
+                    builder.append('>');
                 }
 
-                writer.write('<');
-                writer.write(qName);
+                builder.append('<');
+                builder.append(qName);
                 isStartElementOpen = true;
                 // Handle attributes
                 handleAttributes(atts);
                 // Handle prefix mappings
                 writePrefixMappings();
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
         }
 
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-            try {
                 if (isStartElementOpen) {
-                    writer.write('/');
-                    writer.write('>');
+                    builder.append('/');
+                    builder.append('>');
                 } else {
-                        writer.write('<');
-                        writer.write('/');
-                        writer.write(qName);
-                        writer.write('>');
+                        builder.append('<');
+                        builder.append('/');
+                        builder.append(qName);
+                        builder.append('>');
                 }
                 isStartElementOpen = false;
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
         }
 
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
@@ -427,27 +389,19 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
             }
 
             if (isStartElementOpen) {
-                try {
-                    writer.write('>');
+                    builder.append('>');
                     isStartElementOpen = false;
-                } catch (IOException e) {
-                    throw XMLMarshalException.marshalException(e);
-                }
             }
             writeValue(characters.toString());
         }
-        
+
         // --------------------- LEXICALHANDLER METHODS --------------------- //
         public void comment(char[] ch, int start, int length) throws SAXException {
-            try {
                 if (isStartElementOpen) {
-                    writer.write('>');
+                    builder.append('>');
                     isStartElementOpen = false;
                 }
                 writeComment(ch, start, length);
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
         }
 
         public void startCDATA() throws SAXException {
@@ -460,32 +414,28 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
 
         // --------------------- CONVENIENCE METHODS --------------------- //
         protected void writePrefixMappings() {
-            try {
                 if (!prefixMappings.isEmpty()) {
-                	Set<Entry<String, String>> entries = prefixMappings.entrySet();
-                	Iterator<Entry<String, String>> iter = entries.iterator();
-                	while(iter.hasNext()){
-                		Entry<String, String> nextEntry = iter.next();
+                    Set<Entry<String, String>> entries = prefixMappings.entrySet();
+                    Iterator<Entry<String, String>> iter = entries.iterator();
+                    while(iter.hasNext()){
+                        Entry<String, String> nextEntry = iter.next();
                         String prefix = nextEntry.getKey();
-                        writer.write(' ');
-                        writer.write(javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
+                        builder.append(' ');
+                        builder.append(javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
                         if(null != prefix && prefix.length() > 0) {
-                            writer.write(Constants.COLON);
-                            writer.write(prefix);
+                            builder.append(Constants.COLON);
+                            builder.append(prefix);
                         }
-                        writer.write('=');
-                        writer.write('"');
+                        builder.append('=');
+                        builder.append('"');
                         String uri = nextEntry.getValue();
                         if(null != uri) {
-                            writer.write(uri);
+                            builder.append(uri);
                         }
-                        writer.write('"');
+                        builder.append('"');
                     }
                     prefixMappings.clear();
                 }
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
         }
 
         protected void handleAttributes(Attributes atts) {
@@ -499,30 +449,22 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
         }
 
         protected void writeComment(char[] chars, int start, int length) {
-            try {
-                writer.write('<');
-                writer.write('!');
-                writer.write('-');
-                writer.write('-');
+                builder.append('<');
+                builder.append('!');
+                builder.append('-');
+                builder.append('-');
                 for (int x = start; x < length; x++) {
-                    writer.write(chars[x]);
+                    builder.append(chars[x]);
                 }
-                writer.write('-');
-                writer.write('-');
-                writer.write('>');
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
+                builder.append('-');
+                builder.append('-');
+                builder.append('>');
         }
 
         protected void writeCharacters(char[] chars, int start, int length) {
-            try {
                 for (int x = start; x < length; x++) {
-                    writer.write(chars[x]);
+                    builder.append(chars[x]);
                 }
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
         }
         // --------------- SATISFY CONTENTHANDLER INTERFACE --------------- //
         public void endPrefixMapping(String prefix) throws SAXException {}
@@ -538,22 +480,29 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
         public void endEntity(String name) throws SAXException {}
         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
         public void endDTD() throws SAXException {}
-		@Override
-		public void setNil(boolean isNil) {}
+        @Override
+        public void setNil(boolean isNil) {}
 
     }
 
     @Override
     public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
-        encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
+        if (charset == marshaller.getEncoding()) {
+            encoder.reset();
+        } else {
+            encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
+            charset = marshaller.getEncoding();
+        }
     }
 
     @Override
     public void flush() {
         try {
+            writer.write(builder.toString());
+            builder.setLength(0);
             writer.flush();
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
     }

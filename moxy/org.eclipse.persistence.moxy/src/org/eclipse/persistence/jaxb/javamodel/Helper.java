@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel;
 
 import static org.eclipse.persistence.jaxb.JAXBContextFactory.PKG_SEPARATOR;
@@ -43,11 +43,11 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
  * required</li>
  * <li>Provide methods for accessing generics, annotations, etc. on a
  * given implementaiton's classes</li>
- * <li>Provide a dynamic proxy instance for a given JavaAnnotation in 
- * the JOT implementation (for reflection a Java SDK annotation is 
+ * <li>Provide a dynamic proxy instance for a given JavaAnnotation in
+ * the JOT implementation (for reflection a Java SDK annotation is
  * returned)</li>
  * </ul>
- *  
+ *
  * @since Oracle TopLink 11.1.1.0.0
  * @see org.eclipse.persistence.jaxb20.javamodel.JavaModel
  * @see org.eclipse.persistence.jaxb20.javamodel.jot.AnnotationProxy
@@ -104,18 +104,18 @@ public class Helper {
     private static JavaClass MAP_CLASS; 
     public static JavaClass JAXBELEMENT_CLASS;
     public static JavaClass OBJECT_CLASS;
-    
+
     /**
      * INTERNAL:
      * This is the preferred constructor.
-     * 
+     *
      * This constructor builds the map of XML-Java type pairs,
      * and sets the JavaModel and ClassLoader.
-     * 
+     *
      * @param model
      */
     public Helper(JavaModel model) {
-        buildXMLToJavaTypeMap();
+        xmlToJavaTypeMap = buildXMLToJavaTypeMap();
         setJavaModel(model);
         setClassLoader(model.getClassLoader());
         COLLECTION_CLASS = getJavaClass(CoreClassConstants.Collection_Class);
@@ -213,25 +213,22 @@ public class Helper {
     public JavaClass getJavaClass(String javaClassName) {
         return jModel.getClass(javaClassName);
     }
-    
+
     /**
      * Return a map of default Java types to XML types.
      * @return
      */
     public HashMap getXMLToJavaTypeMap() {
-        if (xmlToJavaTypeMap == null) {
-            xmlToJavaTypeMap = buildXMLToJavaTypeMap();
-        }
         return xmlToJavaTypeMap;
     }
 
     /**
-     * Returns a either a dynamic proxy instance that allows an element 
-     * to be treated as an annotation (for JOT), or a Java annotation 
-     * (for Reflection), or null if the specified annotation does not 
-     * exist.  
+     * Returns a either a dynamic proxy instance that allows an element
+     * to be treated as an annotation (for JOT), or a Java annotation
+     * (for Reflection), or null if the specified annotation does not
+     * exist.
      * Intended to be used in conjunction with isAnnotationPresent.
-     *  
+     *
      * @param element
      * @param annotationClass
      * @return
@@ -355,7 +352,7 @@ public class Helper {
 
     /**
      * Convenience method to determine if two JavaClass instances are equal.
-     * 
+     *
      * @param classA
      * @param classB
      * @return
@@ -411,16 +408,16 @@ public class Helper {
         }
         return javaTypeName;
     }
-    
+
     public boolean isCollectionType(JavaClass type) {
-    	 if (COLLECTION_CLASS.isAssignableFrom(type) 
-    			 || LIST_CLASS.isAssignableFrom(type) 
-    			 || SET_CLASS.isAssignableFrom(type)) {
+	 if (COLLECTION_CLASS.isAssignableFrom(type)
+			 || LIST_CLASS.isAssignableFrom(type)
+			 || SET_CLASS.isAssignableFrom(type)) {
              return true;
          }
          return false;
     }
-    
+
     public boolean isMapType(JavaClass type) {
         return MAP_CLASS.isAssignableFrom(type);
     }

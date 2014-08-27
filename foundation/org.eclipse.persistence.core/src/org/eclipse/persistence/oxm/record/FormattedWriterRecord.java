@@ -1,19 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
-
-import java.io.CharArrayWriter;
-import java.io.IOException;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
@@ -54,6 +51,8 @@ public class FormattedWriterRecord extends WriterRecord {
     private boolean isLastEventText;
     private final String cr = Constants.cr();
 
+    private static final String DEFAULT_TAB = "   ".intern();
+
     public FormattedWriterRecord() {
         super();
         numberOfTabs = 0;
@@ -63,46 +62,39 @@ public class FormattedWriterRecord extends WriterRecord {
 
     private String tab() {
         if (tab == null) {
-            CharArrayWriter out = new CharArrayWriter();
+
+            if (DEFAULT_TAB.equals(getMarshaller().getIndentString())) {
+                tab = DEFAULT_TAB;
+                return DEFAULT_TAB;
+            }
+
+            StringBuilder sb = new StringBuilder();
             // Escape the tab using writeValue
-            writeValue(getMarshaller().getIndentString(), false, out);
-            out.close();
-            tab = out.toString();
+            writeValue(getMarshaller().getIndentString(), false, sb);
+            tab = sb.toString();
         }
         return tab;
     }
 
-    
+
     public void startDocument(String encoding, String version) {
         super.startDocument(encoding, version);
-        try{
-            writer.write(cr);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+            builder.append(cr);
     }
-    
+
     /**
      * INTERNAL:
      */
     public void endDocument() {
-        try {
-            writer.write(cr);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+            builder.append(cr);
     }
 
     /**
      * INTERNAL
      */
     public void writeHeader() {
-        try {
-            writer.write(getMarshaller().getXmlHeader());
-            writer.write(cr);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+            builder.append(getMarshaller().getXmlHeader());
+            builder.append(cr);
     }
 
     /**
@@ -110,76 +102,64 @@ public class FormattedWriterRecord extends WriterRecord {
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         this.addPositionalNodes(xPathFragment, namespaceResolver);
-        try {
             if (isStartElementOpen) {
-                writer.write('>');
+                builder.append('>');
             }
             if (!isLastEventText) {
                 if (numberOfTabs > 0) {
-                    writer.write(cr);
+                    builder.append(cr);
                 }
                 for (int x = 0; x < numberOfTabs; x++) {
-                    writer.write(tab());
+                    builder.append(tab());
                 }
             }
             isStartElementOpen = true;
-            writer.write('<');
-            writer.write(getNameForFragment(xPathFragment));
+            builder.append('<');
+            builder.append(getNameForFragment(xPathFragment));
             if(xPathFragment.isGeneratedPrefix()){
-    		    namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
-    	    }
+                namespaceDeclaration(xPathFragment.getPrefix(), xPathFragment.getNamespaceURI());
+            }
             numberOfTabs++;
             isLastEventText = false;
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
     }
 
     /**
      * INTERNAL:
      */
     public void element(XPathFragment frag) {
-        try {
             isLastEventText = false;
             if (isStartElementOpen) {
-                writer.write('>');
+                builder.append('>');
                 isStartElementOpen = false;
             }
-            writer.write(Constants.cr());
+            builder.append(Constants.cr());
             for (int x = 0; x < numberOfTabs; x++) {
-            	writer.write(tab());
+                builder.append(tab());
             }
             super.element(frag);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
     }
 
     /**
      * INTERNAL:
      */
     public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
-        try {
             isLastEventText = false;
             numberOfTabs--;
             if (isStartElementOpen) {
-                writer.write('/');
-                writer.write('>');
+                builder.append('/');
+                builder.append('>');
                 isStartElementOpen = false;
                 return;
             }
             if (complexType) {
-                writer.write(cr);
+                builder.append(cr);
                 for (int x = 0; x < numberOfTabs; x++) {
-                	writer.write(tab());
+                    builder.append(tab());
                 }
             } else {
                 complexType = true;
             }
             super.endElement(xPathFragment, namespaceResolver);
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
     }
 
     /**
@@ -196,16 +176,12 @@ public class FormattedWriterRecord extends WriterRecord {
      */
     public void cdata(String value) {
         //Format the CDATA on it's own line
-        try {
             if(isStartElementOpen) {
-                writer.write('>');
+                builder.append('>');
                 isStartElementOpen = false;
             }
             super.cdata(value);
             complexType=false;
-        }catch(IOException ex) {
-            throw XMLMarshalException.marshalException(ex);
-        }
     }
 
     /**
@@ -260,18 +236,17 @@ public class FormattedWriterRecord extends WriterRecord {
     private class FormattedWriterRecordContentHandler extends WriterRecordContentHandler {
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-            try {
                 if (isStartElementOpen) {
-                    writer.write('>');
+                    builder.append('>');
                 }
                 if (!isLastEventText) {
-                    writer.write(cr);
+                    builder.append(cr);
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	writer.write(tab());
+                        builder.append(tab());
                     }
                 }
-                writer.write('<');
-                writer.write(qName);
+                builder.append('<');
+                builder.append(qName);
                 numberOfTabs++;
                 isStartElementOpen = true;
                 isLastEventText = false;
@@ -279,34 +254,27 @@ public class FormattedWriterRecord extends WriterRecord {
                 handleAttributes(atts);
                 // Handle prefix mappings
                 writePrefixMappings();
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
         }
 
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-            try {
                 isLastEventText = false;
                 numberOfTabs--;
                 if (isStartElementOpen) {
-                    writer.write('/');
-                    writer.write('>');
+                    builder.append('/');
+                    builder.append('>');
                     isStartElementOpen = false;
                     complexType = true;
                     return;
                 }
                 if (complexType) {
-                    writer.write(cr);
+                    builder.append(cr);
                     for (int x = 0; x < numberOfTabs; x++) {
-                    	writer.write(tab());
+                        builder.append(tab());
                     }
                 } else {
                     complexType = true;
                 }
                 super.endElement(namespaceURI, localName, qName);
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
         }
 
         public void characters(char[] ch, int start, int length) throws SAXException {
@@ -324,17 +292,13 @@ public class FormattedWriterRecord extends WriterRecord {
 
     // --------------------- LEXICALHANDLER METHODS --------------------- //
     public void comment(char[] ch, int start, int length) throws SAXException {
-            try {
                 if (isStartElementOpen) {
-                    writer.write('>');
-                    writer.write(cr);
+                    builder.append('>');
+                    builder.append(cr);
                     isStartElementOpen = false;
                 }
                 writeComment(ch, start, length);
                 complexType = false;
-            } catch (IOException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
         }
     }
 

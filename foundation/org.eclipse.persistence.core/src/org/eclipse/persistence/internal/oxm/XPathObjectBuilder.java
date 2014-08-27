@@ -340,7 +340,6 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
             while (mappingIterator.hasNext()) {
                 xmlMapping = (Mapping)mappingIterator.next();
                 
-                
                 xmlField = (Field)xmlMapping.getField();
                 if (xmlMapping.isTransformationMapping()) {
                     transformationMapping = (TransformationMapping)xmlMapping;
@@ -355,37 +354,35 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         addChild(xmlField.getXPathFragment(), fieldTransformerNodeValue, xmlDescriptor.getNamespaceResolver());
                     }
                 } else {
-                    if (xmlMapping instanceof InverseReferenceMapping) {                    	
-                    	xmlMapping = (Mapping)((InverseReferenceMapping)xmlMapping).getInlineMapping();
-                    	if(xmlMapping == null){
-                    		continue;
-                    	}
-                    	xmlField = (Field)xmlMapping.getField();
-                    	if(xmlMapping.isAbstractCompositeCollectionMapping()){
-                    	    mappingNodeValue=new XMLCompositeCollectionMappingNodeValue((CompositeCollectionMapping)xmlMapping, true);
-                    	}
-                    	if(xmlMapping.isAbstractCompositeObjectMapping()){
-                    	    mappingNodeValue=new XMLCompositeObjectMappingNodeValue((CompositeObjectMapping)xmlMapping, true);
-                    	}                      
-                    }
-
-                	
-                    else if (xmlMapping.isAbstractDirectMapping()) {
+                    if (xmlMapping.isAbstractDirectMapping()) {
                         mappingNodeValue = new XMLDirectMappingNodeValue((DirectMapping)xmlMapping);
                     } else if (xmlMapping.isAbstractCompositeObjectMapping()) {
                         mappingNodeValue = new XMLCompositeObjectMappingNodeValue((CompositeObjectMapping)xmlMapping);
-                    } else if (xmlMapping.isAbstractCompositeDirectCollectionMapping()) {
-                        DirectCollectionMapping collectionMapping = (DirectCollectionMapping) xmlMapping;
-                        mappingNodeValue = new XMLCompositeDirectCollectionMappingNodeValue(collectionMapping);
-                        if (collectionMapping.getWrapperNullPolicy() != null) {
-                            addChild(xmlField.getXPathFragment(), new CollectionGroupingElementNodeValue((ContainerValue) mappingNodeValue), xmlDescriptor.getNamespaceResolver());
-                        }
                     } else if (xmlMapping.isAbstractCompositeCollectionMapping()) {
                         CompositeCollectionMapping collectionMapping = (CompositeCollectionMapping) xmlMapping;
                         mappingNodeValue = new XMLCompositeCollectionMappingNodeValue(collectionMapping);
                         if (collectionMapping.getWrapperNullPolicy() != null) {
                             addChild(xmlField.getXPathFragment(), new CollectionGroupingElementNodeValue((ContainerValue) mappingNodeValue), xmlDescriptor.getNamespaceResolver());
                         }
+                    } else if (xmlMapping.isAbstractCompositeDirectCollectionMapping()) {
+                        DirectCollectionMapping collectionMapping = (DirectCollectionMapping) xmlMapping;
+                        mappingNodeValue = new XMLCompositeDirectCollectionMappingNodeValue(collectionMapping);
+                        if (collectionMapping.getWrapperNullPolicy() != null) {
+                            addChild(xmlField.getXPathFragment(), new CollectionGroupingElementNodeValue((ContainerValue) mappingNodeValue), xmlDescriptor.getNamespaceResolver());
+                        }
+                    } else if (xmlMapping instanceof InverseReferenceMapping) {
+                        xmlMapping = (Mapping)((InverseReferenceMapping)xmlMapping).getInlineMapping();
+                        if(xmlMapping == null){
+                            continue;
+                        }
+                        xmlField = (Field)xmlMapping.getField();
+                        if(xmlMapping.isAbstractCompositeCollectionMapping()){
+                            mappingNodeValue=new XMLCompositeCollectionMappingNodeValue((CompositeCollectionMapping)xmlMapping, true);
+                        }
+                        if(xmlMapping.isAbstractCompositeObjectMapping()){
+                            mappingNodeValue=new XMLCompositeObjectMappingNodeValue((CompositeObjectMapping)xmlMapping, true);
+                        }
+
                     } else if (xmlMapping instanceof VariableXPathCollectionMapping) {
                         mappingNodeValue = new XMLVariableXPathCollectionMappingNodeValue((VariableXPathCollectionMapping)xmlMapping);
                     } else if (xmlMapping instanceof VariableXPathObjectMapping){ 
