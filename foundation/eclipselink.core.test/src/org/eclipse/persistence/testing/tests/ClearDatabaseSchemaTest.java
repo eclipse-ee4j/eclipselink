@@ -12,9 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,107 +29,131 @@ import org.eclipse.persistence.testing.framework.TestCase;
  *
  */
 public class ClearDatabaseSchemaTest extends TestCase {
-    
+
     public ClearDatabaseSchemaTest() {
-        setDescription("Clears the database for MYSQL.");
+        setDescription("Clears the database for MYSQL, Oracle DB, Derby, MSSQL, HSQL, Postgres.");
     }
-    
+
     public void test() {
-        //TODO: add missing platforms, currently supported are MySQL, Oracle DB, Derby
-        Platform platform = getSession().getDatasourcePlatform();
+        //TODO: add missing platforms, currently supported are:
+        //MySQL, Oracle DB, Derby, HSQLDB, PostgreSQL, MSSQL
+        AbstractSession session = (AbstractSession) getSession();
+        Platform platform = session.getDatasourcePlatform();
         if (platform.isMySQL()) {
-            ArrayRecord record = (ArrayRecord)getSession().executeSQL("select DATABASE()").get(0);
-            getSession().executeNonSelectingSQL("drop database "+record.get("DATABASE()"));
-            getSession().executeNonSelectingSQL("create database "+record.get("DATABASE()"));
+            resetMySQL(session);
         } else if (platform.isOracle()) {
-            getSession().executeNonSelectingSQL("BEGIN FOR cur_rec IN (\n"
-                    + "SELECT object_name, object_type FROM user_objects WHERE object_type IN "
-                    + "('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE'))\n"
-                    + "LOOP BEGIN IF cur_rec.object_type = 'TABLE' "
-                    + "THEN EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" CASCADE CONSTRAINTS'; "
-                    + "ELSE EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'; "
-                    + "END IF;\nEXCEPTION WHEN OTHERS "
-                    + "THEN DBMS_OUTPUT.put_line ('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"');"
-                    + "END;\nEND LOOP; END;");
+            resetOracle(session);
         } else if (platform.isDerby()) {
-            Connection connection = ((AbstractSession) getSession()).getAccessor().getConnection();
-            DatabaseMetaData metaData;
-            String url = null;
-            try {
-                metaData = connection.getMetaData();
-                url = metaData.getURL();
-            } catch (SQLException e) {
-                fail(e.getMessage());
-            }
-            assertNotNull("Connection URL cannot be null", url);
-            int idx = url.lastIndexOf('/') + 1;
-            String schemaToDrop = url.substring(idx);
-            if ((idx = schemaToDrop.indexOf(';')) > -1) {
-                schemaToDrop = schemaToDrop.substring(0, idx);
-            }
-            Vector<ArrayRecord> result = getSession().executeSQL("SELECT 'ALTER TABLE '||S.SCHEMANAME||'.'||T.TABLENAME||' DROP CONSTRAINT '||C.CONSTRAINTNAME\n"
-                    + "FROM SYS.SYSCONSTRAINTS C, SYS.SYSSCHEMAS S, SYS.SYSTABLES T\n"
-                    + "WHERE C.SCHEMAID = S.SCHEMAID AND C.TABLEID = T.TABLEID AND S.SCHEMANAME = '" + schemaToDrop.toUpperCase() + "' ORDER BY C.REFERENCECOUNT DESC");
-            List<String> toRetry = new ArrayList<String>();
-            for (ArrayRecord ar : result) {
-                for (Object o : ar.values()) {
-                    String stmt = (String) o;
-                    try {
-                        getSession().executeNonSelectingSQL(stmt);
-                    } catch (DatabaseException t) {
-                        toRetry.add(stmt);
-                    }
-                }
-            }
-            final int MAX_ROUNDS = 3;
-            int round = 0;
-            while (!toRetry.isEmpty() && round < MAX_ROUNDS ) {
-                for (Iterator<String> i = toRetry.iterator(); i.hasNext();) {
-                    String stmt = i.next();
-                    try {
-                        getSession().executeNonSelectingSQL(stmt);
-                        i.remove();
-                    } catch (DatabaseException de) {
-                        //ignore, next round may be successful
-                    }
-                }
-                round++;
-            }
-            result = getSession().executeSQL("SELECT 'DROP TABLE ' || schemaname ||'.' || tablename FROM SYS.SYSTABLES\n"
-                    + "INNER JOIN SYS.SYSSCHEMAS ON SYS.SYSTABLES.SCHEMAID = SYS.SYSSCHEMAS.SCHEMAID\n"
-                    + "WHERE schemaname='" + schemaToDrop.toUpperCase() + "'");
-            for (ArrayRecord ar : result) {
-                for (Object o : ar.values()) {
-                    String stmt = (String) o;
-                    try {
-                        getSession().executeNonSelectingSQL(stmt);
-                    } catch (DatabaseException ee) {
-                        toRetry.add(stmt);
-                    }
-                }
-            }
-            assertTrue(toRetry + " statements failed", toRetry.isEmpty());
+            resetDerby(session);
         } else if (platform.isSQLServer()) {
-            getSession().executeNonSelectingSQL(
-                    "DECLARE @name VARCHAR(256)\n" +
-                    "DECLARE @subName VARCHAR(256)\n" +
-                    "DECLARE @statement VARCHAR(256)\n" +
-                    "WHILE((SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME()) > 0)\n" +
-                    "BEGIN\n" +
-                    "\tSELECT TOP 1 @name=TABLE_NAME, @subName=CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() ORDER BY CONSTRAINT_TYPE\n" +
-                    "    SELECT @statement = 'ALTER TABLE [dbo].[' + RTRIM(@name) +'] DROP CONSTRAINT [' + RTRIM(@subName) +']'\n" +
-                    "    EXEC (@statement)\n" +
-                    "END\n" +
-                    "WHILE((SELECT COUNT(1) FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0) > 0)\n" +
-                    "BEGIN\n" +
-                    "\tSELECT TOP 1 @name=[name], @subName=[type] FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0\n" +
-                    "    SELECT @statement = 'DROP ' + CASE @subName WHEN 'P' THEN 'PROCEDURE' WHEN 'V' THEN 'VIEW' WHEN 'U' THEN 'TABLE' ELSE 'FUNCTION' END + ' [dbo].[' + RTRIM(@name) +']'\n" +
-                    "    EXEC (@statement)\n" +
-                    "END");
+            resetMSSQL(session);
+        } else if (platform.isHSQL()) {
+            resetHsql(session);
+        } else if (platform.isPostgreSQL()) {
+            resetPostgres(session);
         } else {
             fail("Clear DB test run on unsupported DB");
         }
         getDatabaseSession().logout();
         getDatabaseSession().login();
+    }
+
+    private void resetMySQL(AbstractSession session) {
+        ArrayRecord record = (ArrayRecord) session.executeSQL("select DATABASE()").get(0);
+        session.executeNonSelectingSQL("drop database "+record.get("DATABASE()"));
+        session.executeNonSelectingSQL("create database "+record.get("DATABASE()"));
+        //unused for now but kept here for alternate option
+//        Vector<ArrayRecord> result = session.executeSQL("SELECT concat('ALTER TABLE ', C.TABLE_SCHEMA, '.', C.TABLE_NAME, ' DROP FOREIGN KEY ', C.CONSTRAINT_NAME) "
+//                + "FROM information_schema.TABLE_CONSTRAINTS C "
+//                + "WHERE C.TABLE_SCHEMA = (SELECT SCHEMA()) and C.CONSTRAINT_TYPE = 'FOREIGN KEY'");
+//        List<String> toRetry = execStatements(session, result);
+//        result = session.executeSQL("SELECT concat('DROP TABLE IF EXISTS ', T.TABLE_SCHEMA, '.', T.TABLE_NAME) "
+//                + "FROM information_schema.TABLES T WHERE T.TABLE_SCHEMA = (SELECT SCHEMA())");
+//        toRetry.addAll(execStatements(session, result));
+//        assertTrue(toRetry + " statements failed", toRetry.isEmpty());
+    }
+
+    private void resetOracle(AbstractSession session) {
+        session.executeNonSelectingSQL("BEGIN FOR cur_rec IN (\n" + "SELECT object_name, object_type FROM user_objects WHERE object_type IN "
+                + "('TABLE', 'VIEW', 'PACKAGE', 'PROCEDURE', 'FUNCTION', 'SEQUENCE'))\n"
+                + "LOOP BEGIN IF cur_rec.object_type = 'TABLE' "
+                + "THEN EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\" CASCADE CONSTRAINTS'; "
+                + "ELSE EXECUTE IMMEDIATE 'DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"'; "
+                + "END IF;\nEXCEPTION WHEN OTHERS " + "THEN DBMS_OUTPUT.put_line ('FAILED: DROP ' || cur_rec.object_type || ' \"' || cur_rec.object_name || '\"');"
+                + "END;\nEND LOOP; END;");
+    }
+
+    private void resetDerby(AbstractSession session) {
+        Vector<ArrayRecord> result = session.executeSQL("SELECT 'ALTER TABLE '||S.SCHEMANAME||'.'||T.TABLENAME||' DROP CONSTRAINT '||C.CONSTRAINTNAME\n"
+                + "FROM SYS.SYSCONSTRAINTS C, SYS.SYSSCHEMAS S, SYS.SYSTABLES T\n"
+                + "WHERE C.SCHEMAID = S.SCHEMAID AND C.TABLEID = T.TABLEID AND S.SCHEMANAME = CURRENT SCHEMA ORDER BY C.REFERENCECOUNT DESC");
+        List<String> toRetry = execStatements(session, result);
+        final int MAX_ROUNDS = 3;
+        int round = 0;
+        while (!toRetry.isEmpty() && round < MAX_ROUNDS ) {
+            for (Iterator<String> i = toRetry.iterator(); i.hasNext();) {
+                String stmt = i.next();
+                try {
+                    session.executeNonSelectingSQL(stmt);
+                    i.remove();
+                } catch (DatabaseException de) {
+                    //ignore, next round may be successful
+                }
+            }
+            round++;
+        }
+        result = session.executeSQL("SELECT 'DROP TABLE ' || schemaname ||'.' || tablename FROM SYS.SYSTABLES\n"
+                + "INNER JOIN SYS.SYSSCHEMAS ON SYS.SYSTABLES.SCHEMAID = SYS.SYSSCHEMAS.SCHEMAID\n"
+                + "WHERE schemaname = CURRENT SCHEMA");
+        toRetry.addAll(execStatements(session, result));
+        assertTrue(toRetry + " statements failed", toRetry.isEmpty());
+    }
+
+    private void resetMSSQL(AbstractSession session) {
+        session.executeNonSelectingSQL(
+                "DECLARE @name VARCHAR(256)\n" +
+                "DECLARE @subName VARCHAR(256)\n" +
+                "DECLARE @statement VARCHAR(256)\n" +
+                "WHILE((SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME()) > 0)\n" +
+                "BEGIN\n" +
+                "\tSELECT TOP 1 @name=TABLE_NAME, @subName=CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() ORDER BY CONSTRAINT_TYPE\n" +
+                "    SELECT @statement = 'ALTER TABLE [dbo].[' + RTRIM(@name) +'] DROP CONSTRAINT [' + RTRIM(@subName) +']'\n" +
+                "    EXEC (@statement)\n" +
+                "END\n" +
+                "WHILE((SELECT COUNT(1) FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0) > 0)\n" +
+                "BEGIN\n" +
+                "\tSELECT TOP 1 @name=[name], @subName=[type] FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0\n" +
+                "    SELECT @statement = 'DROP ' + CASE @subName WHEN 'P' THEN 'PROCEDURE' WHEN 'V' THEN 'VIEW' WHEN 'U' THEN 'TABLE' ELSE 'FUNCTION' END + ' [dbo].[' + RTRIM(@name) +']'\n" +
+                "    EXEC (@statement)\n" +
+                "END");
+    }
+
+    private void resetHsql(AbstractSession session) {
+        Vector<ArrayRecord> result = session.executeSQL("select 'DROP TABLE \"' || table_name || '\" CASCADE' FROM INFORMATION_SCHEMA.system_tables "
+                + "WHERE table_type = 'TABLE' and table_schem = CURRENT_SCHEMA");
+        List<String> toRetry = execStatements(session, result);
+        assertTrue(toRetry + " statements failed", toRetry.isEmpty());
+    }
+
+    private void resetPostgres(AbstractSession session) {
+        Vector<ArrayRecord> result = getSession().executeSQL("SELECT 'DROP TABLE \"' || tablename || '\" CASCADE;' "
+                + "FROM pg_tables WHERE schemaname = current_schema();");
+        List<String> toRetry = execStatements(session, result);
+        assertTrue(toRetry + " statements failed", toRetry.isEmpty());
+    }
+
+    private List<String> execStatements(AbstractSession session, Vector<ArrayRecord> records) {
+        List<String> failures = new ArrayList<String>();
+        for (ArrayRecord ar : records) {
+            for (Object o : ar.values()) {
+                String stmt = (String) o;
+                try {
+                    session.executeNonSelectingSQL(stmt);
+                } catch (DatabaseException t) {
+                    failures.add(stmt);
+                }
+            }
+        }
+        return failures;
     }
 }
