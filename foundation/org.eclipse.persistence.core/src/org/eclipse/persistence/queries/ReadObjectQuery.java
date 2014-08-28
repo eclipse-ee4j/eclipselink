@@ -297,10 +297,9 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * null means there is none.
      */
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
+        Boolean useCustomQuery = this.isCustomQueryUsed != null ? this.isCustomQueryUsed.booleanValue() : Boolean.FALSE;
+
         checkDescriptor(session);
-
-        Boolean useCustomQuery = Boolean.FALSE;
-
         if (this.isCustomQueryUsed == null) {
             // Check if user defined a custom query in the query manager.
             if (!this.isUserDefined) {
@@ -310,7 +309,8 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                         && this.descriptor.getQueryManager().hasReadObjectQuery()) {
                     // If the query require special SQL generation or execution do not use the static read object query.
                     // PERF: the read-object query should always be static to ensure no regeneration of SQL.
-                    if ((!hasJoining() || !this.joinedAttributeManager.hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions()) && (redirector == null) && !doNotRedirect && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup())
+                    if ((!hasJoining() || !this.joinedAttributeManager.hasJoinedAttributeExpressions()) && (!hasPartialAttributeExpressions())
+                            && (redirector == null) && !doNotRedirect && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup())
                             && (this.shouldUseSerializedObjectPolicy == shouldUseSerializedObjectPolicyDefault)
                             && this.wasDefaultLockMode && (shouldBindAllParameters == null) && (this.hintString == null)) {
                         if ((this.selectionId != null) || (this.selectionObject != null)) {// Must be primary key.
