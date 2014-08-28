@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 SAP. All rights reserved.
+ * Copyright (c) 2005, 2014 SAP, Oracle.  All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -429,7 +429,11 @@ public abstract class AbstractBaseTest {
 
             Set<String> existingTables = new HashSet<String>();
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet rs = metaData.getTables(null, null, "TMP_%", null);
+            String schemaPattern = null;
+            if (metaData.getDriverName().toLowerCase().contains("oracle")) {
+                schemaPattern = metaData.getUserName().toUpperCase();
+            }
+            ResultSet rs = metaData.getTables(null, schemaPattern, "TMP_%", null);
             try {
                 while (rs.next()) {
                     existingTables.add(rs.getString("TABLE_NAME").toUpperCase(Locale.ENGLISH));
