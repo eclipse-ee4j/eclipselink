@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -91,6 +91,11 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     private ObjectBuilder treeObjectBuilder;
     private XPathFragment xPathFragment;
     private XPathNode xPathNode;
+    /**
+     * Used to increase performance. We are trying to predict next mapping to unmarshal.
+     * It can reduce the number of map lookups.
+     */
+    private XPathNode predictedNextXPathNode;
     private int levelIndex;
     private UnmarshalRecord childRecord;
     protected UnmarshalRecord parentRecord;
@@ -120,21 +125,21 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     private boolean xpathNodeIsMixedContent = false;
     private int unmappedLevel = -1;
     private ReferenceResolver referenceResolver;
-    
-    
+
+
     protected Unmarshaller unmarshaller;
     protected Object currentObject;
     protected CoreAbstractSession session;
     protected boolean namespaceAware;
     private XPathQName leafElementType;
     private NamespaceResolver namespaceResolver;
-    
+
     private CoreAttributeGroup unmarshalAttributeGroup;
-    
+
     // The "snapshot" location of this object, for @XmlLocation
     private Locator xmlLocation;
 
-    protected XPathFragment textWrapperFragment;    
+    protected XPathFragment textWrapperFragment;
 
     private ConversionManager conversionManager;
 
@@ -163,7 +168,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 this.nullCapableValues = new ArrayList<NullCapableValue>(treeObjectBuilder.getNullCapableValues());
             }
             if (null != treeObjectBuilder.getDefaultEmptyContainerValues()){
-            	this.defaultEmptyContainerValues = new ArrayList<ContainerValue>(treeObjectBuilder.getDefaultEmptyContainerValues());
+		this.defaultEmptyContainerValues = new ArrayList<ContainerValue>(treeObjectBuilder.getDefaultEmptyContainerValues());
             }
         }
         isSelfRecord = false;
@@ -188,6 +193,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         unmarshalContext = null;
         isXsiNil = false;
         unmappedLevel = -1;
+        predictedNextXPathNode = null;
     }
 
     @Override
@@ -226,7 +232,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             xPathFragment.setNamespaceAware(isNamespaceAware());
         }
     }
-  
+
     public UnmarshalRecord getChildRecord() {
         return this.childRecord;
     }
@@ -326,23 +332,23 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     public Object getContainerInstance(ContainerValue c) {
         return getContainerInstance(c, true);
     }
- 
+
     public Object getContainerInstance(ContainerValue c, boolean createContainerIfNecessary) {
         Object containerInstance = containerInstances[c.getIndex()];
 
         if (containerInstance == null) {
             Mapping mapping = c.getMapping();
-            //don't attempt to do a get on a readOnly property.        	
+            //don't attempt to do a get on a readOnly property.
             if(c.getReuseContainer() && !(mapping.isReadOnly())) {
-            	containerInstance = mapping.getAttributeValueFromObject(currentObject);                
+		containerInstance = mapping.getAttributeValueFromObject(currentObject);
             }
             if(null == containerInstance && createContainerIfNecessary) {
                 containerInstance = c.getContainerInstance();
             }
-            containerInstances[c.getIndex()] = containerInstance;    
+            containerInstances[c.getIndex()] = containerInstance;
             populatedContainerValues.add(c);
             if(defaultEmptyContainerValues != null){
-            	defaultEmptyContainerValues.remove(c);
+		defaultEmptyContainerValues.remove(c);
             }
         }
 
@@ -424,31 +430,31 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     public void setTypeQName(QName typeQName) {
         this.typeQName = typeQName;
     }
-    
+
     public void setDocumentLocator(Locator locator) {
-    	if(xmlReader != null){
-    		xmlReader.setLocator(locator);
-    		if (null == rootElementName  && null == rootElementLocalName && parentRecord == null && locator instanceof Locator2){
+	if(xmlReader != null){
+		xmlReader.setLocator(locator);
+		if (null == rootElementName  && null == rootElementLocalName && parentRecord == null && locator instanceof Locator2){
                 Locator2 loc = (Locator2)locator;
                 this.setEncoding(loc.getEncoding());
                 this.setVersion(loc.getXMLVersion());
             }
-    	}
+	}
     }
-    
+
     public Locator getDocumentLocator() {
-    	if(xmlReader != null){
-    		return xmlReader.getLocator();
-    	}
+	if(xmlReader != null){
+		return xmlReader.getLocator();
+	}
       return null;
     }
-    
+
     public Object get(CoreField key) {
         Field xmlField = this.convertToXMLField(key);
-        XPathFragment lastFragment = xmlField.getLastXPathFragment();        
+        XPathFragment lastFragment = xmlField.getLastXPathFragment();
         String namespaceURI = lastFragment.getNamespaceURI();
         if(namespaceURI == null){
-        	NamespaceResolver namespaceResolver = xmlField.getNamespaceResolver();
+		NamespaceResolver namespaceResolver = xmlField.getNamespaceResolver();
             namespaceURI = Constants.EMPTY_STRING;
             if (null != namespaceResolver && !(lastFragment.isAttribute() && lastFragment.getPrefix() == null)) {
                 namespaceURI = namespaceResolver.resolveNamespacePrefix(lastFragment.getPrefix());
@@ -490,27 +496,27 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
     public void startDocument() throws SAXException {
         if (unmarshaller.getIDResolver() != null && parentRecord == null) {
-        	unmarshaller.getIDResolver().startDocument(unmarshaller.getErrorHandler());
+		unmarshaller.getIDResolver().startDocument(unmarshaller.getErrorHandler());
         }
     }
-    
+
     private void initializeRecord(Attributes attrs) throws SAXException{
         this.setAttributes(attrs);
-    	Descriptor xmlDescriptor = (Descriptor) treeObjectBuilder.getDescriptor();    	
-    	if(!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
-    		initialize((ObjectBuilder)xmlDescriptor.getObjectBuilder());
-    		initializeRecord((Mapping)null);
-        	return;
+	Descriptor xmlDescriptor = (Descriptor) treeObjectBuilder.getDescriptor();
+	if(!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().getClassIndicatorField() == null){
+		initialize((ObjectBuilder)xmlDescriptor.getObjectBuilder());
+		initializeRecord((Mapping)null);
+		return;
         }
-    	CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
-    	Class classValue = treeObjectBuilder.classFromRow(this, session);
-    	 if (classValue == null) {
+	CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
+	Class classValue = treeObjectBuilder.classFromRow(this, session);
+	 if (classValue == null) {
              // no xsi:type attribute - look for type indicator on the default root element
              QName leafElementType = xmlDescriptor.getDefaultRootElementType();
 
              // if we have a user-set type, try to get the class from the inheritance policy
              if (leafElementType != null) {
-               	 XPathQName xpathQName = new XPathQName(leafElementType, isNamespaceAware());
+		 XPathQName xpathQName = new XPathQName(leafElementType, isNamespaceAware());
                  Object indicator = inheritancePolicy.getClassIndicatorMapping().get(xpathQName);
                  if(indicator != null) {
                      classValue = (Class)indicator;
@@ -518,12 +524,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
              }
          }
          if (classValue != null) {
-             xmlDescriptor = (Descriptor)session.getDescriptor(classValue);             
+             xmlDescriptor = (Descriptor)session.getDescriptor(classValue);
          }
-         initialize((ObjectBuilder)xmlDescriptor.getObjectBuilder());         
+         initialize((ObjectBuilder)xmlDescriptor.getObjectBuilder());
          initializeRecord((Mapping)null);
     }
-    
+
     public void initializeRecord(Mapping selfRecordMapping) throws SAXException {
         try {
             Descriptor xmlDescriptor = (Descriptor) treeObjectBuilder.getDescriptor();
@@ -542,12 +548,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                     // Store the snapshot of the current documentLocator
                     xmlLocation  = new Locator2Impl(xmlReader.getLocator());
             }
-            
+
             Object parentRecordCurrentObject = null;
             if (null != this.parentRecord) {
                 parentRecordCurrentObject = parentRecord.getCurrentObject();
             }
-            
+
             Unmarshaller.Listener xmlUnmarshalListener = unmarshaller.getUnmarshalListener();
             if (null != xmlUnmarshalListener) {
                 if (null == this.parentRecord) {
@@ -571,7 +577,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             if (null != xPathNode.getSelfChildren()) {
                 int selfChildrenSize = xPathNode.getSelfChildren().size();
                 selfRecords = new ArrayList<UnmarshalRecord>(selfChildrenSize);
-                for (int x = 0; x < selfChildrenSize; x++) {                    
+                for (int x = 0; x < selfChildrenSize; x++) {
                     NodeValue nv = xPathNode.getSelfChildren().get(x).getNodeValue();
                     if (null != nv) {
                         selfRecords.add(nv.buildSelfRecord(this, attributes));
@@ -590,7 +596,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
     public void endDocument() throws SAXException {
         if (unmarshaller.getIDResolver() != null && parentRecord == null) {
-        	unmarshaller.getIDResolver().endDocument();
+		unmarshaller.getIDResolver().endDocument();
         }
         if (null != selfRecords) {
             for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
@@ -615,22 +621,22 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
         try {
             // PROCESS COLLECTION MAPPINGS
-        	//All populated containerValues need to be set on the object
-        	if(null != populatedContainerValues){
-                for (int populatedCVSize=populatedContainerValues.size(), i = populatedCVSize-1; i>=0; i--) {       			
-        			ContainerValue cv = ((ContainerValue) populatedContainerValues.get(i));
-        			cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
-        		}
-        	}
+		//All populated containerValues need to be set on the object
+		if(null != populatedContainerValues){
+                for (int populatedCVSize=populatedContainerValues.size(), i = populatedCVSize-1; i>=0; i--) {
+				ContainerValue cv = ((ContainerValue) populatedContainerValues.get(i));
+				cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
+			}
+		}
 
-        	//Additionally if any containerValues are defaultEmptyContainerValues they need to be set to a new empty container
-        	if(null != defaultEmptyContainerValues){
-                 for (int defaultEmptyCVSize=defaultEmptyContainerValues.size(),i = defaultEmptyCVSize-1; i>=0; i--) {       			
+		//Additionally if any containerValues are defaultEmptyContainerValues they need to be set to a new empty container
+		if(null != defaultEmptyContainerValues){
+                 for (int defaultEmptyCVSize=defaultEmptyContainerValues.size(),i = defaultEmptyCVSize-1; i>=0; i--) {
                      ContainerValue cv = ((ContainerValue) defaultEmptyContainerValues.get(i));
                      cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
                  }
-        		
-        	}
+
+		}
             // PROCESS NULL CAPABLE VALUES
             // This must be done because the node may not have existed to
             // trigger the mapping.
@@ -694,7 +700,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                             }
                         }
                         referenceResolver.putValue(xmlDescriptor.getJavaClass(), pk, currentObject);
-    
+
                         if (unmarshaller.getIDResolver() != null) {
                             try {
                                 if (primaryKeyFieldsSize > 1) {
@@ -706,13 +712,13 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                                     }
                                     unmarshaller.getIDResolver().bind(idWrapper, currentObject);
                                 } else {
-                                	unmarshaller.getIDResolver().bind(pk.getPrimaryKey()[0], currentObject);
+					unmarshaller.getIDResolver().bind(pk.getPrimaryKey()[0], currentObject);
                                 }
                             } catch (SAXException e) {
                                 throw XMLMarshalException.unmarshalException(e);
                             }
                         }
-    
+
                     }
                 }
             }
@@ -762,7 +768,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         }
 
         // set the root element's local name and namespace prefix and look for
-        // schema locations etc.        
+        // schema locations etc.
         if (null == rootElementName  && null == rootElementLocalName && parentRecord == null){
             rootElementLocalName = localName;
             rootElementName = qName;
@@ -788,8 +794,21 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 return;
             }
 
-            XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName, atts);            
+            XPathNode node = null;
+            if (null != predictedNextXPathNode) {
 
+                XPathFragment xpf = predictedNextXPathNode.getXPathFragment();
+
+                if (null != xpf && xPathNode == predictedNextXPathNode.getParent() && (localName == xpf.getLocalName() || localName.equals(xpf.getLocalName())) && (namespaceURI == xpf.getNamespaceURI() || namespaceURI.equals(xpf.getNamespaceURI())) && null == xpf.getPredicate() && !xpf.containsIndex()) {
+
+                    updateXPathFragment(qName, localName, namespaceURI);
+                    node = predictedNextXPathNode;
+                }
+            }
+
+            if (null == node) {
+                node = getNonAttributeXPathNode(namespaceURI, localName, qName, atts);
+            }
 
             if (null == node) {
                 NodeValue parentNodeValue = xPathNode.getUnmarshalNodeValue();
@@ -817,7 +836,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                     return;
                 }
             } else {
-                
+
                 xPathNode = node;
                 unmarshalContext.startElement(this);
                 levelIndex++;
@@ -826,11 +845,11 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 if(xsiNilValue != null){
                     isXsiNil = xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
                 }
-                
+
                 if(node.getNullCapableValue() != null){
                     getNullCapableValues().add(node.getNullCapableValue());
                 }
-                
+
                 NodeValue nodeValue = node.getUnmarshalNodeValue();
                 if (null != nodeValue) {
                     boolean isIncludedInAttributeGroup = true;
@@ -891,7 +910,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                         }
                         if (attributeNodeValue == null) {
                             attributeNodeValue = this.getAttributeChildNodeValue(attNamespace, attLocalName);
-                            
+
                             try {
                                 if (attributeNodeValue != null) {
                                     if(attributeNodeValue.isMappingNodeValue()) {
@@ -928,6 +947,16 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), getDocumentLocator(), e);
                 xmlReader.getErrorHandler().error(saxParseException);
             }
+        }
+    }
+
+    private void updateXPathFragment(String qName, String localName, String namespaceURI) {
+        if (namespaceURI != null && namespaceURI.length() == 0) {
+            xPathFragment.setLocalName(qName);
+            xPathFragment.setNamespaceURI(null);
+        } else {
+            xPathFragment.setLocalName(localName);
+            xPathFragment.setNamespaceURI(namespaceURI);
         }
     }
 
@@ -1024,9 +1053,9 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                     } else {
                         resetStringBuffer();
                     }
-                    
+
                 } catch(EclipseLinkException e) {
-                	if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
+			if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                         throw e;
                     } else {
                         SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), getDocumentLocator(), e);
@@ -1035,7 +1064,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 }
             } else {
                 XPathNode textNode = xPathNode.getTextNode();
-                
+
                 if (null != textNode && getStringBuffer().length() == 0) {
                     NodeValue textNodeUnmarshalNodeValue = textNode.getUnmarshalNodeValue();
                     if(textNode.isWhitespaceAware()){
@@ -1053,12 +1082,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 	                        isXsiNil = false;
 	                    }
                     }else{
-                    	
+
                        //This means empty tag
                        if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
                             Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
                             if(mapping.isAbstractDirectMapping() && !isXsiNil && ((DirectMapping)mapping).getNullPolicy().isNullRepresentedByXsiNil()){
-                                removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);                		
+                                removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
                             }
                         }
 
@@ -1069,6 +1098,14 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             if((null != xPathFragment && xPathFragment.nameIsText()) || (xpathNodeIsMixedContent && xPathNode.getParent() != null)) {
                 xPathNode = xPathNode.getParent();
             }
+
+            NodeValue xPathNodeUnmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
+            if (null != xPathNodeUnmarshalNodeValue && xPathNodeUnmarshalNodeValue.isContainerValue()) {
+                 predictedNextXPathNode = xPathNode;
+            } else {
+                predictedNextXPathNode = xPathNode.getNextNode();
+            }
+
             if (null != xPathNode.getParent()) {
                 xPathNode = xPathNode.getParent();
             }
@@ -1092,7 +1129,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 xmlReader.setContentHandler(pRec);
                 xmlReader.setLexicalHandler(pRec);
             }
-            
+
        } catch (EclipseLinkException e) {
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                 throw e;
@@ -1103,7 +1140,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             }
         }
     }
-    
+
     public void endUnmappedElement(String namespaceURI, String localName, String qName) throws SAXException {
         typeQName = null;
         levelIndex--;
@@ -1118,23 +1155,23 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             xmlReader.setContentHandler(pRec);
             xmlReader.setLexicalHandler(pRec);
         }
-       
+
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {
-    	if(currentObject == null){
-    		return;
-    	}
+	if(currentObject == null){
+		return;
+	}
         try {
-            int strBufferInitialLength = -1; 
+            int strBufferInitialLength = -1;
             if (null != selfRecords) {
-                strBufferInitialLength = getStringBuffer().length(); 
+                strBufferInitialLength = getStringBuffer().length();
                 for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
                     UnmarshalRecord selfRecord = selfRecords.get(x);
                     if(selfRecord != null){
                         selfRecord.characters(ch, start, length);
                     } else {
-                    	getFragmentBuilder().characters(ch, start, length);
+			getFragmentBuilder().characters(ch, start, length);
                     }
                 }
             }
@@ -1208,13 +1245,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         if (0 == levelIndex) {
             return xPathNode;
         }
-        if(namespaceURI !=null && namespaceURI.length() == 0){
-            xPathFragment.setLocalName(qName);
-            xPathFragment.setNamespaceURI(null);
-        } else {
-            xPathFragment.setLocalName(localName);
-            xPathFragment.setNamespaceURI(namespaceURI);
-        }
+        updateXPathFragment(qName, localName, namespaceURI);
 
         Map<XPathFragment, XPathNode> nonAttributeChildrenMap = xPathNode.getNonAttributeChildrenMap();
 
@@ -1275,7 +1306,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                         if(textWrapperFragment != null && localName.equals(textWrapperFragment.getLocalName())){
                            resultNode = xPathNode.getTextNode();
                         }
-                    }                    
+                    }
                     if(null == resultNode && null == nonPredicateNode) {
                         // ANY MAPPING
                         resultNode = xPathNode.getAnyNode();
@@ -1496,14 +1527,14 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     public void addAttributeValue(ContainerValue containerValue, Object value, Object collection) {
         this.unmarshalContext.addAttributeValue(this, containerValue, value, collection);
     }
-    
+
     public void setAttributeValueNull(ContainerValue containerValue) {
         this.unmarshalContext.setAttributeValue(this, null, containerValue.getMapping());
         int containerIndex = containerValue.getIndex();
         populatedContainerValues.remove(containerValue);
         containerInstances[containerIndex] = null;
     }
-    
+
     public void reference(Reference reference) {
         this.unmarshalContext.reference(reference);
     }
@@ -1516,68 +1547,68 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     }
 
     public UnmarshalRecord getChildUnmarshalRecord(ObjectBuilder treeObjectBuilder) {
-    	if(childRecord != null && !childRecord.isSelfRecord()){
-    		childRecord.initialize(treeObjectBuilder);
-	        childRecord.setParentRecord(this);        
+	if(childRecord != null && !childRecord.isSelfRecord()){
+		childRecord.initialize(treeObjectBuilder);
+	        childRecord.setParentRecord(this);
 	        return childRecord;
-    	}else{
-    	    childRecord = new UnmarshalRecordImpl(treeObjectBuilder, referenceResolver);
-    	    childRecord.setSession(session);
+	}else{
+	    childRecord = new UnmarshalRecordImpl(treeObjectBuilder, referenceResolver);
+	    childRecord.setSession(session);
 	        childRecord.setUnmarshaller(unmarshaller);
 	        childRecord.setTextWrapperFragment(textWrapperFragment);
 	        childRecord.setXMLReader(this.xmlReader);
 	        childRecord.setFragmentBuilder(fragmentBuilder);
 	        childRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
-	        childRecord.setParentRecord(this);     
-    	}
-        return childRecord;    	
+	        childRecord.setParentRecord(this);
+	}
+        return childRecord;
     }
-    
+
     /**
      * INTERNAL:
      */
     public void setUnmarshaller(Unmarshaller unmarshaller) {
-        this.unmarshaller = unmarshaller; //super.setUnmarshaller(unmarshaller);                
+        this.unmarshaller = unmarshaller; //super.setUnmarshaller(unmarshaller);
         if(xPathFragment != null){
-        	xPathFragment.setNamespaceAware(isNamespaceAware());
-        }      
+		xPathFragment.setNamespaceAware(isNamespaceAware());
+        }
     }
-    
+
     /**
      * INTERNAL
      * Returns a Map of any prefix mappings that were made before the most recent start
-     * element event. This Map is used so the prefix mappings can be passed along to a 
+     * element event. This Map is used so the prefix mappings can be passed along to a
      * fragment builder in the event that the element in question is going to be unmarshalled
      * as a Node.
      */
     public Map<String, String> getPrefixesForFragment() {
-    	if(prefixesForFragment == null){
-    		prefixesForFragment = new HashMap<String, String>();
-    	}
-    	
+	if(prefixesForFragment == null){
+		prefixesForFragment = new HashMap<String, String>();
+	}
+
         return prefixesForFragment;
     }
-       
+
 
     public char getNamespaceSeparator(){
-    	return xmlReader.getNamespaceSeparator();
+	return xmlReader.getNamespaceSeparator();
     }
 
     public void setTextWrapperFragment(XPathFragment newTextWrapperFragment) {
-    	textWrapperFragment = newTextWrapperFragment;
+	textWrapperFragment = newTextWrapperFragment;
     }
-    
+
     public XPathFragment getTextWrapperFragment() {
-    	if(xmlReader.getMediaType() .isApplicationJSON()){
-    		if(textWrapperFragment == null){
-    			textWrapperFragment = new XPathFragment();
-    			textWrapperFragment.setLocalName(unmarshaller.getValueWrapper());
-    			textWrapperFragment.setNamespaceAware(isNamespaceAware());
-    			textWrapperFragment.setNamespaceSeparator(getNamespaceSeparator());
-    		}
-    		return textWrapperFragment;
-    	}
-    	return null;
+	if(xmlReader.getMediaType() .isApplicationJSON()){
+		if(textWrapperFragment == null){
+			textWrapperFragment = new XPathFragment();
+			textWrapperFragment.setLocalName(unmarshaller.getValueWrapper());
+			textWrapperFragment.setNamespaceAware(isNamespaceAware());
+			textWrapperFragment.setNamespaceSeparator(getNamespaceSeparator());
+		}
+		return textWrapperFragment;
+	}
+	return null;
     }
 
     /**

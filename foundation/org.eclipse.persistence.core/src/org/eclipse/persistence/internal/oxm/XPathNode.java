@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -28,10 +28,10 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 /**
  * INTERNAL:
  * <p><b>Purpose</b>:  XPathNodes are used together to build a tree.  The tree
- * is built from all of the XPath statements specified in the mapping metadata 
- * (mappings and policies).  This tree is then navigated by an 
+ * is built from all of the XPath statements specified in the mapping metadata
+ * (mappings and policies).  This tree is then navigated by an
  * EventObjectBuilder to perform marshal and unmarshal operations.</p>
- * <p>The XPaths "a/b" and "a/c" would result in a tree with the root "a" and 
+ * <p>The XPaths "a/b" and "a/c" would result in a tree with the root "a" and
  * two child nodes "b" and "c".</p>
  * <p><b>Responsibilities</b>:<ul>
  * <li>All tree relationships must be bi-directional.</li>
@@ -39,10 +39,10 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
  * elements.</li>
  * <li>Reference an XPathFragment, XPathFragments contain name and namespace
  * information.</li>
- * <li>Must differentiate between child nodes that correspond to elements and 
+ * <li>Must differentiate between child nodes that correspond to elements and
  * those that do not.</li>
  * <li>Must represent special mapping situations like any and self mappings.</li>
- * </ul> 
+ * </ul>
  */
 
 public class XPathNode {
@@ -64,6 +64,7 @@ public class XPathNode {
     private XPathNode anyAttributeNode;
     private XPathNode textNode;
     private XPathNode anyNode;
+    private XPathNode nextNode;
     private boolean hasTypeChild;
     private boolean hasPredicateSiblings;
     private boolean hasPredicateChildren;
@@ -196,6 +197,10 @@ public class XPathNode {
         this.anyNode = xPathNode;
     }
 
+    public XPathNode getNextNode() {
+        return nextNode;
+    }
+
     public XPathNode getTextNode() {
         return this.textNode;
     }
@@ -271,7 +276,7 @@ public class XPathNode {
         XPathNode xPathNode = new XPathNode();
         xPathNode.setXPathFragment(anXPathFragment);
 
-        List children;
+        List<XPathNode> children;
         Map childrenMap;
 
         if ((anXPathFragment != null) && anXPathFragment.isAttribute()) {
@@ -349,6 +354,10 @@ public class XPathNode {
             } else {
                 xPathNode.setParent(this);
                 if(!children.contains(xPathNode)) {
+                    int childrenSize = children.size();
+                    if (childrenSize > 0) {
+                        children.get(childrenSize - 1).nextNode = xPathNode;
+                    }
                     children.add(xPathNode);
                 }
                 childrenMap.put(anXPathFragment, xPathNode);
