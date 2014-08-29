@@ -445,6 +445,7 @@
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
+                <jvmarg value="-ea"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -487,6 +488,7 @@
             <mkdir dir="${report.dir}/srg/jaxb"/>
             <mkdir dir="${resource.dir}/${tmp.dir}"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <jvmarg value="-ea"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -534,6 +536,7 @@
             <delete dir="${report.dir}/oxm/default" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/default"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <jvmarg value="-ea"/>
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
                 <sysproperty key="parser" value="${parser}"/>
@@ -575,6 +578,7 @@
             <delete dir="${report.dir}/oxm/dom" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/dom"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <jvmarg value="-ea"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="JAVA"/>
                 <sysproperty key="useLogging" value="false"/>
@@ -617,6 +621,7 @@
             <delete dir="${report.dir}/oxm/deploymentxml" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/deploymentxml"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <jvmarg value="-ea"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="XML_ECLIPSELINK"/>
                 <sysproperty key="useLogging" value="false"/>
@@ -671,6 +676,7 @@
             <delete dir="${report.dir}/oxm/deploymentxml-tl" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/deploymentxml-tl"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <jvmarg value="-ea"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="XML_TOPLINK"/>
                 <sysproperty key="useLogging" value="false"/>
@@ -721,6 +727,7 @@
             <delete dir="${report.dir}/oxm/docpres" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}/oxm/docpres"/>
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
+                <jvmarg value="-ea"/>
                 <sysproperty key="platformType" value="DOC_PRES"/>
                 <sysproperty key="metadataType" value="JAVA"/>
                 <sysproperty key="useLogging" value="false"/>

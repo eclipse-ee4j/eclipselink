@@ -192,9 +192,10 @@ public final class ReferenceResolver {
         /**
          * Speed up array which lowers time complexity by a factor of n.
          */
-        boolean[] a = null;
+        boolean[] a;
         if (lastValue == null) {
             lastValue = -1; // for the condition "i <= lastValue"
+            a = new boolean[1];
         } else {
             a = new boolean[lastValue + 1];
             //noinspection ForLoopReplaceableByForEach
@@ -206,7 +207,6 @@ public final class ReferenceResolver {
             final Reference reference;
             // A quick check to see if position [i] originally
             // contained a Reference that was later kicked out.
-            assert a != null;
             if (i <= lastValue && a[i]) {
                 reference = itUnlucky.next();
             } else {
