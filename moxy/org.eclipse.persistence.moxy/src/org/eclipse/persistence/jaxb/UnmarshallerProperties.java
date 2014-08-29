@@ -78,7 +78,7 @@ public class UnmarshallerProperties {
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties.NAMESPACE_SEPARATOR
      * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
      */
-    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
+    public static final String JSON_NAMESPACE_SEPARATOR  = JAXBContextProperties.JSON_NAMESPACE_SEPARATOR;
 
     /**
      * The name of the property used to specify the key that will correspond to
@@ -122,7 +122,7 @@ public class UnmarshallerProperties {
     public static final String AUTO_DETECT_MEDIA_TYPE = "eclipselink.auto-detect-media-type";
 
     
-    public static final String OBJECT_GRAPH = "eclipselink.object-graph";
+    public static final String OBJECT_GRAPH = JAXBContextProperties.OBJECT_GRAPH;
 
     /**
      * The Constant JSON_WRAPPER_AS_ARRAY_NAME. If true the grouping 

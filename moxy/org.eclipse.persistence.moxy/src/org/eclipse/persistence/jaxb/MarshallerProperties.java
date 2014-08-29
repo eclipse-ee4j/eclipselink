@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,7 +78,7 @@ public class MarshallerProperties {
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties.NAMESPACE_SEPARATOR
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
      */
-    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
+    public static final String JSON_NAMESPACE_SEPARATOR  = JAXBContextProperties.JSON_NAMESPACE_SEPARATOR;
 
     /**
      * The name of the property used to specify the key that will correspond to
@@ -140,7 +140,7 @@ public class MarshallerProperties {
     /**
      * 
      */
-    public static final String OBJECT_GRAPH = "eclipselink.object-graph";
+    public static final String OBJECT_GRAPH = JAXBContextProperties.OBJECT_GRAPH;
    
     /**
      * The Constant JSON_WRAPPER_AS_ARRAY_NAME. If true the grouping 
