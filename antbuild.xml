@@ -36,6 +36,7 @@
 *     egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
                strategy. Also includes fixes to eclipselink.jar creation.
 *     egwin  - rework to standardize antcall conventions and fix multiple target builds.
+*     tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
 #******************************************************************************/-->
 <!-- =============================================================================
 *  General Comments
@@ -50,7 +51,8 @@
 *  When called by autobuild it generates Nightly and Milestone builds
 *================================================================================= -->
 <!-- This ant project includes the following tasks:
-        - build (default) : compiles all components and tests (excluding Oracle)
+        - build (default) : compiles all components and tests
+                            Oracle is included when Oracle JDBC driver is set and dependency chek passes
         - build.all : compiles all components and tests, including Oracle extensions
         - build-eclipselink-jar : compiles all components except tests, packages eclipselink.jar
         - clean : removes all build generated files
@@ -132,7 +134,12 @@
     </condition>
     <echo message="JDK version detected: '${java.version}'"/>
     <fail message="An non-compatible version of JDK was detected! Build won't run properly unless running at least 1.6 of JDK!." unless="compat.jdk"/>
-    <echo message="JDBC driver JAR: '${jdbc.driver.jar}'"/>
+
+    <!-- JDBC driver settings info -->
+    <condition property="msg.jdbc.driver.jar.configured" value="JDBC driver JAR: '${jdbc.driver.jar}'" else="JDBC driver JAR: jdbc.driver.jar property missing">
+        <isset property="jdbc.driver.jar"/>
+    </condition>
+    <echo message="${msg.jdbc.driver.jar.configured}"/>
 
     <!-- controls which goals to invoke with maven (default is 'verify') -->
     <property name="maven.goals" value="verify"/>
@@ -184,6 +191,137 @@
     </path>
 
 <!-- ================================================================================= -->
+
+    <!-- Check oracle extension dependencies helper target -->
+    <target name="check.oracle.dependencies">
+        <!-- Locate libraries in oracle.extensions.depend.dir first and extensions.depend.dir second --> 
+        <condition property="file.ojdbc.jar" value="${oracle.extensions.depend.dir}/${ojdbc.jar}"
+                                             else="${extensions.depend.dir}/${ojdbc.jar}">
+            <available file="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>
+        </condition>
+        <condition property="file.sdoapi.jar" value="${oracle.extensions.depend.dir}/${sdoapi.jar}"
+                                              else="${extensions.depend.dir}/${sdoapi.jar}">
+            <available file="${oracle.extensions.depend.dir}/${sdoapi.jar}"/>
+        </condition>
+        <condition property="file.xdb.jar" value="${oracle.extensions.depend.dir}/${xdb.jar}"
+                                           else="${extensions.depend.dir}/${xdb.jar}">
+            <available file="${oracle.extensions.depend.dir}/${xdb.jar}"/>
+        </condition>
+        <condition property="file.xmlparser.jar" value="${oracle.extensions.depend.dir}/${xmlparser.jar}"
+                                                 else="${extensions.depend.dir}/${xmlparser.jar}">
+            <available file="${oracle.extensions.depend.dir}/${xmlparser.jar}"/>
+        </condition>
+        <condition property="file.ucp.jar" value="${oracle.extensions.depend.dir}/${ucp.jar}"
+                                           else="${extensions.depend.dir}/${ucp.jar}">
+            <available file="${oracle.extensions.depend.dir}/${ucp.jar}"/>
+        </condition>
+        <condition property="file.dms.jar" value="${oracle.extensions.depend.dir}/${dms.jar}"
+                                           else="${extensions.depend.dir}/${dms.jar}">
+            <available file="${oracle.extensions.depend.dir}/${dms.jar}"/>
+        </condition>
+        <!-- Oracle libraries dependency check -->
+        <condition property="is.ojdbc.jar">
+            <available file="${file.ojdbc.jar}"/>
+        </condition>
+        <condition property="is.sdoapi.jar">
+            <available file="${file.sdoapi.jar}"/>
+        </condition>
+        <condition property="is.xdb.jar">
+            <available file="${file.xdb.jar}"/>
+        </condition>
+        <condition property="is.xmlparser.jar">
+            <available file="${file.xmlparser.jar}"/>
+        </condition>
+        <condition property="is.ucp.jar">
+            <available file="${file.ucp.jar}"/>
+        </condition>
+        <condition property="is.dms.jar">
+            <available file="${file.dms.jar}"/>
+        </condition>
+        <!-- All checks evaluation -->
+        <condition property="oracle.dependencies.available">
+            <and>
+            <isset property="is.ojdbc.jar"/>
+                <isset property="is.sdoapi.jar"/>
+                <isset property="is.xdb.jar"/>
+                <isset property="is.xmlparser.jar"/>
+                <isset property="is.ucp.jar"/>
+                <isset property="is.dms.jar"/>
+            </and>
+        </condition>
+        <!-- Check staus messages -->
+        <condition property="msg.oracle.dependencies" value="Oracle DB dependencies check passed:" else="Oracle DB dependencies check failed:">
+            <isset property="oracle.dependencies.available"/>
+        </condition>
+        <condition property="msg.ojdbc.jar"     value=" + ${file.ojdbc.jar} library found"     else=" - ${ojdbc.jar} library missing">
+            <isset property="is.ojdbc.jar"/>
+        </condition>
+        <condition property="msg.sdoapi.jar"    value=" + ${file.sdoapi.jar} library found"    else=" - ${sdoapi.jar} library missing">
+            <isset property="is.sdoapi.jar"/>
+        </condition>
+        <condition property="msg.xdb.jar"       value=" + ${file.xdb.jar} library found"       else=" - ${xdb.jar} library missing">
+            <isset property="is.xdb.jar"/>
+        </condition>
+        <condition property="msg.xmlparser.jar" value=" + ${file.xmlparser.jar} library found" else=" - ${xmlparser.jar} library missing">
+            <isset property="is.xmlparser.jar"/>
+        </condition>
+        <condition property="msg.ucp.jar"       value=" + ${file.ucp.jar} library found"       else=" - ${ucp.jar} library missing">
+            <isset property="is.ucp.jar"/>
+        </condition>
+        <condition property="msg.dms.jar"       value=" + ${file.dms.jar} library found"       else=" - ${dms.jar} library missing">
+            <isset property="is.dms.jar"/>
+        </condition>
+    </target>
+
+    <!-- Check oracle DB driver class helper target -->
+    <target name="check.oracle.db-driver.dependencies">
+        <!-- Oracle DB driver class settings check (oracle.jdbc.OracleDriver is expected value) -->
+        <condition property="oracle.db-driver.available">
+            <contains string="${db.driver}" substring="oracle"/>
+        </condition>
+        <condition property="oracle.jdbc.dependencies.available">
+            <and>
+                <isset property="oracle.dependencies.available"/>
+                <isset property="oracle.db-driver.available"/>
+            </and>
+        </condition>
+    </target>
+
+    <!-- Check oracle extension dependencies and print check status helper target -->
+    <target name="oracle.dependencies" depends="check.oracle.dependencies">
+        <echo message="${msg.oracle.dependencies}"/>
+        <echo message="${msg.ojdbc.jar}"/>
+        <echo message="${msg.sdoapi.jar}"/>
+        <echo message="${msg.xdb.jar}"/>
+        <echo message="${msg.xmlparser.jar}"/>
+        <echo message="${msg.ucp.jar}"/>
+        <echo message="${msg.dms.jar}"/>
+    </target>
+
+    <!-- Check oracle JDBC driver and extension dependencies and print check status helper target -->
+    <target name="oracle.jdbc.dependencies" depends="check.oracle.dependencies, check.oracle.db-driver.dependencies">
+        <condition property="msg.oracle.jdbc.dependencies"   value="Oracle DB driver and dependencies check passed:"  else="Oracle DB driver and dependencies check failed:">
+            <isset property="oracle.jdbc.dependencies.available"/>
+        </condition>
+        <condition property="msg.jdbc.oracle"   value=" + Oracle DB driver configured"  else=" - Oracle DB driver not configured.">
+            <isset property="oracle.db-driver.available"/>
+        </condition>
+        <echo message="${msg.oracle.jdbc.dependencies}"/>
+        <echo message="${msg.jdbc.oracle}"/>
+        <echo message="${msg.ojdbc.jar}"/>
+        <echo message="${msg.sdoapi.jar}"/>
+        <echo message="${msg.xdb.jar}"/>
+        <echo message="${msg.xmlparser.jar}"/>
+        <echo message="${msg.ucp.jar}"/>
+        <echo message="${msg.dms.jar}"/>
+    </target>
+
+    <!-- Check oracle JDBC driver and extension dependencies. Fail when check did not passed. -->
+    <target name="check-oracle-dependencies" depends="oracle.jdbc.dependencies">
+        <fail message="Oracle DB dependencies missing. Check dependency libraries and oracle.extensions.depend.dir and extensions.depend.dir properties" unless="oracle.dependencies.available"/>
+        <fail message="Oracle DB JDBC driver is missing. Check jdbc.driver.jar property." unless="oracle.db-driver.available"/>
+    </target>
+
     <!-- *** Convienience and Compatability targets *** -->
 
     <!-- Short alias for building the jar. -->
@@ -204,7 +342,7 @@
     <target name="build-src" depends="build-eclipselink-jar, package-src-jar" description="build EclipseLink jar and source zip"/>
 
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
-    <target name="build" depends="build-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
+    <target name="build" depends="build-eclipselink-jar, build-core-test, build-oracle-if-dependencies" description="build all EclipseLink distribution files except docs"/>
 
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
     <target name="build-no-test" depends="build-eclipselink-jar, build-util, package-all" description="build all EclipseLink distribution files except docs"/>
@@ -215,6 +353,10 @@
     <!-- Compiles Oracle components, tests and extensions (excluding utilities). -->
     <target name="build-oracle"      depends="build-oracle-test"/> <!-- added for backward compatibility -->
     <target name="build-oracle-test" depends="build-oracle-extension-test, build-oracle-nosql-extension-test"/>
+    <!-- Compiles Oracle components, tests and extensions (excluding utilities) if dependencies are available. -->
+    <target name="build-oracle-if-dependencies" depends="oracle.jdbc.dependencies" if="oracle.jdbc.dependencies.available">
+        <antcall target="build-oracle-test"/>
+    </target>
 
     <!-- Builds and packages all jars,javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all, gen-wls-shared-lib"/>
@@ -319,6 +461,22 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <antcall target="clean-oracle-if-dependencies"/>
+    </target>
+
+    <target name="clean-oracle"      depends="clean-oracle-test"/>
+    <target name="clean-oracle-test" depends="clean-oracle-extension-test, clean-oracle-nosql-extension-test"/>
+    <!-- Compiles Oracle components, tests and extensions (excluding utilities) if dependencies are available. -->
+    <target name="clean-oracle-if-dependencies" depends="oracle.dependencies" if="oracle.dependencies.available">
+        <antcall target="clean-oracle-test"/>
+    </target>
+
+    <target name="clean-oracle-extension-test">
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}" target="clean"/>
+    </target>
+
+    <target name="clean-oracle-nosql-extension-test">
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="clean"/>
     </target>
 
     <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of local compiler dependencies">
@@ -471,12 +629,12 @@
         </copy>
     </target>
 
-    <target name="build-oracle-extension-test">
+    <target name="build-oracle-extension-test" depends="check-oracle-dependencies">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
     </target>
 
-    <target name="build-oracle-nosql-extension-test">
+    <target name="build-oracle-nosql-extension-test" depends="check-oracle-dependencies">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"                   target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="build"/>
     </target>
@@ -884,47 +1042,6 @@
             <!-- miscellaneous files -->
             <zipfileset dir="${unified.javadocs}/"/>
         </zip>
-    </target>
-
-    <target name="check-oracle-dependencies">
-        <condition property="ojdbc.lib"     value="${oracle.extensions.depend.dir}/${ojdbc.jar}"
-                                                    else="${extensions.depend.dir}/${ojdbc.jar}">
-            <available file="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>
-        </condition>
-        <condition property="sdoapi.lib"    value="${oracle.extensions.depend.dir}/${sdoapi.jar}"
-                                                    else="${extensions.depend.dir}/${sdoapi.jar}">
-            <available file="${oracle.extensions.depend.dir}/${sdoapi.jar}"/>
-        </condition>
-        <condition property="xdb.lib"       value="${oracle.extensions.depend.dir}/${xdb.jar}"
-                                                    else="${extensions.depend.dir}/${xdb.jar}">
-            <available file="${oracle.extensions.depend.dir}/${xdb.jar}"/>
-        </condition>
-        <condition property="xmlparser.lib" value="${oracle.extensions.depend.dir}/${xmlparser.jar}"
-                                                    else="${extensions.depend.dir}/${xmlparser.jar}">
-            <available file="${oracle.extensions.depend.dir}/${xmlparser.jar}"/>
-        </condition>
-        <condition property="ucp.lib"       value="${oracle.extensions.depend.dir}/${ucp.jar}"
-                                                    else="${extensions.depend.dir}/${ucp.jar}">
-            <available file="${oracle.extensions.depend.dir}/${ucp.jar}"/>
-        </condition>
-        <condition property="dms.lib"       value="${oracle.extensions.depend.dir}/${dms.jar}"
-                                                    else="${extensions.depend.dir}/${dms.jar}">
-            <available file="${oracle.extensions.depend.dir}/${dms.jar}"/>
-        </condition>
-
-        <!-- oracle dependency tests -->
-        <available file="${ojdbc.lib}"         property="ojdbc.bundle.exist"/>
-        <available file="${sdoapi.lib}"        property="sdoapi.bundle.exist"/>
-        <available file="${xdb.lib}"           property="xdb.bundle.exist"/>
-        <available file="${xmlparser.lib}"     property="xmlparser.bundle.exist"/>
-        <available file="${ucp.lib}"           property="ucp.bundle.exist"/>
-        <available file="${dms.lib}"           property="dms.bundle.exist"/>
-        <fail message="Cannot find:          '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>
-        <fail message="Cannot find:          '${sdoapi.lib}'"      unless="sdoapi.bundle.exist"/>
-        <fail message="Cannot find:          '${xdb.lib}'"         unless="xdb.bundle.exist"/>
-        <fail message="Cannot find:          '${xmlparser.lib}'"   unless="xmlparser.bundle.exist"/>
-        <fail message="Cannot find:          '${ucp.lib}'"         unless="ucp.bundle.exist"/>
-        <fail message="Cannot find:          '${dms.lib}'"         unless="dms.bundle.exist"/>
     </target>
 
     <target name="build-unified-javadocs" depends="check-oracle-dependencies">
