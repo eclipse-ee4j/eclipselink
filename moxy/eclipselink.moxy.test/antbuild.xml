@@ -86,19 +86,19 @@
     <property name="jaxb-impl.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
     <property name="jaxb-core.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-core.jar}"/>
     <property name="javax.validation.lib"   value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
-    <property name="validation-impl.lib"   value="${eclipselink.external.libs}/${validation-impl.jar}"/>
-    <property name="jboss-logging.lib"   value="${eclipselink.external.libs}/${jboss-logging.jar}"/>
-    <property name="javax.el-api.lib"   value="${eclipselink.external.libs}/${javax.el-api.jar}"/>
-    <property name="javax.el.lib"   value="${eclipselink.external.libs}/${javax.el.jar}"/>
-    <property name="classmate.lib"   value="${eclipselink.external.libs}/${classmate.jar}"/>
+    <property name="validation-impl.lib"   value="${extensions.depend.dir}/${validation-impl.jar}"/>
+    <property name="jboss-logging.lib"   value="${extensions.depend.dir}/${jboss-logging.jar}"/>
+    <property name="javax.el-api.lib"   value="${extensions.depend.dir}/${javax.el-api.jar}"/>
+    <property name="javax.el.lib"   value="${extensions.depend.dir}/${javax.el.jar}"/>
+    <property name="classmate.lib"   value="${extensions.depend.dir}/${classmate.jar}"/>
 
     <condition property="validate.jar.exists">
         <and>
-            <available file="${eclipselink.external.libs}/${validation-impl.jar}" />
-            <available file="${eclipselink.external.libs}/${jboss-logging.jar}" />
-            <available file="${eclipselink.external.libs}/${javax.el-api.jar}" />
-            <available file="${eclipselink.external.libs}/${javax.el.jar}" />
-            <available file="${eclipselink.external.libs}/${classmate.jar}" />
+            <available file="${extensions.depend.dir}/${validation-impl.jar}" />
+            <available file="${extensions.depend.dir}/${jboss-logging.jar}" />
+            <available file="${extensions.depend.dir}/${javax.el-api.jar}" />
+            <available file="${extensions.depend.dir}/${javax.el.jar}" />
+            <available file="${extensions.depend.dir}/${classmate.jar}" />
         </and>
     </condition>
 

@@ -226,11 +226,11 @@
 
     <condition property="validate.jar.exists">
         <and>
-            <available file="${eclipselink.external.libs}/${validation-impl.jar}" />
-            <available file="${eclipselink.external.libs}/${jboss-logging.jar}" />
-            <available file="${eclipselink.external.libs}/${javax.el-api.jar}" />
-            <available file="${eclipselink.external.libs}/${javax.el.jar}" />
-            <available file="${eclipselink.external.libs}/${classmate.jar}" />
+            <available file="${extensions.depend.dir}/${validation-impl.jar}" />
+            <available file="${extensions.depend.dir}/${jboss-logging.jar}" />
+            <available file="${extensions.depend.dir}/${javax.el-api.jar}" />
+            <available file="${extensions.depend.dir}/${javax.el.jar}" />
+            <available file="${extensions.depend.dir}/${classmate.jar}" />
         </and>
     </condition>
 
@@ -1440,12 +1440,12 @@
         </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.classpath"/>
-            <pathelement path="${eclipselink.external.libs}/${validation-impl.jar}"/>
-            <pathelement path="${eclipselink.external.libs}/${jboss-logging.jar}"/>
-            <pathelement path="${eclipselink.external.libs}/${javax.el-api.jar}"/>
-            <pathelement path="${eclipselink.external.libs}/${javax.el.jar}"/>
-            <pathelement path="${eclipselink.external.libs}/${classmate.jar}"/>
-            <pathelement path="${eclipselink.external.libs}/${javax.validation.jar}"/>
+            <pathelement path="${extensions.depend.dir}/${validation-impl.jar}"/>
+            <pathelement path="${extensions.depend.dir}/${jboss-logging.jar}"/>
+            <pathelement path="${extensions.depend.dir}/${javax.el-api.jar}"/>
+            <pathelement path="${extensions.depend.dir}/${javax.el.jar}"/>
+            <pathelement path="${extensions.depend.dir}/${classmate.jar}"/>
+            <pathelement path="${extensions.depend.dir}/${javax.validation.jar}"/>
         </path>
         <path id="run.jpa21.classpath">
             <pathelement path="${jpatest.basedir}/${classes21.dir}"/>
