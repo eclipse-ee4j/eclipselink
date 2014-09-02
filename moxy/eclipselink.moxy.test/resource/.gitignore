@@ -1,4 +1,6 @@
 # Ignore everything in this directory
 *
-# Except this file
+# Except the test sources, this file and META-INF
+!org
 !.gitignore
+!META-INF
