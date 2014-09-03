@@ -3,15 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Oracle Target Libraries
 Bundle-SymbolicName: oracle.libs
 Bundle-Version: 1.0.0
-Bundle-ClassPath: xmlparserv2.jar,
- aqapi.jar,
+Bundle-ClassPath: aqapi.jar,
  dms.jar,
- ojdbc5.jar,
+ kvclient.jar,
+ ojdbc6.jar,
  sdoapi.jar,
- xdb.jar,
- xml.jar,
  ucp.jar,
- kvclient-1.1.100.jar
+ xdb.jar,
+ xmlparserv2.jar
 Bundle-Vendor: Oracle Corporation
 Export-Package: javax.xml,
  javax.xml.bind,
