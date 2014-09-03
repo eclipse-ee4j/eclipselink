@@ -2,16 +2,18 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="var" path="ORACLE_JDBC_LIB"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.antlr"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.asm"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.oracleddlparser"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws.builder"/>
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
-	<classpathentry kind="var" path="ORACLE_XDB_LIB"/>
-	<classpathentry kind="var" path="ORACLE_XMLPARSER_LIB"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/javax.wsdl_1.6.2.v201012040545.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/wsdl4j-src-1.6.2.zip"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.2.0.v201302191141.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser_1.0.0.v20130531.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser.source_1.0.0.v20130531.jar"/>
+	<classpathentry kind="lib" path="/oracle.libs/xdb.jar"/>
+	<classpathentry kind="lib" path="/oracle.libs/xmlparserv2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.0.v201304241213.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.0.v201304241213.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

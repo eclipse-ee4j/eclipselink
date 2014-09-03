@@ -148,7 +148,7 @@
         <property name="persistence.lib"  value="${dbwsbldrorcltst.2.common.plugins.dir}/${persistence.jar}"/>
 
         <!-- dependency tests -->
-        <available file="${junit.lib}"            property="junit.lib.exist"/>
+        <available classname="org.junit.Test"     classpath="${junit.lib}" property="junit.lib.exist"/>
         <available file="${eclipselink.lib}"      property="eclipselink.exist"/>
         <available file="${persistence.lib}"      property="persistence.exist"/>
         <available file="${asm.lib}"              property="asm.bundle.exist"/>
