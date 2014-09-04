@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,8 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * 		dclarke/tware - initial 
- *      tware
+ * 		dclarke/tware - Initial implementation
+ *      09-01-2014-2.6.0 Dmitry Kornilov
+ *        - Fields filtering (projection)
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
@@ -18,6 +19,7 @@ import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilter;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
@@ -48,7 +50,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     private PersistenceContext context;
     private Object result;
     private MediaType mediaType;
-    private List<String> fields;
+    private FieldsFilter filter;
 
     public StreamingOutputMarshaller(PersistenceContext context, Object result, MediaType acceptedType) {
         this.context = context;
@@ -62,13 +64,20 @@ public class StreamingOutputMarshaller implements StreamingOutput {
      * @param context persistence context.
      * @param result entity to process.
      * @param acceptedTypes
-     * @param fields a list of fields of 'result' entity to marshall.
+     * @param filter containing a list of fields to filter out from the response.
      */
-    public StreamingOutputMarshaller(PersistenceContext context, Object result, List<MediaType> acceptedTypes, List<String> fields) {
+    public StreamingOutputMarshaller(PersistenceContext context, Object result, List<MediaType> acceptedTypes, FieldsFilter filter) {
         this(context, result, acceptedTypes);
-        this.fields = fields;
+        this.filter = filter;
     }
 
+    /**
+     * Creates a new StreamingOutputMarshaller.
+     *
+     * @param context persistence context.
+     * @param result entity to process.
+     * @param acceptedTypes
+     */
     public StreamingOutputMarshaller(PersistenceContext context, Object result, List<MediaType> acceptedTypes) {
         this(context, result, mediaType(acceptedTypes));
     }
@@ -96,8 +105,8 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                             context.marshallEntity(result, mediaType, output);
                         }
                     } else {
-                        if (fields != null) {
-                            context.marshallEntity(result, fields, mediaType, output);
+                        if (filter != null) {
+                            context.marshallEntity(result, filter, mediaType, output);
                         } else {
                             context.marshallEntity(result, mediaType, output);
                         }

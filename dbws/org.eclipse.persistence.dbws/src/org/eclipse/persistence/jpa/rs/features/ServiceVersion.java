@@ -42,6 +42,9 @@ public enum ServiceVersion {
      */
     public static final String LATEST_VERSION = "latest";
 
+    /**
+     * String representation of the version number. As it appears in the URL. Ex. "v2.0"
+     */
     private final String version;
 
     private static final Map<String, ServiceVersion> values;

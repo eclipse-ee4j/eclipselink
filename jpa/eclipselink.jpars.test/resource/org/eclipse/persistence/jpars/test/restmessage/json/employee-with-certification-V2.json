@@ -1,0 +1,16 @@
+{
+   "firstName": "John",
+   "id": 201204,
+   "gender": "Male",
+   "lastName": "Doe",
+   "certifications": {
+       "items": [
+           {
+               "type": "certification",
+               "name": "Java",
+               "issueDate": "2014-08-29"
+           }
+       ]
+   }
+}
+

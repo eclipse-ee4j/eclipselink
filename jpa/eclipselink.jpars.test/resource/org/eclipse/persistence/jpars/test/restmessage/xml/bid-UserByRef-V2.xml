@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<staticBid>
+   <amount>110.0</amount>
+   <id>1001</id>
+   <user>
+       <links rel="self" href="http://localhost:7001/eclipselink.jpars.test/persistence/v2.0/auction-static/entity/StaticUser/2002"/>
+   </user>
+</staticBid>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+    <certifications>
+        <items xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="certification">
+            <issueDate>2014-08-29</issueDate>
+            <name>Java</name>
+        </items>
+    </certifications>
+    <firstName>John</firstName>
+    <gender>Male</gender>
+    <id>201204</id>
+    <lastName>Doe</lastName>
+    <salary>0.0</salary>
+</employee>

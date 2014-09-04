@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - initial
+ *      Dmitry Kornilov - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.model.basket;
 
@@ -74,6 +74,10 @@ public class Basket {
 
     @Override
     public String toString() {
-        return "id=" + id + ", name=" + name;
+        return "Basket{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", basketItems=" + basketItems +
+                '}';
     }
 }

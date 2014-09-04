@@ -8,19 +8,20 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      gonural - initial implementation
+ *     gonural - initial implementation
+ *     2014-09-01-2.6.0 Dmitry Kornilov
+ *       - JPARS 2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features.paging;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
-import org.eclipse.persistence.jpa.rs.ReservedWords;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
+import org.eclipse.persistence.jpa.rs.features.ItemLinksBuilder;
 import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
@@ -31,17 +32,22 @@ import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+/**
+ * FeatureResponseBuilder implementation used for pageable collections. Used in JPARS 2.0.
+ *
+ * @author gonural
+ * @since EclipseLink 2.6.0.
+ */
 public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     private static final String NO_PREVIOUS_CHUNK = "-1";
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
@@ -54,16 +60,16 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         return populatePagedCollectionLinks(queryParams, uriInfo, response);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReportQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, java.util.List, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
         return populatePagedReportQueryCollectionLinks(queryParams, results, items, uriInfo);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.String, java.lang.Object, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
@@ -96,11 +102,14 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         // populate links for the entity
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
         if ((result instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
-            ItemLinks itemLinks = new ItemLinks();
-            PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
-            String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
-            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
-            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_CANONICAL, href));
+            final PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
+            final String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
+
+            final ItemLinks itemLinks = (new ItemLinksBuilder())
+                    .addSelf(href)
+                    .addCanonical(href)
+                    .build();
+
             entity._persistence_setLinks(itemLinks);
             return entity;
         }
@@ -109,7 +118,8 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
 
     private PageableCollection populatePagedCollectionLinks(Map<String, Object> queryParams, UriInfo uriInfo, PageableCollection resultCollection) {
         // populate links for entire response
-        List<LinkV2> links = new ArrayList<LinkV2>();
+        final ItemLinksBuilder itemLinksBuilder = new ItemLinksBuilder();
+
         int limit = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_LIMIT));
         int offset = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_OFFSET));
 
@@ -133,7 +143,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
                 // for next and prev links and leave the rest untouched
                 uriBuilder = UriBuilder.fromUri(uriInfo.getRequestUri());
                 uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, nextOffset);
-                links.add(new LinkV2(ReservedWords.JPARS_REL_NEXT, uriBuilder.build().toString()));
+                itemLinksBuilder.addNext(uriBuilder.build().toString());
                 resultCollection.setHasMore(true);
             } else {
                 resultCollection.setHasMore(false);
@@ -144,12 +154,12 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
             // prev link
             uriBuilder = UriBuilder.fromUri(uriInfo.getRequestUri());
             uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, prevOffset);
-            links.add(new LinkV2(ReservedWords.JPARS_REL_PREV, uriBuilder.build().toString()));
+            itemLinksBuilder.addPrev(uriBuilder.build().toString());
         }
 
-        links.add(new LinkV2(ReservedWords.JPARS_REL_SELF, uriInfo.getRequestUri().toString()));
+        itemLinksBuilder.addSelf(uriInfo.getRequestUri().toString());
 
-        resultCollection.setLinks(links);
+        resultCollection.setLinks(itemLinksBuilder.build().getLinks());
         resultCollection.setOffset(offset);
         resultCollection.setLimit(limit);
 

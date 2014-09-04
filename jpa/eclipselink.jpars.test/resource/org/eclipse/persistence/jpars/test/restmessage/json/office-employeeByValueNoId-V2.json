@@ -1,0 +1,16 @@
+{
+   "id":90876,
+   "location": "Ottawa",
+   "employees": {
+       "items": [
+           {
+               "firstName": "Joe",
+               "lastName": "Smith"
+           },
+           {
+               "firstName": "Jane",
+               "lastName": "Douglas"
+           }
+       ]
+   }
+}

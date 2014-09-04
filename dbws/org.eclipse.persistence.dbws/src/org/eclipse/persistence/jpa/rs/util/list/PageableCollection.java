@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,22 +8,26 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      gonural - initial 
+ *     gonural - initial
+ *     2014-09-01-2.6.0 Dmitry Kornilov
+ *       - JPARS 2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.list;
 
-import java.util.List;
-
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
+
+import java.util.List;
 
 /**
  * Marker interface for queries returning paged results
  *  
  * @see ReadAllQueryResultCollection
  * @see ReportQueryResultCollection
- *
  */
-public interface PageableCollection {
+public interface PageableCollection<T> {
+    public List<T> getItems();
+
+    public void setItems(List<T> items);
 
     /**
      * Sets hasMore 

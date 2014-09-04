@@ -1,30 +1,16 @@
 /****************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      gonural 
+ *      gonural - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpars.test.service;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
+package org.eclipse.persistence.jpars.test.service.noversion;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -37,6 +23,19 @@ import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.After;
 import org.junit.Test;
+
+import javax.ws.rs.core.MediaType;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class TestServiceNonRelational {
     PersistenceFactoryBase factory = null;;
@@ -114,13 +113,13 @@ public class TestServiceNonRelational {
         person.set("age", new Integer(48));
         person.set("occupation", "Engineer");
         person.set("currentEmployer", "Oracle");
-        
+
         List<String> pastEmployers = new ArrayList<String>();
         pastEmployers.add("BEA");
         pastEmployers.add("IBM");
         pastEmployers.add("Sun");
         person.set("pastEmployers", pastEmployers);
-        
+
         DynamicEntity address1 = (DynamicEntity) context.newEntity("Addresses");
         address1.set("street1", "123 Sandy Lane");
         address1.set("city", "San Jose");
@@ -132,7 +131,7 @@ public class TestServiceNonRelational {
         address2.set("city", "San Francisco");
         address2.set("state", "CA");
         address2.set("zip", new Integer(94110));
-        
+
         List<Object> addresses = new ArrayList<Object>();
         addresses.add(address1);
         addresses.add(address2);

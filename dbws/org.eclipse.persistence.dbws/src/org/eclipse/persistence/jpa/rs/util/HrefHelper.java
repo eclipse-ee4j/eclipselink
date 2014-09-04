@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - initial implementation
+ *      Dmitry Kornilov - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
@@ -21,23 +21,38 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
  * @since EclipseLink 2.6.0
  */
 public class HrefHelper {
-
     /**
      * Returns a href to single entity resource.
      * http(s)://root:port/version/context/entity/id
      *
-     * @param context Persistence context.
-     * @param entityClass Entity class name.
-     * @param entityId Entity ID.
+     * @param context persistence context.
+     * @param entityClass entity class name.
+     * @param entityId entity ID.
      * @return href to given entity.
      */
     public static String buildEntityHref(PersistenceContext context, String entityClass, String entityId) {
-        StringBuilder href = new StringBuilder(context.getBaseURI().toString());
+        final StringBuilder href = new StringBuilder(context.getBaseURI().toString());
         href.append(context.getVersion()).append("/")
                 .append(context.getName()).append("/")
                 .append("entity/")
                 .append(entityClass).append("/")
                 .append(entityId);
+        return href.toString();
+    }
+
+    /**
+     * Builds a link to an entity field.
+     * http(s)://root:port/version/context/entity/id/attribute
+     *
+     * @param context persistence context.
+     * @param entityClass entity class name.
+     * @param entityId entity ID.
+     * @param fieldName entity field name.
+     * @return href
+     */
+    public static String buildEntityFieldHref(PersistenceContext context, String entityClass, String entityId, String fieldName) {
+        final StringBuilder href = new StringBuilder(buildEntityHref(context, entityClass, entityId));
+        href.append("/").append(fieldName);
         return href.toString();
     }
 }

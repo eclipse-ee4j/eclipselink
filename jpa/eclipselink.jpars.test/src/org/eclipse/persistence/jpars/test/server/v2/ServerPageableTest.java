@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2014 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *      Dmitry Kornilov - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpars.test.server;
+package org.eclipse.persistence.jpars.test.server.v2;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -42,12 +42,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class ServerPageableTest {
     private static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars.test.server");
-
-    private static final String JPA_RS_VERSION_STRING = "jpars.version.string";
     private static final String DEFAULT_PU = "jpars_basket-static";
+    private static final String JPARS_VERSION = "v2.0";
 
     private static PersistenceContext context;
-    private static PersistenceFactoryBase factory;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -56,19 +54,15 @@ public class ServerPageableTest {
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        System.setProperty(JPA_RS_VERSION_STRING, "v2.0");
-        factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), null, true);
+        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
+        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, false);
         initData();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        try {
-            RestUtils.restUpdateQuery(context, "BasketItem.deleteAll", "BasketItem", null, null, MediaType.APPLICATION_JSON_TYPE);
-            RestUtils.restUpdateQuery(context, "Basket.deleteAll", "Basket", null, null, MediaType.APPLICATION_JSON_TYPE);
-        } catch (URISyntaxException e) {
-        }
+        RestUtils.restUpdateQuery(context, "BasketItem.deleteAll", "BasketItem", null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restUpdateQuery(context, "Basket.deleteAll", "Basket", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     private static void initData() throws Exception {
@@ -108,16 +102,10 @@ public class ServerPageableTest {
         assertFalse(basketItemExists(queryResult, 4));
         assertFalse(basketItemExists(queryResult, 5));
 
-        // Check next link
-        final String nextLink = "{\"href\":\"" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?offset=2&limit=2\",\"rel\":\"next\"}";
-        assertTrue(queryResult.contains(nextLink));
-
-        // Check previous link
+        // Check links
+        assertTrue(checkLinkJson(queryResult, "next", "/query/BasketItem.findAllPageable?offset=2&limit=2"));
         assertFalse(queryResult.contains("\"rel\": \"prev\""));
-
-        // Check self link
-        final String selfLink = "{\"href\":\"" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?limit=2\",\"rel\":\"self\"}";
-        assertTrue(queryResult.contains(selfLink));
+        assertTrue(checkLinkJson(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2"));
 
         // Check items (limit = 2, offset = 0, count = 2, hasMore = true)
         checkItemsJson(queryResult, 2, 0, 2, true);
@@ -142,16 +130,10 @@ public class ServerPageableTest {
         assertFalse(basketItemExists(queryResult, 4));
         assertFalse(basketItemExists(queryResult, 5));
 
-        // Check next link
-        final String nextLink = "<link><href>" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?offset=2&amp;limit=2" + "</href><rel>next</rel></link>";
-        assertTrue(queryResult.contains(nextLink));
-
-        // Check previous link
+        // Check links
+        assertTrue(checkLinkXml(queryResult, "next", "/query/BasketItem.findAllPageable?offset=2&amp;limit=2"));
         assertFalse(queryResult.contains("<rel>prev</rel>"));
-
-        // Check self link
-        final String selfLink = "<link><href>" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?limit=2" + "</href><rel>self</rel></link>";
-        assertTrue(queryResult.contains(selfLink));
+        assertTrue(checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2"));
 
         // Check items (limit = 2, offset = 0, count = 2, hasMore = true)
         checkItemsXml(queryResult, 2, 0, 2, true);
@@ -179,17 +161,10 @@ public class ServerPageableTest {
         // And the last one not
         assertFalse(basketItemExists(queryResult, 5));
 
-        // Check next link
-        final String nextLink = "{\"href\":\"" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?offset=4&limit=2\",\"rel\":\"next\"}";
-        assertTrue(queryResult.contains(nextLink));
-
-        // Check previous link
-        final String prevLink = "{\"href\":\"" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?offset=0&limit=2\",\"rel\":\"prev\"}";
-        assertTrue(queryResult.contains(prevLink));
-
-        // Check self link
-        final String selfLink = "{\"href\":\"" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?limit=2&offset=2\",\"rel\":\"self\"}";
-        assertTrue(queryResult.contains(selfLink));
+        // Check links
+        assertTrue(checkLinkJson(queryResult, "next", "/query/BasketItem.findAllPageable?offset=4&limit=2"));
+        assertTrue(checkLinkJson(queryResult, "prev", "/query/BasketItem.findAllPageable?offset=0&limit=2"));
+        assertTrue(checkLinkJson(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2&offset=2"));
 
         // Check items (limit = 2, offset = 2, count = 2, hasMore = true)
         checkItemsJson(queryResult, 2, 2, 2, true);
@@ -217,17 +192,10 @@ public class ServerPageableTest {
         // And the last one not
         assertFalse(basketItemExists(queryResult, 5));
 
-        // Check next link
-        final String nextLink = "<link><href>" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?offset=4&amp;limit=2</href><rel>next</rel></link>";
-        assertTrue(queryResult.contains(nextLink));
-
-        // Check previous link
-        final String prevLink = "<link><href>" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?offset=0&amp;limit=2</href><rel>prev</rel></link>";
-        assertTrue(queryResult.contains(prevLink));
-
-        // Check self link
-        final String selfLink = "<link><href>" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?limit=2&amp;offset=2</href><rel>self</rel></link>";
-        assertTrue(queryResult.contains(selfLink));
+        // Check links
+        assertTrue(checkLinkXml(queryResult, "next", "/query/BasketItem.findAllPageable?offset=4&amp;limit=2"));
+        assertTrue(checkLinkXml(queryResult, "prev", "/query/BasketItem.findAllPageable?offset=0&amp;limit=2"));
+        assertTrue(checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2&amp;offset=2"));
 
         // Check items (limit = 2, offset = 2, count = 2, hasMore = true)
         checkItemsXml(queryResult, 2, 2, 2, true);
@@ -246,15 +214,10 @@ public class ServerPageableTest {
         assertTrue(basketItemExists(queryResult, 4));
         assertTrue(basketItemExists(queryResult, 5));
 
-        // Check next link
+        // Check links
         assertFalse(queryResult.contains("\"rel\": \"next\""));
-
-        // Check previous link
         assertFalse(queryResult.contains("\"rel\": \"prev\""));
-
-        // Check self link
-        final String selfLink = "{\"href\":\"" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable\",\"rel\":\"self\"}";
-        assertTrue(queryResult.contains(selfLink));
+        assertTrue(checkLinkJson(queryResult, "self", "/query/BasketItem.findAllPageable"));
 
         // Check items (limit = 20, offset = 0, count = 5, hasMore = false)
         checkItemsJson(queryResult, 20, 0, 5, false);
@@ -273,15 +236,10 @@ public class ServerPageableTest {
         assertTrue(basketItemExists(queryResult, 4));
         assertTrue(basketItemExists(queryResult, 5));
 
-        // Check next link
+        // Check links
         assertFalse(queryResult.contains("<rel>next</rel>"));
-
-        // Check previous link
         assertFalse(queryResult.contains("<rel>prev</rel>"));
-
-        // Check self link
-        final String selfLink = "<link><href>" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable</href><rel>self</rel></link>";
-        assertTrue(queryResult.contains(selfLink));
+        assertTrue(checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable"));
 
         // Check items (limit = 20, offset = 0, count = 5, hasMore = false)
         checkItemsXml(queryResult, 20, 0, 5, false);
@@ -307,16 +265,10 @@ public class ServerPageableTest {
         // The last one have to be there
         assertTrue(basketItemExists(queryResult, 5));
 
-        // Check next link
+        // Check links
         assertFalse(queryResult.contains("<rel>next</rel>"));
-
-        // Check previous link
-        final String prevLink = "<link><href>" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?offset=2&amp;limit=2</href><rel>prev</rel></link>";
-        assertTrue(queryResult.contains(prevLink));
-
-        // Check self link
-        final String selfLink = "<link><href>" + RestUtils.getServerURI() + context.getName() + "/query/BasketItem.findAllPageable?limit=2&amp;offset=4</href><rel>self</rel></link>";
-        assertTrue(queryResult.contains(selfLink));
+        assertTrue(checkLinkXml(queryResult, "prev", "/query/BasketItem.findAllPageable?offset=2&amp;limit=2"));
+        assertTrue(checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2&amp;offset=4"));
 
         // Check items (limit = 1, offset = 4, count = 1, hasMore = false)
         checkItemsXml(queryResult, 2, 4, 1, false);
@@ -360,11 +312,8 @@ public class ServerPageableTest {
         assertFalse(queryResult.contains("Item4"));
         assertFalse(queryResult.contains("Item5"));
 
-        // Check next link
-        final String nextLink = "<link><href>" + RestUtils.getServerURI() + context.getName() + "/entity/Basket/1/basketItems?offset=2&amp;limit=2</href><rel>next</rel></link>";
-        assertTrue(queryResult.contains(nextLink));
-
-        // Check previous link
+        // Check links
+        assertTrue(checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?offset=2&amp;limit=2"));
         assertFalse(queryResult.contains("<rel>prev</rel>"));
 
         // Check items (limit = 2, offset = 0, count = 2, hasMore = true)
@@ -387,5 +336,15 @@ public class ServerPageableTest {
         assertTrue(response.contains("\"offset\":" + offset));
         assertTrue(response.contains("\"count\":" + count));
         assertTrue(response.contains("\"hasMore\":" + hasMore));
+    }
+
+    private boolean checkLinkXml(String response, String rel, String uri) throws URISyntaxException {
+        final String link = "<links rel=\"" + rel + "\" href=\"" + RestUtils.getServerURI(context.getVersion()) + context.getName() + uri + "\"/>";
+        return response.contains(link);
+    }
+
+    private boolean checkLinkJson(String response, String rel, String uri) throws URISyntaxException {
+        final String link = "{\"rel\":\"" + rel + "\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + context.getName() + uri + "\"}";
+        return response.contains(link);
     }
 }

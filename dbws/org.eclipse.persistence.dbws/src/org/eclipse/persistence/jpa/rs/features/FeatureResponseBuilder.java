@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,17 +9,23 @@
  *
  * Contributors:
  *      gonural - initial implementation
+ *      2014-09-01-2.6.0 Dmitry Kornilov
+ *        - Added buildSingleResultQueryResponse method.
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features;
-
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 
+import javax.ws.rs.core.UriInfo;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Common interface for all response builders.
+ *
+ * @author gonural
+ */
 public interface FeatureResponseBuilder {
 
     /**
@@ -67,4 +73,16 @@ public interface FeatureResponseBuilder {
      * @return the object
      */
     Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo);
+
+    /**
+     * Builds the single result query response.
+     *
+     * @param context the context
+     * @param queryParams the query params
+     * @param result the result
+     * @param items the report items (result of ReportQuery)
+     * @param uriInfo the uri info
+     * @return the response
+     */
+    Object buildSingleResultQueryResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, List<ReportItem> items, UriInfo uriInfo);
 }

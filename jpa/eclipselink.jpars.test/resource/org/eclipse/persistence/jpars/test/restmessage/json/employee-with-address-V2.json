@@ -1,0 +1,12 @@
+{
+   "firstName": "Debbie",
+   "id": 20130,
+   "gender": "Female",
+   "lastName": "Smith",
+   "address": {
+       "type": "employeeAddress",
+       "id": 201404,
+       "city": "Maine",
+       "country": "USA"
+    }
+}

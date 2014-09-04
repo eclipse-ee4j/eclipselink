@@ -1,0 +1,31 @@
+{
+    "bids": {
+        "items": [
+            {
+                "type": "staticBid",
+                "links": [
+                    {
+                        "href": "http://localhost:7001/persistence/v2.0/jpars_auction-static/entity/StaticBid/1234",
+                        "rel": "self"
+                    }
+                ]
+            },
+            {
+                "type": "staticBid",
+                "links": [
+                    {
+                        "href": "http://localhost:7001/persistence/v2.0/jpars_auction-static/entity/StaticBid/5678",
+                        "rel": "self"
+                    }
+                ]
+            }
+        ]
+    },
+    "description":"a famous Picasso paint",
+    "endPrice":1000000.0,
+    "id":12,
+    "image":"Dora_Maar_au_Chat.jpeg",
+    "name":"Dora Maar au Chat",
+    "sold":false,
+    "startPrice":10000.0
+}

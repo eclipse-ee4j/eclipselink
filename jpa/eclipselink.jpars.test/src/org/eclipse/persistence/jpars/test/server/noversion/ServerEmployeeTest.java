@@ -1,33 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2014 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      gonural - initial 
+ *      gonural - initial
+ *      2014-09-01-2.6.0 Dmitry Kornilov
+ *        - Moved to another package
  ******************************************************************************/
-package org.eclipse.persistence.jpars.test.server;
+package org.eclipse.persistence.jpars.test.server.noversion;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.Persistence;
-import javax.ws.rs.core.MediaType;
-
+import com.sun.jersey.api.client.ClientResponse.Status;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
@@ -41,6 +28,7 @@ import org.eclipse.persistence.jpars.test.model.employee.LargeProject;
 import org.eclipse.persistence.jpars.test.model.employee.Office;
 import org.eclipse.persistence.jpars.test.model.employee.PhoneNumber;
 import org.eclipse.persistence.jpars.test.model.employee.SmallProject;
+import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 import org.eclipse.persistence.jpars.test.util.DBUtils;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
@@ -48,12 +36,26 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.sun.jersey.api.client.ClientResponse.Status;
+import javax.persistence.Persistence;
+import javax.ws.rs.core.MediaType;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ServerEmployeeTest {
     private static final String DEFAULT_PU = "jpars_employee-static";
-    private static PersistenceContext context = null;
-    private static PersistenceFactoryBase factory = null;
+    private static final String JPARS_VERSION = null;
+
+    protected static PersistenceContext context;
     private static long THREE_YEARS = 94608000000L;
 
     /**
@@ -63,13 +65,13 @@ public class ServerEmployeeTest {
      */
     @BeforeClass
     public static void setup() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        final Map<String, Object> properties = new HashMap<String, Object>();
         ExamplePropertiesLoader.loadProperties(properties);
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), null, true);
+        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
+        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, true);
     }
 
     @After
@@ -140,7 +142,7 @@ public class ServerEmployeeTest {
         String msg = RestUtils.getJSONMessage("employee-with-address.json");
         String employee = RestUtils.restUpdate(context, msg, Employee.class.getSimpleName(), null, MediaType.APPLICATION_JSON_TYPE);
         assertNotNull(employee);
-        String addressLink = "\"address\":{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/EmployeeAddress/201404";
+        String addressLink = "\"address\":{\"_link\":{\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/201404";
         assertTrue(employee.contains(addressLink));
 
         RestUtils.restDelete(context, new Integer(20130), Employee.class.getSimpleName(), Employee.class, null, null, MediaType.APPLICATION_JSON_TYPE);
@@ -631,7 +633,7 @@ public class ServerEmployeeTest {
     private void readEmployeeWithAddressLazyFetchOne2One(MediaType mediaType) throws Exception {
         // address on employee object is annoted to be LAZY fetch
         // Create an employee without any address, and make sure that read employee response doesn't contain address,
-        // then add an address to the employee and re-read the employee to make sure that the response contains a link to the address  
+        // then add an address to the employee and re-read the employee to make sure that the response contains a link to the address
         // even if it is fetched lazily.
 
         // create an employee
@@ -661,13 +663,13 @@ public class ServerEmployeeTest {
         assertNotNull(result);
 
         // make sure that response from restUpdateBidirectionalRelationship contains newly added address in employee object
-        String addressLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/EmployeeAddress/" + address.getId();
+        String addressLinkHref = RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/" + address.getId();
         assertTrue(result.contains(addressLinkHref));
 
         // read employee with an addresss
         String employeeWithAddress = RestUtils.restRead(context, new Integer(employee.getId()), Employee.class.getSimpleName(), null, mediaType);
         assertNotNull("Employee read failed.", employeeWithAddress);
-        // make sure employee has address 
+        // make sure employee has address
         assertTrue(employeeWithAddress.contains(addressLinkHref));
 
         // delete employee (cascade deletes address)
@@ -703,7 +705,7 @@ public class ServerEmployeeTest {
             assertNotNull(result);
             assertTrue(result.equals(expected));
         } else if (mediaType == MediaType.APPLICATION_OCTET_STREAM_TYPE) {
-            byte[] expectedResult = RestUtils.restNamedSingleResultQueryInByteArray("EmployeeAddress.getPicture", DEFAULT_PU, parameters, null, mediaType);
+            byte[] expectedResult = RestUtils.restNamedSingleResultQueryInByteArray(context, "EmployeeAddress.getPicture", DEFAULT_PU, parameters, null, mediaType);
             assertTrue(Arrays.equals(manhattan, expectedResult));
         } else {
             // unsupported media type
@@ -886,7 +888,7 @@ public class ServerEmployeeTest {
         // update employee with manager
         RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "manager", manager, mediaType, "managedEmployees", true);
 
-        // read manager and verify that the relationship is set correctly 
+        // read manager and verify that the relationship is set correctly
         manager = RestUtils.restRead(context, manager.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
@@ -905,12 +907,12 @@ public class ServerEmployeeTest {
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.contains("[{\"firstName\":\"Miles\",\"lastName\":\"Davis\",\"manager\""));
             assertTrue(queryResult.contains("managedEmployees\":[{"));
-            assertTrue(queryResult.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
+            assertTrue(queryResult.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
             assertTrue(queryResult.contains("{\"firstName\":\"Charlie\",\"lastName\":\"Parker\"}"));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             assertTrue(queryResult.contains("<item><firstName>Miles</firstName><lastName>Davis</lastName><manager"));
             assertTrue(queryResult.contains("<managedEmployees><_link"));
-            assertTrue(queryResult.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
+            assertTrue(queryResult.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
             assertTrue(queryResult.contains("</managedEmployees>"));
             assertTrue(queryResult.contains("<item><firstName>Charlie</firstName><lastName>Parker</lastName></item>"));
         } else {
@@ -1114,7 +1116,7 @@ public class ServerEmployeeTest {
         RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", largeProject,
                 mediaType, "teamLeader", true);
 
-        // read employee and verify that the relationship is set correctly for the projects 
+        // read employee and verify that the relationship is set correctly for the projects
         String employeeUpdated = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), null, mediaType);
         assertNotNull("Employee read failed.", employeeUpdated);
         assertTrue(employeeUpdated.contains("SmallProject/" + smallProject.getId()));
@@ -1126,12 +1128,12 @@ public class ServerEmployeeTest {
                 String allProjectsRemoved = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", mediaType, "teamLeader", null);
                 // verify relationships
                 assertTrue(allProjectsRemoved.contains("\"firstName\":\"Charles\",\"gender\":\"Male\",\"id\":" + employee.getId() + ",\"lastName\":\"Mingus\",\"responsibilities\":[],\"salary\":0.0"));
-                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
-                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
-                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
-                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
-                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
-                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
                 // there must be no project associated with this employee
                 assertTrue(allProjectsRemoved.contains("projects\":[]"));
             } else {
@@ -1140,25 +1142,25 @@ public class ServerEmployeeTest {
                 String largeProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", mediaType, "teamLeader", String.valueOf(largeProject.getId()));
                 // verify relationships
                 assertTrue(largeProjectDisassociated.contains("\"firstName\":\"Charles\",\"gender\":\"Male\",\"id\":" + employee.getId() + ",\"lastName\":\"Mingus\",\"responsibilities\":[],\"salary\":0.0"));
-                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
-                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
-                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
-                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
-                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
-                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
                 //the employee should have only small project after this
-                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId()));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId()));
 
                 // Disassociate small project from the employe
                 String smallProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", mediaType, "teamLeader", String.valueOf(smallProject.getId()));
                 // verify relationships
                 assertTrue(smallProjectDisassociated.contains("\"firstName\":\"Charles\",\"gender\":\"Male\",\"id\":" + employee.getId() + ",\"lastName\":\"Mingus\",\"responsibilities\":[],\"salary\":0.0"));
-                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
-                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
-                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
-                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
-                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
-                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
                 // there must be no project associated with this employee
                 assertTrue(smallProjectDisassociated.contains("projects\":[]"));
             }
@@ -1168,48 +1170,48 @@ public class ServerEmployeeTest {
                 String allProjectsRemoved = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", mediaType, "teamLeader", null);
                 // verify relationships
                 assertTrue(allProjectsRemoved.contains("<employee><firstName>Charles</firstName><gender>Male</gender><id>" + employee.getId() + "</id><lastName>Mingus</lastName><salary>0.0</salary>"));
-                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
-                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
-                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
-                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
-                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
-                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
                 // there must be no project associated with this employee
-                assertTrue(!allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
-                assertTrue(!allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
+                assertTrue(!allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
+                assertTrue(!allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
             } else {
                 // Disassociate large project from the employee
                 String largeProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", mediaType, "teamLeader", String.valueOf(largeProject.getId()));
                 assertTrue(largeProjectDisassociated.contains("<employee><firstName>Charles</firstName><gender>Male</gender><id>" + employee.getId() + "</id><lastName>Mingus</lastName><salary>0.0</salary>"));
-                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
-                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
-                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
-                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
-                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
-                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
                 // the employee should have only small project after this
-                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
-                assertTrue(!largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
+                assertTrue(!largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
 
                 // Disassociate small project from the employee
                 String smallProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects",
                         mediaType, "teamLeader", String.valueOf(smallProject.getId()));
                 assertTrue(smallProjectDisassociated.contains("<employee><firstName>Charles</firstName><gender>Male</gender><id>" + employee.getId() + "</id><lastName>Mingus</lastName><salary>0.0</salary>"));
-                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
-                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
-                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
-                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
-                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
-                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
                 // there must be no project associated with this employee
-                assertTrue(!smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
-                assertTrue(!smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
+                assertTrue(!smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
+                assertTrue(!smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
             }
         } else {
             // unsupported media type
             throw new RestCallFailedException(Status.BAD_REQUEST);
         }
-        // delete projects 
+        // delete projects
         RestUtils.restDelete(context, largeProject.getId(), LargeProject.class.getSimpleName(), LargeProject.class, null, null, mediaType);
         RestUtils.restDelete(context, smallProject.getId(), SmallProject.class.getSimpleName(), SmallProject.class, null, null, mediaType);
 
@@ -1241,7 +1243,7 @@ public class ServerEmployeeTest {
         // update employee with manager
         RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "manager", manager, mediaType, "managedEmployees", true);
 
-        // read manager and verify that the relationship is set correctly 
+        // read manager and verify that the relationship is set correctly
         manager = RestUtils.restRead(context, manager.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
@@ -1429,7 +1431,7 @@ public class ServerEmployeeTest {
         // update employee with manager
         RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "manager", manager, mediaType, "managedEmployees", true);
 
-        // read manager and verify that the relationship is set correctly 
+        // read manager and verify that the relationship is set correctly
         manager = RestUtils.restRead(context, manager.getId(), Employee.class.getSimpleName(), Employee.class, null, mediaType);
         assertNotNull("Manager read failed.", manager);
         assertNotNull("Manager's managed employee list is null", manager.getManagedEmployees());
@@ -1451,11 +1453,11 @@ public class ServerEmployeeTest {
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.contains("{\"firstName\":\"Miles\",\"lastName\":\"Davis\",\"manager\":"));
             assertTrue(queryResult.contains("managedEmployees\":[{"));
-            assertTrue(queryResult.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
+            assertTrue(queryResult.contains("href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             assertTrue(queryResult.contains("<item><firstName>Miles</firstName><lastName>Davis</lastName><manager"));
             assertTrue(queryResult.contains("<managedEmployees><_link"));
-            assertTrue(queryResult.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
+            assertTrue(queryResult.contains("href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
             assertTrue(queryResult.contains("</managedEmployees>"));
             assertTrue(queryResult.contains("</item>"));
         } else {

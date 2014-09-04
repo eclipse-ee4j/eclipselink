@@ -9,6 +9,8 @@
  *
  * Contributors:
  *      gonural - initial implementation
+ *      2014-09-01-2.6.0 Dmitry Kornilov
+ *        - JPARS 2.0 fixes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features.core.selflinks;
 
@@ -19,41 +21,86 @@ import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl;
+import org.eclipse.persistence.jpa.rs.features.ItemLinksBuilder;
 import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
-import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
+import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryResult;
 
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * FeatureResponseBuilder implementation generating 'self' and 'canonical' links. Used in JPARS 2.0.
+ *
+ * @author gonural, Dmitry Kornilov
+ * @since EclipseList 2.6.0
+ */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
         return response(context, items, uriInfo);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildReportQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, java.util.List, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
-        return populateReportQueryResultList(results, items, uriInfo);
+        ReportQueryResultCollection response = new ReportQueryResultCollection();
+        for (Object result : results) {
+            ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
+            List<JAXBElement> jaxbFields = createShellJAXBElementList(items, result);
+            if (jaxbFields == null) {
+                return null;
+            }
+            generateLinksInElementsList(context, jaxbFields);
+            queryResultListItem.setFields(jaxbFields);
+            response.addItem(queryResultListItem);
+        }
+        response.addLink(new LinkV2(ReservedWords.JPARS_REL_SELF, uriInfo.getRequestUri().toString()));
+        return response;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.String, java.lang.Object, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object buildSingleResultQueryResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, List<ReportItem> items, UriInfo uriInfo) {
+        final SingleResultQueryResult response = new SingleResultQueryResult();
+        final List<JAXBElement> fields = createShellJAXBElementList(items, result);
+        if (fields == null) {
+            return null;
+        }
+
+        // If there are entities in fields insert links there
+        generateLinksInElementsList(context, fields);
+
+        response.setFields(fields);
+        response.addLink(new LinkV2(ReservedWords.JPARS_REL_SELF, uriInfo.getRequestUri().toString()));
+        return response;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object item, UriInfo uriInfo) {
@@ -63,69 +110,95 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         return item;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilderImpl#buildSingleEntityResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.Object, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
         if (result instanceof PersistenceWeavedRest) {
-            ItemLinks itemLinks = new ItemLinks();
-            ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
-            PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
-            String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
-            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
-            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_CANONICAL, href));
-            entity._persistence_setLinks(itemLinks);
+            return generateEntityLinks(context, (PersistenceWeavedRest) result, true);
         }
         return result;
+    }
+
+    private Object callGetterForProperty(Object bean, String propertyName) {
+        try {
+            final BeanInfo info = Introspector.getBeanInfo(bean.getClass(), Object.class);
+            final PropertyDescriptor[] props = info.getPropertyDescriptors();
+            for (PropertyDescriptor pd : props) {
+                if (propertyName.equals(pd.getName())) {
+                    return pd.getReadMethod().invoke(bean);
+                }
+            }
+        } catch (InvocationTargetException e) {
+            throw JPARSException.exceptionOccurred(e);
+        } catch (IntrospectionException e) {
+            throw JPARSException.exceptionOccurred(e);
+        } catch (IllegalAccessException e) {
+            throw JPARSException.exceptionOccurred(e);
+        }
+
+        return null;
     }
 
     private Object response(PersistenceContext context, List<Object> results, UriInfo uriInfo) {
         if ((results != null) && (!results.isEmpty())) {
-            return populateReadAllQueryResultList(context, results, uriInfo);
+            final ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
+            for (Object item : results) {
+                final Object result = buildSingleEntityResponse(context, null, item, uriInfo);
+                response.addItem(result);
+            }
+
+            response.addLink(new LinkV2(ReservedWords.JPARS_REL_SELF, uriInfo.getRequestUri().toString()));
+            return response;
         }
         return results;
     }
 
-    private PageableCollection populateReportQueryResultList(List<Object[]> results, List<ReportItem> reportItems, UriInfo uriInfo) {
-        ReportQueryResultCollection response = new ReportQueryResultCollection();
-        for (Object result : results) {
-            ReportQueryResultListItem queryResultListItem = new ReportQueryResultListItem();
-            List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems, result);
-            if (jaxbFields == null) {
-                return null;
+    private void generateLinksInElementsList(PersistenceContext context, List<JAXBElement> fields) {
+        for (JAXBElement field : fields) {
+            if (field.getValue() instanceof PersistenceWeavedRest) {
+                final PersistenceWeavedRest entity = (PersistenceWeavedRest) field.getValue();
+                generateEntityLinks(context, entity, false);
             }
-            // We don't have a way of determining self links for the report query responses
-            // so, no links array will be inserted into individual items in the response
-            queryResultListItem.setFields(jaxbFields);
-            response.addItem(queryResultListItem);
         }
-        response.addLink(new LinkV2(ReservedWords.JPARS_REL_SELF, uriInfo.getRequestUri().toString()));
-        return response;
     }
 
-    private PageableCollection populateReadAllQueryResultList(PersistenceContext context, List<Object> items, UriInfo uriInfo) {
-        ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
-        for (Object item : items) {
-            response.addItem(populateReadAllQueryResultListItemLinks(context, item));
-        }
+    private PersistenceWeavedRest generateEntityLinks(PersistenceContext context, PersistenceWeavedRest entity, boolean processRelationships) {
+        final ClassDescriptor classDescriptor = context.getServerSession().getProject().getDescriptor(entity.getClass());
+        final String entityClassName = classDescriptor.getAlias();
+        final String entityId = IdHelper.stringifyId(entity, entityClassName, context);
+        final String href = HrefHelper.buildEntityHref(context, entityClassName, entityId);
 
-        response.addLink(new LinkV2(ReservedWords.JPARS_REL_SELF, uriInfo.getRequestUri().toString()));
-        return response;
-    }
+        // No links for embedded objects
+        if (!classDescriptor.isAggregateDescriptor()) {
+            final ItemLinks itemLinks = (new ItemLinksBuilder())
+                    .addSelf(href)
+                    .addCanonical(href)
+                    .build();
 
-    private Object populateReadAllQueryResultListItemLinks(PersistenceContext context, Object result) {
-        // populate links for the entity
-        ItemLinks itemLinks = new ItemLinks();
-        ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
-        if ((result instanceof PersistenceWeavedRest) && (descriptor != null) && (context != null)) {
-            PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
-            String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
-            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_SELF, href));
-            itemLinks.addItem(new LinkV2(ReservedWords.JPARS_REL_CANONICAL, href));
             entity._persistence_setLinks(itemLinks);
-            return entity;
         }
-        return result;
+
+        // Generate links for all referenced entities.
+        if (processRelationships) {
+            for (final Field field : entity.getClass().getDeclaredFields()) {
+                if (PersistenceWeavedRest.class.isAssignableFrom(field.getType())) {
+                    final PersistenceWeavedRest obj = (PersistenceWeavedRest) callGetterForProperty(entity, field.getName());
+                    if (obj != null) {
+                        final String fieldClassName = context.getJAXBDescriptorForClass(field.getType()).getAlias();
+                        final String fieldId = IdHelper.stringifyId(obj, fieldClassName, context);
+
+                        final ItemLinks links = (new ItemLinksBuilder())
+                                .addSelf(HrefHelper.buildEntityFieldHref(context, entityClassName, entityId, field.getName()))
+                                .addCanonical(HrefHelper.buildEntityHref(context, fieldClassName, fieldId))
+                                .build();
+
+                        obj._persistence_setLinks(links);
+                    }
+                }
+            }
+        }
+        return entity;
     }
 }

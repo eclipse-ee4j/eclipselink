@@ -7,6 +7,8 @@
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
+ * Contributors:
+ * 		gonural - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.model.employee;
 
@@ -14,7 +16,6 @@ import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.eclipse.persistence.jpa.rs.annotations.RestPageable;
 import org.eclipse.persistence.jpa.rs.annotations.RestPageableQueries;
 import org.eclipse.persistence.jpa.rs.annotations.RestPageableQuery;
 
@@ -144,7 +145,6 @@ public class Employee {
     private List<String> responsibilities = new ArrayList<String>();
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-    @RestPageable(limit = 2)
     private Set<Expertise> expertiseAreas = new HashSet<Expertise>();
 
     @ManyToOne(cascade = PERSIST, fetch = LAZY)

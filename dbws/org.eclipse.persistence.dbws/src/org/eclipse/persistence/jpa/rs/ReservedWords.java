@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      gonural - initial 
+ *      gonural - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
@@ -24,7 +24,7 @@ public class ReservedWords {
     public static final String JPARS_LINK_NAME = "link";
     public static final String JPARS_LINKS_NAME = "links";
 
-    // Link relationships 
+    // Link relationships
     public static final String JPARS_REL_NEXT = "next";
     public static final String JPARS_REL_PREV = "prev";
     public static final String JPARS_REL_SELF = "self";

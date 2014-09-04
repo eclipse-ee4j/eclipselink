@@ -10,43 +10,34 @@
  * Contributors:
  *      Dmitry Kornilov - initial implementation
  ******************************************************************************/
-
 package org.eclipse.persistence.jpa.rs.features.fieldsfiltering;
 
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Fields filtering feature validator/processor.
  *
  * @author Dmitry Kornilov
+ * @since EclipseLink 2.6.0
  */
 public final class FieldsFilteringValidator {
     public static final String FIELDS_PARAM_NAME = "fields";
     public static final String EXCL_FIELDS_PARAM_NAME = "excludeFields";
 
-    private final Object entity;
-    private final PersistenceContext context;
     private final Map<String, Object> queryParameters;
-    private List<String> fields;
+    private FieldsFilter filter;
 
     /**
      * Creates the validator.
      *
      * @param uri request URI.
      */
-    public FieldsFilteringValidator(PersistenceContext context, UriInfo uri, Object entity) {
+    public FieldsFilteringValidator(UriInfo uri) {
         queryParameters = AbstractResource.getQueryParameters(uri);
-        this.entity = entity;
-        this.context = context;
     }
 
     /**
@@ -66,33 +57,20 @@ public final class FieldsFilteringValidator {
         }
 
         if (queryParameters.containsKey(FIELDS_PARAM_NAME)) {
-            // fields
-            fields = Arrays.asList(((String) queryParameters.get(FIELDS_PARAM_NAME)).split("\\s*,\\s*"));
+            filter = new FieldsFilter(FieldsFilterType.INCLUDE, ((String) queryParameters.get(FIELDS_PARAM_NAME)));
         } else {
-            // excludeFields
-            List<String> excludeFields = Arrays.asList(((String) queryParameters.get(EXCL_FIELDS_PARAM_NAME)).split("\\s*,\\s*"));
-
-            // Get attribute mappings from class descriptor. We just need an attributes list actually
-            List<DatabaseMapping> mappings = context.getServerSession().getProject().getDescriptors().get(entity.getClass()).getMappings();
-
-            // Build fields list as all fields without the excluded ones
-            fields = new ArrayList<String>();
-            for (DatabaseMapping mapping : mappings) {
-                if (!excludeFields.contains(mapping.getAttributeName())) {
-                    fields.add(mapping.getAttributeName());
-                }
-            }
+            filter = new FieldsFilter(FieldsFilterType.EXCLUDE, ((String) queryParameters.get(EXCL_FIELDS_PARAM_NAME)));
         }
 
         return true;
     }
 
     /**
-     * Gets a list of fields need to be returned in response. Has to be called after isFeatureApplicable() method.
+     * {@link FieldsFilter} object containing a list of fields to filter.
      *
-     * @return A list of entity attributes which have to be included in response.
+     * @return FieldsFilter
      */
-    public List<String> getFields() {
-        return fields;
+    public FieldsFilter getFilter() {
+        return filter;
     }
 }

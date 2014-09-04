@@ -8,7 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - pagination related changes
+ *      gonural - Initial implementation
+ *      2014-09-01-2.6.0 Dmitry Kornilov
+ *        - JPARS v2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
 
@@ -116,8 +118,8 @@ public abstract class AbstractQueryResource extends AbstractResource {
     @SuppressWarnings("unchecked")
     private Response namedQueryResponse(PersistenceContext context, String queryName, DatabaseQuery dbQuery, Query query, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
         // We need to add limit and offset to query parameters because request builder reads it from there
-        Map<String, Object> queryParams = getQueryParameters(uriInfo);
-        if (query.getMaxResults() != -1) {
+        final Map<String, Object> queryParams = getQueryParameters(uriInfo);
+        if (query.getMaxResults() != Integer.MAX_VALUE) {
             queryParams.put(QueryParameters.JPARS_PAGING_LIMIT, String.valueOf(query.getMaxResults()));
             queryParams.put(QueryParameters.JPARS_PAGING_OFFSET, String.valueOf(query.getFirstResult()));
         }

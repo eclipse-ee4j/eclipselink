@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,13 +8,23 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     gonural - initial implementation
+ *     gonural - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.rs.metadata.model;
 
+import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * Represents a link used in JPARS 2.0.
+ *
+ * @author gonural
+ * @since EclipseLink 2.6.0.
+ */
 public class LinkV2 {
+    @XmlAttribute
     private String rel;
+
+    @XmlAttribute
     private String href;
 
     public LinkV2() {

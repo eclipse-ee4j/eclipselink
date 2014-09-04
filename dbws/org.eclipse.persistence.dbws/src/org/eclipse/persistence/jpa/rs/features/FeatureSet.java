@@ -8,13 +8,21 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      gonural - initial implementation
+ *      gonural - Initial implementation
+ *      2014-09-01-2.6.0 Dmitry Kornilov
+ *        - added getMetadataSources, getDynamicMetadataSource and getSessionEventListener methods
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features;
 
+import org.eclipse.persistence.internal.jaxb.SessionEventListener;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jaxb.metadata.MetadataSource;
+
+import java.util.List;
+
 /**
- * This interface represents one feature of the JPARS. Features can be supported or not
- * supported by different versions of the service.
+ * This interface represents a set of JPARS features. Each service version has it's
+ * own implementation of this interface.
  */
 public interface FeatureSet {
     public enum Feature {
@@ -43,4 +51,31 @@ public interface FeatureSet {
      * @return {@link FeatureResponseBuilder}
      */
     FeatureResponseBuilder getResponseBuilder(Feature feature);
+
+    /**
+     * Gets a list of {@link MetadataSource} related to this version. Called on JAXB context
+     * initialization.
+     *
+     * @return a list of {@link MetadataSource}
+     */
+    List<MetadataSource> getMetadataSources();
+
+    /**
+     * Builds a dynamic {@link MetadataSource} for given package. Called on JAXB context
+     * initialization.
+     *
+     * @param session the session
+     * @param packageName package name to build meta data for.
+     *
+     * @return {@link MetadataSource}
+     */
+    MetadataSource getDynamicMetadataSource(AbstractSession session, String packageName);
+
+    /**
+     * Returns {@link SessionEventListener} related to this version.
+     *
+     * @param session the session
+     * @return {@link SessionEventListener}
+     */
+    SessionEventListener getSessionEventListener(AbstractSession session);
 }

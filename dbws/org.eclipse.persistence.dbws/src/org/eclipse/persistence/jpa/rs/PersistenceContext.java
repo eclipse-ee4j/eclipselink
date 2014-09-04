@@ -8,8 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * 		dclarke/tware - initial
- * 	    Dmitry Kornilov - Pagination related changes
+ * 	   dclarke/tware - initial
+ *     2014-09-01-2.6.0 Dmitry Kornilov
+ *       - JPARS 2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
@@ -20,9 +21,12 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.jaxb.SessionEventListener;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
+import org.eclipse.persistence.internal.jpa.weaving.RestCollectionAdapterClassWriter;
+import org.eclipse.persistence.internal.jpa.weaving.RestReferenceAdapterV2ClassWriter;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredFields;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
@@ -35,6 +39,7 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.ObjectGraph;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
@@ -43,10 +48,12 @@ import org.eclipse.persistence.jpa.rs.annotations.RestPageableQuery;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
+import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilter;
+import org.eclipse.persistence.jpa.rs.util.CollectionWrapperBuilder;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
-import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
+import org.eclipse.persistence.jpa.rs.util.ObjectGraphBuilder;
 import org.eclipse.persistence.jpa.rs.util.ResourceLocalTransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
@@ -54,20 +61,6 @@ import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.DynamicXMLMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.ErrorResponseMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.ItemLinksMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaLangMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaMathMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaUtilMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.LinkMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.LinkV2MetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.ReadAllQueryResultCollectionMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.ReportQueryResultCollectionMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.ReportQueryResultListItemMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.ReportQueryResultListMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.SimpleHomogeneousListMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.SingleResultQueryListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -133,6 +126,7 @@ import java.util.Set;
 public class PersistenceContext {
     public static final String JPARS_CONTEXT = "eclipselink.jpars.context";
     public static final String CLASS_NAME = PersistenceContext.class.getName();
+    public static final String SESSION_VERSION_PROPERTY = "jaxb.context.version";
 
     @SuppressWarnings("rawtypes")
     protected List<XmlAdapter> adapters = null;
@@ -149,7 +143,7 @@ public class PersistenceContext {
     /** The JAXBConext used to produce JSON or XML **/
     protected JAXBContext jaxbContext = null;
 
-    /** The URI of the Persistence context.  This is used to build Links in JSON and XML **/
+    /** The URI of the Persistence context. This is used to build Links in JSON and XML **/
     protected URI baseURI = null;
 
     protected TransactionWrapper transaction = null;
@@ -157,6 +151,9 @@ public class PersistenceContext {
     private Boolean weavingEnabled = null;
 
     private ServiceVersion version = ServiceVersion.NO_VERSION;
+
+    /** Builder for collection proxies used in JPARS 2.0. **/
+    private CollectionWrapperBuilder collectionWrapperBuilder;
 
     /**
      * JPARS pageable queries map.
@@ -177,24 +174,7 @@ public class PersistenceContext {
      */
     public PersistenceContext(String emfName, EntityManagerFactoryImpl emf, URI defaultURI) {
         super();
-        this.emf = emf;
-        this.name = emfName;
-        this.baseURI = defaultURI;
-
-        if (getServerSession().hasExternalTransactionController()) {
-            transaction = new JTATransactionWrapper();
-        } else {
-            transaction = new ResourceLocalTransactionWrapper();
-        }
-        try {
-            this.jaxbContext = createDynamicJAXBContext(emf.getDatabaseSession());
-        } catch (JAXBException jaxbe) {
-            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, jaxbe.toString() }, jaxbe);
-            emf.close();
-        } catch (IOException e) {
-            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, e.toString() }, e);
-            emf.close();
-        }
+        init(emfName, emf, defaultURI, null);
     }
 
     /**
@@ -206,8 +186,31 @@ public class PersistenceContext {
      * @param version REST service version
      */
     public PersistenceContext(String emfName, EntityManagerFactoryImpl emf, URI defaultURI, ServiceVersion version) {
-        this(emfName, emf, defaultURI);
+        super();
+        init(emfName, emf, defaultURI, version);
+    }
+
+    private void init(String emfName, EntityManagerFactoryImpl emf, URI defaultURI, ServiceVersion version) {
+        this.emf = emf;
+        this.name = emfName;
+        this.baseURI = defaultURI;
         this.version = version;
+
+        if (getServerSession().hasExternalTransactionController()) {
+            transaction = new JTATransactionWrapper();
+        } else {
+            transaction = new ResourceLocalTransactionWrapper();
+        }
+
+        try {
+            this.jaxbContext = createDynamicJAXBContext(emf.getDatabaseSession());
+        } catch (JAXBException jaxbe) {
+            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, jaxbe.toString() }, jaxbe);
+            emf.close();
+        } catch (IOException e) {
+            JPARSLogger.exception("exception_creating_jaxb_context", new Object[] { emfName, e.toString() }, e);
+            emf.close();
+        }
     }
 
     /**
@@ -229,6 +232,15 @@ public class PersistenceContext {
      */
     public String getVersion() {
         return version.getCode();
+    }
+
+    /**
+     * Gets JPARS version.
+     *
+     * @return JPARS version.
+     */
+    public ServiceVersion getServiceVersion() {
+        return version;
     }
 
     /**
@@ -254,7 +266,7 @@ public class PersistenceContext {
         }
 
         for (String packageName : packages) {
-            metadataSources.add(new DynamicXMLMetadataSource(session, packageName));
+            metadataSources.add(getSupportedFeatureSet().getDynamicMetadataSource(session, packageName));
         }
     }
 
@@ -287,16 +299,17 @@ public class PersistenceContext {
      * @return
      */
     protected JAXBContext createDynamicJAXBContext(AbstractSession session) throws JAXBException, IOException {
-        JAXBContext jaxbContext = (JAXBContext) session.getProperty(JAXBContext.class.getName());
-        if (jaxbContext != null) {
-            return jaxbContext;
+        final ServiceVersion cachedContextVersion = (ServiceVersion) session.getProperty(SESSION_VERSION_PROPERTY);
+        final JAXBContext cachedContext = (JAXBContext) session.getProperty(JAXBContext.class.getName());
+        if (cachedContext != null && cachedContextVersion != null && cachedContextVersion == version) {
+            return cachedContext;
         }
 
-        Map<String, Object> properties = createJAXBProperties(session);
+        final Map<String, Object> properties = createJAXBProperties(session);
+        final ClassLoader cl = session.getDatasourcePlatform().getConversionManager().getLoader();
+        final JAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(cl, properties);
 
-        ClassLoader cl = session.getDatasourcePlatform().getConversionManager().getLoader();
-        jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(cl, properties);
-
+        session.setProperty(SESSION_VERSION_PROPERTY, version);
         session.setProperty(JAXBContext.class.getName(), jaxbContext);
 
         return jaxbContext;
@@ -338,8 +351,8 @@ public class PersistenceContext {
         List<Object> metadataLocations = new ArrayList<Object>();
 
         addDynamicXMLMetadataSources(metadataLocations, session);
-        String oxmLocation = (String) emf.getProperties().get("eclipselink.jpa-rs.oxm");
 
+        String oxmLocation = (String) emf.getProperties().get("eclipselink.jpa-rs.oxm");
         if (oxmLocation != null) {
             metadataLocations.add(oxmLocation);
         }
@@ -353,23 +366,17 @@ public class PersistenceContext {
             }
         }
 
-        metadataLocations.add(new LinkMetadataSource());
-        metadataLocations.add(new ReportQueryResultListMetadataSource());
-        metadataLocations.add(new ReportQueryResultListItemMetadataSource());
-        metadataLocations.add(new SingleResultQueryListMetadataSource());
-        metadataLocations.add(new SimpleHomogeneousListMetadataSource());
-        metadataLocations.add(new ReportQueryResultCollectionMetadataSource());
-        metadataLocations.add(new ReadAllQueryResultCollectionMetadataSource());
-
-        metadataLocations.add(new JavaLangMetadataSource());
-        metadataLocations.add(new JavaMathMetadataSource());
-        metadataLocations.add(new JavaUtilMetadataSource());
-        metadataLocations.add(new LinkV2MetadataSource());
-        metadataLocations.add(new ItemLinksMetadataSource());
-        metadataLocations.add(new ErrorResponseMetadataSource());
+        // Add static metadata sources specific to current version
+        for (MetadataSource metadataSource : getSupportedFeatureSet().getMetadataSources()) {
+            metadataLocations.add(metadataSource);
+        }
 
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataLocations);
-        properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, new PreLoginMappingAdapter(session));
+
+        SessionEventListener sessionEventListener = getSupportedFeatureSet().getSessionEventListener(session);
+        if (sessionEventListener != null) {
+            properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
+        }
 
         // Bug 410095 - JSON_WRAPPER_AS_ARRAY_NAME property doesn't work when jaxb context is created using DynamicJAXBContextFactory
         //properties.put(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
@@ -782,7 +789,6 @@ public class PersistenceContext {
      * @param entity
      * @return
      */
-
     @SuppressWarnings("rawtypes")
     public Object merge(Map<String, String> tenantId, Object entity) {
         EntityManager em = getEmf().createEntityManager(tenantId);
@@ -1135,9 +1141,18 @@ public class PersistenceContext {
         JPARSLogger.exiting(CLASS_NAME, "marshallEntity", this, object, mediaType);
     }
 
-    public void marshallEntity(Object object, List<String> fields, MediaType mediaType, OutputStream output) throws JAXBException {
-        JPARSLogger.entering(CLASS_NAME, "marshallEntity", new Object[] { object, fields, mediaType });
-        marshall(object, mediaType, output, true, fields);
+    /**
+     * Marshall an entity to either JSON or XML.
+     *
+     * @param object the object to marshal.
+     * @param filter the filter (included/excluded fields) to use.
+     * @param mediaType the media type (XML/JSON).
+     * @param output the result.
+     * @throws JAXBException
+     */
+    public void marshallEntity(Object object, FieldsFilter filter, MediaType mediaType, OutputStream output) throws JAXBException {
+        JPARSLogger.entering(CLASS_NAME, "marshallEntity", new Object[] { object, filter, mediaType });
+        marshall(object, mediaType, output, true, filter);
         JPARSLogger.exiting(CLASS_NAME, "marshallEntity", this, object, mediaType);
     }
 
@@ -1159,24 +1174,23 @@ public class PersistenceContext {
     /**
      * Marshall an entity to either JSON or XML.
      *
-     * @param object
-     * @param mediaType
-     * @param output
+     * @param object the object to marshal.
+     * @param mediaType the media type (XML/JSON).
+     * @param output the result.
      * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending
      *                          the actual objects in the relationships.
-     * @param fields            A list of fields to marshall.
+     * @param fieldsFilter      Specifies fields to include/exclude from the response.
      * @throws JAXBException
      */
-    public void marshall(final Object object, final MediaType mediaType, final OutputStream output, boolean sendRelationships, final List<String> fields) throws JAXBException {
-        if (sendRelationships) {
+    public void marshall(final Object object, final MediaType mediaType, final OutputStream output, boolean sendRelationships, final FieldsFilter fieldsFilter) throws JAXBException {
+        if (version.compareTo(ServiceVersion.VERSION_2_0) < 0 && sendRelationships) {
             preMarshallEntity(object);
         }
 
-        Marshaller marshaller = getJAXBContext().createMarshaller();
+        final Marshaller marshaller = getJAXBContext().createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
         marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         marshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
-
         marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
 
         marshaller.setAdapter(new LinkAdapter(getBaseURI().toString(), this));
@@ -1186,8 +1200,17 @@ public class PersistenceContext {
             marshaller.setAdapter(adapter);
         }
 
-        if (fields != null) {
-            marshaller.setProperty(MarshallerProperties.OBJECT_GRAPH, createObjectGraph(object, fields));
+        // v2.0 and higher
+        if (version.compareTo(ServiceVersion.VERSION_2_0) >= 0) {
+            // Create proxies for collections
+            getCollectionWrapperBuilder().wrapCollections(object);
+
+            // Build object graph + fields filtering
+            final ObjectGraphBuilder objectGraphBuilder = new ObjectGraphBuilder(this);
+            final ObjectGraph objectGraph = objectGraphBuilder.createObjectGraph(object, fieldsFilter);
+            if (objectGraph != null) {
+                marshaller.setProperty(MarshallerProperties.OBJECT_GRAPH, objectGraph);
+            }
         }
 
         if (mediaType == MediaType.APPLICATION_XML_TYPE && object instanceof List) {
@@ -1209,7 +1232,9 @@ public class PersistenceContext {
             }
         } else {
             marshaller.marshal(object, output);
-            postMarshallEntity(object);
+            if (version.compareTo(ServiceVersion.VERSION_2_0) < 0) {
+                postMarshallEntity(object);
+            }
         }
     }
 
@@ -1330,17 +1355,38 @@ public class PersistenceContext {
         }
         adapters = new ArrayList<XmlAdapter>();
         try {
+            final ClassLoader cl = getServerSession().getDatasourcePlatform().getConversionManager().getLoader();
+
             for (ClassDescriptor desc : this.getServerSession().getDescriptors().values()) {
-                // avoid embeddables
-                if (!desc.isAggregateCollectionDescriptor() && !desc.isAggregateDescriptor()) {
-                    Class clz = desc.getJavaClass();
-                    String referenceAdapterName = RestAdapterClassWriter.constructClassNameForReferenceAdapter(clz.getName());
-                    ClassLoader cl = getServerSession().getDatasourcePlatform().getConversionManager().getLoader();
-                    Class referenceAdaptorClass = Class.forName(referenceAdapterName, true, cl);
-                    Class[] argTypes = { String.class, PersistenceContext.class };
-                    Constructor referenceAdaptorConstructor = referenceAdaptorClass.getDeclaredConstructor(argTypes);
-                    Object[] args = new Object[] { getBaseURI().toString(), this };
-                    adapters.add((XmlAdapter) referenceAdaptorConstructor.newInstance(args));
+                if (version.compareTo(ServiceVersion.VERSION_2_0) >= 0) {
+                    // Version is 2.0 or higher
+                    // Collection adapter
+                    final String collectionAdapterName = RestCollectionAdapterClassWriter.getClassName(desc.getJavaClass().getName());
+                    final Class collectionAdaptorClass = Class.forName(collectionAdapterName, true, cl);
+                    final Class[] argTypes = {PersistenceContext.class};
+                    final Constructor collectionAdaptorConstructor = collectionAdaptorClass.getDeclaredConstructor(argTypes);
+                    final Object[] args = new Object[]{this};
+                    adapters.add((XmlAdapter) collectionAdaptorConstructor.newInstance(args));
+
+                    // Reference adapter
+                    final String refAdapterName = RestReferenceAdapterV2ClassWriter.getClassName(desc.getJavaClass().getName());
+                    final Class refAdaptorClass = Class.forName(refAdapterName, true, cl);
+                    final Class[] refAdapterTypes = {PersistenceContext.class};
+                    final Constructor refAdaptorConstructor = refAdaptorClass.getDeclaredConstructor(refAdapterTypes);
+                    final Object[] refAdapterArgs = new Object[]{this};
+                    adapters.add((XmlAdapter) refAdaptorConstructor.newInstance(refAdapterArgs));
+                } else {
+                    // Version is 1.0 or below
+                    // avoid embeddables
+                    if (!desc.isAggregateCollectionDescriptor() && !desc.isAggregateDescriptor()) {
+                        Class clz = desc.getJavaClass();
+                        String referenceAdapterName = RestAdapterClassWriter.constructClassNameForReferenceAdapter(clz.getName());
+                        Class referenceAdaptorClass = Class.forName(referenceAdapterName, true, cl);
+                        Class[] argTypes1 = {String.class, PersistenceContext.class};
+                        Constructor referenceAdaptorConstructor = referenceAdaptorClass.getDeclaredConstructor(argTypes1);
+                        Object[] args1 = new Object[]{getBaseURI().toString(), this};
+                        adapters.add((XmlAdapter) referenceAdaptorConstructor.newInstance(args1));
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -1464,24 +1510,17 @@ public class PersistenceContext {
     }
 
     /**
-     * Creates {@link ObjectGraph} from the given list of entity attributes.
+     * Getter for the collectionWrapperBuilder property with lazy initialization.
      *
-     * @param entity An entity to create object graph for.
-     * @param fields A list of entity attributes.
-     * @return Object graph
+     * @return the collectionWrapperBuilder.
      */
-    private ObjectGraph createObjectGraph(final Object entity, final List<String> fields) {
-        ObjectGraph objectGraph = getJAXBContext().createObjectGraph(entity.getClass());
-        objectGraph.addAttributeNodes("_persistence_links", "_persistence_relationshipInfo");
-        for (String field : fields) {
-            objectGraph.addAttributeNodes(field);
+    public CollectionWrapperBuilder getCollectionWrapperBuilder() {
+        if (collectionWrapperBuilder == null) {
+            collectionWrapperBuilder = new CollectionWrapperBuilder(this);
         }
-        return objectGraph;
+        return collectionWrapperBuilder;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -1491,9 +1530,6 @@ public class PersistenceContext {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {

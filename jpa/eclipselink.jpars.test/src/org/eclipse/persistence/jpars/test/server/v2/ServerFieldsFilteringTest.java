@@ -10,7 +10,7 @@
  * Contributors:
  *      Dmitry Kornilov - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpars.test.server;
+package org.eclipse.persistence.jpars.test.server.v2;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -42,12 +42,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class ServerFieldsFilteringTest {
     private static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars.test.server");
-
-    private static final String JPA_RS_VERSION_STRING = "jpars.version.string";
+    private static final String JPARS_VERSION = "v2.0";
     private static final String DEFAULT_PU = "jpars_basket-static";
 
     private static PersistenceContext context;
-    private static PersistenceFactoryBase factory;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -56,9 +54,8 @@ public class ServerFieldsFilteringTest {
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        System.setProperty(JPA_RS_VERSION_STRING, "v2.0");
-        factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), null, true);
+        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
+        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, true);
         initData();
     }
 

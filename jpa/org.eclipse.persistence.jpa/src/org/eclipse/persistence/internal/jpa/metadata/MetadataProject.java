@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -97,27 +97,10 @@
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  *     07/16/2013-2.5.1 Guy Pelletier 
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
+ *     09/01/2014-2.6.0 Dmitry Kornilov
+ *       - JPARS 2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
-
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.SharedCacheMode;
-import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -153,6 +136,8 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitDefaults;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitMetadata;
 import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
+import org.eclipse.persistence.internal.jpa.weaving.RestCollectionAdapterClassWriter;
+import org.eclipse.persistence.internal.jpa.weaving.RestReferenceAdapterV2ClassWriter;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
@@ -162,6 +147,24 @@ import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
+
+import javax.persistence.SharedCacheMode;
+import javax.persistence.spi.PersistenceUnitInfo;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
 
 /**
  * INTERNAL:
@@ -319,9 +322,22 @@ public class MetadataProject {
             for (EntityAccessor accessor : getEntityAccessors()) {
                 String className = accessor.getParentClassName();
                 if (className == null || getEntityAccessor(className) == null) {
-                    RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(
-                            accessor.getJavaClassName());
+                    // Reference adapter for JPARS version < 2.0
+                    RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(accessor.getJavaClassName());
                     dcl.addClass(restAdapter.getClassName(), restAdapter);
+                }
+            }
+
+            for (ClassAccessor classAccessor : getAllAccessors()) {
+                String className = classAccessor.getParentClassName();
+                if (className == null || getEntityAccessor(className) == null) {
+                    // Collection adapter for JPARS version >= 2.0
+                    RestCollectionAdapterClassWriter restCollectionAdapter = new RestCollectionAdapterClassWriter(classAccessor.getJavaClassName());
+                    dcl.addClass(restCollectionAdapter.getClassName(), restCollectionAdapter);
+
+                    // Reference adapter for JPARS version >= 2.0
+                    RestReferenceAdapterV2ClassWriter restReferenceAdapterV2 = new RestReferenceAdapterV2ClassWriter(classAccessor.getJavaClassName());
+                    dcl.addClass(restReferenceAdapterV2.getClassName(), restReferenceAdapterV2);
                 }
             }
         }
@@ -333,7 +349,6 @@ public class MetadataProject {
      * session as its Session and weavingEnabled as its global dynamic weaving state.
      * @param puInfo - the PersistenceUnitInfo
      * @param session - the Session
-     * @param weavingEnabled - flag for global dynamic weaving state
      */
     public MetadataProject(PersistenceUnitInfo puInfo, AbstractSession session, boolean weaveLazy, boolean weaveEager, boolean weaveFetchGroups, boolean multitenantSharedEmf, boolean multitenantSharedCache) {
         m_isSharedCacheModeInitialized = false;

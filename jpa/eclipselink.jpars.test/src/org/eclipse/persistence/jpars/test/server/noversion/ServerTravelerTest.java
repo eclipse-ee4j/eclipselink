@@ -1,26 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2014 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      gonural - initial 
+ *      gonural - initial
+ *      2014-09-01-2.6.0 Dmitry Kornilov
+ *         - Moved to another package
  ******************************************************************************/
-package org.eclipse.persistence.jpars.test.server;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.persistence.Persistence;
-import javax.ws.rs.core.MediaType;
+package org.eclipse.persistence.jpars.test.server.noversion;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -33,10 +25,20 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.persistence.Persistence;
+import javax.ws.rs.core.MediaType;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 public class ServerTravelerTest {
     private static final String DEFAULT_PU = "jpars_traveler-static";
-    private static PersistenceContext context = null;
-    private static PersistenceFactoryBase factory = null;
+    private static final String JPARS_VERSION = null;
+
+    protected static PersistenceContext context = null;
 
     /**
      * Setup.
@@ -50,8 +52,8 @@ public class ServerTravelerTest {
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), null, true);
+        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
+        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, true);
         if (context == null) {
             throw new Exception("Persistence context could not be created.");
         }

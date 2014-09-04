@@ -1,0 +1,17 @@
+{
+   "firstName": "Jacob",
+   "gender": "Male",
+   "id": 743627,
+   "lastName": "Smith",
+   "salary": 0,
+   "phoneNumbers": {
+       "items": [
+           {
+               "type": "phoneNumber",
+               "id": 743627,
+               "type": "cell",
+               "areaCode": "613"
+           }
+       ]
+   }
+}

@@ -8,9 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - pagination and fields filtering related changes
+ *      gonural - Initial implementation
+ *      2014-09-01-2.6.0 Dmitry Kornilov
+ *        - JPARS v2.0 related changes
  ******************************************************************************/
-
 package org.eclipse.persistence.jpa.rs.resources.common;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -24,6 +25,7 @@ import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
+import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
 import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilteringValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PageableFieldValidator;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
@@ -85,7 +87,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
                     JPARSLogger.error("jpars_could_not_find_entity_for_attribute", new Object[] { attribute, type, id, persistenceUnit });
                     throw JPARSException.attributeCouldNotBeFoundForEntity(attribute, type, id, persistenceUnit);
                 }
-                return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+                final FeatureResponseBuilder responseBuilder = context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING);
+                return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, responseBuilder);
             }
 
             ReadQuery query = (ReadQuery) ((((ForeignReferenceMapping) attributeMapping).getSelectionQuery()).clone());
@@ -93,28 +96,31 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 throw JPARSException.selectionQueryForAttributeCouldNotBeFoundForEntity(attribute, type, id, persistenceUnit);
             }
 
-            FeatureSet featureSet = context.getSupportedFeatureSet();
-            AbstractSession clientSession = context.getClientSession(em);
+            final FeatureSet featureSet = context.getSupportedFeatureSet();
+            final AbstractSession clientSession = context.getClientSession(em);
             if (featureSet.isSupported(Feature.PAGING)) {
-                PageableFieldValidator validator = new PageableFieldValidator(entity.getClass(), attribute, uriInfo);
+                final PageableFieldValidator validator = new PageableFieldValidator(entity.getClass(), attribute, uriInfo);
                 if (validator.isFeatureApplicable()) {
                     query.setMaxRows(validator.getLimit());
                     query.setFirstResult(validator.getOffset());
 
                     // We need to add limit and offset to query parameters because request builder reads it from there
-                    Map<String, Object> queryParams = getQueryParameters(uriInfo);
+                    final Map<String, Object> queryParams = getQueryParameters(uriInfo);
                     queryParams.put(QueryParameters.JPARS_PAGING_LIMIT, String.valueOf(validator.getLimit()));
                     queryParams.put(QueryParameters.JPARS_PAGING_OFFSET, String.valueOf(validator.getOffset()));
 
                     // check orderBy, and generate a warning if there is none
                     checkOrderBy(query);
 
-                    Object result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
-                    return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, queryParams, headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING));
+                    final Object result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
+                    final FeatureResponseBuilder responseBuilder = context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING);
+                    return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, queryParams, headers, uriInfo, responseBuilder);
                 }
             }
-            Object result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
-            return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING));
+
+            final Object result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
+            final FeatureResponseBuilder responseBuilder = context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING);
+            return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, responseBuilder);
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
         } finally {
@@ -141,12 +147,12 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
             // Fields filtering
             if (context.getSupportedFeatureSet().isSupported(Feature.FIELDS_FILTERING)) {
-                final FieldsFilteringValidator fieldsFilteringValidator = new FieldsFilteringValidator(context, uriInfo, entity);
+                final FieldsFilteringValidator fieldsFilteringValidator = new FieldsFilteringValidator(uriInfo);
                 if (fieldsFilteringValidator.isFeatureApplicable()) {
                     final StreamingOutputMarshaller marshaller = new StreamingOutputMarshaller(context,
                             singleEntityResponse(context, entity, uriInfo),
                             headers.getAcceptableMediaTypes(),
-                            fieldsFilteringValidator.getFields());
+                            fieldsFilteringValidator.getFilter());
                     return Response.ok(marshaller).build();
                 }
             }
@@ -161,54 +167,74 @@ public abstract class AbstractEntityResource extends AbstractResource {
     protected Response createInternal(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, InputStream in) {
         JPARSLogger.entering(CLASS_NAME, "createInternal", new Object[] { "PUT", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
         try {
-            PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
-            ClassDescriptor descriptor = context.getDescriptor(type);
+            final PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
+            final ClassDescriptor descriptor = context.getDescriptor(type);
             if (descriptor == null) {
                 JPARSLogger.error("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(type, persistenceUnit);
             }
 
-            Object entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
+            final Object entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
 
-            // maintain idempotence on PUT by disallowing sequencing
-            AbstractDirectMapping sequenceMapping = descriptor.getObjectBuilder().getSequenceMapping();
-            if (sequenceMapping != null) {
-                Object value = sequenceMapping.getAttributeAccessor().getAttributeValueFromObject(entity);
-
-                if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
-                        || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
-                    JPARSLogger.error("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
-                    throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
-                }
+            // Check idempotence of the entity
+            if (!checkIdempotence(descriptor, entity)) {
+                JPARSLogger.error("jpars_put_not_idempotent", new Object[]{type, persistenceUnit});
+                throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
             }
 
-            // maintain idempotence on PUT by disallowing sequencing in relationships
-            List<DatabaseMapping> mappings = descriptor.getMappings();
-            if ((mappings != null) && (!mappings.isEmpty())) {
-                for (DatabaseMapping mapping : mappings) {
-                    if (mapping instanceof ForeignReferenceMapping) {
-                        ForeignReferenceMapping fkMapping = (ForeignReferenceMapping) mapping;
-                        if ((fkMapping.isCascadePersist()) || (fkMapping.isCascadeMerge())) {
-                            ClassDescriptor referenceDescriptor = fkMapping.getReferenceDescriptor();
-                            if (referenceDescriptor != null) {
-                                if (referenceDescriptor instanceof RelationalDescriptor) {
-                                    RelationalDescriptor relDesc = (RelationalDescriptor) referenceDescriptor;
-                                    AbstractDirectMapping relSequenceMapping = relDesc.getObjectBuilder().getSequenceMapping();
-                                    if (relSequenceMapping != null) {
-                                        Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
-                                        if (value != null) {
-                                            if (value instanceof ValueHolder) {
-                                                ValueHolder holder = (ValueHolder) value;
-                                                Object obj = holder.getValue();
-                                                if (obj != null) {
-                                                    JPARSLogger.error("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
-                                                    throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
-                                                }
-                                            } else if (value instanceof Collection) {
-                                                if (!(((Collection) value).isEmpty())) {
-                                                    JPARSLogger.error("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
-                                                    throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
-                                                }
+            // Check idempotence of the entity's relationships
+            if (!checkIdempotenceOnRelationships(descriptor, entity)) {
+                JPARSLogger.error("jpars_put_not_idempotent", new Object[]{type, persistenceUnit});
+                throw JPARSException.entityIsNotIdempotent(type, persistenceUnit);
+            }
+
+            // Cascade persist. Sets references to the parent object in collections with objects passed by value.
+            if (context.getServiceVersion().compareTo(ServiceVersion.VERSION_2_0) >= 0) {
+                processBidirectionalRelationships(context, descriptor, entity);
+            }
+
+            // No sequencing in relationships, we can create the object now...
+            context.create(getMatrixParameters(uriInfo, persistenceUnit), entity);
+            final ResponseBuilder rb = Response.status(Status.CREATED);
+            return rb.entity(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
+        } catch (Exception ex) {
+            throw JPARSException.exceptionOccurred(ex);
+        }
+    }
+
+    /**
+     * Finds all bidirectional relationships of the given entity with Cascade=PERSIST and sets reference to the parent
+     * object.
+     * This method is called on creating new entities in JPARS v2.0 only.
+     *
+     * @param context       the persistence context.
+     * @param descriptor    descriptor of the entity passed in 'entity' parameter.
+     * @param entity        entity to process.
+     */
+    private void processBidirectionalRelationships(PersistenceContext context, ClassDescriptor descriptor, Object entity) {
+        final List<DatabaseMapping> mappings = descriptor.getMappings();
+        for (DatabaseMapping mapping : mappings) {
+            if ((mapping != null) && (mapping instanceof ForeignReferenceMapping)) {
+                final ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) mapping;
+                final Object attributeValue = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
+                if (jpaMapping != null && jpaMapping.isCascadePersist()) {
+                    if (jpaMapping.getMappedBy() != null) {
+                        final ClassDescriptor inverseDescriptor = context.getDescriptor(jpaMapping.getReferenceDescriptor().getAlias());
+                        if (inverseDescriptor != null) {
+                            final DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
+                            if (inverseMapping != null) {
+                                if (attributeValue != null) {
+                                    if (attributeValue instanceof ValueHolder) {
+                                        final ValueHolder holder = (ValueHolder) attributeValue;
+                                        final Object obj = holder.getValue();
+                                        if (obj != null) {
+                                            inverseMapping.setAttributeValueInObject(obj, entity);
+                                        }
+                                    } else if (attributeValue instanceof Collection) {
+                                        final Collection collection = (Collection) attributeValue;
+                                        if (!collection.isEmpty()) {
+                                            for (Object obj : collection) {
+                                                inverseMapping.setAttributeValueInObject(obj, entity);
                                             }
                                         }
                                     }
@@ -218,13 +244,69 @@ public abstract class AbstractEntityResource extends AbstractResource {
                     }
                 }
             }
-            // No sequencing in relationships, we can create the object now...
-            context.create(getMatrixParameters(uriInfo, persistenceUnit), entity);
-            ResponseBuilder rb = Response.status(Status.CREATED);
-            return rb.entity(new StreamingOutputMarshaller(context, singleEntityResponse(context, entity, uriInfo), headers.getAcceptableMediaTypes())).build();
-        } catch (Exception ex) {
-            throw JPARSException.exceptionOccurred(ex);
         }
+    }
+
+    /**
+     * This method maintains idempotence on PUT by disallowing sequencing in relationships.
+     *
+     * @param descriptor    descriptor of the entity passed in 'entity' parameter.
+     * @param entity        entity to process.
+     * @return true if check is passed (no sequencing)
+     */
+    private boolean checkIdempotenceOnRelationships(ClassDescriptor descriptor, Object entity) {
+        final List<DatabaseMapping> mappings = descriptor.getMappings();
+        if ((mappings != null) && (!mappings.isEmpty())) {
+            for (DatabaseMapping mapping : mappings) {
+                if (mapping instanceof ForeignReferenceMapping) {
+                    final ForeignReferenceMapping fkMapping = (ForeignReferenceMapping) mapping;
+                    if ((fkMapping.isCascadePersist()) || (fkMapping.isCascadeMerge())) {
+                        final ClassDescriptor referenceDescriptor = fkMapping.getReferenceDescriptor();
+                        if (referenceDescriptor != null) {
+                            if (referenceDescriptor instanceof RelationalDescriptor) {
+                                final RelationalDescriptor relDesc = (RelationalDescriptor) referenceDescriptor;
+                                final AbstractDirectMapping relSequenceMapping = relDesc.getObjectBuilder().getSequenceMapping();
+                                if (relSequenceMapping != null) {
+                                    final Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
+                                    if (value != null) {
+                                        if (value instanceof ValueHolder) {
+                                            final ValueHolder holder = (ValueHolder) value;
+                                            if (holder.getValue() != null) {
+                                                return false;
+                                            }
+                                        } else if (value instanceof Collection) {
+                                            if (!(((Collection) value).isEmpty())) {
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * This method maintains idempotence on PUT by disallowing sequencing.
+     *
+     * @param descriptor    descriptor of the entity passed in 'entity' parameter.
+     * @param entity        entity to process.
+     * @return true if check is passed (no sequencing)
+     */
+    private boolean checkIdempotence(ClassDescriptor descriptor, Object entity) {
+        final AbstractDirectMapping sequenceMapping = descriptor.getObjectBuilder().getSequenceMapping();
+        if (sequenceMapping != null) {
+            final Object value = sequenceMapping.getAttributeAccessor().getAttributeValueFromObject(entity);
+            if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
+                    || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected Response updateInternal(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, InputStream in) {

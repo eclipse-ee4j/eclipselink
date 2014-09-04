@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -7,23 +7,10 @@
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
+ * Contributors:
+ *      gonural - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpars.test.service;
-
-import static org.junit.Assert.assertTrue;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBException;
+package org.eclipse.persistence.jpars.test.service.noversion;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -36,17 +23,36 @@ import org.eclipse.persistence.jpars.test.model.employee.Expertise;
 import org.eclipse.persistence.jpars.test.model.employee.Gender;
 import org.eclipse.persistence.jpars.test.model.employee.PhoneNumber;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
-import org.eclipse.persistence.jpars.test.util.DBUtils;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
+
+/**
+ * JPARS tests on employee model.
+ *
+ * @author gonural
+ */
 public class EmployeeTest {
     private static final String DEFAULT_PU = "jpars_employee-static";
-    private static PersistenceContext context = null;
-    private static PersistenceFactoryBase factory = null;
+    private static final String JPARS_VERSION = null;
+
+    protected static PersistenceContext context = null;
 
     @BeforeClass
     public static void setup() throws URISyntaxException {
@@ -55,9 +61,9 @@ public class EmployeeTest {
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        factory = new PersistenceFactoryBase();
+        PersistenceFactoryBase factory = new PersistenceFactoryBase();
         context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties),
-                RestUtils.getServerURI(), null, true);
+                RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, true);
     }
 
     @AfterClass
@@ -103,8 +109,6 @@ public class EmployeeTest {
         expertise.setSubject("REST");
         em.persist(expertise);
         
-        em.getTransaction().commit();
-
         Employee manager = new Employee();
         manager.setId(121);
         manager.setFirstName("Bill");
@@ -117,7 +121,10 @@ public class EmployeeTest {
 
         expertise.setEmployee(manager);
         manager.getExpertiseAreas().add(expertise);
-        
+        em.persist(manager);
+
+        em.getTransaction().commit();
+
         String mgrMsg = RestUtils.marshal(context, manager, MediaType.APPLICATION_JSON_TYPE);
         Employee mgr = RestUtils.unmarshal(context, mgrMsg, Employee.class.getSimpleName(), MediaType.APPLICATION_JSON_TYPE);
 
@@ -133,7 +140,10 @@ public class EmployeeTest {
         
         assertTrue("Incorrectly marshallet Set of Expertise Areas", mgr.getExpertiseAreas().size() == 1);
 
-        DBUtils.dbDelete(employee, em);
+        em.getTransaction().begin();
+        em.remove(employee);
+        em.remove(manager);
+        em.getTransaction().commit();
     }
 
     @Test
@@ -174,8 +184,6 @@ public class EmployeeTest {
         Expertise expertise = new Expertise();
         expertise.setSubject("REST");
         em.persist(expertise);
-        
-        em.getTransaction().commit();
 
         Employee manager = new Employee();
         manager.setId(121);
@@ -189,7 +197,10 @@ public class EmployeeTest {
         
         expertise.setEmployee(manager);
         manager.getExpertiseAreas().add(expertise);
-        
+        em.persist(manager);
+
+        em.getTransaction().commit();
+
         String mgrMsg = RestUtils.marshal(context, manager, MediaType.APPLICATION_XML_TYPE);
         Employee mgr = RestUtils.unmarshal(context, mgrMsg, Employee.class.getSimpleName(), MediaType.APPLICATION_XML_TYPE);
 
@@ -203,7 +214,10 @@ public class EmployeeTest {
             }
         }
         assertTrue("Incorrectly marshalled Set of Expertise Areas", mgr.getExpertiseAreas().size() == 1);
-        
-        DBUtils.dbDelete(employee, em);
+
+        em.getTransaction().begin();
+        em.remove(employee);
+        em.remove(manager);
+        em.getTransaction().commit();
     }
 }

@@ -1,14 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *      gonural - Initial implementation
+ *      2014-09-01-2.6.0 Dmitry Kornilov
+ *        - Added buildSingleResultQueryResponse method.
+ ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.features;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -17,21 +21,38 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
+import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
+import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Response builder used in JPARS 1.0 and earlier versions.
+ *
+ * @author gonural
+ */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildReadAllQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
         return items;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildReportQueryResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.util.List, java.util.List, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public Object buildReportQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object[]> results, List<ReportItem> items, UriInfo uriInfo) {
         if ((results != null) && (!results.isEmpty())) {
             ReportQueryResultList list = populateReportQueryResultList(results, items);
@@ -41,9 +62,10 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildAttributeResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.String, java.lang.Object, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
+    @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object result, UriInfo uriInfo) {
         if (result instanceof Collection) {
             if (containsDomainObjects(result)) {
@@ -57,9 +79,25 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder#buildSingleEntityResponse(org.eclipse.persistence.jpa.rs.PersistenceContext, java.util.Map, java.lang.Object, javax.ws.rs.core.UriInfo)
+    /**
+     * {@inheritDoc}
      */
+    @Override
+    public Object buildSingleResultQueryResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, List<ReportItem> items, UriInfo uriInfo) {
+        final SingleResultQueryList response = new SingleResultQueryList();
+        final List<JAXBElement> fields = new FeatureResponseBuilderImpl().createShellJAXBElementList(items, result);
+        if (fields == null) {
+            return null;
+        }
+
+        response.setFields(fields);
+        return response;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
         return result;
     }
