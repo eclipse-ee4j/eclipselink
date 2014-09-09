@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -82,7 +82,6 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * <li>*&#47;json (i.e. application/json and text/json)</li>
  * <li>*&#47;*+json</li>
  * </ul>
- * </p>
  * 
  * <p>Below are some different usage options.</p>
  * 
@@ -99,8 +98,8 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * public class ExampleApplication  extends Application {
  *
  *     &#64;Override
- *     public Set&lt;Class&lt;?>> getClasses() {
- *         HashSet&lt;Class&lt;?>> set = new HashSet&lt;Class&lt;?>>(2);
+ *     public Set&lt;Class&lt;?&gt;&gt; getClasses() {
+ *         HashSet&lt;Class&lt;?&gt;&gt; set = new HashSet&lt;Class&lt;?&gt;&gt;(2);
  *         set.add(MOXyJsonProvider.class);
  *         set.add(ExampleService.class);
  *         return set;
@@ -122,19 +121,19 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * public class CustomerApplication  extends Application {
  *
  *     &#64;Override
- *     public Set&lt;Class&lt;?>> getClasses() {
- *         HashSet&lt;Class&lt;?>> set = new HashSet&lt;Class&lt;?>>(1);
+ *     public Set&lt;Class&lt;?&gt;&gt; getClasses() {
+ *         HashSet&lt;Class&lt;?&gt;&gt; set = new HashSet&lt;Class&lt;?&gt;&gt;(1);
  *         set.add(ExampleService.class);
  *         return set;
  *     }
 
  *     &#64;Override
- *     public Set&lt;Object> getSingletons() {
+ *     public Set&lt;Object&gt; getSingletons() {
  *         moxyJsonProvider moxyJsonProvider = new MOXyJsonProvider();
  *         moxyJsonProvider.setFormattedOutput(true);
  *         moxyJsonProvider.setIncludeRoot(true);
  *
- *         HashSet&lt;Object> set = new HashSet&lt;Object>(2);
+ *         HashSet&lt;Object&gt; set = new HashSet&lt;Object&gt;(2);
  *         set.add(moxyJsonProvider);
  *         return set;
  *     }
@@ -164,29 +163,29 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * public class CustomerJSONProvider extends MOXyJsonProvider {
 
  *     &#64;Override
- *     public boolean isReadable(Class&lt;?> type, Type genericType,
+ *     public boolean isReadable(Class&lt;?&gt; type, Type genericType,
  *             Annotation[] annotations, MediaType mediaType) {
  *         return getDomainClass(genericType) == Customer.class;
  *     }
  *
  *     &#64;Override
- *     public boolean isWriteable(Class&lt;?> type, Type genericType,
+ *     public boolean isWriteable(Class&lt;?&gt; type, Type genericType,
  *             Annotation[] annotations, MediaType mediaType) {
  *         return isReadable(type, genericType, annotations, mediaType);
  *     }
  *
  *     &#64;Override
- *     protected void preReadFrom(Class&lt;Object> type, Type genericType,
+ *     protected void preReadFrom(Class&lt;Object&gt; type, Type genericType,
  *             Annotation[] annotations, MediaType mediaType,
- *             MultivaluedMap<String, String> httpHeaders,
+ *             MultivaluedMap&lt;String, String&gt; httpHeaders,
  *             Unmarshaller unmarshaller) throws JAXBException {
  *         unmarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "$");
  *     }
  *
  *     &#64;Override
- *     protected void preWriteTo(Object object, Class&lt;?> type, Type genericType,
+ *     protected void preWriteTo(Object object, Class&lt;?&gt; type, Type genericType,
  *             Annotation[] annotations, MediaType mediaType,
- *             MultivaluedMap&lt;String, Object> httpHeaders, Marshaller marshaller)
+ *             MultivaluedMap&lt;String, Object&gt; httpHeaders, Marshaller marshaller)
  *             throws JAXBException {
  *         marshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "$");
  *     }
@@ -221,8 +220,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * The value that will be prepended to all keys that are mapped to an XML
      * attribute.  By default there is no attribute prefix.
-     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_ATTRIBUTE_PREFIX
-     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_ATTRIBUTE_PREFIX
      */
     public String getAttributePrefix() {
         return attributePrefix;
@@ -230,10 +229,10 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     /**
      * A convenience method to get the domain class (i.e. <i>Customer</i>) from 
-     * the parameter/return type (i.e. <i>Customer</i>, <i>List&lt;Customer></i>,
-     * <i>JAXBElement&lt;Customer></i>, <i>JAXBElement&lt;? extends Customer></i>, 
-     * <i>List&lt;JAXBElement&lt;Customer>></i>, or 
-     * <i>List&lt;JAXBElement&lt;? extends Customer>></i>).
+     * the parameter/return type (i.e. <i>Customer</i>, <i>List&lt;Customer&gt;</i>,
+     * <i>JAXBElement&lt;Customer&gt;</i>, <i>JAXBElement&lt;? extends Customer&gt;</i>,
+     * <i>List&lt;JAXBElement&lt;Customer&gt;&gt;</i>, or
+     * <i>List&lt;JAXBElement&lt;? extends Customer&gt;&gt;</i>).
      * @param genericType - The parameter/return type of the JAX-RS operation.
      * @return The corresponding domain class.
      */
@@ -329,8 +328,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * By default the JSON-binding will ignore namespace qualification. If this 
      * property is set the portion of the key before the namespace separator
      * will be used to determine the namespace URI.
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_PREFIX_MAPPER
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#NAMESPACE_PREFIX_MAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_NAMESPACE_PREFIX_MAPPER
      */
     public Map<String, String> getNamespacePrefixMapper() {
         return namespacePrefixMapper;
@@ -340,8 +339,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * This character (default is '.') separates the prefix from the key name.
      * It is only used if namespace qualification has been enabled be setting a
      * namespace prefix mapper.
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_NAMESPACE_SEPARATOR
      */
     public char getNamespaceSeparator() {
         return this.namespaceSeperator;
@@ -358,8 +357,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * The key that will correspond to the property mapped with @XmlValue.  This
      * key will only be used if there are other mapped properties.
-     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
-     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_VALUE_WRAPPER
      */
     public String getValueWrapper() {
         return valueWrapper;
@@ -375,8 +374,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * @return true if the root node is included in the JSON message (default is
      * false).
-     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_INCLUDE_ROOT
-     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_INCLUDE_ROOT
      */
     public boolean isIncludeRoot() {
         return includeRoot;
@@ -385,7 +384,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * If true empty collections will be marshalled as empty arrays, else the 
      * collection will not be marshalled to JSON (default is true).
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_MARSHAL_EMPTY_COLLECTIONS
      */
     public boolean isMarshalEmptyCollections() {
         return marshalEmptyCollections;
@@ -449,7 +448,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * 
      *     &#64;XmlElementWrapper(name="phone-numbers")
      *     &#64;XmlElement(name="phone-number")
-     *     private List<PhoneNumber> phoneNumbers;
+     *     private {@literal List<PhoneNumber>} phoneNumbers;
      * 
      * }
      * </pre>
@@ -476,9 +475,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * }
      * </pre>
      * @since 2.4.2
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_WRAPPER_AS_ARRAY_NAME
      */
     public boolean isWrapperAsArrayName() {
         return wrapperAsArrayName;
@@ -542,7 +541,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @param type - The Class to be unmarshalled (i.e. <i>Customer</i> or 
      * <i>List</i>)
      * @param genericType - The type of object to be unmarshalled (i.e 
-     * <i>Customer</i> or <i>List&lt;Customer></i>).
+     * <i>Customer</i> or <i>List&lt;Customer&gt;</i>).
      * @param annotations - The annotations corresponding to domain object.
      * @param mediaType - The media type for the HTTP entity.
      * @param httpHeaders - HTTP headers associated with HTTP entity.
@@ -562,7 +561,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @param type - The Class to be marshalled (i.e. <i>Customer</i> or 
      * <i>List</i>)
      * @param genericType - The type of object to be marshalled (i.e 
-     * <i>Customer</i> or <i>List&lt;Customer></i>).
+     * <i>Customer</i> or <i>List&lt;Customer&gt;</i>).
      * @param annotations - The annotations corresponding to domain object.
      * @param mediaType - The media type for the HTTP entity.
      * @param httpHeaders - HTTP headers associated with HTTP entity.
@@ -693,8 +692,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * Specify a value that will be prepended to all keys that are mapped to an
      * XML attribute.  By default there is no attribute prefix.
-     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_ATTRIBUTE_PREFIX
-     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_ATTRIBUTE_PREFIX
      */
     public void setAttributePrefix(String attributePrefix) {
         this.attributePrefix = attributePrefix;
@@ -714,8 +713,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * is false).
      * @param includeRoot - true if the message includes the root node, else 
      * false.
-     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_INCLUDE_ROOT
-     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_INCLUDE_ROOT
      */
     public void setIncludeRoot(boolean includeRoot) {
         this.includeRoot = includeRoot;
@@ -724,7 +723,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * If true empty collections will be marshalled as empty arrays, else the 
      * collection will not be marshalled to JSON (default is true).
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_MARSHAL_EMPTY_COLLECTIONS
      */
     public void setMarshalEmptyCollections(boolean marshalEmptyCollections) {
         this.marshalEmptyCollections = marshalEmptyCollections;
@@ -735,8 +734,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * property is set then a prefix corresponding to the namespace URI and a 
      * namespace separator will be prefixed to the key.
      * include it you can specify a Map of namespace URI to prefix.
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_PREFIX_MAPPER
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#NAMESPACE_PREFIX_MAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_NAMESPACE_PREFIX_MAPPER
      */
     public void setNamespacePrefixMapper(Map<String, String> namespacePrefixMapper) {
         this.namespacePrefixMapper = namespacePrefixMapper;
@@ -746,8 +745,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * This character (default is '.') separates the prefix from the key name.
      * It is only used if namespace qualification has been enabled be setting a
      * namespace prefix mapper.
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_NAMESPACE_SEPARATOR
      */
     public void setNamespaceSeparator(char namespaceSeparator) {
         this.namespaceSeperator = namespaceSeparator;
@@ -764,7 +763,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * 
      *     &#64;XmlElementWrapper(name="phone-numbers")
      *     &#64;XmlElement(name="phone-number")
-     *     private List<PhoneNumber> phoneNumbers;
+     *     private {@literal List<PhoneNumber>} phoneNumbers;
      * 
      * }
      * </pre>
@@ -791,9 +790,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * }
      * </pre>
      * @since 2.4.2
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_WRAPPER_AS_ARRAY_NAME
      */
     public void setWrapperAsArrayName(boolean wrapperAsArrayName) {
         this.wrapperAsArrayName = wrapperAsArrayName;
@@ -801,10 +800,10 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     /**
      * Specify the key that will correspond to the property mapped with
-     * @XmlValue.  This key will only be used if there are other mapped
+     * {@literal @XmlValue}.  This key will only be used if there are other mapped
      * properties.
-     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
-     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_VALUE_WRAPPER
      */
     public void setValueWrapper(String valueWrapper) {
         this.valueWrapper = valueWrapper;

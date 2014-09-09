@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,13 +30,13 @@ public interface CharacterEscapeHandler extends org.eclipse.persistence.internal
      *
      * <p>
      * Note: This feature is <i>not</i> supported when marshalling to the following targets:
+     * </p>
      * <ul>
      *  <li>javax.xml.stream.XMLStreamWriter</li>
      *  <li>javax.xml.stream.XMLEventWriter</li>
      *  <li>org.xml.sax.ContentHandler</li>
      *  <li>org.w3c.dom.Node</li>
      * </ul>
-     * </p>
      *
      * @param buffer Array of characters to be escaped
      * @param start The starting position

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -162,13 +162,13 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * all_or_any_expression ::= { ALL | ANY | SOME} (subquery)
  *
  * comparison_expression ::= string_expression comparison_operator {string_expression | all_or_any_expression} |
- *                           boolean_expression { = | <> } {boolean_expression | all_or_any_expression} |
- *                           enum_expression { = | <> } {enum_expression | all_or_any_expression} |
+ *                           boolean_expression { = | {@literal <>} } {boolean_expression | all_or_any_expression} |
+ *                           enum_expression { = | {@literal <>} } {enum_expression | all_or_any_expression} |
  *                           datetime_expression comparison_operator {datetime_expression | all_or_any_expression} |
- *                           entity_expression { = | <> } {entity_expression | all_or_any_expression} |
+ *                           entity_expression { = | {@literal <>} } {entity_expression | all_or_any_expression} |
  *                           arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression}
  *
- * comparison_operator ::= = | > | >= | < | <= | <>
+ * comparison_operator ::= = | {@literal > | >= | < | <= | <>}
  *
  * arithmetic_expression ::= simple_arithmetic_expression | (subquery)
  *

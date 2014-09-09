@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -70,7 +70,7 @@ public interface StateObject {
 	 * Returns the {@link IdentificationVariableStateObject} representing the given identification
 	 * variable.
 	 *
-	 * @param variable The name of the identification variable to retrieve its state object
+	 * @param identificationVariable The name of the identification variable to retrieve its state object
 	 * @return The {@link IdentificationVariableStateObject} defining the given identification variable
 	 */
 	IdentificationVariableStateObject findIdentificationVariable(String identificationVariable);

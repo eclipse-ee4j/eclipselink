@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -206,7 +206,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * keys are populated.  In this way the minimum original required for
      * instantiating a working copy clone can be built without placing it in
      * the shared cache (no concern over cycles).
-     * @parameter original later the input to buildCloneFromRow
+     * @param original later the input to buildCloneFromRow
      */
     @Override
     public void buildShallowOriginalFromRow(AbstractRecord record, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {
@@ -1351,7 +1351,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * PUBLIC:
      * Indirection means that a ValueHolder will be put in-between the attribute and the real object.
      * This defaults to false and only required for transformations that perform database access.
-     * @see org.eclipse.persistence.mappings.IndirectionPolicy
+     * @see org.eclipse.persistence.internal.indirection.IndirectionPolicy
      */
     public boolean usesIndirection() {
         return this.indirectionPolicy.usesIndirection();

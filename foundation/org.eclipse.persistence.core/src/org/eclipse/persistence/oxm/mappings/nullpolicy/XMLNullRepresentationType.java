@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,7 +17,7 @@ package org.eclipse.persistence.oxm.mappings.nullpolicy;
  * An enum that is used within a Node Null Policy to determine what to marshal for a null node.<br>
  * We define 3 final instances available to the user (XSI_NIL, ABSENT_NODE(default) and EMPTY_NODE.
  * <p>
- * <p><table border="1">
+ * <p><table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Flag</th>
  * <th id="c2" align="left">Description</th>
@@ -32,7 +32,7 @@ package org.eclipse.persistence.oxm.mappings.nullpolicy;
  * </tr>
  * <tr>
  * <td headers="c1" nowrap="true"> EMPTY_NODE </td>
- * <td headers="c2">Required: Write out an empty <node/> or node="" node.</td>
+ * <td headers="c2">Required: Write out an empty {@literal <node/>} or node="" node.</td>
  * </tr>
  * </table>
  * @see org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy

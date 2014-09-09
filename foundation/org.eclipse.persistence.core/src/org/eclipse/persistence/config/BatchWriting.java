@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -31,7 +31,7 @@ import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
  * <li>JDBC - JDBC batch API's are used (dynamic, or parameterized).
  * <li>Bufferred - dynamic SQL is concatenated into a batch SQL string.
  * <li>Oracle-JDBC - Oracle JDBC batch API's are used (allows row count to be returned for optimistic locking).
- * <li>&ltcustom-class&gt - A custom class that extends the BatchWritingMechansim class.
+ * <li>&lt;custom-class&gt; - A custom class that extends the BatchWritingMechanism class.
  * </ul>
  * @see BatchWritingMechanism
  */

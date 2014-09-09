@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -33,7 +33,7 @@ public class RMIConnection extends RemoteConnection {
      * PUBLIC:
      * The connection must be create from the server-side session controllers stub.
      * The session in then created from the connection through createRemoteSession().
-     * @see #createRemoteSession();
+     * @see #createRemoteSession()
      */
     public RMIConnection(RMIRemoteSessionController controller) {
         this.remoteSessionController = controller;
@@ -43,7 +43,7 @@ public class RMIConnection extends RemoteConnection {
      * ADVANCED:
      * This method will send the command to the remote session for processing
      * @param command RemoteCOmmand Contains a command that will be executed on the remote session
-     * @see org.eclipse.persistence.internal.RemoteCommand
+     * @see org.eclipse.persistence.internal.sessions.remote.RemoteCommand
      */
     public void processCommand(RemoteCommand command) {
         try {

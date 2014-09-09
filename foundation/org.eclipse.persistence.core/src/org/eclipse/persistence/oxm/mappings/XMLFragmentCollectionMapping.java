@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,7 +49,7 @@ import org.w3c.dom.Text;
  * root node for the fragment.  The XPath is specified on the mapping using the <code>setXPath</code>
  * method.
  * 
- * <p><table border="1">
+ * <p><table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">XPath</th>
  * <th id="c2" align="left">Description</th>
@@ -64,12 +64,12 @@ import org.w3c.dom.Text;
  * </tr>
  * </table>
  * <p><b>Sample Configuration:</b>
- * <code><pre>
+ * <pre><code>
  * XMLFragmentCollectionMapping mapping = new XMLFragmentCollectionMapping();
  * mapping.setAttributeName("phoneNumbers");
  * mapping.setXPath("contact-info/phone-number");
- * </pre>
  * </code>
+ * </pre>
  */
 public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollectionMapping implements FragmentCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, XMLRecord>, XMLMapping {
     private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;

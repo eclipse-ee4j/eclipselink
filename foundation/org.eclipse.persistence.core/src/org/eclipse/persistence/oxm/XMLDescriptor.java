@@ -154,7 +154,8 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * Specifies that object built from this descriptor should retain any unmapped
      * information from their original XML Document when being written back out.
      * By default unmapped data is not preserved.
-     * @return if this descriptor should preserve unmapped data
+     *
+     * @param shouldPreserveDocument if this descriptor should preserve unmapped data
      */
     public void setShouldPreserveDocument(boolean shouldPreserveDocument) {
         this.shouldPreserveDocument = shouldPreserveDocument;

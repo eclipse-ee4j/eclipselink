@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -71,7 +71,7 @@ public class XMLLogFormatter extends XMLFormatter {
 
     /**
      * Format the given message to XML.
-     * @param record the log record to be formatted.
+     * @param record0 the log record to be formatted.
      * @return a formatted log record
      */
     public String format(LogRecord record0) {

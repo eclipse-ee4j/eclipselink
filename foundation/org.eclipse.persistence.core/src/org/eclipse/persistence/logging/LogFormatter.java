@@ -38,7 +38,7 @@ public class LogFormatter extends SimpleFormatter {
 
     /**
      * Format the given LogRecord.
-     * @param record the log record to be formatted.
+     * @param record0 the log record to be formatted.
      * @return a formatted log record
      */
     public synchronized String format(LogRecord record0) {
@@ -47,7 +47,7 @@ public class LogFormatter extends SimpleFormatter {
         } else {
             EclipseLinkLogRecord record = (EclipseLinkLogRecord)record0;
 
-            StringBuilder sb = new StringBuilder();
+            StringBuffer sb = new StringBuffer();
 
             if (record.shouldPrintDate()) {
                 // Minimize memory allocations here.

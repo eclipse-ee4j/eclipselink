@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,8 @@
  *       SerializedObjectPolicy initial API and implementation
  ******************************************************************************/  
 package org.eclipse.persistence.annotations;
+
+import org.eclipse.persistence.config.QueryHints;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -31,16 +33,16 @@ import javax.persistence.Column;
  * 
  * <p>
  * Examples:
- * <code><pre>
- * @Entity
- * @SerializedObject(MySerializedObjectPolicy.class); 
+ * <pre><code>
+ * {@literal @}Entity
+ * {@literal @}SerializedObject(MySerializedObjectPolicy.class);
  * public class Employee {...
- * </pre></code>
- * <code><pre>
- * @Entity
- * @SerializedObject(value = MySerializedObjectPolicy.class, column = @Column(name="SERIALIZED")); 
+ * </code></pre>
+ * <pre><code>
+ * {@literal @}Entity
+ * {@literal @}SerializedObject(value = MySerializedObjectPolicy.class, column = @Column(name="SERIALIZED"));
  * public class Address {...
- * </pre></code>
+ * </code></pre>
  * 
  * If SerializedObjectPolicy is set on an entity then SerializedObjectPolicies with the same field are set
  * on all inheriting entities.
@@ -51,14 +53,14 @@ import javax.persistence.Column;
  *  
  * <p>
  * Examples:
- * <code><pre>
+ * <pre><code>
  * Query query = em.createQuery("SELECT e FROM Employee e").setHint(QueryHints.SERIALIZED_OBJECT, "true");
- * </pre></code>
- * <code><pre>
+ * </code></pre>
+ * <pre><code>
  * Map hints = new HashMap();
  * hints.put("eclipselink.serialized-object", "true");
  * Address address = em.find(Address.class, id, hints);
- * </pre></code>
+ * </code></pre>
  *
  * The goal is to make reads from the database faster.
  * The draw back is slower writes into the database.
@@ -72,12 +74,10 @@ import javax.persistence.Column;
  * Note that currently no default implementation of SerializedObjectPolicy is available
  * and this class should be provided by the user.
  * 
- * @see org.eclipse.persistence.descriptors.SerializedObject
+ * @see org.eclipse.persistence.descriptors.SerializedObjectPolicy
  * 
  * @author ailitche
  * @since EclipseLink 2.5.1
- * 
- * @see SerializedObjectPolicy
  */
 @Target({TYPE})
 @Retention(RUNTIME)

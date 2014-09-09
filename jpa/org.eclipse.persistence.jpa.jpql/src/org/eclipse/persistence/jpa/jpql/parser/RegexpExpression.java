@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * The <code>string_expression</code> must have a string value. The <code>pattern_value</code> is a
  * string literal or a string-valued input parameter that is a regular expression.
  * <p>
- * <div nowrap><b>BNF:</b> <code>regexp_expression ::= string_expression REGEXP pattern_value</code>
+ * <div><b>BNF:</b> <code>regexp_expression ::= string_expression REGEXP pattern_value</code></div>
  * <p>
  *
  * @version 2.5

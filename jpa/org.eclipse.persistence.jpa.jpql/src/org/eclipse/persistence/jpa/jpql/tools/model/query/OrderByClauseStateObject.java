@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The <code><b>ORDER BY</b></code> clause allows the objects or values that are returned by the
  * query to be ordered.
  * <p>
- * <div nowrap><b>BNF:</b> <code>orderby_clause ::= <b>ORDER BY</b> {@link OrderByItemStateObject orderby_item} {, {@link OrderByItemStateObject orderby_item}}*</code><p>
+ * <div><b>BNF:</b> <code>orderby_clause ::= <b>ORDER BY</b> {@link OrderByItemStateObject orderby_item} {, {@link OrderByItemStateObject orderby_item}}*</code><p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.OrderByClause OrderByClause
  *
@@ -199,7 +199,7 @@ public class OrderByClauseStateObject extends AbstractListHolderStateObject<Orde
 	 * {@link StateObject StateObjects}.
 	 *
 	 * @param expression The {@link OrderByClause parsed object} representing an <code><b>ORDER
-	 * BY</b></code clause
+	 * BY</b></code> clause
 	 */
 	public void setExpression(OrderByClause expression) {
 		super.setExpression(expression);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,350 +44,350 @@ public class GenericTypeHelper implements ITypeHelper {
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType bigDecimal() {
 		return delegate.bigDecimal();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType bigInteger() {
 		return delegate.bigInteger();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType booleanType() {
 		return delegate.booleanType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType byteType() {
 		return delegate.byteType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType characterType() {
 		return delegate.characterType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType collectionType() {
 		return delegate.collectionType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType convertPrimitive(Object type) {
 		return delegate.convertPrimitive((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType dateType() {
 		return delegate.dateType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType doubleType() {
 		return delegate.doubleType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType enumType() {
 		return delegate.enumType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType floatType() {
 		return delegate.floatType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType getType(Class<?> type) {
 		return delegate.getType(type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType getType(String typeName) {
 		return delegate.getType(typeName);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType integerType() {
 		return delegate.integerType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isBooleanType(Object type) {
 		return delegate.isBooleanType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isCollectionType(Object type) {
 		return delegate.isCollectionType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isDateType(Object type) {
 		return delegate.isDateType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isEnumType(Object type) {
 		return delegate.isEnumType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isFloatingType(Object type) {
 		return delegate.isFloatingType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isIntegralType(Object type) {
 		return delegate.isIntegralType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isMapType(Object type) {
 		return delegate.isMapType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isNumericType(Object type) {
 		return delegate.isNumericType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isObjectType(Object type) {
 		return delegate.isObjectType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isPrimitiveType(Object type) {
 		return delegate.isPrimitiveType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public boolean isStringType(Object type) {
 		return delegate.isStringType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType longType() {
 		return delegate.longType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType longType(Object type) {
 		return delegate.longType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType mapType() {
 		return delegate.mapType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType numberType() {
 		return delegate.numberType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType objectType() {
 		return delegate.objectType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public ITypeDeclaration objectTypeDeclaration() {
 		return delegate.objectTypeDeclaration();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType primitiveBoolean() {
 		return delegate.primitiveBoolean();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType primitiveByte() {
 		return delegate.primitiveByte();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType primitiveChar() {
 		return delegate.primitiveChar();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType primitiveDouble() {
 		return delegate.primitiveDouble();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType primitiveFloat() {
 		return delegate.primitiveFloat();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType primitiveInteger() {
 		return delegate.primitiveInteger();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType primitiveLong() {
 		return delegate.primitiveLong();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType primitiveShort() {
 		return delegate.primitiveShort();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType shortType() {
 		return delegate.shortType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType stringType() {
 		return delegate.stringType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType timestampType() {
 		return delegate.timestampType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType toBooleanType(Object type) {
 		return delegate.toBooleanType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType toByteType(Object type) {
 		return delegate.toByteType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType toDoubleType(Object type) {
 		return delegate.toDoubleType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType toFloatType(Object type) {
 		return delegate.toFloatType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType toIntegerType(Object type) {
 		return delegate.toIntegerType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType toShortType(Object type) {
 		return delegate.toShortType((IType) type);
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public IType unknownType() {
 		return delegate.unknownType();
 	}
 
 	/**
-	 * {@InheritedDoc}
+	 * {@inheritDoc}
 	 */
 	public ITypeDeclaration unknownTypeDeclaration() {
 		return delegate.unknownTypeDeclaration();

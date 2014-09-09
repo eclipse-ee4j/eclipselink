@@ -894,7 +894,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * INTERNAL:<br/>
+     * INTERNAL:<br>
      * Write the SQL create index string to create index if
      * passed a writer, else delegate to a method that executes the string on
      * the database.
@@ -1098,7 +1098,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * INTERNAL:<br/>
+     * INTERNAL:<br>
      * Write the SQL drop index string to drop indexes if passed a writer,
      * else delegate to a method that executes the string on the database.
      * @throws ValidationException wraps any IOException from the writer

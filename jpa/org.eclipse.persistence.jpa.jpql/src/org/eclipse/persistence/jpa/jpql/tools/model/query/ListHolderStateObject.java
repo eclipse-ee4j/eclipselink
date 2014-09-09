@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -91,9 +91,9 @@ public interface ListHolderStateObject<T> extends StateObject {
 	boolean hasItems();
 
 	/**
-	 * Returns an {@link IterableListIterator} over the children.
+	 * Returns an {@link ListIterable} over the children.
 	 *
-	 * @return An {@link IterableListIterator} that is iterating over the children
+	 * @return An {@link ListIterable} that is iterating over the children
 	 */
 	ListIterable<? extends T> items();
 

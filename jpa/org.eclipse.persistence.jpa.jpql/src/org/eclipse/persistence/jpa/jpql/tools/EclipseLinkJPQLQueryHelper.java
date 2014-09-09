@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,9 +41,9 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
  *     refactoring operation through a collection of {@link TextEdit} objects.</li>
  *     <li>{@link #buildRefactoringTool()} provides support for refactoring the JPQL query through
  *     the editable {@link org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} and
- *     once all refactoring operations have been executed, the {@link org.eclipse.persistence.jpa.
- *     jpql.model.IJPQLQueryFormatter IJPQLQueryFormatter} will generate a new string representation
- *     of the JPQL query.</li>
+ *     once all refactoring operations have been executed, the {@link
+ *     org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryFormatter IJPQLQueryFormatter} will generate
+ *     a new string representation of the JPQL query.</li>
  *     </ul>
  * </li>
  * </ul>

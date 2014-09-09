@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -82,8 +82,8 @@ public interface IJPQLQueryBuilder {
 
 	/**
 	 * Creates a {@link StateObject} representation of the given JPQL fragment. In order to properly
-	 * parse the fragment, the given unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
-	 * parser.JPQLQueryBNF JPQLQueryBNF} will determine how to parse it.
+	 * parse the fragment, the given unique identifier of the
+     * {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF} will determine how to parse it.
 	 * <p>
 	 * It is possible the given JPQL fragment has more than one expression, in this case, parsing
 	 * should stop at the first comma (x, y) or space (x y) where x and y are two separate expressions.

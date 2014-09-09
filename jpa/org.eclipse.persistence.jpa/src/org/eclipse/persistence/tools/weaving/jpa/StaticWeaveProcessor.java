@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -99,7 +99,7 @@ public class StaticWeaveProcessor {
     
     /**
      * The method allows user to specify the output for the log message.
-     * @param log writer - the location where the log message writes to. the default value is standard out
+     * @param logWriter the location where the log message writes to. the default value is standard out
      */
     public void setLog(Writer logWriter){
         this.logWriter = logWriter;
@@ -131,7 +131,7 @@ public class StaticWeaveProcessor {
 
     /**
      * Set an explicitly identified the location containing persistence.xml.
-     * @param persistenceinfo the path of the location containing persistence.xml, the path 
+     * @param persistenceInfoPath the path of the location containing persistence.xml, the path
      * must point to the root of META-INF/persistence.xml
      */
     public void setPersistenceInfo(String persistenceInfoPath) throws MalformedURLException{
@@ -155,7 +155,7 @@ public class StaticWeaveProcessor {
 
     /**
      * Set an explicitly identified the location containing persistence.xml.
-     * @param persistenceinfo the file containing persistence.xml, the file 
+     * @param persistenceInfoFile the file containing persistence.xml, the file
      * should contain META-INF/persistence.xml
      */
     public void setPersistenceInfo(File persistenceInfoFile) throws MalformedURLException{
@@ -167,7 +167,6 @@ public class StaticWeaveProcessor {
     
     /**
      * This method performs weaving function on the class individually from the specified source.
-     * @throws Exception.
      */
     public void performWeaving() throws URISyntaxException,MalformedURLException,IOException{
         preProcess();

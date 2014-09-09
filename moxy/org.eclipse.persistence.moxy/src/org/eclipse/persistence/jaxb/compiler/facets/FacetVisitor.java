@@ -21,7 +21,7 @@ package org.eclipse.persistence.jaxb.compiler.facets;
  *            methods.  Use {@code Void} for visitors that do not need an
  *            additional parameter.
  *
- * @see Facet#accept(FacetVisitor, P)
+ * @see Facet#accept
  *
  * @author Marcel Valovy - marcel.valovy@oracle.com
  * @since 2.6

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,8 +35,8 @@ import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
  *
  * @param <E> the type of elements returned by the iterator
  *
- * @see org.eclipse.jpt.common.utility.internal.iterables.LiveCloneListIterable
- * @see org.eclipse.jpt.common.utility.internal.iterables.SnapshotCloneListIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterable.LiveCloneListIterable LiveCloneListIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterable.SnapshotCloneListIterable SnapshotCloneListIterable
  */
 public class CloneListIterator<E>
 	implements ListIterator<E>

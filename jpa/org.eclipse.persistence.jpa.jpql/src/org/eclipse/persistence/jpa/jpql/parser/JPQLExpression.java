@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * A JPQL statement may be either a <b>SELECT</b> statement, an <b>UPDATE</b> statement, or a
  * <b>DELETE FROM</b> statement.
  * <p>
- * <div nowrap><b>BNF:</b> <code>QL_statement ::= {@link SelectStatement select_statement} |
+ * <div><b>BNF:</b> <code>QL_statement ::= {@link SelectStatement select_statement} |
  *                                                {@link UpdateStatement update_statement} |
  *                                                {@link DeleteStatement delete_statement}</code></div>
  * <p>
@@ -100,8 +100,7 @@ public final class JPQLExpression extends AbstractExpression {
 	 *
 	 * @param jpqlFragment A fragment of a JPQL query, which is a portion of a complete JPQL query
 	 * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
-	 * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
-	 * JPQLQueryBNF JPQLQueryBNF}
+	 * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF}
 	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
 	 * to parse invalid or incomplete queries
 	 * @since 2.4

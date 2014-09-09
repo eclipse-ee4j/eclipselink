@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -25,11 +25,13 @@ import org.eclipse.persistence.sessions.Session;
  * <p><b>Purpose: </b> Provides an implementation of XMLConverter to wrap/unwrap objects in an 
  * XMLRoot in order to capture element name information.
  * <p><b>Responsibilities</b>
- * <li>Wrap an object in an XMLRoot on unmarshal. Do any required conversions based on type for 
+ * <ul>
+ * <li>Wrap an object in an XMLRoot on unmarshal. Do any required conversions based on type for
  * simple mappings.
  * <li>Unwrap an XMLRoot from the object and pass it along to be marshalled.
+ * </ul>
  * @see XMLConverter
- * @see Converter
+ * @see org.eclipse.persistence.mappings.converters.Converter Converter
  */
 public class XMLRootConverter implements XMLConverter {
 	private XPathFragment rootFragment;

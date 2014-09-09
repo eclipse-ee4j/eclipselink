@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -426,7 +426,6 @@ public class DoesExistQuery extends DatabaseQuery {
     }
     /**
      * INTERNAL:
-     * @param checkCacheFirst 
      */
     public boolean getCheckCacheFirst(){
         return this.checkCacheFirst;
@@ -437,14 +436,13 @@ public class DoesExistQuery extends DatabaseQuery {
      * Sets checkDatabaseIfInvalid flag.  If true, query will go to the 
      * database when it finds the object in the cache and it is invalid.  
      * This is only valid when it checks the cache, and is true by default
-     * @param checkDatabaseIfInvalid 
+     * @param checkCacheFirst
      */
     public void setCheckDatabaseIfInvalid(boolean checkCacheFirst){
         this.checkCacheFirst = checkCacheFirst;
     }
     /**
      * INTERNAL:
-     * @param checkDatabaseIfInvalid 
      */
     public boolean getCheckDatabaseIfInvalid(){
         return this.checkCacheFirst;

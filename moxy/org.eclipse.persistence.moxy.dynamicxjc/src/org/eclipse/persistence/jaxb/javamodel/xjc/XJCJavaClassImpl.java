@@ -49,10 +49,10 @@ import com.sun.codemodel.JTypeVar;
  *
  * <p>
  * <b>Responsibilities:</b>
+ * </p>
  * <ul>
  *    <li>Provide Class information from the underlying <code>JDefinedClass</code>.</li>
  * </ul>
- * </p>
  *
  * @since EclipseLink 2.1
  *
@@ -640,7 +640,7 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Indicates if this <code>JavaClass</code> is an inner <code>Class</code>.
      *
-     * @return <code>true</code> if this <code>JavaClass</code> is an inner </code>Class</code>, otherwise <code>false</code>.
+     * @return <code>true</code> if this <code>JavaClass</code> is an inner <code>Class</code>, otherwise <code>false</code>.
      */
     public boolean isMemberClass() {
         return this.xjcClass.outer() != null;
@@ -784,7 +784,7 @@ public class XJCJavaClassImpl implements JavaClass {
     /**
      * Get this <code>JavaClass'</code> <code>JavaModel</code>.
      *
-     * @return The <code>JavaModel</code> associated with this <code>JavaClass<code>.
+     * @return The <code>JavaModel</code> associated with this <code>JavaClass</code>.
      */
     public JavaModel getJavaModel() {
         return javaModel;

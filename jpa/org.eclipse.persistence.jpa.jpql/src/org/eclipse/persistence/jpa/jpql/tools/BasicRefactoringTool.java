@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,7 +40,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
 
 /**
  * The abstract implementation providing refactoring support for JPQL queries. This version does not
- * changes the {@link org.eclipse.persistence.jpa.jpql.tools.model.query. } but
+ * change the {@link org.eclipse.persistence.jpa.jpql.tools.model.query.JPQLQueryStateObject query} but
  * rather gather the changes in {@link RefactoringDelta} and it is the responsibility of the invoker
  * to the actual change.
  * <p>
@@ -100,8 +100,8 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 	 * using the JPQL query BNF identifier by the given ID
 	 * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL fragment
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
-	 * parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
+	 * @param jpqlQueryBNFId The unique identifier of the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
 	 */
 	protected BasicRefactoringTool(CharSequence jpqlFragment,
 	                               JPQLGrammar jpqlGrammar,
@@ -359,8 +359,8 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 
 	/**
 	 * The abstract class that all refactoring classes should extend, it automatically provides
-	 * the {@link MultiTextEdit} that will holds the {@link TextEdit} objects that are related to
-	 * the same refactoring event.
+	 * the {@link org.eclipse.text.edits.MultiTextEdit MultiTextEdit} that will holds the
+     * {@link TextEdit} objects that are related to the same refactoring event.
 	 */
 	protected abstract class AbstractRenamer extends AbstractTraverseChildrenVisitor {
 
@@ -604,13 +604,13 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 		/**
 		 * Visits the given {@link } and if its value is the same as the old class name or
 		 * if the value represents an inner class of that old class name, then the given {@link
-		 * StateObjectUpdater} will be notified to replace the value.
+		 * org.eclipse.persistence.jpa.jpql.tools.RefactoringTool.StateObjectUpdater StateObjectUpdater}
+         * will be notified to replace the value.
 		 *
 		 * @param expression The {@link } that is being visited
 		 * @param extraOffset Additional offset that will be added to the given {@link Expression}'s
 		 * offset, which is the length of the string representation of what is before it
 		 * @param value The value to check if it's the old class name
-		 * @param updater The {@link StateObjectUpdater} is notified when to replace the value
 		 */
 		protected void visit(Expression expression, String value, int extraOffset) {
 
@@ -651,17 +651,18 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 	}
 
 	/**
-	 * This visitor renames an entity name. There are three possible {@link StateObjects}
+	 * This visitor renames an entity name. There are three possible {@link
+     * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObjects}
 	 * that can represent an entity name:
 	 * <ul>
 	 * <li>
-	 * {@link AbstractSchemaNameStateObject}:
+	 * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractSchemaNameStateObject AbstractSchemaNameStateObject}:
 	 * <i>Employee</i> in<br><br>
 	 * <code><b>SELECT</b> e<br>
 	 * <b>FROM</b> Employee e</code><br><br>
 	 * </li>
 	 * <li>
-	 * {@link EntityTypeLiteralStateObject}:
+	 * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.EntityTypeLiteralStateObject EntityTypeLiteralStateObject}:
 	 * <i>Exempt</i> in<br><br>
 	 * <pre><code><b> SELECT CASE TYPE</b>(e) <b>WHEN</b> Exempt <b>THEN</b> 'Exempt'
 	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ELSE</b> 'NONE'
@@ -669,11 +670,11 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 	 * <b>FROM</b> Employee e</code></pre>
 	 * </li>
 	 * <li>
-	 * {@link IdentificationVariableStateObject}:
+	 * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.IdentificationVariableStateObject IdentificationVariableStateObject}:
 	 * <i>Exempt</i> in<br>
 	 * <pre><code> <b>SELECT</b> e
 	 * <b>FROM</b> Employee e
-	 * <b>WHERE TYPE</b>(e) <> Exempt</code></pre>
+	 * <b>WHERE TYPE</b>(e) {@literal <>} Exempt</code></pre>
 	 * </li>
 	 * </ul>
 	 */

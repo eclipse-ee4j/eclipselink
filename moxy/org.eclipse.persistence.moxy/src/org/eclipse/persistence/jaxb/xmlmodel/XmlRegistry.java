@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,31 +29,31 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="xml-element-decl" maxOccurs="unbounded">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="java-method" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="defaultValue" type="{http://www.w3.org/2001/XMLSchema}string" default="\u0000" />
- *                 &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
- *                 &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
- *                 &lt;attribute name="substitutionHeadName" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
- *                 &lt;attribute name="substitutionHeadNamespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
- *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/sequence>
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="xml-element-decl" maxOccurs="unbounded"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;attribute name="java-method" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                 &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                 &lt;attribute name="defaultValue" type="{http://www.w3.org/2001/XMLSchema}string" default="\u0000" /&gt;
+ *                 &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
+ *                 &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" /&gt;
+ *                 &lt;attribute name="substitutionHeadName" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
+ *                 &lt;attribute name="substitutionHeadNamespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
+ *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -130,20 +130,20 @@ public class XmlRegistry {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="java-method" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="defaultValue" type="{http://www.w3.org/2001/XMLSchema}string" default="\u0000" />
-     *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
-     *       &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
-     *       &lt;attribute name="substitutionHeadName" type="{http://www.w3.org/2001/XMLSchema}string" default="" />
-     *       &lt;attribute name="substitutionHeadNamespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
-     *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;attribute name="java-method" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+     *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+     *       &lt;attribute name="defaultValue" type="{http://www.w3.org/2001/XMLSchema}string" default="\u0000" /&gt;
+     *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
+     *       &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" /&gt;
+     *       &lt;attribute name="substitutionHeadName" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
+     *       &lt;attribute name="substitutionHeadNamespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
+     *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 

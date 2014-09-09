@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,7 +19,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
  * <p><b>Purpose</b>: Provides an empty implementation of FieldTransformer.
  * Users who do not require the full FieldTransformer API can subclass this class
  * and implement only the methods required.
- *  @see org.eclipse.persistence.mappings.FieldTransformer
+ *  @see FieldTransformer
  *  @version $Header: FieldTransformerAdapter.java 11-jul-2006.10:33:44 gyorke Exp $
  *  @author  mmacivor
  *  @since   10

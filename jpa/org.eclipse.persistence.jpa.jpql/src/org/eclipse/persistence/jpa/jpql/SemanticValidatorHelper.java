@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,8 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
  * This helper allows third party adopter to write an instance of this helper that directly access
  * the JPA information without having to implement Hermes SPI, which can improve performance.
  * <p>
- * {@link GenericSemanticValidatorHelper} is a default implementation that uses Hermes SPI.
+ * {@link org.eclipse.persistence.jpa.jpql.tools.GenericSemanticValidatorHelper
+ * GenericSemanticValidatorHelper} is a default implementation that uses Hermes SPI.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
@@ -80,9 +81,9 @@ public interface SemanticValidatorHelper {
 	 * Returns the constructors for the given type. All public, protected, default (package) access,
 	 * and private constructors should be included.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IType IType} and the return type would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IConstructor IConstructor}.
+	 * If it was going through Hermes SPI, the type of the argument would be {@link
+     * org.eclipse.persistence.jpa.jpql.tools.spi.IType IType} and the return type would be {@link
+     * org.eclipse.persistence.jpa.jpql.tools.spi.IConstructor IConstructor}.
 	 *
 	 * @return The declared constructors
 	 */
@@ -116,8 +117,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Returns the constant names for the given {@link Enum} type.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IType IType}.
+	 * If it was going through Hermes SPI, the type of the argument would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType}.
 	 *
 	 * @param type The {@link Enum} type
 	 * @return The list of constant names
@@ -134,16 +135,17 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Returns the managed type by resolving the given {@link Expression}.
 	 * <p>
-	 * If it was going through Hermes SPI, the return type would be {@link org.eclipse.persistence.
-	 * jpa.jpql.spi.IManagedType IManagedType}.
+	 * If it was going through Hermes SPI, the return type would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType IManagedType}.
 	 */
 	Object getManagedType(Expression expression);
 
 	/**
 	 * Returns the mapping with the given name.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IManagedType IManagedType} and the return type would be {@link
+	 * If it was going through Hermes SPI, the type of the argument would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType IManagedType}
+     * and the return type would be {@link
 	 * org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}.
 	 *
 	 * @param managedType The managed type that has a mapping with the given name
@@ -155,9 +157,9 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Returns the type of the given mapping object.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IMapping IMapping} and the return type would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IType IType}.
+	 * If it was going through Hermes SPI, the type of the argument would be {@link
+     * org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping} and the return type
+     * would be {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType}.
 	 *
 	 * @param mapping The mapping object
 	 * @return The type of the given mapping
@@ -168,9 +170,9 @@ public interface SemanticValidatorHelper {
 	 * Returns the list of type declarations representing the given constructor's parameter types.
 	 * If this is the default constructor, then an empty array should be returned.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IConstructor IConstructor} and the return type would be {@link
-	 * org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration ITypeDeclaration}.
+	 * If it was going through Hermes SPI, the type of the argument would be {@link
+     * org.eclipse.persistence.jpa.jpql.tools.spi.IConstructor IConstructor} and the return type would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration ITypeDeclaration}.
 	 *
 	 * @param constructor The constructor to return its parameter types
 	 * @return The list of parameter types or an empty list
@@ -180,8 +182,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Returns the reference managed type from the given relationship mapping.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IMapping IMapping} and the return type would be {@link
+	 * If it was going through Hermes SPI, the type of the argument would be {@link
+     * org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping} and the return type would be {@link
 	 * org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType IManagedType}.
 	 *
 	 * @param relationshipMapping The relationship mapping
@@ -192,8 +194,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Returns the type by resolving the given {@link Expression}.
 	 * <p>
-	 * If it was going through Hermes SPI, the return type would be {@link org.eclipse.persistence.
-	 * jpa.jpql.spi.IType IType}.
+	 * If it was going through Hermes SPI, the return type would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType}.
 	 *
 	 * @param expression The {@link Expression} to resolve
 	 * @return The type of the given {@link Expression} or <code>null</code> if it could not be
@@ -204,8 +206,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Returns the type defined for the Java member.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.ITypeDeclaration ITypeDeclaration} and the return type would be
+	 * If it was going through Hermes SPI, the type of the argument would be {@link
+     * org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration ITypeDeclaration} and the return type would be
 	 * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType}.
 	 *
 	 * @return The type defined for the Java member
@@ -226,8 +228,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Returns the type declaration for the given {@link Expression}'s type.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.ITypeDeclaration ITypeDeclaration}.
+	 * If it was going through Hermes SPI, the type of the argument would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration ITypeDeclaration}.
 	 *
 	 * @param expression The {@link Expression} to resolve
 	 * @return Either the type declaration that was resolved for the given {@link Expression}
@@ -244,8 +246,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Returns the fully qualified class name of the given type.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IType IType}.
+	 * If it was going through Hermes SPI, the type of the argument would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType}.
 	 *
 	 * @param type The type to retrieve its name
 	 * @return The name of the class represented by this one
@@ -255,8 +257,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Determines whether type 1 is an instance of type 2.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the arguments would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IType IType}.
+	 * If it was going through Hermes SPI, the type of the arguments would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType}.
 	 *
 	 * @param type1 The type to check if it is an instance of type 2
 	 * @param type2 The type used to determine if the class represented by type 1 is an instance
@@ -279,8 +281,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Determines whether the given mapping is a collection type mapping.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the arguments would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IMapping IMapping}.
+	 * If it was going through Hermes SPI, the type of the arguments would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}.
 	 *
 	 * @param mapping The mapping object to verify if it represents a collection mapping
 	 * @return <code>true</code> if the given mapping is a collection mapping; <code>false</code>
@@ -291,8 +293,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Determines whether the given type represents an {@link Enum}.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IType IType}.
+	 * If it was going through Hermes SPI, the type of the argument would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType}.
 	 *
 	 * @return <code>true</code> if the given type is an {@link Enum}; <code>false</code> otherwise
 	 */
@@ -300,7 +302,7 @@ public interface SemanticValidatorHelper {
 
 	/**
 	 * Determines whether an identification variable can be used in a comparison expression when the
-	 * operator is either '<', '<=', '>', '>='.
+	 * operator is either {@literal '<', '<=', '>', '>='}.
 	 *
 	 * @param expression The {@link IdentificationVariable} that is mapped to either an entity, a
 	 * singled-object value field, a collection-valued object field
@@ -312,8 +314,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Determines whether the given managed type actually exists.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IManagedType IManagedType}.
+	 * If it was going through Hermes SPI, the type of the argument would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType IManagedType}.
 	 *
 	 * @return <code>true</code> if the given managed type can be located; <code>false</code> if it
 	 * could not be found
@@ -323,8 +325,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Determines whether the given mapping is a property type mapping.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the arguments would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IMapping IMapping}.
+	 * If it was going through Hermes SPI, the type of the arguments would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}.
 	 *
 	 * @param mapping The mapping object to verify if it represents a property mapping
 	 * @return <code>true</code> if the given mapping is a property mapping; <code>false</code> otherwise
@@ -334,8 +336,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Determines whether the given mapping is a relationship type mapping.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the arguments would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IMapping IMapping}.
+	 * If it was going through Hermes SPI, the type of the arguments would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}.
 	 *
 	 * @param mapping The mapping object to verify if it represents a relationship mapping
 	 * @return <code>true</code> if the given mapping is a relationship mapping; <code>false</code> otherwise
@@ -354,8 +356,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Determines whether the given mapping is a transient attribute.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the arguments would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IMapping IMapping}.
+	 * If it was going through Hermes SPI, the type of the arguments would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}.
 	 *
 	 * @param mapping The mapping object to verify if it represents a transient attribute
 	 * @return <code>true</code> if the given attribute is a transient mapping; <code>false</code> otherwise
@@ -365,8 +367,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Determines whether type declaration 1 is an instance of type declaration 2.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the arguments would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.ITypeDeclaration ITypeDeclaration}.
+	 * If it was going through Hermes SPI, the type of the arguments would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration ITypeDeclaration}.
 	 *
 	 * @param typeDeclaration1 The type declaration to check if it is an instance of type declaration 2
 	 * @param typeDeclaration2 The type used to determine if the class represented by type
@@ -379,8 +381,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Determines whether the given type actually exists.
 	 * <p>
-	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
-	 * persistence.jpa.jpql.spi.IType IType}.
+	 * If it was going through Hermes SPI, the type of the argument would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType}.
 	 *
 	 * @return <code>true</code> if the actual class exists; <code>false</code> otherwise
 	 */
@@ -397,8 +399,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Returns the mapping for the field represented by the given {@link Expression}.
 	 * <p>
-	 * If it was going through Hermes SPI, the return type would be {@link org.eclipse.persistence.
-	 * jpa.jpql.spi.IMapping IMapping}.
+	 * If it was going through Hermes SPI, the return type would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}.
 	 *
 	 * @param expression The {@link Expression} representing a state field path expression or a
 	 * collection-valued path expression
@@ -410,8 +412,8 @@ public interface SemanticValidatorHelper {
 	 * Returns the mapping that should be a persistence field from the entity defined by the given
 	 * identification variable.
 	 * <p>
-	 * If it was going through Hermes SPI, the return type would be {@link org.eclipse.persistence.
-	 * jpa.jpql.spi.IMapping IMapping}.
+	 * If it was going through Hermes SPI, the return type would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}.
 	 *
 	 * @param identificationVariable The identification variable that is defined in the <code>FROM</code>
 	 * clause of the query (which can be in the current subquery) or in one of the parent queries.

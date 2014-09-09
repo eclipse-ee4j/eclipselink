@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,13 +13,15 @@
 package org.eclipse.persistence.annotations;
 
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+
 /**
  * IdValidation configures which id values are considered valid when loading
  * from the database. This configuration is set either using the
  * {@link PrimaryKey} annotation or using the {@link ClassDescriptor} API.
  * This configuration is also used to determine if a sequence number is
  * required.
- * 
+ *
  * @see PrimaryKey#validation()
  * @see ClassDescriptor#setIdValidation(IdValidation)
  * @author James Sutherland
@@ -39,7 +41,7 @@ public enum IdValidation {
     ZERO,
 
     /**
-     * null, 0 and negative values are not allowed for ids extending Number and primitive int and long ids. 
+     * null, 0 and negative values are not allowed for ids extending Number and primitive int and long ids.
      */
     NEGATIVE,
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -39,7 +39,6 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
  * <b>Retrieving Primary Keys</b>:     It is possible to retrieve the primary key raw values within each result, but stored in a separate (internal) vector. This
  *                                            primary key vector can later be used to retrieve the real object.
  *                                            @see #retrievePrimaryKeys()
- *                                            @see #readObject(Class, Session)
  *                                            If the values are wanted in the result array then they must be added as attributes. For primary keys which are not mapped directly
  *                                            you can add them as DatabaseFields (see above).
  *
@@ -223,7 +222,7 @@ public class ReportQuery extends ReadAllQuery {
     /**
      * PUBLIC: 
      * Add a ConstructorReportItem to this query's set of return values.
-     * @param ConstructorReportItem - used to specify a class constructor and values to pass in from this query
+     * @param item used to specify a class constructor and values to pass in from this query
      * @see ConstructorReportItem
      */
     public void addConstructorReportItem(ConstructorReportItem item){
@@ -250,10 +249,10 @@ public class ReportQuery extends ReadAllQuery {
      * Include the number of rows returned by the query in the result, where attributeExpression is not null.
      * Aggregation functions can be used with a group by, or on the entire result set.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * TopLink:    reportQuery.addCount("id");
      * SQL: SELECT COUNT (t0.EMP_ID) FROM EMPLOYEE t0, ...
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @param attributeName the number of rows where attributeName is not null will be returned.
      * @see #addCount(java.lang.String, org.eclipse.persistence.expressions.Expression)
      */
@@ -267,10 +266,10 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * Set the count to be returned as the specified resultType.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * TopLink:    reportQuery.addCount("id", Long.class);
      * SQL: SELECT COUNT (t0.EMP_ID) FROM EMPLOYEE t0, ...
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @param attributeName the number of rows where attributeName is not null will be returned.
      * @see #addCount(java.lang.String, org.eclipse.persistence.expressions.Expression)
      */
@@ -284,15 +283,15 @@ public class ReportQuery extends ReadAllQuery {
      * is not null.
      * Aggregation functions can be used with a group by, or on the entire result set.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * TopLink:    reportQuery.addCount("Count", getExpressionBuilder().get("id"));
      * SQL: SELECT COUNT (t0.EMP_ID) FROM EMPLOYEE t0, ...
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>Example: counting only distinct values of an attribute.
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  TopLink: reportQuery.addCount("Count", getExpressionBuilder().get("address").distinct());
      *  SQL: SELECT COUNT (DISTINCT t0.ADDR_ID) FROM EMPLOYEE t0, ...
-     * </blockquote></pre>
+     * </pre></blockquote>
      * objectAttributes can be specified also, even accross many to many
      * mappings.
      * @see #addCount()
@@ -308,15 +307,15 @@ public class ReportQuery extends ReadAllQuery {
      * Aggregation functions can be used with a group by, or on the entire result set.
      * Set the count to be returned as the specified resultType.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * TopLink:    reportQuery.addCount("Count", getExpressionBuilder().get("id"), Integer.class);
      * SQL: SELECT COUNT (t0.EMP_ID) FROM EMPLOYEE t0, ...
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>Example: counting only distinct values of an attribute.
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  TopLink: reportQuery.addCount("Count", getExpressionBuilder().get("address").distinct());
      *  SQL: SELECT COUNT (DISTINCT t0.ADDR_ID) FROM EMPLOYEE t0, ...
-     * </blockquote></pre>
+     * </pre></blockquote>
      * objectAttributes can be specified also, even accross many to many
      * mappings.
      * @see #addCount()
@@ -1276,11 +1275,11 @@ public class ReportQuery extends ReadAllQuery {
      * Set the return type.
      * This can be one of several constants,
      * <ul>
-     * <li>ShouldReturnReportResult - return List<ReportQueryResult> : ReportQueryResult (Map) of each row is returned.
+     * <li>ShouldReturnReportResult - return {@literal List<ReportQueryResult>} : ReportQueryResult (Map) of each row is returned.
      * <li>ShouldReturnSingleResult - return ReportQueryResult : Only first row is returned.
-     * <li>ShouldReturnSingleAttribute - return List<Object> : Only first column of (all) rows are returned.
+     * <li>ShouldReturnSingleAttribute - return {@literal List<Object>} : Only first column of (all) rows are returned.
      * <li>ShouldReturnSingleValue - return Object : Only first value of first row is returned.
-     * <li>ShouldReturnWithoutReportQueryResult - return List<Object[]> : Array of each row is returned.
+     * <li>ShouldReturnWithoutReportQueryResult - return {@literal List<Object[]>} : Array of each row is returned.
      * </ul>
      */
     public void setReturnType(int returnChoice) {

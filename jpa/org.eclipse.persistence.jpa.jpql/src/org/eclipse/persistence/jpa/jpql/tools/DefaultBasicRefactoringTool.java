@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,8 +65,8 @@ public class DefaultBasicRefactoringTool extends BasicRefactoringTool {
 	 * using the JPQL query BNF identifier by the given ID
 	 * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL fragment
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
-	 * parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
+	 * @param jpqlQueryBNFId The unique identifier of the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
 	 */
 	public DefaultBasicRefactoringTool(CharSequence jpqlFragment,
 	                                    JPQLGrammar jpqlGrammar,

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -29,10 +29,11 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
  * <p><b>Purpose</b>:Provide a means to Convert an Enumeration type to/from either a string representation
  * of the enum facet or a user defined value. 
  * 
- * <p><b>Responsibilities:</b><ul>
+ * <p><b>Responsibilities:</b></p>
+ * <ul>
  * <li>Initialize the conversion values to be the Enum facets</li>
  * <li>Don't overwrite any existing, user defined conversion value</li>
- * 
+ * </ul>
  */
 public class JAXBEnumTypeConverter extends ObjectTypeConverter {
     private Class m_enumClass;

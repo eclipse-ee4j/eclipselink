@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -43,14 +43,14 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
  * required</li>
  * <li>Provide methods for accessing generics, annotations, etc. on a
  * given implementaiton's classes</li>
- * <li>Provide a dynamic proxy instance for a given JavaAnnotation in
- * the JOT implementation (for reflection a Java SDK annotation is
+ * <li>Provide a dynamic proxy instance for a given JavaAnnotation in 
+ * the JOT implementation (for reflection a Java SDK annotation is 
  * returned)</li>
  * </ul>
- *
+ *  
  * @since Oracle TopLink 11.1.1.0.0
- * @see org.eclipse.persistence.jaxb20.javamodel.JavaModel
- * @see org.eclipse.persistence.jaxb20.javamodel.jot.AnnotationProxy
+ * @see JavaModel
+ * @see AnnotationProxy
  *
  */
 public class Helper {
@@ -232,7 +232,7 @@ public class Helper {
      * @param element
      * @param annotationClass
      * @return
-     * @see isAnnotationPresent
+     * @see #isAnnotationPresent
      */
     public Annotation getAnnotation(JavaHasAnnotations element, Class annotationClass) {
         JavaAnnotation janno = element.getAnnotation(jModel.getClass(annotationClass));

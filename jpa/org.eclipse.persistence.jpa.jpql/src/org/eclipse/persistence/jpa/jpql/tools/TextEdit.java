@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,8 +15,8 @@ package org.eclipse.persistence.jpa.jpql.tools;
 
 /**
  * A <code>TextEdit</code> contains the information of a change that can be made to the JPQL query
- * after performing a refactoring operation. {@link TextRange} objects are stored in a {@link
- * RefactoringDelta}.
+ * after performing a refactoring operation. {@link org.eclipse.jpt.common.core.utility.TextRange TextRange}
+ * objects are stored in a {@link RefactoringDelta}.
  *
  * @see BasicRefactoringTool
  *

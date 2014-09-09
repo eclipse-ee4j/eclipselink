@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -356,14 +356,13 @@ public class SessionBroker extends DatabaseSessionImpl {
 
     /**
      * ADVANCED:
-     * Answers the past time this session is as of.  Only meaningfull
+     * Answers the past time this session is as of.  Only meaningful
      * for special historical sessions.
      * @return An immutable object representation of the past time.
      * <code>null</code> if no clause set, or this a regular session.
-     * @see org.eclipse.persistence.expressions.AsOfClause
-     * @see #acquireSessionAsOf(java.lang.Number)
-     * @see #acquireSessionAsOf(java.util.Date)
-     * @see #hasAsOfClause
+     * @see AsOfClause
+     * @see #acquireHistoricalSession(AsOfClause)
+     * @see org.eclipse.persistence.expressions.Expression#hasAsOfClause Expression.hasAsOfClause()
      */
     public AsOfClause getAsOfClause() {
         for (Iterator enumtr = getSessionsByName().values().iterator(); enumtr.hasNext();) {
@@ -927,7 +926,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * Set the session log.
      *
-     * @see #logMessages()
+     * @see #logMessage
      */
     public void setSessionLog(SessionLog log) {
         super.setSessionLog(log);
@@ -943,7 +942,7 @@ public class SessionBroker extends DatabaseSessionImpl {
      * PUBLIC:
      * Set the message log.
      *
-     * @see #logMessages()
+     * @see #logMessage
      */
     public void setLog(Writer log) {
         super.setLog(log);

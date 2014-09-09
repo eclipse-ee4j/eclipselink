@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The <b>SELECT</b> statement queries data from entities. This version simply does not handle
  * <b>OBJECT</b> and <b>NEW</b> identifiers. It is used from within another expression.
  * <p>
- * <div nowrap><b>BNF:</b> <code>simple_select_clause ::= SELECT [DISTINCT] simple_select_expression</code><p>
+ * <div><b>BNF:</b> <code>simple_select_clause ::= SELECT [DISTINCT] simple_select_expression</code><p></div>
  *
  * @see SimpleSelectClause
  *
@@ -164,7 +164,7 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
 	 * {@link StateObject StateObjects}.
 	 *
 	 * @param expression The {@link SimpleSelectClause parsed object} representing a subquery
-	 * <code>SELECT<b></b></code clause
+	 * <code>SELECT<b></b></code> clause
 	 */
 	public void setExpression(SimpleSelectClause expression) {
 		super.setExpression(expression);

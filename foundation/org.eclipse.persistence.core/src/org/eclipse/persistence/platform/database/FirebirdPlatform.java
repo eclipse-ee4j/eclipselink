@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -203,7 +203,7 @@ public class FirebirdPlatform extends DatabasePlatform {
     /**
      * INTERNAL:
      * Build FB equivalent to GREATEST(x, y)
-     * FB: CASE WHEN x >= y THEN x ELSE y END
+     * FB: CASE WHEN x {@literal >=} y THEN x ELSE y END
      */
     protected ExpressionOperator greatest() {
         ExpressionOperator exOperator = new ExpressionOperator();
@@ -325,7 +325,7 @@ public class FirebirdPlatform extends DatabasePlatform {
     }
     
     /**
-     * Print the pagination SQL using FB syntax " ROWS <max> TO <first>".
+     * Print the pagination SQL using FB syntax " ROWS {@literal <max> TO <first>}".
      */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -71,7 +71,7 @@ public abstract class AbstractStateObject implements StateObject {
 	/**
 	 * Creates a new <code>AbstractStateObject</code>.
 	 *
-	 * @param The parent of this state object, which cannot be <code>null</code>
+	 * @param parent The parent of this state object, which cannot be <code>null</code>
 	 * @exception NullPointerException The given parent cannot be <code>null</code>, unless {@link
 	 * #changeSupport} is overridden and does not throw the exception
 	 */
@@ -86,11 +86,11 @@ public abstract class AbstractStateObject implements StateObject {
 	 * third-party provider. This method will programmatically invoke the <b>visit</b> method defined
 	 * on the given visitor which signature should be.
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code>
+	 * <div><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code></div>
 	 * <p>
 	 * or
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(StateObject stateObject)</code><p>
+	 * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></div>
 	 *
 	 * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
 	 * @return <code>true</code> if the call was successfully executed; <code>false</code> otherwise
@@ -133,17 +133,17 @@ public abstract class AbstractStateObject implements StateObject {
 	 * third-party provider. This method will programmatically invoke the <b>visit</b> method defined
 	 * on the given visitor which signature should be.
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code>
+	 * <div><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code></div>
 	 * <p>
 	 * or
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(StateObject stateObject)</code><p>
+	 * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></div>
 	 *
 	 * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
 	 * @param type The type found in the hierarchy of the given {@link StateObjectVisitor} that will
 	 * be used to retrieve the visit method
 	 * @param parameterType The parameter type of the visit method
-	 * @see #acceptUnknownVisitor(ExpressionVisitor)
+	 * @see #acceptUnknownVisitor(StateObjectVisitor)
 	 * @since 2.4
 	 */
 	protected void acceptUnknownVisitor(StateObjectVisitor visitor,

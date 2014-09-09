@@ -731,7 +731,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     /**
      * Define the DataObject as a Type.
      * The Type is available through TypeHelper and DataGraph getType() methods.
-     * @param type the DataObject representing the Type.
+     * @param dataObject the DataObject representing the Type.
      * @return the defined Type.
      * @throws IllegalArgumentException if the Type could not be defined.
      */

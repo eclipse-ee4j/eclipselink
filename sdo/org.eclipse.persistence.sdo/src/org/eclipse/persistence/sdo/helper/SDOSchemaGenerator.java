@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -41,7 +41,7 @@ import org.eclipse.persistence.sessions.Project;
  * from a list of SDO Type objects. Populates an org.eclipse.persistence.internal.oxm.schema.model.Schema
  * object and makes use of org.eclipse.persistence.internal.oxm.schema.SchemaModelProject to marshal
  * the Schema Object to XML.
- * @see commonj.sdo.XSDHelper
+ * @see commonj.sdo.helper.XSDHelper
  */
 public class SDOSchemaGenerator {
     private Map namespaceToSchemaLocation;

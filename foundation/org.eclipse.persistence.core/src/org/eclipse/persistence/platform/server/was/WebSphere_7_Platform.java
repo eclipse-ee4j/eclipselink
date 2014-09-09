@@ -114,7 +114,6 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
      * supply the server specific MBean instance for later registration by calling it in the
      * constructor.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()
@@ -130,7 +129,6 @@ public class WebSphere_7_Platform extends WebSphere_6_1_Platform implements JMXE
      * INTERNAL: serverSpecificRegisterMBean(): Server specific implementation of the creation and
      * deployment of the JMX MBean to provide runtime services for my databaseSession.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()

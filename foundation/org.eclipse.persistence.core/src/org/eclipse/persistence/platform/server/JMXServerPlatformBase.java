@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -286,7 +286,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * For platform classes that override the JMXEnabledPlatform - the services MBean 
      * is created at platform construction for use during MBean registration here.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()
@@ -371,7 +370,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * serverSpecificUnregisterMBean(): Server specific implementation of the
      * de-registration of the JMX MBean from its server during session logout.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      */
@@ -452,7 +450,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
     
     /**
      * Remove JMX reserved characters from the session name
-     * @param aSession
      * @return
      */
     protected String getMBeanSessionName() {
@@ -582,7 +579,6 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
      * This function does not use reflective API on the application server, instead it parses
      * the database session name for the module name, and 
      * the classLoader (from the Platform.conversionManager) toString() for the application name.
-     * @return
      */
     protected void initializeApplicationNameAndModuleName() {
         // 333160: Fail Fast: we wrap the entire function in a try/catch - even though no exceptions like IOBE should occur - because this initialization should not stop server predeploy in "any" way

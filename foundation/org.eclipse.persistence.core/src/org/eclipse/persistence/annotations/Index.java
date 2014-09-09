@@ -31,7 +31,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, TYPE})
 @Retention(RUNTIME)
 public @interface Index {
-    /** The name of the INDEX, defaults to INDEX_<table-name> */
+    /** The name of the INDEX, defaults to {@literal INDEX_<table-name>} */
     String name() default "";
     
     /** The schema of the INDEX */

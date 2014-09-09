@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  * of results refers to the maximum number of parameter sets results will be cached for.\
  * By default query result caching is not used.
  *
- * @see org.eclipse.persistence.queries.ReadQuery#setQueryCachePolicy(QueryResultsCachePolicy)
+ * @see org.eclipse.persistence.queries.ReadQuery#setQueryResultsCachePolicy(QueryResultsCachePolicy)
  */
 public class QueryResultsCachePolicy implements Serializable, Cloneable {
     /** Allows invalidation to be specified. */

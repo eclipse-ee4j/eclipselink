@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,8 +18,8 @@ import org.eclipse.persistence.jpa.jpql.JPAVersion;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
- * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>.</p>
+ * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined in
+ * <a href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>.</p>
  *
  * The following is the JPQL grammar defined in JPA version 2.0.
  *
@@ -192,14 +192,14 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * all_or_any_expression ::= { ALL | ANY | SOME} (subquery)
  *
  * comparison_expression ::= string_expression comparison_operator {string_expression | all_or_any_expression} |
- *                           boolean_expression { = | <> } {boolean_expression | all_or_any_expression} |
- *                           enum_expression { = | <> } {enum_expression | all_or_any_expression} |
+ *                           boolean_expression { = | {@literal <>} } {boolean_expression | all_or_any_expression} |
+ *                           enum_expression { = | {@literal <>} } {enum_expression | all_or_any_expression} |
  *                           datetime_expression comparison_operator {datetime_expression | all_or_any_expression} |
- *                           entity_expression { = | <> } {entity_expression | all_or_any_expression} |
+ *                           entity_expression { = | {@literal <>} } {entity_expression | all_or_any_expression} |
  *                           arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression} |
- *                           entity_type_expression { = | <> } entity_type_expression}
+ *                           entity_type_expression { = | {@literal <>} } entity_type_expression}
  *
- * comparison_operator ::= = | > | >= | < | <= | <>
+ * comparison_operator ::= = | {@literal > | >= | < | <= | <>}
  *
  * arithmetic_expression ::= simple_arithmetic_expression | (subquery)
  *
@@ -324,7 +324,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * date_string ::= [0-9] [0-9] [0-9] [0-9] '-' [0-9] [0-9] '-' [0-9] [0-9]
  *
- * trim_string ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*</pre></code>
+ * trim_string ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*</code></pre>
  *
  * <p>Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage

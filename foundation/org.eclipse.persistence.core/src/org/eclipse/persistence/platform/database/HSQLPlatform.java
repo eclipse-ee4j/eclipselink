@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -44,6 +44,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li>SEQUENCE objects
  * <li>Functions
  * <li>Pagination
+ * </ul>
  *
  * @since TOPLink/Java 4.5
  */
@@ -158,7 +159,7 @@ public class HSQLPlatform extends DatabasePlatform {
     /**
      * INTERNAL:
      * Build HSQL equivalent to GREATEST(x, y)
-     * HSQL: CASE WHEN x >= y THEN x ELSE y
+     * HSQL: CASE WHEN x {@literal >=} y THEN x ELSE y
      */
     protected ExpressionOperator greatest() {
         ExpressionOperator exOperator = new ExpressionOperator();
@@ -320,7 +321,7 @@ public class HSQLPlatform extends DatabasePlatform {
     }
 
     /**
-     * Print the pagination SQL using HSQL syntax "SELECT LIMIT <first> <max>".
+     * Print the pagination SQL using HSQL syntax "SELECT LIMIT {@literal <first> <max>}".
      */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {

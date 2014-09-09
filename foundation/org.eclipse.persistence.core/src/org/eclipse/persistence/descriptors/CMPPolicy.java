@@ -101,7 +101,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return the policy for bean pessimistic locking
-     * @see #org.eclipse.persistence.descriptors.PessimisticLockingPolicy
+     * @see org.eclipse.persistence.descriptors.PessimisticLockingPolicy
      */
     public PessimisticLockingPolicy getPessimisticLockingPolicy() {
         return pessimisticLockingPolicy;
@@ -121,7 +121,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * PUBLIC:
      * Define the mapped class. This is the class which was originally mapped in the MW
      *
-     * @param Class newMappedClass
+     * @param newMappedClass
      */
     public void setMappedClass(Class newMappedClass) {
         mappedClass = newMappedClass;
@@ -150,8 +150,8 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * PUBLIC:
      * Configure bean pessimistic locking
      *
-     * @param PessimisticLockingPolicy policy
-     * @see #org.eclipse.persistence.descriptors.PessimisticLockingPolicy
+     * @param policy
+     * @see org.eclipse.persistence.descriptors.PessimisticLockingPolicy
      */
     public void setPessimisticLockingPolicy(PessimisticLockingPolicy policy) {
         pessimisticLockingPolicy = policy;
@@ -190,7 +190,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * this type.  NOTE: if set to true, then updateAllFields must also be set
      * to true
      *
-     * @param boolean shouldForceUpdate
+     * @param shouldForceUpdate
      */
     public void setForceUpdate(boolean shouldForceUpdate) {
         this.forceUpdate = Boolean.valueOf(shouldForceUpdate);
@@ -211,7 +211,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Configure whether TopLink should update all fields for an object of this
      * type when an update occurs.
      *
-     * @param boolean shouldUpdatAllFields
+     * @param shouldUpdatAllFields
      */
     public void setUpdateAllFields(boolean shouldUpdatAllFields) {
         this.updateAllFields = Boolean.valueOf(shouldUpdatAllFields);

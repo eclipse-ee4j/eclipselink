@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -86,7 +86,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     /**
      * INTERNAL:
      * Private constructor.
-     *Use {@link #SDODataObject(HelperContext)} instead
+     * Use {@link org.eclipse.persistence.sdo.helper.delegates.SDODataFactoryDelegate#create(commonj.sdo.Type) SDODataFactoryDelegate.create(Type)} instead
      */
     public SDODataObject() {
         // Implementors should not be calling this constructor directly - please use SDODataFactory
@@ -1150,7 +1150,6 @@ public class SDODataObject implements DataObject, SequencedObject {
      * Perform a detach on a DataObject or List of DataObjects
      * @param property
      * @param oldValue (List or Object)
-     *@param fromDelete
      */
     private void detach(Property property, Object oldValue) {
         // This function is called internally from set(property, object, boolean) when a detach of the existing object is required
@@ -1265,10 +1264,9 @@ public class SDODataObject implements DataObject, SequencedObject {
     /**
      * INTERNAL:
      * Call detach or delete recursively on aDataObject after possibly changing the flag whether to clear the ChangeSummary pointer at this level
-     * @param anObject
-     * @param isCSRoot
+     * @param aDataObject
      * @param fromDelete
-     * @param subTreeRootHasCS
+     * @param clearCS
      */
     private void detachDeleteRecursivePrivateHelper(SDODataObject aDataObject, boolean fromDelete, boolean clearCS) {
         if (aDataObject != null) {
@@ -1629,7 +1627,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     /**
      * INTERNAL:
      * This function reverses any operations that were performed on this object since change tracking
-     * was turned on.  The object is returned to the state when logging was first started.<br/>
+     * was turned on.  The object is returned to the state when logging was first started.<br>
      * @param isCSRoot
      * @param cs
      * @param origContainer
@@ -1871,8 +1869,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     /**
      * INTERNAL:
      * Pluggable Interface for substituting the default Map with a custom Map Class
-     * @param currentValueStore
-     * void
+     * @param aValueStore
      */
     public void _setCurrentValueStore(ValueStore aValueStore) {
         currentValueStore = aValueStore;
@@ -2284,7 +2281,8 @@ public class SDODataObject implements DataObject, SequencedObject {
      * INTERNAL:
      * Update containment on the dataObject with specified update sequence state
      * @param property
-     * @param value
+     * @param aDataObject
+     * @param updateSequence
      */
     public void updateContainment(Property property, SDODataObject aDataObject, boolean updateSequence) {
         if (property.isContainment() || isContainedByDataGraph(property)) {
@@ -2439,7 +2437,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      * Defined in SDO 2.01 spec on page 65 Externalizable function is called by
      * ObjectStream.writeObject() A replacement object for serialization can be
      * called here.
-     * <p/>Security Note:
+     * <p>Security Note:
      *     This public function exposes a data replacement vulnerability where an outside client
      *     can gain access and modify their non-final constants.
      *     We may need to wrap the GZIP streams in some sort of encryption when we are not

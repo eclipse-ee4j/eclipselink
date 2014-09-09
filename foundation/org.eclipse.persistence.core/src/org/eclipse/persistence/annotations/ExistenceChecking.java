@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -31,7 +31,7 @@ import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
  * An existence-checking specification is supported on an Entity or 
  * MappedSuperclass annotation.
  * 
- * @see org.eclipse.persistence.annotations.ExistenceType.
+ * @see org.eclipse.persistence.annotations.ExistenceType
  * @see org.eclipse.persistence.queries.DoesExistQuery
  * @author Guy Pelletier
  * @since Eclipselink 1.0

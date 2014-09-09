@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -112,7 +112,7 @@ public class SDOType implements Type, Serializable {
     /**
      * INTERNAL:
      * Build up a Type with given name and uri and a default static HelperContext.
-     * Use  {@link # SDOType(uri, typeName, aHelperContext)} instead
+     * Use  {@link #SDOType(String, String, org.eclipse.persistence.sdo.helper.SDOTypeHelper)} instead
      * @param uri           the URI of this type
      * @param type_name     the unique of this Type
      */
@@ -124,8 +124,8 @@ public class SDOType implements Type, Serializable {
     /**
      * Build up a Type with given name and uri
      * @param uri           the URI of this type
-     * @param type_name     the unique of this Type
-     * @param aContext      the current HelperContext
+     * @param name          the unique of this Type
+     * @param sdoTypeHelper the current HelperContext
      */
     public SDOType(String uri, String name, SDOTypeHelper sdoTypeHelper) {
         this(sdoTypeHelper);
@@ -337,7 +337,7 @@ public class SDOType implements Type, Serializable {
      * INTERNAL:
      * Make this Type an opened Type to allow open content by assigning true value
      * or a Type not to accept any additional properties by assigning false value,
-     * {@link isOpen()}.
+     * {@link #isOpen()}.
      * @param bOpen  boolean value implying if this Type is open
      */
     public void setOpen(boolean bOpen) {
@@ -516,7 +516,7 @@ public class SDOType implements Type, Serializable {
     /**
       * INTERNAL:
       * Set the local name of this property.
-      * @param xsdLocalName a String representing the local name of this property if it was declared in an XML schema
+      * @param xsdLocalNameString a String representing the local name of this property if it was declared in an XML schema
       */
     public void setXsdLocalName(String xsdLocalNameString) {
         xsdLocalName = xsdLocalNameString;
@@ -636,7 +636,7 @@ public class SDOType implements Type, Serializable {
     /**
       * INTERNAL:
       * Set if this type is an xsd:list in the schema
-      * @param xsdList a boolean representing if this type represents an xsd:list in the schema
+      * @param anXsdList a boolean representing if this type represents an xsd:list in the schema
       */
     public void setXsdList(boolean anXsdList) {
         xsdList = anXsdList;
@@ -795,7 +795,7 @@ public class SDOType implements Type, Serializable {
      * INTERNAL:
      * For this Type generate classes
      * @param packageName
-     * @param nr
+     * @param namespaceResolvers
      */
     public void preInitialize(String packageName, List namespaceResolvers) {
         String instanceClassName = getInstanceClassName();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -68,8 +68,8 @@ public interface ObjectChangeSet {
     /**
      * ADVANCED:
      * This method returns the primary key for the object that this change set represents.
-     * @depreated since EclipseLink 2.1, replaced by getPrimaryKey()
-     * @see getPrimaryKey()
+     * @deprecated since EclipseLink 2.1, replaced by getId()
+     * @see #getId()
      */
     @Deprecated
     Vector getPrimaryKeys();
@@ -101,7 +101,7 @@ public interface ObjectChangeSet {
     /**
      * ADVANCED:
      * This method will return true if the specified attribute has been changed.
-     * @param String the name of the attribute to search for.
+     * @param attributeName the name of the attribute to search for.
      */
     boolean hasChangeFor(String attributeName);
 
@@ -127,7 +127,6 @@ public interface ObjectChangeSet {
     /**
      * ADVANCED
      * Set whether this ObjectChangeSet should be recalculated after changes in event
-     * @return
      */
     public void setShouldRecalculateAfterUpdateEvent(boolean shouldRecalculateAfterUpdateEvent);
 

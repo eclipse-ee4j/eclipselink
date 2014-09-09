@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -42,10 +42,10 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  * <p>
  *&nbsp;<b>Usage</b>:<br>
  * <ul>
- * <li> Set to a non-null value</li><br/>IsSet==true, value=value
- * <li> Not set</li><br/>isSet=false, value=null
- * <li> Set to null value </li><br/>isSet=true, value=null
- * <li> Set to default value </li><br/>isSet=false, value=default
+ * <li> Set to a non-null value<br>IsSet==true, value=value</li>
+ * <li> Not set<br>isSet=false, value=null</li>
+ * <li> Set to null value<br>isSet=true, value=null</li>
+ * <li> Set to default value<br>isSet=false, value=default</li>
  * </ul>
  * 
  * @see org.eclipse.persistence.internal.oxm.NullCapableValue
@@ -181,7 +181,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     /**
      * 
-     * @param isSetMethodName
+     * @param anIsSetMethodName
      */
     public void setIsSetMethodName(String anIsSetMethodName) {
         isSetMethodName = anIsSetMethodName;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,9 +19,9 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedTypeProvider;
 /**
  * This utility class provides basic refactoring support. This version adds support for EclipseLink
  * specific extension over the default implementation of JPQL defined in the Java Persistence
- * functional specification and it does not changes the {@link org.eclipse.persistence.jpa.jpql.
- * model.query.StateObject StateObject} but rather gather the changes in {@link RefactoringDelta}
- * and it is the responsibility of the invoker to the actual change.
+ * functional specification and it does not changes the {@link
+ * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} but rather gather the
+ * changes in {@link RefactoringDelta} and it is the responsibility of the invoker to the actual change.
  * <p>
  * Provided functionality:
  * <ul>
@@ -66,8 +66,8 @@ public class EclipseLinkBasicRefactoringTool extends BasicRefactoringTool {
 	 * using the JPQL query BNF identifier by the given ID
 	 * @param jpqlGrammar The {@link JPQLGrammar} that was used to parse the JPQL fragment
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
-	 * parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
+	 * @param jpqlQueryBNFId The unique identifier of the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
 	 */
 	public EclipseLinkBasicRefactoringTool(CharSequence jpqlFragment,
 	                                        JPQLGrammar jpqlGrammar,

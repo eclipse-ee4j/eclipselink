@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -28,25 +28,25 @@ import java.lang.annotation.Target;
  * &nbsp;@XmlRootElement(name="customer")<br>
  * &nbsp;public class Customer {<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlElements({@XmlElement(type=String.class), @XmlElement(type=Integer.class)})<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlPaths({@XmlPath("choice-element/string/text()"), @XmlPath("choice-element/integer/text()")})<br> 
+ * &nbsp;&nbsp;&nbsp;&nbsp;@XmlElements({@literal {@XmlElement(type=String.class), @XmlElement(type=Integer.class)}})<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;@XmlPaths({@literal {@XmlPath("choice-element/string/text()"), @XmlPath("choice-element/integer/text()")}})<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;public Object choice<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;}<br><br> 
+ * &nbsp;}</code><br><br>
  * Will create the following Schema:<br>
  * 
  * <pre>
  *    ...
- *    &lt;xsd:choice>
- *       &lt;xsd:element name="choice-element" minOccurs="0">
- *          &lt;xsd:complexType>
- *             &lt;xsd:choice>
- *                &lt;xsd:element name="string" type="xsd:string" minOccurs="0"/>
- *                &lt;xsd:element name="integer" type="xsd:int" minOccurs="0"/>
- *             &lt;/xsd:choice>
- *          &lt;/xsd:complexType>
- *       &lt;/xsd:element>
- *    &lt;/xsd:choice>
+ *    &lt;xsd:choice&gt;
+ *       &lt;xsd:element name="choice-element" minOccurs="0"&gt;
+ *          &lt;xsd:complexType&gt;
+ *             &lt;xsd:choice&gt;
+ *                &lt;xsd:element name="string" type="xsd:string" minOccurs="0"/&gt;
+ *                &lt;xsd:element name="integer" type="xsd:int" minOccurs="0"/&gt;
+ *             &lt;/xsd:choice&gt;
+ *          &lt;/xsd:complexType&gt;
+ *       &lt;/xsd:element&gt;
+ *    &lt;/xsd:choice&gt;
  *    ...
  * </pre> 
  */

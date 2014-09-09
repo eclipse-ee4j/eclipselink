@@ -64,7 +64,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Add any temporal querying conditions to this object expression.
-     * @parameter Integer tableIndex not null indicates that only expression for a single table should be returned.
+     * @param tableIndex not null indicates that only expression for a single table should be returned.
      */
     public Expression additionalHistoryExpression(Expression context, Expression base, Integer tableIndex) {
         //

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -94,7 +94,7 @@ public class FileBasedProjectCache implements ProjectCache {
      * Check the provided map for an object with the given name.  If that object is not available, check the
      * System properties.  Log the value returned if logging is enabled at the FINEST level
      * @param propertyName 
-     * @param map 
+     * @param properties
      * @param log
      * @return
      */

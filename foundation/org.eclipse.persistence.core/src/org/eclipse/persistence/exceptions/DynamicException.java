@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -109,7 +109,7 @@ public class DynamicException extends EclipseLinkException {
      * which does not have an associated mapping. Make sure the index used is
      * less then {@link DynamicType#getNumberOfProperties()}.
      * 
-     * @see DynamicTypeImpl#getMapping(int)
+     * @see DynamicTypeImpl#getMapping(String)
      */
     public static DynamicException invalidPropertyIndex(DynamicType type, int propertyIndex) {
         DynamicException de = new DynamicException("Invalid DynamicEntity[" + type + "] property index: " + propertyIndex);
@@ -157,7 +157,7 @@ public class DynamicException extends EclipseLinkException {
      * A null or empty string was provided as the parent class for a dynamic
      * class being registered for creation.
      * 
-     * @see DynamicClassWriter(String)
+     * @see DynamicClassWriter
      */
     public static DynamicException illegalParentClassName(String parentClassName) {
         DynamicException de = new DynamicException("Illegal parent class name for dynamic type: " + parentClassName);
@@ -166,9 +166,9 @@ public class DynamicException extends EclipseLinkException {
     }
 
     /**
-     * A call to {@link DynamicClassLoader#addClass(String, DynamicClassWriter)}
+     * A call to {@link DynamicClassLoader#addClass(String, org.eclipse.persistence.dynamic.EclipseLinkClassWriter)}
      * or
-     * {@link DynamicClassLoader#creatDynamicClass(String, DynamicClassWriter)}
+     * {@link DynamicClassLoader#createDynamicClass(String, DynamicClassWriter)}
      * was invoked with a className that already had a
      * {@link DynamicClassWriter} that is not compatible with the provided
      * writer.

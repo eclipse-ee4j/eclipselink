@@ -966,21 +966,20 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Conforming on a result from the database is lenient.  Since the object
      * matched the query on the database we assume it matches here unless we can
      * determine for sure that it was changed in this UnitOfWork not to conform.
-     * @param result may be an original, or a raw database row
+     * @param clone the clone to return
      * @param arguments the parameters this query was executed with
      * @param selectionCriteriaClone the expression to conform to.  If was a
      * selection object or key, null (which all conform to) is used
      * @param alreadyReturned a hashtable of objects already found by scanning
      * the UnitOfWork cache for conforming instances.  Prevents duplicates.
-     * @param buildDirectlyFromRows whether result is an original or a raw database
-     * row
+     * @param unitOfWork current UnitOfWork
      * @return a clone, or null if result does not conform.
      */
     protected Object conformIndividualResult(Object clone, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, Expression selectionCriteriaClone, Map alreadyReturned) {
         if (this.descriptor.hasWrapperPolicy() && this.descriptor.getWrapperPolicy().isWrapped(clone)) {
             // The only time the clone could be wrapped is if we are not registering
             // results in the unitOfWork and we are ready to return a final
-            // (unregistered) result now.  Any further processing may accidently
+            // (unregistered) result now.  Any further processing may accidentally
             // cause it to get registered.
             return clone;
         }
@@ -2367,11 +2366,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * <b>Restrictions</b>:
      * <ul>
      * <li>Only attributes whose mappings are DirectToField, Aggregate (Embeddable), ObjectReference
-     * (OneToOne) or Collection type OneToMany/ManyToMany are considered in a Query By Example object.  The behaviour when an example object has attribute values for other mappings types is <b>undefined</b>.</li>
-     * <ul><li>To ensure the example does not include any unsupported mappings the flag {@link #setValidateExample}
+     * (OneToOne) or Collection type OneToMany/ManyToMany are considered in a Query By Example object.  The behaviour when an example object has attribute values for other mappings types is <b>undefined</b>.
+     * <ul><li>To ensure the example does not include any unsupported mappings the flag {@link org.eclipse.persistence.queries.QueryByExamplePolicy#setValidateExample}
      * should be set to true on the corresponding QueryByExamplePolicy to ensure no unsupported relationship types are used in the example.</li>
      * <li> For OneToMany and ManyToMany mappings the elements within the collections and the references attribute values will be added to the expression as disjuncts (OR)</li>
-     * </ul>
+     * </ul></li>
      * </ul>
      */
     public void setExampleObject(Object newExampleObject) {
@@ -2921,8 +2920,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * If a fetch group is not explicitly set in the query, default fetch group optionally defined in the descriptor
      * would be used, unless the user explicitly calls query.setShouldUseDefaultFetchGroup(false).
      * Note that the returned fetchGroup may be updated during preProcess.
-     * @see #getFetchGroup(ClassDescriptor) for named and default FetchGroup
-     *      lookup.
      */
     public FetchGroup getFetchGroup() {
         return this.fetchGroup;

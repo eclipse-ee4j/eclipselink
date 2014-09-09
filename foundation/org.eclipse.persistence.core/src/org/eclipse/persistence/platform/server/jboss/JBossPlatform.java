@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -79,9 +79,9 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      * @return Class externalTransactionControllerClass
      *
      * @see org.eclipse.persistence.transaction.JTATransactionController
-     * @see ServerPlatformBase.isJTAEnabled()
-     * @see ServerPlatformBase.disableJTA()
-     * @see ServerPlatformBase.initializeExternalTransactionController()
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#isJTAEnabled()
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#disableJTA()
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
     public Class getExternalTransactionControllerClass() {
     	if (externalTransactionControllerClass == null){
@@ -99,7 +99,7 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      * @return ClassLoaderHolder - a composite object containing the classLoader and the flag
      *     that is true if the classLoader returned is temporary
      *     
-     *  @see org.eclipse.persistence.internal.helper.ClassLoaderHolder
+     *  @see org.eclipse.persistence.internal.helper.JPAClassLoaderHolder
      */
     public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo) {
         // Bug 6460732: Use real classLoader instead of getNewTempClassLoader for now to avoid a JBoss NPE on loadClass()
@@ -119,7 +119,6 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      * Implementing platform classes must override this function and supply
      * the server specific MBean instance for later registration by calling it in the constructor.  
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()
@@ -137,7 +136,6 @@ public class JBossPlatform extends JMXServerPlatformBase implements JMXEnabledPl
      * creation and deployment of the JMX MBean to provide runtime services for my
      * databaseSession.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()

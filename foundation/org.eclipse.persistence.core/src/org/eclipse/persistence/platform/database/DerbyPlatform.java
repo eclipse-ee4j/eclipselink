@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2005 Sun Microsystems,  Inc. All rights reserved.
+ * Copyright 2005, 2014 Oracle and/or its affiliates,  Inc. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -49,7 +49,7 @@ public class DerbyPlatform extends DB2Platform {
     public static final int MAX_CLOB = 2147483647;  //The maximum clob/blob size is 2 gigs in Derby.
     public static final int MAX_BLOB = MAX_CLOB;
 
-    /** Allow sequence support to be disabled for Derby < 10.6.1. */
+    /** Allow sequence support to be disabled for Derby {@literal <} 10.6.1. */
     protected boolean isSequenceSupported;
     protected boolean isConnectionDataInitialized;
     
@@ -200,10 +200,10 @@ public class DerbyPlatform extends DB2Platform {
      * Write an sql string for updating the original table from the temporary table.
      * Precondition: supportsTempTables() == true.
      * Precondition: pkFields and assignFields don't intersect.
-     * @parameter Writer writer for writing the sql
-     * @parameter DatabaseTable table is original table for which temp table is created.
-     * @parameter Collection pkFields - primary key fields for the original table.
-     * @parameter Collection assignedFields - fields to be assigned a new value.
+     * @param writer for writing the sql
+     * @param table is original table for which temp table is created.
+     * @param pkFields - primary key fields for the original table.
+     * @param assignedFields - fields to be assigned a new value.
      */
     @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,

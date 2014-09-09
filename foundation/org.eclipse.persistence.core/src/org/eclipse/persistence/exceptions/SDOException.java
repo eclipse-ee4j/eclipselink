@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
  * <b>Purpose:</b>
  * <ul><li>This class provides an implementation of EclipseLinkException specific to the EclipseLink SDO (Service Data Objects) API.</li>
  * </ul>
- * <p/>
+ * <p>
  * <b>Responsibilities:</b>
  * <ul>
  * <li>Return an SDOException that can be thrown around input parameters.
@@ -567,7 +567,7 @@ public class SDOException extends EclipseLinkException {
 
      /**
       * INTERNAL:
-      * Exception when trying to resolve an sdo xml [propertyType] annotation on a target Type of dataType==true.<br/>
+      * Exception when trying to resolve an sdo xml [propertyType] annotation on a target Type of dataType==true.<br>
       * See Sect 9.2 (1) of the SDO Specification.
       * thrown from SDOTypesGenerator.postProcessing()
       */

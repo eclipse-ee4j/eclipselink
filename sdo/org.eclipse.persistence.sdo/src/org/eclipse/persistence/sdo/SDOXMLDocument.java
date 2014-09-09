@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -20,31 +20,31 @@ import org.eclipse.persistence.oxm.XMLRoot;
 /**
  * <p><b>Purpose</b>: Represents an XML Document containing a tree of DataObjects.
  *
- * An example XMLDocument fragment is:
- * <?xml version="1.0"?>
- * <purchaseOrder orderDate="1999-10-20">
+ * <p>An example XMLDocument fragment is:<br>
+ * &nbsp;{@literal <?xml version="1.0"?>}<br>
+ * &nbsp;{@literal <purchaseOrder orderDate="1999-10-20">}
  *
- * created from this XML Schema fragment:
- * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
- *   <xsd:element name="purchaseOrder" type="PurchaseOrderType"/>
- *   <xsd:complexType name="PurchaseOrderType">
+ * <p>created from this XML Schema fragment:<br>
+ * &nbsp;{@literal <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">}<br>
+ * &nbsp;{@literal <xsd:element name="purchaseOrder" type="PurchaseOrderType"/>}<br>
+ * &nbsp;{@literal <xsd:complexType name="PurchaseOrderType">}
  *
- * Upon loading this XMLDocument:
- *   DataObject is an instance of Type PurchaseOrderType.
- *   RootElementURI is null because the XSD has no targetNamespace URI.
- *   RootElementName is purchaseOrder.
- *   Encoding is null because the document did not specify an encoding.
- *   XMLDeclaration is true because the document contained an XML declaration.
- *   XMLVersion is 1.0
- *   SchemaLocation and noNamespaceSchemaLocation are null because they are
+ * <p>Upon loading this XMLDocument:<br>
+ * &nbsp;DataObject is an instance of Type PurchaseOrderType.<br>
+ * &nbsp;RootElementURI is null because the XSD has no targetNamespace URI.<br>
+ * &nbsp;RootElementName is purchaseOrder.<br>
+ * &nbsp;Encoding is null because the document did not specify an encoding.<br>
+ * &nbsp;XMLDeclaration is true because the document contained an XML declaration.<br>
+ * &nbsp;XMLVersion is 1.0<br>
+ * &nbsp;SchemaLocation and noNamespaceSchemaLocation are null because they are
  *     not specified in the document.
  *
- * When saving the root element, if the type of the root dataObject is not the
+ * <p>When saving the root element, if the type of the root dataObject is not the
  *   type of global element specified by rootElementURI and rootElementName,
  *   or if a global element does not exist for rootElementURI and rootElementName,
  *   then an xsi:type declaration is written to record the root DataObject's Type.
  *
- * When loading the root element and an xsi:type declaration is found
+ * <p>When loading the root element and an xsi:type declaration is found
  *   it is used as the type of the root DataObject.  In this case,
  *   if validation is not being performed, it is not an error if the
  *   rootElementName is not a global element.
@@ -111,7 +111,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
     /**
      * Return the XML declaration of the document.  If true,
      *   XMLHelper save() will produce a declaration of the form:
-     * <?xml version="1.0" encoding="UTF-8"?>
+     * {@literal <?xml version="1.0" encoding="UTF-8"?>}
      *   Encoding will be suppressed if getEncoding() is null.
      * The default value is true.
      * @return the XML declaration of the document.
@@ -210,7 +210,7 @@ public class SDOXMLDocument extends XMLRoot implements XMLDocument {
     /**
       * INTERNAL:
       * Set the root element uri of the document
-      * @param rootElementURI the root element uri of the document
+      * @param rootElementUri the root element uri of the document
       */
     public void setRootElementURI(String rootElementUri) {
         super.setNamespaceURI(rootElementUri);

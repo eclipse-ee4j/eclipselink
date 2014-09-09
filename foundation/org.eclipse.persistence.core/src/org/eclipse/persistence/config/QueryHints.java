@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -134,7 +134,7 @@ public class QueryHints {
      * This can be used to avoid bottlenecks from the cached values expiring at the same time.
      * By default expiry is not randomized.
      * Valid values are "true" and "false", false is the default.
-     * @see org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy#setInvalidationRandomized(boolean)
+     * @see org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy#setIsInvalidationRandomized(boolean)
      */
     public static final String QUERY_RESULTS_CACHE_RANDOMIZE_EXPIRY = "eclipselink.query-results-cache.randomize-expiry";
 
@@ -287,7 +287,7 @@ public class QueryHints {
     /**
      * "eclipselink.batch.size"
      * <p>Configures the batch size for batch fetching using the IN batch type.
-     * Valid values are integer values > 0.
+     * Valid values are integer values {@literal >} 0.
      * The default size is 256, or the cursor pageSize.
      * @see #BATCH
      * @see #BATCH_TYPE
@@ -715,7 +715,7 @@ public class QueryHints {
      * Both local and nested attributes are supported.
      * @see #LOAD_GROUP
      * @see org.eclipse.persistence.queries.LoadGroup
-     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setLoadGroup(org.eclipse.persistence.queries.FetchGroup)
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setLoadGroup
      */
     public static final String LOAD_GROUP_ATTRIBUTE = "eclipselink.load-group.attribute";
     
@@ -763,7 +763,7 @@ public class QueryHints {
      * <li>"false" - (DEFAULT) do not allow native SQL (and respect the persistence unit flag if set.)
      * </ul>
      * 
-     * @see DatabaseQuery#setAllowNativeSQLQuery(boolean) {
+     * @see org.eclipse.persistence.queries.DatabaseQuery#setAllowNativeSQLQuery(Boolean) {
      */
     public static final String ALLOW_NATIVE_SQL_QUERY = "eclipselink.jdbc.allow-native-sql-query";
     
@@ -773,7 +773,7 @@ public class QueryHints {
      * This can only be used if the class has been configured with historical support,
      * or if Oracle Flashback is used.
      * Valid values are timestamps in the form "YYYY/MM/DD HH:MM:SS.n".
-     * @see org.eclipse.persistence.descriptors.HistoryPolicy
+     * @see org.eclipse.persistence.history.HistoryPolicy
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setAsOfClause(org.eclipse.persistence.history.AsOfClause)
      */
     public static final String AS_OF = "eclipselink.history.as-of";
@@ -791,8 +791,8 @@ public class QueryHints {
      * "eclipselink.result-type"
      * <p> By default in JPA for non-single select queries an Array of values is returned.
      * If getSingleResult() is called the first array is returned, for getResultList() a List of arrays is returned.
-     * <p>i.e. "Select e.firstName, e.lastName from Employee e" returns List<Object[]>
-     * <p>or the native query, "SELECT * FROM EMPLOYEE" returns List<Object[]>
+     * <p>i.e. "Select e.firstName, e.lastName from Employee e" returns {@literal List<Object[]>}
+     * <p>or the native query, "SELECT * FROM EMPLOYEE" returns {@literal List<Object[]>}
      * <p>The ResultType can be used to instead return a Map of values (DatabaseRecord, ReportQueryResult).
      * <p>It can also be used to return a single column, or single value.
      * Valid values are defined in ResultType.
@@ -801,7 +801,7 @@ public class QueryHints {
      * @see org.eclipse.persistence.sessions.DatabaseRecord
      * @see org.eclipse.persistence.queries.ReportQueryResult
      * @see org.eclipse.persistence.queries.ReportQuery#setReturnType(int)
-     * @see org.eclipse.persistence.queries.DataReadQuery#setUseAbstractRecord(boolean)
+     * @see org.eclipse.persistence.queries.DataReadQuery#setResultType
      */
     public static final String RESULT_TYPE = "eclipselink.result-type";
     

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,10 +28,10 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * comparison operation is <code>false</code> for every value in the result of the subquery, and is
  * unknown if neither <code>true</code> nor <code>false</code>. The keyword <b>SOME</b> is
  * synonymous with <b>ANY</b>. The comparison operators used with <b>ALL</b> or <b>ANY</b>
- * conditional expressions are =, <, <=, >, >=, <>. The result of the subquery must be like that of
- * the other argument to the comparison operator in type.
+ * conditional expressions are =, {@literal <, <=, >, >=, <>}. The result of the subquery must be
+ * like that of the other argument to the comparison operator in type.
  * <p>
- * <div nowrap><b>BNF:</b> <code>all_or_any_expression ::= {ALL|ANY|SOME}(subquery)</code><p>
+ * <div><b>BNF:</b> <code>all_or_any_expression ::= {ALL|ANY|SOME}(subquery)</code><p></div>
  *
  * @version 2.5
  * @since 2.3

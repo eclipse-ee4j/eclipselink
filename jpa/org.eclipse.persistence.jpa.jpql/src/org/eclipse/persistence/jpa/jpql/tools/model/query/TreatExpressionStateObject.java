@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * <b>Note:</b> {@link EclipseLinkStateObjectVisitor} needs to be used to traverse this state object.
  * <p>
- * <div nowrap><b>BNF:</b> <code>join_treat ::= TREAT(collection_valued_path_expression [AS] entity_type_literal)</code><p>
+ * <div><b>BNF:</b> <code>join_treat ::= TREAT(collection_valued_path_expression [AS] entity_type_literal)</code><p></div>
  *
  * @see TreatExpression
  *

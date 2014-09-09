@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -261,7 +261,7 @@ public class ExpressionRegistry {
 	 *
 	 * @param identifier The JPQL identifier to register its role within a JPQL query
 	 * @param role The role of the given JPQL identifier
-	 * @exception NullPointerException The JPQL identifier and the {@linkIdentifierRole} cannot be
+	 * @exception NullPointerException The JPQL identifier and the {@link IdentifierRole} cannot be
 	 * <code>null</code>
 	 */
 	public void registerIdentifierRole(String identifier, IdentifierRole role) {
@@ -324,7 +324,7 @@ public class ExpressionRegistry {
 	 * Determines whether the <code>Expression</code> handles a collection of sub-expressions that
 	 * are separated by commas.
 	 *
-	 * @param queryBNF The unique identifier of the {@link JPQLQueryBNF}
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF}
 	 * @param handleCollection <code>true</code> if the sub-expression to parse might have several
 	 * sub-expressions separated by commas; <code>false</code> otherwise
 	 */

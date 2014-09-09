@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,8 +15,9 @@ package org.eclipse.persistence.jpa.jpql.tools.model;
 
 /**
  * This builder can be used to easily create a conditional expression without having to create each
- * object manually. The builder is associated with {@link org.eclipse.persistence.jpa.jpql.tools.model.
- * query.AbstractConditionalClauseStateObject AbstractConditionalClauseStateObject}.
+ * object manually. The builder is associated with {@link
+ * org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractConditionalClauseStateObject
+ * AbstractConditionalClauseStateObject}.
  *
  * @version 2.4
  * @since 2.4

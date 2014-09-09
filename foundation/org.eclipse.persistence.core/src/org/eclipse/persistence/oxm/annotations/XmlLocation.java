@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,11 +24,11 @@ import java.lang.annotation.Target;
  * <p>XmlLocation can be used on a property of type Locator, to provide information about
  * the XML location (line and column number, source location) that the owning object was unmarshalled from.</p>
  * 
- * <p>This annotation can be used on:
+ * <p>This annotation can be used on:</p>
  * <ul>
  *      <li>a Field of type org.xml.sax.Locator</li>
  *      <li>a set or get Method that takes/returns a single parameter, of type org.xml.sax.Locator</li>
- * </ul></p>
+ * </ul>
  * 
  * <p>If this property is also marked as XmlTransient, then no Location information
  * will be marshalled to XML, however the Location will be set on the object when unmarshalling.</p>

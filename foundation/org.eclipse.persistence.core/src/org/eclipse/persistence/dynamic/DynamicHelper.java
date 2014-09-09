@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -109,8 +109,7 @@ public class DynamicHelper {
      * it and that it is not involved in an inheritance relationship. If there
      * are concurrent processes using this type when it is removed some
      * exceptions may occur.
-     * 
-     * @param session
+     *
      * @param typeName
      */
     public void removeType(String typeName) {
@@ -191,8 +190,7 @@ public class DynamicHelper {
     /**
      * Add one or more EntityType instances to a session and optionally generate
      * needed tables with or without FK constraints.
-     * 
-     * @param session
+     *
      * @param createMissingTables
      * @param generateFKConstraints
      * @param types

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,33 +22,32 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * views.
  * <p>
  * JPA:
- * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause
+ * <div><b>BNF:</b> <code>select_statement ::= select_clause
  *                                                    from_clause
  *                                                    [where_clause]
  *                                                    [groupby_clause]
  *                                                    [having_clause]
- *                                                    [orderby_clause]</code>
+ *                                                    [orderby_clause]</code></div>
  * <p>
  * EclipseLink 2.4:
- * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause
+ * <div><b>BNF:</b> <code>select_statement ::= select_clause
  *                                                    from_clause
  *                                                    [where_clause]
  *                                                    [groupby_clause]
  *                                                    [having_clause]
  *                                                    [orderby_clause]
- *                                                    {union_clause}*</code>
+ *                                                    {union_clause}*</code></div>
  * <p>
  * HQL query (EclipseLink 2.5):
- * <div nowrap><b>BNF:</b> <code>select_statement ::= [select_clause]
+ * <div><b>BNF:</b> <code>select_statement ::= [select_clause]
  *                                                    from_clause
  *                                                    [where_clause]
  *                                                    [groupby_clause]
  *                                                    [having_clause]
  *                                                    [orderby_clause]
- *                                                    {union_clause}*</code>
+ *                                                    {union_clause}*</code></div>
  * <p>
  *
- * @see FlashbackQueryClause
  * @see FromClause
  * @see GroupByClause
  * @see HavingClause

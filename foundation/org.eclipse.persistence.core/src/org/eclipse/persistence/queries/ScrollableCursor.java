@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -231,7 +231,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * Unlike java.sql.ResultSet.getRow(), 0 is not returned if afterLast.
      * Instead size() + 1 is returned.
      * @return the current row number; 0 if there is no current row
-     * @exception SQLException if a database access error occurs
+     * @exception DatabaseException if a database access error occurs
      */
     public int getPosition() throws DatabaseException {
         try {
@@ -431,7 +431,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      *
      * Return the next object from the collection, if beyond the read limit read from the cursor
      * @return - next object in stream
-     * @exception - throws exception if read pass end of stream
+     * @throws DatabaseException if read pass end of stream
      */
     public Object next() throws DatabaseException, QueryException {
         loadNext();
@@ -451,7 +451,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * Return the next specified number of objects from the collection, if beyond the read limit read from the cursor
      * @param number - number of objects to be returned
      * @return - vector containing next number of objects
-     * @exception - throws exception if read pass end of stream
+     * @throws DatabaseException if read pass end of stream
      */
     public List<Object> next(int number) throws DatabaseException {
         List<Object> result = new ArrayList(number);
@@ -483,7 +483,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * Return the previous object from the collection.
      *
      * @return - previous object in stream
-     * @exception - throws exception if read pass first of stream
+     * @throws DatabaseException if read pass first of stream
      */
     public Object previous() throws DatabaseException, QueryException {
         loadPrevious();

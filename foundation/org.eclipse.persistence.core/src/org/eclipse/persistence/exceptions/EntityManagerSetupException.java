@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -298,7 +298,6 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * Our OSGI persistence provider does not support a JavaEE-type deployment
-     * @param PUName
      * @return
      */
     public static EntityManagerSetupException createContainerEntityManagerFactoryNotSupportedInOSGi() {
@@ -311,7 +310,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * An OSGi application is trying to instantiate a persistence unit for which a bundle does not exist
-     * @param PUName
+     * @param persistenceUnitName
      * @return
      */
     public static EntityManagerSetupException couldNotFindPersistenceUnitBundle(String persistenceUnitName) {
@@ -325,7 +324,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * Persistence unit tries to use sessions.xml and to be a composite.
-     * @param PUName
+     * @param persistenceUnitName
      * @return
      */
     public static EntityManagerSetupException compositeIncompatibleWithSessionsXml(String persistenceUnitName) {
@@ -339,7 +338,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
     /**
      * INTERNAL:
      * Persistence unit tries to use sessions.xml and to be a composite.
-     * @param PUName
+     * @param persistenceUnitName
      * @return
      */
     public static EntityManagerSetupException compositeMemberCannotBeUsedStandalone(String persistenceUnitName) {

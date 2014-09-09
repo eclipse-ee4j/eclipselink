@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,9 +19,9 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * <div nowrap><b>BNF:</b> <code>general_case_expression ::= CASE when_clause {when_clause}* ELSE scalar_expression END</code>
+ * <div><b>BNF:</b> <code>general_case_expression ::= CASE when_clause {when_clause}* ELSE scalar_expression END</code></div>
  * or
- * <div nowrap><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code><p>
+ * <div><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code><p></div>
  *
  * @version 2.5
  * @since 2.3
@@ -358,7 +358,7 @@ public final class CaseExpression extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after the <b>WHEN</b> clause.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <the b>WHEN</b>
+	 * @return <code>true</code> if there was a whitespace after the <b>WHEN</b>
 	 * clause; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterWhenClauses() {

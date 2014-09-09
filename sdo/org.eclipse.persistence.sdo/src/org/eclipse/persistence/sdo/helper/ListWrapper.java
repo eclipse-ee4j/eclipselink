@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -26,11 +26,11 @@ import org.eclipse.persistence.sdo.SDOProperty;
 
 /**
  * INTERNAL:
- * <p/>
+ * <p>
  * <b>Purpose:</b>
  * <ul><li>This class wraps the ArrayList of currentElements that implement the List interface.</li>
  * </ul>
- * <p/>
+ * <p>
  * <b>Responsibilities:</b>
  * <ul>
  * <li>Provide access many properties on {@link DataObject dataObject}s</li>
@@ -144,9 +144,8 @@ public class ListWrapper implements List, Serializable, Cloneable {
 
     /**
      * Inserts the specified element at the index position in this list.<br>
-     * @param position (start at 0 = prepend, length = append)
+     * @param index (start at 0 = prepend, length = append)
      * @param item
-     * @return void
      */
     public void add(int index, Object item) {
         add(index, item, true);
@@ -214,7 +213,6 @@ public class ListWrapper implements List, Serializable, Cloneable {
     /**
      * INTERNAL:
      * Undo any changes and return the original List
-     * @return
      */
     public void undoChanges(SDOChangeSummary cs) {
         // ignore logging state  
@@ -747,7 +745,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * Returns an array containing all of the currentElements in this list in proper sequence;
      *   the runtime type of the returned array is that of the specified array.
      *   Obeys the general contract of the Collection.toArray(Object[]) method.<br>
-     * Specified by: toArray in interface Collection<E><br>
+     * Specified by: toArray in interface {@literal Collection<E>}<br>
      *
      * Throws:<br>
      * ArrayStoreException - if the runtime type of the specified array is not a supertype of the
@@ -804,7 +802,7 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * Defined in SDO 2.01 spec on page 65 Externalizable function is called by
      * ObjectStream.writeObject() A replacement object for serialization can be
      * called here.
-     * <p/>Security Note:
+     * <p>Security Note:
      *     This public function exposes a data replacement vulnerability where an outside client
      *     can gain access and modify their non-final constants.
      *     We may need to wrap the GZIP streams in some sort of encryption when we are not

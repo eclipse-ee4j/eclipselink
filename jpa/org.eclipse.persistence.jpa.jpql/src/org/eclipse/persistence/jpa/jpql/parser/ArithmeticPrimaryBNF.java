@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,24 +17,24 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for an arithmetic primary expression.
  * <p>
  * JPA 1.0
- * <div nowrap><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
+ * <div><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
  *                                                      numeric_literal |
  *                                                      (simple_arithmetic_expression) |
  *                                                      input_parameter |
  *                                                      functions_returning_numerics |
- *                                                      aggregate_expression<p>
+ *                                                      aggregate_expression</code><p></div>
  *
  * JPA 2.0:
- * <div nowrap><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
+ * <div><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
  *                                                      numeric_literal |
  *                                                      (simple_arithmetic_expression) |
  *                                                      input_parameter |
  *                                                      functions_returning_numerics |
  *                                                      aggregate_expression |
- *                                                      case_expression</code><p>
+ *                                                      case_expression</code><p></div>
  *
  * JPA 2.1:
- * <div nowrap><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
+ * <div><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
  *                                                      numeric_literal |
  *                                                      (arithmetic_expression) |
  *                                                      input_parameter |
@@ -42,7 +42,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                      aggregate_expression |
  *                                                      case_expression |
  *                                                      function_invocation |
- *                                                      (subquery)</code><p>
+ *                                                      (subquery)</code><p></div>
  *
  * @version 2.5
  * @since 2.3

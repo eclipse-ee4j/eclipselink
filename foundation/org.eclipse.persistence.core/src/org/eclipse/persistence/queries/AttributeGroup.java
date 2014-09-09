@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -95,7 +95,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      * Note that existing group corresponding to attributeNameOrPath
      * will be overridden with the passed group. 
      * 
-     * @param attrPathOrName
+     * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path
      * @param group - an AttributeGroup to be added.
      */
@@ -198,7 +198,6 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
     /**
      * INTERNAL:
      *    This method is used internally when converting to a copy group.
-     * @param cloneMap
      * @return
      */
     

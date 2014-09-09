@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -43,7 +43,7 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * <p>The following XPath statements may be used to specify the location of XML data relating to an object's
  * name attribute:
  *
- * <p><table border="1">
+ * <p><table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">XPath</th>
  * <th id="c2" align="left">Description</th>
@@ -115,178 +115,178 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * so the XML will be formated based on that type.  Below are the default schema type to java type conversion pairs
  * and the default java type to schema type conversion pairs.
  * <p><b>XML schema type to Java type default conversion pairs</b>
- * <p><table border="1">
+ * <p><table summary="" border="1">
  * <tr>
- * <th id="c1" align="left">Schema Type</th>
- * <th id="c2" align="left">Java Type</th>
+ * <th id="c3" align="left">Schema Type</th>
+ * <th id="c4" align="left">Java Type</th>
  * </tr>
  * <tr>
- * <td headers="c1">base64Binary</td>
- * <td headers="c2">byte[]</td>
+ * <td headers="c3">base64Binary</td>
+ * <td headers="c4">byte[]</td>
  * </tr>
  * <tr>
- * <td headers="c1">boolean</td>
- * <td headers="c2">boolean</td>
+ * <td headers="c3">boolean</td>
+ * <td headers="c4">boolean</td>
  * </tr>
  * <tr>
- * <td headers="c1">byte</td>
- * <td headers="c2">byte</td>
+ * <td headers="c3">byte</td>
+ * <td headers="c4">byte</td>
  * </tr>
  * <tr>
- * <td headers="c1">date</td>
- * <td headers="c2">java.util.Calendar</td>
+ * <td headers="c3">date</td>
+ * <td headers="c4">java.util.Calendar</td>
  * </tr>
  * <tr>
- * <td headers="c1">dateTime</td>
- * <td headers="c2">java.util.Calendar</td>
+ * <td headers="c3">dateTime</td>
+ * <td headers="c4">java.util.Calendar</td>
  * </tr>
  * <tr>
- * <td headers="c1">decimal</td>
- * <td headers="c2">java.math.BigDecimal</td>
+ * <td headers="c3">decimal</td>
+ * <td headers="c4">java.math.BigDecimal</td>
  * </tr>
  * <tr>
- * <td headers="c1">double</td>
- * <td headers="c2">double</td>
+ * <td headers="c3">double</td>
+ * <td headers="c4">double</td>
  * </tr>
  * <tr>
- * <td headers="c1">float</td>
- * <td headers="c2">float</td>
+ * <td headers="c3">float</td>
+ * <td headers="c4">float</td>
  * </tr>
  * <tr>
- * <td headers="c1">hexBinary</td>
- * <td headers="c2">byte[]</td>
+ * <td headers="c3">hexBinary</td>
+ * <td headers="c4">byte[]</td>
  * </tr>
  * <tr>
- * <td headers="c1">int</td>
- * <td headers="c2">int</td>
+ * <td headers="c3">int</td>
+ * <td headers="c4">int</td>
  * </tr>
  * <tr>
- * <td headers="c1">integer</td>
- * <td headers="c2">java.math.BigInteger</td>
+ * <td headers="c3">integer</td>
+ * <td headers="c4">java.math.BigInteger</td>
  * </tr>
  * <tr>
- * <td headers="c1">long</td>
- * <td headers="c2">long</td>
+ * <td headers="c3">long</td>
+ * <td headers="c4">long</td>
  * </tr>
  * <tr>
- * <td headers="c1">QName</td>
- * <td headers="c2">javax.xml.namespace.QName</td>
+ * <td headers="c3">QName</td>
+ * <td headers="c4">javax.xml.namespace.QName</td>
  * </tr>
  * <tr>
- * <td headers="c1">time</td>
- * <td headers="c2">java.util.Calendar</td>
+ * <td headers="c3">time</td>
+ * <td headers="c4">java.util.Calendar</td>
  * </tr>
  * <tr>
- * <td headers="c1">unsignedByte</td>
- * <td headers="c2">short</td>
+ * <td headers="c3">unsignedByte</td>
+ * <td headers="c4">short</td>
  * </tr>
  * <tr>
- * <td headers="c1">unsignedInt</td>
- * <td headers="c2">long</td>
+ * <td headers="c3">unsignedInt</td>
+ * <td headers="c4">long</td>
  * </tr>
  * <tr>
- * <td headers="c1">unsignedShort</td>
- * <td headers="c2">int</td>
+ * <td headers="c3">unsignedShort</td>
+ * <td headers="c4">int</td>
  * </tr>
  * <tr>
- * <td headers="c1">anySimpleType</td>
- * <td headers="c2">java.lang.String</td>
+ * <td headers="c3">anySimpleType</td>
+ * <td headers="c4">java.lang.String</td>
  * </tr>
  * </table>
  *
  * <p><b>Java type to XML schema type default conversion pairs</b>
- * <p><table border="1">
+ * <p><table summary="" border="1">
  * <tr>
- * <th id="c1" align="left">Java Type</th>
- * <th id="c2" align="left">Schema Type</th>
+ * <th id="c5" align="left">Java Type</th>
+ * <th id="c6" align="left">Schema Type</th>
  * </tr>
  * <tr>
- * <td headers="c1">byte[]</td>
- * <td headers="c2">hexBinary</td>
+ * <td headers="c5">byte[]</td>
+ * <td headers="c6">hexBinary</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.lang.Byte[]</td>
- * <td headers="c2">hexBinary</td>
+ * <td headers="c5">java.lang.Byte[]</td>
+ * <td headers="c6">hexBinary</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.math.BigDecimal</td>
- * <td headers="c2">decimal</td>
+ * <td headers="c5">java.math.BigDecimal</td>
+ * <td headers="c6">decimal</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.math.BigInteger</td>
- * <td headers="c2">integer</td>
+ * <td headers="c5">java.math.BigInteger</td>
+ * <td headers="c6">integer</td>
  * </tr>
  * <tr>
- * <td headers="c1">boolean</td>
- * <td headers="c2">boolean</td>
+ * <td headers="c5">boolean</td>
+ * <td headers="c6">boolean</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.lang.Boolean</td>
- * <td headers="c2">boolean</td>
+ * <td headers="c5">java.lang.Boolean</td>
+ * <td headers="c6">boolean</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.lang.Byte</td>
- * <td headers="c2">Byte</td>
+ * <td headers="c5">java.lang.Byte</td>
+ * <td headers="c6">Byte</td>
  * </tr>
  * <tr>
- * <td headers="c1">byte</td>
- * <td headers="c2">byte</td>
+ * <td headers="c5">byte</td>
+ * <td headers="c6">byte</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.util.Calendar</td>
- * <td headers="c2">dateTime</td>
+ * <td headers="c5">java.util.Calendar</td>
+ * <td headers="c6">dateTime</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.util.GregorianCalendar</td>
- * <td headers="c2">dateTime</td>
+ * <td headers="c5">java.util.GregorianCalendar</td>
+ * <td headers="c6">dateTime</td>
  * </tr>
  * <tr>
- * <td headers="c1">double</td>
- * <td headers="c2">double</td>
+ * <td headers="c5">double</td>
+ * <td headers="c6">double</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.lang.Double</td>
- * <td headers="c2">double</td>
+ * <td headers="c5">java.lang.Double</td>
+ * <td headers="c6">double</td>
  * </tr>
  * <tr>
- * <td headers="c1">float</td>
- * <td headers="c2">float</td>
+ * <td headers="c5">float</td>
+ * <td headers="c6">float</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.lang.Float</td>
- * <td headers="c2">float</td>
+ * <td headers="c5">java.lang.Float</td>
+ * <td headers="c6">float</td>
  * </tr>
  * <tr>
- * <td headers="c1">int</td>
- * <td headers="c2">int</td>
+ * <td headers="c5">int</td>
+ * <td headers="c6">int</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.lang.Integer</td>
- * <td headers="c2">int</td>
+ * <td headers="c5">java.lang.Integer</td>
+ * <td headers="c6">int</td>
  * </tr>
  * <tr>
- * <td headers="c1">long</td>
- * <td headers="c2">long</td>
+ * <td headers="c5">long</td>
+ * <td headers="c6">long</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.lang.Long</td>
- * <td headers="c2">long</td>
+ * <td headers="c5">java.lang.Long</td>
+ * <td headers="c6">long</td>
  * </tr>
  * <tr>
- * <td headers="c1">short</td>
- * <td headers="c2">short</td>
+ * <td headers="c5">short</td>
+ * <td headers="c6">short</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.lang.Short</td>
- * <td headers="c2">short</td>
+ * <td headers="c5">java.lang.Short</td>
+ * <td headers="c6">short</td>
  * </tr>
  * <tr>
- * <td headers="c1">javax.xml.namespace.QName</td>
- * <td headers="c2">QName</td>
+ * <td headers="c5">javax.xml.namespace.QName</td>
+ * <td headers="c6">QName</td>
  * </tr>
  * <tr>
- * <td headers="c1">java.lang.String</td>
- * <td headers="c2">string</td>
+ * <td headers="c5">java.lang.String</td>
+ * <td headers="c6">string</td>
  * </tr>
  * </table>
  * @see org.eclipse.persistence.oxm.XMLUnionField

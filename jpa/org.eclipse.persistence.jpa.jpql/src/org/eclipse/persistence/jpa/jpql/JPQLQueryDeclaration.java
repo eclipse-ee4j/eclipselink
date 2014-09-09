@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -41,12 +41,12 @@ public interface JPQLQueryDeclaration {
 	Expression getBaseExpression();
 
 	/**
-	 * Returns the declaration expression, which is either an {@link org.eclipse.persistence.jpa.jpql.
-	 * parser.IdentificationVariableDeclaration IdentificationVariableDeclaration} or a {@link
-	 * org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration CollectionMemberDeclaration}
-	 * when part of a <b>FROM</b> clause, otherwise it's either the {@link org.eclipse.persistence.
-	 * jpa.jpql.parser.DeleteClause DeleteClause} or the {@link org.eclipse.persistence.jpa.jpql.
-	 * parser.UpdateClause UpdateClause}.
+	 * Returns the declaration expression, which is either an {@link
+     * org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration IdentificationVariableDeclaration}
+     * or a {@link org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration CollectionMemberDeclaration}
+	 * when part of a <b>FROM</b> clause, otherwise it's either the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.DeleteClause DeleteClause} or the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.UpdateClause UpdateClause}.
 	 *
 	 * @return The root of the declaration expression
 	 */
@@ -78,7 +78,7 @@ public interface JPQLQueryDeclaration {
 
 	/**
 	 * Determines whether the declaration contains <b>JOIN</b> expressions. This can be
-	 * <code>true</code> only when {@link #isRange()} returns <code>true</code>. A collection
+	 * <code>true</code> only when {@link Type#isRange()} returns <code>true</code>. A collection
 	 * member declaration does not have <b>JOIN</b> expressions.
 	 *
 	 * @return <code>true</code> if at least one <b>JOIN</b> expression was parsed;

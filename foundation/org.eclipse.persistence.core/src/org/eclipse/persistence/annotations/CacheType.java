@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -49,7 +49,7 @@ public enum CacheType {
      * Similar to the WEAK identity map except that it maintains a
      * most-frequently-used sub-cache. The size of the sub-cache is
      * proportional to the size of the identity map as specified by
-     * @Cache size attribute. The sub-cache
+     * {@literal @}Cache size attribute. The sub-cache
      * uses soft references to ensure that these objects are
      * garbage-collected only if the system is low on memory.
      */

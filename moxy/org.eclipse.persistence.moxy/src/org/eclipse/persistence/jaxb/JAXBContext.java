@@ -741,7 +741,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
     /**
      * The JAXBContextInput is used to create a JAXBContextState which is responsible for accessing
-     * the underlying XMLContext</p>
+     * the underlying XMLContext
      */
     public static abstract class JAXBContextInput {
 

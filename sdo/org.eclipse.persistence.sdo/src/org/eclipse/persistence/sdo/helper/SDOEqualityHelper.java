@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -60,7 +60,7 @@ public class SDOEqualityHelper implements EqualityHelper {
     }
 
     /**
-     * Constructor that takes in a HelperContext instance that contains this equalityHelper.<br/>
+     * Constructor that takes in a HelperContext instance that contains this equalityHelper.<br>
      * This is the recommended constructor.
      * @param aContext
      */
@@ -76,10 +76,10 @@ public class SDOEqualityHelper implements EqualityHelper {
      *  {@link DataObject#getInstanceProperties() instance properties}
      *  where property.getType().isDataType() is true
      *  and property.getType() is not ChangeSummaryType.
-     * <br/>Two of these Property values are equal if they are both not
+     * <br>Two of these Property values are equal if they are both not
      *  {@link DataObject#isSet(Property) set}, or set to an equal value
      *  dataObject1.get(property).equals(dataObject2.get(property))
-     * <br/>If the type is a sequenced type, the sequence entries must be the same.
+     * <br>If the type is a sequenced type, the sequence entries must be the same.
      *  For each entry x in the sequence where the property is used in the comparison,
      *  dataObject1.getSequence().getValue(x).equals(
      *   dataObject2.getSequence().getValue(x)) and
@@ -104,13 +104,13 @@ public class SDOEqualityHelper implements EqualityHelper {
      *  {@link DataObject#getInstanceProperties() instance properties}
      *  where property.getType().isDataType() is false,
      *  and is not a container property, ie !property.getOpposite().isContainment()
-     * <br/>Two of these Property values are equal if they are both not
+     * <br>Two of these Property values are equal if they are both not
      *  {@link DataObject#isSet(Property) set}, or all the DataObjects
      *  they refer to are {@link #equal(DataObject, DataObject) equal} in the
      *  context of dataObject1 and dataObject2.
-     * <br/>Note that properties to a containing DataObject are not compared
+     * <br>Note that properties to a containing DataObject are not compared
      *  which means two DataObject trees can be equal even if their containers are not equal.
-     * <br/>If the type is a sequenced type, the sequence entries must be the same.
+     * <br>If the type is a sequenced type, the sequence entries must be the same.
      *  For each entry x in the sequence where the property is used in the comparison,
      *  equal(dataObject1.getSequence().getValue(x),
      *   dataObject2.getSequence().getValue(x)) and
@@ -502,7 +502,7 @@ public class SDOEqualityHelper implements EqualityHelper {
      * iteratively check value of property p when p is many type property.
      * @param dataObject1   the DataObject to be compared
      * @param dataObject2   the DataObject to be compared
-     * @param isShallow     if comparison is shallow
+     * @param isDeep        if comparison is deep
      * @param p             the property shared by two DataObjects
      * @return              true if two DataObjects meet requirements of shallow equal or deep equal
      */

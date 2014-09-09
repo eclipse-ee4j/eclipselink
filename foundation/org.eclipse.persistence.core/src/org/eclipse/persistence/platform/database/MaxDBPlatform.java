@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009,2010 Markus Karg, SAP. All rights reserved.
+ * Copyright (c) 2009, 2014 Markus Karg, SAP, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,7 +37,7 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 /**
  * <b>Database Platform for SAP MaxDB.</b>
  * <p>
- * <b>Wiki page:</b> {@link http://wiki.eclipse.org/EclipseLink/Development/DatabasePlatform/MaxDBPlatform}
+ * <a href="http://wiki.eclipse.org/EclipseLink/Development/DatabasePlatform/MaxDBPlatform"><b>Wiki page</b></a>
  * <p>
  * <b>Usage</b>
  * <p>
@@ -85,7 +85,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
     /**
      * Maximum length of type VARCHAR UNICODE
      *
-     * ({@link http://maxdb.sap.com/doc/7_8/45/33337d9faf2b34e10000000a1553f7/content.htm})
+     * (<a href="http://maxdb.sap.com/doc/7_8/45/33337d9faf2b34e10000000a1553f7/content.htm">link</a>)
      */
     private static final int MAX_VARCHAR_UNICODE_LENGTH = 4000; //
 

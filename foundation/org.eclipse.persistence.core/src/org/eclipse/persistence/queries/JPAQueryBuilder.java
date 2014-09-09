@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,8 +50,6 @@ public interface JPAQueryBuilder {
      * @param jpqlQuery
      *            A non-<code>null</code> string representation of the query to
      *            parse and to convert into a {@link DatabaseQuery}
-     * @param query
-     *            The query to populate with the derived JPQL query
      * @param session
      *            The EclipseLink {@link AbstractSession} that this query will
      *            execute against

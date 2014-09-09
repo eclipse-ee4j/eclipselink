@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * this class.
  * </p>
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;attribute name="nillable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" use="optional" />
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;attribute name="nillable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" use="optional" /&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  *
  *

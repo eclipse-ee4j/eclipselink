@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.utility.iterator.CloneListIterator;
  * @param <E> the type of elements returned by the list iterable's list iterator
  *
  * @see SnapshotCloneListIterable
- * @see LiveCloneListIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterable.LiveCloneListIterable LiveCloneListIterable
  */
 public abstract class CloneListIterable<E>
 	implements ListIterable<E>
@@ -56,7 +56,7 @@ public abstract class CloneListIterable<E>
 	 * <p>
 	 * This method can be overridden by a subclass as an
 	 * alternative to building a
-	 * {@link org.eclipse.jpt.common.utility.internal.iterators.CloneListIterator.Mutator}.
+	 * {@link CloneListIterator.Mutator}.
 	 */
 	protected void add(@SuppressWarnings("unused") int index, @SuppressWarnings("unused") E element) {
 		throw new RuntimeException("This method was not overridden."); //$NON-NLS-1$
@@ -67,7 +67,7 @@ public abstract class CloneListIterable<E>
 	 * <p>
 	 * This method can be overridden by a subclass as an
 	 * alternative to building a
-	 * {@link org.eclipse.jpt.common.utility.internal.iterators.CloneListIterator.Mutator}.
+	 * {@link CloneListIterator.Mutator}.
 	 */
 	protected void remove(@SuppressWarnings("unused") int index) {
 		throw new RuntimeException("This method was not overridden."); //$NON-NLS-1$
@@ -78,7 +78,7 @@ public abstract class CloneListIterable<E>
 	 * <p>
 	 * This method can be overridden by a subclass as an
 	 * alternative to building a
-	 * {@link org.eclipse.jpt.common.utility.internal.iterators.CloneListIterator.Mutator}.
+	 * {@link CloneListIterator.Mutator}.
 	 */
 	protected void set(@SuppressWarnings("unused") int index, @SuppressWarnings("unused") E element) {
 		throw new RuntimeException("This method was not overridden."); //$NON-NLS-1$

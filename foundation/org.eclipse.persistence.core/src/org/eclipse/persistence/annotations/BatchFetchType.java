@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,7 +19,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * This can be specified on a mapping or query to configure the type of batch reading to be used.
  * 
  * @see BatchFetch
- * @see ForeignReferenceMapping#setBatchFetch(BatchFetchType)
+ * @see ForeignReferenceMapping#setBatchFetchType(BatchFetchType)
  * @author James Sutherland
  * @since EclipseLink 2.1
  */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1333,9 +1333,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * The method validateAttributeOfInstantiatedObject(Object attributeValue) fixes the value of the attributeValue 
      * in cases where it is null and indirection requires that it contain some specific data structure.  Return whether this will happen.
      * This method is used to help determine if indirection has been triggered
-     * @param attributeValue
+     * @param object
      * @return
-     * @see validateAttributeOfInstantiatedObject(Object attributeValue)
+     * @see org.eclipse.persistence.internal.indirection.IndirectionPolicy#validateAttributeOfInstantiatedObject(Object)
      */
     public boolean isAttributeValueFullyBuilt(Object object){
         Object attributeValue = super.getAttributeValueFromObject(object);

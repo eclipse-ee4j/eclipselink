@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,11 +18,11 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  * <p>
  * <b>Purpose</b>: This class mirrors the java.lang.Math class to allow mathimetical function support within expressions.</p>
  * <p>Example:
- * <pre><blockquote>
+ * <blockquote><pre>
  *  ExpressionBuilder builder = new ExpressionBuilder();
  *  Expression poorAndRich = ExpressionMath.abs(builder.get("netWorth")).greaterThan(1000000);
  *  session.readAllObjects(Company.class, poorAndRich);
- * </blockquote></pre></p>
+ * </pre></blockquote>
  */
 public class ExpressionMath {
 
@@ -30,9 +30,9 @@ public class ExpressionMath {
      * PUBLIC:
      * Return a new expression that applies the function to the given expression.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  Example: ExpressionMath.abs(builder.get("netWorth")).greaterThan(1000000);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public static Expression abs(Expression expression) {
         ExpressionOperator anOperator = expression.getOperator(ExpressionOperator.Abs);

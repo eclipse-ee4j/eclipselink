@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,12 +28,12 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
  *
  * <p>
  * <b>Responsibilities:</b>
+ * </p>
  * <ul>
  *    <li>Create an array of <code>JavaClass</code> instances from an array of <code>Classes/JavaClasses/Types/TypeMappingInfos</code>.</li>
  *    <li>Return an array of <code>JavaClass</code> objects to be used by the generator.</li>
  *    <li>Return the <code>JavaModel</code> to be used during generation.</li>
  * </ul>
- * </p>
  *
  * @since EclipseLink 2.1
  *
@@ -91,7 +91,7 @@ public class XJCJavaModelInputImpl implements JavaModelInput {
     /**
      * Construct a new instance of <code>XJCJavaModelInputImpl</code>.
      *
-     * @param types - an array of Java <code>Classes</code> for which to generate mappings.
+     * @param classes - an array of Java <code>Classes</code> for which to generate mappings.
      * @param javaModel - the <code>JavaModel</code> to be used.
      */
     public XJCJavaModelInputImpl(Class<?>[] classes, JavaModel javaModel) {

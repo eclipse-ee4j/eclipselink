@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,9 +18,6 @@ import java.util.List;
  * This type represents a AttributeNode of an EntityGraph that corresponds to a
  * Managed Type. Using this class an entity graph can be embedded within an
  * EntityGraph.
- *
- * @param <T>
- *            the Class type of the AttributeNode.
  */
 
 public interface Subgraph extends AttributeNode {
@@ -71,11 +68,6 @@ public interface Subgraph extends AttributeNode {
      * sub-graph
      */
     public List<AttributeNode> getAttributeNodes();
-
-    /**
-     * returns the attribute that references this sub-graph.
-     /
-    public <T> Attribute<T,X> getReferencingAttribute();
 
     /**
      * returns the type of this sub-graph if it was used to extend a superclass

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -21,9 +21,9 @@ package org.eclipse.persistence.config;
  * 
  * The "isolated case" mentioned below is the case of some (or all) entities requiring isolated cache.
  * That could be achieved either by specifying the property for one or more entities:
- *   eclipselink.cache.shared.Employee -> "false"
+ *   eclipselink.cache.shared.Employee {@literal ->} "false"
  * or for all entities:
- *   eclipselink.cache.shared.default -> "false"
+ *   eclipselink.cache.shared.default {@literal ->} "false"
  * Note that this property(es) could be specified only on persistence unit level (cannot be passed to createEntityManager method).
  * 
  * <p>JPA persistence property Usage:
@@ -68,7 +68,7 @@ public class ExclusiveConnectionMode {
      *   readQuery5.getResultList();
      *    
      * There's a way to force beginning of Eclipselink transaction right before executing the first query after em.getTransaction().begin():
-     *   "eclipselink.transaction.join-existing" -> true.
+     *   "eclipselink.transaction.join-existing" {@literal ->} true.
      * In the example that setting would force Exclipselink transaction top begin right before readQuery2 is executed
      * and therefore cause execution of readQuery2 and readQuery3 through the exclusive connection 
      * (of course the same connection would be used by readQuery4 and flush, too).

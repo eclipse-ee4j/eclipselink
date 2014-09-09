@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -296,7 +296,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
     
     /**
      * Stores the XML DOM value into the record.
-     * XML is stored in Oracle NoSQL but storing the XML text, keyed on the object's "<dataTypeName>/<id>".
+     * XML is stored in Oracle NoSQL but storing the XML text, keyed on the object's {@literal "<dataTypeName>/<id>"}.
      */
     @Override
     public void setDOMInRecord(Element dom, Record record, EISInteraction interaction, EISAccessor accessor) {

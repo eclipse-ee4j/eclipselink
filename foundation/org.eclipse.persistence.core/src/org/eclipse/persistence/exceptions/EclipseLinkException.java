@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -227,7 +227,7 @@ public abstract class EclipseLinkException extends RuntimeException {
     /**
      * PUBLIC:
      * Allows overriding of EclipseLink's exception chaining detection.
-     * @param booleam printException - If printException is true, the EclipseLink-stored
+     * @param printException - If printException is true, the EclipseLink-stored
      * Internal exception will be included in a stack trace or in the exception message of a EclipseLinkException.
      * If printException is false, the EclipseLink-stored Internal Exception will not be included
      * in the stack trace or the exception message of EclipseLinkExceptions

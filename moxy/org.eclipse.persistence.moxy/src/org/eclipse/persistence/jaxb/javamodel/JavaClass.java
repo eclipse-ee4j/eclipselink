@@ -25,7 +25,7 @@ import java.util.Collection;
  * </ul>
  * 
  * @since Oracle TopLink 11.1.1.0.0
- * @see org.eclipse.persistence.jaxb20.javamodel.JavaHasAnnotations
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations
  * @see java.lang.Class
  */
 public interface JavaClass extends JavaHasAnnotations {

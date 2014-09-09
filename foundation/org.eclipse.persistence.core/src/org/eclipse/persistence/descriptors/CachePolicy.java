@@ -48,8 +48,8 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * <p><b>Purpose</b>:
  * CachePolicy defines the cache configuration.
  * EclipseLink supports an integrated shared (L2) object cache.
- * Caching is enabled by default.<br/>
- * To disable caching use:<br/>
+ * Caching is enabled by default.<br>
+ * To disable caching use:<br>
  * <code>setCacheIsolation(CacheIsolationType.ISOLATED)</code>
  *
  * @see ClassDescriptor
@@ -481,7 +481,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * PUBLIC:
      * Return if for cache hits on primary key read object queries to be disabled.
      *
-     * @see #disableCacheHits()
+     * @see ClassDescriptor#disableCacheHits()
      */
     public boolean shouldDisableCacheHits() {
         return shouldDisableCacheHits;
@@ -491,7 +491,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * PUBLIC:
      * Return if the remote server session cache hits on primary key read object queries is aloowed or not.
      *
-     * @see #disableCacheHitsOnRemote()
+     * @see ClassDescriptor#disableCacheHitsOnRemote()
      */
     public boolean shouldDisableCacheHitsOnRemote() {
         return shouldDisableCacheHitsOnRemote;
@@ -536,7 +536,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * PUBLIC:
      * Set if cache hits on primary key read object queries should be disabled.
      *
-     * @see #alwaysRefreshCache()
+     * @see ClassDescriptor#alwaysRefreshCache()
      */
     public void setShouldDisableCacheHits(boolean shouldDisableCacheHits) {
         this.shouldDisableCacheHits = shouldDisableCacheHits;
@@ -546,7 +546,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * PUBLIC:
      * Set if the remote session cache hits on primary key read object queries is allowed or not.
      *
-     * @see #disableCacheHitsOnRemote()
+     * @see ClassDescriptor#disableCacheHitsOnRemote()
      */
     public void setShouldDisableCacheHitsOnRemote(boolean shouldDisableCacheHitsOnRemote) {
         this.shouldDisableCacheHitsOnRemote = shouldDisableCacheHitsOnRemote;
@@ -559,7 +559,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * by a query is newer than the data in the cache (as determined by the optimistic locking field) and as long as one of the following is true:
      *
      * <UL>
-     * <LI>the <CODE>ClassDescriptor</CODE> was configured by calling {@link #alwaysRefreshCache} or {@link #alwaysRefreshCacheOnRemote},</LI>
+     * <LI>the <CODE>ClassDescriptor</CODE> was configured by calling {@link ClassDescriptor#alwaysRefreshCache} or {@link ClassDescriptor#alwaysRefreshCacheOnRemote},</LI>
      * <LI>the query was configured by calling {@link org.eclipse.persistence.queries.ObjectLevelReadQuery#refreshIdentityMapResult}, or</LI>
      * <LI>the query was a call to {@link org.eclipse.persistence.sessions.Session#refreshObject}</LI>
      * </UL>
@@ -568,7 +568,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * However, if a query hits the cache, data is not refreshed regardless of how this setting is configured. For example, by default,
      * when a query for a single object based on its primary key is executed, OracleAS TopLink will first look in the cache for the object.
      * If the object is in the cache, the cached object is returned and data is not refreshed. To avoid cache hits, use
-     * the {@link #disableCacheHits} method.<P>
+     * the {@link ClassDescriptor#disableCacheHits} method.<P>
      *
      * Also note that the {@link org.eclipse.persistence.sessions.UnitOfWork} will not refresh its registered objects.<P>
      *
@@ -576,8 +576,8 @@ public class CachePolicy implements Cloneable, Serializable {
      * ensures that a <CODE>ClassDescriptor</CODE> is not configured to only refresh the cache if the data received from the database by a
      * query is newer than the data in the cache (as determined by the optimistic locking field).
      *
-     * @see #onlyRefreshCacheIfNewerVersion
-     * @see #dontOnlyRefreshCacheIfNewerVersion
+     * @see ClassDescriptor#onlyRefreshCacheIfNewerVersion
+     * @see ClassDescriptor#dontOnlyRefreshCacheIfNewerVersion
      */
     public void setShouldOnlyRefreshCacheIfNewerVersion(boolean shouldOnlyRefreshCacheIfNewerVersion) {
         this.shouldOnlyRefreshCacheIfNewerVersion = shouldOnlyRefreshCacheIfNewerVersion;
@@ -592,19 +592,19 @@ public class CachePolicy implements Cloneable, Serializable {
      * However, if a query hits the cache, data is not refreshed regardless of how this setting is configured.
      * For example, by default, when a query for a single object based on its primary key is executed, OracleAS TopLink
      * will first look in the cache for the object. If the object is in the cache, the cached object is returned and
-     * data is not refreshed. To avoid cache hits, use the {@link #disableCacheHits} method.<P>
+     * data is not refreshed. To avoid cache hits, use the {@link ClassDescriptor#disableCacheHits} method.<P>
      *
      * Also note that the {@link org.eclipse.persistence.sessions.UnitOfWork} will not refresh its registered objects.<P>
      *
      * Use this property with caution because it can lead to poor performance and may refresh on queries when it is not desired.
      * Normally, if you require fresh data, it is better to configure a query with {@link org.eclipse.persistence.queries.ObjectLevelReadQuery#refreshIdentityMapResult}.
-     * To ensure that refreshes are only done when required, use this method in conjunction with {@link #onlyRefreshCacheIfNewerVersion}.<P>
+     * To ensure that refreshes are only done when required, use this method in conjunction with {@link ClassDescriptor#onlyRefreshCacheIfNewerVersion}.<P>
      *
      * When the <CODE>shouldAlwaysRefreshCache</CODE> argument passed into this method is <CODE>false</CODE>, this method
      * ensures that a <CODE>ClassDescriptor</CODE> is not configured to always refresh the cache if data is received from the database by any query.<P>
      *
-     * @see #alwaysRefreshCache
-     * @see #dontAlwaysRefreshCache
+     * @see ClassDescriptor#alwaysRefreshCache
+     * @see ClassDescriptor#dontAlwaysRefreshCache
      */
     public void setShouldAlwaysRefreshCache(boolean shouldAlwaysRefreshCache) {
         this.shouldAlwaysRefreshCache = shouldAlwaysRefreshCache;
@@ -619,20 +619,20 @@ public class CachePolicy implements Cloneable, Serializable {
      * However, if a query hits the cache, data is not refreshed regardless of how this setting is configured. For
      * example, by default, when a query for a single object based on its primary key is executed, OracleAS TopLink
      * will first look in the cache for the object. If the object is in the cache, the cached object is returned and
-     * data is not refreshed. To avoid cache hits, use the {@link #disableCacheHitsOnRemote} method.<P>
+     * data is not refreshed. To avoid cache hits, use the {@link ClassDescriptor#disableCacheHitsOnRemote} method.<P>
      *
      * Also note that the {@link org.eclipse.persistence.sessions.UnitOfWork} will not refresh its registered objects.<P>
      *
      * Use this property with caution because it can lead to poor performance and may refresh on queries when it is
      * not desired. Normally, if you require fresh data, it is better to configure a query with {@link org.eclipse.persistence.queries.ObjectLevelReadQuery#refreshIdentityMapResult}.
-     * To ensure that refreshes are only done when required, use this method in conjunction with {@link #onlyRefreshCacheIfNewerVersion}.<P>
+     * To ensure that refreshes are only done when required, use this method in conjunction with {@link ClassDescriptor#onlyRefreshCacheIfNewerVersion}.<P>
      *
      * When the <CODE>shouldAlwaysRefreshCacheOnRemote</CODE> argument passed into this method is <CODE>false</CODE>,
      * this method ensures that a <CODE>ClassDescriptor</CODE> is not configured to always remotely refresh the cache if data
      * is received from the database by any query in a {@link org.eclipse.persistence.sessions.remote.RemoteSession}.
      *
-     * @see #alwaysRefreshCacheOnRemote
-     * @see #dontAlwaysRefreshCacheOnRemote
+     * @see ClassDescriptor#alwaysRefreshCacheOnRemote
+     * @see ClassDescriptor#dontAlwaysRefreshCacheOnRemote
      */
     public void setShouldAlwaysRefreshCacheOnRemote(boolean shouldAlwaysRefreshCacheOnRemote) {
         this.shouldAlwaysRefreshCacheOnRemote = shouldAlwaysRefreshCacheOnRemote;
@@ -1053,7 +1053,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Note: This map does not maintain object identity.
      * In general if caching is not desired a WeakIdentityMap should be used with an isolated descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
-     * @see #setIsIsolated(boolean)
+     * @see ClassDescriptor#setIsIsolated(boolean)
      */
     public void useNoIdentityMap() {
         setIdentityMapClass(ClassConstants.NoIdentityMap_Class);

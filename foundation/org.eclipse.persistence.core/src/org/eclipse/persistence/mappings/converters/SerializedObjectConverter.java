@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -31,12 +31,11 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * <p><b>Purpose</b>: The serialized object converter can be used to store an arbitrary object or set of objects into a database binary or character field.
  * By default it uses the Java serializer so the target must be serializable.
- * A custom Serializer can also be specified, such as XML, JSON or Kryo.
+ * A custom Serializer can also be specified, such as XML or JSON.
  *
  * @see Serializer
  * @see XMLSerializer
  * @see JSONSerializer
- * @see org.eclipse.persistence.sessions.serializers.KryoSerializer
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */

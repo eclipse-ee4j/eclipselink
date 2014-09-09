@@ -130,9 +130,8 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      *
      * Default is to do nothing.
      * Implementing platform classes must override this function and supply
-     * the server specific MBean instance for later registration by calling it in the constructor.  
+     * the server specific MBean instance for later registration by calling it in the constructor.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()
@@ -150,7 +149,6 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * creation and deployment of the JMX MBean to provide runtime services for my
      * databaseSession.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()
@@ -236,7 +234,6 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
     /**
      * INTERNAL:
      * Get the applicationName and moduleName from the runtime WebLogic MBean reflectively
-     * @return
      * @deprecated
      */
     protected void initializeApplicationNameAndModuleName() {

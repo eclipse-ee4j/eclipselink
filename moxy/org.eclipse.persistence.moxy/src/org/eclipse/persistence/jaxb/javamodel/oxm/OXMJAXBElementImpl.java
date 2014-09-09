@@ -28,10 +28,10 @@ import org.eclipse.persistence.jaxb.javamodel.*;
  *
  * <p>
  * <b>Responsibilities:</b>
+ * </p>
  * <ul>
  *    <li>Provide Class information to the <code>JavaModel</code>.</li>
  * </ul>
- * </p>
  *
  * @since EclipseLink 2.2
  *

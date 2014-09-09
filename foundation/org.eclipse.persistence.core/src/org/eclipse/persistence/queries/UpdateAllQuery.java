@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -40,7 +40,7 @@ import org.eclipse.persistence.expressions.*;
  * </code> 
  * 
  * @author Guy Pelletier
- * @date March 1, 2004
+ * @since  March 1, 2004
  */
 public class UpdateAllQuery extends ModifyAllQuery {
 
@@ -79,7 +79,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
      * ExpressionBuilder. This sets the default builder which is used for all associated 
      * expressions in the query.<br>
      * @param referenceClass Class type to be considered
-     * @param builder ExpressionBuilder
+     * @param expressionBuilder ExpressionBuilder
      */
     public UpdateAllQuery(Class referenceClass, ExpressionBuilder expressionBuilder) {
         super(referenceClass);

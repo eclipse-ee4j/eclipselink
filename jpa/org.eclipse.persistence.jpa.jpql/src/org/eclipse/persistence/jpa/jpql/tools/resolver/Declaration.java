@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,9 +38,12 @@ public abstract class Declaration implements JPQLQueryDeclaration {
 	protected Expression baseExpression;
 
 	/**
-	 * The declaration expression, which is either an {@link IdentificationVariableDeclaration} or
-	 * a {@link CollectionMemberDeclaration} when part of a <b>FROM</b> clause, otherwise it's
-	 * either the {@link DeleteClause} or the {@link UpdateClause}.
+	 * The declaration expression, which is either an {@link
+     * org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration} or
+	 * a {@link org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration} when part
+     * of a <b>FROM</b> clause, otherwise it's either the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.DeleteClause} or the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.UpdateClause}.
 	 */
 	protected Expression declarationExpression;
 

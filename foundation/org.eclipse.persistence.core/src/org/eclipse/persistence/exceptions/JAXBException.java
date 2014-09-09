@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -20,7 +20,7 @@ import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
  * <b>Purpose:</b>
  * <ul><li>This class provides an implementation of EclipseLinkException specific to the EclipseLink JAXB implementation</li>
  * </ul>
- * <p/>
+ * <p>
  * <b>Responsibilities:</b>
  * <ul>
  * <li>Return a JAXBException that can be thrown around input parameters.
@@ -280,7 +280,7 @@ public class JAXBException extends EclipseLinkException {
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
      * eclipselink-oxm.xml).  This exception applies to the case where the Key parameter type of the package name to
-     * metadata source map is something other than String.  We require Map<String, Source>.
+     * metadata source map is something other than String.  We require {@literal Map<String, Source>}.
      *
      * @return
      */
@@ -294,7 +294,7 @@ public class JAXBException extends EclipseLinkException {
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
      * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type (of the package
-     * name to metadata source map) is something other than Source.  We require Map<String, Source>.
+     * name to metadata source map) is something other than Source.  We require {@literal Map<String, Source>}.
      *
      * @return
      */
@@ -308,7 +308,7 @@ public class JAXBException extends EclipseLinkException {
     /**
      * This exception would typically be used by JAXBContextFactory during externalized metadata processing (i.e.
      * eclipselink-oxm.xml).  This exception applies to the case where the Value parameter type associated with
-     * the 'eclipselink-oxm-xml' Key (in the properties map) is something other than Map<String, Source>.
+     * the 'eclipselink-oxm-xml' Key (in the properties map) is something other than {@literal Map<String, Source>}.
      *
      * @return
      */
@@ -440,7 +440,6 @@ public class JAXBException extends EclipseLinkException {
      * This exception should be used when a descriptor customizer instance cannot be created.
      *
      * @param e
-     * @param javaClassName
      * @param customizerClassName
      * @return
      */
@@ -574,7 +573,8 @@ public class JAXBException extends EclipseLinkException {
 
     /**
      * This exception should be used when a TypeMappingInfo is specified but the Type is not set on it.
-     * @param tagName
+     * @param javaTypePackage
+     * @param bindingsPackage
      * @return
      */
     public static JAXBException javaTypeNotAllowedInBindingsFile(String javaTypePackage, String bindingsPackage) {
@@ -793,7 +793,7 @@ public class JAXBException extends EclipseLinkException {
     /**
      * PUBLIC:
      * Cause:  The reference class (i.e. actualType) of a given Property is marked
-     * transient.  I.e. List<Address> addresses;  where Address is marked
+     * transient.  I.e. {@literal List<Address>} addresses;  where Address is marked
      * transient.
      */
     public static JAXBException invalidReferenceToTransientClass(String className, String propertyName, String referencedClassName) {
@@ -951,7 +951,7 @@ public class JAXBException extends EclipseLinkException {
     }
 
     /**
-     * When the target of an XmlPaths -> XmlPath is an attribute, it must be nested, and
+     * When the target of an XmlPaths {@literal ->} XmlPath is an attribute, it must be nested, and
      * not the root of the path.
      *
      * @param propertyName name of the Property containing the XmlPaths

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,9 +28,9 @@ import org.eclipse.persistence.jpa.jpql.tools.utility.iterable.EmptyIterable;
  * one-to-one or many-to-one relationship. The type of a single-valued association field and thus a
  * single-valued association path expression is the abstract schema type of the related entity.
  * <p>
- * <div nowrap><b>BNF:</b> <code>state_field_path_expression ::= {identification_variable | single_valued_association_path_expression}.state_field</code><p>
+ * <div><b>BNF:</b> <code>state_field_path_expression ::= {identification_variable | single_valued_association_path_expression}.state_field</code><p></div>
  * <p>
- * <div nowrap><b>BNF:</b> <code>single_valued_association_path_expression ::= identification_variable.{single_valued_association_field.}*single_valued_association_field</code><p>
+ * <div><b>BNF:</b> <code>single_valued_association_path_expression ::= identification_variable.{single_valued_association_field.}*single_valued_association_field</code><p></div>
  *
  * @see StateFieldPathExpression
  *

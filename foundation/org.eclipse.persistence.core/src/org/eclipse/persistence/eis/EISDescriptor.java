@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.eis;
 
 import java.util.List;
@@ -47,16 +47,16 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
- * 
- * <p>An <code>EISDescriptor</code> defines the mapping from a JCA data 
+ *
+ * <p>An <code>EISDescriptor</code> defines the mapping from a JCA data
  * structure to a Java object.  There are two types of EIS descriptors:
  * <ul>
- * <li>Root - indicates to the EclipseLink runtime that the EIS descriptor's 
- * reference class is a parent class: no other class will reference it by way of 
- * a composite object mapping or composite collection mapping.  For an EIS root 
+ * <li>Root - indicates to the EclipseLink runtime that the EIS descriptor's
+ * reference class is a parent class: no other class will reference it by way of
+ * a composite object mapping or composite collection mapping.  For an EIS root
  * descriptor, EIS interactions can be defined to invoke methods on an EIS
- * <li>Composite - indicates to the EclipseLink runtime that the EIS descriptor's 
- * reference class may be referenced by a composite object mapping or composite 
+ * <li>Composite - indicates to the EclipseLink runtime that the EIS descriptor's
+ * reference class may be referenced by a composite object mapping or composite
  * collection mapping
  * </ul>
  *
@@ -175,7 +175,7 @@ public class EISDescriptor extends ClassDescriptor {
         //		initializeQueryManager();
         super.preInitialize(session);
     }
-    
+
     /**
      * INTERNAL:
      * Initialize the query manager specific to the descriptor type.
@@ -198,7 +198,7 @@ public class EISDescriptor extends ClassDescriptor {
     public boolean isIndexedFormat() {
         return this.dataFormat.equals(INDEXED);
     }
-    
+
     /**
      * PUBLIC:
      * Return the data format that the descriptor maps to.
@@ -379,7 +379,7 @@ public class EISDescriptor extends ClassDescriptor {
         }
         return super.buildField(field);
     }
-    
+
     /**
      * Return a new direct/basic mapping for this type of descriptor.
      */
@@ -387,7 +387,7 @@ public class EISDescriptor extends ClassDescriptor {
     public AbstractDirectMapping newDirectMapping() {
         return new EISDirectMapping();
     }
-    
+
     /**
      * Return a new aggregate/embedded mapping for this type of descriptor.
      */
@@ -395,7 +395,7 @@ public class EISDescriptor extends ClassDescriptor {
     public AggregateMapping newAggregateMapping() {
         return new EISCompositeObjectMapping();
     }
-    
+
     /**
      * Return a new aggregate collection/element collection mapping for this type of descriptor.
      */
@@ -403,7 +403,7 @@ public class EISDescriptor extends ClassDescriptor {
     public DatabaseMapping newAggregateCollectionMapping() {
         return new EISCompositeCollectionMapping();
     }
-    
+
     /**
      * Return a new direct collection/element collection mapping for this type of descriptor.
      */
@@ -411,7 +411,7 @@ public class EISDescriptor extends ClassDescriptor {
     public DatabaseMapping newDirectCollectionMapping() {
         return new EISCompositeDirectCollectionMapping();
     }
-    
+
     /**
      * Return a new one to one mapping for this type of descriptor.
      */
@@ -419,7 +419,7 @@ public class EISDescriptor extends ClassDescriptor {
     public ObjectReferenceMapping newOneToOneMapping() {
         return new EISOneToOneMapping();
     }
-    
+
     /**
      * Return a new many to one mapping for this type of descriptor.
      */
@@ -427,7 +427,7 @@ public class EISDescriptor extends ClassDescriptor {
     public ObjectReferenceMapping newManyToOneMapping() {
         return new EISOneToOneMapping();
     }
-    
+
     /**
      * Return a new one to many mapping for this type of descriptor.
      */
@@ -435,14 +435,14 @@ public class EISDescriptor extends ClassDescriptor {
     public CollectionMapping newOneToManyMapping() {
         return new EISOneToManyMapping();
     }
-    
+
     /**
      * Return a new one to many mapping for this type of descriptor.
      */
     public CollectionMapping newUnidirectionalOneToManyMapping() {
         return new EISOneToManyMapping();
     }
-    
+
     /**
      * Return a new one to many mapping for this type of descriptor.
      */
@@ -450,17 +450,17 @@ public class EISDescriptor extends ClassDescriptor {
     public CollectionMapping newManyToManyMapping() {
         return new EISOneToManyMapping();
     }
-    
+
     /**
      * PUBLIC: Add a direct mapping to the receiver. The new mapping specifies
      * that an instance variable of the class of objects which the receiver
      * describes maps in the default manner for its type to the indicated
      * database field.
-     * 
-     * @param String
+     *
+     * @param attributeName
      *            instanceVariableName is the name of an instance variable of
      *            the class which the receiver describes.
-     * @param String
+     * @param fieldName
      *            fieldName is the name of the xml element or attribute which
      *            corresponds with the designated instance variable.
      * @return The newly created DatabaseMapping is returned.
@@ -601,7 +601,7 @@ public class EISDescriptor extends ClassDescriptor {
     public boolean isEISDescriptor() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return if change sets are required for new objects.

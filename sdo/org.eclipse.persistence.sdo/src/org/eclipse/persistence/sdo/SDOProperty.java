@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -65,7 +65,7 @@ import org.eclipse.persistence.sdo.helper.metadata.NamespaceURITransformer;
 import org.eclipse.persistence.sdo.helper.metadata.QNameTransformer;
 
 /**
- * <p><b>Purpose</b>:A representation of a Property in the {@link Type type} of a {@link DataObject data object}.
+ * <p><b>Purpose</b>:A representation of a Property in the {@link Type type} of a {@link commonj.sdo.DataObject data object}.
  * <p><b>Responsibilities</b>:<ul>
  * <li> A property represents an element or attribute in XML
  * </ul>
@@ -195,7 +195,7 @@ public class SDOProperty implements Property, Serializable {
     }
 
     /**
-     * Returns the default value this Property will have in a {@link DataObject data object} where the Property hasn't been set.
+     * Returns the default value this Property will have in a {@link commonj.sdo.DataObject data object} where the Property hasn't been set.
      * @return the default value.
      */
     public Object getDefault() {
@@ -325,7 +325,7 @@ public class SDOProperty implements Property, Serializable {
     /**
      * INTERNAL:
     * Set the opposite Property.  If not null then this Property is a of a bi-directional Property.
-    * @param the opposite Property if the Property is bi-directional, otherwise null
+    * @param property the opposite Property if the Property is bi-directional, otherwise null
     */
     public void setOpposite(Property property) {
         opposite = (SDOProperty) property;

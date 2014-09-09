@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.security.*;
  * however in complex cases the class type may be determined through another mechanism.
  * The method calls a static method on the descriptor class to determine the class to use for the database row.
  *
- * @see org.eclipse.persistence.descriptors.InheritancePolicy#setClassExtractor(ClassExtrator)
+ * @see org.eclipse.persistence.descriptors.InheritancePolicy#setClassExtractor
  */
 public class MethodClassExtractor extends ClassExtractor {
     protected transient ClassDescriptor descriptor;

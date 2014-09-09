@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -110,9 +110,9 @@ public class ForeignReferenceQueryKey extends QueryKey {
      * PUBLIC:
      * Set the join expression for the relationship defined by the query key.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     builder.getField("ADDRESS.ADDRESS_ID").equal(builder.getParameter("EMPLOYEE.ADDR_ID");
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public void setJoinCriteria(Expression joinCriteria) {
         this.joinCriteria = joinCriteria;

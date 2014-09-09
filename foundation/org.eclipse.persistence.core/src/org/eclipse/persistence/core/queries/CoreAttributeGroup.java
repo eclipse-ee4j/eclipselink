@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
  * INTERNAL
  * <b>Purpose</b>: A generic super class for AttributeGroup and other subclasses
  * 
- * @see AttributeGroup
+ * @see org.eclipse.persistence.queries.AttributeGroup
 
  * @author Matt MacIvor
  * @since EclipseLink 2.5
@@ -92,7 +92,6 @@ public class CoreAttributeGroup<
     
     /**
      * Marks this AttributeGroup as having been validated by the builder and does not require further validation
-     * @param name
      */
     protected boolean isValidated;
     
@@ -138,7 +137,7 @@ public class CoreAttributeGroup<
      *    group.addAttribute("manager.address");
      * </code>
      * 
-     * @param attrPathOrName
+     * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path
      */
     public void addAttribute(String attributeNameOrPath) {
@@ -149,9 +148,9 @@ public class CoreAttributeGroup<
      * Add an attribute and the corresponding list of AttributeGroups.
      * Multiple groups are added in the case of inheritance
      * <p>
-     * @param attrPathOrName
+     * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path
-     * @param group - a collection of AttributeGroups to be added.
+     * @param groups - a collection of AttributeGroups to be added.
      */
     public void addAttribute(String attributeNameOrPath, Collection<? extends CoreAttributeGroup> groups) {
         CoreAttributeItem item = getItem(CoreAttributeConverter.convert(attributeNameOrPath), true);
@@ -171,7 +170,7 @@ public class CoreAttributeGroup<
      * Note that existing group corresponding to attributeNameOrPath
      * will be overridden with the passed group. 
      * 
-     * @param attrPathOrName
+     * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path
      * @param group - an AttributeGroup to be added.
      */
@@ -193,7 +192,7 @@ public class CoreAttributeGroup<
      * Note that existing group corresponding to attributeNameOrPath will be
      * overridden with the passed group.
      * 
-     * @param attrPathOrName
+     * @param attributeNameOrPath
      *            A simple attribute, array or attributes forming a path to a
      *            Map key
      * @param group
@@ -448,7 +447,7 @@ public class CoreAttributeGroup<
 
     /**
      * INTERNAL:
-     * Lookup the {@link AttributeItem}for the provided attribute name or path.
+     * Lookup the {@link org.eclipse.persistence.internal.queries.AttributeItem AttributeItem} for the provided attribute name or path.
      * 
      * @return item or null
      * @throws IllegalArgumentException if name is not valid attribute name or path
@@ -592,7 +591,6 @@ public class CoreAttributeGroup<
     /**
      * INTERNAL:
      *    This method is used internally when converting to a copy group.
-     * @param cloneMap
      * @return
      */    
     public boolean isCopyGroup() {

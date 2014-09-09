@@ -18,7 +18,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * This {@link ComparisonExpressionFactory} creates a new {@link ComparisonExpression} when the
- * portion of the query to parse starts with <b>&lt;</b>, <b>&gt;</b>, <b><></b>, <b>&lt;=</b>,
+ * portion of the query to parse starts with <b>&lt;</b>, <b>&gt;</b>, <b>{@literal <>}</b>, <b>&lt;=</b>,
  * <b>&gt;=</b> or <b>=</b>.
  *
  * @see ComparisonExpression

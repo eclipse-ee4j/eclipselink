@@ -45,7 +45,7 @@ import org.w3c.dom.Node;
  *  <code>
  *  XMLContext context = new XMLContext("mySessionName");<br>
  *  XMLMarshaller marshaller = context.createMarshaller();<br>
- *  <code>
+ *  </code>
  *
  * <p>Objects can be marshalled to the following outputs:<ul>
  * <li>java.io.OutputStream</li>
@@ -67,7 +67,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
 
     /**
      * Create a new XMLMarshaller based on the specified session
-     * @param session A single session
+     * @param xmlContext the XML content
      */
     public XMLMarshaller(XMLContext xmlContext) {
         super(xmlContext);
@@ -502,7 +502,6 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
 	/**
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
      * @since 2.3.3
-     * @return
      */
     public void setNamespacePrefixMapper(NamespacePrefixMapper mapper) {
         super.setNamespacePrefixMapper(mapper);

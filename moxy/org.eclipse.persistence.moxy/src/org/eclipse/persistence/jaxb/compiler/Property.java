@@ -632,7 +632,6 @@ public class Property implements Cloneable {
      * Set indicator for XmlAnyElement.
      * 
      * @param isAnyElement
-     * @return
      */
     public void setIsAny(boolean isAnyElement) {
         this.isAnyElement = isAnyElement;
@@ -740,8 +739,6 @@ public class Property implements Cloneable {
      * Set the original type of the property.  This is typically used when
      * the type will been changed via @XmlElement annotation and the 
      * original type may be needed.
-     *  
-     * @return
      */
     public void  setOriginalType(JavaClass type) {
         originalType = type;
@@ -896,7 +893,7 @@ public class Property implements Cloneable {
     /**
      * Sets the indicator that identifies this property as an ID field.
      * 
-     * @param isXmlIdRef
+     * @param isXmlId
      */
     public void setIsXmlId(boolean isXmlId) {
         this.isXmlId = isXmlId;
@@ -1258,8 +1255,8 @@ public class Property implements Cloneable {
      * The value returned will be true if one of the following is true:
      * 
      * - isNillable
-     * - isSetNullPolicy && xsi-nil-represents-null == 'true'
-     * - isSetNullPolicy && null-representation-for-xml == 'XSI_NIL'
+     * - isSetNullPolicy {@literal &&} xsi-nil-represents-null == 'true'
+     * - isSetNullPolicy {@literal &&} null-representation-for-xml == 'XSI_NIL'
      * 
      * @return
      */

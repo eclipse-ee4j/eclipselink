@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,7 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.tools;
 
 /**
- * The default implementation of a {@link Text}, which contains the location of the change within
+ * The default implementation of a {@link TextEdit}, which contains the location of the change within
  * the JPQL query (offset) and the old and new values.
  *
  * @version 2.4

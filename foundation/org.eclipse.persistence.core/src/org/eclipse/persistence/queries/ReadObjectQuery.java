@@ -649,7 +649,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * PUBLIC:
      * The primary key can be specified if used instead of an expression or selection object.
      * If composite the primary must be in the same order as defined in the descriptor.
-     * @Depreacted since EclipseLink 2.1, replaced by getSelectionId()
+     * @deprecated since EclipseLink 2.1, replaced by getSelectionId()
      * @see #getSelectionId()
      */
     @Deprecated
@@ -961,7 +961,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * PUBLIC:
      * The primary key can be specified if used instead of an expression or selection object.
      * If composite the primary must be in the same order as defined in the descriptor.
-     * @depreacted since EclipseLink 2.1, replaced by setSelectionId(Object)
+     * @deprecated since EclipseLink 2.1, replaced by setSelectionId(Object)
      * @see #setSelectionId(Object)
      */
     @Deprecated
@@ -1012,7 +1012,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     /**
      * PUBLIC:
      * The primary key can be specified if used instead of an expression or selection object.
-     * @Depreacted since EclipseLink 2.1, replaced by setSelectionId(Object)
+     * @deprecated since EclipseLink 2.1, replaced by setSelectionId(Object)
      * @see #setSelectionId(Object)
      */
     @Deprecated

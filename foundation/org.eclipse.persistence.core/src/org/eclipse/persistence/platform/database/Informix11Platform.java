@@ -1,5 +1,5 @@
 /*******************************************************************************
- * (c) 2011-2013 Jenzabar, Inc. All rights reserved. 
+ * Copyright (c) 2011, 2014 Jenzabar, Inc, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -83,7 +83,7 @@ public class Informix11Platform extends InformixPlatform {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Creates a new {@link JenzabarInformixPlatform}.  Calls {@link
+   * Creates a new {@link Informix11Platform}.  Calls {@link
    * #setShouldBindLiterals(boolean)} with {@code false} as a
    * parameter value.
    *

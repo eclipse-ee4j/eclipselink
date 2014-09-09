@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -653,7 +653,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
 	/**
 	 * Returns a list of the {@link StateObject StateObjects} that were previously created.
 	 *
-	 * @param builders The list of {@link IConditionalStateObjectBuilder builders} is used to
+	 * @param builders The list of {@link IScalarExpressionStateObjectBuilder builders} is used to
 	 * determine how many {@link StateObject StateObjects} needs to be pulled out of the stack
 	 * @return The list of {@link StateObject StateObjects} that were added to the stack
 	 */

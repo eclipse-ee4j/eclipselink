@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,11 +18,11 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
- * <p><b>Purpose</b>: To provide a trivial implementation of MetadataRepository.
- * You may subclass this class rather than implement the MetadataRepositoryReader
+ * <p><b>Purpose</b>: To provide a trivial implementation of MetadataSource.
+ * You may subclass this class rather than implement the MetadataSource
  * interface allowing insulation from future additions to the interface.
  *
- * @see MetadataRepository
+ * @see MetadataSource
  * 
  * @author Chris Delahunt
  * @since EclipseLink 2.3

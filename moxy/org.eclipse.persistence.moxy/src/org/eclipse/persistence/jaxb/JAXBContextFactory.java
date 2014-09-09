@@ -72,19 +72,19 @@ public class JAXBContextFactory {
 
     /**
      * @deprecated As of release 2.4, replaced by JAXBContextProperties.OXM_METADATA_SOURCE
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.OXM_METADATA_SOURCE
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#OXM_METADATA_SOURCE
      */
     @Deprecated
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
     /**
      * @deprecated As of release 2.4, replaced by JAXBContextProperties.DEFAULT_TARGET_NAMESPACE
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.DEFAULT_TARGET_NAMESPACE
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#DEFAULT_TARGET_NAMESPACE
      */
     @Deprecated
     public static final String DEFAULT_TARGET_NAMESPACE_KEY = "defaultTargetNamespace";
     /**
      * @deprecated As of release 2.4, replaced by JAXBContextProperties.ANNOTATION_HELPER
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.ANNOTATION_HELPER
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#ANNOTATION_HELPER
      */
     @Deprecated
     public static final String ANNOTATION_HELPER_KEY = "annotationHelper";
@@ -170,15 +170,15 @@ public class JAXBContextFactory {
     }
 
     /**
-     * Convenience method for processing a properties map and creating a map of 
-     * package names to XmlBindings instances.
+     * <p>Convenience method for processing a properties map and creating a map of
+     * package names to XmlBindings instances.</p>
      *
-     * It is assumed that the given map's key will be JAXBContextProperties.OXM_METADATA_SOURCE,
-     * and the value will be:
-     * 
-     * 1)  Map<String, Object>
+     * <p>It is assumed that the given map's key will be JAXBContextProperties.OXM_METADATA_SOURCE,
+     * and the value will be:</p>
+     * <pre>
+     * 1)  {@literal Map<String, Object>}
      *     - Object is one of those listed in 3) below
-     * 2)  List<Object>
+     * 2)  {@literal List<Object>}
      *     - Object is one of those listed in 3) below
      *     - Bindings file must contain package-name attribute on 
      *       xml-bindings element
@@ -197,6 +197,7 @@ public class JAXBContextFactory {
      *     
      *     - Bindings file must contain package-name attribute on 
      *       xml-bindings element
+     * </pre>
      */
     public static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
         Map<String, List<XmlBindings>> bindings = new HashMap<String, List<XmlBindings>>();

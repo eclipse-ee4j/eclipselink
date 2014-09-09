@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,8 +48,8 @@ public class EclipseLinkRefactoringTool extends RefactoringTool {
 	 * Creates a new <code>EclipseLinkRefactoringTool</code>.
 	 *
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBuilder The builder that creates the {@link org.eclipse.persistence.jpa.jpql.
-	 * model.query.StateObject StateObject} representation of the JPQL query
+	 * @param jpqlQueryBuilder The builder that creates the {@link
+     * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} representation of the JPQL query
 	 * @param jpqlQuery The JPQL query to manipulate
 	 */
 	public EclipseLinkRefactoringTool(IManagedTypeProvider managedTypeProvider,
@@ -63,12 +63,12 @@ public class EclipseLinkRefactoringTool extends RefactoringTool {
 	 * Creates a new <code>EclipseLinkRefactoringTool</code>.
 	 *
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBuilder The builder that creates the {@link org.eclipse.persistence.jpa.jpql.
-	 * model.query.StateObject StateObject} representation of the JPQL query
+	 * @param jpqlQueryBuilder The builder that creates the {@link
+     * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} representation of the JPQL query
 	 * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
 	 * using the JPQL query BNF identifier by the given ID
-	 * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
-	 * parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
+	 * @param jpqlQueryBNFId The unique identifier of the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
 	 */
 	public EclipseLinkRefactoringTool(IManagedTypeProvider managedTypeProvider,
 	                                  IJPQLQueryBuilder jpqlQueryBuilder,

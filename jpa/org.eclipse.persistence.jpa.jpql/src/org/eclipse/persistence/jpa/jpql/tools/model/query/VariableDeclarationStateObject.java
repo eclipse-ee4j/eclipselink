@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,7 +35,7 @@ public interface VariableDeclarationStateObject extends StateObject {
 	 * Returns the {@link IManagedType} for the given identification variable. The search does not
 	 * traverse up the query hierarchy if this declaration is for a subquery.
 	 * <p>
-	 * <pre><code>SELECT e FROM Department d JOIN KEY(d.employees).addresses a</pre></code>
+	 * <pre><code>SELECT e FROM Department d JOIN KEY(d.employees).addresses a</code></pre>
 	 * In the above query, the managed type associated with the identification variable:
 	 * <ul>
 	 * <li>d is "Department"

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -42,6 +42,7 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  * This will produce XML like:
+ * <pre>{@code
  * <xmp>
  * <customer>
  *     <contact-info>
@@ -53,7 +54,8 @@ import java.lang.annotation.Target;
  *         </shipping-address>
  *     </contact-info>
  * </customer>
- * </xmp>
+ * </xmp>}
+ * </pre>
  * <b>Example 2 - Using {@code @XmlPath} to Map by Position</b>
  * <p>Normally in JAXB elements with the same name must be mapped to a 
  * collection property.  Using the &#64;XmlPath extension you map non-collection
@@ -73,6 +75,7 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  * This will produce XML like:
+ * <pre>{@code
  * <xmp>
  * <customer>
  *     <address>
@@ -82,7 +85,8 @@ import java.lang.annotation.Target;
  *         <street>2 Shipping Road</street>
  *     </address> 
  * </customer>
- * </xmp>
+ * </xmp>}
+ * </pre>
  * <b>Example 3 - Using {@code @XmlPath} to Map Two Objects to the Same Node</b>
  * <p>We have seen how {@code @XmlPath} can be used to expand the structure by 
  * adding a grouping element. {@code @XmlPath} can also be used to collapse the 
@@ -100,6 +104,7 @@ import java.lang.annotation.Target;
  * } 
  * </pre>
  * This will produce XML like:
+ * <pre>{@code
  * <xmp>
  * <customer>
  *     <street>1 Billing Street</street>
@@ -107,7 +112,8 @@ import java.lang.annotation.Target;
  *         <street>2 Shipping Road</street>
  *     </shippingAddress>
  * </customer>
- * </xmp>
+ * </xmp>}
+ * </pre>
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -149,7 +155,7 @@ public @interface XmlPath {
      * <ul>
      * <li>contact-info - in "http://www.example.org/FOO" namespace.</li>
      * <li>address - in "http://www.example.com/BAR" namespace.</li>
-     * <li>&#64id - in no namespace.</li>
+     * <li>&#64;id - in no namespace.</li>
      * </ul>
      * @see javax.xml.bind.annotation.XmlSchema
      * @see javax.xml.bind.annotation.XmlNs

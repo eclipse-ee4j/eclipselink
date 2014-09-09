@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
  * By default, the iterator returned by a <code>SnapshotCloneIterable</code> does not
  * support the {@link Iterator#remove()} operation; this is because it does not
  * have access to the original collection. But if the <code>SnapshotCloneIterable</code>
- * is supplied with a {@link org.eclipse.jpt.common.utility.internal.iterators.CloneIterator.Remover}
+ * is supplied with a {@link CloneIterator.Remover}
  * it will delegate the
  * {@link Iterator#remove()} operation to the <code>Remover</code>.
  * Alternatively, a subclass can override the iterable's {@link #remove(Object)}
@@ -45,8 +45,8 @@ import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
  * @param <E> the type of elements returned by the iterable's iterator
  *
  * @see CloneIterator
- * @see LiveCloneIterable
- * @see SnapshotCloneListIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterable.LiveCloneIterable LiveCloneIterable
+ * @see org.eclipse.persistence.jpa.jpql.utility.iterable.SnapshotCloneListIterable SnapshotCloneListIterable
  */
 public class SnapshotCloneIterable<E> extends CloneIterable<E> {
 

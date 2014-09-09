@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,7 +17,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This <code>ConnectByClauseFactory<code> creates a new {@link ConnectByClause} when the portion of
+ * This <code>ConnectByClauseFactory</code> creates a new {@link ConnectByClause} when the portion of
  * the query to parse starts with <b>CONNECT BY</b>.
  *
  * @version 2.5

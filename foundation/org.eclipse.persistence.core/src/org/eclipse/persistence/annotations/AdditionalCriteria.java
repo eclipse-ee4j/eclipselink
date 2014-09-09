@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -27,13 +27,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * is ignored.</p>
  * 
  * <p>The additional criteria supports any valid JPQL string and must use 'this' 
- * as an alias to form your additional criteria. E.G.,
+ * as an alias to form your additional criteria. E.G.,</p>
  * <pre>
- * @Entity
- * @AdditionalCriteria("this.nut.size = :NUT_SIZE and this.nut.color = :NUT_COLOR")
+ * {@literal @}Entity
+ * {@literal @}AdditionalCriteria("this.nut.size = :NUT_SIZE and this.nut.color = :NUT_COLOR")
  * public class Bolt {...}
  * </pre>
- * </p>
  *   
  * <p>Additional criteria parameters are also accepted and are set through 
  * properties on the entity manager factory, or on an entity manager. When set 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -78,7 +78,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * different elements in an XML Document. This will be used to map to Choices or Substitution
  * Groups in an XML Schema
  * <p><b>Responsibilities:</b><ul>
- * <li>Allow the user to specify XPath -> Type mappings</li>
+ * <li>Allow the user to specify XPath {@literal ->} Type mappings</li>
  * <li>Handle reading and writing of XML Documents containing a collection of choice or substitution
  * group elements</li>
  * </ul>

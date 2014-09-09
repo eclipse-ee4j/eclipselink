@@ -30,7 +30,6 @@ import org.eclipse.persistence.jpa.rs.exceptions.JPARSExceptionMapper;
  * Config class for JPA-RS REST service.  This class should remain dependent only on classes from
  * the specification since it is designed to work with both Jersey 1.x and Jersey 2.x.
  *
- * @see ServicePathDefinition
  * @author tware
  *
  */

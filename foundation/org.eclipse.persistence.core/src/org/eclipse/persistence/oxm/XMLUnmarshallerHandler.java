@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
  *  XMLContext context = new XMLContext("mySessionName");<br>
  *  XMLUnmarshaller unmarshaller = context.createUnmarshaller();<br>
  *  XMLUnmarshallerHandler unmarshallerHandler = unmarshaller.getUnmarshallerHandler();<br>
- *  <code>
+ *  </code>
  *
  * <p>Use the UnmarshallerHandler with an XMLReader<br>
  *  <em>Code Sample</em><br>
@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
  *  InputSource inputSource = new InputSource(inputStream);<br>
  *  xmlReader.parse(inputSource);<br>
  *  Object result = xmlUnmarshallerHandler.getResult();<br>
- *  <code>
+ *  </code>
  *
  * <p>XML that can be unmarshalled is XML which has a root tag that corresponds
  * to a default root element on an XMLDescriptor in the TopLink project associated

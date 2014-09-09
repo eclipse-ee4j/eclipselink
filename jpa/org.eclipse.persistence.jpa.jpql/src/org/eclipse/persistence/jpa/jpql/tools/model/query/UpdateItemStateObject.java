@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The <code>new_value</code> specified for an update operation must be compatible in type with the
  * field to which it is assigned.
  *
- * <div nowrap><b>BNF:</b> <code>update_item ::= [identification_variable.]{state_field | single_valued_association_field} = new_value</code><p>
+ * <div><b>BNF:</b> <code>update_item ::= [identification_variable.]{state_field | single_valued_association_field} = new_value</code><p></div>
  *
  * @see UpdateItem
  *
@@ -229,7 +229,7 @@ public class UpdateItemStateObject extends AbstractStateObject {
 	/**
 	 * Returns the segments in the state field path in order.
 	 *
-	 * @return An {@link IterableListIterator} over the paths of the state field path
+	 * @return An {@link ListIterable} over the paths of the state field path
 	 */
 	public ListIterable<String> items() {
 		return stateFieldPath.items();

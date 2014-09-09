@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -52,7 +52,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 /**
  * <p><b>Purpose</b>: Provides Oracle specific behavior.
  * <p><b>Responsibilities</b>:<ul>
- * <li> Native SQL for byte[], Date, Time, & Timestamp.
+ * <li> Native SQL for byte[], Date, Time, {@literal &} Timestamp.
  * <li> Native sequencing named sequences.
  * <li> Native SQL/ROWNUM support for MaxRows and FirstResult filtering.
  * </ul>
@@ -640,7 +640,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
-     * <p><b>NOTE</b>: BigInteger & BigDecimal maximums are dependent upon their precision & Scale
+     * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
     public Hashtable maximumNumericValues() {
@@ -660,7 +660,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
-     * <p><b>NOTE</b>: BigInteger & BigDecimal minimums are dependent upon their precision & Scale
+     * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
     public Hashtable minimumNumericValues() {

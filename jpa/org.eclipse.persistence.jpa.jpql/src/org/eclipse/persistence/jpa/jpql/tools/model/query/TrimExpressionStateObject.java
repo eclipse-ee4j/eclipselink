@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,7 +32,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <code><b>BOTH</b></code> is assumed. The <code><b>TRIM</b></code> function returns the trimmed
  * string.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code><p>
+ * <div><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code><p></div>
  *
  * @see TrimExpression
  *
@@ -83,9 +83,9 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
 	 * @param stateObject The {@link StateObject} representing the encapsulated expression
-	 * @param specification Defines the way the string is trimmed, or {@link org.eclipse.persistence.
-	 * jpa.jpql.parser.TrimExpression.Specification#DEFAULT Specification.DEFAULT} when it is not
-	 * present
+	 * @param specification Defines the way the string is trimmed, or {@link
+     * org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification#DEFAULT
+     * Specification.DEFAULT} when it is not present
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public TrimExpressionStateObject(StateObject parent,
@@ -99,9 +99,9 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
 	 * Creates a new <code>TrimExpressionStateObject</code>.
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param specification Defines the way the string is trimmed, or {@link org.eclipse.persistence.
-	 * jpa.jpql.parser.TrimExpression.Specification#DEFAULT Specification.DEFAULT} when it is not
-	 * present
+	 * @param specification Defines the way the string is trimmed, or {@link
+     * org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification#DEFAULT
+     * Specification.DEFAULT} when it is not present
 	 * @param trimCharacter The trim character
 	 * @param stateObject The {@link StateObject} representing the encapsulated expression
 	 * @exception NullPointerException The given parent cannot be <code>null</code>

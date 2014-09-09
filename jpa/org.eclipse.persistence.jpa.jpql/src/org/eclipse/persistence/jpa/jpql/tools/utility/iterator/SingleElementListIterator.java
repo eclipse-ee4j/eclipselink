@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,7 +19,7 @@ import java.util.NoSuchElementException;
 /**
  * A <code>SingleElementListIterator</code> holds a single element and returns it with the first
  * call to {@link #next()}, at which point it will return <code>false</code> to any subsequent call
- * to {@link #hasNext()}. Likewise, it will return <code>false</code> to a call to {@link #hasPrevious()}<
+ * to {@link #hasNext()}. Likewise, it will return <code>false</code> to a call to {@link #hasPrevious()}
  * until a call to {@link #next()}, at which point a call to {@link #previous()} will return the
  * single element.
  *

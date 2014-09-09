@@ -311,7 +311,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
      * Define XML Schema as Types.
      * The Types are available through TypeHelper and DataGraph getType() methods.
      * @param xsdReader reader to an XML Schema.
-     * @param schemaLocation the URI of the location of the schema, used
+     * @param schemaResolver the URI of the location of the schema, used
      *    for processing relative imports and includes.  May be null if not used.
      * @return the defined Types.
      * @throws IllegalArgumentException if the Types could not be defined.

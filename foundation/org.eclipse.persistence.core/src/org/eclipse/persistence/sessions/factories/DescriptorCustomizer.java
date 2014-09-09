@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,7 +16,7 @@ package org.eclipse.persistence.sessions.factories;
  * This class handles migration from TopLink when broad imports were used.
  * This class was moved to config.
  * @author James Sutherland
- * @Deprecated replaced by org.eclipse.persistence.config.DescriptorCustomizer
+ * @deprecated replaced by org.eclipse.persistence.config.DescriptorCustomizer
  */
 @Deprecated
 public interface DescriptorCustomizer extends org.eclipse.persistence.config.DescriptorCustomizer {

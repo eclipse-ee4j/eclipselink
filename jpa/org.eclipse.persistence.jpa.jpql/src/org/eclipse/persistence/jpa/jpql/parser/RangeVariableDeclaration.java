@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,12 +25,12 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * schema type is needed in the <b>FROM</b> clause.
  * <p>
  * JPA:
- * <div nowrap><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code>
+ * <div><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code></div>
  * <p>
  * EclipseLink 2.4:
- * <div nowrap><b>BNF:</b> <code>range_variable_declaration ::= { root_object } [AS] identification_variable</code>
- * <p<
- * <div nowrap><b>BNF:</b> <code>root_object ::= abstract_schema_name | (subquery)</code>
+ * <div><b>BNF:</b> <code>range_variable_declaration ::= { root_object } [AS] identification_variable</code></div>
+ * <p>
+ * <div><b>BNF:</b> <code>root_object ::= abstract_schema_name | (subquery)</code></div>
  * <p>
  *
  * @version 2.5
@@ -330,7 +330,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 * derived path that does not start with an identification variable. Example:
 	 * <p>
 	 * <code>UPDATE Employee SET firstName = 'MODIFIED'
-	 *       WHERE (SELECT COUNT(m) FROM managedEmployees m) > 0</code>
+	 *       WHERE (SELECT COUNT(m) FROM managedEmployees m) {@literal >} 0</code>
 	 * <p>
 	 * <i>'managedEmployees'</i> is a derived path and will become qualified with the given virtual
 	 * identification variable.

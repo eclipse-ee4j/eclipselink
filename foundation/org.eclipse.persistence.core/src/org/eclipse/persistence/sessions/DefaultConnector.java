@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -318,7 +318,6 @@ public class DefaultConnector implements Connector {
     /**
      * INTERNAL:
      * Instantiate the Driver.
-     * @return void
      */
     protected void instantiateDriver() throws DatabaseException {
         try {
@@ -348,7 +347,6 @@ public class DefaultConnector implements Connector {
     /**
      * INTERNAL:
      * Discard the cached driver class and driver.
-    * @return void
      */
     public void clearDriverClassAndDriver() {
         this.driverClass = null;

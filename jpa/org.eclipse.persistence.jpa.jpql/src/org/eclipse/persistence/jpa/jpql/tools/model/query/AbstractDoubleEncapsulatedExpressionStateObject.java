@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * This {@link StateObject} represents a JPQL expression that has a JPQL identifier followed by
  * two an encapsulated expression with parenthesis, the two expression are separated by a comma.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression)</code><p>
+ * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression)</code><p></div>
  *
  * @see ModExpressionStateObject
  * @see NullIfExpressionStateObject

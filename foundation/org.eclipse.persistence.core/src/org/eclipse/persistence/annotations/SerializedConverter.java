@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * The usage of a SerializedConverter is always specified via the Converter annotation and 
  * is supported on a Basic, or ElementCollection mapping.
  * 
- * @see org.eclipse.persistence.annotations.Serialize
+ * @see org.eclipse.persistence.annotations.Converter
  * @see org.eclipse.persistence.sessions.serializers.Serializer
  * @author James Sutherland
  * @since EclipseLink 2.6 

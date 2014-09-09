@@ -43,9 +43,9 @@ public class WebSphere_Liberty_Platform extends WebSphere_7_Platform {
      * @return Class externalTransactionControllerClass
      * 
      * @see org.eclipse.persistence.transaction.JTATransactionController
-     * @see ServerPlatformBase.isJTAEnabled()
-     * @see ServerPlatformBase.disableJTA()
-     * @see ServerPlatformBase.initializeExternalTransactionController()
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#isJTAEnabled()
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#disableJTA()
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#initializeExternalTransactionController()
      */
     public Class getExternalTransactionControllerClass() {
         if (externalTransactionControllerClass == null) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -21,7 +21,7 @@ import org.eclipse.persistence.sessions.*;
  * however in complex cases the class type may be determined through another mechanism.
  * The class extractor must be able to determine and return the class type from the database row.
  *
- * @see org.eclipse.persistence.descriptors.InheritancePolicy#setClassExtractor(ClassExtrator)
+ * @see org.eclipse.persistence.descriptors.InheritancePolicy#setClassExtractor(ClassExtractor)
  */
 public abstract class ClassExtractor {
 

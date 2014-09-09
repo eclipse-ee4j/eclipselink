@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -92,8 +92,8 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
 	 * JPQL query
 	 * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
 	 * using the JPQL query BNF identifier by the given ID
-	 * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
-	 * parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
+	 * @param jpqlQueryBNFId The unique identifier of the {@link
+     * org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF JPQLQueryBNF} that determines how to parse the JPQL fragment
 	 */
 	protected RefactoringTool(IManagedTypeProvider managedTypeProvider,
 	                          IJPQLQueryBuilder jpqlQueryBuilder,
@@ -147,7 +147,8 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
 	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
 	 * @param oldFieldName The current name of the attribute to rename
 	 * @param newFieldName The new name of the attribute
-	 * @return A new {@link AttributeNameRenamer}
+	 * @return A new {@link org.eclipse.persistence.jpa.jpql.tools.BasicRefactoringTool.AttributeNameRenamer
+     * AttributeNameRenamer}
 	 */
 	protected FieldNameRenamer buildFieldNameRenamer(String typeName,
 	                                                 String oldFieldName,
@@ -509,19 +510,19 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
 	 * <li>
 	 * {@link EntityTypeLiteralStateObject}:
 	 * <i>Exempt</i> in<br><br>
-	 * <code><b>SELECT CASE TYPE</b>(e) <b>WHEN</b> Exempt <b>THEN</b> 'Exempt'<p>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 * <b>ELSE</b> 'NONE'
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 * <b>END</b><p>
-	 * <b>FROM</b> Employee e</code><br><br>
+	 * <code><b>SELECT CASE TYPE</b>(e) <b>WHEN</b> Exempt <b>THEN</b> 'Exempt'</code><p>
+	 * <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 * <b>ELSE</b> 'NONE'</code><p>
+	 * <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 * <b>END</b></code><p>
+	 * <code><b>FROM</b> Employee e</code><br><br>
 	 * </li>
 	 * <li>
 	 * {@link IdentificationVariableStateObject}:
 	 * <i>Exempt</i> in<br><br>
 	 * <code><b>SELECT</b> e<br>
 	 * <b>FROM</b> Employee e</code><br>
-	 * <b>WHERE TYPE</b>(e) <> Exempt
+	 * <b>WHERE TYPE</b>(e) {@literal <>} Exempt
 	 * </li>
 	 * </ul>
 	 */

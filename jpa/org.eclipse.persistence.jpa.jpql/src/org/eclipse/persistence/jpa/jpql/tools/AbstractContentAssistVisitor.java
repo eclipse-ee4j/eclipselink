@@ -2150,11 +2150,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	/**
 	 * Determines whether the given position is within the given word.
 	 * <p>
-	 * Example: position=0, word="JPQL" => true
-	 * Example: position=1, word="JPQL" => true
-	 * Example: position=4, word="JPQL" => true
-	 * Example: position=5, word="JPQL" => true
-	 * Example: position=5, offset 2, (actual cursor position is 3), word="JPQL" => true
+	 * Example: position=0, word="JPQL" {@literal =>} true
+	 * Example: position=1, word="JPQL" {@literal =>} true
+	 * Example: position=4, word="JPQL" {@literal =>} true
+	 * Example: position=5, word="JPQL" {@literal =>} true
+	 * Example: position=5, offset 2, (actual cursor position is 3), word="JPQL" {@literal =>} true
 	 *
 	 * @param position The position of the cursor
 	 * @param offset The offset to adjust the position
@@ -2169,10 +2169,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	/**
 	 * Determines whether the given position is within the given word.
 	 * <p>
-	 * Example: position=0, word="JPQL" => true
-	 * Example: position=1, word="JPQL" => true
-	 * Example: position=4, word="JPQL" => true
-	 * Example: position=5, word="JPQL" => true
+	 * Example: position=0, word="JPQL" {@literal =>} true
+	 * Example: position=1, word="JPQL" {@literal =>} true
+	 * Example: position=4, word="JPQL" {@literal =>} true
+	 * Example: position=5, word="JPQL" {@literal =>} true
 	 *
 	 * @param position The position of the cursor
 	 * @param word The word to check if the cursor is positioned in it
@@ -5532,7 +5532,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     // Made static for performance reasons.
 	/**
 	 * This visitor retrieves the permitted type from the path expression's parent. For instance,
-	 * <b>SUM<b></b> or <b>AVG</b> only accepts state fields that have a numeric type.
+	 * <b>SUM</b> or <b>AVG</b> only accepts state fields that have a numeric type.
 	 */
 	protected static abstract class AcceptableTypeVisitor extends AbstractExpressionVisitor {
 
@@ -6796,7 +6796,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		CLAUSE,
 
 		/**
-		 * Determines whether the comparison operators (<, <=, <>, >=, =) can be appended as valid proposals.
+		 * Determines whether the comparison operators {@literal (<, <=, <>, >=, =)} can be appended as valid proposals.
 		 */
 		COMPARISON,
 
@@ -7452,7 +7452,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	        extends AnonymousExpressionVisitor implements Filter<Expression> {
 
 		/**
-		 * Determines whether '<', '<=', '>=', '>' are valid comparison operators.
+		 * Determines whether {@literal '<', '<=', '>=', '>'} are valid comparison operators.
 		 */
 		protected boolean valid;
 
@@ -9542,7 +9542,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		protected String beforeIdentifier;
 
 		/**
-		 * Determines whether there is at least one clause defined after the clause defined by {@link #identifier}.
+		 * Determines whether there is at least one clause defined after the clause defined by {@link #afterIdentifier}.
 		 */
 		protected boolean hasFollowUpClauses;
 
@@ -11411,7 +11411,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 		/**
 		 * Returns the clause being scanned by this helper. It is safe to type cast the clause because
-		 * {@link #hasClause(AbstractSelectStatement)} is called before this one.
+		 * {@link #hasClause(Expression)} is called before this one.
 		 *
 		 * @param expression The {@link AbstractSelectStatement} being visited
 		 * @return The clause being scanned

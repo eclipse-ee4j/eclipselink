@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -60,14 +60,14 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     protected ThreadLocal activeUnitOfWorkThreadLocal;
 
     /** Table of external transaction object keys and sequencing listeners values. */
-    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback > 0 */
+    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0 */
     protected ConcurrentMap<Object, AbstractSynchronizationListener> sequencingListeners;
 
     /** Table of external transaction object keys and listeners that are currently in beforeCompletion. */
     /** Request for a new sequencing callback may be triggered by beforeCompletion of existing listener - */
     /** in this case avoid creating yet another listener for sequencing but rather use the listener */
     /** that has initiated the request */
-    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback > 0 */
+    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0 */
     protected ConcurrentMap<Object, AbstractSynchronizationListener> currentlyProcessedListeners;
 
     /** Indicates how many sessions require sequencing callbacks: */

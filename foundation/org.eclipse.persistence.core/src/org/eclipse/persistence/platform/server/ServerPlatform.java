@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -110,9 +110,6 @@ public interface ServerPlatform {
      * ServerPlatformBase, and overriding getExternalTransactionControllerClass()
      *
      * @see ServerPlatformBase
-     *
-     * @return void
-     *
      */
     void initializeExternalTransactionController();
 
@@ -142,7 +139,6 @@ public interface ServerPlatform {
      * be ignored, and will NOT be used to populate DatabaseSession's external transaction controller class
      * at runtime.
      *
-     * @return void
      * @see #getExternalTransactionControllerClass()
      * @see #isJTAEnabled()
      */
@@ -161,7 +157,6 @@ public interface ServerPlatform {
      * INTERNAL: disableRuntimeServices(): Configure the receiver such that no JMX/MBean will be registered
      * to provide runtime services for my DatabaseSession at runtime.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      */
     void disableRuntimeServices();
@@ -170,7 +165,6 @@ public interface ServerPlatform {
      * INTERNAL: registerMBean(): Create and deploy the JMX MBean to provide runtime services for my
      * databaseSession.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #unregisterMBean()
@@ -181,7 +175,6 @@ public interface ServerPlatform {
      * INTERNAL: unregisterMBean(): Unregister the JMX MBean that was providing runtime services for my
      * databaseSession.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()
@@ -217,8 +210,7 @@ public interface ServerPlatform {
      *
      * Default behavior is to use Thread(runnable).start()
      *
-     * @param Runnable runnable: the instance of runnable to be "started"
-     * @return void
+     * @param runnable: the instance of runnable to be "started"
      */
     void launchContainerRunnable(Runnable runnable);
 
@@ -258,7 +250,7 @@ public interface ServerPlatform {
      * @return ClassLoaderHolder - a composite object containing the classLoader and the flag
      *     that is true if the classLoader returned is temporary
      *     
-     * @see org.eclipse.persistence.internal.helper.ClassLoaderHolder
+     * @see org.eclipse.persistence.internal.helper.JPAClassLoaderHolder
      */
     JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo);
     

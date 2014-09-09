@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,20 +33,20 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <b>JPA 1.0 - BNF:</b>
  * <pre><code>comparison_expression ::= string_expression comparison_operator {string_expression | all_or_any_expression} |
- *                          boolean_expression {=|<>} {boolean_expression | all_or_any_expression} |
- *                          enum_expression {=|<>} {enum_expression | all_or_any_expression} |
+ *                          boolean_expression {=|{@literal <>}} {boolean_expression | all_or_any_expression} |
+ *                          enum_expression {=|{@literal <>}} {enum_expression | all_or_any_expression} |
  *                          datetime_expression comparison_operator {datetime_expression | all_or_any_expression} |
- *                          entity_expression {=|<>} {entity_expression | all_or_any_expression} |
+ *                          entity_expression {=|{@literal <>}} {entity_expression | all_or_any_expression} |
  *                          arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression}</code></pre>
  *
  * <b>JPA 2.0 - BNF:</b>
  * <pre><code>comparison_expression ::= string_expression comparison_operator {string_expression | all_or_any_expression} |
- *                          boolean_expression {=|<>} {boolean_expression | all_or_any_expression} |
- *                          enum_expression {=|<>} {enum_expression | all_or_any_expression} |
+ *                          boolean_expression {=|{@literal <>}} {boolean_expression | all_or_any_expression} |
+ *                          enum_expression {=|{@literal <>}} {enum_expression | all_or_any_expression} |
  *                          datetime_expression comparison_operator {datetime_expression | all_or_any_expression} |
- *                          entity_expression {=|<>} {entity_expression | all_or_any_expression} |
+ *                          entity_expression {=|{@literal <>}} {entity_expression | all_or_any_expression} |
  *                          arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression} |
- *                          <b>entity_type_expression {=|<>} entity_type_expression}</b></code></pre>
+ *                          <b>entity_type_expression {=|{@literal <>}} entity_type_expression}</b></code></pre>
  *
  * @version 2.5
  * @since 2.3
@@ -72,7 +72,7 @@ public final class ComparisonExpression extends CompoundExpression {
 	}
 
 	/**
-	 * Returns the comparison operator, which is either '=', '>', '>=', '<', '<=' or '<>'.
+	 * Returns the comparison operator, which is either {@literal '=', '>', '>=', '<', '<=' or '<>'}.
 	 *
 	 * @return The operator comparing the two expressions
 	 */

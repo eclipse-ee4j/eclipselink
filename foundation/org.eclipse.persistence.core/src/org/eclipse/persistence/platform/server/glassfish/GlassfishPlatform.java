@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -152,9 +152,8 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      *
      * Default is to do nothing.
      * Implementing platform classes must override this function and supply
-     * the server specific MBean instance for later registration by calling it in the constructor.  
+     * the server specific MBean instance for later registration by calling it in the constructor.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()
@@ -172,7 +171,6 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * creation and deployment of the JMX MBean to provide runtime services for my
      * databaseSession.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()

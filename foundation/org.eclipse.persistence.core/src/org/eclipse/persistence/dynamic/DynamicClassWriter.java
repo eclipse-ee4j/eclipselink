@@ -217,7 +217,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      * Allow subclasses to add additional state to the dynamic entity.
      * 
      * @param cw
-     * @param parentClassNameAsSlashes
+     * @param parentClassType
      */
     protected void addFields(ClassWriter cw, String parentClassType) {
     }
@@ -226,7 +226,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      * Allow subclasses to add additional methods to the dynamic entity.
      * 
      * @param cw
-     * @param parentClassNameAsSlashes
+     * @param parentClassType
      */
     protected void addMethods(ClassWriter cw, String parentClassType) {
     }
@@ -368,7 +368,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      * Returning true means that the bytes that would be created using this
      * writer are identical with what would come from the provided writer.
      * <p>
-     * Used in {@link DynamicClassLoader#addClass(String, DynamicClassWriter)}
+     * Used in {@link DynamicClassLoader#addClass(String, EclipseLinkClassWriter)}
      * to verify if a duplicate request of the same className can proceed and
      * return the same class that may already exist.
      */

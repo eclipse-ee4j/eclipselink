@@ -43,10 +43,10 @@ import com.sun.codemodel.JType;
  *
  * <p>
  * <b>Responsibilities:</b>
+ * </p>
  * <ul>
  *    <li>Provide <code>Method</code> information from the underlying <code>JMethod</code>.</li>
  * </ul>
- * </p>
  *
  * @since EclipseLink 2.1
  *

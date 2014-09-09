@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,7 +23,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * Defines the specification for a call to a JCA interaction that uses a query string.
  * This can be used for generic query translation support (i.e. VSAM, BETRIEVE, ADA, etc.)
- * Arguments are defined in the query string through #<field-name> (i.e. #EMP_ID)
+ * Arguments are defined in the query string through #{@literal <field-name>} (i.e. #EMP_ID)
  * Translates the query string from the query arguments.
  * Builds the input and output records.
  *

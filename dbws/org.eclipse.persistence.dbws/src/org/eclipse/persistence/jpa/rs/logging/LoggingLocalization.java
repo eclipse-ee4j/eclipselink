@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -30,7 +30,6 @@ public class LoggingLocalization extends EclipseLinkLocalization {
      * INTERNAL:
      * Return the message for the given exception class and error number.
      * Based on the state of the translate flag - look up translation for the key:value message
-     * @param localizationClassName
      * @param key
      * @param arguments
      * @param translate

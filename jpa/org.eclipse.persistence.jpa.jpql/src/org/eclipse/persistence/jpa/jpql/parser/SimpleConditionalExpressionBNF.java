@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,14 +16,14 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a simple conditional expression.
  *
- * <div nowrap><b>BNF:</b> <code>simple_cond_expression ::= comparison_expression |
+ * <div><b>BNF:</b> <code>simple_cond_expression ::= comparison_expression |
  *                                                          between_expression |
  *                                                          in_expression |
  *                                                          like_expression |
  *                                                          null_comparison_expression |
  *                                                          empty_collection_comparison_expression |
  *                                                          collection_member_expression |
- *                                                          exists_expression</code>
+ *                                                          exists_expression</code></div>
  * <p>
  *
  * @version 2.4

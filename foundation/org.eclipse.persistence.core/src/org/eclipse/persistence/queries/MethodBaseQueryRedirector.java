@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -55,7 +55,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * dynamically.
  * </ul>
  * <p><b>Example</b>:
- * <PRE><BLOCKQUOTE>
+ * <BLOCKQUOTE><PRE>
  * // First create a named query, define a redirector for it, and add the query
  * // to the query manager.
  * ReadObjectQuery query = new ReadObjectQuery(Employee.class);
@@ -80,7 +80,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * ((ReadObjectQuery) query).setSelectionObject(arguments.get("employee"));
  * return session.executeQuery(query);
  * }
- * }</PRE><BLOCKQUOTE><p>
+ * }</PRE></BLOCKQUOTE><p>
  *
  * @see QueryRedirector
  * @author James Sutherland

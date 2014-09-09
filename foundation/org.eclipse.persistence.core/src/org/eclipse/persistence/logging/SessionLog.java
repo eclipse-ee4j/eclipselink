@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -26,7 +26,7 @@ import org.eclipse.persistence.sessions.Session;
  * in a database instead of logged to System.out, etc.
  * <p>
  * This class defines Eclipselink logging levels (that are used throughout EclipseLink code) with the following integer values:
- * <table>
+ * <table summary="">
  * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= 0</td></tr>
  * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= 1</td></tr>
  * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= 2</td></tr>
@@ -39,7 +39,7 @@ import org.eclipse.persistence.sessions.Session;
  * </table>
  * <p>
  * In addition, EclipseLink categories used for logging name space are defined with the following String values:
- * <table>
+ * <table summary="">
  * <tr><td>&nbsp;</td><td>{@link #SQL}</td>           <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>   <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>         <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
@@ -242,7 +242,7 @@ public interface SessionLog extends Cloneable {
      * Return the log level.  Used when session is not available.
      * <p>
      * The EclipseLink logging levels returned correspond to:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -269,7 +269,7 @@ public interface SessionLog extends Cloneable {
      * is available.
      * <p>
      * The EclipseLink logging levels returned correspond to:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td></tr>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td></tr>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td></tr>
@@ -282,7 +282,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      * <p>
      * The EclipseLink categories for the logging name space are:<br> 
-     * <table>
+     * <table summary="">
      * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td></tr>
      * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td></tr>
      * <tr><td>&nbsp;</td><td>EVENT</td>         <td>&nbsp;</td><td>= "event"</td></tr>
@@ -307,7 +307,7 @@ public interface SessionLog extends Cloneable {
      * Set the log level.  Used when session is not available.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -327,7 +327,7 @@ public interface SessionLog extends Cloneable {
      * is available.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -340,7 +340,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      * <p>
      * The EclipseLink categories for logging name space are:<br> 
-     * <table>
+     * <table summary="">
      * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td></tr>
      * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td></tr>
      * <tr><td>&nbsp;</td><td>EVENT</td>         <td>&nbsp;</td><td>= "event"</td></tr>
@@ -366,7 +366,7 @@ public interface SessionLog extends Cloneable {
      * Used when session is not available.
      * <p>
      * The EclipseLink logging levels available are:
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -386,7 +386,7 @@ public interface SessionLog extends Cloneable {
      * Category is only needed where name space is available.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -399,7 +399,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      * <p>
      * The EclipseLink categories for logging name space are:<br> 
-     * <table>
+     * <table summary="">
      * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td></tr>
      * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td></tr>
      * <tr><td>&nbsp;</td><td>EVENT</td>         <td>&nbsp;</td><td>= "event"</td></tr>
@@ -425,7 +425,7 @@ public interface SessionLog extends Cloneable {
      * external use when logging messages are wanted within the EclipseLink output.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -444,7 +444,7 @@ public interface SessionLog extends Cloneable {
      * Log a message with one parameter that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -463,7 +463,7 @@ public interface SessionLog extends Cloneable {
      * Log a message with one parameter that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -482,7 +482,7 @@ public interface SessionLog extends Cloneable {
      * Log a message with two parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -501,7 +501,7 @@ public interface SessionLog extends Cloneable {
      * Log a message with two parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -520,7 +520,7 @@ public interface SessionLog extends Cloneable {
      * Log a message with three parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -539,7 +539,7 @@ public interface SessionLog extends Cloneable {
      * Log a message with three parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -558,7 +558,7 @@ public interface SessionLog extends Cloneable {
      * Log a message with four parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -577,7 +577,7 @@ public interface SessionLog extends Cloneable {
      * Log a message with four parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -597,7 +597,7 @@ public interface SessionLog extends Cloneable {
      * The message needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -617,7 +617,7 @@ public interface SessionLog extends Cloneable {
      * The message needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -637,7 +637,7 @@ public interface SessionLog extends Cloneable {
      * shouldTranslate flag determines if the message needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -657,7 +657,7 @@ public interface SessionLog extends Cloneable {
      * shouldTranslate flag determines if the message needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
      * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
      * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
@@ -731,7 +731,7 @@ public interface SessionLog extends Cloneable {
      * Log a {@link Throwable} with level.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -750,7 +750,7 @@ public interface SessionLog extends Cloneable {
      * Log a throwable with level.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table>
+     * <table summary="">
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>

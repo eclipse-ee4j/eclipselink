@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -54,6 +54,8 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
+import javax.persistence.Embeddable;
+
 /**
  * The EntityTypeBuilder is a factory class for creating and extending dynamic
  * entity types. After being constructed in either usage the application can
@@ -80,7 +82,7 @@ public class DynamicTypeBuilder {
      *  DynamicHelper helper = new DynamicHelper(session);
      *  DynamicClassLoader dcl = helper.getDynamicClassLoader();<br>
      *  <br>
-     *  Class<?> javaType = dcl.creatDynamicClass("model.Simple");<br>
+     *  Class{@literal <?>} javaType = dcl.creatDynamicClass("model.Simple");<br>
      *  <br>
      *  DynamicTypeBuilder typeBuilder = new JPADynamicTypeBuilder(javaType, null, "SIMPLE_TYPE");<br>
      *  typeBuilder.setPrimaryKeyFields("SID");<br>
@@ -209,7 +211,7 @@ public class DynamicTypeBuilder {
      * <li>basic indirection references
      * </ul>
      * 
-     * @see #newDynamicEntity() for creation and initialization
+     * @see DynamicHelper#newDynamicEntity for creation and initialization
      */
     private boolean requiresInitialization(DatabaseMapping mapping) {
         if (mapping.isDirectToFieldMapping() && mapping.getAttributeClassification() != null && mapping.getAttributeClassification().isPrimitive()) {

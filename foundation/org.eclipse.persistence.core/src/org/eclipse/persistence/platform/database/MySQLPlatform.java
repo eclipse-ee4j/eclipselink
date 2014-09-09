@@ -50,7 +50,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 /**
  * <p><b>Purpose</b>: Provides MySQL specific behavior.
  * <p><b>Responsibilities</b>:<ul>
- * <li> Native SQL for Date, Time, & Timestamp.
+ * <li> Native SQL for Date, Time, {@literal &} Timestamp.
  * <li> Native sequencing.
  * <li> Mapping of class types to database types for the schema framework.
  * <li> Pessimistic locking.
@@ -224,8 +224,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * 2. MaxRows is the number of rows to be returned
      * 
      * MySQL uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex
-     * 
-     * @param readQuery
+     *
      * @param firstResultIndex
      * @param maxResults
      * 
@@ -608,8 +607,8 @@ public class MySQLPlatform extends DatabasePlatform {
      * INTERNAL:
      * MySQL uses ' to allow identifier to have spaces.
      * @deprecated
-     * @see getStartDelimiter()
-     * @see getEndDelimiter()
+     * @see #getStartDelimiter()
+     * @see #getEndDelimiter()
      */
     @Override
     public String getIdentifierQuoteCharacter() {

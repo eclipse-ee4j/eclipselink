@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,14 +23,14 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 /**
- * <p>Class used to unmarshal XML & JSON to objects.
+ * <p>Class used to unmarshal XML {@literal &} JSON to objects.
  *
  * <p>Create an XMLUnmarshaller from an XMLContext.<br>
  *  <em>Code Sample</em><br>
  *  <code>
  *  XMLContext context = new XMLContext("mySessionName");<br>
  *  XMLUnmarshaller unmarshaller = context.createUnmarshaller();<br>
- *  <code>
+ *  </code>
  *
  * <p>XML can be unmarshalled from the following inputs:<ul>
  * <li>java.io.File</li>

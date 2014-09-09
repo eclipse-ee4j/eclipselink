@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -40,7 +40,7 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
- * <li>Native SQL for Date, Time, & Timestamp.
+ * <li>Native SQL for Date, Time, {@literal &} Timestamp.
  * <li>Native sequencing.
  * <li>Mapping of class types to database types for the schema framework.
  * <li>Pessimistic locking.
@@ -103,8 +103,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * 
      * PostGreSQL uses case #2 and therefore the maxResults has to be altered
      * based on the firstResultIndex
-     * 
-     * @param readQuery
+     *
      * @param firstResultIndex
      * @param maxResults
      * 
@@ -518,7 +517,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
 
     /**
      * Print the pagination SQL using Postgres syntax
-     * " LIMIT <max> OFFSET <first>".
+     * " LIMIT {@literal <max> OFFSET <first>}".
      */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
@@ -547,12 +546,12 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * supportsTempTables() == true. Precondition: pkFields and assignFields
      * don't intersect.
      * 
-     * @parameter Writer writer for writing the sql
-     * @parameter DatabaseTable table is original table for which temp table is
+     * @param writer for writing the sql
+     * @param table is original table for which temp table is
      *            created.
-     * @parameter Collection pkFields - primary key fields for the original
+     * @param pkFields - primary key fields for the original
      *            table.
-     * @parameter Collection assignedFields - fields to be assigned a new value.
+     * @param assignedFields - fields to be assigned a new value.
      */
     @Override
     public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table, Collection pkFields, Collection assignedFields) throws IOException {

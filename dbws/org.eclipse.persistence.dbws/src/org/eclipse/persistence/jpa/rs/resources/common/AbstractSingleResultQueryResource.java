@@ -47,7 +47,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
      *
      * @param version the version
      * @param persistenceUnit the persistence unit
-     * @param queryName the name
+     * @param queryName the query name
      * @param headers the http headers
      * @param uriInfo the uriInfo
      * @return the response

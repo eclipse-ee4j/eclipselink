@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,7 +68,7 @@ import org.eclipse.persistence.sessions.Session;
  * <p>The following XPath statements may be used to specify the location of XML data relating to an object's
  * name attribute:
  *
- * <p><table border="1">
+ * <p><table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">XPath</th>
  * <th id="c2" align="left">Description</th>
@@ -500,7 +500,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * Indicates that this mapping should collapse all string values before adding them
      * to the collection on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
      * any sequence of whitespace characters with a single space.
-     * @param normalize
+     * @param collapse
      */
     public void setCollapsingStringValues(boolean collapse) {
         this.isCollapsingStringValues = collapse;
@@ -511,7 +511,6 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
      * Returns true if this mapping should collapse all string values before adding them
      * to the collection. Collapse removes leading and trailing whitespaces, and replaces
      * any sequence of whitespace characters with a single space.
-     * @param normalize
      */
     public boolean isCollapsingStringValues() {
         return this.isCollapsingStringValues;

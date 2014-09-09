@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * The <b>UNION</b> clause allows the results of two queries to be combined.
  * <p>
- * <div nowrap><b>BNF:</b> <code>union_clause ::= <b>{ UNION | INTERSECT | EXCEPT }</b> [ALL] subquery</code>
+ * <div><b>BNF:</b> <code>union_clause ::= <b>{ UNION | INTERSECT | EXCEPT }</b> [ALL] subquery</code></div>
  * <p>
  *
  * @version 2.5
@@ -129,7 +129,7 @@ public final class UnionClause extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the actual <code><b>ALL</b></code>< found in the string representation of the JPQL
+	 * Returns the actual <code><b>ALL</b></code> found in the string representation of the JPQL
 	 * query, which has the actual case that was used.
 	 *
 	 * @return The <code><b>ALL</b></code> identifier that was actually parsed
@@ -160,7 +160,7 @@ public final class UnionClause extends AbstractExpression {
 	/**
 	 * Returns the {@link Expression} representing the unioned query.
 	 *
-	 * @return The {@link expression} representing the subquery
+	 * @return The {@link Expression} representing the subquery
 	 */
 	public Expression getQuery() {
 		if (query == null) {

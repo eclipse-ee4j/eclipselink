@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -91,7 +91,7 @@ public final class CollectionTools {
 	 * Creates a new array and adds the items returned by the given {@link Iterable}.
 	 *
 	 * @param componentType The type of the array
-	 * @param iterator The {@link Iterable} that will iterate over the collection of items to add
+	 * @param iterable The {@link Iterable} that will iterate over the collection of items to add
 	 * into the new array in the same order they are returned
 	 * @return A new array filled with the items returned by the given iterator
 	 * @since 2.5
@@ -126,7 +126,7 @@ public final class CollectionTools {
 	}
 
 	/**
-	 * Returns a list corresponding to the specified array. Unlike {@link Arrays#asList(Object[])},
+	 * Returns a list corresponding to the specified array. Unlike {@link java.util.Arrays#asList(Object[])},
 	 * the list is modifiable and is not backed by the array.
 	 *
 	 * @param array The array to convert into a {@link List}

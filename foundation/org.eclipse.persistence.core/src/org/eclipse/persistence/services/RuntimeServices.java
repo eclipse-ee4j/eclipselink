@@ -323,7 +323,7 @@ public abstract class RuntimeServices {
      * This method will return a collection of the objects in the Identity Map.
      * There is no particular order to these objects.
      * @param className the fully qualified classname of the class to the instances of
-     * @exception  thrown then the IdentityMap for that class name could not be found
+     * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public List getObjectsInIdentityMap(String className) throws ClassNotFoundException {
         Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
@@ -340,7 +340,7 @@ public abstract class RuntimeServices {
     /**
      *        This method is used to return the number of objects in a particular Identity Map
      * @param className the fully qualified name of the class to get number of instances of.
-     * @exception  thrown then the IdentityMap for that class name could not be found
+     * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public Integer getNumberOfObjectsInIdentityMap(String className) throws ClassNotFoundException {
         Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
@@ -353,7 +353,7 @@ public abstract class RuntimeServices {
      * This method replaces getObjectsInIdentityMapSubCache(className) which returns a list instead
      * of a Map
      * @param className the fully qualified name of the class to get number of instances of.
-     * @exception  thrown then the IdentityMap for that class name could not be found
+     * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public List getObjectsInIdentityMapSubCacheAsMap(String className) throws ClassNotFoundException {
         Class classToChange = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
@@ -371,7 +371,7 @@ public abstract class RuntimeServices {
      * This method is used to return the number of objects in a particular Identity Map's
      * subcache.  Only works for those identity Maps with a sub cache (ie Hard Cache Weak Identity Map)
      * @param className the fully qualified name of the class to get number of instances of.
-     * @exception  thrown then the IdentityMap for that class name could not be found
+     * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public Integer getNumberOfObjectsInIdentityMapSubCache(String className) throws ClassNotFoundException {
         //This needs to use the Session's active class loader (not implemented yet)
@@ -418,7 +418,7 @@ public abstract class RuntimeServices {
      *
      * @return true if the given message level will be logged
      * </p><p>
-     * @param level  the log request level
+     * @param Level  the log request level
      * @param category  the string representation of an EclipseLink category
      * </p>
      */
@@ -606,7 +606,7 @@ public abstract class RuntimeServices {
          * This does not affect the log level in the project (i.e. The next
          * time the application is deployed, changes are forgotten)
          *
-         * @param String newLevel: new log level
+         * @param newLevel new log level
          */
         public synchronized void setCurrentEclipseLinkLogLevel(String newLevel) {
             this.getSession().setLogLevel(this.getLogLevelForName(newLevel));
@@ -998,7 +998,6 @@ public abstract class RuntimeServices {
 
      /**
      *     This method will print the available Connection pools to the SessionLog.
-     * @return void
      */
      public void printAvailableConnectionPools() {
          if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
@@ -1048,7 +1047,6 @@ public abstract class RuntimeServices {
      *        This method is used to output those Class Names that have identity Maps in the Session.
      * Please note that SubClasses and aggregates will be missing from this list as they do not have
      * separate identity maps.
-     * @return void
      */
      public void printClassesInSession() {
          Vector classes = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
@@ -1067,7 +1065,7 @@ public abstract class RuntimeServices {
      *        This method will log the objects in the Identity Map.
      * There is no particular order to these objects.
      * @param className the fully qualified classname identifying the identity map
-     * @exception  thrown then the IdentityMap for that class name could not be found
+     * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
      public void printObjectsInIdentityMap(String className) throws ClassNotFoundException {
          Class classWithMap = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
@@ -1304,7 +1302,7 @@ public abstract class RuntimeServices {
      /**
      *    This method is used to invalidate the identity maps specified by the String[] of classNames.
      *
-     * @param classNames String[] of fully qualified classnames identifying the identity maps to invalidate
+     * @param classNamesParam String[] of fully qualified classnames identifying the identity maps to invalidate
      * @param recurse    Boolean indicating if we want to invalidate the children identity maps too
      */
      public synchronized void invalidateIdentityMaps(String[] classNamesParam, Boolean recurse) throws ClassNotFoundException {
@@ -1373,7 +1371,7 @@ public abstract class RuntimeServices {
       *  INTERNAL:
       *  Define the session that this instance is providing runtime services for
       *
-      *  @param Session session The session to be used with these RuntimeServices
+      *  @param newSession The session to be used with these RuntimeServices
       */
      protected void setSession(AbstractSession newSession) {
          this.session = newSession;
@@ -1506,8 +1504,8 @@ public abstract class RuntimeServices {
       * Answer the CompositeData containing the cache details for the given mappedClassName
       * This uses a CompositeDataSupport, which implements CompositeData
       *
-      * @param String mappedClassName: fullyQualified class name of the class
-      * @param CompositeType detailsType: describes the format of the returned CompositeData
+      * @param mappedClassName fullyQualified class name of the class
+      * @param detailsType describes the format of the returned CompositeData
 
       * @return javax.management.openmbean.CompositeData
       */
@@ -1519,7 +1517,7 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * Helper to build a HashMap to help in the construction of a CompositeData
       *
-      * @param String mappedClassName: fullyQualified class name of the class
+      * @param mappedClassName fullyQualified class name of the class
 
       * @return HashMap
       */

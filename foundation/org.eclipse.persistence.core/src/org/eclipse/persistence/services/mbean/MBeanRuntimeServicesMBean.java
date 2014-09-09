@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -130,7 +130,7 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *        This method is used to return the number of objects in a particular Identity Map
      * @param className the fully qualified name of the class to get number of instances of.
-     * @exception If ClassNotFoundException is thrown then the IdentityMap for that class name could not be found
+     * @exception ClassNotFoundException if thrown then the IdentityMap for that class name could not be found
      */
     public Integer getNumberOfObjectsInIdentityMap(String className) throws ClassNotFoundException;
 
@@ -179,7 +179,7 @@ public interface MBeanRuntimeServicesMBean {
      * This does not affect the log level in the project (i.e. The next
      * time the application is deployed, changes are forgotten)
      *
-     * @param String newLevel: new log level
+     * @param newLevel new log level
      */
     public  void setCurrentEclipseLinkLogLevel(String newLevel);
 
@@ -351,7 +351,6 @@ public interface MBeanRuntimeServicesMBean {
 
     /**
     *     This method will print the available Connection pools to the SessionLog.
-    * @return void
     */
     public void printAvailableConnectionPools();
 
@@ -373,7 +372,6 @@ public interface MBeanRuntimeServicesMBean {
     *        This method is used to output those Class Names that have identity Maps in the Session.
     * Please note that SubClasses and aggregates will be missing form this list as they do not have
     * separate identity maps.
-    * @return void
     */
     public void printClassesInSession();
 
@@ -381,7 +379,7 @@ public interface MBeanRuntimeServicesMBean {
     *        This method will log the objects in the Identity Map.
     * There is no particular order to these objects.
     * @param className the fully qualified classname identifying the identity map
-    * @exception  thrown then the IdentityMap for that class name could not be found
+    * @exception ClassNotFoundException if thrown then the IdentityMap for that class name could not be found
     */
     public void printObjectsInIdentityMap(String className) throws ClassNotFoundException;
 
@@ -485,7 +483,7 @@ public interface MBeanRuntimeServicesMBean {
 
     /**
     *    This method is used to invalidate the identity maps specified by the String[] of classNames.
-    * @param classNames String[] of fully qualified classnames identifying the identity maps to invalidate
+    * @param classNamesParam String[] of fully qualified classnames identifying the identity maps to invalidate
     * @param recurse    Boolean indicating if we want to invalidate the children identity maps too
     */
     public void invalidateIdentityMaps(String[] classNamesParam, Boolean recurse) throws ClassNotFoundException;

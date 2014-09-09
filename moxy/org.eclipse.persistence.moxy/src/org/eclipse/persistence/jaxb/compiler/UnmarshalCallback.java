@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
  *  <p><b>Responsibilities:</b><ul>
  *  <li>Store information about domainClass and the callback methods</li>
  *  <li>Act as a means to integrate JAXB 2.0 Class based callbacks with TopLink OXM 
- *  Listener based callbacks.</li>
+ *  Listener based callbacks.</li></ul>
  *  
  *  A Map of UnmarshalCallbacks are created during JAXB 2.0 Generation and are set on a
  *  JAXBUnmarshallerListener on each JAXBUnmarshaller. These callbacks are used to invoke

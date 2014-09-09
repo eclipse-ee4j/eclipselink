@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -44,7 +44,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <li> Store the selection criteria in a tree-like structure.
  * <li> Support public manipulation protocols for all comparison and function operators.
  * <li> Use operator overloading to support all primitive types as well as objects.
- * </ul></p>
+ * </ul>
  */
 public abstract class Expression implements Serializable, Cloneable {
 
@@ -78,7 +78,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * EclipseLink: employee.get("date").addDate("year", 2)
      * Java: NA
      * SQL: DATEADD(date, 2, year)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression addDate(String datePart, int numberToAdd) {
         return addDate(datePart, Integer.valueOf(numberToAdd));
@@ -93,7 +93,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * EclipseLink: employee.get("date").addDate("year", 2)
      * Java: NA
      * SQL: DATEADD(date, 2, year)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression addDate(String datePart, Object numberToAdd) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.AddDate);
@@ -141,7 +141,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * ReadAllQuery query = new ReadAllQuery(Employee.class);
      * ExpressionBuilder employee = new ExpressionBuilder();
      * Expression exp = employee.anyOf("phoneNumbers").get("areaCode").notEqual("613");
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * AllOf Example: Employees with all '613' area code phone numbers.
      * <blockquote><pre>
@@ -151,7 +151,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * SQL:
      * SELECT ... EMPLOYEE t0 WHERE NOT EXISTS (SELECT ... PHONE t1 WHERE
      *                     (t0.EMP_ID = t1.EMP_ID) AND NOT (t1.AREACODE = '613'))
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * allOf is the universal counterpart to the existential anyOf.  To have the
      * condition evaluated for each instance it must be put inside of a subquery,
@@ -170,7 +170,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * subQuery.setSelectionCriteria(phone.equal(employee.anyOf("phoneNumbers").and(
      *         phone.get("areaCode").notEqual("613")));
      * Expression exp = employee.notExists(subQuery);
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * Note if employee has no phone numbers allOf ~ noneOf.
      * @param criteria must have its own builder, as it will become the
@@ -189,13 +189,13 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that is the boolean logical combination of both expressions.
-     * This is equivalent to the SQL "AND" operator and the Java "&&" operator.
+     * This is equivalent to the SQL "AND" operator and the Java {@literal "&&"} operator.
      * <p>Example:
      * <blockquote><pre>
      *  EclipseLink: employee.get("firstName").equal("Bob").and(employee.get("lastName").equal("Smith"))
-     *  Java: (employee.getFirstName().equals("Bob")) && (employee.getLastName().equals("Smith"))
+     *  Java: (employee.getFirstName().equals("Bob")) {@literal &&} (employee.getLastName().equals("Smith"))
      *  SQL: F_NAME = 'Bob' AND L_NAME = 'Smith'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression and(Expression theExpression) {
         // Allow ands with null.
@@ -236,10 +236,10 @@ public abstract class Expression implements Serializable, Cloneable {
      * <td headers="c1">EclipseLink</td>
      * <td headers="c2">
      * <pre>
-     * ReadAllQuery query = new ReadAllQuery(Employee.class);</br>
-     * ExpressionBuilder builder = new ExpressionBuilder();</br>
-     * Expression exp = builder.get("id").equal("14858");</br>
-     * exp = exp.or(builder.anyOf("managedEmployees").get("firstName").equal("Bob"));</br>
+     * ReadAllQuery query = new ReadAllQuery(Employee.class);<br>
+     * ExpressionBuilder builder = new ExpressionBuilder();<br>
+     * Expression exp = builder.get("id").equal("14858");<br>
+     * exp = exp.or(builder.anyOf("managedEmployees").get("firstName").equal("Bob"));<br>
      * </pre>
      * </td>
      * </tr>
@@ -265,30 +265,30 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>
      * <table border=0 summary="This table compares an example EclipseLink anyOf Expression to Java and SQL">
      * <tr>
-     * <th id="c1">Format</th>
-     * <th id="c2">Equivalent</th>
+     * <th id="c3">Format</th>
+     * <th id="c4">Equivalent</th>
      * </tr>
      * <tr>
-     * <td headers="c1">EclipseLink</td>
-     * <td headers="c2">
+     * <td headers="c3">EclipseLink</td>
+     * <td headers="c4">
      * <pre>
-     * ReadAllQuery query = new ReadAllQuery(Employee.class);</br>
-     * ExpressionBuilder builder = new ExpressionBuilder();</br>
-     * Expression exp = builder.get("id").equal("14858");</br>
-     * exp = exp.or(builder.anyOf("managedEmployees").get("firstName").equal("Bob"));</br>
+     * ReadAllQuery query = new ReadAllQuery(Employee.class);<br>
+     * ExpressionBuilder builder = new ExpressionBuilder();<br>
+     * Expression exp = builder.get("id").equal("14858");<br>
+     * exp = exp.or(builder.anyOf("managedEmployees").get("firstName").equal("Bob"));<br>
      * </pre>
      * </td>
      * </tr>
      * <tr>
-     * <td headers="c1">Java</td>
-     * <td headers="c2">No direct equivalent</td>
+     * <td headers="c3">Java</td>
+     * <td headers="c4">No direct equivalent</td>
      * </tr>
      * <tr>
-     * <td headers="c1">SQL</td>
-     * <td headers="c2">SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')</td>
+     * <td headers="c3">SQL</td>
+     * <td headers="c4">SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')</td>
      * </tr>
      * </table>
-     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
+     * @param shouldJoinBeIndependent indicates whether a new expression should be created.
      */
     public Expression anyOf(String attributeName, boolean shouldJoinBeIndependent) {
         throw new UnsupportedOperationException("anyOf");
@@ -305,27 +305,27 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>
      * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
      * <tr>
-     * <th id="c1">Format</th>
-     * <th id="c2">Equivalent</th>
+     * <th id="c5">Format</th>
+     * <th id="c6">Equivalent</th>
      * </tr>
      * <tr>
-     * <td headers="c1">EclipseLink</td>
-     * <td headers="c2">
+     * <td headers="c5">EclipseLink</td>
+     * <td headers="c6">
      * <pre>
-     * ReadAllQuery query = new ReadAllQuery(Employee.class);</br>
-     * ExpressionBuilder builder = new ExpressionBuilder();</br>
-     * Expression exp = builder.get("id").equal("14858");</br>
-     * exp = exp.or(builder.anyOfAllowingNone("managedEmployees").get("firstName").equal("Bob"));</br>
+     * ReadAllQuery query = new ReadAllQuery(Employee.class);<br>
+     * ExpressionBuilder builder = new ExpressionBuilder();<br>
+     * Expression exp = builder.get("id").equal("14858");<br>
+     * exp = exp.or(builder.anyOfAllowingNone("managedEmployees").get("firstName").equal("Bob"));<br>
      * </pre>
      * </td>
      * </tr>
      * <tr>
-     * <td headers="c1">Java</td>
-     * <td headers="c2">No direct equivalent</td>
+     * <td headers="c5">Java</td>
+     * <td headers="c6">No direct equivalent</td>
      * </tr>
      * <tr>
-     * <td headers="c1">SQL</td>
-     * <td headers="c2">SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')</td>
+     * <td headers="c5">SQL</td>
+     * <td headers="c6">SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')</td>
      * </tr>
      * </table>
      */
@@ -344,30 +344,30 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>
      * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
      * <tr>
-     * <th id="c1">Format</th>
-     * <th id="c2">Equivalent</th>
+     * <th id="c7">Format</th>
+     * <th id="c8">Equivalent</th>
      * </tr>
      * <tr>
-     * <td headers="c1">EclipseLink</td>
-     * <td headers="c2">
+     * <td headers="c7">EclipseLink</td>
+     * <td headers="c8">
      * <pre>
-     * ReadAllQuery query = new ReadAllQuery(Employee.class);</br>
-     * ExpressionBuilder builder = new ExpressionBuilder();</br>
-     * Expression exp = builder.get("id").equal("14858");</br>
-     * exp = exp.or(builder.anyOfAllowingNone("managedEmployees").get("firstName").equal("Bob"));</br>
+     * ReadAllQuery query = new ReadAllQuery(Employee.class);<br>
+     * ExpressionBuilder builder = new ExpressionBuilder();<br>
+     * Expression exp = builder.get("id").equal("14858");<br>
+     * exp = exp.or(builder.anyOfAllowingNone("managedEmployees").get("firstName").equal("Bob"));<br>
      * </pre>
      * </td>
      * </tr>
      * <tr>
-     * <td headers="c1">Java</td>
-     * <td headers="c2">No direct equivalent</td>
+     * <td headers="c7">Java</td>
+     * <td headers="c8">No direct equivalent</td>
      * </tr>
      * <tr>
-     * <td headers="c1">SQL</td>
-     * <td headers="c2">SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')</td>
+     * <td headers="c7">SQL</td>
+     * <td headers="c8">SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')</td>
      * </tr>
      * </table>
-     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
+     * @param shouldJoinBeIndependent indicates whether a new expression should be created.
      */
     public Expression anyOfAllowingNone(String attributeName, boolean shouldJoinBeIndependent) {
         throw new UnsupportedOperationException("anyOfAllowingNone");
@@ -400,11 +400,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * 
      *  downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("project").treat(LargeProject.class).get("budget").equal(1000)
      *     Java: ((LargeProject)employee.getProjects().get(0)).getBudget() == 1000
      *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000 AND PROJ.TYPE = "L"
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression treat(Class castClass) {
         return this;
@@ -417,7 +417,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Example:
      * <blockquote><pre>
      *  readAllQuery.addOrderBy(expBuilder.get("address").get("city").ascending())
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression ascending() {
         return getFunction(ExpressionOperator.Ascending);
@@ -430,7 +430,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Example:
      * <blockquote><pre>
      *  readAllQuery.addOrderBy(expBuilder.get("address").get("city").ascending().nullsFirst())
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression nullsFirst() {
         return getFunction(ExpressionOperator.NullsFirst);
@@ -443,7 +443,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Example:
      * <blockquote><pre>
      *  readAllQuery.addOrderBy(expBuilder.get("address").get("city").ascending().nullsLast())
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression nullsLast() {
         return getFunction(ExpressionOperator.NullsLast);
@@ -468,7 +468,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *  EclipseLink: employee.asOf(new AsOfClause(pastTime))
      *  Java: None
      *  SQL (Flashback): SELECT ... FROM EMPLOYEE AS OF TIMESTAMP (pastTime) t0 ...
-     *  SQL (Generic): .. WHERE (t1.START <= pastTime) AND ((t1.END IS NULL) OR t1.END > pastTime)
+     *  SQL (Generic): .. WHERE (t1.START {@literal <=} pastTime) AND ((t1.END IS NULL) OR t1.END {@literal >} pastTime)
      * </pre>
      * <p>
      * Set an as of clause at the expression level to still query for current objects
@@ -491,7 +491,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *   Expression pastAddress = pastEmployee.get("address"); // by default address will also be as of past time.
      *   Expression selectionCriteria = pastAddress.get("city").equal("Ottawa").and(
      *       employee.equal(pastEmployee));
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * The advantage of the parallel expression is that you can still read current
      * objects, the as of clause will affect only the where clause / selection criteria.
@@ -510,7 +510,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *   Expression parallelJoin = employee.equal(pastEmployee);
      *   Expression selectionCriteria = parallelJoin.and(
      *       employee.get("salary").greaterThan(pastEmployee.get("salary")));
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * Example: Querying on object changes using custom query keys
      * <p><blockquote><pre>
@@ -527,7 +527,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *   Expression employee = new ExpessionBuilder();
      *   Expression pastEmployee = employee.get("this").asOf(yesterday);
      *   Expression selectionCriteria = employee.get("salary").greaterThan(pastEmployee.get("salary"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * Note in general that any parallel expression can be rewritten using a custom query key.
      * EclipseLink will even automatically interpret x.get("this") for you so you do
@@ -566,7 +566,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * @see org.eclipse.persistence.history.AsOfClause
      * @see #hasAsOfClause
      * @see org.eclipse.persistence.sessions.Session#acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause)
-     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setAsOfClause(org.eclipse.persistence.history.AsOfClause))
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setAsOfClause(org.eclipse.persistence.history.AsOfClause)
      */
     public Expression asOf(AsOfClause pastTime) {
         throw new UnsupportedOperationException("anyOfAllowingNone");
@@ -663,11 +663,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * This means the receiver's value is greater than or equal to the leftValue argument and less than or equal to the
      * rightValue argument.
      * <p>
-     * This is equivalent to the SQL "BETWEEN AND" operator and Java ">=", "<=;" operators.
+     * This is equivalent to the SQL "BETWEEN AND" operator and Java {@literal ">=", "<=;"} operators.
      * <p>Example:
      * <pre>
      *     EclipseLink: employee.get("age").between(19,50)
-     *     Java: (employee.getAge() >= 19) && (employee.getAge() <= 50)
+     *     Java: (employee.getAge() {@literal >=} 19) {@literal &&} (employee.getAge() {@literal <=} 50)
      *     SQL: AGE BETWEEN 19 AND 50
      * </pre>
      */
@@ -708,7 +708,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * SQL: CASE name WHEN "Robert" THEN "Bob"
      *     WHEN "Susan" THEN "Sue"
      *  ELSE "No-Nickname"
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @param caseItems java.util.Map
      * A Map containing the items to be processed.
      * Keys represent the items to match coming from the query.
@@ -732,11 +732,11 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Creates an ArgumentListFunctionExpression that is capable of creating a case statement of the form:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * SQL: CASE name WHEN "Robert" THEN "Bob"
      *     WHEN "Susan" THEN "Sue"
      *  ELSE "No-Nickname"
-     * </blockquote></pre>
+     * </pre></blockquote>
      * 
      * This expression must be manipulated to successfully build a case statement by adding appropriate 
      * children to it.
@@ -775,8 +775,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * SQL: CASE WHEN name = "Robert" THEN "Bob"
      *     WHEN name = "Susan" THEN "Sue"
      *  ELSE "No-Nickname" 
-     * </blockquote></pre>
-     * @param caseItems java.util.Map
+     * </pre></blockquote>
+     * @param caseConditions java.util.Map
      * A Map containing the items to be processed.
      * Keys represent the items to match coming from the query.
      * Values represent what a key will be changed to.
@@ -805,11 +805,11 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Creates an ArgumentListFunctionExpression that is capable of creating a case statement of the form:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * SQL: CASE WHEN name = "Robert" THEN "Bob"
      *     WHEN name = "Susan" THEN "Sue"
      *  ELSE "No-Nickname" 
-     * </blockquote></pre>
+     * </pre></blockquote>
      * 
      * This expression must be manipulated to successfully build a case statement by adding appropriate 
      * children to it.
@@ -839,8 +839,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * EclipseLink: builder.get("name").nullIf( "Bobby")
      * Java: NA
      * SQL: NULLIF(name, "Bobby") 
-     * </blockquote></pre>
-     * @param defaultItem java.lang.Object  the value/expression that will be compared to the base expression
+     * </pre></blockquote>
+     * @param object java.lang.Object the value/expression that will be compared to the base expression
      */
     public Expression nullIf(Object object) {
             ExpressionOperator anOperator = getOperator(ExpressionOperator.NullIf);
@@ -863,8 +863,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * EclipseLink: expressionBuilder.coalesce(caseTable)
      * Java: NA
      * SQL: COALESCE(firstname, lastname, nickname)
-     * </blockquote></pre>
-     * @param caseItems java.util.Collection
+     * </pre></blockquote>
+     * @param expressions java.util.Collection
      * A Collection containing the items to check if null
      */
     public ArgumentListFunctionExpression coalesce(Collection expressions) {
@@ -946,7 +946,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>Example:
      * <blockquote><pre>
      *     EclipseLink: project.get("description").containsAllKeyWords("EclipseLink rdbms java")
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression containsAllKeyWords(String spaceSeparatedKeyWords) {
         StringTokenizer tokenizer = new StringTokenizer(spaceSeparatedKeyWords);
@@ -973,7 +973,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>Example:
      * <blockquote><pre>
      *     EclipseLink: project.get("description").containsAllKeyWords("EclipseLink rdbms java")
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression containsAnyKeyWords(String spaceSeparatedKeyWords) {
         StringTokenizer tokenizer = new StringTokenizer(spaceSeparatedKeyWords);
@@ -1002,7 +1002,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     EclipseLink: employee.get("firstName").containsSubstring("Bob")
      *     Java: employee.getFirstName().indexOf("Bob") != -1
      *     SQL: F_NAME LIKE '%BOB%'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression containsSubstring(String theValue) {
         return like("%" + theValue + "%");
@@ -1016,7 +1016,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     EclipseLink: employee.get("firstName").containsSubstring("Bob")
      *     Java: employee.getFirstName().indexOf("Bob") != -1
      *     SQL: F_NAME LIKE '%BOB%'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression containsSubstring(Expression expression) {
         return like((value("%").concat(expression)).concat("%"));
@@ -1030,7 +1030,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     EclipseLink: employee.get("firstName").containsSubstringIgnoringCase("Bob")
      *     Java: employee.getFirstName().toUpperCase().indexOf("BOB") != -1
      *     SQL: UPPER(F_NAME) LIKE '%BOB%'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression containsSubstringIgnoringCase(String theValue) {
         if (shouldUseUpperCaseForIgnoreCase) {
@@ -1048,7 +1048,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     EclipseLink: employee.get("firstName").containsSubstringIgnoringCase("Bob")
      *     Java: employee.getFirstName().toUpperCase().indexOf("BOB") != -1
      *     SQL: UPPER(F_NAME) LIKE '%BOB%'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression containsSubstringIgnoringCase(Expression expression) {
         if (shouldUseUpperCaseForIgnoreCase) {
@@ -1178,7 +1178,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * EclipseLink: employee.get("date").dateDifference("year", new Date(System.currentTimeMillis()))
      * Java: NA
      * SQL: DATEADD(date, 2, GETDATE)
-     * </blockquote></pre> *
+     * </pre></blockquote>
      */
     public Expression dateDifference(String datePart, java.util.Date date) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.DateDifference);
@@ -1200,7 +1200,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * EclipseLink: employee.get("date").dateDifference("year", new Date(System.currentTimeMillis()))
      * Java: NA
      * SQL: DATEADD(date, 2, GETDATE)
-     * </blockquote></pre> *
+     * </pre></blockquote>
      */
     public Expression dateDifference(String datePart, Expression comparisonExpression) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.DateDifference);
@@ -1222,7 +1222,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * EclipseLink: employee.get("date").dateName("year")
      * Java: new String(date.getYear())
      * SQL: DATENAME(date, year)
-     * </blockquote></pre> *
+     * </pre></blockquote>
      */
     public Expression dateName(String datePart) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.DateName);
@@ -1243,7 +1243,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * EclipseLink: employee.get("date").datePart("year")
      * Java: date.getYear()
      * SQL: DATEPART(date, year)
-     * </blockquote></pre> *  */
+     * </pre></blockquote>
+     */
     public Expression datePart(String datePart) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.DatePart);
         FunctionExpression expression = new FunctionExpression();
@@ -1277,7 +1278,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * EclipseLink: employee.get("name").Decode(decodeTable, "No-Nickname")
      * Java: NA
      * SQL: DECODE(name, "Robert", "Bob", "Susan", "Sue", "No-Nickname")
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @param decodeableItems java.util.Map
      *   a Map containing the items to be decoded.  Keys represent
      * the items to match coming from the query.  Values represent what
@@ -1333,7 +1334,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>Example:
      * <blockquote><pre>
      * readAllQuery.addOrderBy(expBuilder.get("address").get("city").descending())
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression descending() {
         return getFunction(ExpressionOperator.Descending);
@@ -1355,7 +1356,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * <blockquote><pre>
      * EclipseLink: employee.get("name").difference("Frank")
      * SQL: DIFFERENCE(name, 'Frank')
-     * </blockquote></pre> *  */
+     * </pre></blockquote>
+     */
     public Expression difference(String expression) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Difference);
         return anOperator.expressionFor(this, expression);
@@ -1457,11 +1459,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that compares if the receiver's value is equal to the other value.
      * This is equivalent to the SQL "=" operator and Java "equals" method.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").equal("Bob")
      *     Java: employee.getFirstName().equals("Bob")
      *     SQL: F_NAME = 'Bob'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression equal(Object theValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Equal);
@@ -1475,12 +1477,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * is not used elsewhere, both will be translated to the same table.  This can
      * generate SQL with one less join for most exists subqueries.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("manager").equal(employee)
      *     Java: employee.getManager().equals(employee)
      *     SQL (optimized): EMP_ID = MANAGER_ID
      *     SQL (unoptimized): t0.MANAGER_ID = t1.EMP_ID AND t0.EMP_ID = t1.EMP_ID
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @see #equal(Object)
      */
     public Expression equal(Expression theValue) {
@@ -1523,11 +1525,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that compares if the receiver's value is equal to the other value, ignoring case.
      * This is equivalent to the Java "equalsIgnoreCase" method.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").equalsIgnoreCase("Bob")
      *     Java: employee.getFirstName().equalsIgnoreCase("Bob")
      *     SQL: UPPER(F_NAME) = 'BOB'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression equalsIgnoreCase(String theValue) {
         if (shouldUseUpperCaseForIgnoreCase) {
@@ -1542,11 +1544,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that compares if the receiver's value is equal to the other value, ignoring case.
      * This is equivalent to the Java "equalsIgnoreCase" method.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").equalsIgnoreCase("Bob")
      *     Java: employee.getFirstName().equalsIgnoreCase("Bob")
      *     SQL: UPPER(F_NAME) = 'BOB'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression equalsIgnoreCase(Expression theValue) {
         if (shouldUseUpperCaseForIgnoreCase) {
@@ -1562,12 +1564,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * A sub query using a report query to define a subselect within another queries expression or select's where clause.
      * The sub query (the report query) will use its own expression builder be can reference expressions from the base expression builder.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * ExpressionBuilder builder = new ExpressionBuilder();
      * ReportQuery subQuery = new ReportQuery(Employee.class, new ExpressionBuilder());
      * subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().get("name").equal(builder.get("name")));
      * builder.exists(subQuery);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression exists(ReportQuery subQuery) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Exists);
@@ -1650,9 +1652,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that wraps the attribute or query key name.
      * This method is used to construct user-defined queries containing joins.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  builder.get("address").get("city").equal("Ottawa");
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression get(String attributeName) {
         return get(attributeName, true);
@@ -1663,9 +1665,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that wraps the attribute or query key name.
      * This method is used to construct user-defined queries containing joins.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  builder.get("address", false).get("city").equal("Ottawa");
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @param forceInnerJoin - allows the get to not force an inner-join (if getAllowingNull was used elsewhere).
      */
     public Expression get(String attributeName, boolean forceInnerJoin) {
@@ -1679,9 +1681,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * the relationship to be null if there is no corresponding relationship in the database.
      * Implemented via an outer join in the database.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  builder.getAllowingNull("address").get("city").equal("Ottawa");
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression getAllowingNull(String attributeName) {
         throw new UnsupportedOperationException("getAllowingNull");
@@ -1733,7 +1735,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <blockquote><pre>
      *  builder.getField("ADDR_ID").greaterThan(100);
      *  builder.getTable("PROJ_EMP").getField("TYPE").equal("S");
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression getField(String fieldName) {
         throw QueryException.illegalUseOfGetField(fieldName);
@@ -1746,7 +1748,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p> Example:
      * <blockquote><pre>
      *  builder.getField(aField).greaterThan(100);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression getField(DatabaseField field) {
         throw QueryException.illegalUseOfGetField(field);
@@ -1788,11 +1790,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * This can be used to define a join condition on two unrelated objects,
      * or to qualify a relationship join with additional criteria.
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  Expression address = employee.getAllowingNull("address");
      *  employee.join(address, address.get("city").equal("Ottawa"));
      *  query.addNonFetchJoin(address);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression join(Expression target, Expression onClause) {
         throw new UnsupportedOperationException("join");
@@ -1804,11 +1806,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * This can be used to define a join condition on two unrelated objects,
      * or to qualify a relationship join with additional criteria.
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  Expression address = employee.getAllowingNull("address");
      *  employee.leftJoin(address, address.get("city").equal("Ottawa"));
      *  query.addNonFetchJoin(address);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression leftJoin(Expression target, Expression onClause) {
         throw new UnsupportedOperationException("leftJoin");
@@ -1820,9 +1822,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * The operator must be defined in ExpressionOperator to be able to reference it.
      * @see ExpressionOperator
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  builder.get("name").getFunction(MyFunctions.FOO_BAR).greaterThan(100);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression getFunction(int selector) {
         ExpressionOperator anOperator = getOperator(selector);
@@ -1835,11 +1837,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * The operator must be defined in ExpressionOperator to be able to reference it.
      * @see ExpressionOperator
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *    List arguments = new ArrayList();
      *    arguments.add("blee");
      *  builder.get("name").getFunction(MyFunctions.FOO_BAR, arguments).greaterThan(100);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression getFunction(int selector, List arguments) {
         ExpressionOperator anOperator = getOperator(selector);
@@ -1852,11 +1854,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * The operator must be defined in ExpressionOperator to be able to reference it.
      * @see ExpressionOperator
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  List arguments = new ArrayList();
      *  arguments.add("blee");
      *  builder.get("name").operator("FOO_BAR", arguments).greaterThan(100);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression operator(String name, List arguments) {
         Integer selector = ExpressionOperator.getPlatformOperatorSelectors().get(name);
@@ -1872,11 +1874,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * The operator must be defined in ExpressionOperator to be able to reference it.
      * @see ExpressionOperator
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *    List arguments = new ArrayList();
      *    arguments.add("blee");
      *  builder.get("name").getFunction(MyFunctions.FOO_BAR, arguments).greaterThan(100);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     @Deprecated
     public Expression getFunction(int selector, Vector arguments) {
@@ -1888,9 +1890,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return a user defined function accepting the argument.
      * The function is assumed to be a normal prefix function and will print like, UPPER(base).
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  builder.get("firstName").getFunction("UPPER");
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression getFunction(String functionName) {
         ExpressionOperator anOperator = ExpressionOperator.simpleFunction(0, functionName);
@@ -1969,10 +1971,10 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression that wraps the inheritance type field in an expression.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  builder.getClassForInheritance().equal(SmallProject.class);
      *  builder.anyOf("projects").getClassForInheritance().equal(builder.getParameter("projectClass"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression type() {
         //Only valid on an ObjectExpression
@@ -2069,9 +2071,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is used internally in EclipseLink, or to construct queries involving
      * fields and/or tables that are not mapped.
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  builder.getTable("PROJ_EMP").getField("TYPE").equal("S");
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression getTable(String tableName) {
         DatabaseTable table = new DatabaseTable(tableName);
@@ -2083,9 +2085,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is used internally in EclipseLink, or to construct queries involving
      * fields and/or tables that are not mapped.
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  builder.getTable(linkTable).getField("TYPE").equal("S");
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression getTable(DatabaseTable table) {
         throw QueryException.illegalUseOfGetTable(table);
@@ -2094,9 +2096,9 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * ADVANCED: Return an expression representing a sub-select in the from clause.
      * <p> Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  builder.getAlias(builder.subQuery(reportQuery)).get("type").equal("S");
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression getAlias(Expression subSelect) {
         throw QueryException.illegalUseOfGetTable(subSelect);
@@ -2168,7 +2170,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receiver's value is greater than the other value.
-     * This is equivalent to the SQL ">" operator.
+     * This is equivalent to the SQL {@literal ">"} operator.
      */
     public Expression greaterThan(Object theValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.GreaterThan);
@@ -2202,7 +2204,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(byte theValue) {
         return greaterThanEqual(Byte.valueOf(theValue));
@@ -2211,7 +2213,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(char theChar) {
         return greaterThanEqual(Character.valueOf(theChar));
@@ -2220,7 +2222,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(double theValue) {
         return greaterThanEqual(Double.valueOf(theValue));
@@ -2229,7 +2231,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(float theValue) {
         return greaterThanEqual(Float.valueOf(theValue));
@@ -2238,7 +2240,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(int theValue) {
         return greaterThanEqual(Integer.valueOf(theValue));
@@ -2247,7 +2249,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(long theValue) {
         return greaterThanEqual(Long.valueOf(theValue));
@@ -2256,7 +2258,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(Object theValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.GreaterThanEqual);
@@ -2267,7 +2269,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(Expression theValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.GreaterThanEqual);
@@ -2278,7 +2280,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(short theValue) {
         return greaterThanEqual(Short.valueOf(theValue));
@@ -2287,7 +2289,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is greater and equal to the other value.
-     * This is equivalent to the SQL ">=" operator .
+     * This is equivalent to the SQL {@literal ">="} operator.
      */
     public Expression greaterThanEqual(boolean theBoolean) {
         return greaterThanEqual(Boolean.valueOf(theBoolean));
@@ -2326,11 +2328,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function  return a specific value if item returned from the
      * query is null.  Equivalent of the oracle NVL function
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("name").ifNull("no-name")
      * Java: NA
      * SQL: NVL(name, 'no-name')
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression ifNull(Object nullValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Nvl);
@@ -2477,11 +2479,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").in(ages)
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression in(Collection theObjects) {
         return in(new CollectionExpression(theObjects, this));
@@ -2502,7 +2504,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Index method could be applied to QueryKeyExpression corresponding to CollectionMapping
      * that has non-null listOrderField (the field holding the index values).
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *    ReportQuery query = new ReportQuery();
      *    query.setReferenceClass(Employee.class);
      *    ExpressionBuilder builder = query.getExpressionBuilder();
@@ -2516,7 +2518,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *    FROM OL_PROJ_EMP t4, OL_SALARY t3, OL_EMPLOYEE t2, OL_LPROJECT t1, OL_PROJECT t0 
      *    WHERE ((((t2.F_NAME = 'John') AND (t4.PROJ_ORDER BETWEEN 2 AND 4)) AND (t3.OWNER_EMP_ID = t2.EMP_ID)) AND
      *    (((t4.EMP_ID = t2.EMP_ID) AND (t0.PROJ_ID = t4.PROJ_ID)) AND (t1.PROJ_ID (+) = t0.PROJ_ID)))
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression index() {
         throw QueryException.indexRequiresQueryKeyExpression(this);
@@ -2564,12 +2566,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * being empty.
      * Equivalent to <code>size(attributeName).equal(0)</code>
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.isEmpty("phoneNumbers")
      *     Java: employee.getPhoneNumbers().size() == 0
      *     SQL: SELECT ... FROM EMP t0 WHERE (
      *      (SELECT COUNT(*) FROM PHONE t1 WHERE (t0.EMP_ID = t1.EMP_ID)) = 0)
-     * </blockquote></pre>
+     * </pre></blockquote>
      * This is a case where a fast operation in java does not translate to an
      * equally fast operation in SQL, requiring a correlated subselect.
      * @see #size(java.lang.String)
@@ -2753,7 +2755,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than the other value.
-     * This is equivalent to the SQL "<" operator.
+     * This is equivalent to the SQL {@literal "<"} operator.
      */
     public Expression lessThan(byte theValue) {
         return lessThan(Byte.valueOf(theValue));
@@ -2762,7 +2764,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than the other value.
-     * This is equivalent to the SQL "<" operator.
+     * This is equivalent to the SQL {@literal "<"} operator.
      */
     public Expression lessThan(char theChar) {
         return lessThan(Character.valueOf(theChar));
@@ -2771,7 +2773,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than the other value.
-     * This is equivalent to the SQL "<" operator.
+     * This is equivalent to the SQL {@literal "<"} operator.
      */
     public Expression lessThan(double theValue) {
         return lessThan(Double.valueOf(theValue));
@@ -2780,7 +2782,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than the other value.
-     * This is equivalent to the SQL "<" operator.
+     * This is equivalent to the SQL {@literal "<"} operator.
      */
     public Expression lessThan(float theValue) {
         return lessThan(Float.valueOf(theValue));
@@ -2789,7 +2791,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than the other value.
-     * This is equivalent to the SQL "<" operator.
+     * This is equivalent to the SQL {@literal "<"} operator.
      */
     public Expression lessThan(int theValue) {
         return lessThan(Integer.valueOf(theValue));
@@ -2798,7 +2800,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than the other value.
-     * This is equivalent to the SQL "<" operator.
+     * This is equivalent to the SQL {@literal "<"} operator.
      */
     public Expression lessThan(long theValue) {
         return lessThan(Long.valueOf(theValue));
@@ -2807,7 +2809,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than the other value.
-     * This is equivalent to the SQL "<" operator.
+     * This is equivalent to the SQL {@literal "<"} operator.
      */
     public Expression lessThan(Object theValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.LessThan);
@@ -2823,7 +2825,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than the other value.
-     * This is equivalent to the SQL "<" operator.
+     * This is equivalent to the SQL {@literal "<"} operator.
      */
     public Expression lessThan(short theValue) {
         return lessThan(Short.valueOf(theValue));
@@ -2832,7 +2834,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than the other value.
-     * This is equivalent to the SQL "<" operator.
+     * This is equivalent to the SQL {@literal "<"} operator.
      */
     public Expression lessThan(boolean theBoolean) {
         return lessThan(Boolean.valueOf(theBoolean));
@@ -2841,7 +2843,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(byte theValue) {
         return lessThanEqual(Byte.valueOf(theValue));
@@ -2850,7 +2852,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(char theChar) {
         return lessThanEqual(Character.valueOf(theChar));
@@ -2859,7 +2861,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(double theValue) {
         return lessThanEqual(Double.valueOf(theValue));
@@ -2868,7 +2870,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(float theValue) {
         return lessThanEqual(Float.valueOf(theValue));
@@ -2877,7 +2879,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(int theValue) {
         return lessThanEqual(Integer.valueOf(theValue));
@@ -2886,7 +2888,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(long theValue) {
         return lessThanEqual(Long.valueOf(theValue));
@@ -2895,7 +2897,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(Object theValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.LessThanEqual);
@@ -2905,7 +2907,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(Expression theValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.LessThanEqual);
@@ -2916,7 +2918,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(short theValue) {
         return lessThanEqual(Short.valueOf(theValue));
@@ -2925,7 +2927,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is less than and equal to the other value.
-     * This is equivalent to the SQL "<=" operator.
+     * This is equivalent to the SQL {@literal "<="} operator.
      */
     public Expression lessThanEqual(boolean theBoolean) {
         return lessThanEqual(Boolean.valueOf(theBoolean));
@@ -2938,11 +2940,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * The character "%" means any sequence of characters and the character "_" mean any character.
      * i.e. "B%" == "Bob", "B_B" == "BOB"
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").like("B%")
      *     Java: NA
      *     SQL: F_NAME LIKE 'B%'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression like(String value) {
         return like(new ConstantExpression(value, this));
@@ -2957,11 +2959,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * The escape sequence specifies a set of characters the may be used to indicate that
      * an one of the wildcard characters should be interpreted literally.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").like("B\_SMITH", "\")
      *     Java: NA
      *     SQL: F_NAME LIKE 'B\_SMITH ESCAPE '\''
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression like(String value, String escapeSequence) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.LikeEscape);
@@ -2978,11 +2980,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * The character "%" means any sequence of characters and the character "_" mean any character.
      * i.e. "B%" == "Bob", "B_B" == "BOB"
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").like("B%")
      *     Java: NA
      *     SQL: F_NAME LIKE 'B%'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression like(Expression argument) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Like);
@@ -2996,11 +2998,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Regular expressions are similar to LIKE except support a much larger scope of comparisons.
      * i.e. "^B.*" == "Bob", "^B.B$" == "BOB"
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").regexp("^B.*")
      *     Java: Pattern.compile("^B.*").matcher(employee.getFirstName()).matches()
      *     SQL: F_NAME REGEXP '^B.*'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression regexp(String regexp) {
         return regexp(new ConstantExpression(regexp, this));
@@ -3013,11 +3015,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Regular expressions are similar to LIKE except support a much larger scope of comparisons.
      * i.e. "^B.*" == "Bob", "^B.B$" == "BOB"
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").regexp("^B.*")
      *     Java: Pattern.compile("^B.*").matcher(employee.getFirstName()).matches()
      *     SQL: F_NAME REGEXP '^B.*'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression regexp(Expression regexp) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Regexp);
@@ -3033,11 +3035,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * The escape sequence specifies a set of characters the may be used to indicate that
      * an one of the wildcard characters should be interpreted literally.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").like("B\_SMITH", "\")
      *     Java: NA
      *     SQL: F_NAME LIKE 'B\_SMITH ESCAPE '\''
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression like(Expression value, Expression escapeSequence) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.LikeEscape);
@@ -3052,11 +3054,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that compares if the receivers value is like the other value, ignoring case.
      * This is a case in-sensitive like.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").likeIgnoreCase("%Bob%")
      *     Java: none
      *     SQL: UPPER(F_NAME) LIKE 'BOB'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression likeIgnoreCase(String theValue) {
         if (shouldUseUpperCaseForIgnoreCase) {
@@ -3083,11 +3085,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Function, returns the position of <code>str</code> in <code>this</code>
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("firstName").locate("ob")
      * Java: employee.getFirstName().indexOf("ob") + 1
      * SQL: LOCATE('ob', t0.F_NAME)
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * Note that while in String.locate(str) -1 is returned if not found, and the
      * index starting at 0 if found, in SQL it is 0 if not found, and the index
@@ -3105,11 +3107,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, returns the position of <code>str</code> in <code>this</code>,
      * starting the search at <code>fromIndex</code>.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("firstName").locate("ob", 1)
      * Java: employee.getFirstName().indexOf("ob", 1) + 1
      * SQL: LOCATE('ob', t0.F_NAME, 1)
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * Note that while in String.locate(str) -1 is returned if not found, and the
      * index starting at 0 if found, in SQL it is 0 if not found, and the index
@@ -3124,11 +3126,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function, returns the position of <code>str</code> in <code>this</code>,
      * starting the search at <code>fromIndex</code>.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("firstName").locate("ob", 1)
      * Java: employee.getFirstName().indexOf("ob", 1) + 1
      * SQL: LOCATE('ob', t0.F_NAME, 1)
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * Note that while in String.locate(str) -1 is returned if not found, and the
      * index starting at 0 if found, in SQL it is 0 if not found, and the index
@@ -3198,11 +3200,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * funcation return a date converted to a new timezone. Equivalent of the Oracle NEW_TIME function
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("date").newTime("EST", "PST")
      * Java: NA
      * SQL: NEW_TIME(date, 'EST', 'PST')
-     * </blockquote></pre> *
+     * </pre></blockquote>
      */
     public Expression newTime(String timeZoneFrom, String timeZoneTo) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.NewTime);
@@ -3230,11 +3232,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * negation of the first:
      * <p>
      * AnyOf Example: Employees with a '613' area code phone number.
-     * <pre><blockquote>
+     * <blockquote><pre>
      * ReadAllQuery query = new ReadAllQuery(Employee.class);
      * ExpressionBuilder employee = new ExpressionBuilder();
      * Expression exp = employee.anyOf("phoneNumbers").get("areaCode").equal("613");
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * NoneOf Example: Employees with no '613' area code phone numbers.
      * <blockquote><pre>
@@ -3244,7 +3246,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * SQL:
      * SELECT ... EMPLOYEE t0 WHERE NOT EXISTS (SELECT ... PHONE t1 WHERE
      *                         (t0.EMP_ID = t1.EMP_ID) AND (t1.AREACODE = '613'))
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * noneOf is the universal counterpart to the existential anyOf.  To have the
      * condition evaluated for each instance it must be put inside of a subquery,
@@ -3255,7 +3257,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * <p>
      * This method saves you from writing the sub query yourself.  The above is
      * equivalent to the following expression:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * ExpressionBuilder employee = new ExpressionBuilder();
      * ExpressionBuilder phone = new ExpressionBuilder();
      * ReportQuery subQuery = new ReportQuery(Phone.class, phone);
@@ -3263,7 +3265,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * subQuery.setSelectionCriteria(phone.equal(employee.anyOf("phoneNumbers").and(
      *         phone.get("areaCode").equal("613")));
      * Expression exp = employee.notExists(subQuery);
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @param criteria must have its own builder, as it will become the
      * separate selection criteria of a subQuery.
      * @return a notExists subQuery expression
@@ -3295,11 +3297,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that is the boolean logical negation of the expression.
      * This is equivalent to the SQL "NOT" operator and the Java "!" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").equal(24).not()
      *     Java: (! (employee.getAge() == 24))
      *     SQL: NOT (AGE = 24)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression not() {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Not);
@@ -3401,12 +3403,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * not being empty.
      * Equivalent to <code>size(attributeName).greaterThan(0)</code>
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.notEmpty("phoneNumbers")
-     *     Java: employee.getPhoneNumbers().size() > 0
+     *     Java: employee.getPhoneNumbers().size() {@literal >} 0
      *     SQL: SELECT ... FROM EMP t0 WHERE (
-     *      (SELECT COUNT(*) FROM PHONE t1 WHERE (t0.EMP_ID = t1.EMP_ID)) > 0)
-     * </blockquote></pre>
+     *      (SELECT COUNT(*) FROM PHONE t1 WHERE (t0.EMP_ID = t1.EMP_ID)) {@literal >} 0)
+     * </pre></blockquote>
      * This is a case where a fast operation in java does not translate to an
      * equally fast operation in SQL, requiring a correlated subselect.
      * @see #size(java.lang.String)
@@ -3418,7 +3420,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3429,7 +3431,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3440,7 +3442,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3451,7 +3453,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3462,7 +3464,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3473,7 +3475,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3484,7 +3486,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3496,7 +3498,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3508,7 +3510,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3519,7 +3521,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Return an expression that compares if the receivers value is not equal to the other value.
-     * This is equivalent to the SQL "<>" operator
+     * This is equivalent to the SQL {@literal "<>"} operator
      *
      * @see #equal(Object)
      */
@@ -3533,12 +3535,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * A sub query using a report query to define a subselect within another queries expression or select's where clause.
      * The sub query (the report query) will use its own expression builder be can reference expressions from the base expression builder.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * ExpressionBuilder builder = new ExpressionBuilder();
      * ReportQuery subQuery = new ReportQuery(Employee.class, new ExpressionBuilder());
      * subQuery.setSelectionCriteria(subQuery.getExpressionBuilder().get("name").equal(builder.get("name")));
      * builder.notExists(subQuery);
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression notExists(ReportQuery subQuery) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.NotExists);
@@ -3691,11 +3693,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * The collection can be a collection of constants or expressions.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").in(ages)
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression notIn(Collection theObjects) {
         return notIn(new CollectionExpression(theObjects, this));
@@ -3762,11 +3764,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression representing a comparison to null
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").notNull()
      *     Java: employee.getAge() != null
      *     SQL: AGE IS NOT NULL
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression notNull() {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.NotNull);
@@ -3778,11 +3780,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that is the boolean logical combination of both expressions.
      * This is equivalent to the SQL "OR" operator and the Java "||" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").equal("Bob").OR(employee.get("lastName").equal("Smith"))
      *     Java: (employee.getFirstName().equals("Bob")) || (employee.getLastName().equals("Smith"))
      *     SQL: F_NAME = 'Bob' OR L_NAME = 'Smith'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression or(Expression theExpression) {
         // Allow ands with null.
@@ -3920,11 +3922,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * return the result of this query repeated a given number of times.
      * Equivalent of the Sybase REPLICATE function
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("name").replicate(2)
      * Java: NA
      * SQL: REPLICATE(name, 2)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression replicate(int constant) {
         return replicate(Integer.valueOf(constant));
@@ -3935,11 +3937,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * return the result of this query repeated a given number of times.
      * Equivalent of the Sybase REPLICATE function
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("name").replicate(2)
      * Java: NA
      * SQL: REPLICATE(name, 2)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression replicate(Object theValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Replicate);
@@ -3957,11 +3959,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function return the reverse of the query result. Equivalent of the
      * Sybase REVERSE function
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("name").reverse()
      * Java: NA
      * SQL: REVERSE(name)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression reverse() {
         return getFunction(ExpressionOperator.Reverse);
@@ -3972,11 +3974,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function return a given number of characters starting at the
      * right of a string. Equivalent to the Sybase RIGHT function
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("name").right(2)
      * Java: NA
      * SQL: RIGHT(name, 2)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression right(int characters) {
         return right(Integer.valueOf(characters));
@@ -3987,11 +3989,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Function return a given number of characters starting at the
      * right of a string. Equivalent to the Sybase RIGHT function
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("name").right(2)
      * Java: NA
      * SQL: RIGHT(name, 2)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression right(Object characters) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Right);
@@ -4089,12 +4091,12 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC: A logical expression for the size of collection <code>attributeName</code>.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.size("phoneNumbers")
      *     Java: employee.getPhoneNumbers().size()
      *     SQL: SELECT ... FROM EMP t0 WHERE  ...
      *      (SELECT COUNT(*) FROM PHONE t1 WHERE (t0.EMP_ID = t1.EMP_ID))
-     * </blockquote></pre>
+     * </pre></blockquote>
      * This is a case where a fast operation in java does not translate to an
      * equally fast operation in SQL, requiring a correlated subselect.
      */
@@ -4105,12 +4107,12 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * PUBLIC: A logical expression for the size of collection expression.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.size(Class returnType)
      *     Java: employee.getPhoneNumbers().size()
      *     SQL: SELECT ... FROM EMP t0 WHERE  ...
      *      (SELECT COUNT(*) FROM PHONE t1 WHERE (t0.EMP_ID = t1.EMP_ID))
-     * </blockquote></pre>
+     * </pre></blockquote>
      * This is a case where a fast operation in java does not translate to an
      * equally fast operation in SQL, requiring a correlated subselect.
      */
@@ -4135,12 +4137,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * A sub query using a report query to define a subselect within another queries expression or select's where clause.
      * The sub query (the report query) will use its own expression builder be can reference expressions from the base expression builder.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * ExpressionBuilder builder = new ExpressionBuilder();
      * ReportQuery subQuery = new ReportQuery(Employee.class, new ExpressionBuilder());
      * subQuery.addMaximum("salary");
      * builder.get("salary").equal(builder.subQuery(subQuery));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression subQuery(ReportQuery subQuery) {
         return new SubSelectExpression(subQuery, this);
@@ -4228,11 +4230,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that represents the receiver value converted to a character string.
      * This is equivalent to the SQL "TO_CHAR" operator and Java "toString" method.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("salary").toChar().equal("100000")
      *     Java: employee.getSalary().toString().equals("100000")
      *     SQL: TO_CHAR(SALARY) = '100000'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression toChar() {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.ToChar);
@@ -4245,11 +4247,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * with the database formating options (i.e. 'year', 'yyyy', 'day', etc.).
      * This is equivalent to the SQL "TO_CHAR" operator and Java Date API.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("startDate").toChar("day").equal("monday")
      *     Java: employee.getStartDate().getDay().equals("monday")
      *     SQL: TO_CHAR(START_DATE, 'day') = 'monday'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression toChar(String format) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.ToCharWithFormat);
@@ -4262,11 +4264,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "LOWER" operator and Java "toLowerCase" method.
      * This is only allowed for String attribute values.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").toLowerCase().equal("bob")
      *     Java: employee.getFirstName().toLowerCase().equals("bob")
      *     SQL: LOWER(F_NAME) = 'bob'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression toLowerCase() {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.ToLowerCase);
@@ -4319,11 +4321,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "UPPER" operator and Java "toUpperCase" method.
      * This is only allowed for String attribute values.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").toUpperCase().equal("BOB")
      *     Java: employee.getFirstName().toUpperCase().equals("BOB")
      *     SQL: UPPER(F_NAME) = 'BOB'
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression toUpperCase() {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.ToUpperCase);
@@ -4456,11 +4458,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * return the date truncated to the indicated datePart. Equivalent
      * to the Sybase TRUNC function for dates
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * EclipseLink: employee.get("date").truncDate(year)
      * Java: NA
      * SQL: TRUNC(date, year)
-     * </blockquote></pre>  */
+     * </pre></blockquote>
+     */
     public Expression truncateDate(String datePart) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.TruncateDate);
         return anOperator.expressionFor(this, datePart);
@@ -4526,9 +4529,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("a constant", builder.value("a constant"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression value(byte constant) {
         return value(Byte.valueOf(constant));
@@ -4538,9 +4541,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("a constant", builder.value("a constant"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression value(char constant) {
         return value(Character.valueOf(constant));
@@ -4550,9 +4553,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("a constant", builder.value("a constant"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression value(double constant) {
         return value(Double.valueOf(constant));
@@ -4562,9 +4565,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("a constant", builder.value("a constant"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression value(float constant) {
         return value(Float.valueOf(constant));
@@ -4574,9 +4577,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("a constant", builder.value("a constant"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression value(int constant) {
         return value(Integer.valueOf(constant));
@@ -4586,9 +4589,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("a constant", builder.value("a constant"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression value(long constant) {
         return value(Long.valueOf(constant));
@@ -4598,9 +4601,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("a constant", builder.value("a constant"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression value(Object constant) {
         return new ConstantExpression(constant, this);
@@ -4610,9 +4613,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("a constant", builder.value("a constant"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression value(short constant) {
         return value(Short.valueOf(constant));
@@ -4622,9 +4625,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return an expression on the constant.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("a constant", builder.value("a constant"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression value(boolean constant) {
         return value(Boolean.valueOf(constant));
@@ -4636,9 +4639,9 @@ public abstract class Expression implements Serializable, Cloneable {
      * A literal is a specific SQL syntax string that will be printed as is without quotes in the SQL.
      * It can be useful for printing database key words or global variables.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      * reportQuery.addItem("currentTime", builder.literal("SYSDATE"));
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression literal(String literal) {
         return new LiteralExpression(literal, this);
@@ -4904,11 +4907,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").in(ages)
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @deprecated since 2.4 replaced by any(List)
      * @see #any(List)
      */
@@ -4922,11 +4925,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").in(ages)
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression any(List theObjects) {
         return any(new ConstantExpression(theObjects, this));
@@ -5185,11 +5188,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").in(ages)
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @deprecated since 2.4 replaced by some(List)
      * @see #some(List)
      */
@@ -5203,11 +5206,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").in(ages)
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */    
     public Expression some(List theObjects) {
         return some(new ConstantExpression(theObjects, this));
@@ -5365,11 +5368,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").in(ages)
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
-     * </blockquote></pre>
+     * </pre></blockquote>
      * @deprecated since 2.4 replaced by all(List)
      * @see #all(List)
      */
@@ -5383,11 +5386,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that checks if the receivers value is contained in the collection.
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      * <p>Example:
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     EclipseLink: employee.get("age").in(ages)
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
-     * </blockquote></pre>
+     * </pre></blockquote>
      */
     public Expression all(List theObjects) {
         return all(new ConstantExpression(theObjects, this));

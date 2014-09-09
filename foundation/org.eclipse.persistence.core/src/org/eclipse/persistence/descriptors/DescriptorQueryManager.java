@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -963,7 +963,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * criteria has been specified and parameter values must be resolved
      * through session properties.
      *
-     * @see postInitialize
+     * @see #postInitialize
      */
     protected void updatePropertyParameterExpression(Expression exp) {
         if (exp.isCompoundExpression()) {
@@ -1160,7 +1160,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * ADVANCED:
      * Set the additional join criteria that will be used to form the additional
      * join expression. The additionalCriteria is a jpql fragment at this point.
-     * @see setAdditionalJoinExpression
+     * @see #setAdditionalJoinExpression
      */
     public void setAdditionalCriteria(String additionalCriteria) {
         this.additionalCriteria = additionalCriteria;
@@ -1552,7 +1552,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Set the receiver's read query.
-     * This should be an instance of a valid subclass of ReadObjectQuery>
+     * This should be an instance of a valid subclass of ReadObjectQuery
      * If specified this is used by the descriptor to read itself from the database.
      * The read arguments must be the primary key of the object only.
      * This gives the user the ability to define exactly how to read the object from the database,

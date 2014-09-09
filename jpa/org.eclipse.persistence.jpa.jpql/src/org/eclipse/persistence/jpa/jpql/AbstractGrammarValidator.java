@@ -1280,8 +1280,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 * Determines whether the given sequence of characters is a numeric literal or not. There are
 	 * two types of numeric literal that is supported:
 	 * <ul>
-	 *    <li type=square>Decimal literal</li>
-	 *    <li type=square>Hexadecimal literal</li>
+	 *    <li>Decimal literal</li>
+	 *    <li>Hexadecimal literal</li>
 	 * </ul>
 	 *
 	 * @param text The sequence of characters to validate

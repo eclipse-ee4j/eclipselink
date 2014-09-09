@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 Fujitsu Limited. All rights reserved.
+ * Copyright (c) 2009, 2014 Fujitsu Limited, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -39,17 +39,17 @@ import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
- *  Symfoware Server<br/>
- *  http://wiki.eclipse.org/EclipseLink/Development/Incubator/Extensions/SymfowarePlatform <br/>
- *  Test results: http://wiki.eclipse.org/EclipseLink/Development/DatabasePlatform/SymfowarePlatform/TestResults <br/>
- *  Contributed by: Fujitsu Ltd.<br/>
+ *  Symfoware Server<br>
+ *  http://wiki.eclipse.org/EclipseLink/Development/Incubator/Extensions/SymfowarePlatform <br>
+ *  Test results: http://wiki.eclipse.org/EclipseLink/Development/DatabasePlatform/SymfowarePlatform/TestResults <br>
+ *  Contributed by: Fujitsu Ltd.<br>
  *  Contributed under bug: 288715
- *  <p/>
+ *  <p>
  *
- *  Developed on Symfoware Server V10<br/>
- *  Initial SRG Passes on Symfoware Server V10<br/>
+ *  Developed on Symfoware Server V10<br>
+ *  Initial SRG Passes on Symfoware Server V10<br>
  *  
- *  <p/><b>Feature Testing</b><br/>
+ *  <p><b>Feature Testing</b><br>
  * ----------------------
  * <ul>
  * <li> DDL Generation - Succeeds
@@ -67,8 +67,8 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> Delimiters - Succeeds
  * <li> Auto Detection - Succeeds
  * </ul>
- * <br/>
- * <p/><b>Limitations</b><br/>
+ * <br>
+ * <p><b>Limitations</b><br>
  * ----------------
  * <ul>
  * <li> Reserved SQL keywords cannot be used as table, column or sequence names. Use a different name, or enclose the name in double quotes. For example: @Column(name="\"LANGUAGE\"")
@@ -85,7 +85,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> Bulk update and delete operations that require multiple tables to be accessed cannot be used (e.g. bulk operation on an entity that is part of an inheritance hierarchy, UpdateAll and DeleteAll queries). (See bug 298193).
  * <li> Dropping of tables, sequences and procedures while the database connection is still open can fail due to unreleased locks. Shut down the Java process that executed the create operation before performing the drop operation, or have the create operation use an unpooled connection that is closed after use (GlassFish's deploy-time table generation function uses an unpooled connection). 
  * <li> The standard deviation (STDDEV) and variance (VARIANCE) functions cannot be used. (bug 304909)
- * <li> '= NULL' and '<> NULL' cannot be used for null comparisons in the WHERE clause. Use 'IS (NOT) NULL' instead.
+ * <li> '= NULL' and {@literal '<> NULL'} cannot be used for null comparisons in the WHERE clause. Use 'IS (NOT) NULL' instead.
  * <li> A scrollable cursor policy of CONCUR_UPDATABLE mode cannot be used with queries that select from multiple tables.
  * <li> Columns and literals of different type may need casting to allow them to be compared or assigned. (bug 372178) For example: 
  *   'SELECT ... WHERE CAST(PHONE_ORDER_VARCHAR AS INTEGER) BETWEEN 0 AND 1'
@@ -96,7 +96,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> A subquery cannot be specified on both sides of a comparison predicate or a quantified predicate. (bug 378313)
  * <li> A base table name to be updated cannot be identical to table name in from clause in query or subquery specification (bug 381302) 
  * </ul>
- * <p/><b>Additional Notes</b><br/>
+ * <p><b>Additional Notes</b><br>
  * ----------------
  * <ul>
  * <li> When using DDL generation, indices are automatically generated for primary and unique keys.
@@ -104,7 +104,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> When input parameters are used as arguments to the TRIM function, they are substituted with their values before the SQL statement is sent to the JDBC driver. 
  * <li> When an input parameter is used as argument to the UPPER, LOWER or LENGTH functions, it is substituted with its value before the SQL statement is sent to the JDBC driver.
  * </ul>
- * <p/>
+ * <p>
  *  
  *  @author Dies Koper
  *  @author Wu Jie
@@ -119,7 +119,7 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Appends a Date in Symfoware specific format.<br/>
+     * Appends a Date in Symfoware specific format.<br>
      * Symfoware: DATE'YYYY-MM-DD'
      */
     @Override
@@ -128,7 +128,7 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Appends a Time in Symfoware specific format.<br/>
+     * Appends a Time in Symfoware specific format.<br>
      * Symfoware: TIME'hh:mm:ss'
      */
     @Override
@@ -137,8 +137,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Appends a TimeStamp in Symfoware specific format.<br/>
-     * Note that Symfoware does not support the milli- and nanoseconds.<br/>
+     * Appends a TimeStamp in Symfoware specific format.<br>
+     * Note that Symfoware does not support the milli- and nanoseconds.<br>
      * Symfoware: TIMESTAMP'YYYY-MM-DD hh:mm:ss'
      */
     @Override
@@ -147,8 +147,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Write a Calendar in Symfoware specific format.<br/>
-     * Note that Symfoware does not support nanoseconds.<br/>
+     * Write a Calendar in Symfoware specific format.<br>
+     * Note that Symfoware does not support nanoseconds.<br>
      * Symfoware: CNV_TIMESTAMP(calendar, 'YYYY-MM-DD hh24:mm:ss')
      */
     @Override
@@ -321,7 +321,7 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Symfoware does not support the use of parameters in certain functions.<br/>
+     * Symfoware does not support the use of parameters in certain functions.<br>
      * This adds the operator and disables binding support at the same time.
      * 
      * @see #addOperator(ExpressionOperator)
@@ -333,7 +333,7 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Symfoware does not support the use of multiple parameters in certain functions.<br/>
+     * Symfoware does not support the use of multiple parameters in certain functions.<br>
      * This allows statements to disable binding only in these cases.
      */
     @Override
@@ -358,8 +358,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Obtains the number of characters in the data string value expression.<br/>
-     * Builds Symfoware equivalent to length(string_exp).<br/>
+     * Obtains the number of characters in the data string value expression.<br>
+     * Builds Symfoware equivalent to length(string_exp).<br>
      * 
      * Symfoware: CHAR_LENGTH(string_exp)
      * 
@@ -378,8 +378,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Obtains the number of characters in the data string value expression.<br/>
-     * Builds Symfoware equivalent to length(string_exp).<br/>
+     * Obtains the number of characters in the data string value expression.<br>
+     * Builds Symfoware equivalent to length(string_exp).<br>
      * 
      * Symfoware: CHAR_LENGTH(string_exp)
      * 
@@ -398,8 +398,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Evaluates the location of the "tofind" text within the string_exp text.<br/>
-     * Builds Symfoware equivalent to locate(string_exp, tofind).<br/>
+     * Evaluates the location of the "tofind" text within the string_exp text.<br>
+     * Builds Symfoware equivalent to locate(string_exp, tofind).<br>
      * 
      * Symfoware: POSITION(tofind IN string_exp)
      * 
@@ -422,8 +422,8 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Evaluates the location of the "tofind" text within the "string_exp" text,
-     * starting from the given start position.<br/>
-     * Builds Symfoware equivalent to locate(string_exp, tofind, startpos).<br/>
+     * starting from the given start position.<br>
+     * Builds Symfoware equivalent to locate(string_exp, tofind, startpos).<br>
      * 
      * Symfoware: LOCATE(tofind IN string_exp, startpos)
      * 
@@ -446,8 +446,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the log10 operator.<br/>
-     * Builds Symfoware equivalent to LOG(x).<br/>
+     * Returns the log10 operator.<br>
+     * Builds Symfoware equivalent to LOG(x).<br>
      * 
      * Symfoware: (LN(x)/LN(10))
      * 
@@ -466,8 +466,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the string left trimmed for white space.<br/>
-     * Builds Symfoware equivalent to LTRIM(string_exp).<br/>
+     * Returns the string left trimmed for white space.<br>
+     * Builds Symfoware equivalent to LTRIM(string_exp).<br>
      * 
      * Symfoware: TRIM(LEADING FROM string_exp)
      * 
@@ -486,8 +486,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the string left trimmed for white space.<br/>
-     * Builds Symfoware equivalent to LTRIM(string_exp, character).<br/>
+     * Returns the string left trimmed for white space.<br>
+     * Builds Symfoware equivalent to LTRIM(string_exp, character).<br>
      * 
      * Symfoware: TRIM(LEADING character FROM string_exp)
      * 
@@ -509,8 +509,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the remainder of a division.<br/>
-     * Builds Symfoware equivalent to Oracle's MOD(x, y).<br/>
+     * Returns the remainder of a division.<br>
+     * Builds Symfoware equivalent to Oracle's MOD(x, y).<br>
      * Note that it returns x when y is 0, and the sign of the remainder is
      * taken from x.
      * 
@@ -538,8 +538,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the string right trimmed for white space.<br/>
-     * Builds Symfoware equivalent to RTRIM(character).<br/>
+     * Returns the string right trimmed for white space.<br>
+     * Builds Symfoware equivalent to RTRIM(character).<br>
      * 
      * Symfoware: TRIM(TRAILING FROM string_exp)
      * 
@@ -558,8 +558,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the string right trimmed for white space.<br/>
-     * Builds Symfoware equivalent to RTRIM(string_exp, character).<br/>
+     * Returns the string right trimmed for white space.<br>
+     * Builds Symfoware equivalent to RTRIM(string_exp, character).<br>
      * 
      * Symfoware: TRIM(TRAILING character FROM string_exp)
      * 
@@ -581,8 +581,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Gets the substring of source bounded by start location to end location. <br/>
-     * Builds Symfoware equivalent to SUBSTRING(string_exp, startpos, length).<br/>
+     * Gets the substring of source bounded by start location to end location. <br>
+     * Builds Symfoware equivalent to SUBSTRING(string_exp, startpos, length).<br>
      * 
      * Symfoware: SUBSTRING(string_exp FROM startpos FOR length)
      * 
@@ -604,8 +604,8 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Gets the substring of a string starting from the specified start
-     * position.<br/>
-     * Builds Symfoware equivalent to SUBSTRING(string_exp, startpos).<br/>
+     * position.<br>
+     * Builds Symfoware equivalent to SUBSTRING(string_exp, startpos).<br>
      * 
      * Symfoware: SUBSTRING(string_exp FROM startpos)
      * 
@@ -625,8 +625,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the number converted from the string.<br/>
-     * Builds Symfoware equivalent to ToNumber(string_exp).<br/>
+     * Returns the number converted from the string.<br>
+     * Builds Symfoware equivalent to ToNumber(string_exp).<br>
      * 
      * Symfoware: CAST(string_exp AS SMALLINT)
      * 
@@ -645,8 +645,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Evaluates the location of the "tofind" text within the string_exp text.<br/>
-     * Builds Symfoware equivalent to Instring(string_exp, tofind).<br/>
+     * Evaluates the location of the "tofind" text within the string_exp text.<br>
+     * Builds Symfoware equivalent to Instring(string_exp, tofind).<br>
      * 
      * Symfoware: POSITION(tofind In string_exp)
      * 
@@ -668,8 +668,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the decimal number of months between the two dates.<br/>
-     * Builds Symfoware equivalent to monthsBetween(Date, Date).<br/>
+     * Returns the decimal number of months between the two dates.<br>
+     * Builds Symfoware equivalent to monthsBetween(Date, Date).<br>
      * 
      * Symfoware: SPAN_DATE(Date, Date, 'MONTH')
      * 
@@ -689,8 +689,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the date rounded to the year, month or day.<br/>
-     * Builds Symfoware equivalent to ROUNDDATE(Date, rounded).<br/>
+     * Returns the date rounded to the year, month or day.<br>
+     * Builds Symfoware equivalent to ROUNDDATE(Date, rounded).<br>
      * 
      * Symfoware: ROUND_DATE(Date, rounded)
      * 
@@ -711,8 +711,8 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Converts the character value expression of the conversion source to the
-     * DATE type in accordance.<br/>
-     * Builds Symfoware equivalent to toDate(Date, format).<br/>
+     * DATE type in accordance.<br>
+     * Builds Symfoware equivalent to toDate(Date, format).<br>
      * 
      * Symfoware: CNV_DATE(Date, 'YYYY-MM-DD')
      * 
@@ -732,8 +732,8 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Adds to a date the specified addition number as the specified interval
-     * unit and returns the resulting date.<br/>
-     * Builds Symfoware equivalent to addDate(unit, number).<br/>
+     * unit and returns the resulting date.<br>
+     * Builds Symfoware equivalent to addDate(unit, number).<br>
      * 
      * Symfoware: ADD_DATE(date, number, unit)
      * 
@@ -759,8 +759,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Truncates a date by using the truncating unit.<br/>
-     * Builds Symfoware equivalent to truncateDate(date, unit).<br/>
+     * Truncates a date by using the truncating unit.<br>
+     * Builds Symfoware equivalent to truncateDate(date, unit).<br>
      * 
      * Symfoware: TRUNC_DATE(date, unit)
      * 
@@ -780,8 +780,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Substitute a value when a null value is encountered.<br/>
-     * Builds Symfoware equivalent to NVL(string, replace_with).<br/>
+     * Substitute a value when a null value is encountered.<br>
+     * Builds Symfoware equivalent to NVL(string, replace_with).<br>
      * 
      * Symfoware: COALESCE(string, replace_with)
      * 
@@ -793,10 +793,10 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the greatest of two values.<br/>
-     * Builds Symfoware equivalent to GREATEST(x, y).<br/>
+     * Returns the greatest of two values.<br>
+     * Builds Symfoware equivalent to GREATEST(x, y).<br>
      * 
-     * Symfoware: CASE WHEN x >= y THEN x ELSE y END
+     * Symfoware: CASE WHEN x {@literal >=} y THEN x ELSE y END
      * 
      * @return the defined expression operator.
      */
@@ -819,10 +819,10 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the smallest of two values.<br/>
-     * Builds Symfoware equivalent to LEAST(x, y).<br/>
+     * Returns the smallest of two values.<br>
+     * Builds Symfoware equivalent to LEAST(x, y).<br>
      * 
-     * Symfoware: CASE WHEN x <= y THEN x ELSE y END
+     * Symfoware: CASE WHEN x {@literal <=} y THEN x ELSE y END
      * 
      * @return the defined expression operator.
      */
@@ -948,8 +948,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Returns the ending of the SQL string to create a temporary table.<br/>
-     * Symfoware V10 requires table space name and number of concurrent users.<br/>
+     * Returns the ending of the SQL string to create a temporary table.<br>
+     * Symfoware V10 requires table space name and number of concurrent users.<br>
      * Maybe this will be implemented in the future, for now it invokes the
      * super class's method.
      */
@@ -970,7 +970,7 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Used to allow platforms to define their own index prefixes
-     * @param isUniqueField
+     * @param isUniqueSetOnField
      * @return
      */
     public String getIndexNamePrefix(boolean isUniqueSetOnField){
@@ -1081,8 +1081,8 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
     
     /**
-     * Print the pagination SQL using Symfoware syntax
-     * " WITH OPTION LIMIT (<max>)". There is no equivalent to 'OFFSET'.<br/>
+     * Print the pagination SQL using Symfoware syntax " WITH OPTION LIMIT (
+     * {@literal <max>})". There is no equivalent to 'OFFSET'.<br>
      * Even though most performance benefit comes from including the offset in
      * the SQL statement, for this platform the benefit of including LIMIT is
      * that it allows pagination with result sets with scrollable cursors too
@@ -1167,7 +1167,7 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Allows platform to choose whether to bind literals in SQL statements or
-     * not.<br/>
+     * not.<br>
      * Literal binding is enabled for Symfoware in general. As a number of
      * functions and operators have restrictions on the use of input parameters,
      * it is disabled for those.
@@ -1230,7 +1230,7 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Symfoware stored procedure calls do not require the argument name be
-     * printed in the call string.<br/>
+     * printed in the call string.<br>
      * E.g. call MyStoredProc(?) instead of call MyStoredProc(myvariable = ?)
      */
     @Override
@@ -1280,7 +1280,7 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Indicates whether locking clause could be selectively applied only to
-     * some tables in a ReadQuery.<br/>
+     * some tables in a ReadQuery.<br>
      * Symfoware platform currently only supports FOR UPDATE locking, which
      * cannot be applied to queries that select from multiple tables. Use of
      * other locking strategies (LOCK_MODE) are yet to be explored.
@@ -1292,7 +1292,7 @@ public class SymfowarePlatform extends DatabasePlatform {
 
     /**
      * Indicates whether locking clause could be applied to the query that has
-     * more than one table.<br/>
+     * more than one table.<br>
      * Symfoware platform currently only supports FOR UPDATE locking, which
      * cannot be applied to queries that select from multiple tables. Use of
      * other locking strategies (LOCK_MODE) are yet to be explored.
@@ -1303,7 +1303,7 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Indicates whether the platform supports sequence objects.<br/>
+     * Indicates whether the platform supports sequence objects.<br>
      * Symfoware does through global sequence objects.
      */
     @Override
@@ -1312,7 +1312,7 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Indicates whether the platform supports stored functions.<br/>
+     * Indicates whether the platform supports stored functions.<br>
      * Although Symfoware supports some stored functions as function routines,
      * their functionality is incompatible with the one EclipseLink provides.
      * So, return false;
@@ -1323,7 +1323,7 @@ public class SymfowarePlatform extends DatabasePlatform {
     }
 
     /**
-     * Symfoware supports unique key constraints, so returns true.<br/>
+     * Symfoware supports unique key constraints, so returns true.<br>
      * Do note that unique constraints cannot be added/removed using
      * "ALTER TABLE ADD/DROP CONSTRAINT" syntax.
      * 
@@ -1338,7 +1338,7 @@ public class SymfowarePlatform extends DatabasePlatform {
      * Fail-over is not implemented on platform. This method returns false no
      * matter what caused the failure.
      * 
-     * @returns false
+     * @return false
      */
     @Override
     public boolean wasFailureCommunicationBased(SQLException exception,

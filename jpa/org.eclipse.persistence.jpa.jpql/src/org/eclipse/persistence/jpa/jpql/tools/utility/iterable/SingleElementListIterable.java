@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,7 +34,7 @@ import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
  * @param <E> the type of elements returned by the list iterable's list iterator
  *
  * @see SingleElementListIterator
- * @see SingleElementIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterable.SingleElementIterable SingleElementIterable
  */
 @SuppressWarnings("nls")
 public class SingleElementListIterable<E> implements ListIterable<E> {

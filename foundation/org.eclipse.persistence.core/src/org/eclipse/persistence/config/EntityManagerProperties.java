@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -67,7 +67,7 @@ public class EntityManagerProperties {
      * obligated to use this property and are free to specify their own.
      * 
      * Example: persistence.xml file <code>
-     * <property name="eclipselink.tenant-id" value="Oracle"/>
+     * {@literal <property name="eclipselink.tenant-id" value="Oracle"/>}
      * </code> Example: property Map <code>
      * propertiesMap.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "Oracle");
      * </code>
@@ -287,17 +287,20 @@ public class EntityManagerProperties {
      * The value is a map: 
      * the key is a member persistence unit's name,
      * the value is a map of properties to be passed to this persistence unit. 
-     * "eclipselink.composite-unit.properties" -> (
-     *   ("memberPu1" -> (   "javax.persistence.jdbc.user" -> "user1", 
-     *                       "javax.persistence.jdbc.password" -> "password1",
-     *                       "javax.persistence.jdbc.driver" -> "oracle.jdbc.OracleDriver",
-     *                       "javax.persistence.jdbc.url" -> "jdbc:oracle:thin:@oracle_db_url:1521:db",
-     *                    ) , 
-     *   ("memberPu2" -> (   "javax.persistence.jdbc.user" -> "user2",
-     *                       "javax.persistence.jdbc.password" -> "password2"
-     *                       "javax.persistence.jdbc.driver" -> "com.mysql.jdbc.Driver",
-     *                       "javax.persistence.jdbc.url" -> "jdbc:mysql://my_sql_db_url:3306/user2",
-     *                    )
+     * <p>
+     * "eclipselink.composite-unit.properties" {@literal ->} (<br>
+     *  &nbsp;("memberPu1" {@literal ->} (<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.user" {@literal ->} "user1",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.password" {@literal ->} "password1",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.driver" {@literal ->} "oracle.jdbc.OracleDriver",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.url" {@literal ->} "jdbc:oracle:thin:@oracle_db_url:1521:db",<br>
+     *  &nbsp;&nbsp;) ,<br>
+     *  &nbsp;("memberPu2" {@literal ->} (<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.user" {@literal ->} "user2",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.password" {@literal ->} "password2"<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.driver" {@literal ->} "com.mysql.jdbc.Driver",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.url" {@literal ->} "jdbc:mysql://my_sql_db_url:3306/user2",<br>
+     *  &nbsp;&nbsp;)<br>
      * )
      */
     public static final String COMPOSITE_UNIT_PROPERTIES = PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES;

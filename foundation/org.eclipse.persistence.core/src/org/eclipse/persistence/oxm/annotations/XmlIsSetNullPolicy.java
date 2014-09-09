@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * document. The following values can be specified:
  * <ul><li>xsiNilRepresentsNull - This indicates that during unmarshal, an element with an xsi:nil="true" 
  * attribute specified should be unmarshaled as "null" into the object.</li>
- * <li>emptyNodeRepresentsNull - This indicates that during unmarshal, an empty node <code>"&lt;element/>"</code>
+ * <li>emptyNodeRepresentsNull - This indicates that during unmarshal, an empty node <code>"&lt;element/&gt;"</code>
  * should be unmarshalled to as null in the object model.</li>
  * <li>nullRepresentationForXml - Determines how a null value in the object model is written out
  * to XML.

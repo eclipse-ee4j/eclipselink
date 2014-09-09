@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,7 +23,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  *    <p><b>Purpose</b>: Provides DBase specific behavior.
  *    <p><b>Responsibilities</b>:<ul>
- *    <li> Writing Time & Timestamp as strings since they are not supported.
+ *    <li> Writing Time {@literal &} Timestamp as strings since they are not supported.
  *    </ul>
  *
  * @since TOPLink/Java 1.0
@@ -107,7 +107,7 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     /**
      *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
-     * <p><b>NOTE</b>: BigInteger & BigDecimal minimums are dependent upon their precision & Scale
+     * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
@@ -126,7 +126,7 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     /**
      *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
-     * <p><b>NOTE</b>: BigInteger & BigDecimal minimums are dependent upon their precision & Scale
+     * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();

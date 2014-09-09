@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse protected License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,10 +50,10 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeRepository;
  *     <li>{@link #buildBasicRefactoringTool()} provides support for generating the delta of the
  *     refactoring operation through a collection of {@link TextEdit} objects.</li>
  *     <li>{@link #buildRefactoringTool()} provides support for refactoring the JPQL query through
- *     the editable {@link org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} and
- *     once all refactoring operations have been executed, the {@link org.eclipse.persistence.jpa.
- *     jpql.model.IJPQLQueryFormatter IJPQLQueryFormatter} will generate a new string representation
- *     of the JPQL query.</li>
+ *     the editable {@link org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject}
+ *     and once all refactoring operations have been executed, the {@link
+ *     org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryFormatter IJPQLQueryFormatter} will
+ *     generate a new string representation of the JPQL query.</li>
  *     </ul>
  * </li>
  * </ul>
@@ -178,7 +178,7 @@ public abstract class AbstractJPQLQueryHelper {
 	/**
 	 * Creates the concrete instance of the validator that will grammatically validate the JPQL query.
 	 *
-	 * @param queryContext The context used to query information about the JPQL query
+	 * @param jpqlGrammar The context used to query information about the JPQL query
 	 * @return A new concrete instance of {@link AbstractGrammarValidator}
 	 */
 	protected abstract AbstractGrammarValidator buildGrammarValidator(JPQLGrammar jpqlGrammar);
@@ -204,12 +204,12 @@ public abstract class AbstractJPQLQueryHelper {
 
 	/**
 	 * Creates the concrete instance of the tool that can refactor the content of a JPQL query. This
-	 * version provides a way to manipulate the editable version of the JPQL query ({@link org.
-	 * eclipse.persistence.jpa.jpql.model.query.StateObject StateObject} and simply outputs the
-	 * result of the refactoring operations, i.e. the updated JPQL query).
+	 * version provides a way to manipulate the editable version of the JPQL query ({@link
+     * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} and simply
+     * outputs the result of the refactoring operations, i.e. the updated JPQL query).
 	 *
 	 * @return The concrete instance of {@link RefactoringTool}
-	 * @see #buildSimpleRefactoringTool
+	 * @see #buildBasicRefactoringTool()
 	 * @since 2.4
 	 */
 	public abstract RefactoringTool buildRefactoringTool();
@@ -242,7 +242,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * the JPQL query and determines the valid proposals.
 	 *
 	 * @return A concrete instance of {@link AbstractContentAssistVisitor}
-	 * @see {@link #buildContentAssistVisitor(JPQLQueryContext)}
+	 * @see #buildContentAssistVisitor(JPQLQueryContext)
 	 */
 	protected AbstractContentAssistVisitor getContentAssistVisitor() {
 		if (contentAssistVisitor == null) {
@@ -366,7 +366,8 @@ public abstract class AbstractJPQLQueryHelper {
 	/**
 	 * Calculates the type of the query result of the JPQL query.
 	 * <p>
-	 * See {@link Resolver} to understand how the type is calculated.
+	 * See {@link org.eclipse.persistence.jpa.jpql.tools.resolver.Resolver Resolver}
+     * to understand how the type is calculated.
 	 *
 	 * @return The result type of the JPQL query if it could accurately be calculated or the
 	 * {@link IType} for <code>Object</code> if it could not be calculated

@@ -171,11 +171,11 @@ public abstract class AbstractExpression implements Expression {
 	 * party provider. This method will programmatically invoke the <b>visit</b> method defined on
 	 * the visitor. The method signature should be:
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code></div>
+	 * <div><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code></div>
 	 * <p>
 	 * or
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(Expression expression)</code></div>
+	 * <div><code>{public|protected|private} void visit(Expression expression)</code></div>
 	 * <p>
 	 * <b>Note:</b> The package protected visibility (default) should be used with care, if the code
 	 * is running inside OSGi, then the method will not be accessible, even through reflection.
@@ -221,11 +221,11 @@ public abstract class AbstractExpression implements Expression {
 	 * party provider. This method will programmatically invoke the <b>visit</b> method defined on
 	 * the visitor. The method signature should be:
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code></div>
+	 * <div><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code></div>
 	 * <p>
 	 * or
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(Expression expression)</code></div>
+	 * <div><code>{public|protected|private} void visit(Expression expression)</code></div>
 	 * <p>
 	 *
 	 * @param visitor The {@link ExpressionVisitor} to visit this {@link Expression} programmatically
@@ -345,10 +345,10 @@ public abstract class AbstractExpression implements Expression {
 	}
 
 	/**
-	 * Creates an {@link Expression} that contains an malformed expression.
+	 * Creates an {@link Expression} that contains a malformed expression.
 	 *
 	 * @param text The text causing the expression to be malformed
-	 * @return A new {@link Expression} where {@link #toText()} returns the given text
+	 * @return A new {@link Expression} where {@link #toActualText()} returns the given text
 	 */
 	protected final AbstractExpression buildUnknownExpression(String text) {
 		return new UnknownExpression(this, text);
@@ -404,7 +404,7 @@ public abstract class AbstractExpression implements Expression {
 	 * path of fallback {@link JPQLQueryBNF JPQLQueryBNFs} and then returns the {@link ExpressionFactory}
 	 * from the leaf {@link JPQLQueryBNF}.
 	 *
-	 * @param queryBNF The {@link JPQLQueryBNF} for which its associated fallback {@ink ExpressionFactory}
+	 * @param queryBNF The {@link JPQLQueryBNF} for which its associated fallback {@link ExpressionFactory}
 	 * will be searched
 	 * @return Either the fallback {@link ExpressionFactory} linked to the given {@link JPQLQueryBNF}
 	 * or <code>null</code> if none was declared

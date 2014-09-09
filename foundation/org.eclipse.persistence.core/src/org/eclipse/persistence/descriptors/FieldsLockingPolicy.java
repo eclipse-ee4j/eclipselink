@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -151,9 +151,9 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * INTERNAL:
      * Indicates whether compareWriteLockValues method is supported by the policy.
      * Numeric or timestamp lock values could be compared:
-     * for every pair of values v1 and v2 - either v1<v2; or v1==v2; or v1>v2.
+     * for every pair of values v1 and v2 - either {@literal v1<v2; or v1==v2; or v1>v2}.
      * However it's impossible to compare values for FieldsLockingPolicy for two reasons:
-     * 1. there is no "linear order": v1<v2 and v>v2 is not defined: either v1==v2 or v1!=v2;
+     * 1. there is no "linear order": {@literal v1<v2 and v>v2} is not defined: either v1==v2 or v1!=v2;
      * 2. locking value is not a single field which is not part of mapped object value
      *    but rather a set of object's mapped fields. That means any object's mapped attribute change
      *    is potentially a change of the locking value.

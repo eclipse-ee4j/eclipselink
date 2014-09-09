@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -41,7 +41,7 @@ public class RMIRemoteSessionControllerDispatcher extends PortableRemoteObject i
      * INTERNAL:
      * This method is intended to be used by by sessions that wish to execute a command on a
      * remote session
-     * @param remoteCommand RemoteCommand The command to be executed on the remote session
+     * @param remoteTransporter The Transporter carrying the command to be executed on the remote session
      */
     public Transporter processCommand(Transporter remoteTransporter) {
         return getController().processCommand(remoteTransporter);

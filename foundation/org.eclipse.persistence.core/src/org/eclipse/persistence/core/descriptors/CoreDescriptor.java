@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -144,7 +144,7 @@ public abstract class CoreDescriptor<
      * Return if this descriptor is involved in inheritance, (is child or parent).
      * Note: If this class is part of table per class inheritance strategy this
      * method will return false. 
-     * @see hasTablePerClassPolicy()
+     * @see org.eclipse.persistence.descriptors.ClassDescriptor#hasTablePerClassPolicy
      */
     public abstract boolean hasInheritance();
 
@@ -184,7 +184,7 @@ public abstract class CoreDescriptor<
      * PUBLIC:
      * User can specify a vector of all the primary key field names if primary key is composite.
      *
-     * @see #addPrimaryKeyFieldName(String)
+     * @see org.eclipse.persistence.descriptors.ClassDescriptor#addPrimaryKeyFieldName(String)
      */
     public abstract void setPrimaryKeyFieldNames(LIST primaryKeyFieldNames);
 
@@ -192,7 +192,7 @@ public abstract class CoreDescriptor<
      * PUBLIC:
      * User can specify a vector of all the primary key field names if primary key is composite.
      *
-     * @see #addPrimaryKeyFieldName(String)
+     * @see org.eclipse.persistence.descriptors.ClassDescriptor#addPrimaryKeyFieldName(String)
      */
     public abstract void setPrimaryKeyFields(List<FIELD> primaryKeyFields); 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,13 +22,13 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="xml-marshal-null-representation">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="XSI_NIL"/>
- *     &lt;enumeration value="ABSENT_NODE"/>
- *     &lt;enumeration value="EMPTY_NODE"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="xml-marshal-null-representation"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="XSI_NIL"/&gt;
+ *     &lt;enumeration value="ABSENT_NODE"/&gt;
+ *     &lt;enumeration value="EMPTY_NODE"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -570,7 +570,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build operator.
      * Note: This operator works differently from other operators.
-     * @see Expression#caseStatement(Map, String)
+     * @see Expression#caseStatement(Map, Object)
      */
     public static ExpressionOperator caseStatement() {
         ListExpressionOperator exOperator = new ListExpressionOperator();
@@ -590,7 +590,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build operator.
      * Note: This operator works differently from other operators.
-     * @see Expression#caseStatement(Map, String)
+     * @see Expression#caseStatement(Map, Object)
      */
     public static ExpressionOperator caseConditionStatement() {
         ListExpressionOperator exOperator = new ListExpressionOperator();
@@ -641,7 +641,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Build operator.
      * Note: This operator works differently from other operators.
-     * @see Expression#caseStatement(Map, String)
+     * @see Expression#caseStatement(Map, Object)
      */
     public static ExpressionOperator coalesce() {
         ListExpressionOperator exOperator = new ListExpressionOperator();
@@ -1646,7 +1646,7 @@ public class ExpressionOperator implements Serializable {
     }
 
     /**
-     * Comparison functions are functions such as = and >.
+     * Comparison functions are functions such as = and {@literal >}.
      */
     public boolean isComparisonOperator() {
         return getType() == ComparisonOperator;
@@ -2419,11 +2419,11 @@ public class ExpressionOperator implements Serializable {
      * Set the node class for this operator. For user-defined functions this is
      * set automatically but can be changed.
      * <p>A list of Operator types, an example, and the node class used follows.
-     * <p>LogicalOperator     AND        LogicalExpression
-     * <p>ComparisonOperator  <>         RelationExpression
-     * <p>AggregateOperator   COUNT      FunctionExpression
-     * <p>OrderOperator       ASCENDING         "
-     * <p>FunctionOperator    RTRIM             "
+     * <p>LogicalOperator     AND           LogicalExpression
+     * <p>ComparisonOperator  {@literal <>} RelationExpression
+     * <p>AggregateOperator   COUNT         FunctionExpression
+     * <p>OrderOperator       ASCENDING             "
+     * <p>FunctionOperator    RTRIM                 "
      * <p>Node classes given belong to org.eclipse.persistence.internal.expressions.
      */
     public void setNodeClass(Class nodeClass) {

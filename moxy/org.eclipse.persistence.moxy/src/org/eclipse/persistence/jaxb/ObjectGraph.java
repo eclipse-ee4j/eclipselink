@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,9 +20,7 @@ import java.util.List;
  * graph of JAXB objects and relationships. The root must be an
  * root-level JAXB type.
  *
- * @param <T> The type of the root entity.
- *
- * @see XmlNamedObjectGraph
+ * @see org.eclipse.persistence.jaxb.xmlmodel.XmlNamedObjectGraph
  *
  * @since EclipseLink 2.5
  */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -36,11 +36,11 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * This can be by EJB session beans, BMP beans and CMP beans as well as Servlets and
  * other three-tier services.</p>
  *
- * <p><b>Responsibilities</b>:
+ * <p><b>Responsibilities</b>:</p>
  * <ul>
  * <li> Store a global session.
  * <li> Allow the storage of alternative sessions as well.
- * </ul></p>
+ * </ul>
  *
  * @author James Sutherland
  * @since TOPLink/Java 3.0

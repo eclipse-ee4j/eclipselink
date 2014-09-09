@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,14 +22,14 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="xml-access-type">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="FIELD"/>
- *     &lt;enumeration value="NONE"/>
- *     &lt;enumeration value="PROPERTY"/>
- *     &lt;enumeration value="PUBLIC_MEMBER"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="xml-access-type"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="FIELD"/&gt;
+ *     &lt;enumeration value="NONE"/&gt;
+ *     &lt;enumeration value="PROPERTY"/&gt;
+ *     &lt;enumeration value="PUBLIC_MEMBER"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */

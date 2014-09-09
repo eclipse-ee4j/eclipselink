@@ -148,7 +148,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**  
      * Property used to override a persistence unit level that disallows native 
      * SQL queries.
-     * @see Project#setAllowNativeSQLQueries(boolean)
+     * @see org.eclipse.persistence.sessions.Project#setAllowNativeSQLQueries(boolean) Project.setAllowNativeSQLQueries(boolean)
      */
     protected Boolean allowNativeSQLQuery;
     
@@ -1067,7 +1067,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * ADVANCED: Return the call for this query. This call contains the SQL and
      * argument list.
      * 
-     * @see #prepareCall(Session, Record);
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public Call getDatasourceCall() {
         Call call = null;
@@ -1089,7 +1089,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * ADVANCED: Return the calls for this query. This method can be called for
      * queries with multiple calls This call contains the SQL and argument list.
      * 
-     * @see #prepareCall(Session, Record);
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public List getDatasourceCalls() {
         List calls = new Vector();
@@ -1417,7 +1417,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * queries. This can also be used for normal queries if they have been
      * prepared, (i.e. query.prepareCall()).
      * 
-     * @see #prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public String getSQLString() {
         Call call = getDatasourceCall();
@@ -1437,7 +1437,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * for normal queries if they have been prepared, (i.e.
      * query.prepareCall()).
      * 
-     * @see #prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public List getSQLStrings() {
         List calls = getDatasourceCalls();
@@ -1496,7 +1496,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * have been prepared, (i.e. query.prepareCall()). This method can be used
      * for queries with multiple calls.
      * 
-     * @see #prepareCall(Session, Record)
+     * @see #prepareCall(org.eclipse.persistence.sessions.Session, org.eclipse.persistence.sessions.Record) prepareCall(Session, Record)
      */
     public List getTranslatedSQLStrings(org.eclipse.persistence.sessions.Session session, Record translationRow) {
         prepareCall(session, translationRow);

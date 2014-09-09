@@ -39,62 +39,62 @@ import commonj.sdo.impl.ExternalizableDelegator;
  * </ul>
  * Serialization Process
  * 
- * <p/>Serialization and de-serialization of objects occurs during DAS transactions, 
+ * <p>Serialization and de-serialization of objects occurs during DAS transactions,
  *   Web Service transactions in the SOAP envelope, EJB container passivation, 
  *   web container session saving or directly in an application using the function 
  *   ObjectOutputStream.writeObject(Object).  
  *   The Serializable and Externalizable framework handles automatic or user defined 
  *   reading/writing of streams depending on which interface functions are realized in the implementing classes.
  *   
- * <p/>The Serializable interface has no operations - therefore a class that implements 
+ * <p>The Serializable interface has no operations - therefore a class that implements
  * it needs to add no additional functionality.  
  *     Why do this? - For security.  The security manager in the JVM will only serialize objects at 
  * runtime if they are flagged as Serializable (or Externalizable) so that by default 
  * java classes do not expose themselves to serialization.  (See p49 of Java Security 2nd edition).
  * 
- * <p/>There are 3 levels of serialization control.
- * <ul><li><i>1) Default Serialization</i><br/></li>
+ * <p>There are 3 levels of serialization control.
+ * <ul><li><i>1) Default Serialization</i><br>
  *     Here we make the class implement Serializable, mark non-serializable fields as 
- * transient and implement no new functions.
- * <li><i>2) Partial custom Serialization</i><br/></li>
+ * transient and implement no new functions.</li>
+ * <li><i>2) Partial custom Serialization</i><br>
  *     Here we make the class implement Serializable and implement the optional functions 
  * writeObject and readObject to handle custom serialization of the current class while 
- * using the default serialization for super and subtypes.
- * 
- * <li><b>3) Fully customized Serialization - current implementation</b>.</li><br/>
+ * using the default serialization for super and subtypes.</li>
+ *
+ * <li><b>3) Fully customized Serialization - current implementation</b>.<br>
  *     Here we make the class implement Externalizable and implement the functions 
  * readResolve, writeReplace, readExternal, writeExternal.
- * Supertypes and subtypes must also implement these functions.
+ * Supertypes and subtypes must also implement these functions.</li>
  * </ul>
- * <p/>The SDO 2.01 specification details the high level structure of the 
+ * <p>The SDO 2.01 specification details the high level structure of the
  * serialization format on page 64, section 6 - Java Serialization of DataObjects.  
  *     The process will involve gzip serialization of the xml data with UTF representation of the 
  * Xpath address of the current DataObject inside the entire tree along with its identification as root/no-root in 
  * binary 1/0 format as follows.
  *
- * <p/><ul><li><b>Security:</b></li><br/>
+ * <p><ul><li><b>Security:</b><br>
  *     The following public functions expose a data replacement vulnerability where an 
  *     outside client can gain access and modify their constants.  
  *     We may need to wrap the GZIP streams in some sort of encryption when we are not 
  *     using HTTPS or SSL/TLS on the wire.
  *     
  * public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
- * public void writeExternal(ObjectOutput out) throws IOException
- * <li><b>Concurrency:</b></li><br/>
+ * public void writeExternal(ObjectOutput out) throws IOException</li>
+ * <li><b>Concurrency:</b><br>
  *     Avoid synchronized classes that will queue threaded clients such as Enumeration, Vector etc.
  * We need to discuss how this API will be used by containers like an EJB container that can 
- * invoke multithreaded clients.
+ * invoke multithreaded clients.</li>
  * 
- * 	<li><b>Scalability:</b></li><br/>
- * 	<li>XML Serialization Size is 4GB:</li><br/>
+ * 	<li><b>Scalability:</b><br></li>
+ * 	<li>XML Serialization Size is 4GB:<br>
  *     There is a limitation set by the SDO Specification on the size of the DataObject serialization.  
  *     According to the spec we must use an integer to define the size of the GZIP buffer that is serialized.  
  *     This size is limited to +/- 2GB.  This limitation is actually set by the JVM itself because a 
  *     call to buffer.length returns a signed 32 bit integer.
- * <p/>
- * <li><b>Performance:</b></li><br/>
- *    Using custom serialization via the Externalizable interface is 30% faster than the 
- *    default java serialization because the JVM does not need to discover the class definition.
+ * <p></li>
+ * <li><b>Performance:</b><br>
+ *    Using custom serialization via the Externalizable interface is 30% faster than the
+ *    default java serialization because the JVM does not need to discover the class definition.</li>
  * </ul>
  * @since Oracle TopLink 11.1.1.0.0
  */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -99,7 +99,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * Retrieve the target object's primary key value that is mapped to a given
      * source xpath (in the source-target key field association list).
      * 
-     * @param sourceObject
+     * @param targetObject
      * @param xmlFld
      * @param session
      * @return null if the target object is null, the reference class is null, or
@@ -141,7 +141,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * @param xmlField
      * @param object
      * @param session
-     * @return
      */
     public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session) {
         ReferenceResolver resolver = record.getReferenceResolver();
@@ -436,7 +435,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     }
 
     /**
-     * @Override 
      * @param field
      */
     public void setField(DatabaseField field) {
@@ -446,8 +444,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
     /**
      * INTERNAL:
      * Set the list of source-target xmlfield pairs.
-     * 
-     * @return
      */
     public void setSourceToTargetKeyFieldAssociations(HashMap sourceToTargetKeyFieldAssociations) {
         this.sourceToTargetKeyFieldAssociations = sourceToTargetKeyFieldAssociations;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -66,22 +66,23 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * <p>
      * Example: Using a historical session to read past versions of objects.
      * <p>
-     * <pre><blockquote>
+     * <blockquote><pre>
      *  AsOfClause pastTime = new AsOfClause(System.currentTimeMillis() - 24*60*60*1000);
      *     Session historicalSession = session.acquireSessionAsOf(pastTime);
      *      Employee pastEmployee = (Employee)historicalSession.readObject(Employee.class);
      *      Address pastAddress = pastEmployee.getAddress();
      *      Vector pastProjects = pastEmployee.getProjects();
      *  historicalSession.release();
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * Example: Using the above past employee to recover objects.
      * <p>
-     * <pre><blockquote>
+     * <blockquote><pre>
      *     UnitOfWork uow = baseSession.acquireUnitOfWork();
      *      Employee presentClone = (Employee)uow.readObject(pastEmployee);
      *      uow.deepMergeClone(pastEmployee);
      *  uow.commit();
+     * </pre></blockquote>
      * <p>
      * By definition all data as of a past time is frozen.  So this session is
      * also ideal for read consistent queries and read only transactions, as all
@@ -166,7 +167,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * or for templatizing an existing object into another new object.
      * The object and all of its privately owned parts will be copied.
      *
-     * @see #copy(Object, CopyGroup)
+     * @see #copy(Object, AttributeGroup)
      */
     public Object copy(Object originalObjectOrObjects);
 
@@ -425,7 +426,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
     /**
      *  Stores the default Session wide reference mode that a UnitOfWork will use when referencing
      *  managed objects.
-     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     *  @see org.eclipse.persistence.config.ReferenceMode
      */
     public ReferenceMode getDefaultReferenceMode();
 
@@ -507,7 +508,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * If not set, this reference defaults to a writer on System.out.
      * To enable logging logMessages must be turned on.
      *
-     * @see #logMessages()
+     * @see #logMessage
      */
     public Writer getLog();
 
@@ -615,7 +616,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * If not set, this will default to a session log on a writer on System.out.
      * To enable logging, logMessages must be turned on.
      *
-     * @see #logMessages()
+     * @see #logMessage
      */
     public SessionLog getSessionLog();
 
@@ -844,7 +845,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
     /**
      *  Stores the default Session wide reference mode that a UnitOfWork will use when referencing
      *  managed objects.
-     *  @see org.eclipse.persistence.sessions.factories.ReferenceMode
+     *  @see org.eclipse.persistence.config.ReferenceMode
      */
    public void setDefaultReferenceMode(ReferenceMode defaultReferenceMode);
    
@@ -885,7 +886,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * If not set, this reference defaults to a writer on System.out.
      * To enable logging logMessages() is used.
      *
-     * @see #logMessages()
+     * @see #logMessage
      */
     public void setLog(Writer log);
 
@@ -915,7 +916,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * If not set, this will default to a session log on a writer on System.out.
      * To enable logging, logMessages must be turned on.
      *
-     * @see #logMessages()
+     * @see #logMessage
      */
     public void setSessionLog(SessionLog sessionLog);
 
@@ -938,7 +939,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * PUBLIC:
      * Return the log level.
      * <br>Possible values for log level and category are listed in SessionLog.
-     * @see org.eclipse.persistence.sessions.SessionLog
+     * @see org.eclipse.persistence.logging.SessionLog
      */
     public int getLogLevel(String category);
 
@@ -946,7 +947,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * PUBLIC:
      * Return the log level.
      * <br>Possible values for log level are listed in SessionLog.
-     * @see org.eclipse.persistence.sessions.SessionLog
+     * @see org.eclipse.persistence.logging.SessionLog
      */
     public int getLogLevel();
 
@@ -954,7 +955,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * PUBLIC:
      * Set the log level. 
      * <br>Possible values for log level are listed in SessionLog.
-     * @see org.eclipse.persistence.sessions.SessionLog
+     * @see org.eclipse.persistence.logging.SessionLog
      */
     public void setLogLevel(int level);
 
@@ -962,7 +963,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * PUBLIC:
      * Check if a message of the given level would actually be logged.
      * <br>Possible values for log level and category are listed in SessionLog.
-     * @see org.eclipse.persistence.sessions.SessionLog
+     * @see org.eclipse.persistence.logging.SessionLog
      */
     public boolean shouldLog(int Level, String category);
 

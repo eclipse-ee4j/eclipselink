@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -204,7 +204,7 @@ public class CursoredStream extends Cursor {
 
     /**
      * INTERNAL:
-     * Return the marker used for mark() & reset() operations.
+     * Return the marker used for mark() {@literal &} reset() operations.
      */
     protected int getMarker() {
         return marker;
@@ -329,7 +329,7 @@ public class CursoredStream extends Cursor {
      *
      * Return the next object from the collection, if beyond the read limit read from the cursor
      * @return - next object in stream
-     * @exception - throws exception if read pass end of stream
+     * @throws DatabaseException if read pass end of stream
      */
     public Object read() throws DatabaseException, QueryException {
         // CR#2571.  If no more objects in collection get next page.
@@ -352,7 +352,7 @@ public class CursoredStream extends Cursor {
      * Return the next object from the collection, if beyond the read limit read from the cursor
      * @param number - number of objects to be returned
      * @return - vector containing next number of objects
-     * @exception - throws exception if read pass end of stream
+     * @throws DatabaseException if read pass end of stream
      */
     public List<Object> read(int number) throws DatabaseException {        
         List<Object> result = copy(this.position, this.position + number);
@@ -465,7 +465,7 @@ public class CursoredStream extends Cursor {
 
     /**
      * INTERNAL:
-     * Set the marker used for mark() & reset() operations
+     * Set the marker used for mark() {@literal &} reset() operations
      */
     protected void setMarker(int value) {
         marker = value;

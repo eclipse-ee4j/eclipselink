@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -70,7 +70,7 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *  XMLMarshaller marshaller = context.createMarshaller();<br>
  *  XMLUnmarshaller unmarshaller = context.createUnmarshaller();<br>
  *  XMLValidator validator = context.createValidator();<br>
- *  <code>
+ * </code>
  *
  *  <p>The XMLContext is thread-safe.  If multiple threads accessing the same XMLContext object
  *  request an XMLMarshaller, each will receive their own instance of XMLMarshaller, so any
@@ -243,7 +243,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
     /**
      * Create a new XMLUnmarshaller
      * <pre>
-     * Map<String, Boolean> parserFeatures = new HashMap<String, Boolean>(1);
+     * {@literal Map<String, Boolean> parserFeatures = new HashMap<String, Boolean>(1);}
      * parserFeatures.put("http://apache.org/xml/features/validation/schema/normalized-value", false);
      * XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller(parserFeatures);
      * </pre>

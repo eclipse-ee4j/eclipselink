@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Pervasive Software Inc. All Rights Reserved
+ * Copyright (c) 2012, 2014 Pervasive Software Inc, Oracle and/or its affiliates. All Rights Reserved
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -36,27 +36,30 @@ import org.eclipse.persistence.queries.*;
 
 /** <p><b>Purpose</b>: Provides Pervasive SQL DBMS specific behavior.
 * 
-* </br></br> 
-* Pervasive SQL Platform file <br/>
-*  Contributed by: Pervasive Software, Inc.<br/>
+* <br><br>
+* Pervasive SQL Platform file <br>
+*  Contributed by: Pervasive Software, Inc.<br>
 *  Contributed under bug: 392109
-*  <p/>
+*  <p>
 * 
 * <u><b>Developed on Pervasive PSQL Server 11.30 </b></u>
 * <blockquote>
+* <ul>
 * <li>Eclipselink Core SRG Test passes with known limitations.
 * <li>Eclipselink JPA SRG Test passes with known limitations.
 * <li>Eclipselink stored procedure tests "CustomSQLTestModel", "StoredProcedureGeneratorModel" pass with known limitations.
+* </ul>
 * </blockquote>
 *  
-* <u><p/><b>Limitations</b></u>
+* <p><u><b>Limitations</b></u>
 * <ul> 
 * <li> Updates are not supported on joined queries or queries with group by. 
 * <li> The platform method getSelectForUpdateString() currently returns an empty string. This is 
 * to avoid avoid joined queries with FOR UPDATE in them, which Pervasive does not support. 
 * <li> Columns used in indexes must total no more than 255 bytes in length. 
 * <li> Pervasive SQL does not support dynamic parameters in the SELECT list. 
-* <li> IDENTITY columns are either 2- or 4-byte integers. Foreign keys referencing such columns must use the same datatypes. 
+* <li> IDENTITY columns are either 2- or 4-byte integers. Foreign keys referencing such columns must use the same datatypes.
+* </ul>
 * 
 **/ 
 

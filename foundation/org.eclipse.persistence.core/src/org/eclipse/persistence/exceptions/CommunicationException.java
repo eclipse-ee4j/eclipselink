@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -24,7 +24,6 @@ public class CommunicationException extends EclipseLinkException {
     /**
      * PUBLIC:
      * Creates a CommunicationException.
-     * @param theMessage This is the exception message
      */
     public static final int ERROR_SENDING_CONNECTION_SERVICE = 12000;
     public static final int UNABLE_TO_CONNECT = 12001;
@@ -39,7 +38,7 @@ public class CommunicationException extends EclipseLinkException {
     /**
      * PUBLIC:
      * Creates a CommunicationException.
-     * @param theMessage the detailed message
+     * @param message the detailed message
      * @param internalException the handle of the exception
      */
     public CommunicationException(String message, Exception internalException) {

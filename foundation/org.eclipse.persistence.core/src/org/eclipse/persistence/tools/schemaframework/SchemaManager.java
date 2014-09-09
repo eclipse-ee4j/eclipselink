@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -282,7 +282,7 @@ public class SchemaManager {
     /**
      * Common implementor for createSequence and replaceSequence, distinguishes between sequence tables and sequence objects
      * @param createSequenceTables - true to create the sequences tables, false to replace them (dropped then create)
-     * @param createSequenceObjects - true to create the sequences objects, false to replace them (dropped then create)
+     * @param createSequences - true to create the sequences objects, false to replace them (dropped then create)
      */
     protected void createOrReplaceSequences(boolean createSequenceTables, boolean createSequences) throws EclipseLinkException {
         // PERF: Allow a special "fast" flag to be set on the session causes a delete from the table instead of a replace.
@@ -309,7 +309,7 @@ public class SchemaManager {
      * it if the replace flag is true (otherwise a drop only).
      *   
      * @param definition - the sequence definition
-     * @param createTable - true if table sequence table definitions should be created.
+     * @param createTables - true if table sequence table definitions should be created.
      * @param createSequences - true if the sequence definition should be created, 
      *        false if it should be dropped.
      * @param replace - true if table definitions and sequence definitions should be replaced.
@@ -395,7 +395,7 @@ public class SchemaManager {
     /**
      * Common implementor for createSequence and replaceSequence, distinguishes between sequence tables and sequence objects
      * @param createSequenceTables - true to create the sequences tables, false to replace them (dropped then create)
-     * @param createSequenceObjects - true to create the sequences objects, false to replace them (dropped then create)
+     * @param createSequences - true to create the sequences objects, false to replace them (dropped then create)
      * @param replaceSequences - true to actually replace, false to drop only.
      */
     protected void processSequenceDefinitions(boolean createSequenceTables, boolean createSequences, boolean replaceSequences) throws EclipseLinkException {
@@ -677,33 +677,33 @@ public class SchemaManager {
      *
      * <P>Each column description has the following columns:
      *  <OL>
-     *    <LI><B>TABLE_CAT</B> String => table catalog (may be null)
-     *    <LI><B>TABLE_SCHEM</B> String => table schema (may be null)
-     *    <LI><B>TABLE_NAME</B> String => table name
-     *    <LI><B>COLUMN_NAME</B> String => column name
-     *    <LI><B>DATA_TYPE</B> short => SQL type from java.sql.Types
-     *    <LI><B>TYPE_NAME</B> String => Data source dependent type name
-     *    <LI><B>COLUMN_SIZE</B> int => column size.  For char or date
+     *    <LI><B>TABLE_CAT</B> String {@literal =>} table catalog (may be null)
+     *    <LI><B>TABLE_SCHEM</B> String {@literal =>} table schema (may be null)
+     *    <LI><B>TABLE_NAME</B> String {@literal =>} table name
+     *    <LI><B>COLUMN_NAME</B> String {@literal =>} column name
+     *    <LI><B>DATA_TYPE</B> short {@literal =>} SQL type from java.sql.Types
+     *    <LI><B>TYPE_NAME</B> String {@literal =>} Data source dependent type name
+     *    <LI><B>COLUMN_SIZE</B> int {@literal =>} column size.  For char or date
      *        types this is the maximum number of characters, for numeric or
      *        decimal types this is precision.
      *    <LI><B>BUFFER_LENGTH</B> is not used.
-     *    <LI><B>DECIMAL_DIGITS</B> int => the number of fractional digits
-     *    <LI><B>NUM_PREC_RADIX</B> int => Radix (typically either 10 or 2)
-     *    <LI><B>NULLABLE</B> int => is NULL allowed?
+     *    <LI><B>DECIMAL_DIGITS</B> int {@literal =>} the number of fractional digits
+     *    <LI><B>NUM_PREC_RADIX</B> int {@literal =>} Radix (typically either 10 or 2)
+     *    <LI><B>NULLABLE</B> int {@literal =>} is NULL allowed?
      *      <UL>
      *      <LI> columnNoNulls - might not allow NULL values
      *      <LI> columnNullable - definitely allows NULL values
      *      <LI> columnNullableUnknown - nullability unknown
      *      </UL>
-     *    <LI><B>REMARKS</B> String => comment describing column (may be null)
-     *     <LI><B>COLUMN_DEF</B> String => default value (may be null)
-     *    <LI><B>SQL_DATA_TYPE</B> int => unused
-     *    <LI><B>SQL_DATETIME_SUB</B> int => unused
-     *    <LI><B>CHAR_OCTET_LENGTH</B> int => for char types the
+     *    <LI><B>REMARKS</B> String {@literal =>} comment describing column (may be null)
+     *     <LI><B>COLUMN_DEF</B> String {@literal =>} default value (may be null)
+     *    <LI><B>SQL_DATA_TYPE</B> int {@literal =>} unused
+     *    <LI><B>SQL_DATETIME_SUB</B> int {@literal =>} unused
+     *    <LI><B>CHAR_OCTET_LENGTH</B> int {@literal =>} for char types the
      *       maximum number of bytes in the column
-     *    <LI><B>ORDINAL_POSITION</B> int    => index of column in table
+     *    <LI><B>ORDINAL_POSITION</B> int    {@literal =>} index of column in table
      *      (starting at 1)
-     *    <LI><B>IS_NULLABLE</B> String => "NO" means column definitely
+     *    <LI><B>IS_NULLABLE</B> String {@literal =>} "NO" means column definitely
      *      does not allow NULL values; "YES" means the column might
      *      allow NULL values.  An empty string means nobody knows.
      *  </OL>
@@ -720,33 +720,33 @@ public class SchemaManager {
      *
      * <P>Each column description has the following columns:
      *  <OL>
-     *    <LI><B>TABLE_CAT</B> String => table catalog (may be null)
-     *    <LI><B>TABLE_SCHEM</B> String => table schema (may be null)
-     *    <LI><B>TABLE_NAME</B> String => table name
-     *    <LI><B>COLUMN_NAME</B> String => column name
-     *    <LI><B>DATA_TYPE</B> short => SQL type from java.sql.Types
-     *    <LI><B>TYPE_NAME</B> String => Data source dependent type name
-     *    <LI><B>COLUMN_SIZE</B> int => column size.  For char or date
+     *    <LI><B>TABLE_CAT</B> String {@literal =>} table catalog (may be null)
+     *    <LI><B>TABLE_SCHEM</B> String {@literal =>} table schema (may be null)
+     *    <LI><B>TABLE_NAME</B> String {@literal =>} table name
+     *    <LI><B>COLUMN_NAME</B> String {@literal =>} column name
+     *    <LI><B>DATA_TYPE</B> short {@literal =>} SQL type from java.sql.Types
+     *    <LI><B>TYPE_NAME</B> String {@literal =>} Data source dependent type name
+     *    <LI><B>COLUMN_SIZE</B> int {@literal =>} column size.  For char or date
      *        types this is the maximum number of characters, for numeric or
      *        decimal types this is precision.
      *    <LI><B>BUFFER_LENGTH</B> is not used.
-     *    <LI><B>DECIMAL_DIGITS</B> int => the number of fractional digits
-     *    <LI><B>NUM_PREC_RADIX</B> int => Radix (typically either 10 or 2)
-     *    <LI><B>NULLABLE</B> int => is NULL allowed?
+     *    <LI><B>DECIMAL_DIGITS</B> int {@literal =>} the number of fractional digits
+     *    <LI><B>NUM_PREC_RADIX</B> int {@literal =>} Radix (typically either 10 or 2)
+     *    <LI><B>NULLABLE</B> int {@literal =>} is NULL allowed?
      *      <UL>
      *      <LI> columnNoNulls - might not allow NULL values
      *      <LI> columnNullable - definitely allows NULL values
      *      <LI> columnNullableUnknown - nullability unknown
      *      </UL>
-     *    <LI><B>REMARKS</B> String => comment describing column (may be null)
-     *     <LI><B>COLUMN_DEF</B> String => default value (may be null)
-     *    <LI><B>SQL_DATA_TYPE</B> int => unused
-     *    <LI><B>SQL_DATETIME_SUB</B> int => unused
-     *    <LI><B>CHAR_OCTET_LENGTH</B> int => for char types the
+     *    <LI><B>REMARKS</B> String {@literal =>} comment describing column (may be null)
+     *     <LI><B>COLUMN_DEF</B> String {@literal =>} default value (may be null)
+     *    <LI><B>SQL_DATA_TYPE</B> int {@literal =>} unused
+     *    <LI><B>SQL_DATETIME_SUB</B> int {@literal =>} unused
+     *    <LI><B>CHAR_OCTET_LENGTH</B> int {@literal =>} for char types the
      *       maximum number of bytes in the column
-     *    <LI><B>ORDINAL_POSITION</B> int    => index of column in table
+     *    <LI><B>ORDINAL_POSITION</B> int    {@literal =>} index of column in table
      *      (starting at 1)
-     *    <LI><B>IS_NULLABLE</B> String => "NO" means column definitely
+     *    <LI><B>IS_NULLABLE</B> String {@literal =>} "NO" means column definitely
      *      does not allow NULL values; "YES" means the column might
      *      allow NULL values.  An empty string means nobody knows.
      *  </OL>
@@ -765,13 +765,13 @@ public class SchemaManager {
      *
      * <P>Each table description has the following columns:
      *  <OL>
-     *    <LI><B>TABLE_CAT</B> String => table catalog (may be null)
-     *    <LI><B>TABLE_SCHEM</B> String => table schema (may be null)
-     *    <LI><B>TABLE_NAME</B> String => table name
-     *    <LI><B>TABLE_TYPE</B> String => table type.  Typical types are "TABLE",
+     *    <LI><B>TABLE_CAT</B> String {@literal =>} table catalog (may be null)
+     *    <LI><B>TABLE_SCHEM</B> String {@literal =>} table schema (may be null)
+     *    <LI><B>TABLE_NAME</B> String {@literal =>} table name
+     *    <LI><B>TABLE_TYPE</B> String {@literal =>} table type.  Typical types are "TABLE",
      *            "VIEW",    "SYSTEM TABLE", "GLOBAL TEMPORARY",
      *            "LOCAL TEMPORARY", "ALIAS", "SYNONYM".
-     *    <LI><B>REMARKS</B> String => explanatory comment on the table
+     *    <LI><B>REMARKS</B> String {@literal =>} explanatory comment on the table
      *  </OL>
      *
      * <P><B>Note:</B> Some databases may not return information for
@@ -788,33 +788,33 @@ public class SchemaManager {
      *
      * <P>Each column description has the following columns:
      *  <OL>
-     *    <LI><B>TABLE_CAT</B> String => table catalog (may be null)
-     *    <LI><B>TABLE_SCHEM</B> String => table schema (may be null)
-     *    <LI><B>TABLE_NAME</B> String => table name
-     *    <LI><B>COLUMN_NAME</B> String => column name
-     *    <LI><B>DATA_TYPE</B> short => SQL type from java.sql.Types
-     *    <LI><B>TYPE_NAME</B> String => Data source dependent type name
-     *    <LI><B>COLUMN_SIZE</B> int => column size.  For char or date
+     *    <LI><B>TABLE_CAT</B> String {@literal =>} table catalog (may be null)
+     *    <LI><B>TABLE_SCHEM</B> String {@literal =>} table schema (may be null)
+     *    <LI><B>TABLE_NAME</B> String {@literal =>} table name
+     *    <LI><B>COLUMN_NAME</B> String {@literal =>} column name
+     *    <LI><B>DATA_TYPE</B> short {@literal =>} SQL type from java.sql.Types
+     *    <LI><B>TYPE_NAME</B> String {@literal =>} Data source dependent type name
+     *    <LI><B>COLUMN_SIZE</B> int {@literal =>} column size.  For char or date
      *        types this is the maximum number of characters, for numeric or
      *        decimal types this is precision.
      *    <LI><B>BUFFER_LENGTH</B> is not used.
-     *    <LI><B>DECIMAL_DIGITS</B> int => the number of fractional digits
-     *    <LI><B>NUM_PREC_RADIX</B> int => Radix (typically either 10 or 2)
-     *    <LI><B>NULLABLE</B> int => is NULL allowed?
+     *    <LI><B>DECIMAL_DIGITS</B> int {@literal =>} the number of fractional digits
+     *    <LI><B>NUM_PREC_RADIX</B> int {@literal =>} Radix (typically either 10 or 2)
+     *    <LI><B>NULLABLE</B> int {@literal =>} is NULL allowed?
      *      <UL>
      *      <LI> columnNoNulls - might not allow NULL values
      *      <LI> columnNullable - definitely allows NULL values
      *      <LI> columnNullableUnknown - nullability unknown
      *      </UL>
-     *    <LI><B>REMARKS</B> String => comment describing column (may be null)
-     *     <LI><B>COLUMN_DEF</B> String => default value (may be null)
-     *    <LI><B>SQL_DATA_TYPE</B> int => unused
-     *    <LI><B>SQL_DATETIME_SUB</B> int => unused
-     *    <LI><B>CHAR_OCTET_LENGTH</B> int => for char types the
+     *    <LI><B>REMARKS</B> String {@literal =>} comment describing column (may be null)
+     *     <LI><B>COLUMN_DEF</B> String {@literal =>} default value (may be null)
+     *    <LI><B>SQL_DATA_TYPE</B> int {@literal =>} unused
+     *    <LI><B>SQL_DATETIME_SUB</B> int {@literal =>} unused
+     *    <LI><B>CHAR_OCTET_LENGTH</B> int {@literal =>} for char types the
      *       maximum number of bytes in the column
-     *    <LI><B>ORDINAL_POSITION</B> int    => index of column in table
+     *    <LI><B>ORDINAL_POSITION</B> int    {@literal =>} index of column in table
      *      (starting at 1)
-     *    <LI><B>IS_NULLABLE</B> String => "NO" means column definitely
+     *    <LI><B>IS_NULLABLE</B> String {@literal =>} "NO" means column definitely
      *      does not allow NULL values; "YES" means the column might
      *      allow NULL values.  An empty string means nobody knows.
      *  </OL>
@@ -836,33 +836,33 @@ public class SchemaManager {
      *
      * <P>Each column description has the following columns:
      *  <OL>
-     *    <LI><B>TABLE_CAT</B> String => table catalog (may be null)
-     *    <LI><B>TABLE_SCHEM</B> String => table schema (may be null)
-     *    <LI><B>TABLE_NAME</B> String => table name
-     *    <LI><B>COLUMN_NAME</B> String => column name
-     *    <LI><B>DATA_TYPE</B> short => SQL type from java.sql.Types
-     *    <LI><B>TYPE_NAME</B> String => Data source dependent type name
-     *    <LI><B>COLUMN_SIZE</B> int => column size.  For char or date
+     *    <LI><B>TABLE_CAT</B> String {@literal =>} table catalog (may be null)
+     *    <LI><B>TABLE_SCHEM</B> String {@literal =>} table schema (may be null)
+     *    <LI><B>TABLE_NAME</B> String {@literal =>} table name
+     *    <LI><B>COLUMN_NAME</B> String {@literal =>} column name
+     *    <LI><B>DATA_TYPE</B> short {@literal =>} SQL type from java.sql.Types
+     *    <LI><B>TYPE_NAME</B> String {@literal =>} Data source dependent type name
+     *    <LI><B>COLUMN_SIZE</B> int {@literal =>} column size.  For char or date
      *        types this is the maximum number of characters, for numeric or
      *        decimal types this is precision.
      *    <LI><B>BUFFER_LENGTH</B> is not used.
-     *    <LI><B>DECIMAL_DIGITS</B> int => the number of fractional digits
-     *    <LI><B>NUM_PREC_RADIX</B> int => Radix (typically either 10 or 2)
-     *    <LI><B>NULLABLE</B> int => is NULL allowed?
+     *    <LI><B>DECIMAL_DIGITS</B> int {@literal =>} the number of fractional digits
+     *    <LI><B>NUM_PREC_RADIX</B> int {@literal =>} Radix (typically either 10 or 2)
+     *    <LI><B>NULLABLE</B> int {@literal =>} is NULL allowed?
      *      <UL>
      *      <LI> columnNoNulls - might not allow NULL values
      *      <LI> columnNullable - definitely allows NULL values
      *      <LI> columnNullableUnknown - nullability unknown
      *      </UL>
-     *    <LI><B>REMARKS</B> String => comment describing column (may be null)
-     *     <LI><B>COLUMN_DEF</B> String => default value (may be null)
-     *    <LI><B>SQL_DATA_TYPE</B> int => unused
-     *    <LI><B>SQL_DATETIME_SUB</B> int => unused
-     *    <LI><B>CHAR_OCTET_LENGTH</B> int => for char types the
+     *    <LI><B>REMARKS</B> String {@literal =>} comment describing column (may be null)
+     *     <LI><B>COLUMN_DEF</B> String {@literal =>} default value (may be null)
+     *    <LI><B>SQL_DATA_TYPE</B> int {@literal =>} unused
+     *    <LI><B>SQL_DATETIME_SUB</B> int {@literal =>} unused
+     *    <LI><B>CHAR_OCTET_LENGTH</B> int {@literal =>} for char types the
      *       maximum number of bytes in the column
-     *    <LI><B>ORDINAL_POSITION</B> int    => index of column in table
+     *    <LI><B>ORDINAL_POSITION</B> int    {@literal =>} index of column in table
      *      (starting at 1)
-     *    <LI><B>IS_NULLABLE</B> String => "NO" means column definitely
+     *    <LI><B>IS_NULLABLE</B> String {@literal =>} "NO" means column definitely
      *      does not allow NULL values; "YES" means the column might
      *      allow NULL values.  An empty string means nobody knows.
      *  </OL>
@@ -892,13 +892,13 @@ public class SchemaManager {
      *
      * <P>Each table description has the following columns:
      *  <OL>
-     *    <LI><B>TABLE_CAT</B> String => table catalog (may be null)
-     *    <LI><B>TABLE_SCHEM</B> String => table schema (may be null)
-     *    <LI><B>TABLE_NAME</B> String => table name
-     *    <LI><B>TABLE_TYPE</B> String => table type.  Typical types are "TABLE",
+     *    <LI><B>TABLE_CAT</B> String {@literal =>} table catalog (may be null)
+     *    <LI><B>TABLE_SCHEM</B> String {@literal =>} table schema (may be null)
+     *    <LI><B>TABLE_NAME</B> String {@literal =>} table name
+     *    <LI><B>TABLE_TYPE</B> String {@literal =>} table type.  Typical types are "TABLE",
      *            "VIEW",    "SYSTEM TABLE", "GLOBAL TEMPORARY",
      *            "LOCAL TEMPORARY", "ALIAS", "SYNONYM".
-     *    <LI><B>REMARKS</B> String => explanatory comment on the table
+     *    <LI><B>REMARKS</B> String {@literal =>} explanatory comment on the table
      *  </OL>
      *
      * <P><B>Note:</B> Some databases may not return information for

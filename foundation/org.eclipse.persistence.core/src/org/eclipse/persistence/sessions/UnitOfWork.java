@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -391,7 +391,7 @@ public interface UnitOfWork extends Session {
      * The object will be pessimistically locked on the database for the duration of the transaction.
      * If the object is already locked this method will wait until the lock is released.
      * A no wait option is available through setting the lock mode.
-     * @see #refreshAndLockObject(Object, lockMode)
+     * @see #refreshAndLockObject(Object, short)
      */
     public Object refreshAndLockObject(Object object);
 

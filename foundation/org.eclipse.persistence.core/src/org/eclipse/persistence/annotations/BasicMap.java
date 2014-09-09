@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -70,7 +70,7 @@ public @interface BasicMap {
 
     /**
      * (Optional) Specify the key converter. Default is equivalent to specifying
-     * @Convert("none"), meaning no converter will be added to the direct map key.
+     * {@literal @}Convert("none"), meaning no converter will be added to the direct map key.
      */
     Convert keyConverter() default @Convert;
 
@@ -82,7 +82,7 @@ public @interface BasicMap {
 
     /**
      * (Optional) Specify the value converter. Default is equivalent to specifying 
-     * @Convert("none"), meaning no converter will be added to the value column mapping.
+     * {@literal @}Convert("none"), meaning no converter will be added to the value column mapping.
      */
     Convert valueConverter() default @Convert;
 }

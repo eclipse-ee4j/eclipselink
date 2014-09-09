@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -108,7 +108,7 @@ public class DynamicClassLoader extends ClassLoader {
      * Register a class to be dynamically created using the default
      * {@link DynamicClassWriter}.
      * 
-     * @see #addClass(String, DynamicClassWriter)
+     * @see #addClass(String, EclipseLinkClassWriter)
      */
     public void addClass(String className) {
         addClass(className, getDefaultWriter());
@@ -118,7 +118,7 @@ public class DynamicClassLoader extends ClassLoader {
      * Register a class to be dynamically created using a copy of default
      * {@link DynamicClassWriter} but specifying a different parent class.
      * 
-     * @see #addClass(String, DynamicClassWriter)
+     * @see #addClass(String, EclipseLinkClassWriter)
      */
     public void addClass(String className, Class<?> parentClass) {
         addClass(className, getDefaultWriter().createCopy(parentClass));
@@ -179,7 +179,7 @@ public class DynamicClassLoader extends ClassLoader {
      * Create a new dynamic entity type for the specified name assuming the use
      * of the default writer and its default parent class.
      * 
-     * @see #creatDynamicClass(String, DynamicClassWriter)
+     * @see #createDynamicClass(String, DynamicClassWriter)
      */
     public Class<?> createDynamicClass(String className) {
         return createDynamicClass(className, getDefaultWriter());
@@ -189,7 +189,7 @@ public class DynamicClassLoader extends ClassLoader {
      * Create a new dynamic entity type for the specified name with the
      * specified parent class.
      * 
-     * @see #creatDynamicClass(String, DynamicClassWriter)
+     * @see #createDynamicClass(String, DynamicClassWriter)
      */
     public Class<?> createDynamicClass(String className, Class<?> parentClass) {
         return createDynamicClass(className, new DynamicClassWriter(parentClass));

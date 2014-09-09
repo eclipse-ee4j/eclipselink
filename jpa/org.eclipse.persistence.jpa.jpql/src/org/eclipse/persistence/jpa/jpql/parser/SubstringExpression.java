@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,15 +19,15 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * string is denoted by 1. The <b>SUBSTRING</b> function returns a string.
  * <p>
  * JPA 1.0:
- * <div nowrap><b>BNF</b> ::= <code>SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)</code>
+ * <div><b>BNF</b> ::= <code>SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)</code></div>
  * <p>
  * JPA 2.0:
- * <div nowrap><b>BNF</b> ::= <code>SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])</code>
+ * <div><b>BNF</b> ::= <code>SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])</code></div>
  * <p>
  * JPA 2.1:
- * <div nowrap><b>BNF</b> ::= <code>SUBSTRING(string_expression, arithmetic_expression [, arithmetic_expression])</code>
+ * <div><b>BNF</b> ::= <code>SUBSTRING(string_expression, arithmetic_expression [, arithmetic_expression])</code></div>
  * <p>
- * <div nowrap>Example: <b>UPDATE</b> Employee e <b>SET</b> e.firstName = <b>SUBSTRING</b>('TopLink Workbench', 1, 8)<p>
+ * <div>Example: <b>UPDATE</b> Employee e <b>SET</b> e.firstName = <b>SUBSTRING</b>('TopLink Workbench', 1, 8)<p></div>
  *
  * @version 2.5
  * @since 2.3

@@ -41,8 +41,8 @@ public class UnmarshallerProperties {
      * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
      * <i>Unmarshaller</i> will default to this attribute prefix.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_ATTRIBUTE_PREFIX
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_ATTRIBUTE_PREFIX
      */
     public static final String JSON_ATTRIBUTE_PREFIX = JAXBContextProperties.JSON_ATTRIBUTE_PREFIX;
 
@@ -53,15 +53,15 @@ public class UnmarshallerProperties {
      * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_INCLUDE_ROOT
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_INCLUDE_ROOT
      */
     public static final String JSON_INCLUDE_ROOT = JAXBContextProperties.JSON_INCLUDE_ROOT;
 
     /**
      * The Constant JSON_NAMESPACE_PREFIX_MAPPER. Provides a means to set a
-     * a Map<String, String> of namespace URIs to prefixes.  Alternatively can
-     * be an implementation of NamespacePrefixMapper.
+     * a {@literal Map<String, String>} of namespace URIs to prefixes.
+     * Alternatively can be an implementation of NamespacePrefixMapper.
      * @since 2.4
      * @see org.eclipse.persistence.oxm.NamespacePrefixMapper
      */
@@ -75,8 +75,8 @@ public class UnmarshallerProperties {
      * instances of <i>Marshaller</i> and <i>Unmarshaller</i> will default to 
      * this setting.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.NAMESPACE_SEPARATOR
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_NAMESPACE_SEPARATOR
      */
     public static final String JSON_NAMESPACE_SEPARATOR  = JAXBContextProperties.JSON_NAMESPACE_SEPARATOR;
 
@@ -87,8 +87,8 @@ public class UnmarshallerProperties {
      * the <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextPropertes.JSON_VALUE_WRAPPER
-     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_VALUE_WRAPPER
      */
     public static final String JSON_VALUE_WRAPPER = JAXBContextProperties.JSON_VALUE_WRAPPER;
 
@@ -104,8 +104,8 @@ public class UnmarshallerProperties {
      * <li>"application/json"
      * </ul>
     * @since 2.4
-    * @see org.eclipse.persistence.jaxb.JAXBContextProperties.MEDIA_TYPE
-    * @see org.eclipse.persistence.jaxb.MarshallerProperties.MEDIA_TYPE
+    * @see org.eclipse.persistence.jaxb.JAXBContextProperties#MEDIA_TYPE
+    * @see org.eclipse.persistence.jaxb.MarshallerProperties#MEDIA_TYPE
     * @see org.eclipse.persistence.oxm.MediaType
     */
     public static final String MEDIA_TYPE = JAXBContextProperties.MEDIA_TYPE;
@@ -116,7 +116,7 @@ public class UnmarshallerProperties {
      * is unknown.  Otherwise set the MEDIA_TYPE property.   If the type can not
      * be auto-detected an unmarshal with the MEDIA_TYPE value will be performed. 
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.MEDIA_TYPE
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MEDIA_TYPE
      * @see org.eclipse.persistence.oxm.MediaType
      */
     public static final String AUTO_DETECT_MEDIA_TYPE = "eclipselink.auto-detect-media-type";
@@ -139,7 +139,7 @@ public class UnmarshallerProperties {
      * 
      *     &#64;XmlElementWrapper(name="phone-numbers")
      *     &#64;XmlElement(name="phone-number")
-     *     private List<PhoneNumber> phoneNumbers;
+     *     private {@literal List<PhoneNumber>} phoneNumbers;
      * 
      * }
      * </pre>
@@ -166,8 +166,8 @@ public class UnmarshallerProperties {
      * }
      * </pre>
      * @since 2.4.2
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_WRAPPER_AS_ARRAY_NAME
      */
     public static final String JSON_WRAPPER_AS_ARRAY_NAME = JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME;
 
@@ -195,7 +195,7 @@ public class UnmarshallerProperties {
      * &lt;/customer&gt;
      * </pre>
      *
-     * <p><b>By default, case-insensitive unmarshalling is turned off.</b><p/>
+     * <p><b>By default, case-insensitive unmarshalling is turned off.</b></p>
      *
      * <p>The property can be set through {@link org.eclipse.persistence.jaxb.JAXBUnmarshaller#setProperty(String, Object)}.</p>
      *
@@ -226,7 +226,7 @@ public class UnmarshallerProperties {
     public static final String BEAN_VALIDATION_FACTORY = JAXBContextProperties.BEAN_VALIDATION_FACTORY;
 
     /**
-     * Property for setting bean validation target groups. Must be of type Class<?>[].
+     * Property for setting bean validation target groups. Must be of type {@literal Class<?>[]}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#BEAN_VALIDATION_GROUPS

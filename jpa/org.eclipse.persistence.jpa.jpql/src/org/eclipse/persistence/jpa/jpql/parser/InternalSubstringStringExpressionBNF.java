@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,13 +17,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for the parameter of the <code><b>LENGTH</b></code> expression.
  * <p>
  * JPA 1.0:
- * <div nowrap><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)
+ * <div><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)</div>
  * <p>
  * JPA 2.0:
- * <div nowrap><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])
+ * <div><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])</div>
  * <p>
  * JPA 2.1:
- * <div nowrap><b>BNF</b> ::= SUBSTRING(string_expression, arithmetic_expression [, arithmetic_expression])
+ * <div><b>BNF</b> ::= SUBSTRING(string_expression, arithmetic_expression [, arithmetic_expression])</div>
  * <p>
  *
  * @version 2.5

@@ -73,12 +73,12 @@ import org.eclipse.persistence.tools.tuning.SessionTuner;
  * {@link Persistence#createEntityManagerFactory(String, Map)} which override
  * the values specified in the persistence.xml file.
  * <p>
- * <b>Usage Example:</b> <code>
- * Map<String, Object> props = new HashMap<String, Object>();</br>
- * </br>
- * props.put(PersistenceUnitProperties.JDBC_USER, "user-name");</br>
- * props.put(PersistenceUnitProperties.JDBC_PASSWORD, "password");</br>
- * </br>
+ * <b>Usage Example:</b><br> <code>
+ * {@literal Map<String, Object> props = new HashMap<String, Object>();}
+ *
+ * props.put(PersistenceUnitProperties.JDBC_USER, "user-name");
+ * props.put(PersistenceUnitProperties.JDBC_PASSWORD, "password");
+ *
  * EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu-name", props);
  * </code>
  * <p>
@@ -129,7 +129,7 @@ public class PersistenceUnitProperties {
      * <code>java.sql.Driver</code>.
      * <p>
      * <b>Persistence XML example:</b> <code>
-     * <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+     * {@literal <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />}
      * </code>
      * <p>
      * The previous value for this property <code>"eclipselink.jdbc.driver</code> is now deprecated and should
@@ -144,7 +144,7 @@ public class PersistenceUnitProperties {
      * JDBC driver.
      * <p>
      * <b>Persistence XML example:</b> <code>
-     * <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/mysql" />
+     * {@literal <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/mysql" />}
      * </code>
      * <p>
      * The previous value for this property <code>"eclipselink.jdbc.url</code> is now deprecated and should
@@ -157,7 +157,7 @@ public class PersistenceUnitProperties {
      * or JDBC user name.
      * <p>
      * <b>Persistence XML example:</b> <code>
-     * <property name="javax.persistence.jdbc.user" value="user-name" />
+     * {@literal <property name="javax.persistence.jdbc.user" value="user-name" />}
      * </code>
      * <p>
      * The previous value for this property <code>"eclipselink.jdbc.user</code> is now deprecated and should
@@ -170,7 +170,7 @@ public class PersistenceUnitProperties {
      * source or JDBC password.
      * <p>
      * <b>Persistence XML example:</b> <code>
-     * <property name="javax.persistence.jdbc.password" value="password" />
+     * {@literal <property name="javax.persistence.jdbc.password" value="password" />}
      * </code> The previous value for this
      * property <code>"eclipselink.jdbc.password</code> is now deprecated and should be replaced with this new
      * name.
@@ -417,8 +417,8 @@ public class PersistenceUnitProperties {
      * &lt;property name="eclipselink.connection-pool.node2.max" value="16"/&gt;
      * &lt;property name="eclipselink.connection-pool.node2.url" value="jdbc:oracle:thin:@node2:1521:orcl"/&gt;
      * </pre>
-     * @see CONNECTION_POOL_READ
-     * @see CONNECTION_POOL_SEQUENCE
+     * @see #CONNECTION_POOL_READ
+     * @see #CONNECTION_POOL_SEQUENCE
      * @see #CONNECTION_POOL_INITIAL
      * @see #CONNECTION_POOL_MIN
      * @see #CONNECTION_POOL_MAX
@@ -882,7 +882,7 @@ public class PersistenceUnitProperties {
      * </ul>
      * <p>
      * Example: persistence.xml file <code>
-     * <property name="eclipselink.jdbc.cache-statements" value="false"/>
+     * {@literal <property name="eclipselink.jdbc.cache-statements" value="false"/>}
      * </code> Example: property Map <code>
      * propertiesMap.put(PersistenceUnitProperties.CACHE_STATEMENTS, "false");
      * </code>
@@ -1113,26 +1113,26 @@ public class PersistenceUnitProperties {
      * Property <code>"eclipselink.logging.level</code> allows the default logging levels to be specified.
      * <p>
      * <b>Java example:</b> <code>
-     * props.put(PersistenceUnitProperties.LOGGING_LEVEL, SessionLog.FINE_LABEL);</br>
+     * props.put(PersistenceUnitProperties.LOGGING_LEVEL, SessionLog.FINE_LABEL);</code>
      * <p>
      * <b>XML example:</b>
      * <code>
-     * <property name="eclipselink.logging.level" value="FINE" />;</br>
+     * {@literal <property name="eclipselink.logging.level" value="FINE" />;}
      * </code>
      * <p>
      * <b>Logging Levels:</b>
      * 
-     * @see SessionLog#OFF_LABEL = "OFF"
-     * @see SessionLog#SEVERE_LABEL = "SEVERE"
-     * @see SessionLog#WARNING_LABEL = "WARNING"
-     * @see SessionLog#CONFIG_LABEL = "CONFIG"
-     * @see SessionLog#INFO_LABEL = "INFO" (DEFAULT)
-     * @see SessionLog#FINE_LABEL = "FINE"
-     * @see SessionLog#FINER_LABEL = "FINER"
-     * @see SessionLog#FINEST_LABEL = "FINEST"
-     * @see SessionLog#ALL_LABEL = "ALL"
+     * @see SessionLog#OFF_LABEL OFF_LABEL = "OFF"
+     * @see SessionLog#SEVERE_LABEL SEVERE_LABEL = "SEVERE"
+     * @see SessionLog#WARNING_LABEL WARNING_LABEL = "WARNING"
+     * @see SessionLog#CONFIG_LABEL CONFIG_LABEL = "CONFIG"
+     * @see SessionLog#INFO_LABEL INFO_LABEL = "INFO" (DEFAULT)
+     * @see SessionLog#FINE_LABEL FINE_LABEL = "FINE"
+     * @see SessionLog#FINER_LABEL FINER_LABEL = "FINER"
+     * @see SessionLog#FINEST_LABEL FINEST_LABEL = "FINEST"
+     * @see SessionLog#ALL_LABEL ALL_LABEL = "ALL"
      * 
-     * @see #CATEGORY_LOGGING_LEVEL_ for category specific level configuration
+     * @see #CATEGORY_LOGGING_LEVEL_ CATEGORY_LOGGING_LEVEL_ for category specific level configuration
      */
     public static final String LOGGING_LEVEL = "eclipselink.logging.level";
 
@@ -1141,11 +1141,11 @@ public class PersistenceUnitProperties {
      * specified.
      * <p>
      * <b>Java example:</b> <code>
-     * props.put(PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_ + SessionLog.EJB_OR_METADATA, SessionLog.WARNING_LABEL);</br>
+     * props.put(PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_ + SessionLog.EJB_OR_METADATA, SessionLog.WARNING_LABEL);</code>
      * <p>
      * <b>XML example:</b>
      * <code>
-     * <property name="eclipselink.logging.level.ejb_or_metadata" value="WARNING" />;</br>
+     * {@literal <property name="eclipselink.logging.level.ejb_or_metadata" value="WARNING"/>};
      * </code> specific Valid values are names of levels defined in
      * java.util.logging.Level, default value is INFO.
      * <p>
@@ -1174,7 +1174,7 @@ public class PersistenceUnitProperties {
      * visible. Note: this property applies only to bind parameters. When not
      * using binding, the parameters are always displayed.
      * 
-     * @see JDBC_BIND_PARAMETERS 
+     * @see #JDBC_BIND_PARAMETERS
      */
     public static final String LOGGING_PARAMETERS = "eclipselink.logging.parameters";
 
@@ -1202,7 +1202,7 @@ public class PersistenceUnitProperties {
      * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
      * 
      * Example: persistence.xml file <code>
-     * <property name="eclipselink.tenant-id" value="Oracle"/>
+     * {@literal <property name="eclipselink.tenant-id" value="Oracle"/>}
      * </code> Example: property Map <code>
      * propertiesMap.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "Oracle");
      * </code>
@@ -1218,15 +1218,15 @@ public class PersistenceUnitProperties {
      * WARNING: Queries that use the cache may return data from other tenants 
      * when using the PROTECTED setting.
      * 
-     * @see eclipselink.multitenant.tenants-share-emf
+     * @see #MULTITENANT_SHARED_EMF
      * 
      * <p>
      * <b>Java example:</b> <code>
-     * props.put(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, true);</br>
+     * props.put(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, true);</code>
      * <p>
      * <b>XML example:</b>
      * <code>
-     * <property name="eclipselink.multitenant.tenants-share-cache" value="true" />;</br>
+     * {@literal <property name="eclipselink.multitenant.tenants-share-cache" value="true" />;}<br>
      * </code>
      */
     public static final String MULTITENANT_SHARED_CACHE = "eclipselink.multitenant.tenants-share-cache";
@@ -1238,16 +1238,16 @@ public class PersistenceUnitProperties {
      * multitenant entities only). When setting it to false, users are required 
      * to provide a unique session name.
      * 
-     * @see eclipselink.session-name
-     * @see eclipselink.multitenant.tenants-share-cache
+     * @see #SESSION_NAME
+     * @see #MULTITENANT_SHARED_CACHE
      * 
      * <p>
      * <b>Java example:</b> <code>
-     * props.put(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, true);</br>
+     * props.put(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, true);</code>
      * <p>
      * <b>XML example:</b>
      * <code>
-     * <property name="eclipselink.multitenant.tenants-share-emf" value="true" />;</br>
+     * {@literal <property name="eclipselink.multitenant.tenants-share-emf" value="true" />;}<br>
      * </code>
      */
     public static final String MULTITENANT_SHARED_EMF = "eclipselink.multitenant.tenants-share-emf";
@@ -1311,7 +1311,7 @@ public class PersistenceUnitProperties {
      * generated CREATE Table statements
      * 
      * This value is applied to all Table creation statements through the DDL generation feature
-     * ie <property name="eclipselink.ddl.table-creation-suffix" value="engine=InnoDB"/>
+     * ie {@literal <property name="eclipselink.ddl.table-creation-suffix" value="engine=InnoDB"/>}
      */
     public static final String TABLE_CREATION_SUFFIX = "eclipselink.ddl-generation.table-creation-suffix";
 
@@ -1860,7 +1860,7 @@ public class PersistenceUnitProperties {
      * batch writing.
      * <li>"Oracle-JDBC": use Oracle's native batch writing. This requires the
      * use of an Oracle JDBC driver.
-     * <li>&ltcustom-class&gt - A custom class that extends the BatchWritingMechansim class.
+     * <li>&lt;custom-class&gt; - A custom class that extends the BatchWritingMechansim class.
      * <li>"None" (DEFAULT): do not use batch writing (turn it off).
      * </ul>
      * 
@@ -1967,12 +1967,12 @@ public class PersistenceUnitProperties {
      * <p>
      * Values (case insensitive):
      * <ul>
-     * <li>"java-serialization": Use {@link FileBasedProjectCache}
-     * <li>Custom ProjectCacheAccessor - Specify a custom class name which
-     * implements {@link ProjectCacheAccessor}
+     * <li>"java-serialization": Use {@link org.eclipse.persistence.jpa.metadata.FileBasedProjectCache FileBasedProjectCache}
+     * <li>Custom ProjectCache - Specify a custom class name which implements
+     * {@link org.eclipse.persistence.jpa.metadata.ProjectCache ProjectCache}
      * </ul>
      * 
-     * @see ProjectCacheAccessor
+     * @see org.eclipse.persistence.jpa.metadata.ProjectCache
      */
     public static final String PROJECT_CACHE = "eclipselink.project-cache"; 
     
@@ -2188,12 +2188,12 @@ public class PersistenceUnitProperties {
      * <p>
      * Values (case insensitive):
      * <ul>
-     * <li>"XML": Use {@link XMLMetadataSource}
+     * <li>"XML": Use {@link org.eclipse.persistence.jpa.metadata.XMLMetadataSource XMLMetadataSource}
      * <li>Custom MetadataSource - Specify a custom class name which
-     * implements {@link MetadataSource}
+     * implements {@link org.eclipse.persistence.jpa.metadata.MetadataSource MetadataSource}
      * </ul>
      * 
-     * @see MetadataSource
+     * @see org.eclipse.persistence.jpa.metadata.MetadataSource MetadataSource
      */
     public static final String METADATA_SOURCE = "eclipselink.metadata-source";
     
@@ -2320,7 +2320,7 @@ public class PersistenceUnitProperties {
      * The system property <code>INTERACT_WITH_DB</code>
      * 
      * <p>Specified to enable or disable the execution of DDL (configured with 
-     * the <code>eclipselink.ddl-generation<code> property) against a database.</p>
+     * the <code>eclipselink.ddl-generation</code> property) against a database.</p>
      * 
      * <p>e.g. a command line setting of <code>-DINTERACT_WITH_DB=false</code> 
      * will not output DDL to the database.</p>
@@ -2456,7 +2456,7 @@ public class PersistenceUnitProperties {
      * <li>"PerformanceMonitor": Use {@link PerformanceMonitor}
      * <li>"PerformanceProfiler": Use {@link PerformanceProfiler}
      * <li>"QueryMonitor": Use {@link QueryMonitor}
-     * <li>"DMSProfiler": Use {@link DMSPerformanceProfiler}
+     * <li>"DMSProfiler": Use {@link org.eclipse.persistence.tools.profiler.oracle.DMSPerformanceProfiler}
      * <li>Custom profiler - Specify a custom profiler class name which
      * implements {@link SessionProfiler}
      * </ul>
@@ -2527,9 +2527,9 @@ public class PersistenceUnitProperties {
      * SessionManagers pass it to createEntityManager method.
      * <p>
      * Values:<ul>
-     * <li>"HARD" (DEFAULT) - {@link ReferenceMode#HARD
-     * <li>"WEAK"  - {@link ReferenceMode#WEAK
-     * <li>"FORCE_WEAK" - {@link ReferenceMode#FORCE_WEAK
+     * <li>"HARD" (DEFAULT) - {@link ReferenceMode#HARD}
+     * <li>"WEAK"  - {@link ReferenceMode#WEAK}
+     * <li>"FORCE_WEAK" - {@link ReferenceMode#FORCE_WEAK}
      * </ul>
      * 
      * @see ReferenceMode
@@ -2645,6 +2645,7 @@ public class PersistenceUnitProperties {
      * <li>oracle.jdbc.OracleConnection.PROXY_USER_NAME,
      * <li>oracle.jdbc.OracleConnection.PROXY_DISTINGUISHED_NAME,
      * <li>oracle.jdbc.OracleConnection.PROXY_CERTIFICATE.
+     * </ul>
      * <p>
      * Typically these properties should be set into EntityManager (either
      * through createEntityManager method or using proprietary setProperties
@@ -2670,13 +2671,13 @@ public class PersistenceUnitProperties {
      * <li>"rmi"
      * <li>"rmi-iiop"
      * <li>"jgroups"
-     * <li>a <package.class> name of a subclass implementation of the TransportManager abstract class.
+     * <li>a {@literal <package.class>} name of a subclass implementation of the TransportManager abstract class.
      * </ul>
      * by default the cache is not coordinated.
      * 
      * @see CacheCoordinationProtocol
      * @see Cache#coordinationType()
-     * @see RemoteCommandManager#setTransportManager(TransportManager)
+     * @see RemoteCommandManager#setTransportManager(org.eclipse.persistence.sessions.coordination.TransportManager)
      */
     public static final String COORDINATION_PROTOCOL = "eclipselink.cache.coordination.protocol";
 
@@ -2720,7 +2721,8 @@ public class PersistenceUnitProperties {
      * The default topic connection factory JNDI name is "jms/EclipseLinkTopicConnectionFactory".
      * 
      * @see #COORDINATION_PROTOCOL
-     * @see org.eclipse.persistence.sessions.coordination.broadcast.BroadcastTransportManager#setTopicConnectionFactoryName(String)
+     * @see org.eclipse.persistence.internal.sessions.factories.model.transport.JMSPublishingTransportManagerConfig#setTopicConnectionFactoryName(String)
+     * JMSPublishingTransportManagerConfig.setTopicConnectionFactoryName(String)
      */
     public static final String COORDINATION_JMS_FACTORY = "eclipselink.cache.coordination.jms.factory";
     
@@ -2922,12 +2924,13 @@ public class PersistenceUnitProperties {
      * Indicates if it's a composite persistence unit ("true").
      * The property must be specified in persistence.xml of a composite persistence unit.
      * The property passed to createEntityManagerFactory method or in system properties is ignored.
-     * Composite persistence unit would contain all persistence units found in jar files specified by <jar-file> elements in persistence.xml. 
-     *    <jar-file>member1.jar</jar-file>
-     *    <jar-file>member2.jar</jar-file>
-     *    <properties>
-     *        <property name="eclipselink.composite-unit" value="true"/>
-     *    </properties>
+     * Composite persistence unit would contain all persistence units found in jar files specified by
+     * {@literal <jar-file> elements in persistence.xml.}<br>
+     * &nbsp;{@literal <jar-file>member1.jar</jar-file>}<br>
+     * &nbsp;{@literal <jar-file>member2.jar</jar-file>}<br>
+     * &nbsp;{@literal <properties>}<br>
+     * &nbsp;&nbsp;{@literal <property name="eclipselink.composite-unit" value="true"/>}<br>
+     * &nbsp;{@literal </properties>}
      * @see #COMPOSITE_UNIT_MEMBER
      * @see #COMPOSITE_UNIT_PROPERTIES
      */
@@ -2951,18 +2954,21 @@ public class PersistenceUnitProperties {
      * to pass properties to member persistence units.
      * The value is a map: 
      * the key is a member persistence unit's name,
-     * the value is a map of properties to be passed to this persistence unit. 
-     * "eclipselink.composite-unit.properties" -> (
-     *   ("memberPu1" -> (   "javax.persistence.jdbc.user" -> "user1", 
-     *                       "javax.persistence.jdbc.password" -> "password1",
-     *                       "javax.persistence.jdbc.driver" -> "oracle.jdbc.OracleDriver",
-     *                       "javax.persistence.jdbc.url" -> "jdbc:oracle:thin:@oracle_db_url:1521:db",
-     *                    ) , 
-     *   ("memberPu2" -> (   "javax.persistence.jdbc.user" -> "user2",
-     *                       "javax.persistence.jdbc.password" -> "password2"
-     *                       "javax.persistence.jdbc.driver" -> "com.mysql.jdbc.Driver",
-     *                       "javax.persistence.jdbc.url" -> "jdbc:mysql://my_sql_db_url:3306/user2",
-     *                    )
+     * the value is a map of properties to be passed to this persistence unit.
+     * <p>
+     * "eclipselink.composite-unit.properties" {@literal ->} (<br>
+     *  &nbsp;("memberPu1" {@literal ->} (<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.user" {@literal ->} "user1",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.password" {@literal ->} "password1",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.driver" {@literal ->} "oracle.jdbc.OracleDriver",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.url" {@literal ->} "jdbc:oracle:thin:@oracle_db_url:1521:db",<br>
+     *  &nbsp;&nbsp;) ,<br>
+     *  &nbsp;("memberPu2" {@literal ->} (<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.user" {@literal ->} "user2",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.password" {@literal ->} "password2"<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.driver" {@literal ->} "com.mysql.jdbc.Driver",<br>
+     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.url" {@literal ->} "jdbc:mysql://my_sql_db_url:3306/user2",<br>
+     *  &nbsp;&nbsp;)<br>
      * )
      * @see #COMPOSITE_UNIT
      */
@@ -2976,7 +2982,7 @@ public class PersistenceUnitProperties {
      * Values:
      * <ul>
      * <li>"rmi"
-     * <li>a <package.class> name of a subclass implementation of the RemoteConnection abstract class.
+     * <li>a {@literal <package.class>} name of a subclass implementation of the RemoteConnection abstract class.
      * </ul>
      * 
      * @see RemoteProtocol
@@ -2991,7 +2997,7 @@ public class PersistenceUnitProperties {
      * This allows JPA to be access over RMI or other protocol from a remote Java client.
      * The URL is the complete URL used to access the RMI server.
      * 
-     * @see REMOTE_PROTOCOL
+     * @see #REMOTE_PROTOCOL
      */
     public static final String REMOTE_URL = "eclipselink.remote.client.url";
     
@@ -3001,7 +3007,7 @@ public class PersistenceUnitProperties {
      * This allows JPA to be access over RMI or other protocol from a remote Java client.
      * The name is the name the server will be registered under in the RMI registry.
      * 
-     * @see REMOTE_PROTOCOL
+     * @see #REMOTE_PROTOCOL
      */
     public static final String REMOTE_SERVER_NAME = "eclipselink.remote.server.name";
     
@@ -3011,7 +3017,7 @@ public class PersistenceUnitProperties {
      * An NoSQL datasource is a non-relational datasource such as a legacy database, NoSQL database,
      * XML database, transactional and messaging systems, or ERP systems.
      * @see org.eclipse.persistence.eis.EISConnectionSpec
-     * @see org.eclipse.persistence.annotations.NoSQL
+     * @see org.eclipse.persistence.nosql.annotations.NoSql
      */
     public static final String NOSQL_CONNECTION_SPEC = "eclipselink.nosql.connection-spec";
     
@@ -3043,7 +3049,7 @@ public class PersistenceUnitProperties {
      * "eclipselink.nosql.property.nosql.host"="localhost:5000"
      * 
      * @see org.eclipse.persistence.eis.EISConnectionSpec
-     * @see org.eclipse.persistence.annotations.NoSQL
+     * @see org.eclipse.persistence.nosql.annotations.NoSql
      */
     public static final String NOSQL_PROPERTY = "eclipselink.nosql.property.";
     
@@ -3052,7 +3058,7 @@ public class PersistenceUnitProperties {
      * Note that "javax.persistence.jdbc.user" is also supported.
      * 
      * @see org.eclipse.persistence.eis.EISConnectionSpec
-     * @see org.eclipse.persistence.annotations.NoSQL
+     * @see org.eclipse.persistence.nosql.annotations.NoSql
      */
     public static final String NOSQL_USER = "eclipselink.nosql.property.user";
     
@@ -3061,7 +3067,7 @@ public class PersistenceUnitProperties {
      * Note that "javax.persistence.jdbc.password" is also supported.
      * 
      * @see org.eclipse.persistence.eis.EISConnectionSpec
-     * @see org.eclipse.persistence.annotations.NoSQL
+     * @see org.eclipse.persistence.nosql.annotations.NoSql
      */
     public static final String NOSQL_PASSWORD = "eclipselink.nosql.property.password";
     

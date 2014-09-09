@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -116,7 +116,7 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 
 	/**
 	 * Creates a new {@link ExpressionRegistry} that will be used to store the definition of the JPQL
-	 * grammar. This method is invoked if {@link #buildJPQLGrammar()} returns <code>null</code>.
+	 * grammar. This method is invoked if {@link #buildBaseGrammar()} returns <code>null</code>.
 	 *
 	 * @return The registry of {@link JPQLQueryBNF JPQLQueryBNFs}, {@link ExpressionFactory
 	 * ExpressionFactories} and the JPQL identifiers
@@ -195,7 +195,7 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 	protected abstract void initializeExpressionFactories();
 
 	/**
-	 * Registers the JPQL identifiers support by this {@link IJPQLExtension}. The registration
+	 * Registers the JPQL identifiers support by this {@link JPQLGrammar}. The registration
 	 * involves registering the {@link JPAVersion} and the {@link IdentifierRole}.
 	 */
 	protected abstract void initializeIdentifiers();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,13 +22,13 @@ import org.eclipse.persistence.exceptions.DynamicException;
  * <code>DynamicEntity</code> is the public interface for dealing with dynamic persistent objects.
  * <p>
  * The purpose of dynamic persistent objects is to enable (simple) data access when only mapping
- * information is available <br />
+ * information is available <br>
  * and no concrete Java model is present (specifically, no <tt>.class</tt> files .)
  * <p>
  * Applications using <code>DynamicEntity</code>'s can access the persistent state using property names
- * which correspond <br />
+ * which correspond <br>
  * to the mapped attributes in the underlying EclipseLink descriptors.
- * For properties mapped to containers ({@link java.util.Collection Collection},<br />
+ * For properties mapped to containers ({@link java.util.Collection Collection},<br>
  * {@link java.util.Map Map}, etc.), the property is retrieved then the resulting container can
  * be manipulated.
  * <pre>

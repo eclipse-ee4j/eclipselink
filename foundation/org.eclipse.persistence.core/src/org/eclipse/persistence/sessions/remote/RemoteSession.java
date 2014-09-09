@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -33,13 +33,13 @@ import org.eclipse.persistence.logging.SessionLog;
 /**
  * <b>Purpose</b>: Provide transparent remote three-tiered replacation support.
  * The remote session allows for complex three-tiered applications to be easily built.
- * It gives the remote client the fully functionality of the TopLink api including,</p>
- * <p><ul>
+ * It gives the remote client the fully functionality of the TopLink api including,
+ * <ul>
  * <li>Client side caching and object-identity maintainence.
  * <li>Complex query support
  * <li>Unit of work support
  * <li>Indirection support through remote value holders.
- * </ul></p>
+ * </ul>
  *
  * This session is a primary interface which resides on the client side. Users would interact
  * with session just the same way as if it was a normal session.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,15 +24,15 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="get-method" type="{http://www.w3.org/2001/XMLSchema}string" default="get" />
- *       &lt;attribute name="set-method" type="{http://www.w3.org/2001/XMLSchema}string" default="set" />
- *       &lt;attribute name="schema" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-virtual-access-methods-schema" default="NODES" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="get-method" type="{http://www.w3.org/2001/XMLSchema}string" default="get" /&gt;
+ *       &lt;attribute name="set-method" type="{http://www.w3.org/2001/XMLSchema}string" default="set" /&gt;
+ *       &lt;attribute name="schema" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-virtual-access-methods-schema" default="NODES" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

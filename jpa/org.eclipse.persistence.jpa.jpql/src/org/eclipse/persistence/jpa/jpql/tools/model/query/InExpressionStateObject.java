@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,9 +34,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * unknown, the value of the expression is unknown.
  * <p>
  * JPA 1.0:
- * <div nowrap><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code><p>
+ * <div><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code><p></div>
  * JPA 2.0
- * <div nowrap><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code><p>
+ * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code><p></div>
  *
  * @see InExpression
  *
@@ -94,10 +94,10 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
 	 * Creates a new <code>InExpressionStateObject</code>.
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param stateFieldPath
+	 * @param path
 	 * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
 	 * or not
-	 * @param inItems The list of JPQL fragments that will be parsed and converted into {@link
+	 * @param items The list of JPQL fragments that will be parsed and converted into {@link
 	 * StateObject}
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
@@ -135,7 +135,7 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
 	 * Creates a new <code>InExpressionStateObject</code>.
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param stateFieldPath
+	 * @param stateObject
 	 * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
 	 * or not
 	 * @param items
@@ -171,7 +171,7 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
 	 * @param path
-	 * @param inItems The list of JPQL fragments that will be parsed and converted into {@link
+	 * @param items The list of JPQL fragments that will be parsed and converted into {@link
 	 * StateObject}
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */

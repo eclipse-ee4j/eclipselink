@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,17 +34,14 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The following table shows how the <code><b>AND</b></code> operator is evaluated based on its two
  * operands:
  * <p>
- * <code>
- * <style type="text/css">td {border-top:solid 1px; border-bottom:solid 0px; border-left:solid 1px; border-right:solid 0px}</style>
- * <table cellspacing="0" cellpadding="2" border="1" width="250" style="border:1px outset darkgrey;">
- * <tr><td>            </td><td style="border-top="0""><b>TRUE</b></td><td style="border-top="0""><b>FALSE</b><td  style="border-top="0""><b>NULL</b></td></tr>
- * <tr><td style="border-left="0""><b>TRUE</b> </td><td>   TRUE    </td><td>   FALSE    <td>   NULL    </td></tr>
- * <tr><td style="border-left="0""><b>FALSE</b></td><td>   FALSE   </td><td>   FALSE    <td>   FALSE   </td></tr>
- * <tr><td style="border-left="0""><b>NULL</b> </td><td>   NULL    </td><td>   FALSE    <td>   NULL    </td></tr>
+ * <table summary="" cellspacing="0" cellpadding="2" border="1" width="250" style="border:1px outset darkgrey;">
+ * <tr><td>            </td><td><b>TRUE</b></td><td><b>FALSE</b></td><td><b>NULL</b></td></tr>
+ * <tr><td><b>TRUE</b> </td><td>   TRUE    </td><td>   FALSE    </td><td>   NULL    </td></tr>
+ * <tr><td><b>FALSE</b></td><td>   FALSE   </td><td>   FALSE    </td><td>   FALSE   </td></tr>
+ * <tr><td><b>NULL</b> </td><td>   NULL    </td><td>   FALSE    </td><td>   NULL    </td></tr>
  * </table>
- * </code>
  *
- * <div nowrap><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code><p>
+ * <div><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code><p></div>
  *
  * @see AndExpression
  *

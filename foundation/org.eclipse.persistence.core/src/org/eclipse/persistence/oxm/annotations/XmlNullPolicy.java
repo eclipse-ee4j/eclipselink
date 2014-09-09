@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * handles the reading and writing of null values. The following values can be specified:
  * <ul><li>xsiNilRepresentsNull - This indicates that during unmarshal, an element with an xsi:nil="true" 
  * attribute specified should be unmarshaled as "null" into the object.</li>
- * <li>emptyNodeRepresentsNull - This indicates that during unmarshal, an empty node <code>"&lt;element/>"</code>
+ * <li>emptyNodeRepresentsNull - This indicates that during unmarshal, an empty node <code>"&lt;element/&gt;"</code>
  * should be unmarshalled to as null in the object model.</li>
  * <li>isSetPerformedForAbsentNode - If this is set to true, then for each mapped element that was absent from
  * the document during unmarshal, the property in java will be explicitly set to null. </li>

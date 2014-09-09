@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,15 +16,15 @@ package org.eclipse.persistence.jpa.jpql.tools.model;
 /**
  * This {@link IJPQLQueryFormatter} is used to generate a string representation of a {@link
  * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} based on how it was parsed,
- * which means this formatter can only be used when the {@link org.eclipse.persistence.jpa.jpql.
- * model.query.StateObject StateObject} was created by parsing a JPQL query because it needs to
- * retrieve parsing information from the corresponding {@link org.eclipse.persistence.jpa.jpql.
- * parser.Expression Expression}.
+ * which means this formatter can only be used when the
+ * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} was created by parsing a JPQL
+ * query because it needs to retrieve parsing information from the corresponding
+ * {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}.
  * <p>
  * It is possible to partially match the JPQL query that was parsed, the value of the <em>exactMatch</em>
- * will determine whether the string representation of any given {@link org.eclipse.persistence.jpa.
- * jpql.model.query.StateObject StateObject} should reflect the exact string that was parsed.
- * <code>true</code> will use every bit of information contained in the corresponding {@link
+ * will determine whether the string representation of any given
+ * {@link org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} should reflect the exact string
+ * that was parsed. <code>true</code> will use every bit of information contained in the corresponding {@link
  * org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to perfectly match what was parsed;
  * <code>false</code> will only match the case sensitivity of the JPQL identifiers.
  *
@@ -37,8 +37,8 @@ public class DefaultActualJPQLQueryFormatter extends AbstractActualJPQLQueryForm
 	/**
 	 * Creates a new <code>DefaultActualJPQLQueryFormatter</code>.
 	 *
-	 * @param exactMatch Determines whether the string representation of any given {@link org.eclipse.
-	 * persistence.jpa.jpql.model.query.StateObject StateObject} should reflect the exact string that
+	 * @param exactMatch Determines whether the string representation of any given {@link
+     * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} should reflect the exact string that
 	 * was parsed: <code>true</code> will use every bit of information contained in the corresponding
 	 * {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to perfectly match what
 	 * was parsed (case of JPQL identifiers and the presence of whitespace); <code>false</code> will
@@ -51,8 +51,8 @@ public class DefaultActualJPQLQueryFormatter extends AbstractActualJPQLQueryForm
 	/**
 	 * Creates a new <code>DefaultActualJPQLQueryFormatter</code>.
 	 *
-	 * @param exactMatch Determines whether the string representation of any given {@link org.eclipse.
-	 * persistence.jpa.jpql.model.query.StateObject StateObject} should reflect the exact string that
+	 * @param exactMatch Determines whether the string representation of any given {@link
+     * org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject StateObject} should reflect the exact string that
 	 * was parsed: <code>true</code> will use every bit of information contained in the corresponding
 	 * {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to perfectly match what
 	 * was parsed (case of JPQL identifiers and the presence of whitespace); <code>false</code> will

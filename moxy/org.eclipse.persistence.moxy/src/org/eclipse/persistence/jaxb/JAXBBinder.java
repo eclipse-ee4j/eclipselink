@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,7 +40,7 @@ import org.w3c.dom.Node;
  * <ul>
  * <li>Provide an implementation of Binder</li>
  * <li>Provide a means to preserve unmapped XML Data</li>
- * </ul></p>
+ * </ul>
  *
  * @author      mmacivor
  * @since       Oracle TopLink 11.1.1.0.0

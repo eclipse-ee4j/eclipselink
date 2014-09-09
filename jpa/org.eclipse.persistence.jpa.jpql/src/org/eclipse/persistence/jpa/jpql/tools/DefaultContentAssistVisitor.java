@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,11 +48,11 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
  *
  * // Create the visitor and visit the parsed tree
  * DefaultContentAssistVisitor visitor = new DefaultContentAssistVisitor(context);
- * visitor.{@link #prepare(org.eclipse.persistence.jpa.jpql.parser.QueryPosition, ContentAssistExtension) prepare(queryPosition, extension)};
+ * visitor.{@link #buildProposals(int, ContentAssistExtension) buildProposals(queryPosition.getPosition(), extension)};
  * queryPosition.getExpression().accept(visitor);
  *
  * // Retrieve the proposals
- * {@link org.eclipse.persistence.jpa.jpql.ContentAssistProposals ContentAssistProposals} proposals = visitor.getProposals();
+ * {@link ContentAssistProposals} proposals = visitor.getProposals();
  *
  * // Only required if the visitor is cached
  * visitor.dispose();

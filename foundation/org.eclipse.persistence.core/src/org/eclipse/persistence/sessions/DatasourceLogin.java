@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -174,7 +174,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * <p>Setting are:<ul>
      * <li>ConcurrentReadWrite - default
      * <li>SynchronizedWrite - only allow a single writer (i.e. unit of work merge) to the cache at once
-     * <li>SynchronizedReadOnWrite - do not allow reading or other unit of work merge while a unit of work is in merge
+     * <li>SynchronizedReadOnWrite - do not allow reading or other unit of work merge while a unit of work is in merge</ul>
      */
     public int getCacheTransactionIsolation() {
         return cacheTransactionIsolation;
@@ -351,7 +351,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * <p>Setting are:<ul>
      * <li>ConcurrentReadWrite - default
      * <li>SynchronizedWrite - only allow a single writer (i.e. unit of work merge) to the cache at once
-     * <li>SynchronizedReadOnWrite - do not allow reading or other unit of work merge while a unit of work is in merge
+     * <li>SynchronizedReadOnWrite - do not allow reading or other unit of work merge while a unit of work is in merge</ul>
      */
     public void setCacheTransactionIsolation(int cacheTransactionIsolation) {
         this.cacheTransactionIsolation = cacheTransactionIsolation;
@@ -522,7 +522,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * passed in class loader.  If no class loader is passed
      * in, of if an exception is thrown, call the 
      * setPlatformClassName method with no classloader.
-     * @see setPlatformClassName(String platformClassName)
+     * @see #setPlatformClassName(String platformClassName)
      */
     public void setPlatformClassName(String platformClassName, ClassLoader loader) throws ValidationException {
         boolean exceptionCaught = false;

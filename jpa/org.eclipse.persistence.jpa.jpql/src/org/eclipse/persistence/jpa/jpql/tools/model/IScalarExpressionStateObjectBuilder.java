@@ -65,7 +65,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	T case_(ICaseExpressionStateObjectBuilder builder);
 
 	/**
-	 * Create the expression <code><b>COALESCE(scalar_expression {, scalar_expression}+)</b>.
+	 * Create the expression <code><b>COALESCE(scalar_expression {, scalar_expression}+)</b></code>.
 	 *
 	 * @param builder1 The first scalar expression
 	 * @param builder2 The second scalar expression
@@ -161,7 +161,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	T enumLiteral(Enum<? extends Enum<?>> enumConstant);
 
 	/**
-	 * Creates the expression <code><b>&lt;identifier&gt;</b>('functionName' {, expression}*)</b></code>.
+	 * Creates the expression <code><b>&lt;identifier&gt;('functionName' {, expression}*)</b></code>.
 	 *
 	 * @param identifier The JPQL identifier that is used to identify the SQL expression
 	 * @param functionName The name of the native SQL function
@@ -171,7 +171,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	T function(String identifier, String functionName, String... arguments);
 
 	/**
-	 * Creates the expression <code><b>&lt;identifier&gt;</b>('functionName' {, expression}*)</b></code>.
+	 * Creates the expression <code><b>&lt;identifier&gt;('functionName' {, expression}*)</b></code>.
 	 *
 	 * @param identifier The JPQL identifier that is used to identify the SQL expression
 	 * @param functionName The name of the native SQL function
@@ -281,7 +281,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	T multiply(T builder);
 
 	/**
-	 * Create the expression <code><b>NULLIF(scalar_expression, scalar_expression)</b>.
+	 * Create the expression <code><b>NULLIF(scalar_expression, scalar_expression)</b></code>.
 	 *
 	 * @param builder1 The first scalar expression
 	 * @param builder2 The second scalar expression

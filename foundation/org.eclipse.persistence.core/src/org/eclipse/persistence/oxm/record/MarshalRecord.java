@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -445,7 +445,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     /**
      * Receive notification of a node.
      * @param node The Node to be added to the document
-     * @param namespaceResolver The NamespaceResolver can be used to resolve the
+     * @param resolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
      public void node(Node node, NamespaceResolver resolver ){
@@ -455,8 +455,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      /**
       * Receive notification of a node.
       * @param node The Node to be added to the document
-      * @param namespaceResolver The NamespaceResolver can be used to resolve the
-      * @param name replacement root name for the node
+      * @param resolver The NamespaceResolver can be used to resolve the
+      * @param qualifiedName replacement root name for the node
       * @param rootUri replacement root namespace for the node
       * namespace URI/prefix of the node
       */
@@ -597,7 +597,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * This method is used to inform the MarshalRecord that the element events
      * it is about to receive are part of a collection.
      * @since EclipseLink 2.4
-     * @see endCollection
+     * @see #endCollection
      */
     public void startCollection() {
     }
@@ -671,7 +671,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * This method is used to inform the MarshalRecord that it is done receiving
      * element events that are part of a collection.
      * @since EclipseLink 2.4
-     * @see startCollection
+     * @see #startCollection
      */
     public void endCollection() {
     }
@@ -682,7 +682,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
      * Private function to process or create an entry in the NamespaceResolver for the xsi prefix.
      * @param namespaceResolver
      * @return xsi prefix
-     * @since EclipseLink 2.4
+     * @since EclipseLink 2.4
+
      */
     protected String processNamespaceResolverForXSIPrefix(NamespaceResolver namespaceResolver) {
         String xsiPrefix;

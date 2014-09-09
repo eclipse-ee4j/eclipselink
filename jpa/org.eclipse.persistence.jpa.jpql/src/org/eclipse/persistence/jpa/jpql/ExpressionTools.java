@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -317,7 +317,7 @@ public final class ExpressionTools {
 	 * characters.
 	 *
 	 * @param query1 The query where the positions are pointing
-	 * @param position The position of a cursor within <em>query1</em>
+	 * @param position1 The position of a cursor within <em>query1</em>
 	 * @param query2 The query for which the position might need adjustment
 	 * @return The adjusted position by moving it based on the difference between <em>query1</em> and
 	 * <em>query2</em>
@@ -341,8 +341,8 @@ public final class ExpressionTools {
 	 *
 	 * @param query The query that may contain escape characters
 	 * @param positions The position within the non-escaped version of the given query, which is
-	 * either a single element position or two positions that is used as a text range
-	 * @return The adjusted positions by moving it based on the difference between the escape and
+	 * either a single element position or two positions that is used as a text range. After execution
+     * contains the adjusted positions by moving it based on the difference between the escape and
 	 * non-escaped versions of the query
 	 * @since 2.5
 	 */

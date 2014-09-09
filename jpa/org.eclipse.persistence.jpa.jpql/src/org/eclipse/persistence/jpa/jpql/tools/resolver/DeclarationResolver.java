@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -190,8 +190,8 @@ public class DeclarationResolver extends Resolver {
 	 * a path expression declaration.
 	 * <p>
 	 * In this query "<code>UPDATE Employee SET firstName = 'MODIFIED' WHERE (SELECT COUNT(m) FROM
-	 * managedEmployees m) > 0</code>" <em>managedEmployees</em> is an unqualified collection-valued
-	 * path expression (<code>employee.managedEmployees</code>).
+	 * managedEmployees m) {@literal >} 0</code>" <em>managedEmployees</em> is an unqualified
+     * collection-valued path expression (<code>employee.managedEmployees</code>).
 	 *
 	 * @param declaration The {@link Declaration} that was parsed to range over an abstract schema
 	 * name but is actually ranging over a path expression

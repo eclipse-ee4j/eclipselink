@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -72,15 +72,16 @@ import org.eclipse.persistence.exceptions.*;
 * <b>Restrictions</b>:
 * <ul>
 * <li>Only attributes whose mappings are DirectToField, Aggregate (Embeddable), ObjectReference
-* (OneToOne) or Collection type OneToMany/ManyToMany are considered in a Query By Example object.  The behaviour when an example object has attribute values for other mappings types is <b>undefined</b>.</li>
+* (OneToOne) or Collection type OneToMany/ManyToMany are considered in a Query By Example object.  The behaviour when an example object has attribute values for other mappings types is <b>undefined</b>.
 * <ul><li>To ensure the example does not include any unsupported mappings the flag {@link #setValidateExample}
 * should be set to true on the corresponding QueryByExamplePolicy to ensure no unsupported relationship types are used in the example.</li>
 * <li> For OneToMany and ManyToMany mappings the elements within the collections and the references attribute values will be added to the expression as disjuncts (OR)</li>
 * </ul>
+* </li>
 * </ul>
 * <p>
 * <b>Example</b>:
-* <PRE><BLOCKQUOTE>
+* <BLOCKQUOTE><PRE>
 * // This example uses like for Strings and the salary must be greater
 * // than zero.
 * ReadAllQuery query = new ReadAllQuery();
@@ -144,8 +145,8 @@ public class QueryByExamplePolicy implements java.io.Serializable {
      * can be used.  A list of supported operations is provided below.
      * <p>
      * Note: A special operation can not be used for attributes set to <code>null</code>.  The only
-     * options are {@link org.eclipse.persistence.expressions.Expression#isNull(Object) isNull} (default) and
-     * {@link org.eclipse.persistence.expressions.Expression#notNull(Object) notNull}.  See
+     * options are {@link org.eclipse.persistence.expressions.Expression#isNull() isNull} (default) and
+     * {@link org.eclipse.persistence.expressions.Expression#notNull() notNull}.  See
      * {@link #setShouldUseEqualityForNulls}.
      * @param attributeValueClass Attribute values of which type, for instance
      * <code>Integer</code>, to apply to.  Note for <code>int</code> attributes the

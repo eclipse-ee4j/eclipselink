@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,7 +23,7 @@ import commonj.sdo.Property;
  *   The ValueStore interface exposes the properties Map in SDODataObject to extension or replacement.
  *   The implementing class must override or extend the get/set/isSet/unset ValueStore functions so that
  *   any calls routed through the SDO API are routed through to the underlying Data-Model that ValueStore wraps.
- *   </p></p>
+ *   </p><p>
  *   Possible implementers must maintain DataObject integrity
  *   which includes containment and changeSummary.
  *   

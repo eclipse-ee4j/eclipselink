@@ -139,8 +139,8 @@ import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
  *    <bv:facet type="future" message="Welcome to the Future!"/>
  *   </jxb:bindings>
  *  </xs:appinfo>}
- * <blockquote></pre>
- * <p/>
+ * </pre></blockquote>
+ * <p>
  * Supports custom-created BV annotations. Example:
  * <blockquote><pre>
  * {@code <xs:appinfo>
@@ -148,7 +148,7 @@ import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
  *    <bv:facet type="org.eclipse.persistence.annotations.AdditionalCriteria" value="This is a real custom annotation."/>
  *   </jxb:bindings>
  *  </xs:appinfo>}
- * <blockquote></pre>
+ * </pre></blockquote>
  *
  * @author Marcel Valovy - marcel.valovy@oracle.com
  */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.utility.iterator.CloneListIterator;
  * By default, the list iterator returned by a <code>SnapshotCloneListIterable</code> does not
  * support the {@link ListIterator} mutation operations; this is because it does not
  * have access to the original list. But if the <code>SnapshotCloneListIterable</code>
- * is supplied with a {@link org.eclipse.jpt.common.utility.internal.iterators.CloneListIterator.Mutator}
+ * is supplied with a {@link CloneListIterator.Mutator}
  * it will delegate the
  * {@link ListIterator} mutation operations to the <code>Mutator</code>.
  * Alternatively, a subclass can override the list iterable's mutation
@@ -45,8 +45,8 @@ import org.eclipse.persistence.jpa.jpql.utility.iterator.CloneListIterator;
  * @param <E> the type of elements returned by the list iterable's list iterator
  *
  * @see CloneListIterator
- * @see LiveCloneListIterable
- * @see SnapshotCloneIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterable.LiveCloneListIterable LiveCloneListIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterable.SnapshotCloneIterable SnapshotCloneIterable
  */
 public class SnapshotCloneListIterable<E>
 	extends CloneListIterable<E>

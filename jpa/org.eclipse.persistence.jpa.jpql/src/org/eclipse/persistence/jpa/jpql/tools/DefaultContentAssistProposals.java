@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -561,8 +561,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	/**
 	 * Returns the {@link JPQLGrammar} that defines how the JPQL query was parsed.
 	 *
-	 * @return The {@link JPQLGrammar} that was used to parse this {@link org.eclipse.persistence.
-	 * jpa.jpql.parser.Expression Expression}
+	 * @return The {@link JPQLGrammar} that was used to parse this {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}
 	 */
 	public JPQLGrammar getGrammar() {
 		return jpqlGrammar;
@@ -731,8 +730,8 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	/**
 	 * Adds the given prefix that will be used to filter the list of possible class names.
 	 *
-	 * @param tableNamePrefix The prefix that is used to filter the list of class names
-	 * @param type Determines how to filter the various types of classes
+	 * @param prefix The prefix that is used to filter the list of class names
+	 * @param classType Determines how to filter the various types of classes
 	 * @since 2.5
 	 */
 	public void setClassNamePrefix(String prefix, ClassType classType) {

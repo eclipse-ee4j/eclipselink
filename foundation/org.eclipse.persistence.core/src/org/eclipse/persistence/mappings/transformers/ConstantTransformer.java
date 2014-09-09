@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,7 +17,7 @@ import org.eclipse.persistence.sessions.Session;
 /**
  * <p><b>Purpose</b>: Allows a field to always be mapped to a constant value.
  * This allows default values to be provided for un-mapped fields.
- * @see org.eclipse.persistence.mappings.FieldTransformer
+ * @see FieldTransformer
  * @author  James Sutherland
  * @since   10.1.3
  */

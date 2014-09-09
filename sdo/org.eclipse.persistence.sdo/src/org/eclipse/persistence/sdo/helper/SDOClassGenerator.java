@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -32,7 +32,7 @@ import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 
 /**
- * <p><b>Purpose<>/b: Generate Java interfaces and implementation classes from a list of SDO Type objects.
+ * <p><b>Purpose</b>: Generate Java interfaces and implementation classes from a list of SDO Type objects.
  * <ul><li>This class can be run standalone - logging will default to level FINER when run from the command line.</li>
  * </ul>
  */

@@ -17,7 +17,7 @@ package org.eclipse.persistence.jaxb;
 /**
  * These are properties that may be passed in to create a JAXBContext:
  * <pre>
- * Map&lt;String, Object> properties = new HashMap<String, Object>(1);
+ * {@literal Map<String, Object> properties = new HashMap<String, Object>(1);}
  * properties.put();
  * JAXBContext jc = JAXBContext.newInstance(new Class[] {Foo.class}, properties);
  * </pre>
@@ -25,7 +25,7 @@ package org.eclipse.persistence.jaxb;
  */
 public class JAXBContextProperties {
 
-    /**
+    /**`
      * The name of the property used to specify a value that will be prepended 
      * to all keys that are mapped to an XML attribute. By default there is no 
      * attribute prefix.  There is no effect when media type is 
@@ -33,8 +33,8 @@ public class JAXBContextProperties {
      * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
      * <i>Unmarshaller</i> will default to this attribute prefix.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_ATTRIBUTE_PREFIX
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_ATTRIBUTE_PREFIX
      */
     public static final String JSON_ATTRIBUTE_PREFIX = "eclipselink.json.attribute-prefix";
 
@@ -45,8 +45,8 @@ public class JAXBContextProperties {
      * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_INCLUDE_ROOT
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_INCLUDE_ROOT
      */
     public static final String JSON_INCLUDE_ROOT = "eclipselink.json.include-root";
 
@@ -58,8 +58,8 @@ public class JAXBContextProperties {
      * instances of <i>Marshaller</i> and <i>Unmarshaller</i> will default to 
      * this setting.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_NAMESPACE_SEPARATOR
      */
     public static final String JSON_NAMESPACE_SEPARATOR = "eclipselink.json.namespace-separator";
 
@@ -70,8 +70,8 @@ public class JAXBContextProperties {
      * the <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
-     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_VALUE_WRAPPER
      */
     public static final String JSON_VALUE_WRAPPER = "eclipselink.json.value-wrapper";
 
@@ -87,8 +87,8 @@ public class JAXBContextProperties {
      * <li>"application/json"
      * </ul>
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.MEDIA_TYPE
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.MEDIA_TYPE
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#MEDIA_TYPE
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MEDIA_TYPE
      * @see org.eclipse.persistence.oxm.MediaType
      */
     public static final String MEDIA_TYPE = "eclipselink.media-type";
@@ -97,8 +97,8 @@ public class JAXBContextProperties {
      * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the
      * namespace prefixes used  while marshalling to XML.  Used for both marshal
      * and unmarshal when mediaType is set to "application/json".  Value is
-     * either a Map<String, String> of URIs to prefixes, or an implementation of 
-     * org.eclipse.persistence.oxm.NamespacePrefixMapper.
+     * either a {@literal Map<String, String>} of URIs to prefixes, or an
+     * implementation of org.eclipse.persistence.oxm.NamespacePrefixMapper.
      * @since 2.4
      * @see org.eclipse.persistence.oxm.NamespacePrefixMapper
      */
@@ -108,7 +108,7 @@ public class JAXBContextProperties {
      * The name of the property used to specify a SessionEventListener that can
      * be used to customize the metadata before or after it has been 
      * initialized. Value is either an implementation of org.eclipse.persistence.sessions.SessionEventListener 
-     * or a List<org.eclipse.persistence.sessions.SessionEventListener>.
+     * or a {@literal List<org.eclipse.persistence.sessions.SessionEventListener>}.
      * 
      * @see org.eclipse.persistence.sessions.SessionEventListener
      * @since 2.4
@@ -136,8 +136,8 @@ public class JAXBContextProperties {
      * 
      * To specify multiple metadata sources, the following can be used:
      * <ul>
-     * <li>java.util.Map<String, Object>
-     * <li>java.util.List<Object>
+     * <li>{@literal java.util.Map<String, Object>}
+     * <li>{@literal java.util.List<Object>}
      * </ul>
      * 
      * @since 2.4, replaces JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY
@@ -166,7 +166,7 @@ public class JAXBContextProperties {
     /**
      * The name of the boolean property used to enable custom XmlAccessorFactories.
      * 
-     * @see com.sun.xml.bind.XmlAccessorFactory
+     * @see com.sun.xml.internal.bind.XmlAccessorFactory
      *
      * @since 2.4.2
      */
@@ -193,7 +193,7 @@ public class JAXBContextProperties {
      * 
      *     &#64;XmlElementWrapper(name="phone-numbers")
      *     &#64;XmlElement(name="phone-number")
-     *     private List<PhoneNumber> phoneNumbers;
+     *     private {@literal List<PhoneNumber>} phoneNumbers;
      * 
      * }
      * </pre>
@@ -220,8 +220,8 @@ public class JAXBContextProperties {
      * }
      * </pre>
      * @since 2.4.2
-     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_WRAPPER_AS_ARRAY_NAME
      */
     public static final String JSON_WRAPPER_AS_ARRAY_NAME = "eclipselink.json.wrapper-as-array-name";
 
@@ -249,7 +249,7 @@ public class JAXBContextProperties {
      * &lt;/customer&gt;
      * </pre>
      *
-     * <p><b>By default, case-insensitive unmarshalling is turned off.</b><p/>
+     * <p><b>By default, case-insensitive unmarshalling is turned off.</b></p>
      *
      * <p>The property must be passed to the {@link org.eclipse.persistence.jaxb.JAXBContextFactory}, when creating
      * {@link org.eclipse.persistence.jaxb.JAXBContext}. It will affect only unmarshaller created from that context.</p>
@@ -284,7 +284,7 @@ public class JAXBContextProperties {
 
     /**
      * Property for setting bean validation target groups.
-     * The mapped value must be of type Class<?>[].
+     * The mapped value must be of type {@literal Class<?>[]}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#BEAN_VALIDATION_GROUPS

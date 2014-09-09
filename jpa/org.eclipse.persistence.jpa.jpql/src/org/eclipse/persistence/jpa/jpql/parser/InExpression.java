@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,16 +31,16 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <b>NOT IN</b> expression is <b>NULL</b> or unknown, the value of the expression is unknown.
  * <p>
  * JPA 1.0:
- * <div nowrap><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code></p>
+ * <div><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code></div>
  * <p>
  * JPA 2.0:
- * <div nowrap><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code></p>
+ * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code></div>
  * <p>
  * EclipseLink 2.1:
- * <div nowrap><b>BNF:</b> <code>in_item ::= literal | single_valued_input_parameter | scalar_expression</code></p>
+ * <div><b>BNF:</b> <code>in_item ::= literal | single_valued_input_parameter | scalar_expression</code></div>
  * <p>
  * EclipseLink 2.5:
- * <div nowrap><b>BNF:</b> <pre><code> in_expression ::= { in_expression_expression | nested_array_expression } [NOT] IN { ( in_item {, in_item}* ) | (subquery) | ( nested_array_item {, nested_array_item}+ ) | collection_valued_input_parameter }
+ * <div><b>BNF:</b> <pre><code> in_expression ::= { in_expression_expression | nested_array_expression } [NOT] IN { ( in_item {, in_item}* ) | (subquery) | ( nested_array_item {, nested_array_item}+ ) | collection_valued_input_parameter }
  *
  * in_expression_expression ::= { state_field_path_expression | type_discriminator |
  *                                single_valued_input_parameter | identification_variable |
@@ -48,11 +48,11 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * nested_array_expression ::= ( in_expression_expression {, in_expression_expression}+ )
  *
- * nested_array_item ::= ( in_item {, in_item}+ )</code></pre></p>
+ * nested_array_item ::= ( in_item {, in_item}+ )</code></pre></div>
  * <p>
- * <div nowrap>Example: </code><b>SELECT</b> c <b>FROM</b> Customer c <b>WHERE</b> c.home.city <b>IN</b> :city</p>
+ * <div>Example: <code><b>SELECT</b> c <b>FROM</b> Customer c <b>WHERE</b> c.home.city <b>IN</b> :city</code></div>
  * <p>
- * <div nowrap>Example: </code><b>SELECT</b> p <b>FROM</b> Project p <b>WHERE</b> <b>TYPE</b>(p) <b>IN</b>(LargeProject, SmallProject)</p>
+ * <div>Example: <code><b>SELECT</b> p <b>FROM</b> Project p <b>WHERE</b> <b>TYPE</b>(p) <b>IN</b>(LargeProject, SmallProject)</code></div>
  *
  * @version 2.5.1
  * @since 2.3
@@ -354,7 +354,7 @@ public final class InExpression extends AbstractExpression {
 	/**
 	 * Determines whether what was parsed after the <code>IN</code> identifier is a single input
 	 * parameter:
-	 * <div nowrap><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code><p>
+	 * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code><p></div>
 	 *
 	 * @return <code>true</code> if what is following the <code>IN</code> identifier is a single
 	 * input parameter (without the left or right parenthesis); <code>false</code> otherwise

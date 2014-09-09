@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -92,7 +92,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * map is the existing EclipseLink functionality and works well when all 
      * embeddable mappings have unique database fields. This map adds specific 
      * attribute to database field override.
-     * @see addFieldTranslation()
+     * @see #addFieldTranslation
      */
     protected Map<String, Object[]> nestedFieldTranslations;
     
@@ -260,7 +260,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * AggregateObjectMappings are dealt with in their parent delete, so this is a no-op.
      * 
      * @param object
-     * @param manager
+     * @param deletedObjects
      */
     @Override
     public void addKeyToDeletedObjectsList(Object object, Map deletedObjects){
@@ -701,9 +701,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     /**
      * INTERNAL:
      * Build a clone of the given element in a unitOfWork
-     * @param element
+     * @param attributeValue
+     * @param parent
+     * @param parentCacheKey
+     * @param refreshCascade
      * @param cloningSession
      * @param isExisting
+     * @param isFromSharedCache
      * @return
      */
     @Override

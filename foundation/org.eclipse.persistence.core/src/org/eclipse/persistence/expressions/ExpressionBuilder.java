@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -34,14 +34,14 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  * <P>
  *
  * <B>Example</B>:
- * <PRE><BLOCKQUOTE>
+ * <BLOCKQUOTE><PRE>
  *        ExpressionBuilder employee = new ExpressionBuilder();
  *        employee.get("firstName").equal("Bob").and(employee.get("lastName").equal("Smith"))
  *
- *        >> equivalent Java code: (employee.getFirstName().equals("Bob")) && (employee.getLastName().equals("Smith"))
+ *        {@literal >>} equivalent Java code: (employee.getFirstName().equals("Bob")) {@literal &&} (employee.getLastName().equals("Smith"))
  *
- *        >> equivalent SQL: (F_NAME = 'Bob') AND (L_NAME = 'Smith')
- * </BLOCKQUOTE></PRE>
+ *        {@literal >>} equivalent SQL: (F_NAME = 'Bob') AND (L_NAME = 'Smith')
+ * </PRE></BLOCKQUOTE>
  *
  * @see Expression
  */

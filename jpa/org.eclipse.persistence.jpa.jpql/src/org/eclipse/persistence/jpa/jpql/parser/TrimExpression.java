@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,16 +25,16 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * function returns the trimmed string.
  * <p>
  * JPA 1.0, 2.0:
- * <div nowrap><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code>
+ * <div><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code></div>
  * <p>
- * <div nowrap><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code>
+ * <div><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code></div>
  * <p>
  * JPA 2.1:
- * <div nowrap><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_expression)</code>
+ * <div><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_expression)</code></div>
  * <p>
- * <div nowrap><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code><p>
+ * <div><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code><p></div>
  * <p>
- * <div norwrap>Example: <code><b>UPDATE</b> Student st <b>SET</b> st.sname=TRIM(st.sname)</code><p>
+ * <div>Example: <code><b>UPDATE</b> Student st <b>SET</b> st.sname=TRIM(st.sname)</code><p></div>
  *
  * @version 2.5
  * @since 2.3

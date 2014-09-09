@@ -323,8 +323,6 @@ public class TypeInfo {
     /**
      * Sets the TypeProperty 'idProperty'. This indicates that an @XmlID annotation is set on a
      * given field/method.
-     * 
-     * @return
      */
     public void setIDProperty(Property idProperty) {
         this.idProperty = idProperty;
@@ -479,8 +477,6 @@ public class TypeInfo {
     
     /**
      * Set the XmlElementRefs property name.
-     * 
-     * @return
      */
     public void setElementRefsPropertyName(String propName) {
         elementRefsPropertyName = propName;
@@ -540,8 +536,6 @@ public class TypeInfo {
     /**
      * Used to indicate that the class represented by this TypeInfo is marked 
      * XmlTransient.
-     *  
-     * @return
      */
     public void setTransient(boolean isTransient) {
         this.isTransient = isTransient;

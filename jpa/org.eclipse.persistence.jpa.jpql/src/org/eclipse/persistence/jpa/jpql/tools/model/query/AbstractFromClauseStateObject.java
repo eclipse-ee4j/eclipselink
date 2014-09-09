@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,7 +33,6 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see AbstractSelectStatementStateObject
  * @see FromClauseStateObject
- * @see SubQueryFromClauseStateObject
  *
  * @see AbstractFromClause
  *
@@ -228,7 +227,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
 	 * Example:
 	 * <ul>
 	 * <li><code>Employee e</code>; <i>e</i> is returned</li>
-	 * <li><code>IN (e.employees) AS emps</code></li>; <i>emps</i> is returned</li>
+	 * <li><code>IN (e.employees) AS emps</code>; <i>emps</i> is returned</li>
 	 * <li><code>Manager m JOIN m.employees emps</code>; <i>m</i> and <i>emps</i> are returned</li>
 	 * </ul>
 	 *

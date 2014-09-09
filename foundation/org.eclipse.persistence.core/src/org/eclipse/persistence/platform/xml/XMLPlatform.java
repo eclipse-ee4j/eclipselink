@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,7 @@ package org.eclipse.persistence.platform.xml;
 import java.net.URL;
 import java.util.Map;
 
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -117,8 +118,8 @@ public interface XMLPlatform {
     /**
      * Validate the document against the XML Schema
      * @param  document the document to be validated
-     *         xmlSchemaURL the XML Schema
-     *         errorHandler a mechanism for selectively ignoring errors
+     * @param  xmlSchemaURL the XML Schema
+     * @param  errorHandler a mechanism for selectively ignoring errors
      * @return true if the document is valid, else false
      * @throws XMLPlatformException
      */
@@ -127,11 +128,9 @@ public interface XMLPlatform {
     /**
      * Validates a document fragment against a complex type or element in the XML schema
      *
-     * @param document - the document which contains the document fragment to be validated
-     * @param schemaReference - the path to the complex type or element to be validated against in the schema
      * @return true if the document fragment is valid, false otherwise
      */
-    public boolean validate(Element elem, org.eclipse.persistence.oxm.XMLDescriptor xmlDescriptor, ErrorHandler handler) throws XMLPlatformException;
+    public boolean validate(Element elem, XMLDescriptor xmlDescriptor, ErrorHandler handler) throws XMLPlatformException;
 
     /**
     *

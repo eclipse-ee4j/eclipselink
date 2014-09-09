@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.tools.utility.iterator.CloneIterator;
  * @param <E> the type of elements returned by the iterable's iterator
  *
  * @see SnapshotCloneIterable
- * @see LiveCloneIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterable.LiveCloneIterable LiveCloneIterable
  */
 @SuppressWarnings("nls")
 public abstract class CloneIterable<E> implements Iterable<E> {
@@ -56,7 +56,7 @@ public abstract class CloneIterable<E> implements Iterable<E> {
 	 * <p>
 	 * This method can be overridden by a subclass as an
 	 * alternative to building a
-	 * {@link org.eclipse.jpt.common.utility.internal.iterators.Mutator}.
+	 * {@link org.eclipse.persistence.jpa.jpql.utility.iterator.CloneListIterator.Mutator}.
 	 */
 	protected void remove(@SuppressWarnings("unused") E element) {
 		throw new RuntimeException("This method was not overridden.");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -50,20 +50,23 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  * <ul>
  * <li>A {@link FetchGroupManager#getDefaultFetchGroup()} is created and stored
  * on the {@link FetchGroupManager} during metadata processing if any of the
- * basic ({@link DirectToFieldMapping}) are configured to be loaded directly.
+ * basic ({@link org.eclipse.persistence.mappings.DirectToFieldMapping
+ * DirectToFieldMapping}) are configured to be loaded directly.
  * <li>A named FetchGroup can be defined and added to the
  * {@link FetchGroupManager}. For JPA users this can be accomplished using
  * annotation (@FetchGroup) or in an eclipselink-orm.xml. For JPA and native
  * users named groups can be defined in code and added to the
  * {@link FetchGroupManager#addFetchGroup(FetchGroup)}. Adding named groups in
- * code is typically done in a {@link DescriptorCustomizer}and should be done
+ * code is typically done in a {@link
+ * org.eclipse.persistence.config.DescriptorCustomizer}and should be done
  * before the session is initialized at login. To use a named FetchGroup on a
  * query the native {@link ObjectLevelReadQuery#setFetchGroupName(String)} can
- * be used of for JPA users the {@link QueryHints#FETCH_GROUP_NAME} an be used.
+ * be used of for JPA users the {@link
+ * org.eclipse.persistence.config.QueryHints#FETCH_GROUP_NAME} an be used.
  * <li>A dynamic FetchGroup can be created within the application and used on a
  * query. For native API usage this is done using
  * {@link ObjectLevelReadQuery#setFetchGroup(FetchGroup)} while JPA users
- * generally use the {@link QueryHints#FETCH_GROUP}.
+ * generally use the {@link org.eclipse.persistence.config.QueryHints#FETCH_GROUP}.
  * </ul>
  * <p>
  * When a query is executed only one FetchGroup will be used. The order of
@@ -75,21 +78,22 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  * <li>If neither a FetchGroup nor a FetchGroup name is specified on the query
  * an the FetchGroupManager has a default group then it will be used.
  * <li>If none of these conditions are met then no FetchGroup will be used when
- * executing a query. <br/>
+ * executing a query.
+ * </ol><br>
  * <i>Note: This includes the execution of queries to populate lazy and eager
- * relationships.
+ * relationships.</i>
  * <p>
  * <b>Loading:</b> A FetchGroup can optionally specify that it needs its
  * included relationships loaded. This can be done using
  * {@link #setShouldLoad(boolean)} and {@link #setShouldLoadAll(boolean)} as
  * well as the corresponding configurations in the @FetchGroup annotation and
- * the <fetch-group> element in the eclipselink-orm.xml. When this si configured
- * the FetchGroup will also function as a {@link LoadGroup} causing all of its
- * specified relationships to be populated prior to returning the results form
- * the query execution.
+ * the {@literal <fetch-group>} element in the eclipselink-orm.xml. When this
+ * is configured the FetchGroup will also function as a {@link LoadGroup}
+ * causing all of its specified relationships to be populated prior to returning
+ * the results from the query execution.
  * 
  * @see FetchGroupManager
- * @see QueryHints#FETCH_GROUP
+ * @see org.eclipse.persistence.config.QueryHints#FETCH_GROUP QueryHints.FETCH_GROUP
  * @see LoadGroup
  * 
  * @author King Wang, dclarke, ailitchev

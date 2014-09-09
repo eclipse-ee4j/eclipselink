@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,8 +15,8 @@ package org.eclipse.persistence.jpa.jpql;
 
 /**
  * This "parser/scanner" holds onto the string version of the JPQL query that is parsed into a
- * parsed tree. It uses a cursor that lets the current {@link org.eclipse.persistence.jpa.jpql.
- * parser.Expression Expression} object to parse its fragment of the query.
+ * parsed tree. It uses a cursor that lets the current {@link
+ * org.eclipse.persistence.jpa.jpql.parser.Expression Expression} object to parse its fragment of the query.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
@@ -167,7 +167,7 @@ public final class WordParser {
 
 	/**
 	 * Determines whether the given character is an arithmetic symbol, which is one of the following:
-	 * { '>', '<', '/', '*', '-', '+', '=', '{' }.
+	 * { {@literal '>', '<', '/', '*', '-', '+', '=', '{'} }.
 	 *
 	 * @param character The character to test if it's a math symbol
 	 * @return <code>true</code> if the given character is one of the valid math symbols;
@@ -229,7 +229,7 @@ public final class WordParser {
 	 * arithmetic symbol
 	 * @see Character#isWhitespace(char)
 	 * @see #isArithmeticSymbol(char)
-	 * @see #isDelimitor(char)
+	 * @see #isDelimiter(char)
 	 */
 	public boolean isWordSeparator(char character) {
 		return Character.isWhitespace(character) ||
@@ -546,8 +546,7 @@ public final class WordParser {
 	/**
 	 * Retrieves the first word from the given text starting at the specified position.
 	 *
-	 * @param wordParser The {@link WordParser} contains the string and the current position that
-	 * will be used to parse the literal
+	 * @param startPosition the current position that will be used to parse the literal
 	 * @return The first word contained in the text, if none could be found, then an empty string is
 	 * returned
 	 */

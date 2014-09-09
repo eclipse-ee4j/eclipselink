@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -123,7 +123,7 @@ public class XPathHelper {
     /** 
      * Process an XPath expression fragment.  
      *
-     * @param frag
+     * @param xpFrag
      * @param dataObject
      * @return
      */
@@ -385,7 +385,7 @@ public class XPathHelper {
      * Convenience method that strips off '@' portion, if
      * one exists.
      * 
-     * @param qualifiedName
+     * @param expression
      * @return
      */
     protected String getPathWithAtRemoved(String expression) {
@@ -405,7 +405,7 @@ public class XPathHelper {
      * Convenience method that strips off 'ns0:' portion, if
      * one exists.
      * 
-     * @param qualifiedName
+     * @param expression
      * @return
      */
     protected String getPathWithPrefixRemoved(String expression) {
@@ -503,8 +503,6 @@ public class XPathHelper {
          * This constructor sets a logical operator and breaks 
          * the provided query into property name and query 
          * value parts.
-         *  
-         * @param query
          */
         public QueryPart(String property, String value, int op) {
             relOperand = op;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -26,8 +26,8 @@ import org.eclipse.persistence.internal.helper.*;
  * <code>SELECT ... FROM EMPLOYEE AS OF TIMESTAMP (value) t0, ...</code>
  * <p>For generic historical schema support, a special criteria can be added to
  * the where clause for each table in a select:
- * <code>((t0.ROW_START <= value) AND ((t0.END IS NULL) OR (t1.END > value)))</code>
- * <p><b>Responsibilities:<b>
+ * <code>((t0.ROW_START {@literal <=} value) AND ((t0.END IS NULL) OR (t1.END {@literal >} value)))</code>
+ * <p><b>Responsibilities:</b>
  * <ul>
  * <li>By default AsOfClause is a timestamp.  To specify a system change number use AsOfSCNClause.
  * <li>For Oracle 9R2 Flashback prints the correct AS OF clause before the alias name in the FROM clause.
@@ -36,8 +36,8 @@ import org.eclipse.persistence.internal.helper.*;
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  * @author Stephen McRitchie
  * @see org.eclipse.persistence.expressions.Expression#asOf(AsOfClause)
- * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#asOf(AsOfClause)
- * @see org.eclipse.persistence.sessions.Session#acquireSessionAsOf(AsOfClause)
+ * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setAsOfClause(AsOfClause)
+ * @see org.eclipse.persistence.sessions.Session#acquireHistoricalSession(AsOfClause)
  * @see HistoryPolicy
  */
 public class AsOfClause implements Serializable {

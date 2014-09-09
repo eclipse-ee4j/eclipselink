@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -162,7 +162,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * is to be created.
      *
      * @param emName The name of the persistence unit
-     * @param map A Map of properties for use by the
+     * @param properties A Map of properties for use by the
      * persistence provider. These properties may be used to
      * override the values of the corresponding elements in
      * the persistence.xml file or specify values for
@@ -190,7 +190,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * Called by the Persistence class when schema generation is to occur as a 
      * separate phase from creation of the entity manager factory.
      * <p>
-     * @param persistenceUnitName the name of the persistence unit
+     * @param info the name of the persistence unit
      * @param properties properties for schema generation; these may also 
      *        contain provider-specific properties. The value of these 
      *        properties override any values that may have been configured 
@@ -292,7 +292,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * @param info Metadata for use by the persistence provider
      * @return EntityManagerFactory for the persistence unit
      * specified by the metadata
-     * @param map A Map of integration-level properties for use
+     * @param properties A Map of integration-level properties for use
      * by the persistence provider.
      */
     public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties) {

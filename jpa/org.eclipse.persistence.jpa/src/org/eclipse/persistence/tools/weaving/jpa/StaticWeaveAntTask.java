@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -43,7 +43,7 @@ import org.apache.tools.ant.types.Path;
 * <li>target - specify the output location (either a directory or a jar).  
 * <li>persistenceinfo - specify the location containing the persistence.xml. This is optional and should only be specified if the source does not contain the persistence.xml.
 * Weaving is not required for composite persistence unit - only for its members.
-* If composite persistence unit member can't be used independently from its composite (specifies <property name="eclipselink.composite-unit.member" value="true"/>) 
+* If composite persistence unit member can't be used independently from its composite (specifies {@literal <property name="eclipselink.composite-unit.member" value="true"/>})
 * then it must specify both its source and persistenceInfo of its composite.
 * Otherwise composite persistence unit member may or may not specify persistenceInfo of its composite.
 * <li>log - specify a logging file. This is optional.

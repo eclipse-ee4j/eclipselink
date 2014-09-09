@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -58,7 +58,6 @@ import commonj.sdo.Type;
  * <pre>
  * jaxbHelperContext.getXSDHelper().define(xmlSchema);
  * </pre>
- * </p>
  * 
  * <p>
  * The JAXBHelperContext allows you to convert between POJOs and DataObjects using
@@ -71,8 +70,7 @@ import commonj.sdo.Type;
  * 
  * DataObject customerDO = jaxbHelperContext.wrap(customer);
  * customerDO.getString("address/street");  // returns "123 Any Street"
- * </pre> 
- * </p>
+ * </pre>
  * 
  * <p>
  * The JAXBHelperContext allows you to convert between DataObjects and POJOs using
@@ -85,7 +83,6 @@ import commonj.sdo.Type;
  * Customer customer = jaxbHelperContext.unwrap(customerDO);
  * customer.getFirstName();  // returns "Jane"
  * </pre>
- * </p>
  * 
  * <p>
  * Of course the POJOs may be JPA entities.  Below is an example of wrapping the 
@@ -93,10 +90,9 @@ import commonj.sdo.Type;
  * <pre>
  * EntityManagerFactory emf = Persistence.createEntityManagerFactory("CustomerExample");      
  * EntityManager em = emf.createEntityManager();
- * List<MyEntity> entities = em.createQuery("SELECT e FROM MyEntity e WHERE ...").getResultList();
- * List<DataObject> dataObjects = hc.wrap(entities);
- * </pre> 
- * </p>
+ * {@literal List<MyEntity>} entities = em.createQuery("SELECT e FROM MyEntity e WHERE ...").getResultList();
+ * {@literal List<DataObject>} dataObjects = hc.wrap(entities);
+ * </pre>
  */
 public class JAXBHelperContext extends SDOHelperContext {
 

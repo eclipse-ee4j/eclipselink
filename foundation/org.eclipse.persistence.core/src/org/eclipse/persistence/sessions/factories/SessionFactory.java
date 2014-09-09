@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -72,7 +72,7 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
  * <i>Note</i>: The above code example shows how a detached instance can have
  * changes made to it persisted through use of the UnitOfWork merge API.
  *
- * @author Doug Clarke & John Braken
+ * @author Doug Clarke {@literal &} John Braken
  * @version 10.1.3
  * @since Dec 10, 2006
  */

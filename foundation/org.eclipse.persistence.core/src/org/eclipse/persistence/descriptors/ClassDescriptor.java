@@ -580,7 +580,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * If the descriptor has many tables, this must be the primary key in the first table,
      * if the other tables have the same primary key nothing else is required, otherwise
      * a primary key/foreign key field mapping must be provided for each of the other tables.
-     * @see #addMultipleTableForeignKeyFieldName(String, String);
+     * @see #addForeignKeyFieldNameForMultipleTable(String, String)
      */
     public void addPrimaryKeyFieldName(String fieldName) {
         addPrimaryKeyField(new DatabaseField(fieldName));
@@ -2805,7 +2805,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * TABLE_PER_CLASS inheritance strategy. Calling this on a descriptor that 
      * does not use table per class will cause problems, 
      * #hasTablePerClassPolicy() must always first be called.
-     * @see setTablePerClassPolicy()
+     * @see #setTablePerClassPolicy
      */
     public TablePerClassPolicy getTablePerClassPolicy() {
         return (TablePerClassPolicy) interfacePolicy;
@@ -2900,7 +2900,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Return if this descriptor is involved in inheritance, (is child or parent).
      * Note: If this class is part of table per class inheritance strategy this
      * method will return false. 
-     * @see hasTablePerClassPolicy()
+     * @see #hasTablePerClassPolicy()
      */
     @Override
     public boolean hasInheritance() {
@@ -4721,7 +4721,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * since isolated objects cannot be sent by  cache synchronization.
      * 
      * @deprecated as of EclipseLink 2.2
-     * @see setCacheIsolation(CacheIsolationType)
+     * @see #setCacheIsolation(CacheIsolationType)
      */
     @Deprecated
     public void setIsIsolated(boolean isIsolated) {
@@ -4848,7 +4848,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     /**
      * INTERNAL:
      * set whether this descriptor has any relationships through its mappings, through inheritance, or through aggregates 
-     * @param isSimpleDescriptor
+     * @param hasRelationships
      */
     public void setHasRelationships(boolean hasRelationships) {
         this.hasRelationships = hasRelationships;
@@ -6337,7 +6337,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultQueryRedirector() {
         return defaultQueryRedirector;
@@ -6350,7 +6350,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultQueryRedirector(QueryRedirector defaultRedirector) {
         this.defaultQueryRedirector = defaultRedirector;
@@ -6362,7 +6362,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultReadAllQueryRedirector() {
         return defaultReadAllQueryRedirector;
@@ -6374,7 +6374,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReadAllQueryRedirector(
             QueryRedirector defaultReadAllQueryRedirector) {
@@ -6387,7 +6387,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultReadObjectQueryRedirector() {
         return defaultReadObjectQueryRedirector;
@@ -6399,7 +6399,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReadObjectQueryRedirector(
             QueryRedirector defaultReadObjectQueryRedirector) {
@@ -6412,7 +6412,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultReportQueryRedirector() {
         return defaultReportQueryRedirector;
@@ -6424,7 +6424,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReportQueryRedirector(
             QueryRedirector defaultReportQueryRedirector) {
@@ -6437,7 +6437,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultUpdateObjectQueryRedirector() {
         return defaultUpdateObjectQueryRedirector;
@@ -6449,7 +6449,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultUpdateObjectQueryRedirector(QueryRedirector defaultUpdateQueryRedirector) {
         this.defaultUpdateObjectQueryRedirector = defaultUpdateQueryRedirector;
@@ -6461,7 +6461,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultInsertObjectQueryRedirector() {
         return defaultInsertObjectQueryRedirector;
@@ -6473,7 +6473,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultInsertObjectQueryRedirector(QueryRedirector defaultInsertQueryRedirector) {
         this.defaultInsertObjectQueryRedirector = defaultInsertQueryRedirector;
@@ -6485,7 +6485,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public QueryRedirector getDefaultDeleteObjectQueryRedirector() {
         return defaultDeleteObjectQueryRedirector;
@@ -6497,7 +6497,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultDeleteObjectQueryRedirector(QueryRedirector defaultDeleteObjectQueryRedirector) {
         this.defaultDeleteObjectQueryRedirector = defaultDeleteObjectQueryRedirector;
@@ -6510,7 +6510,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultQueryRedirectorClassName(String defaultQueryRedirectorClassName) {
         this.defaultQueryRedirectorClassName = defaultQueryRedirectorClassName;
@@ -6522,7 +6522,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query exection preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReadAllQueryRedirectorClassName(String defaultReadAllQueryRedirectorClassName) {
         this.defaultReadAllQueryRedirectorClassName = defaultReadAllQueryRedirectorClassName;
@@ -6534,7 +6534,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultReadObjectQueryRedirectorClassName(
             String defaultReadObjectQueryRedirectorClassName) {
@@ -6547,7 +6547,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query execution preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
    public void setDefaultReportQueryRedirectorClassName(
             String defaultReportQueryRedirectorClassName) {
@@ -6560,7 +6560,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     * Query redirectors allow the user to intercept query execution preventing
     * it or alternately performing some side effect like auditing.
     * 
-    * @see org.eclipse.persistence.queryframework.QueryRedirector
+    * @see org.eclipse.persistence.queries.QueryRedirector
     */
     public void setDefaultUpdateObjectQueryRedirectorClassName(
             String defaultUpdateObjectQueryRedirectorClassName) {
@@ -6573,7 +6573,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query exection preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultInsertObjectQueryRedirectorClassName(
             String defaultInsertObjectQueryRedirectorClassName) {
@@ -6586,7 +6586,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Query redirectors allow the user to intercept query exection preventing
      * it or alternately performing some side effect like auditing.
      * 
-     * @see org.eclipse.persistence.queryframework.QueryRedirector
+     * @see org.eclipse.persistence.queries.QueryRedirector
      */
     public void setDefaultDeleteObjectQueryRedirectorClassName(
             String defaultDeleteObjectQueryRedirectorClassName) {

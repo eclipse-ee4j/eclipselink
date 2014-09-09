@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -358,7 +358,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: disableRuntimeServices(): Configure the receiver such that no JMX/MBean will be registered
      * to provide runtime services for my DatabaseSession at runtime.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      */
     public void disableRuntimeServices() {
@@ -371,7 +370,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * enableRuntimeServices(): Configure the receiver such that JMX/MBeans will be registered
      * to provide runtime services for my DatabaseSession at runtime.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @since EclipseLink 2.2.0
      */
@@ -388,7 +386,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
        *
        * TopLink will NOT be configured to register for callbacks for beforeCompletion and afterCompletion.
      *
-     * @return void
      * @see #getExternalTransactionControllerClass()
      * @see #isJTAEnabled()
      */
@@ -419,8 +416,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * Default behavior is to use Thread(runnable).start()
      *
-     * @param Runnable runnable: the instance of runnable to be "started"
-     * @return void
+     * @param runnable: the instance of runnable to be "started"
      */
     public void launchContainerRunnable(Runnable runnable) {
         if (getThreadPool() == null) {
@@ -500,8 +496,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
 
     /**
      * INTERNAL: setIsCMP(boolean): Define whether or not we're in the context of CMP (i.e. the container created me)
-     *
-     * @return void 
      */
     public void setIsCMP(boolean isThisCMP) {
         isCMP = isThisCMP;
@@ -549,7 +543,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * Default is to do nothing.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #unregisterMBean()
@@ -565,7 +558,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: unregisterMBean(): Unregister the JMX MBean that was providing runtime services for my
      * databaseSession.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()
@@ -595,7 +587,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * Default is to do nothing. This should be subclassed if required.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      */
@@ -608,7 +599,6 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * Default is to do nothing. This should be subclassed if required.
      *
-     * @return void
      * @see #isRuntimeServicesEnabled()
      * @see #disableRuntimeServices()
      * @see #registerMBean()

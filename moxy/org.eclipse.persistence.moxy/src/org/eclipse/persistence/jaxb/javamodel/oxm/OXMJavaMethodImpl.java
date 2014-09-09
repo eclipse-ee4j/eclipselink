@@ -27,10 +27,10 @@ import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
  *
  * <p>
  * <b>Responsibilities:</b>
+ * </p>
  * <ul>
  *    <li>Provide Method information to the <code>JavaModel</code>.</li>
  * </ul>
- * </p>
  *
  * @since EclipseLink 2.2
  *

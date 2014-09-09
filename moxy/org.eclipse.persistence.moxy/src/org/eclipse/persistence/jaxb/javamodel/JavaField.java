@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,7 +22,7 @@ package org.eclipse.persistence.jaxb.javamodel;
  * </ul>
  *  
  * @since Oracle TopLink 11.1.1.0.0
- * @see org.eclipse.persistence.jaxb20.javamodel.JavaHasAnnotations
+ * @see org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations
  * @see java.lang.reflect.Field
  */
 public interface JavaField extends JavaHasAnnotations {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -39,7 +39,7 @@ import org.xml.sax.Attributes;
  * </ul>
  * <p>
  * <p>
- * <table border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Unmarshal Flag</th>
  * <th id="c2" align="left">Description</th>
@@ -62,21 +62,22 @@ import org.xml.sax.Attributes;
  * </tr>
  * </table>
  * <p>
- * <table border="1">
+ * <table summary="" border="1">
  * <tr>
- * <th id="c1" align="left">Marshal Enum</th>
- * <th id="c2" align="left">XMLNullRepresentationType Description</th>
- * </tr>
- * <td headers="c1"> XSI_NIL </td>
- * <td headers="c2">Nillable: Write out an xsi:nil="true" attribute.</td>
+ * <th id="c3" align="left">Marshal Enum</th>
+ * <th id="c4" align="left">XMLNullRepresentationType Description</th>
  * </tr>
  * <tr>
- * <td headers="c1"> ABSENT_NODE(default) </td>
- * <td headers="c2">Optional: Write out no node.</td>
+ * <td headers="c3"> XSI_NIL </td>
+ * <td headers="c4">Nillable: Write out an xsi:nil="true" attribute.</td>
  * </tr>
  * <tr>
- * <td headers="c1" nowrap="true"> EMPTY_NODE </td>
- * <td headers="c2">Required: Write out an empty <node/> or node="" node.</td>
+ * <td headers="c3"> ABSENT_NODE(default) </td>
+ * <td headers="c4">Optional: Write out no node.</td>
+ * </tr>
+ * <tr>
+ * <td headers="c3" nowrap="true"> EMPTY_NODE </td>
+ * <td headers="c4">Required: Write out an empty {@literal <node/>} or node="" node.</td>
  * </tr>
  * </table> &nbsp;<b>Usage</b>:<br>
  * 
@@ -124,22 +125,18 @@ public abstract class AbstractNullPolicy {
 
     /**
      * Get the enum that determines what XML to write when a null value is encountered.
-     * 
-     * @param enumValue
      */
     public XMLNullRepresentationType getMarshalNullRepresentation() {
         return marshalNullRepresentation;
-
     }
 
     /**
      * Set the enum that determines what XML to write when a null value is encountered.
-     * 
-     * @param enumValue
      */
     public void setMarshalNullRepresentation(XMLNullRepresentationType anEnumInstance) {
         marshalNullRepresentation = anEnumInstance;
     }
+
     /**
      * INTERNAL: 
      * When using the SAX or DOM Platform, this method is responsible for
@@ -271,7 +268,7 @@ public abstract class AbstractNullPolicy {
      * INTERNAL: When using the DOM Platform during unmarshal operations. 
      * Use the element to determine if the element represents a null value.
      * 
-     * @ param element
+     * @param element
      * @return true if based on the element it represents a null value, else false.
      */
     public boolean valueIsNull(Element element) {
@@ -320,8 +317,8 @@ public abstract class AbstractNullPolicy {
      * 
      * @param bIsNullRepresentedByEmptyNode
      */
-    public void setNullRepresentedByEmptyNode(boolean bisNullRepresentedByEmptyNode) {
-        isNullRepresentedByEmptyNode = bisNullRepresentedByEmptyNode;
+    public void setNullRepresentedByEmptyNode(boolean bIsNullRepresentedByEmptyNode) {
+        isNullRepresentedByEmptyNode = bIsNullRepresentedByEmptyNode;
     }
 
     /**
@@ -334,7 +331,7 @@ public abstract class AbstractNullPolicy {
 
     /**
      * 
-     * @param isNullRepresentedByXsiNil
+     * @param bIsNullRepresentedByXsiNil
      */
     public void setNullRepresentedByXsiNil(boolean bIsNullRepresentedByXsiNil) {
         isNullRepresentedByXsiNil = bIsNullRepresentedByXsiNil;
@@ -352,8 +349,8 @@ public abstract class AbstractNullPolicy {
      * 
      * @param ignoreAttributesForNil
      */
-    public void setIgnoreAttributesForNil(boolean ignoreAttributtesForNil) {
-    	this.ignoreAttributesForNil = ignoreAttributtesForNil;
+    public void setIgnoreAttributesForNil(boolean ignoreAttributesForNil) {
+    	this.ignoreAttributesForNil = ignoreAttributesForNil;
     }
 
     /**

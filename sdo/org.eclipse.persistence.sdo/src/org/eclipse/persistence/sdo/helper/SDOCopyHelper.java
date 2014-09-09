@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -39,7 +39,7 @@ import org.eclipse.persistence.oxm.sequenced.Setting;
  * <b>Purpose:</b>
  * <ul><li>A helper class for making deep or shallow copies of DataObjects.</li>
  * </ul>
- * <p/>
+ * <p>
  * <b>Responsibilities:</b>
  * <ul>
  * <li>Perform shallow and deep copy operations on {@link DataObject DataObject}s.</li>
@@ -88,7 +88,7 @@ public class SDOCopyHelper implements CopyHelper {
     }
 
     /**
-     * Constructor that takes in a HelperContext instance that contains this copyHelper.<br/>
+     * Constructor that takes in a HelperContext instance that contains this copyHelper.<br>
      * This is the recommended constructor.
      * @param aContext
      */

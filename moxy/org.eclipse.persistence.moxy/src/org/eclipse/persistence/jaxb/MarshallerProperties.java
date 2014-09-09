@@ -50,8 +50,8 @@ public class MarshallerProperties {
      * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
      * <i>Unmarshaller</i> will default to this attribute prefix.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_ATTRIBUTE_PREFIX
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_ATTRIBUTE_PREFIX
      */
     public static final String JSON_ATTRIBUTE_PREFIX = JAXBContextProperties.JSON_ATTRIBUTE_PREFIX;
 
@@ -62,8 +62,8 @@ public class MarshallerProperties {
      * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_INCLUDE_ROOT
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_INCLUDE_ROOT
      */
     public static final String JSON_INCLUDE_ROOT = JAXBContextProperties.JSON_INCLUDE_ROOT;
 
@@ -75,8 +75,8 @@ public class MarshallerProperties {
      * instances of <i>Marshaller</i> and <i>Unmarshaller</i> will default to 
      * this setting.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.NAMESPACE_SEPARATOR
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_NAMESPACE_SEPARATOR
      */
     public static final String JSON_NAMESPACE_SEPARATOR  = JAXBContextProperties.JSON_NAMESPACE_SEPARATOR;
 
@@ -87,8 +87,8 @@ public class MarshallerProperties {
      * the <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
      * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextPropertes.JSON_VALUE_WRAPPER
-     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_VALUE_WRAPPER
      */
     public static final String JSON_VALUE_WRAPPER = JAXBContextProperties.JSON_VALUE_WRAPPER;
 
@@ -104,8 +104,8 @@ public class MarshallerProperties {
      * <li>"application/json"
      * </ul>
      * @since 2.4
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.MEDIA_TYPE
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.MEDIA_TYPE
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#MEDIA_TYPE
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MEDIA_TYPE
      * @see org.eclipse.persistence.oxm.MediaType
      */
     public static final String MEDIA_TYPE = JAXBContextProperties.MEDIA_TYPE;
@@ -114,8 +114,8 @@ public class MarshallerProperties {
      * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the
      * namespace prefixes used while marshalling to XML.  Used for both marshal
      * and unmarshal when mediaType is set to "application/json". Value is 
-     * either a Map<String, String> of URIs to prefixes, or an implementation of 
-     * org.eclipse.persistence.oxm.NamespacePrefixMapper.
+     * either a {@literal Map<String, String>} of URIs to prefixes, or an
+     * implementation of org.eclipse.persistence.oxm.NamespacePrefixMapper.
      * @since 2.3.3
      * @see org.eclipse.persistence.oxm.NamespacePrefixMapper 
      */
@@ -157,7 +157,7 @@ public class MarshallerProperties {
      * 
      *     &#64;XmlElementWrapper(name="phone-numbers")
      *     &#64;XmlElement(name="phone-number")
-     *     private List<PhoneNumber> phoneNumbers;
+     *     private {@literal List<PhoneNumber>} phoneNumbers;
      * 
      * }
      * </pre>
@@ -184,8 +184,8 @@ public class MarshallerProperties {
      * }
      * </pre>
      * @since 2.4.2
-     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME
-     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_WRAPPER_AS_ARRAY_NAME
      */
     public static final String JSON_WRAPPER_AS_ARRAY_NAME = JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME;
 
@@ -209,7 +209,7 @@ public class MarshallerProperties {
     public static final String BEAN_VALIDATION_FACTORY = JAXBContextProperties.BEAN_VALIDATION_FACTORY;
 
     /**
-     * Allows to set bean validation target groups. Must be of type Class<?>[].
+     * Allows to set bean validation target groups. Must be of type {@literal Class<?>[]}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#BEAN_VALIDATION_GROUPS

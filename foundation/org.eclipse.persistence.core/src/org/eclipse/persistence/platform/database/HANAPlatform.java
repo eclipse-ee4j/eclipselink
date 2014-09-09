@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 SAP. All rights reserved.
+ * Copyright (c) 2012, 2014 SAP, Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -52,8 +52,8 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 /**
  * <b>Database Platform for SAP HANA</b> <br>
  * 
- * <p/>
- * <b>Feature Testing</b><br/>
+ * <p>
+ * <b>Feature Testing</b><br>
  * ----------------------
  * <ul>
  * <li>DDL Generation - Succeeds
@@ -71,9 +71,9 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * <li>Delimiters - Succeeds
  * <li>Auto Detection - Succeeds
  * </ul>
- * <br/>
- * <p/>
- * <b>Limitations</b><br/>
+ * <br>
+ * <p>
+ * <b>Limitations</b><br>
  * ----------------
  * <ul>
  * <li>Reserved SQL keywords cannot be used as table, column or sequence names. Use a different
@@ -86,8 +86,8 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * <li>Bulk update and delete operations that require multiple tables to be accessed cannot be used
  * (e.g. bulk operation on an entity that is part of an inheritance hierarchy, UpdateAll and
  * DeleteAll queries).
- * <li>'= NULL' and '<> NULL' cannot be used for null comparisons in the WHERE clause. Use 'IS (NOT)
- * NULL' instead.
+ * {@literal <li>'= NULL' and '<> NULL'} cannot be used for null comparisons in the WHERE clause.
+ * Use 'IS (NOT) NULL' instead.
  * <li>Scrollable cursors are not supported.
  * <li>Query timeouts are not supported.
  * </ul>

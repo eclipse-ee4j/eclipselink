@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,7 +16,7 @@ package org.eclipse.persistence.oxm;
  * <p>JSONWithPadding is used to hold an Object along with the corresponding callback name
  * to marshal.
  * <p>Sample Usage:
- * JSONWithPadding<Person> jsonWithPaddingObject = new JSONWithPadding(person, "theCallBackName");
+ * {@literal JSONWithPadding<Person>} jsonWithPaddingObject = new JSONWithPadding(person, "theCallBackName");
  * Marshal this jsonWithPaddingObject object would result in JSON like this:
  *     theCallBackName({"person":{"id":10,"name":"Bob"}});
  */
@@ -65,7 +65,6 @@ public class JSONWithPadding<T> {
 
 	/**
 	 * The callback name that should me marshalled with the object
-	 * @return
 	 */
 	public void setCallbackName(String callbackName) {
 		if(callbackName == null){

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,10 +16,10 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a function expression returning a string value.
  *
- * <div nowrap><b>BNF:</b> <code>functions_returning_strings ::= CONCAT(string_primary, string_primary {, string_primary}*) |
+ * <div><b>BNF:</b> <code>functions_returning_strings ::= CONCAT(string_primary, string_primary {, string_primary}*) |
  * SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression]) |
  * TRIM([[trim_specification] [trim_character] FROM] string_primary) |
- * LOWER(string_primary) | UPPER(string_primary)</code><p>
+ * LOWER(string_primary) | UPPER(string_primary)</code><p></div>
  *
  * @version 2.4
  * @since 2.3

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * This expression tests whether or not the collection designated by the collection-valued path
  * expression is empty (i.e, has no elements).
  * <p>
- * <div nowrap><b>BNF:</b> <code>empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY</code><p>
+ * <div><b>BNF:</b> <code>empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY</code><p></div>
  *
  * @see EmptyCollectionComparisonExpression
  *
@@ -184,7 +184,7 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
 	 * JPQL query into {@link StateObject StateObjects}.
 	 *
 	 * @param expression The {@link EmptyCollectionComparisonExpression parsed object} representing
-	 * an <code><b>EMPTY</b></code expression
+	 * an <code><b>EMPTY</b></code> expression
 	 */
 	public void setExpression(EmptyCollectionComparisonExpression expression) {
 		super.setExpression(expression);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -516,7 +516,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     /**
      * PUBLIC:
      * Sets whether the mapping uses a single node.
-     * @param True if the items in the collection are in a single node or false if each of the items in the collection is in its own node
+     * @param usesSingleNode true if the items in the collection are in a single node or false if each of the items in the collection is in its own node
      */
     public void setUsesSingleNode(boolean usesSingleNode) {
         if (getField() instanceof Field) {
@@ -528,7 +528,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     * PUBLIC:
     * Checks whether the mapping uses a single node.
     *
-    * @returns True if the items in the collection are in a single node or false if each of the items in the collection is in its own node.
+    * @return True if the items in the collection are in a single node or false if each of the items in the collection is in its own node.
     */
     public boolean usesSingleNode() {
         if (getField() instanceof Field) {

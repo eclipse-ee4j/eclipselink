@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -26,11 +26,11 @@ import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_NN;
 /**
  * This class is used to construct expressions that use Oracle Spatial operators
  * 
- * <pre><blockquote>
+ * <blockquote><pre>
  * ExpressionBuilder builder = new ExpressionBuilder();
  * Expression withinDistance = SpatialExpressions.withinDistance(myJGeometry1, myJGeometry2, "DISTANCE=10");
  * session.readAllObjects(GeometryHolder.class, withinDistance);
- * </blockquote></pre></p>
+ * </pre></blockquote>
  *
  * @since Oracle TopLink 11.1.1.0.0
  */
@@ -41,11 +41,11 @@ public class SpatialExpressionFactory {
      * Return an Expression for the MDSYS.SDO_WITHIN_DISTANCE Spatial Operator on the Oracle Database
      * Use of this expression requires the Java spatial classes
      * 
-     * <pre><blockquote>
+     * <blockquote><pre>
      * SpatialParameters parameters = new SpatialParameters();
      *parameters.setDistance(10d);
      * Expression selectCriteria = SpatialExpressions.withinDistance(jGeometry1, jGeometry2, parameters);
-     * </blockquote></pre>
+     * </pre></blockquote>
      * 
      * @param geom1 an Expression representing a JGeometryObject
      * @param geom2 a JGeometryObject or an Expression representing a JGeometryObject
@@ -62,11 +62,11 @@ public class SpatialExpressionFactory {
      * Return an Expression for the MDSYS.MDSYS.SDO_RELATE Spatial Operator on the Oracle Database
      * Use of this operator requires the Java spatial classes
      * 
-     * <pre><blockquote>
+     * <blockquote><pre>
      * SpatialParameters parameters = new SpatialParameters();
      * parameters..setMask(Mask.ANYINTERACT).setQueryType(QueryType.WINDOW);
      * Expression selectCriteria = SpatialExpressions.relate(jGeometry1, jGeometry2, parameters);
-     * </blockquote></pre>
+     * </pre></blockquote>
      * 
      * @param geom1 an Expression representing a JGeometryObject
      * @param geom2 a JGeometryObject or an Expression representing a JGeometryObject
@@ -83,11 +83,11 @@ public class SpatialExpressionFactory {
      * Return an Expression for the MDSYS.SDO_FILTER Spatial Operator on the Oracle Database
      * Use of this operator requires the Java spatial classes
      * 
-     * <pre><blockquote>
+     * <blockquote><pre>
      * SpatialParameters parameters = new SpatialParameters();
      * parameters.setQueryType(QueryType.WINDOW);
      * Expression selectCriteria = SpatialExpressions.filter(jGeometry1, jGeometry2, parameters);
-     * </blockquote></pre>
+     * </pre></blockquote>
      * 
      * @param geom1 an Expression representing a JGeometryObject
      * @param geom2 a JGeometryObject or an Expression representing a JGeometryObject
@@ -104,11 +104,11 @@ public class SpatialExpressionFactory {
      * Return an Expression for the MDSYS.SDO_NN Spatial Operator on the Oracle Database
      * Use of this operator requires the Java spatial classes
      * 
-     * <pre><blockquote>
+     * <blockquote><pre>
      * SpatialParameters parameters = new SpatialParameters();
      * parameters.setUnit(Units.M);
      * Expression selectCriteria = SpatialExpressions.nearestNeighbor(jGeometry1, jGeometry2, parameters);
-     * </blockquote></pre>
+     * </pre></blockquote>
      * 
      * @param geom1 an Expression representing a JGeometryObject
      * @param geom2 a JGeometryObject or an Expression representing a JGeometryObject

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,10 +17,11 @@ package org.eclipse.persistence.oxm.annotations;
  * java object should be marshalled to XML. The possible options are:<br>
  * <ul>
  * <li>XSI_NIL - This means that the element should be written out with an xsi:nil attribute. Example: 
- * <code>&lt;element xsi:nil="true"/></code></li>
+ * <code>&lt;element xsi:nil="true"/&gt;</code></li>
  * <li>EMPTY_NODE - This indicates that the element should be written out to xml with no contents
- * Example: <code>&lt;element /></code></li>
- * <li>ABSENT_NODE - Absent node means that no element should be written to XML if null is encountered 
+ * Example: <code>&lt;element /&gt;</code></li>
+ * <li>ABSENT_NODE - Absent node means that no element should be written to XML if null is encountered
+ * </ul>
  */
 public enum XmlMarshalNullRepresentation {
 

@@ -420,7 +420,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 	/**
 	 * Determines whether an identification variable can be used in a comparison expression when the
-	 * operator is either '<', '<=', '>', '>='.
+	 * operator is either {@literal '<', '<=', '>', '>='}.
 	 *
 	 * @param expression The {@link IdentificationVariable} that is mapped to either an entity, a
 	 * singled-object value field, a collection-valued object field
@@ -433,7 +433,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 	/**
 	 * Determines whether the given {@link ComparisonExpression} compares two expression using one of
-	 * the following operators: '<', '<=', '>', '>='.
+	 * the following operators: {@literal '<', '<=', '>', '>='}.
 	 *
 	 * @param expression The {@link ComparisonExpression} to check what type of operator that is used
 	 * @return <code>true</code> if the operator is used to check for order; <code>false</code> if it
@@ -937,7 +937,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * Validates the left and right expressions of the given {@link ComparisonExpression}. The tests
 	 * to perform are:
 	 * <ul>
-	 *    <li>If the comparison operator is either '=' or '<>'. The expressions can only be
+	 *    <li>If the comparison operator is either '=' or {@literal '<>'}. The expressions can only be
 	 *       <ul>
 	 *          <li>Two identification variables;</li>
 	 *          <li>Two path expressions resolving to an association field;</li>
@@ -945,7 +945,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 *              resolve to a basic value.</li>
 	 *       </ul>
 	 *    </li>
-	 *    <li>If the comparison operator is either '<', '<=', '>=', '>'. The expressions cannot be
+	 *    <li>If the comparison operator is either {@literal '<', '<=', '>=', '>'}. The expressions cannot be
 	 *       <ul>
 	 *          <li>Two identification variables;</li>
 	 *          <li>Two path expressions resolving to an association field;</li>
@@ -1357,7 +1357,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 *
 	 * @param expression The {@link CompoundExpression} to validate by validating its left and right
 	 * expressions
-	 * @param associationFieldValid Determines whether an association field is a valid type
+	 * @param pathType The type of field that is allowed
 	 * @return A number indicating the validation result. {@link #isValid(int, int)} can be used to
 	 * determine the validation status of an expression based on its position
 	 */
@@ -1497,8 +1497,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * clause in the current subquery or in a superquery.</li>
 	 * <li>They have been defined only once.</li>
 	 * </ul>
-	 *
-	 * @param expression The {@link InExpression} to validate
 	 */
 	protected void validateIdentificationVariables() {
 
@@ -2008,10 +2006,10 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	}
 
 	/**
-	 * Validates the given {@link validateSelectClause}. The default behavior does not require to
+	 * Validates the given {@link SelectClause}. The default behavior does not require to
 	 * semantically validate it.
 	 *
-	 * @param expression The {@link validateSelectClause} to validate
+	 * @param expression The {@link SelectClause} to validate
 	 */
 	protected void validateSelectClause(SelectClause expression) {
 

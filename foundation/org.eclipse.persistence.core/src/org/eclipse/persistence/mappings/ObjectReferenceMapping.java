@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1254,8 +1254,8 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * list of PKs of the target entities. This method is used in combination
      * with the CachedValueHolder to store references to PK's to be loaded from
      * a cache instead of a query.
-     * @see ContainerPolicy.buildReferencesPKList()
-     * @see MappedKeyMapContainerPolicy()
+     * @see org.eclipse.persistence.internal.queries.ContainerPolicy#buildReferencesPKList
+     * @see org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy
      */
     @Override
     public Object[] buildReferencesPKList(Object entity, Object attribute, AbstractSession session) {
@@ -1302,7 +1302,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * With this policy, proxy objects are returned during object creation.  When a message other than
      * <CODE>toString</CODE> is called on the proxy the real object data is retrieved from the database.
      *
-     * @param    proxyInterfaces        The interfaces that the target class implements.  The attribute must be typed
+     * @param    targetInterfaces        The interfaces that the target class implements.  The attribute must be typed
      *                                as one of these interfaces.
      */
     public void useProxyIndirection(Class[] targetInterfaces) {
@@ -1326,7 +1326,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * With this policy, proxy objects are returned during object creation.  When a message other than
      * <CODE>toString</CODE> is called on the proxy the real object data is retrieved from the database.
      *
-     * @param    proxyInterface        The interface that the target class implements.  The attribute must be typed
+     * @param    targetInterface        The interface that the target class implements.  The attribute must be typed
      *                                as this interface.
      */
     public void useProxyIndirection(Class targetInterface) {

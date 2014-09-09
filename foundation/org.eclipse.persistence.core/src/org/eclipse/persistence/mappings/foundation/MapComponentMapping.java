@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,13 +25,13 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * by mappings that provide the value in a mapping to a Map.  Mappings that provide the key generally 
  * implement sub-interface MapKeyMapping
  * 
- * @see MappedKeyContainerPolicy
- * @see MapKeyMapping
- * @see DirectCollectionMapping
- * @see AggregateCollectionMapping
- * @see OneToManyMapping
- * @see UnidirectionalOneToManyMapping
- * @see ManyToManyMapping
+ * @see org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy
+ * @see org.eclipse.persistence.mappings.foundation.MapKeyMapping
+ * @see org.eclipse.persistence.mappings.DirectCollectionMapping
+ * @see org.eclipse.persistence.mappings.AggregateCollectionMapping
+ * @see org.eclipse.persistence.mappings.OneToManyMapping
+ * @see org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping
+ * @see org.eclipse.persistence.mappings.ManyToManyMapping
  * @author tware
  *
  */

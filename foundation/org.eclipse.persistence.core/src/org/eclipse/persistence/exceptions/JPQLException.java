@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -473,7 +473,7 @@ public class JPQLException extends EclipseLinkException {
     }
 
     /**
-     * <b>JPQLException[<a name="8034">8034</a>] Entity Type Not Found</b>
+     * <b>{@link JPQLException} Entity Type Not Found</b>
      * <p>
      * Indicates that a type specified in a JPQL query string cannot be found in
      * the current persistence unit. Ensure that the entity name is properly

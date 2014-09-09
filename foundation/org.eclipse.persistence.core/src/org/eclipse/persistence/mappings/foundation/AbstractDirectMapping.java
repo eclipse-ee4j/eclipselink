@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1182,7 +1182,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * keys are populated.  In this way the minimum original required for
      * instantiating a working copy clone can be built without placing it in
      * the shared cache (no concern over cycles).
-     * @parameter original later the input to buildCloneFromRow
+     * @param original later the input to buildCloneFromRow
      */
     @Override
     public void buildShallowOriginalFromRow(AbstractRecord databaseRow, Object original, JoinedAttributeManager joinManager, ObjectBuildingQuery query, AbstractSession executionSession) {

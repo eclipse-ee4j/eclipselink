@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -89,7 +89,7 @@ public class DefaultValueStore implements ValueStore {
       * - we cannot set this variable until the dataObject itself is finished instantiation
       * - hence the 2-step initialization.
       *
-      * @param dataObject
+      * @param aDataObject
       */
     public void initialize(DataObject aDataObject) {
         dataObject = aDataObject;
@@ -131,7 +131,7 @@ public class DefaultValueStore implements ValueStore {
 
     /**
      * INTERNAL:
-     * @param Map openContentValues
+     * @param openContentValues
      */
     public void setOpenContentValues(Map openContentValues) {
         this.openContentValues = openContentValues;

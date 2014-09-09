@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -59,7 +59,7 @@ public abstract class Cursor implements Enumeration, Iterator, java.io.Serializa
     /** Conforming instances found in memory when building the result. */
     protected Map<Object, Object> initiallyConformingIndex;
 
-    /** SelectionCriteria & translation row ready for incremental conforming. */
+    /** SelectionCriteria {@literal &} translation row ready for incremental conforming. */
     protected Expression selectionCriteriaClone;
     protected AbstractRecord translationRow;
     /** Store the next row, for 1-m joining. */

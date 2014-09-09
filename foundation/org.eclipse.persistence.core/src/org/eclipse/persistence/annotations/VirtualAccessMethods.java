@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * Specifies that this class contains virtual attributes.
  * This annotation is used in an EclipseLink-specific way to define
  * access methods used by mappings with accessType=VIRTUAL.
- * The xml-equivalent is the <access-methods> tag
+ * The xml-equivalent is the {@literal <access-methods>} tag
  */
 @Documented
 @Target(TYPE)

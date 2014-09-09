@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -374,7 +374,7 @@ public class ConnectionPool {
     /**
      *  INTERNAL:
      *  Set this list of connections available
-     *  @param java.util.Vector
+     *  @param connectionsAvailable
      */
     protected void setConnectionsAvailable(Vector connectionsAvailable) {
         this.connectionsAvailable = connectionsAvailable;
@@ -383,7 +383,7 @@ public class ConnectionPool {
     /**
      *  INTERNAL:
      *  Set the list of connections being used.
-     *  @param java.util.Vector
+     *  @param connectionsUsed
      */
     protected void setConnectionsUsed(Vector connectionsUsed) {
         this.connectionsUsed = connectionsUsed;
@@ -462,7 +462,7 @@ public class ConnectionPool {
 
     /**
      *  Set the ServerSession that owns this connection pool
-     *  @param org.eclipse.persistence.sessions.server.ServerSession
+     *  @param owner
      */
     protected void setOwner(ServerSession owner) {
         this.owner = owner;

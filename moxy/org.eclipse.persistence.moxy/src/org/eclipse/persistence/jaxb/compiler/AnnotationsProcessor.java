@@ -177,6 +177,7 @@ import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
  * MarshalCallback and UnmarshalCallback objects to wrap them.</li>
  * <li>Centralize processing which is common to both Schema Generation and
  * Mapping Generation tasks</li>
+ * </ul>
  * <p>
  * This class does the initial processing of the JAXB 2.0 Generation. It
  * generates meta data that can be used by the later Schema Generation and
@@ -749,8 +750,7 @@ public final class AnnotationsProcessor {
 
     /**
      * Process any additional classes (i.e. inner classes, @XmlSeeAlso,
-     *
-     * @XmlRegistry, etc.) for a given set of JavaClasses, then complete
+     * {@literal @XmlRegistry}, etc.) for a given set of JavaClasses, then complete
      * building all of the required TypeInfo objects. This method
      * is typically called after init and preBuildTypeInfo have
      * been called.
@@ -3294,7 +3294,7 @@ public final class AnnotationsProcessor {
      * Use name, namespace and type information to setup a user-defined schema
      * type. This method will typically be called when processing an
      *
-     * @XmlSchemaType(s) annotation or xml-schema-type(s) metadata.
+     * {@literal @XmlSchemaType(s)} annotation or xml-schema-type(s) metadata.
      *
      * @param name
      * @param namespace
@@ -3546,8 +3546,6 @@ public final class AnnotationsProcessor {
     /**
      * Add a package name/NamespaceInfo entry to the map. This method will
      * lazy-load the map if necessary.
-     *
-     * @return
      */
     public void addPackageToNamespaceMapping(String packageName, NamespaceInfo nsInfo) {
       PackageInfo info = getPackageInfoWithLazyInit(packageName);
@@ -3557,8 +3555,6 @@ public final class AnnotationsProcessor {
     /**
      * Add a package name/XmlElementNillable entry to the map. This method will
      * lazy-load the map if necessary.
-     *
-     * @return
      */
     public void addPackageToXmlElementNillable(String packageName, org.eclipse.persistence.jaxb.xmlmodel.XmlElementNillable xmlElementNillable) {
         XmlNillableInfo info = getXmlNillableInfoWithLazyInit(packageName);
@@ -3568,8 +3564,6 @@ public final class AnnotationsProcessor {
     /**
      * Add a package name/XmlNullPolicy entry to the map. This method will
      * lazy-load the map if necessary.
-     *
-     * @return
      */
     public void addPackageToXmlNullPolicy(String packageName, org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy xmlNullPolicy) {
         XmlNillableInfo info = getXmlNillableInfoWithLazyInit(packageName);
@@ -4796,7 +4790,7 @@ public final class AnnotationsProcessor {
      * map for each call. We should eventually store the TypeInfos in a Map
      * based on package name, i.e.:
      *
-     * Map<String, Map<String, TypeInfo>>
+     * Map {@literal <String, Map<String, TypeInfo>>}
      *
      * @param packageName
      * @return List of TypeInfo objects for a given package name
@@ -5045,7 +5039,7 @@ public final class AnnotationsProcessor {
      * Indicates whether this AnnotationsProcessor has been configured to enable
      * processing of XmlAccessorFactory annotations.
      *
-     * @see com.sun.xml.bind.XmlAccessorFactory
+     * @see com.sun.xml.internal.bind.XmlAccessorFactory
      */
     public boolean isXmlAccessorFactorySupport() {
         return xmlAccessorFactorySupport;
@@ -5054,7 +5048,7 @@ public final class AnnotationsProcessor {
     /**
      * Sets whether this AnnotationsProcessor should process XmlAccessorFactory annotations.
      *
-     * @see com.sun.xml.bind.XmlAccessorFactory
+     * @see com.sun.xml.internal.bind.XmlAccessorFactory
      */
     public void setXmlAccessorFactorySupport(boolean value) {
         this.xmlAccessorFactorySupport = value;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,10 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tools.model;
 
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLStatementBNF;
+import org.eclipse.persistence.jpa.jpql.parser.*;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.JPQLQueryStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedTypeProvider;
@@ -132,20 +129,16 @@ public abstract class AbstractJPQLQueryBuilder implements IJPQLQueryBuilder {
 	}
 
 	/**
-	 * Creates the builder that creates the {@link StateObject} for each {@link org.eclipse.
-	 * persistence.jpa.jpql.parser.Expression Expression}.
+	 * Creates the builder that creates the {@link StateObject} for each {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}.
 	 *
-	 * @return The builder that will be visiting the {@link org.eclipse.persistence.jpa.jpql.parser.
-	 * Expression Expression}
+	 * @return The builder that will be visiting the {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}
 	 */
 	protected abstract BasicStateObjectBuilder buildStateObjectBuilder();
 
 	/**
-	 * Returns the builder that creates the {@link StateObject} for each {@link org.eclipse.
-	 * persistence.jpa.jpql.parser.Expression Expression}.
+	 * Returns the builder that creates the {@link StateObject} for each {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}.
 	 *
-	 * @return The builder that will be visiting the {@link org.eclipse.persistence.jpa.jpql.parser.
-	 * Expression Expression}
+	 * @return The builder that will be visiting the {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}
 	 */
 	protected final BasicStateObjectBuilder getStateObjectBuilder() {
 		if (builder == null) {
@@ -157,7 +150,7 @@ public abstract class AbstractJPQLQueryBuilder implements IJPQLQueryBuilder {
 	/**
 	 * Parses the given JPQL query with tolerant mode turned on.
 	 *
-	 * @param query The string representation of the JPQL query to parse
+	 * @param jpqlQuery The string representation of the JPQL query to parse
 	 * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
 	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
 	 * to parse invalid or incomplete queries
@@ -172,7 +165,7 @@ public abstract class AbstractJPQLQueryBuilder implements IJPQLQueryBuilder {
 	 *
 	 * @param jpqFragment The string representation of the portion of a JPQL query to parse
 	 * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
-	 * @param queryBNFId The unique identifier of the {@link queryBNFId}
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF}
 	 * @return The root of the parsed tree representation of the JPQL fragment
 	 */
 	protected JPQLExpression parse(CharSequence jpqFragment,

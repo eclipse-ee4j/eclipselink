@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,7 +22,7 @@ import java.util.Map;
  * <p>
  * The conversion supports both converting a numeric character reference (&amp;#nnnn; where nnnn is
  * the code point in decimal form or &amp;xhhhh; where hhhh is the code point in hexadecimal point)
- * and a character entity reference (&name; where name is the case-sensitive name of the entity).
+ * and a character entity reference (&amp;name; where name is the case-sensitive name of the entity).
  *
  * @version 2.5
  * @since 2.5
@@ -37,7 +37,7 @@ public final class XmlEscapeCharacterConverter {
 	public static final String AMPERSAND_ENTITY_NAME = "&amp;";
 
 	/**
-	 * The entity name for apostrophe: <b>&apos;</b>.
+	 * The entity name for apostrophe: <b>&amp;apos;</b>.
 	 */
 	public static final String APOSTROPHE_ENTITY_NAME = "&apos;";
 
@@ -528,8 +528,8 @@ public final class XmlEscapeCharacterConverter {
 	 *
 	 * @param query The query that may contain escape characters
 	 * @param positions The position within the non-escaped version of the given query, which is
-	 * either a single element position or two positions that is used as a text range
-	 * @return The adjusted positions by moving it based on the difference between the escape and
+	 * either a single element position or two positions that is used as a text range. After execution
+     * contains the adjusted positions by moving it based on the difference between the escape and
 	 * non-escaped versions of the query
 	 * @since 2.5
 	 */
@@ -592,10 +592,9 @@ public final class XmlEscapeCharacterConverter {
 	 * <p>
 	 * <ul>
 	 * <li>Character entity reference: <b>&amp;copy;</b> for <b>&copy;</b></li>
-	 * <li>Numeric character reference (decimal value): <b>&amp#169;</b> for <b>&#169;</b></li>
-	 * <li>Numeric character reference (hexadecimal value): <b>&amp#xA9;</b> for <b>&#xA9;</b></li>
+	 * <li>Numeric character reference (decimal value): <b>&amp;#169;</b> for <b>&#169;</b></li>
+	 * <li>Numeric character reference (hexadecimal value): <b>&amp;#xA9;</b> for <b>&#xA9;</b></li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @param value A string that may contain escape characters
 	 * @param position This array of length one can be used to adjust the position of the cursor

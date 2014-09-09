@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -569,7 +569,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * with the list of {@link JPQLQueryBNF} associated with the given unique identifiers.
 	 *
 	 * @param expression The {@link Expression} to validate based on the query BNF
-	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF} that determines if the
+	 * @param queryBNFIds The unique identifier of the {@link JPQLQueryBNF} that determines if the
 	 * given {@link Expression} is valid
 	 * @return <code>true</code> if the {@link Expression}'s {@link JPQLQueryBNF} is either the
 	 * {@link JPQLQueryBNF} or a child of it; <code>false</code> otherwise

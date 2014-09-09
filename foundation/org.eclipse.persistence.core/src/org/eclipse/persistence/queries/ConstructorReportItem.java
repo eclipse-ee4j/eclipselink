@@ -40,7 +40,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  *      item.setResultType(Employee.class);
  *      item.addAttribute("firstName", employees.get("firstName"));
  *      query.addConstructorReportItem(item);
- * </blockquote></pre>
+ * </pre></blockquote>
  * <p>
  * When executed will return a collection of ReportQueryResults that contain Employee objects created using
  * the new Employee(firstname) constructor. 
