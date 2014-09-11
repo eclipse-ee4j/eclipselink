@@ -10,6 +10,6 @@
 # is provided for INSTALL_JAVA_HOME then the system JAVA_HOME
 # value will be used
 INSTALL_JAVA_HOME=%s_jreDirectory%;
-if  [ "$JAVA_HOME" == "" ]; then
+if  [ "${JAVA_HOME}" = '' ]; then
     JAVA_HOME=$INSTALL_JAVA_HOME; export JAVA_HOME
 fi
