@@ -42,7 +42,6 @@ import org.junit.Test;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -78,8 +77,7 @@ public class TestService {
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
-        PersistenceContext context = factory.get("jpars_auction", RestUtils.getServerURI(), null, properties);
-        return context;
+        return factory.get("jpars_auction", RestUtils.getServerURI(), null, properties);
     }
 
     public static PersistenceContext getPhoneBookPersistenceContext(Map<String, Object> additionalProperties) throws URISyntaxException {
@@ -88,8 +86,7 @@ public class TestService {
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
-        PersistenceContext context = factory.get("jpars_phonebook", RestUtils.getServerURI(), null, properties);
-        return context;
+        return factory.get("jpars_phonebook", RestUtils.getServerURI(), null, properties);
     }
 
     @BeforeClass
@@ -165,7 +162,7 @@ public class TestService {
         entities.add(entity);
         entities.add(entity2);
 
-        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction", "User", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction", "User", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
                 TestService.serializeListToStream(entities, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -221,7 +218,7 @@ public class TestService {
         entities.add(entity);
         entities.add(entity2);
 
-        StreamingOutput output = (StreamingOutput) resource.update("jpars_phonebook", "Person", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_phonebook", "Person", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
                 serializeListToStream(entities, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -362,7 +359,7 @@ public class TestService {
         entity1.set("name", "Laptop");
         entity1.set("description", "Speedy");
 
-        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction", "Auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction", "Auction", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
                 serializeToStream(entity1, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         String resultString = stringifyResults(output);
@@ -395,7 +392,7 @@ public class TestService {
         entity3.set("amount", 201d);
         entity1 = entity3.get("auction");
         entity1.set("name", "Laptop");
-        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction", "Bid", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
                 serializeToStream(entity3, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         String resultString = stringifyResults(output);
@@ -414,7 +411,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         StreamingOutput output = null;
         try {
-            output = (StreamingOutput) resource.getContexts(generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo()).getEntity();
+            output = (StreamingOutput) resource.getContexts(TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo()).getEntity();
         } catch (JAXBException e) {
             fail("Exception: " + e);
         }
@@ -428,7 +425,7 @@ public class TestService {
         PersistenceUnitResource resource = new PersistenceUnitResource();
         resource.setPersistenceFactory(factory);
         StreamingOutput output = null;
-        output = (StreamingOutput) resource.getTypes("jpars_auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo()).getEntity();
+        output = (StreamingOutput) resource.getTypes("jpars_auction", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo()).getEntity();
         String result = stringifyResults(output);
 
         assertTrue("Bid was not in the results", result.contains("Bid"));
@@ -447,7 +444,7 @@ public class TestService {
         context.create(null, entity1);
 
         TestURIInfo ui = new TestURIInfo();
-        resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
+        resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
 
         entity1 = (DynamicEntity) context.find("Auction", entity1.get("id"));
 
@@ -469,7 +466,7 @@ public class TestService {
         ui.addMatrixParameter("User.updateName", "name", "Robert");
         ui.addMatrixParameter("User.updateName", "id", entity.get("id").toString());
 
-        resource.namedQueryUpdate("jpars_auction", "User.updateName", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
+        resource.namedQueryUpdate("jpars_auction", "User.updateName", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
 
         entity = (DynamicEntity) context.find("User", entity.get("id"));
 
@@ -491,7 +488,7 @@ public class TestService {
         user.set("address", address);
         context.create(null, user);
 
-        Response output = resource.find("jpars_auction", "Address", address.get("id") + "+" + address.get("type"), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
+        Response output = resource.find("jpars_auction", "Address", address.get("id") + "+" + address.get("type"), TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
                 new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller) output.getEntity());
@@ -505,7 +502,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
 
         Response output = resource.find("jpars_auction-static-local", "StaticAddress", StaticModelDatabasePopulator.ADDRESS1_ID + "+" + StaticModelDatabasePopulator.address1().getType(),
-                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+                TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller) output.getEntity());
         assertTrue("home was not in the result", result.contains("home"));
@@ -518,7 +515,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
 
         Response output = resource.find("jpars_auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID),
-                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+                TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller) output.getEntity());
         assertTrue("Auction was not in the result", result.contains("\"rel\":\"auction\""));
@@ -538,7 +535,7 @@ public class TestService {
 
         try {
             Response output = resource.setOrAddAttribute("jpars_auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user",
-                    generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user2, context, MediaType.APPLICATION_JSON_TYPE));
+                    TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user2, context, MediaType.APPLICATION_JSON_TYPE));
 
             stringifyResults((StreamingOutputMarshaller) output.getEntity());
             context.getServerSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -608,7 +605,7 @@ public class TestService {
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
         try {
-            resource.getContexts(generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+            resource.getContexts(TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
         } catch (JAXBException e) {
             fail(e.toString());
         }
@@ -618,9 +615,9 @@ public class TestService {
     public void testMetadataTypes() {
         PersistenceUnitResource resource = new PersistenceUnitResource();
         resource.setPersistenceFactory(factory);
-        resource.getTypes("jpars_auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
-        resource.getDescriptorMetadata("jpars_auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
-        resource.getQueriesMetadata("jpars_auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        resource.getTypes("jpars_auction", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        resource.getDescriptorMetadata("jpars_auction", "Bid", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        resource.getQueriesMetadata("jpars_auction", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
     }
 
     @Test(expected = JPARSException.class)
@@ -636,7 +633,7 @@ public class TestService {
         TestURIInfo ui = new TestURIInfo();
         ui.addMatrixParameter("jpars_auction-static-local", "tenant.id", "AcctOwner1");
 
-        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction-static-local", "Account", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui,
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction-static-local", "Account", TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui,
                 serializeToStream(account, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         String result = stringifyResults(output);
@@ -644,7 +641,7 @@ public class TestService {
         account = (Account) context.unmarshal(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
 
         output = (StreamingOutput) resource.find("jpars_auction-static-local", "Account", String.valueOf(account.getId()),
-                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui).getEntity();
+                TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui).getEntity();
         result = stringifyResults(output);
         account = (Account) context.unmarshal(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
 
@@ -653,7 +650,7 @@ public class TestService {
         ui2.addMatrixParameter("jpars_auction-static-local", "tenant.id", "AcctOwner2");
 
         output = (StreamingOutput) resource.find("jpars_auction-static-local", "Account", String.valueOf(account.getId()),
-                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui2).getEntity();
+                TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui2).getEntity();
     }
 
     public static String stringifyResults(StreamingOutput output) {
@@ -674,8 +671,7 @@ public class TestService {
             e.printStackTrace();
             fail(e.toString());
         }
-        ByteArrayInputStream stream = new ByteArrayInputStream(os.toByteArray());
-        return stream;
+        return new ByteArrayInputStream(os.toByteArray());
     }
 
     public static InputStream serializeListToStream(List<DynamicEntity> object, PersistenceContext context, MediaType mediaType) {
@@ -686,17 +682,6 @@ public class TestService {
             e.printStackTrace();
             fail(e.toString());
         }
-        ByteArrayInputStream stream = new ByteArrayInputStream(os.toByteArray());
-        return stream;
-    }
-
-    public static HttpHeaders generateHTTPHeader(MediaType acceptableMedia, String mediaTypeString) {
-        TestHttpHeaders headers = new TestHttpHeaders();
-        headers.getAcceptableMediaTypes().add(acceptableMedia);
-        List<String> mediaTypes = new ArrayList<String>();
-        mediaTypes.add(mediaTypeString);
-
-        headers.getRequestHeaders().put(HttpHeaders.CONTENT_TYPE, mediaTypes);
-        return headers;
+        return new ByteArrayInputStream(os.toByteArray());
     }
 }

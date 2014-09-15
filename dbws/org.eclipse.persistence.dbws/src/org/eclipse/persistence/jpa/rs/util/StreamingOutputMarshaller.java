@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  * 		dclarke/tware - Initial implementation
  *      09-01-2014-2.6.0 Dmitry Kornilov
- *        - Fields filtering (projection)
+ *        - Fields filtering (projection), application/schema+json media type handling
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
@@ -20,6 +20,7 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilter;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
@@ -42,14 +43,14 @@ import java.util.List;
  * Simple {@link StreamingOutput} implementation that uses the provided
  * {@link JAXBContext} to marshal the result when requested to either XML or
  * JSON based on the accept media provided.
- * 
+ *
  * @author dclarke
  * @since EclipseLink 2.4.0
  */
 public class StreamingOutputMarshaller implements StreamingOutput {
-    private PersistenceContext context;
-    private Object result;
-    private MediaType mediaType;
+    private final PersistenceContext context;
+    private final Object result;
+    private final MediaType mediaType;
     private FieldsFilter filter;
 
     public StreamingOutputMarshaller(PersistenceContext context, Object result, MediaType acceptedType) {
@@ -63,7 +64,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
      *
      * @param context persistence context.
      * @param result entity to process.
-     * @param acceptedTypes
+     * @param acceptedTypes accepted media types.
      * @param filter containing a list of fields to filter out from the response.
      */
     public StreamingOutputMarshaller(PersistenceContext context, Object result, List<MediaType> acceptedTypes, FieldsFilter filter) {
@@ -76,7 +77,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
      *
      * @param context persistence context.
      * @param result entity to process.
-     * @param acceptedTypes
+     * @param acceptedTypes accepted media types.
      */
     public StreamingOutputMarshaller(PersistenceContext context, Object result, List<MediaType> acceptedTypes) {
         this(context, result, mediaType(acceptedTypes));
@@ -136,16 +137,16 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     /**
      * Identify the preferred {@link MediaType} from the list provided. This
      * will check for JSON string or {@link MediaType} first then XML.
-     * 
+     *
      * @param types
      *            List of {@link MediaType} values;
      * @return selected {@link MediaType}
      */
     public static MediaType mediaType(List<MediaType> types) {
-        MediaType aMediaType = MediaType.APPLICATION_JSON_TYPE;
-        if ((types != null) && (!types.isEmpty())) {
-            for (int i = 0; i < types.size(); i++) {
-                aMediaType = types.get(i);
+        MediaType aMediaType;
+        if (types != null) {
+            for (MediaType type : types) {
+                aMediaType = type;
                 if (aMediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
                     return MediaType.APPLICATION_JSON_TYPE;
                 }
@@ -154,6 +155,9 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 }
                 if (aMediaType.isCompatible(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
                     return MediaType.APPLICATION_OCTET_STREAM_TYPE;
+                }
+                if (aMediaType.isCompatible(AbstractResource.APPLICATION_SCHEMA_JSON_TYPE)) {
+                    return AbstractResource.APPLICATION_SCHEMA_JSON_TYPE;
                 }
             }
         }
@@ -189,6 +193,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 try {
                     mediaType = StreamingOutputMarshaller.mediaType(accepts);
                 } catch (Exception ex) {
+                    JPARSLogger.exception("Exception in getResponseMediaType", new Object[]{headers}, ex);
                 }
             }
         }

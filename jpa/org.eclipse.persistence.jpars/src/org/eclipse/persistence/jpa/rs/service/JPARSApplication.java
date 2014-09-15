@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      tware - initial 
+ *      tware - initial
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.service;
 
@@ -27,9 +27,9 @@ import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSExceptionMapper;
 
 /**
- * Config class for JPA-RS REST service.  This class should remain dependent only on classes from 
+ * Config class for JPA-RS REST service.  This class should remain dependent only on classes from
  * the specification since it is designed to work with both Jersey 1.x and Jersey 2.x.
- * 
+ *
  * @see ServicePathDefinition
  * @author tware
  *
@@ -58,6 +58,9 @@ public class JPARSApplication extends Application {
         c.add(org.eclipse.persistence.jpa.rs.resources.EntityResource.class);
         c.add(org.eclipse.persistence.jpa.rs.resources.SingleResultQueryResource.class);
         c.add(org.eclipse.persistence.jpa.rs.resources.QueryResource.class);
+
+        // JPARS 2.0
+        c.add(org.eclipse.persistence.jpa.rs.resources.MetadataResource.class);
 
         // Exception Mapping
         c.add(JPARSExceptionMapper.class);

@@ -20,39 +20,165 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class HrefHelper {
+public final class HrefHelper {
+    /** URL to Oracle REST schemas **/
+    public static final String ORA_REST_SCHEMAS_URL = "rest-schemas/";
+
+    /**
+     * Returns StringBuilder containing application root:
+     * http(s)://root:port/persistence/version/context
+     *
+     * @param context the persistence context
+     * @return StringBuilder
+     */
+    public static StringBuilder getRoot(PersistenceContext context) {
+        final StringBuilder href = new StringBuilder(context.getBaseURI().toString());
+        href.append(context.getVersion()).append("/").append(context.getName());
+        return href;
+    }
+
+    /**
+     * Returns StringBuilder containing metadata-catalog root:
+     * http(s)://root:port/persistence/version/context/metadata-catalog
+     *
+     * @param context the persistence context
+     * @return StringBuilder
+     */
+    public static StringBuilder getMetadataRoot(PersistenceContext context) {
+        return getRoot(context).append("/metadata-catalog");
+    }
+
+    /**
+     * Returns StringBuilder containing entity root:
+     * http(s)://root:port/persistence/version/context/entity/entityName
+     *
+     * @param context the persistence context
+     * @param entityName the entity name
+     * @return StringBuilder
+     */
+    public static StringBuilder getEntityRoot(PersistenceContext context, String entityName) {
+        return getRoot(context).append("/entity/").append(entityName);
+    }
+
+    /**
+     * Returns StringBuilder containing query root:
+     * http(s)://root:port/persistence/version/context/query/queryName
+     *
+     * @param context the persistence context
+     * @param queryName the query name
+     * @return StringBuilder
+     */
+    public static StringBuilder getQueryRoot(PersistenceContext context, String queryName) {
+        return getRoot(context).append("/query/").append(queryName);
+    }
+
+    /**
+     * Returns a link to standard Oracle schema of given type.
+     *
+     * @param type the schema type
+     * @return URL in string
+     */
+    public static String buildOraRestSchemaRef(String type) {
+        return ORA_REST_SCHEMAS_URL + type;
+    }
+
     /**
      * Returns a href to single entity resource.
-     * http(s)://root:port/version/context/entity/id
+     * http(s)://root:port/persistence/version/context/entity/id
      *
      * @param context persistence context.
-     * @param entityClass entity class name.
+     * @param entityName entity name.
      * @param entityId entity ID.
      * @return href to given entity.
      */
-    public static String buildEntityHref(PersistenceContext context, String entityClass, String entityId) {
-        final StringBuilder href = new StringBuilder(context.getBaseURI().toString());
-        href.append(context.getVersion()).append("/")
-                .append(context.getName()).append("/")
-                .append("entity/")
-                .append(entityClass).append("/")
-                .append(entityId);
-        return href.toString();
+    public static String buildEntityHref(PersistenceContext context, String entityName, String entityId) {
+        return getEntityRoot(context, entityName).append("/").append(entityId).toString();
     }
 
     /**
      * Builds a link to an entity field.
-     * http(s)://root:port/version/context/entity/id/attribute
+     * http(s)://root:port/persistence/version/context/entity/id/attribute
      *
      * @param context persistence context.
-     * @param entityClass entity class name.
+     * @param entityName entity name.
      * @param entityId entity ID.
      * @param fieldName entity field name.
      * @return href
      */
-    public static String buildEntityFieldHref(PersistenceContext context, String entityClass, String entityId, String fieldName) {
-        final StringBuilder href = new StringBuilder(buildEntityHref(context, entityClass, entityId));
-        href.append("/").append(fieldName);
-        return href.toString();
+    public static String buildEntityFieldHref(PersistenceContext context, String entityName, String entityId, String fieldName) {
+        return getEntityRoot(context, entityName).append("/").append(entityId).append("/").append(fieldName).toString();
     }
+
+    /**
+     * Returns a href to entity resource metadata.
+     * http(s)://root:port/persistence/version/context/metadata-catalog/entity
+     *
+     * @param context persistence context.
+     * @param entityName entity name.
+     * @return href to given entity.
+     */
+    public static String buildEntityMetadataHref(PersistenceContext context, String entityName) {
+        return getMetadataRoot(context).append("/entity/").append(entityName).toString();
+    }
+
+    /**
+     * Returns a href to single entity resource without primary key. Used in 'describes' links in resource metadata.
+     * http(s)://root:port/persistence/version/context/entity/entityName
+     *
+     * @param context persistence context.
+     * @param entityName entity name.
+     * @return href to given entity resource.
+     */
+    public static String buildEntityDescribesHref(PersistenceContext context, String entityName) {
+        return getEntityRoot(context, entityName).toString();
+    }
+
+    /**
+     * Returns a href to single entity resource without primary key. Used in 'describes' links in resource metadata.
+     * http(s)://root:port/persistence/version/context/query/queryName
+     *
+     * @param context persistence context.
+     * @param queryName query name.
+     * @return href to given entity resource.
+     */
+    public static String buildQueryDescribesHref(PersistenceContext context, String queryName) {
+        return getQueryRoot(context, queryName).toString();
+    }
+
+    /**
+     * Returns a href to metadata catalog.
+     * http(s)://root:port/persistence/version/context/metadata-catalog
+     *
+     * @param context persistence context.
+     * @return href to resource catalog.
+     */
+    public static String buildMetadataCatalogHref(PersistenceContext context) {
+        return getMetadataRoot(context).toString();
+    }
+
+    /**
+     * Returns a href to query resource.
+     * http(s)://root:port/persistence/version/context/query/queryName+queryParams
+     *
+     * @param context persistence context.
+     * @param queryName name of the query
+     * @param queryParams query parameters. Optional.
+     * @return href to resource catalog.
+     */
+    public static String buildQueryHref(PersistenceContext context, String queryName, String queryParams) {
+        return getQueryRoot(context, queryName).append(queryParams).toString();
+    }
+
+    /**
+     * Returns a href to query resource.
+     * http(s)://root:port/persistence/version/context/query/queryName
+     *
+     * @param context persistence context.
+     * @param queryName name of the query
+     * @return href to resource catalog.
+     */
+    public static String buildQueryMetadataHref(PersistenceContext context, String queryName) {
+        return getMetadataRoot(context).append("/query/").append(queryName).toString();
+    }
+
 }
