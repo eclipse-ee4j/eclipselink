@@ -21,8 +21,8 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
  * @since EclipseLink 2.6.0
  */
 public final class HrefHelper {
-    /** URL to Oracle REST schemas **/
-    public static final String ORA_REST_SCHEMAS_URL = "rest-schemas/";
+    /** URL to base REST schemas **/
+    public static final String BASE_REST_SCHEMAS_URL = "rest-schemas/";
 
     /**
      * Returns StringBuilder containing application root:
@@ -73,13 +73,13 @@ public final class HrefHelper {
     }
 
     /**
-     * Returns a link to standard Oracle schema of given type.
+     * Returns a link to standard base schema of given type.
      *
      * @param type the schema type
      * @return URL in string
      */
-    public static String buildOraRestSchemaRef(String type) {
-        return ORA_REST_SCHEMAS_URL + type;
+    public static String buildBaseRestSchemaRef(String type) {
+        return BASE_REST_SCHEMAS_URL + type;
     }
 
     /**

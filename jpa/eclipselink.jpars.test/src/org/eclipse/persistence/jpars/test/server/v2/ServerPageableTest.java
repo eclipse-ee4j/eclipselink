@@ -103,7 +103,8 @@ public class ServerPageableTest {
         assertFalse(basketItemExists(queryResult, 5));
 
         // Check links
-        assertTrue(checkLinkJson(queryResult, "next", "/query/BasketItem.findAllPageable?offset=2&limit=2"));
+        assertTrue(checkLinkJson(queryResult, "next", "/query/BasketItem.findAllPageable?offset=2&limit=2")
+            || checkLinkJson(queryResult, "next", "/query/BasketItem.findAllPageable?limit=2&offset=2"));
         assertFalse(queryResult.contains("\"rel\": \"prev\""));
         assertTrue(checkLinkJson(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2"));
 
@@ -131,7 +132,8 @@ public class ServerPageableTest {
         assertFalse(basketItemExists(queryResult, 5));
 
         // Check links
-        assertTrue(checkLinkXml(queryResult, "next", "/query/BasketItem.findAllPageable?offset=2&amp;limit=2"));
+        assertTrue(checkLinkXml(queryResult, "next", "/query/BasketItem.findAllPageable?offset=2&amp;limit=2")
+            || checkLinkXml(queryResult, "next", "/query/BasketItem.findAllPageable?limit=2&amp;offset=2"));
         assertFalse(queryResult.contains("<rel>prev</rel>"));
         assertTrue(checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2"));
 
@@ -162,9 +164,12 @@ public class ServerPageableTest {
         assertFalse(basketItemExists(queryResult, 5));
 
         // Check links
-        assertTrue(checkLinkJson(queryResult, "next", "/query/BasketItem.findAllPageable?offset=4&limit=2"));
-        assertTrue(checkLinkJson(queryResult, "prev", "/query/BasketItem.findAllPageable?offset=0&limit=2"));
-        assertTrue(checkLinkJson(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2&offset=2"));
+        assertTrue(checkLinkJson(queryResult, "next", "/query/BasketItem.findAllPageable?offset=4&limit=2")
+            || checkLinkJson(queryResult, "next", "/query/BasketItem.findAllPageable?limit=2&offset=4"));
+        assertTrue(checkLinkJson(queryResult, "prev", "/query/BasketItem.findAllPageable?offset=0&limit=2")
+            || checkLinkJson(queryResult, "prev", "/query/BasketItem.findAllPageable?limit=2&offset=0"));
+        assertTrue(checkLinkJson(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2&offset=2")
+            || checkLinkJson(queryResult, "self", "/query/BasketItem.findAllPageable?offset=2&limit=2"));
 
         // Check items (limit = 2, offset = 2, count = 2, hasMore = true)
         checkItemsJson(queryResult, 2, 2, 2, true);
@@ -193,9 +198,12 @@ public class ServerPageableTest {
         assertFalse(basketItemExists(queryResult, 5));
 
         // Check links
-        assertTrue(checkLinkXml(queryResult, "next", "/query/BasketItem.findAllPageable?offset=4&amp;limit=2"));
-        assertTrue(checkLinkXml(queryResult, "prev", "/query/BasketItem.findAllPageable?offset=0&amp;limit=2"));
-        assertTrue(checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2&amp;offset=2"));
+        assertTrue(checkLinkXml(queryResult, "next", "/query/BasketItem.findAllPageable?offset=4&amp;limit=2")
+            || checkLinkXml(queryResult, "next", "/query/BasketItem.findAllPageable?limit=2&amp;offset=4"));
+        assertTrue(checkLinkXml(queryResult, "prev", "/query/BasketItem.findAllPageable?offset=0&amp;limit=2")
+            || checkLinkXml(queryResult, "prev", "/query/BasketItem.findAllPageable?limit=2&amp;offset=0"));
+        assertTrue(checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2&amp;offset=2")
+            || checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?offset=2&amp;limit=2"));
 
         // Check items (limit = 2, offset = 2, count = 2, hasMore = true)
         checkItemsXml(queryResult, 2, 2, 2, true);
@@ -267,8 +275,10 @@ public class ServerPageableTest {
 
         // Check links
         assertFalse(queryResult.contains("<rel>next</rel>"));
-        assertTrue(checkLinkXml(queryResult, "prev", "/query/BasketItem.findAllPageable?offset=2&amp;limit=2"));
-        assertTrue(checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2&amp;offset=4"));
+        assertTrue(checkLinkXml(queryResult, "prev", "/query/BasketItem.findAllPageable?offset=2&amp;limit=2")
+            || checkLinkXml(queryResult, "prev", "/query/BasketItem.findAllPageable?limit=2&amp;offset=2"));
+        assertTrue(checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?limit=2&amp;offset=4")
+            || checkLinkXml(queryResult, "self", "/query/BasketItem.findAllPageable?offset=4&amp;limit=2"));
 
         // Check items (limit = 1, offset = 4, count = 1, hasMore = false)
         checkItemsXml(queryResult, 2, 4, 1, false);
@@ -313,7 +323,8 @@ public class ServerPageableTest {
         assertFalse(queryResult.contains("Item5"));
 
         // Check links
-        assertTrue(checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?offset=2&amp;limit=2"));
+        assertTrue(checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?offset=2&amp;limit=2") ||
+                checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?limit=2&amp;offset=2"));
         assertFalse(queryResult.contains("<rel>prev</rel>"));
 
         // Check items (limit = 2, offset = 0, count = 2, hasMore = true)

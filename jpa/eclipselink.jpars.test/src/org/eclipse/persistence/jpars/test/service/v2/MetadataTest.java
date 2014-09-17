@@ -219,6 +219,28 @@ public class MetadataTest {
         checkLinkWithMethod(responseString, "execute", "/query/Employee.getManager", "GET");
     }
 
+    @Test
+    public void testEntityOptions() throws URISyntaxException {
+        final Response response = metadataResource.getEntityOptions(JPARS_VERSION, DEFAULT_PU, "Employee",
+                TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
+                new TestURIInfo());
+        assertTrue(response.getMetadata().containsKey("Link"));
+
+        final String link = "<" + RestUtils.getServerURI(context.getVersion()) + context.getName() + "/metadata-catalog/entity/Employee>; rel=describedby";
+        assertTrue(response.getMetadata().get("Link").get(0).equals(link));
+    }
+
+    @Test
+    public void testQueryOptions() throws URISyntaxException {
+        final Response response = metadataResource.getQueryOptions(JPARS_VERSION, DEFAULT_PU, "Employee.getManager",
+                TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
+                new TestURIInfo());
+        assertTrue(response.getMetadata().containsKey("Link"));
+
+        final String link = "<" + RestUtils.getServerURI(context.getVersion()) + context.getName() + "/metadata-catalog/query/Employee.getManager>; rel=describedby";
+        assertTrue(response.getMetadata().get("Link").get(0).equals(link));
+    }
+
     private String getResponseAsString(Response response) {
         StreamingOutput output = (StreamingOutput)response.getEntity();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
