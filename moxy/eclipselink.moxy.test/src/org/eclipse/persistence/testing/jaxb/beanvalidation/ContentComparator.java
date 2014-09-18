@@ -30,6 +30,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
+ * Compares contents of two xml files. Ignores whitespaces.
  *
  * @author jungi
  */
@@ -42,11 +43,11 @@ public final class ContentComparator {
     }
 
     /**
-     *  Compares the content of two xml files. Ignores whitespaces.
+     * Compares content of two xml files. Ignores whitespaces.
      *
-     *@param f1 usually golden file
-     *@param f2 other file which we want to compare against golden file (or any other file)
-     *@return true iff both files have the same content except of whitespaces
+     * @param f1 usually golden file
+     * @param f2 other file which we want to compare against golden file (or any other file)
+     * @return true if both files have the same content except of whitespaces
      */
     public static boolean equalsXML(File f1, File f2) {
         try {

@@ -45,15 +45,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Tests the Bean Validation for MOXy Runtime, with Target groups.
- * Tests include:
- *  - setting properties (mode, preferred validation factory) through JAXBContext,
- *      marshaller and unmarshaller, and overriding them,
+ * Tests Bean Validation for MOXy Runtime:
+ *  - properties on JAXBContext, marshaller and unmarshaller, and their precedence,
  *  - validation on valid objects before marshalling and after unmarshalling,
  *  - validation on invalid objects before marshalling and after unmarshalling,
  *  - validation with Target groups,
  *  - retrieval of correct error messages when constraint violations happen.
- *  Everything is tested with both XML and JSON marshalling and unmarshalling.
+ *  Uses both XML and JSON marshalling and unmarshalling.
  *
  * @author Marcel Valovy - marcel.valovy@oracle.com
  */
@@ -181,7 +179,8 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
         assertEquals(employeeInvalid, employeeUnm);
     }
 
-    private void checkValidationMessages(Set<? extends ConstraintViolation<?>> constraintViolations, List<String> expectedMessages) {
+    private void checkValidationMessages(Set<? extends ConstraintViolation<?>> constraintViolations,
+                                         List<String> expectedMessages) {
         List<String> violationMessages = new ArrayList<String>();
         for (final ConstraintViolation<?> cv : constraintViolations)
             violationMessages.add(cv.getMessageTemplate());
@@ -192,8 +191,10 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
 
     private void toggleDriversGroupOnOff() throws PropertyException {
         if (toggle ^= true) {
-            marshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[]{Default.class, Drivers.class});
-            unmarshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[] { Default.class, Drivers.class });
+            marshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[]{Default.class,
+                    Drivers.class});
+            unmarshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[] { Default.class,
+                   Drivers.class });
         } else {
             marshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[0]);
             unmarshallerValidOn.setProperty(MarshallerProperties.BEAN_VALIDATION_GROUPS, new Class[0]);

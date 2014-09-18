@@ -83,7 +83,7 @@ import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
 
 /**
  * XJC Plugin for generation of JSR349 (Bean Validation) annotations.
- * <p>
+ * <p/>
  * Has two mods:
  * <blockquote><pre>
  *  "jsr303" - enables backward compatibility.
@@ -118,27 +118,32 @@ import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
  *  - minOccurs
  *  - maxOccurs
  * </pre></blockquote>
- *  Basic usage:
+ * Basic usage:
  * <blockquote><pre>
  *  {@code xjc file.xsd -XBeanVal}
  * </pre></blockquote>
- *  Example usage with mods:
+ * Example usage with mods:
  * <blockquote><pre>
  *  {@code xjc file.xsd -XBeanVal jsr303 simpleRegex}
  * </pre></blockquote>
+ * Programmatic usage, with mods and extensions enabled:
+ * <blockquote><pre>
+ *  Driver.run(new String[] { schemaPath, "-extension", "-XBeanVal", "jsr303", "simpleRegex" }, System.out,
+ *  System.out);
+ * </pre></blockquote>
  * Supports setting Target groups and Error message through binding customizations. Example:
  * <blockquote><pre>
- *{@code <xs:appinfo>
+ * {@code <xs:appinfo>
  *   <jxb:bindings node="/xs:schema/xs:complexType/xs:sequence/xs:element[@name='generic']">
  *    <bv:facet type="maxLength" message="Hello, world!" groups="Object"/>
  *    <bv:facet type="future" message="Welcome to the Future!"/>
  *   </jxb:bindings>
  *  </xs:appinfo>}
  * <blockquote></pre>
- * <p>
+ * <p/>
  * Supports custom-created BV annotations. Example:
  * <blockquote><pre>
- *{@code <xs:appinfo>
+ * {@code <xs:appinfo>
  *   <jxb:bindings node="/xs:schema/xs:complexType/xs:sequence/xs:element[@name='generic']">
  *    <bv:facet type="org.eclipse.persistence.annotations.AdditionalCriteria" value="This is a real custom annotation."/>
  *   </jxb:bindings>
@@ -150,7 +155,7 @@ import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
 public class BeanValidationPlugin extends Plugin {
 
     /* ######### LAUNCHING ######### */
-    public static final String PLUGIN_OPTION =  "XBeanVal";
+    public static final String PLUGIN_OPTION = "XBeanVal";
     public static final String JSR_303_MOD = "jsr303";
     public static final String SIMPLE_REGEX_MOD = "simpleRegex";
     public static final String NS_URI = "http://jaxb.dev.java.net/plugin/bean-validation";
@@ -219,6 +224,7 @@ public class BeanValidationPlugin extends Plugin {
 
     // We want this plugin to work without requiring the presence of JSR-303/349 jar.
     private static final JCodeModel codeModel = new JCodeModel();
+
     static {
         validAnn = codeModel.ref("javax.validation.Valid");
         notNullAnn = codeModel.ref("javax.validation.constraints.NotNull");
@@ -246,22 +252,22 @@ public class BeanValidationPlugin extends Plugin {
 
     /**
      * Processes an xsd value in form of xsd attribute from extended base.
-     *
+     * <p/>
      * Example:
-     * 	<xsd:complexType name="Employee">
-     *      <xsd:simpleContent>
-     *           <xsd:extension base="a:ShortId">  <- xsd extension base
-     *               <xsd:attribute name="id" type="xsd:string" use="optional"/>
-     *           </xsd:extension>
-     *       </xsd:simpleContent>
-     *   </xsd:complexType>
-     *
-     * 	<xsd:simpleType name="ShortId">
-     *      <xsd:restriction base="xsd:string">
-     *          <xsd:minLength value="1"/>        <- This is a special field that is added to the generated class, called "value" (corresponds to the valuePropertyName),
-     *          <xsd:maxLength value="5"/>           it gets processed by this method and the "value" field receives @Size(min = 1, max = 5).
-     *      </xsd:restriction>
-     *  </xsd:simpleType>
+     * <xsd:complexType name="Employee">
+     * <xsd:simpleContent>
+     * <xsd:extension base="a:ShortId">  <- xsd extension base
+     * <xsd:attribute name="id" type="xsd:string" use="optional"/>
+     * </xsd:extension>
+     * </xsd:simpleContent>
+     * </xsd:complexType>
+     * <p/>
+     * <xsd:simpleType name="ShortId">
+     * <xsd:restriction base="xsd:string">
+     * <xsd:minLength value="1"/>        <- This is a special field that is added to the generated class, called "value" (corresponds to the valuePropertyName),
+     * <xsd:maxLength value="5"/>           it gets processed by this method and the "value" field receives @Size(min = 1, max = 5).
+     * </xsd:restriction>
+     * </xsd:simpleType>
      */
     private void processValueFromExtendedBase(CValuePropertyInfo valueProperty, ClassOutline classOutline, List<FacetCustomization> customizations) {
         String valuePropertyName = valueProperty.getName(false);
@@ -274,15 +280,15 @@ public class BeanValidationPlugin extends Plugin {
 
     /**
      * Processes an xsd attribute.
-     *
+     * <p/>
      * Example:
-     * 	<xsd:complexType name="Employee">
-     *      <xsd:simpleContent>
-     *           <xsd:extension base="a:Person">
-     *               <xsd:attribute name="id" type="xsd:string" use="optional"/>   << "id" is the attributePropertyName
-     *           </xsd:extension>
-     *       </xsd:simpleContent>
-     *   </xsd:complexType>
+     * <xsd:complexType name="Employee">
+     * <xsd:simpleContent>
+     * <xsd:extension base="a:Person">
+     * <xsd:attribute name="id" type="xsd:string" use="optional"/>   << "id" is the attributePropertyName
+     * </xsd:extension>
+     * </xsd:simpleContent>
+     * </xsd:complexType>
      */
     private void processAttribute(CAttributePropertyInfo attributeProperty, ClassOutline classOutline, List<FacetCustomization> customizations) {
         String attributePropertyName = attributeProperty.getName(false);
@@ -299,7 +305,7 @@ public class BeanValidationPlugin extends Plugin {
 
     /**
      * Processes an xsd element.
-     *
+     * <p/>
      * Example:
      * <xsd:element name="someCollection" minOccurs="1" maxOccurs="unbounded"/>
      */
@@ -312,7 +318,8 @@ public class BeanValidationPlugin extends Plugin {
         XSTerm term = particle.getTerm();
         if (term instanceof XSElementDecl) processTermElement(fieldVar, (XSElementDecl) term, customizations);
             // When a complex type resides inside another complex type and thus gets lazily loaded or processed.
-        else if (term instanceof DelayedRef.Element) processTermElement(fieldVar, ((DelayedRef.Element) term).get(), customizations);
+        else if (term instanceof DelayedRef.Element)
+            processTermElement(fieldVar, ((DelayedRef.Element) term).get(), customizations);
     }
 
     private void processTermElement(JFieldVar fieldVar, XSElementDecl element, List<FacetCustomization> customizations) {
@@ -321,7 +328,8 @@ public class BeanValidationPlugin extends Plugin {
         if (elementType.isComplexType()) {
             validAnnotate(fieldVar);
             if (!element.isNillable()) notNullAnnotate(fieldVar);
-            if (elementType.getBaseType().isSimpleType()) processSimpleType(elementType.getBaseType().asSimpleType(), fieldVar, customizations);
+            if (elementType.getBaseType().isSimpleType())
+                processSimpleType(elementType.getBaseType().asSimpleType(), fieldVar, customizations);
         } else processSimpleType(elementType.asSimpleType(), fieldVar, customizations);
     }
 
@@ -354,8 +362,10 @@ public class BeanValidationPlugin extends Plugin {
 
                 if (minLength != null && maxLength != null) // Note: If using both minLength + maxLength, the minLength's customizations are considered.
                     a.put(fieldVar.annotate(sizeAnn).param("min", minLength).param("max", maxLength), FacetType.minLength);
-                else if (minLength != null) a.put(fieldVar.annotate(sizeAnn).param("min", minLength), FacetType.minLength);
-                else if (maxLength != null) a.put(fieldVar.annotate(sizeAnn).param("max", maxLength), FacetType.maxLength);
+                else if (minLength != null)
+                    a.put(fieldVar.annotate(sizeAnn).param("min", minLength), FacetType.minLength);
+                else if (maxLength != null)
+                    a.put(fieldVar.annotate(sizeAnn).param("max", maxLength), FacetType.maxLength);
             }
         }
 
@@ -398,8 +408,7 @@ public class BeanValidationPlugin extends Plugin {
                 if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMinAnn, minExcValue)) {
                     a.put(fieldVar.annotate(decimalMinAnn).param("value", minExcValue).param("inclusive", false), FacetType.minExclusive);
                     convertToElement(fieldVar);
-                }
-                else {
+                } else {
                     Integer intMinExc = Integer.valueOf(minExcValue) + 1;
                     minExcValue = intMinExc.toString();
                     if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMinAnn, minExcValue)) {
@@ -429,7 +438,8 @@ public class BeanValidationPlugin extends Plugin {
                     // If corresponds to <xsd:restriction base="xsd:string">.
                     if ("String".equals(fieldType.name()))
                         a.put(listValue.annotate(patternAnn).param("regexp", eliminateShorthands(xsFacet.getValue().value)), FacetType.pattern);
-                    else Logger.getLogger(this.getClass().getName()).log(Level.WARNING, PATTERN_ANNOTATION_NOT_APPLICABLE);
+                    else
+                        Logger.getLogger(this.getClass().getName()).log(Level.WARNING, PATTERN_ANNOTATION_NOT_APPLICABLE);
             }
         } else if ((facet = simpleType.getFacet(FACET_PATTERN)) != null)
             if ("String".equals(fieldType.name())) { // <xsd:restriction base="xsd:string">
@@ -480,7 +490,8 @@ public class BeanValidationPlugin extends Plugin {
                     String groups = c.element.getAttribute("groups");
                     String message = c.element.getAttribute("message");
                     String type = c.element.getAttribute("type");
-                    if (type.equals("")) throw new RuntimeException("DOM attribute \"type\" is required in custom facet declarations.");
+                    if (type.equals(""))
+                        throw new RuntimeException("DOM attribute \"type\" is required in custom facet declarations.");
                     String value = c.element.getAttribute("value");
                     facetCustomizations.add(new FacetCustomization(groups, message, type, value));
                 }
@@ -502,15 +513,24 @@ public class BeanValidationPlugin extends Plugin {
             // we have encountered a custom facet.
             try {
                 switch (FacetType.valueOf(c.type)) {
-                case assertFalse: customizeAnnotation(fieldVar.annotate(assertFalseAnn), c); continue;
-                case assertTrue: customizeAnnotation(fieldVar.annotate(assertTrueAnn), c); continue;
-                case future: customizeAnnotation(fieldVar.annotate(futureAnn), c); continue;
-                case past: customizeAnnotation(fieldVar.annotate(pastAnn), c); continue;
+                    case assertFalse:
+                        customizeAnnotation(fieldVar.annotate(assertFalseAnn), c);
+                        continue;
+                    case assertTrue:
+                        customizeAnnotation(fieldVar.annotate(assertTrueAnn), c);
+                        continue;
+                    case future:
+                        customizeAnnotation(fieldVar.annotate(futureAnn), c);
+                        continue;
+                    case past:
+                        customizeAnnotation(fieldVar.annotate(pastAnn), c);
+                        continue;
                 }
             } catch (IllegalArgumentException programmingByException) {
                 JAnnotationUse annotationUse = fieldVar.annotate(codeModel.ref(c.type));
                 if (!c.value.equals("")) annotationUse.param("value", c.value);
-                customizeAnnotation(annotationUse, c); continue;
+                customizeAnnotation(annotationUse, c);
+                continue;
             }
             customizeRegularAnnotations(a, c);
         }
@@ -580,7 +600,8 @@ public class BeanValidationPlugin extends Plugin {
         }
 
         private static final class ClassNameTrimmer {
-            private static final Pattern ws = Pattern.compile("[\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]+");
+            private static final Pattern ws = Pattern.compile("[\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u180E\\" +
+                    "u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]+");
 
             private static String trim(String s) {
                 return ws.matcher(s).replaceAll("").replace('$', '.');
@@ -611,6 +632,7 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     /* ######### AUXILIARY FUNCTIONALITY ######### */
+
     /**
      * Processes minOccurs and maxOccurs attributes of XS Element.
      * If the values are not default, the property will be annotated with @Size.
@@ -661,7 +683,7 @@ public class BeanValidationPlugin extends Plugin {
      * Checks if the fieldVar is already annotated with the desired annotation.
      *
      * @return true if the fieldVar should be annotated, false if the fieldVar is
-     *          already annotated or the value is a default boundary.
+     * already annotated or the value is a default boundary.
      */
     private boolean notAnnotatedAndNotDefaultBoundary(JFieldVar fieldVar, JClass annotationClass, String boundaryValue) {
         if (isDefaultBoundary(fieldVar.type().name(), annotationClass.fullName(), boundaryValue))
@@ -685,9 +707,10 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     /**
-     * @param xorComplement - flips the result of compareTo (must be set to true for decimalMaxAnn and false for decimalMinAnn).
+     * @param xorComplement - flips the result of compareTo (set to true for decimalMaxAnn and false for decimalMinAnn).
      */
-    private boolean isMoreSpecificBoundary(JFieldVar fieldVar, String boundaryValue, JAnnotationUse annotationUse, boolean xorComplement) {
+    private boolean isMoreSpecificBoundary(JFieldVar fieldVar, String boundaryValue, JAnnotationUse annotationUse,
+                                           boolean xorComplement) {
         String existingBoundaryValue = getExistingBoundaryValue(annotationUse);
 
         if (existingBoundaryValue == null) return true;
@@ -710,26 +733,28 @@ public class BeanValidationPlugin extends Plugin {
             clazz = AccessController.doPrivileged(ForNameActionExecutor.INSTANCE.with(className));
         } catch (PrivilegedActionException ignored) {
             // - Can be only of type ClassNotFoundException, no check needed, see AccessController.doPrivileged().
-            // - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be solved by this plugin.
+            /* - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be
+             solved by this plugin. */
         }
         else try {
             clazz = loadClassInternal(className);
         } catch (ClassNotFoundException ignored) {
-            // - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be solved by this plugin.
+            /* - ClassNotFoundException for us "means" that the fieldVar is of some unknown class - not an issue to be
+             solved by this plugin. */
         }
         return clazz;
     }
 
     private int getOccursValue(final String attributeName, final XSParticle xsParticle) {
         return securityEnabled
-                ? AccessController.doPrivileged(OccursValueActionExecutor.INSTANCE.with(attributeName, xsParticle)).intValue()
-                : loadOccursValue(attributeName, xsParticle).intValue();
+            ? AccessController.doPrivileged(OccursValueActionExecutor.INSTANCE.with(attributeName, xsParticle)).intValue()
+            : loadOccursValue(attributeName, xsParticle).intValue();
     }
 
     private String getExistingBoundaryValue(final JAnnotationUse jAnnotationUse) {
         return securityEnabled
-                ? AccessController.doPrivileged(ExistingBoundaryValueActionExecutor.INSTANCE.with(jAnnotationUse))
-                : loadExistingBoundaryValue(jAnnotationUse);
+            ? AccessController.doPrivileged(ExistingBoundaryValueActionExecutor.INSTANCE.with(jAnnotationUse))
+            : loadExistingBoundaryValue(jAnnotationUse);
     }
 
     private String eliminateShorthands(String regex) {
@@ -741,9 +766,9 @@ public class BeanValidationPlugin extends Plugin {
     /**
      * Provides means for maintaining compatibility between XML Schema regex and Java Pattern regex.
      * Replaces Java regex shorthands, which support only ASCII encoding, with full UNICODE equivalent.
-     * <p>
+     * <p/>
      * Also replaces the two special XML regex character sets which aren't supported in Java, \i and \c.
-     * <p>
+     * <p/>
      * Replaced shorthands and their negations:
      * <blockquote><pre>
      * \i - Matches any character that may be the first character of an XML name.
@@ -757,9 +782,7 @@ public class BeanValidationPlugin extends Plugin {
      * \X - Extended grapheme cluster.
      * \R - Carriage return.
      * </pre></blockquote>
-     * Note: I've experienced some issues with the Java Matcher on ampersand characters,
-     * translation of \w and \W shorthands succeeded only from time to time!
-     * <p>
+     * <p/>
      * Changes to this class should also be reflected in the opposite {@link org.eclipse.persistence.jaxb.compiler.SchemaGenerator.RegexMutator RegexMutator} class within SchemaGen.
      *
      * @see <a href="http://stackoverflow.com/questions/4304928/unicode-equivalents-for-w-and-b-in-java-regular-expressions">tchrist's work</a>
@@ -798,7 +821,7 @@ public class BeanValidationPlugin extends Plugin {
          * @param xmlRegex XML regex
          * @return Java regex
          */
-        private String mutate(String xmlRegex){
+        private String mutate(String xmlRegex) {
             for (Map.Entry<Pattern, String> entry : shorthandReplacements.entrySet()) {
                 Matcher m = entry.getKey().matcher(xmlRegex);
                 xmlRegex = m.replaceAll(entry.getValue());
@@ -826,6 +849,7 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private static final Set<String> nonFloatingDigitsClasses;
+
     static {
         Set<String> set = new HashSet<String>();
         set.add("byte");
@@ -842,6 +866,7 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private static final Set<String> floatingDigitsClasses;
+
     static {
         Set<String> set = new HashSet<String>();
         set.add("float");
@@ -852,6 +877,7 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private static final Map<String, MinMaxTuple> nonFloatingDigitsClassesBoundaries;
+
     static {
         HashMap<String, MinMaxTuple> map = new HashMap<String, MinMaxTuple>();
         map.put("byte", new MinMaxTuple<Byte>(Byte.MIN_VALUE, Byte.MAX_VALUE));
@@ -868,7 +894,8 @@ public class BeanValidationPlugin extends Plugin {
     private static final class MinMaxTuple<T extends Number> {
         private final String min;
         private final String max;
-        private MinMaxTuple(T min, T max){
+
+        private MinMaxTuple(T min, T max) {
             this.min = String.valueOf(min);
             this.max = String.valueOf(max);
         }
@@ -966,7 +993,7 @@ public class BeanValidationPlugin extends Plugin {
             theValueField.setAccessible(true);
             return ((JStringLiteral) theValueField.get(jAnnotationValue)).str;
         } catch (Exception e) {
-            // Nothing we can do, the user should be notified that his app is unable to
+            // Nothing we can do, user should be notified that his app is unable to
             // execute this plugin correctly and not should not receive generated default values.
             throw new RuntimeException(e);
         }

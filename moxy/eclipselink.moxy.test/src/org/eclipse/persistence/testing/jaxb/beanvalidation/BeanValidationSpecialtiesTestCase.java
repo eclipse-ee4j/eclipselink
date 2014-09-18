@@ -60,7 +60,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
                     "\"'s value has been set to " + System.getProperty(SYSTEM_PROPERTY_JAXBCONTEXT));
 
             assertFalse(ACTIVATED_VALIDATION_XML.exists());
-            final boolean renamingSucceeded = DEACTIVATED_VALIDATION_XML.renameTo(ACTIVATED_VALIDATION_XML);
+            boolean renamingSucceeded = DEACTIVATED_VALIDATION_XML.renameTo(ACTIVATED_VALIDATION_XML);
             assertTrue(renamingSucceeded);
 
             Validation.buildDefaultValidatorFactory();
@@ -73,7 +73,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
                     + "\"'s value has been cleared,"
                     + "unless it previously was set, in which case it's original value has been restored.");
 
-            final boolean restoringOriginalNameSucceeded = ACTIVATED_VALIDATION_XML.renameTo(DEACTIVATED_VALIDATION_XML);
+            boolean restoringOriginalNameSucceeded = ACTIVATED_VALIDATION_XML.renameTo(DEACTIVATED_VALIDATION_XML);
             assertTrue(restoringOriginalNameSucceeded);
             assertFalse(ACTIVATED_VALIDATION_XML.exists());
         }

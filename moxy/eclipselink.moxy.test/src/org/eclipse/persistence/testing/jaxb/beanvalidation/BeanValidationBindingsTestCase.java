@@ -57,7 +57,7 @@ import java.util.Arrays;
 import static org.eclipse.persistence.testing.jaxb.beanvalidation.ContentComparator.equalsXML;
 
 /**
- * Tests the generation of JAXB Facets and Bean Validation annotations during Schemagen and XJC, respectively.
+ * Tests generation of JAXB Facets and Bean Validation annotations during Schemagen and XJC, respectively.
  *
  * @author Marcel Valovy - marcel.valovy@oracle.com
  */
@@ -341,13 +341,14 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
         DiagnosticCollector<? super JavaFileObject> diag = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fm = compiler.getStandardFileManager(diag, null, null);
         Iterable<? extends JavaFileObject> compilationUnits = fm.getJavaFileObjectsFromFiles(Arrays.asList(compileList));
-        Iterable options = Arrays.asList("-d", TARGET_PATH);
-        JavaCompiler.CompilationTask task = compiler.getTask(new OutputStreamWriter(System.out),fm,diag, options, null, compilationUnits);
+        Iterable<String> options = Arrays.asList("-d", TARGET_PATH);
+        JavaCompiler.CompilationTask task = compiler.getTask(new OutputStreamWriter(System.out), fm, diag, options,
+                null, compilationUnits);
 
         if (!task.call()) {
             for (Diagnostic diagnostic : diag.getDiagnostics())
                 System.out.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic);
-            Assert.fail("Compilation of generated classes failed. See the diagnostics output.");
+            fail("Compilation of generated classes failed. See the diagnostics output.");
         }
     }
 
