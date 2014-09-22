@@ -471,15 +471,15 @@ public class SchemaManager {
         String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE " + column + " <> " + column;
         DataReadQuery query = new DataReadQuery(sql);
         query.setMaxRows(1);
-        int level = this.session.getSessionLog().getLevel();
+        boolean loggingOff = session.isLoggingOff();
         try {
-            this.session.getSessionLog().setLevel(SessionLog.OFF);
-            this.session.executeQuery(query);
+            session.setLoggingOff(true);
+            session.executeQuery(query);
             return true;
         } catch (Exception notFound) {
             return false;
         } finally {
-            this.session.getSessionLog().setLevel(level);
+            session.setLoggingOff(loggingOff);
         }
     }
 

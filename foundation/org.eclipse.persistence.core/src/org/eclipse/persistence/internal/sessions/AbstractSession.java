@@ -472,6 +472,16 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     
     /**
      * INTERNAL:
+     * PERF: Used for quick turning logging ON/OFF entirely.
+     * @param loggingOff Logging is turned off when <code>true</code>
+     *                   and turned on when <code>false</code>.
+     */
+    public void setLoggingOff(final boolean loggingOff) {
+        isLoggingOff = loggingOff;
+    }
+
+    /**
+     * INTERNAL:
      * PERF: Used for quick check if logging is OFF entirely.
      */
     public boolean isLoggingOff() {
