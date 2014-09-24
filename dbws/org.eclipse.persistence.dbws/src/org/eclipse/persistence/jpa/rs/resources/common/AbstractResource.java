@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkTemplate;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Query;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.v2.ContextsCatalog;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.v2.MetadataCatalog;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.v2.Property;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.v2.Reference;
@@ -230,7 +231,7 @@ public abstract class AbstractResource {
      */
     protected String marshallMetadata(Object metadata, String mediaType) throws JAXBException {
         final Class<?>[] jaxbClasses = new Class[] { Link.class, Attribute.class, Descriptor.class, LinkTemplate.class, PersistenceUnit.class, Query.class, LinkList.class, QueryList.class,
-                ResourceSchema.class, Property.class, Reference.class, LinkV2.class, MetadataCatalog.class, Resource.class, ItemLinks.class};
+                ResourceSchema.class, Property.class, Reference.class, LinkV2.class, MetadataCatalog.class, Resource.class, ItemLinks.class, ContextsCatalog.class };
         final JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
         final Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);

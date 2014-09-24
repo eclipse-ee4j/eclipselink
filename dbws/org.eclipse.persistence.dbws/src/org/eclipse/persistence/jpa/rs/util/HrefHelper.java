@@ -28,6 +28,21 @@ public final class HrefHelper {
      * Returns StringBuilder containing application root:
      * http(s)://root:port/persistence/version/context
      *
+     * @param baseUri the base URI
+     * @param version the service version
+     * @param context the persistent unit name
+     * @return StringBuilder
+     */
+    public static StringBuilder getRoot(String baseUri, String version, String context) {
+        final StringBuilder href = new StringBuilder(baseUri);
+        href.append(version).append("/").append(context);
+        return href;
+    }
+
+    /**
+     * Returns StringBuilder containing application root:
+     * http(s)://root:port/persistence/version/context
+     *
      * @param context the persistence context
      * @return StringBuilder
      */

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -337,7 +337,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             Object result = context.updateOrAddAttribute(getMatrixParameters(uriInfo, persistenceUnit), type, entityId, getQueryParameters(uriInfo), attribute, entity, partner);
             if (result == null) {
                 JPARSLogger.error("jpars_could_not_update_attribute", new Object[] { attribute, type, id, persistenceUnit });
-                JPARSException.attributeCouldNotBeUpdated(attribute, type, id, persistenceUnit);
+                throw JPARSException.attributeCouldNotBeUpdated(attribute, type, id, persistenceUnit);
             }
             return Response.ok(new StreamingOutputMarshaller(context, singleEntityResponse(context, result, uriInfo), headers.getAcceptableMediaTypes())).build();
         } catch (Exception ex) {
@@ -357,7 +357,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             }
 
             if ((attribute == null) && (listItemId == null)) {
-                JPARSException.invalidRemoveAttributeRequest(null, type, id, persistenceUnit);
+                throw JPARSException.invalidRemoveAttributeRequest(null, type, id, persistenceUnit);
             }
 
             String partner = getRelationshipPartner(matrixParams, queryParams);

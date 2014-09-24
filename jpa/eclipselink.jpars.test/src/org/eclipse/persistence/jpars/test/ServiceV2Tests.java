@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test;
 
+import org.eclipse.persistence.jpars.test.service.v2.ContextsTest;
 import org.eclipse.persistence.jpars.test.service.v2.EmployeeV2Test;
 import org.eclipse.persistence.jpars.test.service.v2.LinksTest;
 import org.eclipse.persistence.jpars.test.service.v2.MarshalUnmarshalV2Test;
@@ -25,7 +26,8 @@ import org.junit.runners.Suite.SuiteClasses;
         MetadataTest.class,
         MarshalUnmarshalV2Test.class,
         EmployeeV2Test.class,
-        LinksTest.class
+        LinksTest.class,
+        ContextsTest.class
 })
 public class ServiceV2Tests {
 
