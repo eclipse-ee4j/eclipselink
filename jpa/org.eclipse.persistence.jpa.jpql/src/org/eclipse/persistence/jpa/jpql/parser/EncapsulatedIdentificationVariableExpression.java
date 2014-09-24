@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * property, either the key, the value or a {@link java.util.Map.Entry Map.Entry}).
  * <p>
  * This is part of JPA 2.0.
- * <p>
+ * </p>
  * <div><b>BNF:</b> <code>&lt;identifier&gt;(identification_variable)</code><p></div>
  *
  * @version 2.5

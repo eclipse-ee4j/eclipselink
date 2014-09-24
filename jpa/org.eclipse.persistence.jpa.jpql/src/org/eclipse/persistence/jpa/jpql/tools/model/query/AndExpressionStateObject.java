@@ -33,7 +33,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * The following table shows how the <code><b>AND</b></code> operator is evaluated based on its two
  * operands:
- * <p>
+ *
  * <table summary="" cellspacing="0" cellpadding="2" border="1" width="250" style="border:1px outset darkgrey;">
  * <tr><td>            </td><td><b>TRUE</b></td><td><b>FALSE</b></td><td><b>NULL</b></td></tr>
  * <tr><td><b>TRUE</b> </td><td>   TRUE    </td><td>   FALSE    </td><td>   NULL    </td></tr>

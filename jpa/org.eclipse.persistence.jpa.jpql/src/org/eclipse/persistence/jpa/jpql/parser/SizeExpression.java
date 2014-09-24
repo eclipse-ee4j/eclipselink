@@ -18,7 +18,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * The <b>SIZE</b> function returns an integer value, the number of elements of the collection. If
  * the collection is empty, the <b>SIZE</b> function evaluates to zero.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= SIZE(collection_valued_path_expression)</code><p></div>
  *
  * @version 2.5

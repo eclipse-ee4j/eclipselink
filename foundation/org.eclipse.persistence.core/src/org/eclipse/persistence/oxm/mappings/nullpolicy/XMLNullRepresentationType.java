@@ -16,8 +16,8 @@ package org.eclipse.persistence.oxm.mappings.nullpolicy;
  * <b>Description</b>: 
  * An enum that is used within a Node Null Policy to determine what to marshal for a null node.<br>
  * We define 3 final instances available to the user (XSI_NIL, ABSENT_NODE(default) and EMPTY_NODE.
- * <p>
- * <p><table summary="" border="1">
+ *
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Flag</th>
  * <th id="c2" align="left">Description</th>
@@ -31,7 +31,7 @@ package org.eclipse.persistence.oxm.mappings.nullpolicy;
  * <td headers="c2">Optional: Write out no node.</td>
  * </tr>
  * <tr>
- * <td headers="c1" nowrap="true"> EMPTY_NODE </td>
+ * <td headers="c1" style="nowrap"> EMPTY_NODE </td>
  * <td headers="c2">Required: Write out an empty {@literal <node/>} or node="" node.</td>
  * </tr>
  * </table>

@@ -19,7 +19,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * The <code><b>SQRT</b></code> function takes a numeric argument and returns a <code>Double</code>.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= SQRT(simple_arithmetic_expression)</code><p></div>
  *
  * @see SqrtExpression

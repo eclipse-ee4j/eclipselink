@@ -48,7 +48,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
  * </ul>
  *
  * This helper should be used when the JPQL query is written using the JPQL grammar defined in the
- * Java Persistence functional specification 1.0 or 2.x.<p>
+ * Java Persistence functional specification 1.0 or 2.x.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage

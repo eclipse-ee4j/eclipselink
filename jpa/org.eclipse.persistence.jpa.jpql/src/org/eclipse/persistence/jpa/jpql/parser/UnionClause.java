@@ -19,9 +19,8 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
  * The <b>UNION</b> clause allows the results of two queries to be combined.
- * <p>
+ *
  * <div><b>BNF:</b> <code>union_clause ::= <b>{ UNION | INTERSECT | EXCEPT }</b> [ALL] subquery</code></div>
- * <p>
  *
  * @version 2.5
  * @since 2.4

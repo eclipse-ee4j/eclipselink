@@ -27,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * operator is a collection-valued path expression. The path expression evaluates to a collection
  * type specified as a result of navigation to a collection-valued association-field of an entity
  * abstract schema type.
- * <p>
+ *
  * <div><b>BNF:</b> <code>collection_member_declaration ::= IN(collection_valued_path_expression) [AS] identification_variable</code><p></div>
  * or
  * <div><b>BNF:</b> <code>derived_collection_member_declaration ::= IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field</code><p></div>

@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * This expression handles parsing a JPQL identifier followed by an expression encapsulated within
  * parenthesis.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code><p></div>
  *
  * @version 2.5

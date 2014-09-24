@@ -656,7 +656,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * The object should define an on clause that defines the join condition.
      * This allows for two non-related objects to be joined.
      *
-     * <p>Example: (select all employees that are a team leader)<p>
+     * <p>Example: (select all employees that are a team leader)</p>
      * <pre>
      * ExpressionBuilder project = new ExpressionBuilder(Project.class);
      * ExpressionBuilder employee = new ExpressionBuilder(Employee.class);

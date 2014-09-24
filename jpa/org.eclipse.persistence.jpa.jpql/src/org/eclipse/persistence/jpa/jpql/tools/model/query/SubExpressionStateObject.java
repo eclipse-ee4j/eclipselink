@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 
 /**
  * This expression wraps a sub-expression within parenthesis.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= (sub_expression)</code><p></div>
  *
  * @see SubExpression

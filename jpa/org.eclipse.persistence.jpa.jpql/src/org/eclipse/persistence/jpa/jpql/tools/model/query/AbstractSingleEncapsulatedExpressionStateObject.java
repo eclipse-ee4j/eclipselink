@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractSingleEncapsulatedExpress
 /**
  * This {@link StateObject} represents a JPQL expression that has a JPQL identifier followed by
  * an encapsulated expression with parenthesis.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code><p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.AbstractSingleEncapsulatedExpression AbstractSingleEncapsulatedExpression

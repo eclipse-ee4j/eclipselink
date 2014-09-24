@@ -43,7 +43,7 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
 /**
  * <p><b>Purpose</b>:
  * Concrete class for all read queries involving a single object.
- * <p>
+ *
  * <p><b>Responsibilities</b>:
  * Return a single object for the query.
  * Implements the inheritance feature when dealing with abstract descriptors.

@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
  * available to that manager. Different transaction services may do this in slightly
  * different ways, but most common ones (JTA and JTS/OTS) will use a synchronization
  * interface.
- * <p>
+ *
  * @see AbstractSynchronizationListener
  * @see org.eclipse.persistence.sessions.ExternalTransactionController
  */

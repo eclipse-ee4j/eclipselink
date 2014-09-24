@@ -89,7 +89,7 @@ import org.w3c.dom.Text;
  * <p>The following XPath statements may be used to specify the location of XML data relating to an object's
  * name attribute:
  *
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">XPath</th>
  * <th id="c2" align="left">Description</th>
@@ -99,7 +99,7 @@ import org.w3c.dom.Text;
  * <td headers="c2">The name information is stored in the contact-methods element.</td>
  * </tr>
  * <tr>
- * <td headers="c1" nowrap="true">contact-methods/info</td>
+ * <td headers="c1" style="nowrap">contact-methods/info</td>
  * <td headers="c2">The XPath statement may be used to specify any valid path.</td>
  * </tr>
  * <tr>

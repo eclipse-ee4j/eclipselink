@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,7 +15,7 @@ package org.eclipse.persistence.queries;
 /**
  * <p><b>Purpose</b>:
  * Concrete class to perform a read of a single data value.
- * <p>
+ *
  * <p><b>Responsibilities</b>:
  * Used in conjunction with CursoredStream size and Platform getSequence.
  * This can be used to read a single data value (i.e. one field).

@@ -15,9 +15,9 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The query BNF for the database type.
- * <p>
+ *
  * <div><b>BNF:</b> <code>database_type ::= data_type_literal [( [numeric_literal [, numeric_literal]] )]</code></div>
- * <p>
+ *
  * <div><b>BNF:</b> <code>data_type_literal ::= [CHAR, VARCHAR, NUMERIC, INTEGER, DATE, TIME, TIMESTAMP, etc]</code></div>
  * <p>
  *

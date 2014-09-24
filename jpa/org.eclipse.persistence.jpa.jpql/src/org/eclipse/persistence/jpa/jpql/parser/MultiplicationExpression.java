@@ -18,7 +18,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * One of the four binary operators. A multiplication is a mathematical operation of scaling one
  * operand with another.
- * <p>
+ *
  * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression * arithmetic_term</code><p></div>
  *
  * @version 2.4

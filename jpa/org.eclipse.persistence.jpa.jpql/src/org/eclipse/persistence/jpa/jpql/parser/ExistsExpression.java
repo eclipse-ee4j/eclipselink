@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * An <b>EXISTS</b> expression is a predicate that is <code>true</code> only if the result of the
  * subquery consists of one or more values and that is <code>false</code> otherwise.
- * <p>
+ *
  * <div><b>BNF:</b> <code>exists_expression ::= [NOT] EXISTS(subquery)</code><p></div>
  *
  * @version 2.5

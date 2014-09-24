@@ -37,8 +37,7 @@ import org.xml.sax.Attributes;
  * <li> NullPolicy (default implementation)</li>
  * <li> IsSetNullPolicy (keyed off isSet() state of the node)</li>
  * </ul>
- * <p>
- * <p>
+ *
  * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Unmarshal Flag</th>
@@ -55,13 +54,13 @@ import org.xml.sax.Attributes;
  * empty Object for composite mappings, otherwise we set to null.</td>
  * </tr>
  * <tr>
- * <td headers="c1" nowrap="true"> isNullRepresentedByXsiNil </td>
+ * <td headers="c1" style="nowrap"> isNullRepresentedByXsiNil </td>
  * <td headers="c2">If this unmarshal flag is false for xsi:nil nodes we ignore
  * the xsi:nil attribute and treat as an empty node.<br>
  * Otherwise we set to null.</td>
  * </tr>
  * </table>
- * <p>
+ *
  * <table summary="" border="1">
  * <tr>
  * <th id="c3" align="left">Marshal Enum</th>
@@ -76,7 +75,7 @@ import org.xml.sax.Attributes;
  * <td headers="c4">Optional: Write out no node.</td>
  * </tr>
  * <tr>
- * <td headers="c3" nowrap="true"> EMPTY_NODE </td>
+ * <td headers="c3" style="nowrap"> EMPTY_NODE </td>
  * <td headers="c4">Required: Write out an empty {@literal <node/>} or node="" node.</td>
  * </tr>
  * </table> &nbsp;<b>Usage</b>:<br>

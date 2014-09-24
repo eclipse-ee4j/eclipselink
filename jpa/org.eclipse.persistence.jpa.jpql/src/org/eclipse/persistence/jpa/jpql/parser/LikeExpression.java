@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * is a single-character string literal or a character-valued input parameter (i.e., char or
  * Character) and is used to escape the special meaning of the underscore and percent characters in
  * <code>pattern_value</code>.
- * <p>
+ *
  * <div><b>BNF:</b> <code>like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]</code><p></div>
  *
  * @version 2.5

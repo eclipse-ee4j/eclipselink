@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * be applied, the result of the aggregate function is <code>null</code>. If <code><b>COUNT</b></code>
  * is used, and there are no values to which <code><b>COUNT</b></code> can be applied, the result of
  * the aggregate function is 0.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= SUM([DISTINCT] state_field_path_expression)</code><p></div>
  *
  * @see SumFunction

@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <b>NOT MEMBER OF</b> expression is <b>TRUE</b>. Otherwise, if the value of the collection-valued
  * path expression or single-valued association-field path expression in the collection member
  * expression is <b>NULL</b> or unknown, the value of the collection member expression is unknown.
- * <p>
+ *
  * <div><b>BNF:</b> <code>collection_member_expression ::= entity_or_value_expression [NOT] MEMBER [OF] collection_valued_path_expression</code><p></div>
  *
  * @version 2.5

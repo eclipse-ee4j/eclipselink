@@ -68,7 +68,7 @@ import org.eclipse.persistence.sessions.Session;
  * <p>The following XPath statements may be used to specify the location of XML data relating to an object's
  * name attribute:
  *
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">XPath</th>
  * <th id="c2" align="left">Description</th>
@@ -93,7 +93,7 @@ import org.eclipse.persistence.sessions.Session;
  * <td headers="c2">The task information is stored in the text node of the tasks element.</td>
  * </tr>
  * <tr>
- * <td headers="c1" nowrap="true">tasks/task/text()</td>
+ * <td headers="c1" style="nowrap">tasks/task/text()</td>
  * <td headers="c2">The XPath statement may be used to specify any valid path.</td>
  * </tr>
  * <tr>

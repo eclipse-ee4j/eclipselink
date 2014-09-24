@@ -34,7 +34,7 @@ import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
  * @param <E> the type of elements returned by the list iterable's list iterator
  *
  * @see SingleElementListIterator
- * @see org.eclipse.jpt.common.utility.internal.iterable.SingleElementIterable SingleElementIterable
+ * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/SingleElementListIterable.java">SingleElementListIterable</a>
  */
 @SuppressWarnings("nls")
 public class SingleElementListIterable<E> implements ListIterable<E> {

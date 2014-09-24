@@ -34,7 +34,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * operators used with <code><b>ALL</b></code> or <code><b>ANY</b></code> conditional expressions
  * are =, {@literal <, <=, >, >=, <>}. The result of the subquery must be like that of the other
  * argument to the comparison operator in type.
- * <p>
+ *
  * <div><b>BNF:</b> <code>all_or_any_expression ::= {ALL|ANY|SOME}(subquery)</code><p></div>
  *
  * @see AllOrAnyExpression

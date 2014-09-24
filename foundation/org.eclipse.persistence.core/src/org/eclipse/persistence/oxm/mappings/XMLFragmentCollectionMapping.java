@@ -49,7 +49,7 @@ import org.w3c.dom.Text;
  * root node for the fragment.  The XPath is specified on the mapping using the <code>setXPath</code>
  * method.
  * 
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">XPath</th>
  * <th id="c2" align="left">Description</th>
@@ -59,7 +59,7 @@ import org.w3c.dom.Text;
  * <td headers="c2">The phone-number information is stored in the phone-number element.</td>
  * </tr>
  * <tr>
- * <td headers="c1" nowrap="true">contact-info/phone-number</td>
+ * <td headers="c1" style="nowrap">contact-info/phone-number</td>
  * <td headers="c2">The XPath statement may be used to specify any valid path.</td>
  * </tr>
  * </table>

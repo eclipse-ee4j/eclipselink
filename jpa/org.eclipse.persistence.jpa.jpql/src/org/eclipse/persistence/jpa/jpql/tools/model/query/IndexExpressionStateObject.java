@@ -20,7 +20,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The <code><b>INDEX</b></code> function returns an integer value corresponding to the position of
  * its argument in an ordered list. The <code><b>INDEX</b></code> function can only be applied to
  * identification variables denoting types for which an order column has been specified.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= INDEX(identification_variable)</code><p></div>
  *
  * @see IndexExpression

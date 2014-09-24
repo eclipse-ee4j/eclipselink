@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -34,7 +34,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 /**
  * <p><b>Purpose</b>:
  * Concrete class to perform read using raw SQL and the SQLResultSetMapping.
- * <p>
+ *
  * <p><b>Responsibilities</b>:
  * Execute a selecting raw SQL string.
  * Returns a List of results.  Each item in the list will be another list

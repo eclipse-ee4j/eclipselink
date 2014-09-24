@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * A null comparison tests whether or not the single-valued path expression or input parameter is a
  * <b>NULL</b> value.
- * <p>
+ *
  * <div><b>BNF:</b> <code>null_comparison_expression ::= {single_valued_path_expression | input_parameter} IS [NOT] NULL</code><p></div>
  *
  * @version 2.5

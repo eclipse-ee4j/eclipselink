@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,8 +22,6 @@ package org.eclipse.persistence.descriptors.changetracking;
  * a remove for that key and a put using the new value and old key must be fired.
  * <p>
  * <b>Responsibilities</b>: Create a MapChangeEvent for an object
- * <ul>
- * </ul>
  */
 public class MapChangeEvent extends CollectionChangeEvent {
     /**

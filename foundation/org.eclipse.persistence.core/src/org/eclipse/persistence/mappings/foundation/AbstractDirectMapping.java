@@ -732,7 +732,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Set the name of the class that will be used for setFieldClassification and deploy time
      * Used internally by JPA deployment.
      * 
-     * @see setFieldClassification(Class fieldType)
+     * @see #setFieldClassification(Class fieldType)
      * @param className
      */
     public void setFieldClassificationClassName(String className){

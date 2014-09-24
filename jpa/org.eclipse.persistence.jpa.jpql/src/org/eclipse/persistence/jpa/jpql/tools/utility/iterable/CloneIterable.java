@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.tools.utility.iterator.CloneIterator;
  * @param <E> the type of elements returned by the iterable's iterator
  *
  * @see SnapshotCloneIterable
- * @see org.eclipse.jpt.common.utility.internal.iterable.LiveCloneIterable LiveCloneIterable
+ * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/LiveCloneIterable.java">LiveCloneIterable</a>
  */
 @SuppressWarnings("nls")
 public abstract class CloneIterable<E> implements Iterable<E> {

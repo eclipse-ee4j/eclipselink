@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * A JPQL statement may be either a <b>SELECT</b> statement, an <b>UPDATE</b> statement, or a
  * <b>DELETE FROM</b> statement.
- * <p>
+ *
  * <div><b>BNF:</b> <code>QL_statement ::= {@link SelectStatement select_statement} |
  *                                                {@link UpdateStatement update_statement} |
  *                                                {@link DeleteStatement delete_statement}</code></div>

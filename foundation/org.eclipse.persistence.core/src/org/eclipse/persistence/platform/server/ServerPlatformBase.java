@@ -43,13 +43,14 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
  * <p>
  * This is the abstract superclass of all platforms for all servers. Each DatabaseSession
  * contains an instance of the receiver, to help the DatabaseSession determine:
- * <p><ul>
+ * <ul>
  * <li> Which external transaction controller to use
  * <li> Whether or not to enable JTA (external transaction control)
  * <li> How to register/unregister for runtime services (JMX/MBean)
  * <li> Whether or not to enable runtime services
  * <li> How to launch container Threads
- * </ul><p>
+ * </ul>
+ * <p>
  * Subclasses already exist to provide configurations for Oc4J, WebLogic, JBoss, NetWeaver, GlassFish and WebSphere.
  * <p>
  * If the user wants a different external transaction controller class or
@@ -134,9 +135,11 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     protected volatile ExecutorService threadPool;
 
     /**
-     * INTERNAL:
-     * Default Constructor: Initialize so that runtime services and JTA are enabled. Set the DatabaseSession that I
-     * will be helping.
+     * INTERNAL: Default Constructor: Initialize so that runtime services and
+     * JTA are enabled. Set the DatabaseSession that I will be helping.
+     * 
+     * @param newDatabaseSession
+     *            The instance of DatabaseSession that I am helping.
      */
     public ServerPlatformBase(DatabaseSession newDatabaseSession) {
         this.isJTAEnabled = true;

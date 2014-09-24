@@ -35,8 +35,8 @@ import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
  *
  * @param <E> the type of elements returned by the iterator
  *
- * @see org.eclipse.jpt.common.utility.internal.iterable.LiveCloneListIterable LiveCloneListIterable
- * @see org.eclipse.jpt.common.utility.internal.iterable.SnapshotCloneListIterable SnapshotCloneListIterable
+ * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/LiveCloneListIterable.java">LiveCloneListIterable</a>
+ * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/SnapshotCloneListIterable.java">SnapshotCloneListIterable</a>
  */
 public class CloneListIterator<E>
 	implements ListIterator<E>

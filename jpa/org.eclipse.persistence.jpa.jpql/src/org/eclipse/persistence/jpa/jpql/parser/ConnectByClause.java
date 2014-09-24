@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * The <b>CONNECT BY</b> clause allows selecting rows in a hierarchical order using the hierarchical
  * query clause. <b>CONNECT BY</b> specifies the relationship between parent rows and child rows of
  * the hierarchy.
- * <p>
+ *
  * <div><b>BNF:</b> <code>connectby_clause ::= <b>CONNECT BY</b> { single_valued_object_path_expression | collection_valued_path_expression }</code><p></div>
  *
  * @version 2.5

@@ -42,7 +42,7 @@ public interface DeclarationStateObject extends StateObject {
 	 * Returns the {@link IManagedType} for the given identification variable. If the declaration is
 	 * for a subquery and there is no managed type associated with the identification then the search
 	 * will traverse up the query hierarchy.
-	 * <p>
+	 *
 	 * <pre><code>SELECT e FROM Department d JOIN KEY(d.employees).addresses a</code></pre>
 	 * In the above query, the managed type associated with the identification variable:
 	 * <ul>
@@ -62,7 +62,7 @@ public interface DeclarationStateObject extends StateObject {
 	/**
 	 * Returns the {@link IManagedType} for the given identification variable. The search does not
 	 * traverse up the query hierarchy if this declaration is for a subquery.
-	 * <p>
+	 *
 	 * <pre><code>SELECT e FROM Department d JOIN KEY(d.employees).addresses a</code></pre>
 	 * In the above query, the managed type associated with the identification variable:
 	 * <ul>

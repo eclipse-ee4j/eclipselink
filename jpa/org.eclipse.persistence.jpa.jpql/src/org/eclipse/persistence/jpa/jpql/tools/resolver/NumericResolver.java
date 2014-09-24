@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
  * <p>
  * The result of a <b>CASE</b> expression, <b>COALESCE</b> expression, <b>NULLIF</b> expression, or
  * arithmetic expression (+, -, *, /) is determined by applying the following rule to its operands.
- * <p>
+ * </p>
  * <ul>
  * <li>If there is an operand of type <code>Double</code> or <code>double</code>, the result of the
  *     operation is of type <code>Double</code>;

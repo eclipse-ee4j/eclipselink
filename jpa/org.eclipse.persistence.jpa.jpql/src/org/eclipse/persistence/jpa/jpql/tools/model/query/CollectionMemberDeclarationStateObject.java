@@ -34,7 +34,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * path expression evaluates to a collection type specified as a result of navigation to a
  * collection-valued association-field of an entity abstract schema type. The syntax for declaring a
  * collection member identification variable is as follows:
- * <p>
+ *
  * <div><b>BNF:</b> <code>collection_member_declaration ::= IN(collection_valued_path_expression) [AS] identification_variable</code><p></div>
  * or
  * <div><b>BNF:</b> <code>derived_collection_member_declaration ::= IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field</code><p></div>
@@ -323,7 +323,7 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
 	 * should only be done when this object is instantiated during the conversion of a parsed JPQL
 	 * query into {@link StateObject StateObjects}.
 	 *
-	 * @param expression The {@link CollectionMemberDeclaration parsed object} representing an <code>IN<b></b></code>
+	 * @param expression The {@link CollectionMemberDeclaration parsed object} representing an <code><b>IN</b></code>
 	 * expression
 	 */
 	public void setExpression(CollectionMemberDeclaration expression) {

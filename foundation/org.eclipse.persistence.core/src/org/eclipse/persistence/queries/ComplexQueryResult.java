@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,7 +17,7 @@ package org.eclipse.persistence.queries;
  * <p><b>Purpose</b>:
  * Used to return multiple sets of information from a query.
  * This is used if the objects and rows are required to be returned.
- * <p>
+ *
  * <p><b>Responsibilities</b>:
  * Hold both the result of the query and the row results.
  *

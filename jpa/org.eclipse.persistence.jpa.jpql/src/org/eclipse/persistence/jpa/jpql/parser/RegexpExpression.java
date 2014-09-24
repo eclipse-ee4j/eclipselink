@@ -24,9 +24,8 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * The <code>string_expression</code> must have a string value. The <code>pattern_value</code> is a
  * string literal or a string-valued input parameter that is a regular expression.
- * <p>
+ *
  * <div><b>BNF:</b> <code>regexp_expression ::= string_expression REGEXP pattern_value</code></div>
- * <p>
  *
  * @version 2.5
  * @since 2.4

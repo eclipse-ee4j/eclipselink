@@ -589,7 +589,7 @@ public final class XmlEscapeCharacterConverter {
 	/**
 	 * Converts the references (escape characters) the given string may have into their corresponding
 	 * Unicode characters.
-	 * <p>
+	 *
 	 * <ul>
 	 * <li>Character entity reference: <b>&amp;copy;</b> for <b>&copy;</b></li>
 	 * <li>Numeric character reference (decimal value): <b>&amp;#169;</b> for <b>&#169;</b></li>

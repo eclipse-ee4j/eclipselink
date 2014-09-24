@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * A <b>DELETE</b> statement provides bulk operations over sets of entities of a single entity class
  * (together with its subclasses, if any). Only one entity abstract schema type may be specified in
  * the <b>UPDATE</b> clause.
- * <p>
+ *
  * <div><b>BNF:</b> <code>delete_clause ::= DELETE FROM abstract_schema_name [[AS] identification_variable]</code></div>
  * <p>
  * Example: <code>DELETE FROM Employee e</code>

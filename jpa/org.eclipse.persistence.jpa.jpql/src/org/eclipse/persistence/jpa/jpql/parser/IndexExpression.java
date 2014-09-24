@@ -17,7 +17,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The <b>INDEX</b> function returns an integer value corresponding to the position of its argument
  * in an ordered list. The <b>INDEX</b> function can only be applied to identification variables
  * denoting types for which an order column has been specified.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= INDEX(identification_variable)</code><p></div>
  *
  * @version 2.5

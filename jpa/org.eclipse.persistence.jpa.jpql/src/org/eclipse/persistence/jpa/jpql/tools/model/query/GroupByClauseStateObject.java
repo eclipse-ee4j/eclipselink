@@ -23,7 +23,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * The <code><b>GROUP BY</b></code> construct enables the aggregation of values according to the
  * properties of an entity class.
- * <p>
+ *
  * <div><b>BNF:</b> <code>groupby_clause ::= GROUP BY groupby_item {, groupby_item}*</code><p></div>
  *
  * @see GroupByClause

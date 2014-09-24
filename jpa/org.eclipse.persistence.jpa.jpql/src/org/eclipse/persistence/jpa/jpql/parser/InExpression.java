@@ -49,9 +49,9 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * nested_array_expression ::= ( in_expression_expression {, in_expression_expression}+ )
  *
  * nested_array_item ::= ( in_item {, in_item}+ )</code></pre></div>
- * <p>
+ *
  * <div>Example: <code><b>SELECT</b> c <b>FROM</b> Customer c <b>WHERE</b> c.home.city <b>IN</b> :city</code></div>
- * <p>
+ *
  * <div>Example: <code><b>SELECT</b> p <b>FROM</b> Project p <b>WHERE</b> <b>TYPE</b>(p) <b>IN</b>(LargeProject, SmallProject)</code></div>
  *
  * @version 2.5.1

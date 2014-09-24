@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * The <b>WHERE</b> clause of a query consists of a conditional expression used to select objects or
  * values that satisfy the expression. The <b>WHERE</b> clause restricts the result of a select
  * statement or the scope of an update or delete operation.
- * <p>
+ *
  * <div><b>BNF:</b> <code>where_clause ::= WHERE conditional_expression</code><p></div>
  *
  * @version 2.5

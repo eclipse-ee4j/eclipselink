@@ -21,7 +21,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The modulo operation finds the remainder of division of one number by another.
  * <p>
  * It takes two integer arguments and returns an integer.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= MOD(simple_arithmetic_expression, simple_arithmetic_expression)</code><p></div>
  *
  * @see ModExpression

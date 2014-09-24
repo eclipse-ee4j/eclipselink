@@ -18,7 +18,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * One of the four binary operators. A division is a mathematical operation of dividing one operand
  * (the dividend) by a second operand (the divisor).
- * <p>
+ *
  * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression / arithmetic_term</code><p></div>
  *
  * @version 2.4

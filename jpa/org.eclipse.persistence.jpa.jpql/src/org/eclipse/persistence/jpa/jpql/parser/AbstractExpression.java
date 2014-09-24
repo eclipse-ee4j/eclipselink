@@ -170,11 +170,11 @@ public abstract class AbstractExpression implements Expression {
 	 * The given {@link ExpressionVisitor} needs to visit this class but it is defined by a third-
 	 * party provider. This method will programmatically invoke the <b>visit</b> method defined on
 	 * the visitor. The method signature should be:
-	 * <p>
+	 *
 	 * <div><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code></div>
 	 * <p>
 	 * or
-	 * <p>
+	 *
 	 * <div><code>{public|protected|private} void visit(Expression expression)</code></div>
 	 * <p>
 	 * <b>Note:</b> The package protected visibility (default) should be used with care, if the code
@@ -220,11 +220,11 @@ public abstract class AbstractExpression implements Expression {
 	 * The given {@link ExpressionVisitor} needs to visit this class but it is defined by a third-
 	 * party provider. This method will programmatically invoke the <b>visit</b> method defined on
 	 * the visitor. The method signature should be:
-	 * <p>
+	 *
 	 * <div><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code></div>
 	 * <p>
 	 * or
-	 * <p>
+	 *
 	 * <div><code>{public|protected|private} void visit(Expression expression)</code></div>
 	 * <p>
 	 *

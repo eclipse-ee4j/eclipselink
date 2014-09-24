@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * The <code><b>ORDER BY</b></code> clause allows the objects or values that are returned by the
  * query to be ordered.
- * <p>
+ *
  * <div><b>BNF:</b> <code>orderby_clause ::= <b>ORDER BY</b> {@link OrderByItemStateObject orderby_item} {, {@link OrderByItemStateObject orderby_item}}*</code><p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.OrderByClause OrderByClause

@@ -17,7 +17,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * One of the aggregate functions. The arguments must correspond to orderable state-field types
  * (i.e., numeric types, string types, character types, or date types). The return type of this
  * function is based on the state-field's type.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= MAX([DISTINCT] state_field_path_expression)</code><p></div>
  *
  * @version 2.5

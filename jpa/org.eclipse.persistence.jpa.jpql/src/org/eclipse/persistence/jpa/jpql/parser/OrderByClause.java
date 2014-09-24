@@ -15,7 +15,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The <b>ORDER BY</b> clause allows the objects or values that are returned by the query to be ordered.
- * <p>
+ *
  * <div><b>BNF:</b> <code>orderby_clause ::= <b>ORDER BY</b> {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code><p></div>
  *
  * @version 2.5

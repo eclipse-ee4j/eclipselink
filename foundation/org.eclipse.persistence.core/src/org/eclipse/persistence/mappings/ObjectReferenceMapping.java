@@ -1215,7 +1215,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      *
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
      * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
-     * Indirection:<P>
+     * Indirection:
      *
      * <UL>
      *        <LI>The target class must implement at least one public interface
@@ -1291,7 +1291,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      *
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
      * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
-     * Indirection:<P>
+     * Indirection:
      *
      * <UL>
      *        <LI>The target class must implement at least one public interface
@@ -1315,7 +1315,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      *
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
      * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
-     * Indirection:<P>
+     * Indirection:
      *
      * <UL>
      *        <LI>The target class must implement at least one public interface

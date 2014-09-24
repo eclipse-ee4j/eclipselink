@@ -19,7 +19,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * One of the aggregate functions. The return type of this function is a <code>Long</code>.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= COUNT ([DISTINCT] identification_variable |
  *                                                                state_field_path_expression |
  *                                                                single_valued_object_path_expression)</code><p></div>

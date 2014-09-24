@@ -106,8 +106,17 @@ public class PackageRenamer {
     }
 
     /**
-    * Do a binary copy of the file byte buffer by byte buffer.
-    */
+     * Do a binary copy of the file byte buffer by byte buffer.
+     * 
+     * @param inFile
+     *            The file to copy
+     * @param outFile
+     *            The destination file
+     * @throws FileNotFoundException
+     *             if either of the two files does not exist
+     * @throws IOException
+     *             if any other IO related error occurs
+     */
     public void binaryCopy(File inFile, File outFile) throws FileNotFoundException, IOException {
         byte[] buf = new byte[BUFSIZ];
         FileInputStream in = new FileInputStream(inFile);
@@ -130,7 +139,12 @@ public class PackageRenamer {
     }
 
     /**
-     * INTERNAL
+     * INTERNAL Creates a destination directory File object under the path
+     * passed, verifying correctness.
+     * 
+     * @param aDirString
+     *            The path to the directory File object to create
+     * @return The destination directory File object
      */
     public File buildAndCheckDestinationFile(String aDirString) {
         if (aDirString == null) {
@@ -206,6 +220,9 @@ public class PackageRenamer {
 
     /**
      * This method creates an output directory for post-rename file(s).
+     * 
+     * @param aDirectory
+     *            The output directory to create
      */
     public void createDestinationDirectory(File aDirectory) {
         if (!aDirectory.exists()) {
@@ -218,7 +235,14 @@ public class PackageRenamer {
     }
 
     /**
-     * Return true if directory2 is contained within directory1. Both directories must be absolute.
+     * Return true if directory2 is contained within directory1. Both
+     * directories must be absolute.
+     * 
+     * @param directory1
+     *            The higher level directory
+     * @param directory2
+     *            The lower level directory
+     * @return TRUE if directory2 is a subdirectory of directory1
      */
     public static boolean directoryIsSubdirectory(File directory1, File directory2) {
         //        System.out.println(directory1 + " contains " + directory2);
@@ -255,10 +279,14 @@ public class PackageRenamer {
     }
 
     /**
-    * Return true if the PackageRenamer should work on the given file extension.
-    */
+     * Return true if the PackageRenamer should work on the given file
+     * extension.
+     * 
+     * @param extension
+     *            The file extension to check for being supported
+     * @return TRUE if the extension is supported
+     */
     public boolean isExtensionSupported(String extension) {
-
         /* This was cut out because the binary check recognize these files and just copy them byte by byte.
         for (int i=0; i<UNSUPPORTED_EXTENSIONS.length; i++) {
             if ( UNSUPPORTED_EXTENSIONS[i].equalsIgnoreCase(extension)) {
@@ -270,16 +298,20 @@ public class PackageRenamer {
     }
 
     /**
-    */
+     * @param str
+     *            The String to log
+     */
     public void logln(String str) {
         outLog.println(str);
         outLog.flush();
     }
 
     /**
-    * Main method to run the PackageRenamer
-    *
-    */
+     * Main method to run the PackageRenamer
+     *
+     * @param args
+     *            Command line arguments
+     */
     public static void main(String[] args) {
         // Check the accuracy of the arguments
         PackageRenamer instance = null;
@@ -319,8 +351,12 @@ public class PackageRenamer {
     }
 
     /**
-    * Returns the extension of the given file. Returns and empty string if none was found.
-    */
+     * Returns the extension of the given file.
+     * 
+     * @param aFile
+     *            The file of which to retrieve the extension
+     * @return The file extension or an empty string if none was found.
+     */
     public String parseFileExtension(File aFile) {
         int index = aFile.getName().lastIndexOf('.');
         if (index == -1) {
@@ -331,9 +367,11 @@ public class PackageRenamer {
     }
 
     /**
-    * INTERNAL
-    * Prompt from System.in for an empty or non-existent directory to use as the destination directory.
-    */
+     * INTERNAL Prompt from System.in for an empty or non-existent directory to
+     * use as the destination directory.
+     * 
+     * @return The destination directory File object
+     */
     protected File promptForDestinationDirectory() {
         System.out.print("Enter the path of the directory to which files are to be copied:" + CR + "> ");
         String aLine = null;
@@ -343,13 +381,16 @@ public class PackageRenamer {
             throw new PackageRenamerException("Error while reading the destination directory specified: " + exception.getMessage());
         }
         return buildAndCheckDestinationFile(aLine);
-
     }
 
     /**
-    * This readChangesFile() method reads the given properties file to be a reference
-    * for renaming TopLink package name.
-    */
+     * This readChangesFile() method reads the given properties file to be a
+     * reference for renaming TopLink package name.
+     * 
+     * @param filename
+     *            The input file to use for the renaming
+     * @return The Properties object containing the renaming information
+     */
     public Properties readChangesFile(String filename) {
         Properties props = new Properties();
         InputStream in = null;
@@ -429,9 +470,13 @@ public class PackageRenamer {
     }
 
     /**
-    * This runSearchAndReplacePackageName() reads an pre-rename source file all into string variable and
-    * replacing the old package names with the new ones according to the properties file.
-    */
+     * This runSearchAndReplacePackageName() reads a pre-rename source file all
+     * into string variable and replacing the old package names with the new
+     * ones according to the properties file.
+     * 
+     * @param sourceFile
+     *            The source file to process
+     */
     public void runSearchAndReplacePackageName(java.io.File sourceFile) {
         String stringContainAllFile = "";
         String sourceFileName = sourceFile.toString();
@@ -520,9 +565,16 @@ public class PackageRenamer {
     }
 
     /**
-    * Do a search and replace in a string.
-    * @return the modified String
-    */
+     * Do a search and replace in a string.
+     * 
+     * @param str
+     *            The original String
+     * @param oldChars
+     *            The character pattern to replace
+     * @param newChars
+     *            The character pattern to replace the existing with
+     * @return the modified String
+     */
     public static String replace(String str, String oldChars, String newChars) {
         int len;
         int pos;
@@ -547,7 +599,12 @@ public class PackageRenamer {
     }
 
     /**
-    */
+     * Renames a file based on the properties passed.
+     *
+     * @param aSourceFileNameWithoutRoot
+     *            The original filename
+     * @return The new filename, regardless of whether is has been changed
+     */
     public String returnNewFileNameIfRequired(String aSourceFileNameWithoutRoot) {
         for (Enumeration enumtr = properties.keys(); enumtr.hasMoreElements();) {
             String key = (String)enumtr.nextElement();
@@ -563,9 +620,13 @@ public class PackageRenamer {
     }
 
     /**
-    * This traverseSourceDirectory() traverse source-root-directory, creating an corresponding output directory,
-    * and calling another method for replacing old TopLink package name.
-    */
+     * This traverseSourceDirectory() traverse source-root-directory, creating
+     * an corresponding output directory, and calling another method for
+     * replacing old TopLink package name.
+     *
+     * @param aDirectoryString
+     *            The source root directory to traverse
+     */
     public void traverseSourceDirectory(java.io.File aDirectoryString) {
         java.io.File[] filesAndDirectories = aDirectoryString.listFiles();
 

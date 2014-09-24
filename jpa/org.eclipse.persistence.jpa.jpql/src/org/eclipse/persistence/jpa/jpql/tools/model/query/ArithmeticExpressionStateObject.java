@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ArithmeticTermBNF;
 /**
  * This expression represents an arithmetic expression, which means the first and second expressions
  * are aggregated with an arithmetic sign.
- * <p>
+ *
  * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression &lt;identifier&gt; arithmetic_term</code><p></div>
  *
  * @see AdditionExpressionStateObject

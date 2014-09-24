@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * The <b>SELECT</b> statement queries data from entities. This version simply does not handle
  * <b>OBJECT</b> and <b>NEW</b> identifiers. It is used from within another expression.
- * <p>
+ *
  * <div><b>BNF:</b> <code>simple_select_clause ::= SELECT [DISTINCT] simple_select_expression</code><p></div>
  *
  * @see SimpleSelectClause
@@ -164,7 +164,7 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
 	 * {@link StateObject StateObjects}.
 	 *
 	 * @param expression The {@link SimpleSelectClause parsed object} representing a subquery
-	 * <code>SELECT<b></b></code> clause
+	 * <code><b>SELECT</b></code> clause
 	 */
 	public void setExpression(SimpleSelectClause expression) {
 		super.setExpression(expression);

@@ -32,7 +32,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * to an EIS record in a privately owned, one-to-many relationship according to its descriptor's
  * record type.
  * 
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Record Type</th>
  * <th id="c2" align="left">Description</th>

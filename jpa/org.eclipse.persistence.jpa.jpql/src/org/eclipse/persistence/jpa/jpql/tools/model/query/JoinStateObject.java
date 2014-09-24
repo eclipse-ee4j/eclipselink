@@ -26,12 +26,12 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * A <code><b>JOIN</b></code> enables the fetching of an association as a side effect of the
  * execution of a query. A <code><b>JOIN</b></code> is specified over an entity and its related
  * entities.
- * <p>
+ *
  * <div><b>BNF:</b> <code>join ::= join_spec join_association_path_expression [AS] identification_variable</code><p></div>
  * <p>
  * A <b>JOIN FETCH</b> enables the fetching of an association as a side effect of the execution of
  * a query. A <b>JOIN FETCH</b> is specified over an entity and its related entities.
- * <p>
+ *
  * <div><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code><p></div>
  *
  * @see Join

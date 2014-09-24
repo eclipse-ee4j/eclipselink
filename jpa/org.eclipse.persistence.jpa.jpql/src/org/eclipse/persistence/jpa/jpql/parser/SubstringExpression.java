@@ -26,7 +26,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * JPA 2.1:
  * <div><b>BNF</b> ::= <code>SUBSTRING(string_expression, arithmetic_expression [, arithmetic_expression])</code></div>
- * <p>
+ *
  * <div>Example: <b>UPDATE</b> Employee e <b>SET</b> e.firstName = <b>SUBSTRING</b>('TopLink Workbench', 1, 8)<p></div>
  *
  * @version 2.5

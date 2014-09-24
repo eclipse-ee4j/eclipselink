@@ -17,9 +17,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for a <code><b>TREAT</b></code> expression.
  *
  * <div><b>BNF:</b> <code>join_treat ::= TREAT(join_collection_valued_path_expression AS subtype)</code></div>
- * <p>
+ *
  * <div><b>BNF:</b> <code>join_treat ::= TREAT(join_single_valued_path_expression AS subtype)</code></div>
- * <p>
  *
  * @version 2.4
  * @since 2.3

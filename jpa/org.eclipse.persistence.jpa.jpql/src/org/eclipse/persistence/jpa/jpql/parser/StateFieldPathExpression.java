@@ -23,9 +23,9 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * type of the related entity. An <code>embedded_class_state_field</code> is designated by the name
  * of an entity-state field that corresponds to an embedded class. Navigation to a related entity
  * results in a value of the related entity's abstract schema type.
- * <p>
+ *
  * <div><b>BNF:</b> <code>state_field_path_expression ::= {identification_variable | single_valued_association_path_expression}.state_field</code><p></div>
- * <p>
+ *
  * <div><b>BNF:</b> <code>single_valued_association_path_expression ::= identification_variable.{single_valued_association_field.}*single_valued_association_field</code><p></div>
  *
  * @version 2.4

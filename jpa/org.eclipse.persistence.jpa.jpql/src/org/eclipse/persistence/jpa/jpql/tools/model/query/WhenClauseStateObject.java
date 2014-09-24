@@ -25,7 +25,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * A <code><b>WHEN</b></code> predicate is used to calculate a condition and when it's true, its
  * <code><b>THEN</b></code> will be executed.
- * <p>
+ *
  * <div><b>BNF:</b> <code>when_clause ::= WHEN conditional_expression THEN scalar_expression</code><p></div>
  * or
  * <div><b>BNF:</b> <code>simple_when_clause ::= WHEN scalar_expression THEN scalar_expression</code><p></div>

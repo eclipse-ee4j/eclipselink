@@ -33,7 +33,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * <p>EIS Composite Object Mappings map a Java object to a privately owned, one-to-one 
  * relationship to an EIS Record according to its descriptor's record type.  
  * 
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Record Type</th>
  * <th id="c2" align="left">Description</th>

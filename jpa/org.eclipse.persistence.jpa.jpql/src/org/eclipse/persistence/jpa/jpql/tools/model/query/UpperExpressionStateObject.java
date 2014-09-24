@@ -19,7 +19,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * The <code><b>UPPER</b></code> function converts a string to upper case and it returns a string.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= UPPER(string_primary)</code><p></div>
  *
  * @see UpperExpression

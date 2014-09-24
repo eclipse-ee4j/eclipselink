@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.helper.*;
  * <p><b>Purpose</b>:
  * Stream class which is used to deal with large collections returned
  * from TOPLink queries more efficiently.
- * <p>
+ *
  * <p><b>Responsibilities</b>:
  * Wraps a database result set cursor to provide a stream on the resulting selected objects.
  *

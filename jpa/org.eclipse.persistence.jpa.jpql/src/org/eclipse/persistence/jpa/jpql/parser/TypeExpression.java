@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * returns the exact type of the argument.
  * <p>
  * Part of JPA 2.0.
- * <p>
+ *
  * <div><b>BNF:</b> <code>type_discriminator ::= TYPE(identification_variable |
  *                                                           single_valued_object_path_expression |
  *                                                           input_parameter)</code><p></div>

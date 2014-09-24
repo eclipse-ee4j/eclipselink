@@ -19,7 +19,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * The <code><b>HAVING</b></code> construct enables conditions to be specified that further restrict
  * the query result as restrictions upon the groups.
- * <p>
+ *
  * <div><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code><p></div>
  *
  * @see HavingClause
@@ -76,7 +76,7 @@ public class HavingClauseStateObject extends AbstractConditionalClauseStateObjec
 	 * done when this object is instantiated during the conversion of a parsed JPQL query into
 	 * {@link StateObject StateObjects}.
 	 *
-	 * @param expression The {@link HavingClause parsed object} representing a <code>HAVING<b></b></code>
+	 * @param expression The {@link HavingClause parsed object} representing a <code><b>HAVING</b></code>
 	 * expression
 	 */
 	public void setExpression(HavingClause expression) {

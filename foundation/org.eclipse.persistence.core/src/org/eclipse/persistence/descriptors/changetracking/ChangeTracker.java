@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,7 +19,6 @@ import java.beans.PropertyChangeListener;
  * <b>Purpose</b>: Define an interface for any object that wishes to use attribute change tracking.
  * <p>
  * <b>Description</b>: Build a bridge between an object and its PropertyChangeListener.
- * <p>
  */
 public interface ChangeTracker {
 

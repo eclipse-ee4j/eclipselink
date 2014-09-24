@@ -26,7 +26,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * In the <code><b>SELECT</b></code> clause a constructor may be used in the <code><b>SELECT</b></code>
  * list to return one or more Java instances. The specified class is not required to be an entity or
  * to be mapped to the database. The constructor name must be fully qualified.
- * <p>
+ *
  * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code><p></div>
  *
  * @see ConstructorExpression
@@ -268,7 +268,7 @@ public class ConstructorExpressionStateObject extends AbstractListHolderStateObj
 	 * be done when this object is instantiated during the conversion of a parsed JPQL query into
 	 * {@link StateObject StateObjects}.
 	 *
-	 * @param expression The {@link ConstructorExpression parsed object} representing a <code>NEW<b></b></code>
+	 * @param expression The {@link ConstructorExpression parsed object} representing a <code><b>NEW</b></code>
 	 * expression
 	 */
 	public void setExpression(ConstructorExpression expression) {

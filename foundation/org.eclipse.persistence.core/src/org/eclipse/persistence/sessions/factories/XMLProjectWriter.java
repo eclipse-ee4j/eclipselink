@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -78,7 +78,7 @@ public class XMLProjectWriter {
     /**
      * INTERNAL:
      * This should not be used.
-     * @see write(Project, String)
+     * @see #write(Project, String)
      */
     public static void write(String fileName, Project project) {
         write(project, fileName);
@@ -87,8 +87,8 @@ public class XMLProjectWriter {
     /**
      * INTERNAL:
      * This should not be used.
-     * @see write(Project, Writer)
-     * @see write(Project, String)
+     * @see #write(Project, Writer)
+     * @see #write(Project, String)
      */
     public static void write(String fileName, Project project, Writer writer) {
         if (writer != null) {

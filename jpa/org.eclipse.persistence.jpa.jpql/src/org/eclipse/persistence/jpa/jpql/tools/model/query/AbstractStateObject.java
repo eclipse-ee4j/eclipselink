@@ -85,11 +85,11 @@ public abstract class AbstractStateObject implements StateObject {
 	 * The given {@link StateObjectVisitor} needs to visit this class but it is defined by a
 	 * third-party provider. This method will programmatically invoke the <b>visit</b> method defined
 	 * on the given visitor which signature should be.
-	 * <p>
+	 *
 	 * <div><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code></div>
 	 * <p>
 	 * or
-	 * <p>
+	 *
 	 * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></div>
 	 *
 	 * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
@@ -132,11 +132,11 @@ public abstract class AbstractStateObject implements StateObject {
 	 * The given {@link StateObjectVisitor} needs to visit this class but it is defined by a
 	 * third-party provider. This method will programmatically invoke the <b>visit</b> method defined
 	 * on the given visitor which signature should be.
-	 * <p>
+	 *
 	 * <div><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code></div>
 	 * <p>
 	 * or
-	 * <p>
+	 *
 	 * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></div>
 	 *
 	 * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically

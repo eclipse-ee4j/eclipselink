@@ -24,7 +24,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollec
  * <p>EIS Composite Direct Collection Mappings map a collection of simple Java attributes 
  * to and from an EIS Record according to its descriptor's record type.  
  * 
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Record Type</th>
  * <th id="c2" align="left">Description</th>

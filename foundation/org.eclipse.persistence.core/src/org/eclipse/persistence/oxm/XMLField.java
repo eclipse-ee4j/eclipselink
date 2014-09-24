@@ -43,7 +43,7 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * <p>The following XPath statements may be used to specify the location of XML data relating to an object's
  * name attribute:
  *
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">XPath</th>
  * <th id="c2" align="left">Description</th>
@@ -62,7 +62,7 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * <td headers="c2">The name information is stored in the text node of the full-name element.</td>
  * </tr>
  * <tr>
- * <td headers="c1" nowrap="true">personal-info/name/text()</td>
+ * <td headers="c1" style="nowrap">personal-info/name/text()</td>
  * <td headers="c2">The XPath statement may be used to specify any valid path.</td>
  * </tr>
  * <tr>
@@ -115,7 +115,7 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * so the XML will be formated based on that type.  Below are the default schema type to java type conversion pairs
  * and the default java type to schema type conversion pairs.
  * <p><b>XML schema type to Java type default conversion pairs</b>
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c3" align="left">Schema Type</th>
  * <th id="c4" align="left">Java Type</th>
@@ -195,7 +195,7 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * </table>
  *
  * <p><b>Java type to XML schema type default conversion pairs</b>
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c5" align="left">Java Type</th>
  * <th id="c6" align="left">Schema Type</th>

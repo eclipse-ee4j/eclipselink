@@ -385,7 +385,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 	/**
 	 * Adds the composite JPQL identifier by following the given rules:
-	 * <p>
+	 *
 	 * <ul>
 	 * <li>If the word is empty and the offset is -1, then use the rule used by {@link
 	 * #addIdentifier(String)};</li>

@@ -22,7 +22,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * This object represents an identification variable that maps the keys of a {@link java.util.Map}.
  * <p>
  * This is part of JPA 2.0.
- * <p>
+ *
  * <div><b>BNF:</b> <code>KEY(identification_variable)</code><p></div>
  *
  * @see KeyExpression

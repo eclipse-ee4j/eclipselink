@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * This is one of the JPQL arithmetic functions. The <code><b>ABS</b></code> function takes a
  * numeric argument and returns a number (integer, float, or double) of the same type as the
  * argument to the function.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= ABS(simple_arithmetic_expression)</code></div>
  *
  * @see AbsExpression

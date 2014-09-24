@@ -24,7 +24,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <b>NULL</b>, the result is <b>NULL</b> (unknown).
  * <p>
  * The following table shows how the <b>OR</b> operator is evaluated based on its two operands:
- * <p>
+ *
  * <table summary="" cellspacing="0" cellpadding="2" border="1" width="250" style="border:1px outset darkgrey;">
  * <tr><td></td><td><b>TRUE</b></td><td><b>FALSE</b></td><td><b>NULL</b></td></tr>
  * <tr><td><b>TRUE</b></td><td>TRUE</td><td>TRUE</td><td>TRUE</td></tr>

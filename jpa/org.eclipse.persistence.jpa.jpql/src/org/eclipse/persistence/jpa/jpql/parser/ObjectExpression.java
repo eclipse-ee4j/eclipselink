@@ -17,7 +17,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * Stand-alone identification variables in the <b>SELECT</b> clause may optionally be qualified by
  * the <b>OBJECT</b> operator. The <b>SELECT</b> clause must not use the <b>OBJECT</b> operator to
  * qualify path expressions.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= OBJECT(identification_variable)</code><p></div>
  *
  * @version 2.5

@@ -358,9 +358,9 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 	}
 
 	/**
-	 * The abstract class that all refactoring classes should extend, it automatically provides
-	 * the {@link org.eclipse.text.edits.MultiTextEdit MultiTextEdit} that will holds the
-     * {@link TextEdit} objects that are related to the same refactoring event.
+	 * The abstract class that all refactoring classes should extend, it automatically provides the
+     * <a href="http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Ftext%2Fedits%2FMultiTextEdit.html">MultiTextEdit</a>
+     * that will hold the {@link TextEdit} objects that are related to the same refactoring event.
 	 */
 	protected abstract class AbstractRenamer extends AbstractTraverseChildrenVisitor {
 

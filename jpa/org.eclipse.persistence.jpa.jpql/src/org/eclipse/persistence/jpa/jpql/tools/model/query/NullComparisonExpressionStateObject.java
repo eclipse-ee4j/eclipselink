@@ -23,7 +23,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * A null comparison tests whether or not the single-valued path expression or input parameter is a
  * <code><b>NULL</b></code> value.
- * <p>
+ *
  * <div><b>BNF:</b> <code>null_comparison_expression ::= {single_valued_path_expression | input_parameter} IS [NOT] NULL</code><p></div>
  *
  * @see NullComparisonExpression

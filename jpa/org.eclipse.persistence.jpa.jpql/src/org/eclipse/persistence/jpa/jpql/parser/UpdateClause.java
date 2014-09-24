@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * An <b>UPDATE</b> statement provides bulk operations over sets of entities of a single entity
  * class (together with its subclasses, if any). Only one entity abstract schema type may be
  * specified in the <b>UPDATE</b> clause.
- * <p>
+ *
  * <div><b>BNF:</b> <code>update_clause ::= UPDATE abstract_schema_name [[AS] identification_variable] SET update_item {, update_item}*</code><p></div>
  *
  * @see UpdateStatement

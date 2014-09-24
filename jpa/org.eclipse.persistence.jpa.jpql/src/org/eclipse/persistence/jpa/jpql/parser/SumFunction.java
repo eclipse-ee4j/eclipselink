@@ -24,9 +24,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * aggregate function can be applied, the result of the aggregate function is <code>NULL</code>. If
  * <code>COUNT</code> is used, and there are no values to which <b>COUNT</b> can be applied, the
  * result of the aggregate function is 0.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= SUM([DISTINCT] state_field_path_expression)</code></div>
- * <p>
  *
  * @version 2.5
  * @since 2.3

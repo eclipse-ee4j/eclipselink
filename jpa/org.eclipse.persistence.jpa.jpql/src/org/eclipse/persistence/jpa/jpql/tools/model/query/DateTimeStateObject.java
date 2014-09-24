@@ -26,11 +26,11 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * <b>CURRENT_TIMESTAMP</b>: This function returns the value of current timestamp on the database
  * server.
- * <p>
+ *
  * <div><b>BNF:</b> <code>functions_returning_datetime ::= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP</code></div>
  * <p>
  * The JDBC escape syntax may be used for the specification of date, time, and timestamp literals.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= {d 'yyyy-mm-dd'} | {t 'hh:mm:ss'} | {ts 'yyyy-mm-dd hh:mm:ss.f...'}</code><p></div>
  *
  * @see DateTime

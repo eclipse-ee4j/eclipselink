@@ -63,7 +63,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * that implements the JMXEnabledPlatform interface. 
  * Each DatabaseSession
  * contains an instance of the receiver, to help the DatabaseSession determine:
- * <p><ul>
+ * <ul>
  * <li> Whether or not to enable JTA (external transaction control)
  * <li> How to register/unregister for runtime services (JMX/MBean)
  * <li> Whether or not to enable runtime services
@@ -138,7 +138,9 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
     
     /**
      * INTERNAL:
-     * Default Constructor: Initialize so that runtime services and JTA are enabled. 
+     * Default Constructor: Initialize so that runtime services and JTA are enabled.
+     *
+     * @param newDatabaseSession The instance of DatabaseSession that I am helping.
      */
     public JMXServerPlatformBase(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);

@@ -36,8 +36,8 @@ import org.eclipse.persistence.jpa.jpql.utility.iterator.ArrayIterator;
  *
  * @param <E> the type of elements returned by the iterator
  *
- * @see org.eclipse.jpt.common.utility.internal.iterable.LiveCloneIterable
- * @see org.eclipse.jpt.common.utility.internal.iterable.SnapshotCloneIterable
+ * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/LiveCloneIterable.java">LiveCloneIterable</a>
+ * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/SnapshotCloneIterable.java">SnapshotCloneIterable</a>
  */
 public class CloneIterator<E>
 	implements Iterator<E>

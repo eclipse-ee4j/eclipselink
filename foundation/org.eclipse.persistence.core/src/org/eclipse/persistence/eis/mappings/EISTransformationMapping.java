@@ -18,7 +18,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
  * <p>EIS Transformation Mappings allow the creation of custom mappings where one or more fields
  * in an EIS Record can be used to create the object to be stored in a Java class's attribute.
  * 
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Record Type</th>
  * <th id="c2" align="left">Description</th>

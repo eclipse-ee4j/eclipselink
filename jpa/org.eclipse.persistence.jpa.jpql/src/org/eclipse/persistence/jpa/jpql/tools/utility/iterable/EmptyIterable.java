@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.tools.utility.iterator.EmptyIterator;
  * @param <E> the type of elements returned by the iterable's iterator
  *
  * @see EmptyIterator
- * @see org.eclipse.jpt.common.utility.internal.iterable.EmptyListIterable EmptyListIterable
+ * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/EmptyListIterable.java">EmptyListIterable</a>
  *
  * @version 2.5
  * @since 2.5

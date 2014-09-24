@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -995,12 +995,12 @@ public class DatabaseLogin extends DatasourceLogin {
 
     /**
      * PUBLIC: Calling this method with an argument of true indicates to EclipseLink that
-     * the JDBC driver supports batch writing. EclipseLink's internal batch writing is disabled.<p></p>
+     * the JDBC driver supports batch writing. EclipseLink's internal batch writing is disabled.<p>
      * Calling this method with an argument of false indicates to EclipseLink that the
      * JDBC driver does not support batch writing. This will revert to the default
      * behavior which is to delegate to EclipseLink's internal batch writing.
      * @param usesJDBCBatchWriting boolean true delegates batch writing to the
-     * JDBC driver and false delegates batch writing to EclipseLink.
+     * JDBC driver and false delegates batch writing to EclipseLink.</p>
      */
     public void setUsesJDBCBatchWriting(boolean usesJDBCBatchWriting) {
         getPlatform().setUsesJDBCBatchWriting(usesJDBCBatchWriting);

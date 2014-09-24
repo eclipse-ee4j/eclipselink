@@ -72,7 +72,7 @@ import commonj.sdo.impl.ExternalizableDelegator;
  * Xpath address of the current DataObject inside the entire tree along with its identification as root/no-root in 
  * binary 1/0 format as follows.
  *
- * <p><ul><li><b>Security:</b><br>
+ * <ul><li><b>Security:</b><br>
  *     The following public functions expose a data replacement vulnerability where an 
  *     outside client can gain access and modify their constants.  
  *     We may need to wrap the GZIP streams in some sort of encryption when we are not 

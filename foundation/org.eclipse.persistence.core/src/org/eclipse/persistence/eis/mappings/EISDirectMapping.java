@@ -26,7 +26,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
  * <p>EIS Direct Mappings map a simple Java attribute to and from an EIS Record according to 
  * its descriptor's record type.  
  * 
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Record Type</th>
  * <th id="c2" align="left">Description</th>

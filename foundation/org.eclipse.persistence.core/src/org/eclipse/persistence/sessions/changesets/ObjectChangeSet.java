@@ -22,7 +22,6 @@ import org.eclipse.persistence.sessions.Session;
  * <p>
  * <b>Description</b>: The ObjectChangeSet class represents a single Object registered in the UnitOfWork.
  * It is owned by the larger UnitOfWorkChangeSet.
- * <p>
  */
 public interface ObjectChangeSet {
     boolean equals(Object objectChange);

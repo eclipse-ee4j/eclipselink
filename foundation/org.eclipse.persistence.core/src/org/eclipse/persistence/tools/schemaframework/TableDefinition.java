@@ -48,7 +48,7 @@ import org.eclipse.persistence.queries.SQLCall;
 /**
  * <p>
  * <b>Purpose</b>: Allow a generic way of creating tables on the different platforms.
- * <p>
+ * </p>
  */
 public class TableDefinition extends DatabaseObjectDefinition {
     protected List<FieldDefinition> fields; //FieldDefinitions

@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * The <b>GROUP BY</b> construct enables the aggregation of values according to the properties of an
  * entity class.
- * <p>
+ *
  * <div><b>BNF:</b> <code>groupby_clause ::= GROUP BY groupby_item {, groupby_item}*</code><p></div>
  *
  * @version 2.5.1

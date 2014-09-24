@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
  * A compound expression has a left and right expressions combined by an identifier.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= left_expression identifier right_expression</code><p></div>
  *
  * @version 2.5

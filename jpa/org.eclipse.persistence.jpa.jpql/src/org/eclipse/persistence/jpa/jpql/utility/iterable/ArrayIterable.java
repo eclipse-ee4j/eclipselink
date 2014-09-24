@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.utility.iterator.ArrayIterator;
  * @param <E> the type of elements returned by the iterable's iterator
  *
  * @see ArrayIterator
- * @see org.eclipse.jpt.common.utility.internal.iterable.ArrayListIterable ArrayListIterable
+ * @see <a href="http://git.eclipse.org/c/dali/webtools.dali.git/tree/common/plugins/org.eclipse.jpt.common.utility/src/org/eclipse/jpt/common/utility/internal/iterable/ArrayListIterable.java">ArrayListIterable</a>
  */
 public class ArrayIterable<E>
 	implements Iterable<E>

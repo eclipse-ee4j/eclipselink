@@ -21,14 +21,14 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * The <b>EXTRACT</b> function extracts a date part from a date/time value. The date part can be
  * <code>YEAR</code>, <code>MONTH</code>, <code>DAY</code>, <code>HOUR</code>, <code>MINUTE</code>,
  * <code>SECOND</code>. Some databases may support other parts.
- * <p>
+ *
  * <div><b>BNF:</b> <code>extract_expression ::= EXTRACT(date_part_literal [FROM] scalar_expression)</code></div>
  * <p>
  * date_part_literal ::= { MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH | QUARTER |
  *                         YEAR | SECOND_MICROSECOND | MINUTE_MICROSECOND | MINUTE_SECOND |
  *                         HOUR_MICROSECOND | HOUR_SECOND | HOUR_MINUTE | DAY_MICROSECOND |
  *                         DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH, etc }
- * <p>
+ * </p>
  *
  * @version 2.5
  * @since 2.4

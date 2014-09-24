@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,7 +23,7 @@ import org.eclipse.persistence.sequencing.Sequence;
  * <p>
  * <b>Purpose</b>: Allow a generic way of creating sequences on the different platforms,
  * and allow optional parameters to be specified.
- * <p>
+ * </p>
  */
 public abstract class SequenceDefinition extends DatabaseObjectDefinition {
     protected Sequence sequence;

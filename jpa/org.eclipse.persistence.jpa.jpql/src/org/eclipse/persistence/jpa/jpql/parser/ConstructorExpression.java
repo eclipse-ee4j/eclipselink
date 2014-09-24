@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * In the <b>SELECT</b> clause a constructor may be used in the <b>SELECT</b> list to return one or
  * more Java instances. The specified class is not required to be an entity or to be mapped to the
  * database. The constructor name must be fully qualified.
- * <p>
+ *
  * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code><p></div>
  *
  * @version 2.5

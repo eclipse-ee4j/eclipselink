@@ -19,9 +19,8 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * The <b>CAST</b> function cast value to a different type. The database type is the second parameter,
  * and can be any valid database type including size and scale.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= CAST(scalar_expression [AS] database_type)</code></div>
- * <p>
  *
  * @see DatabaseType
  *

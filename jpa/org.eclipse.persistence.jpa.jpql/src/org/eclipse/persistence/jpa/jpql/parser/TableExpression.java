@@ -16,9 +16,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * Defines a table expression. This allow a non-mapped table to be used in a query. This is not part
  * of the JPA functional specification but is EclipseLink specific support.
- * <p>
+ *
  * <div><b>BNF:</b> <code>table_expression ::= TABLE(string_literal)</code></div>
- * <p>
  *
  * @version 2.5
  * @since 2.4

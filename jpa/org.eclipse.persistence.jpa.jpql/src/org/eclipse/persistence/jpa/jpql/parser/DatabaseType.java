@@ -17,9 +17,9 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
  * This expression represents the database specific data type, which may include size and scale.
- * <p>
+ *
  * <div><b>BNF:</b> <code>database_type ::= data_type_literal [( [numeric_literal [, numeric_literal]] )]</code></div>
- * <p>
+ *
  * <div><b>BNF:</b> <code>data_type_literal ::= [CHAR, VARCHAR, NUMERIC, INTEGER, DATE, TIME, TIMESTAMP, etc]</code></div>
  * <p>
  * Example: <code>CASE(e.name AS VARCHAR(20))</code>

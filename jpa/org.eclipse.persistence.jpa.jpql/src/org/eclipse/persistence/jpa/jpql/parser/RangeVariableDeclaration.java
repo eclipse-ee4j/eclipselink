@@ -29,9 +29,8 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * EclipseLink 2.4:
  * <div><b>BNF:</b> <code>range_variable_declaration ::= { root_object } [AS] identification_variable</code></div>
- * <p>
+ *
  * <div><b>BNF:</b> <code>root_object ::= abstract_schema_name | (subquery)</code></div>
- * <p>
  *
  * @version 2.5
  * @since 2.3

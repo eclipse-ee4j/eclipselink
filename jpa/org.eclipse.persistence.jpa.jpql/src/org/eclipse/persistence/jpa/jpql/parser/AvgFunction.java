@@ -15,7 +15,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * One of the aggregate functions. The arguments must be numeric. <b>AVG</b> returns <code>Double</code>.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= AVG([DISTINCT] state_field_path_expression)</code><p></div>
  *
  * @version 2.5

@@ -27,9 +27,9 @@ import org.eclipse.persistence.jpa.jpql.tools.utility.iterable.EmptyIterable;
  * A single-valued association field is designated by the name of an association-field in a
  * one-to-one or many-to-one relationship. The type of a single-valued association field and thus a
  * single-valued association path expression is the abstract schema type of the related entity.
- * <p>
+ *
  * <div><b>BNF:</b> <code>state_field_path_expression ::= {identification_variable | single_valued_association_path_expression}.state_field</code><p></div>
- * <p>
+ *
  * <div><b>BNF:</b> <code>single_valued_association_path_expression ::= identification_variable.{single_valued_association_field.}*single_valued_association_field</code><p></div>
  *
  * @see StateFieldPathExpression

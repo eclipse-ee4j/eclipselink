@@ -41,7 +41,7 @@ import org.eclipse.persistence.queries.*;
  * object may contain a foreign key to the source object (key on target).  Because both the source 
  * and target objects use interactions, they must both be configured as root object types.  
  * 
- * <p><table summary="" border="1">
+ * <table summary="" border="1">
  * <tr>
  * <th id="c1" align="left">Record Type</th>
  * <th id="c2" align="left">Description</th>
@@ -473,52 +473,64 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
     }
 
     /**
-     * PUBLIC:
-     * Verify delete is used during delete and update on private 1:1's outside of a unit of work only.
-     * It checks for the previous value of the target object through joining the source and target tables.
-     * By default it is always done, but may be disabled for performance on distributed database reasons.
-     * In the unit of work the previous value is obtained from the backup-clone so it is never used.
+     * PUBLIC: Verify delete is used during delete and update on private 1:1's
+     * outside of a unit of work only. It checks for the previous value of the
+     * target object through joining the source and target tables. By default it
+     * is always done, but may be disabled for performance on distributed
+     * database reasons. In the unit of work the previous value is obtained from
+     * the backup-clone so it is never used.
+     *
+     * @param shouldVerifyDelete
+     *            Sets whether delete verification should be performed
      */
     public void setShouldVerifyDelete(boolean shouldVerifyDelete) {
         this.shouldVerifyDelete = shouldVerifyDelete;
     }
 
     /**
-    * PUBLIC:
-    * Verify delete is used during delete and update outside of a unit of work only.
-    * It checks for the previous value of the target object through joining the source and target tables.
-    */
+     * PUBLIC: Verify delete is used during delete and update outside of a unit
+     * of work only. It checks for the previous value of the target object
+     * through joining the source and target tables.
+     * 
+     * @return TRUE if verify delete has been enabled
+     */
     public boolean shouldVerifyDelete() {
         return shouldVerifyDelete;
     }
 
     /**
-     * INTERNAL:
-     * Gets the foreign key fields.
+     * INTERNAL: Gets the foreign key fields.
+     * 
+     * @return The mapping from source to target key fields
      */
     public Map<DatabaseField, DatabaseField> getSourceToTargetKeyFields() {
         return sourceToTargetKeyFields;
     }
 
     /**
-     * INTERNAL:
-     * Gets the target foreign key fields.
+     * INTERNAL: Gets the target foreign key fields.
+     * 
+     * @return The mapping from target to source key fields
      */
     public Map<DatabaseField, DatabaseField> getTargetToSourceKeyFields() {
         return targetToSourceKeyFields;
     }
 
     /**
-     * INTERNAL:
-     * Set the source keys to target keys fields association.
+     * INTERNAL: Set the source keys to target keys fields association.
+     * 
+     * @param sourceToTargetKeyFields
+     *            The mapping from source keys to target keys
      */
     public void setSourceToTargetKeyFields(Map sourceToTargetKeyFields) {
         this.sourceToTargetKeyFields = sourceToTargetKeyFields;
     }
 
     /**
-     * INTERNAL:
-     * Set the source keys to target keys fields association.
+     * INTERNAL: Set the target keys to source keys fields association.
+     * 
+     * @param targetToSourceKeyFields
+     *            The mapping from target keys to source keys
      */
     public void setTargetToSourceKeyFields(Map targetToSourceKeyFields) {
         this.targetToSourceKeyFields = targetToSourceKeyFields;

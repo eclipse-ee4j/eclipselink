@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
  * path expressions. Identification variables designate instances of a particular entity abstract
  * schema type. The <code><b>FROM</b></code> clause can contain multiple identification variable
  * declarations separated by a comma (,).
- * <p>
+ *
  * <pre><code>BNF: subquery_from_clause ::= FROM subselect_identification_variable_declaration {, subselect_identification_variable_declaration}*</code></pre>
  *
  * @see SimpleFromClause

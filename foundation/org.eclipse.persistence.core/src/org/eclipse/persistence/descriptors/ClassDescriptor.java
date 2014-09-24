@@ -5155,7 +5155,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * To ensure that refreshes are only done when required, use this method in conjunction with {@link #onlyRefreshCacheIfNewerVersion}.<P>
      *
      * When the <CODE>shouldAlwaysRefreshCache</CODE> argument passed into this method is <CODE>false</CODE>, this method
-     * ensures that a <CODE>ClassDescriptor</CODE> is not configured to always refresh the cache if data is received from the database by any query.<P>
+     * ensures that a <CODE>ClassDescriptor</CODE> is not configured to always refresh the cache if data is received from the database by any query.
      *
      * @see #alwaysRefreshCache
      * @see #dontAlwaysRefreshCache

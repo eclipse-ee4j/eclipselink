@@ -32,7 +32,7 @@ import org.eclipse.persistence.transaction.JTATransactionController;
  * <p>
  * <b>Description</b>: Implements the required behavior for controlling transactions
  * in WebSphere
- * <p>
+ *
  * @see org.eclipse.persistence.transaction.JTATransactionController
  */
 public class WebSphereTransactionController extends JTATransactionController {

@@ -22,7 +22,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * operator (the map entry).
  * <p>
  * This is part of JPA 2.0.
- * <p>
+ * </p>
  * <div><b>BNF:</b> <code>expression ::= ENTRY(identification_variable)</code><p></div>
  *
  * @version 2.5

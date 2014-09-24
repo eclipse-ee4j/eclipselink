@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,7 +30,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * The <code><b>SELECT</b></code> statement queries data from entities, which determines the type of
  * the objects or values to be selected.
- * <p>
+ *
  * <pre><code>BNF: select_clause ::= SELECT [DISTINCT] select_expression {, select_expression}*
  *     select_expression ::= single_valued_path_expression |
  *                           aggregate_expression |
@@ -378,7 +378,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	 * done when this object is instantiated during the conversion of a parsed JPQL query into
 	 * {@link StateObject StateObjects}.
 	 *
-	 * @param expression The {@link SelectClause parsed object} representing a <code>SELECT<b></b></code>
+	 * @param expression The {@link SelectClause parsed object} representing a <code><b>SELECT</b></code>
 	 * clause
 	 */
 	public void setExpression(SelectClause expression) {

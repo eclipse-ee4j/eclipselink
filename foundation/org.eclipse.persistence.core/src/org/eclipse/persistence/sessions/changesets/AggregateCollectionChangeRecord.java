@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -21,10 +21,6 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
  * <b>Purpose</b>: Define the Public interface for the Aggregate Collection Change Record.
  * <p>
  * <b>Description</b>: This interface is meant to clarify the public protocol into TopLink.
- * <p>
- * <b>Responsibilities</b>:
- * <ul>
- * </ul>
  */
 public interface AggregateCollectionChangeRecord extends ChangeRecord {
 

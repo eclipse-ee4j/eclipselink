@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,8 +58,8 @@ import static org.eclipse.persistence.jpa.jpql.LiteralType.*;
  * This {@link Resolver} wraps a subquery that is used as the "root" object in a query's declaration.
  * <p>
  * Example:
- * <p>
- * <pre><code> SELECT e.firstName
+ *
+ * <pre><code>   SELECT e.firstName
  * FROM Employee e, (SELECT count(e2), e2.firstName FROM Employee e2) e3
  * WHERE e.firstName = e3.firstName</code></pre>
  *

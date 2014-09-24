@@ -226,7 +226,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression representing traversal of a 1:many or many:many relationship.
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
-     * <p>
+     * </p>
      * <table border=0 summary="This table compares an example EclipseLink anyOf Expression to Java and SQL">
      * <tr>
      * <th id="c1">Format</th>
@@ -262,7 +262,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression representing traversal of a 1:many or many:many relationship.
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
-     * <p>
+     * </p>
      * <table border=0 summary="This table compares an example EclipseLink anyOf Expression to Java and SQL">
      * <tr>
      * <th id="c3">Format</th>
@@ -302,7 +302,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Outer joins allow the join to performed even if the target of the relationship is empty.
      * NOTE: outer joins are not supported on all database and have differing semantics.
      * <p>Example:
-     * <p>
+     * </p>
      * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
      * <tr>
      * <th id="c5">Format</th>
@@ -341,7 +341,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Outer joins allow the join to performed even if the target of the relationship is empty.
      * NOTE: outer joins are not supported on all database and have differing semantics.
      * <p>Example:
-     * <p>
+     * </p>
      * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
      * <tr>
      * <th id="c7">Format</th>
@@ -463,7 +463,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * time.
      * <p>
      * Example:
-     * <p>
+     * </p>
      * <pre>
      *  EclipseLink: employee.asOf(new AsOfClause(pastTime))
      *  Java: None
@@ -482,7 +482,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * one present) lets you express these advanced selection criteria.
      * <p>
      * Example: Querying on past attributes using parallel expressions.
-     * <p>
+     * </p>
      * <blockquote><pre>
      *   // Finds all employees who lived in Ottawa as of a past time.
      *   ExpressionBuilder employee = new ExpressionBuilder();
@@ -500,7 +500,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * That is allowed but see below for the finer points involved in this.
      * <p>
      * Example: Querying on object changes using parallel expressions.
-     * <p>
+     * </p>
      * <blockquote><pre>
      *   // Finds all employees who recently received a raise.  Note that current
      *   // objects are returned, so can be cached normally.
@@ -513,7 +513,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * </pre></blockquote>
      * <p>
      * Example: Querying on object changes using custom query keys
-     * <p><blockquote><pre>
+     * </p><blockquote><pre>
      *   // First define the custom query key and add it to your descriptor.
      *   ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
      *   Expression joinCriteria = builder.getField("EMPLOYEE.EMP_ID").equal(builder.getParameter("EMPLOYEE.EMP_ID"));

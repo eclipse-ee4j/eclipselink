@@ -27,7 +27,7 @@ import java.util.List;
  * <p>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= CONCAT(string_expression, string_expression {, string_expression}*)</code></div>
- * <p>
+ *
  * <div>Example: <b>SELECT</b> c.firstName <b>FROM</b> Customer c <b>HAVING</b> c.firstName = <b>CONCAT</b>(:fname, :lname)</div>
  *
  * @version 2.5

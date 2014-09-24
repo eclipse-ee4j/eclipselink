@@ -19,7 +19,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * The <code><b>LENGTH</b></code> function returns the length of the string in characters as an integer.
- * <p>
+ *
  * <div><b>BNF:</b> <code>expression ::= LENGTH(string_primary)</code><p></div>
  *
  * @see LengthExpression

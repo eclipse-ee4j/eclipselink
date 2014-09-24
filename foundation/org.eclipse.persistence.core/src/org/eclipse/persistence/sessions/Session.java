@@ -65,7 +65,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * query or expression levels.
      * <p>
      * Example: Using a historical session to read past versions of objects.
-     * <p>
+     *
      * <blockquote><pre>
      *  AsOfClause pastTime = new AsOfClause(System.currentTimeMillis() - 24*60*60*1000);
      *     Session historicalSession = session.acquireSessionAsOf(pastTime);
@@ -76,7 +76,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * </pre></blockquote>
      * <p>
      * Example: Using the above past employee to recover objects.
-     * <p>
+     *
      * <blockquote><pre>
      *     UnitOfWork uow = baseSession.acquireUnitOfWork();
      *      Employee presentClone = (Employee)uow.readObject(pastEmployee);

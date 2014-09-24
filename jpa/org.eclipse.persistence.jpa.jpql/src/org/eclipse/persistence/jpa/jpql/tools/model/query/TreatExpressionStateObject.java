@@ -24,9 +24,8 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * Returns an expression that allows to treat its base as if it were a subclass of the class
  * returned by the base.
  * <p>
- * <p>
  * <b>Note:</b> {@link EclipseLinkStateObjectVisitor} needs to be used to traverse this state object.
- * <p>
+ * </p>
  * <div><b>BNF:</b> <code>join_treat ::= TREAT(collection_valued_path_expression [AS] entity_type_literal)</code><p></div>
  *
  * @see TreatExpression

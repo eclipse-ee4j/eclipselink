@@ -15,7 +15,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The <b>SELECT</b> clause queries data from entities.
- * <p>
+ *
  * <div><b>BNF:</b> <code>select_clause ::= SELECT [DISTINCT] select_expression {, select_expression}*</code><p></div>
  *
  * @see AbstractSelectClause
