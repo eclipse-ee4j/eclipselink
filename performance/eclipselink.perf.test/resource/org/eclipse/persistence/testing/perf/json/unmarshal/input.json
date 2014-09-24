@@ -1,0 +1,28 @@
+[
+    {
+        "id":1,
+        "firstName":"Kate",
+        "lastName":null,
+        "phoneNumbers":[
+            {
+                "type":"mobile",
+                "number":"721111222"
+            }
+        ]
+    },
+    {
+        "id":2,
+        "firstName":"Martin",
+        "lastName":null,
+        "phoneNumbers":[
+            {
+                "type":"work",
+                "number":"222456789"
+            },
+            {
+                "type":"home",
+                "number":"222555444"
+            }
+        ]
+    }
+]

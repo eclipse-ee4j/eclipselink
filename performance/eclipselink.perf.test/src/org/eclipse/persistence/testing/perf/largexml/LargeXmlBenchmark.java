@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.perf.largexml;
 
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
@@ -69,6 +70,14 @@ public class LargeXmlBenchmark {
     }
 
     @Benchmark
+    public void testBigPurchaseOrderOutputStreamMarshal(Blackhole bh) throws Exception {
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        marshaller.marshal(bigPurchaseOrder, baos);
+        bh.consume(baos.toString());
+    }
+    @Benchmark
     public void testALotOfItemsUnmarshal(Blackhole bh) throws Exception {
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         Object aLotOfItems = unmarshaller.unmarshal(Thread.currentThread().getContextClassLoader().getResource(A_LOT_OF_ITEMS_XML));
@@ -84,6 +93,14 @@ public class LargeXmlBenchmark {
         bh.consume(writer);
     }
 
+    @Benchmark
+    public void testALotOfItemsOutputStreamMarshal(Blackhole bh) throws Exception {
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        marshaller.marshal(lotOfItemsOrder, baos);
+        bh.consume(baos.toString());
+    }
     private void prepareBigPurchaseOrder() throws Exception {
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         @SuppressWarnings("rawtypes")

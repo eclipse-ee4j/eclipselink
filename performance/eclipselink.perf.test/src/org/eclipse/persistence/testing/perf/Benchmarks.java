@@ -13,6 +13,9 @@
 package org.eclipse.persistence.testing.perf;
 
 import org.eclipse.persistence.testing.perf.jpa.persistence_content_handler.PersistenceContentHandlerBenchmark;
+import org.eclipse.persistence.testing.perf.json.marshal.JsonMarshalBenchmark;
+import org.eclipse.persistence.testing.perf.json.unmarshal.JsonUnmarshalBenchmark;
+import org.eclipse.persistence.testing.perf.json.writer.JsonWriterBenchmark;
 import org.eclipse.persistence.testing.perf.largexml.LargeXmlBenchmark;
 import org.eclipse.persistence.testing.perf.smallxml.SmallXmlBenchmark;
 import org.openjdk.jmh.results.format.ResultFormatType;
@@ -29,12 +32,26 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
  */
 public class Benchmarks {
     public static void main(String[] args) throws RunnerException {
+
+        int warmupIterations = 20;
+        int measurementIterations = 20;
+
+        if (null != args && args.length == 2) {
+            warmupIterations = Integer.parseInt(args[0]);
+            measurementIterations = Integer.parseInt(args[1]);
+        }
+
         Options opt = new OptionsBuilder()
                 .include(getInclude(SmallXmlBenchmark.class))
                 .include(getInclude(LargeXmlBenchmark.class))
                 .include(getInclude(PersistenceContentHandlerBenchmark.class))
+                .include(getInclude(JsonMarshalBenchmark.class))
+                .include(getInclude(JsonUnmarshalBenchmark.class))
+                .include(getInclude(JsonWriterBenchmark.class))
                 .result("jmh-results.txt")
                 .resultFormat(ResultFormatType.TEXT)
+                .warmupIterations(warmupIterations)
+                .measurementIterations(measurementIterations)
                 .forks(1)
                 .build();
 

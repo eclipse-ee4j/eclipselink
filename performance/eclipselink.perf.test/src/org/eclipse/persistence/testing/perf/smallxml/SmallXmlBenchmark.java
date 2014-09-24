@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.perf.smallxml;
 
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
@@ -70,6 +71,14 @@ public class SmallXmlBenchmark {
     }
 
     @Benchmark
+    public void testWorkOrderOutputStreamMarshal(Blackhole bh) throws Exception {
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        marshaller.marshal(doWorkItem, baos);
+        bh.consume(baos.toString());
+    }
+    @Benchmark
     public void testWorkOrderResponseUnmarshal(Blackhole bh) throws Exception {
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         Object workOrderItemElement = unmarshaller.unmarshal(Thread.currentThread().getContextClassLoader().getResource(DO_WORK_ITEM_RESPONSE_XML));
@@ -85,6 +94,14 @@ public class SmallXmlBenchmark {
         bh.consume(writer);
     }
 
+    @Benchmark
+    public void testWorkOrderResponseOutputStreamMarshal(Blackhole bh) throws Exception {
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        marshaller.marshal(doWorkItemResponse, baos);
+        bh.consume(baos.toString());
+    }
     private void prepareDoWorkItemResponse() {
         doWorkItemResponse = new DoWorkItemResponse();
         doWorkItemResponse.setReturn(true);
