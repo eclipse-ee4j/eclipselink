@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!--/*******************************************************************************
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
@@ -32,7 +31,27 @@
 *     bdoughan, dtwelves, egwin - initial API and implementation from SDO test project
 *     tware - modified for jpa rs tests
 *     Dmitry Kornilov - remoteDebug property added
+*     Tomas Kraus - JPA RS jUnit tests for Java EE with WebLogic
 #******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+       - test (default)    : Run JPA RS jUnit tests for Java SE
+       - test-javaee       : Run JPA RS jUnit tests for Java EE
+       - build             : Compile all JPA RS jUnit tests
+       - build-against-jar : Compile all JPA RS jUnit tests against external eclipselink.jar
+       - clean             : Clean all build generated content
+       - create-war        : Create WAR file to deploy for Java EE jUnit tests
+       - server-install    : Create Java EE server domain for tests
+       - server-start      : Start Java EE server domain for tests
+       - server-stop       : Stop Java EE server domain for tests
+       - server-setup      : Set Java EE server configuration for tests (create JDBC resources)
+       - server-reset      : Reset Java EE server configuration for tests (delete JDBC resources)
+       - server-deploy     : Deploy testing application on Java EE server
+       - server-undeploy   : Undeploy testing application from Java EE server
+
+     It requires some configuration of the build.properties and test.properties to run.
+-->
+
 <project name="eclipselink.jpars.test" default="test" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="jparstest.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
@@ -70,6 +89,8 @@
     <property file="${user.home}/test.properties"/>
     <property file="${jparstest.build.location}/${test.properties}"/>
     <property file="${jparstest.build.location}/test.properties"/>
+
+    <property name="jparstest.basedir" value="${jparstest.build.location}"/>
 
     <!-- Clean all build generated content. -->
     <target name="clean" description="Clean the build">
@@ -216,35 +237,64 @@
         </path>
     </target>
 
+    <!-- Detect OS family and set script suffix property. -->
+    <target name="detect-os">
+        <condition property="is.windows" value="true">
+            <os family="windows"/>
+        </condition>
+        <condition property="is.unix" value="true">
+            <os family="unix"/>
+        </condition>
+        <condition property="suffix" value="bat">
+            <isset property="is.windows"/>
+        </condition>
+        <condition property="suffix" value="sh">
+            <isset property="is.unix"/>
+        </condition>
+    </target>
+
+    <!-- This checks if the Apllication Server is WebLogic -->
+    <condition property="is.weblogic">
+        <contains string="${server.name}" substring="weblogic"/>
+    </condition>
+
     <!-- Build targets -->
-    <target name="compile-jpars-tests" depends="clean, init" description="build jpars test classes">
+    <target name="build" depends="init" description="build jpars test classes">
         <fail message="Cannot find CORE: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'."   unless="core.bundle.exist"/>
         <fail message="Cannot find MOXY: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'."   unless="moxy.bundle.exist"/>
         <fail message="Cannot find JPA: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'."     unless="jpa.bundle.exist"/>
         <compile_jpars_tests compilepathref="jparstest.compile.path"/>
     </target>
 
-    <target name="compile-jpars-tests-against-jar" unless="clean, init" description="build jpars test classes against eclipselink.jar">
+    <target name="build-against-jar" depends="init" description="build jpars test classes against eclipselink.jar">
         <fail message="Cannot find EclipseLink: '${jparstest.2.base.dir}/${eclipselink.jar}'." unless="eclipselink.jar.exist"/>
         <compile_jpars_tests compilepathref="jparstest.compile.against.jar.path"/>
     </target>
 
     <!-- Run targets -->
     <!-- Use -DremoteDebug=true to enable remote debugging on 8787 port -->
-    <target name="test" depends="compile-jpars-tests" description="run jpars tests">
+    <target name="test" depends="build" description="run jpars tests">
         <property name="SERVER_URL" value="http://localhost:7001"/>
         <property name="JPARS_VERSION" value="v1.0"/>
         <echo message="Server url is ${SERVER_URL}"/>
         <echo message="jpars version is ${JPARS_VERSION}"/>
-        <run_jpars_tests runpathref="jparstest.run.path"/>
+        <run_jpars_tests testclass="${test.class}" runpathref="jparstest.run.path"/>
     </target>
 
-    <target name="test-against-jar" depends="compile-jpars-tests-against-jar" description="run jpars tests against eclipselink.jar">
-        <run_jpars_tests runpathref="jparstest.run.against.jar.path"/>
+	<target name="test-javaee" depends="create-war" description="run jpars tests">
+        <property name="SERVER_URL" value="http://localhost:7001"/>
+        <property name="JPARS_VERSION" value="v1.0"/>
+        <echo message="Server url is ${SERVER_URL}"/>
+        <echo message="jpars version is ${JPARS_VERSION}"/>
+        <run_jpars_tests testclass="${test.class.javaee}" runpathref="jparstest.run.path"/>
+    </target>
+
+    <target name="test-against-jar" depends="build-against-jar" description="run jpars tests against eclipselink.jar">
+        <run_jpars_tests testclass="${test.class}" runpathref="jparstest.run.against.jar.path"/>
     </target>
 
     <!-- Build war file for JAX-RS -->
-    <target name="create-jpars-war-file" depends="compile-jpars-tests">
+    <target name="create-war" depends="build">
         <mkdir dir="${eclipselink.jpars.test}/stage/META-INF"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/lib"/>
@@ -294,8 +344,43 @@
         <delete dir="stage" includeEmptyDirs="true" failonerror="false"/>
     </target>
 
+	<!-- Application server handling tasks-->
+	<target name="server-install">
+        <ant antfile="${jparstest.basedir}/${server.name}.xml" target="${server.name}-install" inheritRefs="true"/>
+    </target>
+
+	<target name="server-start" depends="detect-os">
+        <ant antfile="${jparstest.basedir}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
+    </target>
+
+    <target name="server-stop" depends="detect-os">
+        <ant antfile="${jparstest.basedir}/${server.name}.xml" target="${server.name}-stop" inheritRefs="true"/>
+    </target>
+
+    <target name="server-setup" depends="detect-os">
+        <ant antfile="${jparstest.basedir}/${server.name}.xml" target="${server.name}-setup" inheritRefs="true"/>
+    </target>
+
+    <target name="server-reset">
+        <ant antfile="${jparstest.basedir}/${server.name}.xml" target="${server.name}-reset" inheritRefs="true"/>
+    </target>
+
+    <target name="server-deploy" depends="detect-os, create-war">
+        <ant antfile="${jparstest.basedir}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
+            <property name="ear.name" value="${eclipselink.jpars.test}/${ant.project.name}.war"/>
+            <property name="application.name" value="${test.application.name}"/>
+        </ant>
+    </target>
+
+    <target name="server-undeploy" depends="detect-os">
+        <ant antfile="${jparstest.basedir}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+            <property name="application.name" value="${test.application.name}"/>
+        </ant>
+    </target>
+
     <!-- Test run macros -->
     <macrodef name="run_jpars_tests">
+        <attribute name="testclass"/>
         <attribute name="runpathref"/>
         <sequential>
             <delete dir="${report.dir}" includeEmptyDirs="true" failonerror="false"/>
@@ -315,6 +400,7 @@
 
             <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
+            <echo message="Running @{testclass} suite"/>
             <junit printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
@@ -336,7 +422,7 @@
                 <sysproperty key="jpars.version.string" value="${JPARS_VERSION}"/>
                 <batchtest todir="${report.dir}">
                     <fileset dir="${src.dir}">
-                        <include name="${test.class}"/>
+                        <include name="@{testclass}"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
