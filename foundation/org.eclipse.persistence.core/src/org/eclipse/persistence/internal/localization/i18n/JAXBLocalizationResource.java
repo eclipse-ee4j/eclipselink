@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/24/2014-2.6 Rick Curtis 
+ *       - 443762 : Misc message cleanup.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -26,7 +28,7 @@ public class JAXBLocalizationResource extends ListResourceBundle {
                                            { "setup_inheritance", "Setting up inheritance" },
                                            { "add_namespace_resolvers", "Adding namespace resolvers" },
                                            { "generate_files", "Writing Deployment XML and Session Configuration" },
-                                           { "missing_src_dir", "Source Ouput Directory name is missing" },
+                                           { "missing_src_dir", "Source Output Directory name is missing" },
                                            { "missing_project_dir", "TopLink Workbench Project directory name is missing" },
                                            { "missing_output_dir", "TopLink Output Directory name is missing" },
                                            { "missing_target_package", "Target Package Name is missing" },

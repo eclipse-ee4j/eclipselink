@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,6 +19,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls 
  *     02/06/2013-2.5 Guy Pelletier 
  *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
+ *     09/24/2014-2.6 Rick Curtis 
+ *       - 443762 : Misc message cleanup.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -109,7 +111,7 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6090", "Cannot set ReportQuery to \"check cache only\"." },
        { "6091", "The type of the constant [{0}], used for comparison in the expression, does not match the type of the attribute [{1}]." },
        { "6092", "Uninstantiated ValueHolder detected. You must instantiate the relevant Valueholders to perform this in-memory query." },
-       { "6093", "Invalid Type Expression on [{0}].  The class does not have a descriptor, or a descriptor that does not use inheritance or uses a ClassExctractor for inheritance" },
+       { "6093", "Invalid Type Expression on [{0}].  The class does not have a descriptor, or a descriptor that does not use inheritance or uses a ClassExtractor for inheritance" },
        { "6094", "The parameter name [{0}] in the query''s selection criteria does not match any parameter name defined in the query." },
        { "6095", "Public clone method is required." },
        { "6096", "Clone method is inaccessible." },
@@ -118,14 +120,14 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6099", "Joining across inheritance class with multiple table subclasses not supported: {0}, {1}" },
        { "6100", "Multiple values detected for single-object read query." },
        { "6101", "Executing this query could violate the integrity of the global session cache which must contain only the latest versions of objects.  In order to execute a query that returns objects as of a past time, try one of the following: Use a HistoricalSession (acquireSessionAsOf), all objects read will be cached and automatically read as of the same time.  This will apply even to triggering object relationships.  Set shouldMaintainCache to false.  You may make any object expression as of a past time, " + "provided none of its fields are represented in the result set (i.e. used only in the where clause)." },
-       { "6102", "At present historical queries only work with Oracle 9R2 or later databases, as it uses Oracle's Flashback feature." },
+       { "6102", "At present historical queries only work with Oracle 9R2 or later databases, as it uses Oracle''s Flashback feature." },
        { "6103", "You may not execute a WriteQuery from inside a read-only HistoricalSession.  To restore past objects, try the following: read the same object as it is now with a UnitOfWork and commit the UnitOfWork." },
        { "6104", "The object, {0}, does not exist in the cache." },
        { "6105", "Query has to be reinitialized with a cursor stream policy." },
        { "6106", "The object of type [{0}] with primary key [{1}] does not exist in the cache." },
        { "6107", "Missing update statements on UpdateAllQuery." },
        { "6108", "Update all query does not support inheritance with multiple tables" },
-       { "6109", "The named fetch group ({0}) is not defined at the dscriptor level." },
+       { "6109", "The named fetch group ({0}) is not defined at the descriptor level." },
        { "6110", "Read query cannot conform the unfetched attribute ({0}) of the partially fetched object in the unit of work identity map." },
        { "6111", "The fetch group attribute ({0}) is not defined or not mapped." },
        { "6112", "Fetch group cannot be set on report query." },
@@ -133,7 +135,7 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6114", "You must define a fetch group manager at descriptor ({0}) in order to set a fetch group on the query ({1})" },
        { "6115", "Queries on isolated classes, or queries set to use exclusive connections, must not be executed on a ServerSession or, in CMP, outside of a transaction." },
        { "6116", "No Call or Interaction was specified for the attempted operation." },
-       { "6117", "Can not set a query, that uses a cursored result, to cache query results." },
+       { "6117", "Cannot set a query, that uses a cursored result, to cache query results." },
        { "6118", "A query on an Isolated class must not cache query results on the query." },
        { "6119", "The join expression {0} is not valid, or for a mapping type that does not support joining." },
        { "6120", "The partial attribute {0} is not a valid attribute of the class {1}." },
@@ -146,27 +148,27 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6127", "A reflective call failed on the EclipseLink class {0}, your environment must be set up to allow Java reflection." },
        { "6128", "Batch Reading is not supported on Queries using custom Calls."},
        { "6129", "Refreshing is not possible if the query does not go to the database." },
-       { "6130", "Custom SQL failed to provide descriminator column : {0}, as defined in SQLResultSetMapping : {1}."},
+       { "6130", "Custom SQL failed to provide discriminator column : {0}, as defined in SQLResultSetMapping : {1}."},
        { "6131", "DeleteAllQuery that defines objects to be deleted using setObjects method with non-null argument must also define the corresponding selection criteria. {1}Objects: [{2}]{1}Descriptor: [{0}]" },
        { "6132", "Query argument {0} not found in list of parameters provided during query execution."},
-       { "6133", "First argument of addUpdate method defines a field to be assigned a new value - it can't be null."},
-       { "6134", "Attribute name or expression passed as a first parameter to addUpdate method doesn''t define a field. {1}Attribute name or Expression: [{2}]{1}Descriptor: [{0}]" },
+       { "6133", "First argument of addUpdate method defines a field to be assigned a new value - it cannot be null."},
+       { "6134", "Attribute name or expression passed as a first parameter to addUpdate method does not define a field. {1}Attribute name or Expression: [{2}]{1}Descriptor: [{0}]" },
        { "6135", "Attribute name or expression passed as a first parameter to addUpdate method defines a field from a table that''s not mapped to query descriptor. {1}Attribute name or Expression: [{2}]{1}Wrong field: [{3}]{1}Descriptor: [{0}]" },
-       { "6136", "Classes mapped with multi table inheritance can not be ReportQuery items. Item: {0}, Expression: {1}."},
+       { "6136", "Classes mapped with multi table inheritance cannot be ReportQuery items. Item: {0}, Expression: {1}."},
        { "6137", "An Exception was thrown while executing a ReportQuery with a constructor expression: {0}" },
-       { "6138", "Query requires temporary storage, but {0} doesn''t support temporary tables." },
+       { "6138", "Query requires temporary storage, but {0} does not support temporary tables." },
        { "6139", "Problem finding mapping for {0} defined in field result named {1}" },
        { "6140", "You have attempted to assign join expressions to the Report Item {1} of type {0}.  Join expressions are only applicable on Items that return an Persistent Object."},
        { "6141", "A ClassCastException was thrown when trying to convert {0} to a class in a query hint."},
        { "6142", "The value {1} supplied to the query hint {0} navigated an illegal relationship.  The relationship {2} is not a OneToOne or a OneToMany relationship."},
-       { "6143", "The value {1} supplied to the query hint {0} navigated a non-existant relationship.  The relationship {2} does not exist."},
-       { "6144", "The value {1} supplied to the query hint {0} did not contain enough tokens.  The join must start with the identification variable of the query.  For instance, in the query 'SELECT x from X x', to refer to a 'y' belonging to 'x', you should use the hint 'x.y'."},
+       { "6143", "The value {1} supplied to the query hint {0} navigated a non-existent relationship.  The relationship {2} does not exist."},
+       { "6144", "The value {1} supplied to the query hint {0} did not contain enough tokens.  The join must start with the identification variable of the query.  For instance, in the query \"SELECT x from X x\", to refer to a \"y\" belonging to \"x\", you should use the hint \"x.y\"."},
        { "6145", "Count distinct on a composite primary key class [{0}] is not supported. Descriptor [{1}] "},
        { "6146", "The value {1} supplied to the query hint {0} is not a valid value, valid values are Integer or Strings that can be parsed to int values."},
        { "6147", "The expression {0} is not valid for partial attribute reading." },
        { "6148", "Adding {0} to PLSQLStoredProcedureCall is not supported." },
        { "6149", "PLSQLStoredProcedureCall cannot use an unnamed argument." },
-       { "6150", "A null value can not be used as a key in a container of type [{1}]. Ensure your key values for the objects of type [{0}] can not be null." },
+       { "6150", "A null value cannot be used as a key in a container of type [{1}]. Ensure your key values for the objects of type [{0}] cannot be null." },
        { "6151", "An exception occurred while attempting to set a Redirector {0} passed through a JPA Query Hint {1}.  Please verify that the provided Redirector implements org.eclipse.persistence.queries.QueryRedirector."},
        { "6152", "An exception occurred while attempting to instantiate the class {0} passed through a JPA Query Hint {1}.  Please verify that the class has a default constructor."},
        { "6153", "CompatibleType must be set on complex type: {0}."},
@@ -189,8 +191,8 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6171", "Partitioning not support for the session type [{0}]. Only ServerSession and ClientSession are supported."},
        { "6172", "Missing connection pool for partitioning [{0}]."},
        { "6173", "Connection pool [{0}] failed to fail-over, all servers are dead."},
-       { "6174", "No value was provided for the session property [{0}]. This exception is possible when using additional criteria or tenant discriminator columns without specifying the associated contextual property. These properties must be set through Entity Manager, Entity Manager Factory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."},
-       { "6175", "Native SQL queries have been disabled. This is done either by setting the persistence unit property '" + PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES + "' to false or having at least one multitenant entity defined in your persistence unit. Check your persistence unit specification. To allow native sql queries, set this property to true. Alternatively, individual queries may bypass this setting by setting the '" + QueryHints.ALLOW_NATIVE_SQL_QUERY + "' query hint to true."},
+       { "6174", "No value was provided for the session property [{0}]. This exception is possible when using additional criteria or tenant discriminator columns without specifying the associated contextual property. These properties must be set through EntityManager, EntityManagerFactory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."},
+       { "6175", "Native SQL queries have been disabled. This is done either by setting the persistence unit property \"" + PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES + "\" to false or having at least one multitenant entity defined in your persistence unit. Check your persistence unit specification. To allow native sql queries, set this property to true. Alternatively, individual queries may bypass this setting by setting the \"" + QueryHints.ALLOW_NATIVE_SQL_QUERY + "\" query hint to true."},
        { "6176", "An exception was thrown while initializing the constructor from the class [{0}]:  [{1}]"},
        { "6177", "The column result [{0}] was not found in the results of the query."},
        { "6178", "isResultSetAccessOptimizedQuery set to true conflicts with other query settings."},

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/24/2014-2.6 Rick Curtis 
+ *       - 443762 : Misc message cleanup.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -42,7 +44,7 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25017", "Either enumClass or enumClassName must be set on the JAXBTypesafeEnumConverter." },
                                            { "25018", "The fromString method on the enum class {0} does not exist or could not be invoked." },
                                            { "25019", "The specified enum class {0} could not be found." },
-                                           { "25020", "The method 'getResult()' must not be called before the 'endDocument()' event has been called." },
+                                           { "25020", "The method \"getResult()\" must not be called before the \"endDocument()\" event has been called." },
                                            { "25021", "Class {0} invalid for SwaRef. Must be javax.activation.DataHandler." },
                                            { "25022", "Unable to marshal Image. No encoder available for mimeType {0}." },
                                            { "25023", "No descriptor found while unmarshalling element mapped to attribute {0}." },
@@ -52,16 +54,16 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25027", "Unable to retrieve attachment with cid {0} because no AttachmentUnmarshaller was set."},
                                            { "25028", "No reference descriptor found for mapping {1} due to an unknown xsi:type value: {0}."},
                                            { "25029", "For the prefix [{0}] class [{1}] attempted to assign the namespace URI [{2}], but its parent class [{3}] has already assigned the namespace URI [{4}]."},
-                                           { "25030", "An error occured while invoking the {0} method on the custom NamespacePrefixMapper: {1}."},
-                                           { "25031", "An error occured while processing the namespace prefix mapper: {1}. The method {0} was not found."},
-                                           { "25032", "An error occured while invoking the {0} method on the custom CharacterEscapeHandler: {1}."},
-                                           { "25033", "An error occured while processing the CharacterEscapeHandler: {1}. The method {0} was not found."},
-                                           { "25034", "An error occured while invoking the {0} method on the custom IDResolver: {1}."},
-                                           { "25035", "An error occured while processing the IDResolver: {1}. The method {0} was not found."},
+                                           { "25030", "An error occurred while invoking the {0} method on the custom NamespacePrefixMapper: {1}."},
+                                           { "25031", "An error occurred while processing the namespace prefix mapper: {1}. The method {0} was not found."},
+                                           { "25032", "An error occurred while invoking the {0} method on the custom CharacterEscapeHandler: {1}."},
+                                           { "25033", "An error occurred while processing the CharacterEscapeHandler: {1}. The method {0} was not found."},
+                                           { "25034", "An error occurred while invoking the {0} method on the custom IDResolver: {1}."},
+                                           { "25035", "An error occurred while processing the IDResolver: {1}. The method {0} was not found."},
                                            { "25036", "The custom IDResolver {1} does not support multiple XML IDs {0}.  Custom IDResolvers must be subclasses org.eclipse.persistence.jaxb.IDResolver if multiple IDs are used."},
                                            { "25037", "A cycle is detected in the object graph.  This will cause an infinite loop: {0}"},
-                                           { "25038", "DOMPlatform is not supported with media type applicaion/json."},        
-                                           { "25039", "An error occured unmarshalling from {0}"},
+                                           { "25038", "DOMPlatform is not supported with media type application/json."},        
+                                           { "25039", "An error occurred unmarshalling from {0}"},
                                            { "25040", "An object of type {0} with ID {1} was not found."},
                                            { "25041", "The attribute group specified {0} is not defined for the class {1}."},
                                            { "25042", "The value of the variable property {0} on the class {1} can not be null."}                                           
