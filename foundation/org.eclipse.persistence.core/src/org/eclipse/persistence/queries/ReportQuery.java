@@ -582,12 +582,17 @@ public class ReportQuery extends ReadAllQuery {
      */
     @Override
     public Object buildObject(AbstractRecord row) {
-        return buildObject(row, (Vector)null);
+        //Bug 445132 : Avoid NPE.
+        Vector v = new Vector();
+        v.add(row);
+        return buildObject(row, v);
     }
 
     /**
      * INTERNAL:
      * Construct a result from a row. Either return a ReportQueryResult or just the attribute.
+     * @param row
+     * @param toManyJoinData All rows fetched by query.  It is required to be not null.
      */
     public Object buildObject(AbstractRecord row, Vector toManyJoinData) {
         ReportQueryResult reportQueryResult = new ReportQueryResult(this, row, toManyJoinData);

@@ -86,6 +86,7 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
+import org.eclipse.persistence.queries.CursoredStream;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
@@ -119,6 +120,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Product;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.Quantity;
+import org.eclipse.persistence.testing.models.jpa.advanced.Room;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Violation;
 import org.eclipse.persistence.testing.models.jpa.advanced.ViolationCode;
@@ -214,6 +216,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testTransformationMappingWithColumnAnnotation"));
+        
+        suite.addTest(new AdvancedJPAJunitTest("testCursorStream"));
 
         suite.addTest(new AdvancedJPAJunitTest("testProperty"));
         
@@ -2299,6 +2303,67 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
     }
 
+    public void testCursorStream() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        Room room1 = new Room();
+        Door east = new Door();
+        try {
+        //Setup Rooms and Doors
+        room1.setId(10001);
+        east.setId(100);
+        east.setHeight(8);
+        east.setWidth(5);
+        int year = 2013;
+        int month = 1;            
+        int day = 30;
+        east.setSaleDate(Helper.dateFromYearMonthDate(year, month - 1, day));
+        east.setRoom(room1);
+        room1.addDoor(east);
+        
+        try {    
+            em.persist(room1);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        
+        em = createEntityManager();
+
+        Query resultsXferQuery = em.createQuery("SELECT r, d "
+                + "FROM Room r "
+                + "JOIN FETCH r.doors "
+                + "LEFT JOIN Door d "
+                + "WHERE d MEMBER OF r.doors"
+                );
+        
+        resultsXferQuery.setHint(QueryHints.CURSOR, true);
+
+        try {
+            CursoredStream stream = (CursoredStream)resultsXferQuery.getSingleResult();
+            while (!stream.atEnd()) {
+                stream.read();
+            }
+            stream.clear();
+            stream.close();
+        } catch (NullPointerException npe) {
+            fail("CursoredStream with join threw an NPE");
+        }
+        // clean up
+        beginTransaction(em);
+        room1 = em.find(Room.class, room1.getId());
+        em.remove(room1);
+        commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
     /**
      * Tests Property and Properties annotations
      */
