@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/24/2014-2.6 Rick Curtis 
+ *       - 443762 : Misc message cleanup.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -23,9 +25,9 @@ import java.util.ListResourceBundle;
  */
 public class JMSProcessingExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {
-                                           { "18001", "Error while processing incomming JMS message" },
+                                           { "18001", "Error while processing incoming JMS message" },
                                            { "18002", "The Topic created in the JMS Service for the interconnection of Sessions must be set in the JMSClusteringService" },
-                                           { "18003", "Failed to lookup the session's name defined it the env-entry element of the Message Driven Bean" },
+                                           { "18003", "Failed to lookup the session''s name defined it the env-entry element of the Message Driven Bean" },
                                            { "18004", "The Message Driven Bean (MDB) cannot find the session.  The MDB getSession() method must returns a not null sessiion" }   
     };
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     10/15/2010-2.2 Guy Pelletier 
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+ *     09/24/2014-2.6 Rick Curtis 
+ *       - 443762 : Misc message cleanup.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -202,9 +204,9 @@ public class DescriptorExceptionResource extends ListResourceBundle {
                                            { "189", "ReturningPolicy contains mapped field, [{0}] which requires type." },
                                            { "190", "ReturningPolicy contains field, [{0}] mapped with [{1}] mapping which is not supported." },
                                            { "191", "ReturningPolicy contains field, [{0}] which is not supported: it is either sequence field, or class type indicator, or used for locking." },
-                                           { "192", "ReturningPolicy contains field, [{0}] but custom [{1}] doesn't output it." },
-                                           { "193", "There is no custom [{0}] set, but ReturningPolicy contains field(s) to be returned and [{1}] doesn't support generating call with returning." },
-                                           { "194", "The class extraction method [{0}], must be a static method on the descriptor's class." },
+                                           { "192", "ReturningPolicy contains field, [{0}] but custom [{1}] does not output it." },
+                                           { "193", "There is no custom [{0}] set, but ReturningPolicy contains field(s) to be returned and [{1}] does not support generating call with returning." },
+                                           { "194", "The class extraction method [{0}], must be a static method on the descriptor''s class." },
                                            { "195", "The shared class {1} must not reference the isolated class {0}." },
                                            { "196", "UpdateAllFields has not been set or has been set to false.  When using CMPPolicy.setForceUpdate(true) you must also call CMPPolicy.setUpdateAllFields(true)" },
                                            { "197", "The mapping [{0}] is not the appropriate type for this descriptor" },

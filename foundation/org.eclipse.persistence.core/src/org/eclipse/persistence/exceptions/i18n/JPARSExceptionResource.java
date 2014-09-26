@@ -40,7 +40,7 @@ public class JPARSExceptionResource extends ListResourceBundle {
             { String.valueOf(JPARSErrorCodes.RESPONSE_COULD_NOT_BE_BUILT_FOR_NAMED_QUERY_REQUEST), "Response for find named query request for query {0} in persistence unit {1} could not be built successfully." },
             { String.valueOf(JPARSErrorCodes.AN_EXCEPTION_OCCURRED), "{0} occurred." },
             { String.valueOf(JPARSErrorCodes.PAGINATION_PARAMETER_USED_FOR_NOT_PAGEABLE_RESOURCE), "Pagination query parameter (limit or offset) used for non-pageable resource." },
-            { String.valueOf(JPARSErrorCodes.FIELDS_FILTERING_BOTH_PARAMETERS_PRESENT), "Both 'fields' and 'excludeFields' cannot be used in the same request." },
+            { String.valueOf(JPARSErrorCodes.FIELDS_FILTERING_BOTH_PARAMETERS_PRESENT), "Both \"fields\" and \"excludeFields\" cannot be used in the same request." },
     };
 
     @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/24/2014-2.6 Rick Curtis 
+ *       - 443762 : Misc message cleanup.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -25,7 +27,7 @@ public class XMLConversionExceptionResource extends ListResourceBundle {
                                            { "25504", "Incorrect gMonthDay format: [{0}] (expected [--MM-DD])" },
                                            { "25505", "Incorrect gYear format: [{0}] (expected [YYYY])" },
                                            { "25506", "Incorrect gYearMonth format: [{0}] (expected [YYYY-MM])" },
-                                           { "25507", "Incorrect Timestamp dateTime format: [{0}] (expected [YYYY-MM-DD'T'HH:MM:SS.NNNNNNNNN])" },
+                                           { "25507", "Incorrect Timestamp dateTime format: [{0}] (expected [YYYY-MM-DD''T''HH:MM:SS.NNNNNNNNN])" },
                                            { "25508", "Incorrect Timestamp time format: [{0}] (expected [HH:MM:SS.NNNNNNNNN])" },
     };
 

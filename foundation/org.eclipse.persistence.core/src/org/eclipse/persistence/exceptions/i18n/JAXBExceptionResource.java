@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -9,6 +9,8 @@
 *
 * Contributors:
 * mmacivor - June 11/2008 - 1.0 - Initial implementation
+ *     09/24/2014-2.6 Rick Curtis 
+ *       - 443762 : Misc message cleanup.
 ******************************************************************************/
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -29,9 +31,9 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50006", "Invalid XmlElementRef on property {0} on class {1}. Referenced Element not declared."},
         {"50007", "Name collision.  Two classes have the XML type with uri {0} and name {1}."},
         {"50008", "Unsupported Node class {0}.  The createBinder(Class) method only supports the class org.w3c.dom.Node."},
-        {"50009", "The property or field {0} is annotated to be transient so can not be included in the proporder annotation."},
+        {"50009", "The property or field {0} is annotated to be transient so it cannot be included in the propOrder annotation."},
         {"50010", "The property or field {0} must be an attribute because another field or property is annotated with XmlValue."},
-        {"50011", "The property or field {0} can not be annotated with XmlValue since it is a subclass of another XML-bound class."},
+        {"50011", "The property or field {0} cannot be annotated with XmlValue since it is a subclass of another XML-bound class."},
         {"50012", "The property or field {0} was specified in propOrder but is not a valid property."},
         {"50013", "The property or field {0} on the class {1} is required to be included in the propOrder element of the XmlType annotation."},
         {"50014", "The property or field {0} with the XmlValue annotation must be of a type that maps to a simple schema type."},
@@ -53,11 +55,11 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50031", "An attempt was made to set more than one XmlValue property on class [{0}].  Property [{1}] cannot be set as XmlValue, because property [{2}] is already set as XmlValue."},
         {"50032", "An attempt was made to set more than one XmlAnyElement property on class [{0}].  Property [{1}] cannot be set as XmlAnyElement, because property [{2}] is already set as XmlAnyElement."},
         {"50033", "The DomHandlerConverter for DomHandler [{0}] set on property [{1}] could not be initialized."},
-        {"50034", "The property or field [{0}] can not be annotated with XmlAttachmentRef since it is not a DataHandler."},
+        {"50034", "The property or field [{0}] cannot be annotated with XmlAttachmentRef since it is not a DataHandler."},
         {"50035", "Since the property or field [{0}] is set as XmlIDREF, the target type of each XmlElement declared within the XmlElements list must have an XmlID property.  Please ensure the target type of XmlElement [{1}] contains an XmlID property."},
         {"50036", "The TypeMappingInfo with XmlTagName QName [{0}] needs to have a non-null Type set on it."},
         {"50037", "The java-type with package [{0}] is not allowed in the bindings file keyed on package [{1}]."},
-        {"50038", "DynamicJAXBContext can not be created from concrete Classes.  Please use org.eclipse.persistence.jaxb.JAXBContext, or specify org.eclipse.persistence.jaxb.JAXBContextFactory in your jaxb.properties file, to create a context from existing Classes."},
+        {"50038", "DynamicJAXBContext cannot be created from concrete Classes.  Please use org.eclipse.persistence.jaxb.JAXBContext, or specify org.eclipse.persistence.jaxb.JAXBContextFactory in your jaxb.properties file, to create a context from existing Classes."},
         {"50039", "Error creating DynamicJAXBContext: Node must be an instance of either Document or Element."},
         {"50040", "Error creating DynamicJAXBContext."},
         {"50041", "Enum constant [{0}] not found."},
@@ -83,7 +85,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50061", "An exception occurred while attempting to load XmlAdapterClass [{0}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},
         {"50062", "An exception occurred while attempting to access the declared methods of XmlAdapterClass [{0}]. Possible causes are that the SecurityManager has denied access to the declared methods within the adapter class, or the SecuritManager has denied access to the package of the adapter class."},
         {"50063", "An exception occurred while attempting to instantiate XmlAdapterClass [{0}]. A possible cause is that the adapter class has no zero argument constructor."},
-        {"50064", "XmlAdapterClass [{0}] does not extend 'javax.xml.bind.annotation.adapters.XmlAdapter' as expected.  It is required that the adapter class extend 'javax.xml.bind.annotation.adapters.XmlAdapter', and declare methods 'public abstract BoundType unmarshal(ValueType v)' and 'public abstract ValueType marshal(BoundType v)'."},
+        {"50064", "XmlAdapterClass [{0}] does not extend \"javax.xml.bind.annotation.adapters.XmlAdapter\" as expected.  It is required that the adapter class extend \"javax.xml.bind.annotation.adapters.XmlAdapter\", and declare methods \"public abstract BoundType unmarshal(ValueType v)\" and \"public abstract ValueType marshal(BoundType v)\"."},
         {"50065", "An invalid XmlJavaTypeAdapter [{0}] was specified for package [{1}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},
         {"50066", "An invalid XmlJavaTypeAdapter [{0}] was specified for class [{1}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},
         {"50067", "An invalid XmlJavaTypeAdapter [{0}] was specified for field/property [{1}] on class [{2}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},
@@ -102,13 +104,13 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50080", "XmlLocation is only allowed on properties of type org.xml.sax.Locator, but [{0}] is of type [{1}]."},
         {"50081", "An exception occurred during schema generation."},
         {"50082", "An attempt was made to write a value {0} without a key specified.  Try setting JSON_VALUE_WRAPPER on the JAXBMarshaller"},
-        {"50083", "An error occured while trying to instantiate the AccessorFactoryClass {0}"},
+        {"50083", "An error occurred while trying to instantiate the AccessorFactoryClass {0}"},
         {"50084", "The specified AccessorFactory class: {0} is invalid. It must implement createFieldAccessor(Class, Field, boolean) and createPropertyAccessor(Class, Method, Method)."},
-        {"50085", "An exception occured while invoking the createFieldAccessor method on the AccessorFactory {0}"},
-        {"50086", "An exception occured while invoking the createPropertyAccessor method on the AccessorFactory {0}"},
-        {"50087", "An exception occured while attempting to invoke the {0} method on the Accessor {1}"},
+        {"50085", "An exception occurred while invoking the createFieldAccessor method on the AccessorFactory {0}"},
+        {"50086", "An exception occurred while invoking the createPropertyAccessor method on the AccessorFactory {0}"},
+        {"50087", "An exception occurred while attempting to invoke the {0} method on the Accessor {1}"},
         {"50088", "Enum value {0} is not valid for an XmlEnum with class {1}"},
-        {"50089", "The java interface {0} can not be mapped by JAXB as it has multiple mappable parent interfaces. Multiple inheritence is not supported"},
+        {"50089", "The java interface {0} cannot be mapped by JAXB as it has multiple mappable parent interfaces. Multiple inheritence is not supported"},
         {"50090", "Invalid value for object graph: {0}. The value must be a string or an instance of ObjectGraph."},
         {"50091", "The element name {0} has more than one mapping."},
         {"50092", "Only one XmlElementRef property of type {0} allowed on class {1}."},
