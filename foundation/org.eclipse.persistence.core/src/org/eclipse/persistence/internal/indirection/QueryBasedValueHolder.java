@@ -229,4 +229,14 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     public void setSourceObject(Object sourceObject) {
         this.sourceObject = sourceObject;
     }
+    
+    /**
+     * INTERNAL:
+     * @param refreshCascadePolicy
+     * @return
+     */
+    public void setRefreshCascadePolicy(Integer refreshCascadePolicy) {
+        this.refreshCascade = refreshCascadePolicy;
+    }
+    
 }

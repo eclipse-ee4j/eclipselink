@@ -101,6 +101,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_DOORTable());
         addTableDefinition(buildCMP3_PRODUCTTable());
         addTableDefinition(buildCmp3EmbedVisitorTable());
+        addTableDefinition(buildCMP3_CANOETable());
+        addTableDefinition(buildCMP3_LAKETable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -2735,6 +2737,77 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addField(createStringColumn("NAME"));
         table.addField(createStringColumn("CODE", 3, true));
         table.addField(createStringColumn("COUNTRY"));
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_CANOETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_CANOE");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldCOLOR = new FieldDefinition();
+        fieldCOLOR.setName("COLOR");
+        fieldCOLOR.setTypeName("VARCHAR");
+        fieldCOLOR.setSize(32);
+        fieldCOLOR.setShouldAllowNull(true);
+        fieldCOLOR.setIsPrimaryKey(false);
+        fieldCOLOR.setUnique(false);
+        fieldCOLOR.setIsIdentity(false);
+        table.addField(fieldCOLOR);
+        
+        FieldDefinition fieldLAKEID = new FieldDefinition();
+        fieldLAKEID.setName("LAKE_ID");
+        fieldLAKEID.setTypeName("NUMBER");
+        fieldLAKEID.setSize(15);
+        fieldLAKEID.setShouldAllowNull(true);
+        fieldLAKEID.setIsPrimaryKey(false);
+        fieldLAKEID.setUnique(false);
+        fieldLAKEID.setIsIdentity(false);
+        table.addField(fieldLAKEID);
+        
+        ForeignKeyConstraint fkCMP3_CANOE_CMP3_LAKE = new ForeignKeyConstraint();
+        fkCMP3_CANOE_CMP3_LAKE.setName("CMP3_CANOE_CMP3_LAKE");
+        fkCMP3_CANOE_CMP3_LAKE.setTargetTable("CMP3_LAKE");
+        fkCMP3_CANOE_CMP3_LAKE.addSourceField("LAKE_ID");
+        fkCMP3_CANOE_CMP3_LAKE.addTargetField("ID");
+        table.addForeignKeyConstraint(fkCMP3_CANOE_CMP3_LAKE);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_LAKETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_LAKE");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(32);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
         return table;
     }
 

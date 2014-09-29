@@ -57,7 +57,12 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
         if (wrappedValueHolder instanceof QueryBasedValueHolder){
             refreshCascade = ((QueryBasedValueHolder)getWrappedValueHolder()).getRefreshCascadePolicy();
         }
-        return this.mapping.buildCloneForPartObject(originalAttributeValue, null, null, this.relationshipSourceObject, getUnitOfWork(), refreshCascade, true, true);
+        Object clone = this.mapping.buildCloneForPartObject(originalAttributeValue, null, null, this.relationshipSourceObject, getUnitOfWork(), refreshCascade, true, true);
+        // Bug 414801
+        if (wrappedValueHolder.isInstantiated() && refreshCascade != null) {
+            ((QueryBasedValueHolder)getWrappedValueHolder()).setRefreshCascadePolicy(null);
+        }
+        return clone;
     }
 
     /**

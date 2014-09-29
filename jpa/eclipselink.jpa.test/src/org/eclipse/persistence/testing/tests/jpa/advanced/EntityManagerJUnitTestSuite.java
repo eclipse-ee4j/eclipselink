@@ -133,6 +133,7 @@ import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
+import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.PessimisticLock;
@@ -417,6 +418,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testReplaceElementCollection");
         tests.add("testProviderPropertySetting");
         tests.add("testBeginTransactionOnClosedEM");
+        tests.add("testUpdateDetachedEntityWithRelationshipCascadeRefresh");
 //        if (isJPA21()){
 //            tests.add("testUnsynchronizedPC");
 //        }
@@ -12600,4 +12602,69 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     	
     	rollbackTransaction(em);
     }
+    
+    // Bug 414801 - Merge does not merge cascade all mappings
+    public void testUpdateDetachedEntityWithRelationshipCascadeRefresh() {
+        Canoe canoeTD = null;
+        Lake lakeTD = null;
+        try {
+            // Create test data
+            EntityManager em = createEntityManager();
+            beginTransaction(em);
+            
+            canoeTD = new Canoe();
+            canoeTD.setColor("Red");
+            lakeTD = new Lake();
+            lakeTD.setName("Bob's Lake");
+            canoeTD.setLake(lakeTD);
+            em.persist(canoeTD);
+            
+            commitTransaction(em);
+            closeEntityManager(em);
+            
+            clearCache();
+            
+            // Initial refreshing query
+            em = createEntityManager();
+            
+            Query query1 = em.createQuery("select c from Canoe c where c.id = :id");
+            query1.setHint(QueryHints.REFRESH, HintValues.TRUE);
+            query1.setParameter("id", canoeTD.getId());
+            
+            Canoe canoe = (Canoe)query1.getSingleResult();
+            assertNotNull("Entity queried (Canoe) with id " + canoeTD.getId() + " should not be null", canoe);
+            Lake lake = canoe.getLake();
+            assertNotNull("Canoe->Lake for Canoe id " + canoeTD.getId() + " should be non-null", lake);
+            
+            closeEntityManager(em);
+            
+            // change the value on the detached Lake
+            String newName = "Doug's Lake";
+            lake.setName(newName);
+            
+            // merge the modified detached canoe
+            em = createEntityManager();
+            beginTransaction(em);
+            Canoe mergedCanoe = em.merge(canoe);
+            commitTransaction(em);
+            closeEntityManager(em);
+            
+            // the merged canoe's lake should be the 'new' name
+            assertEquals("Canoe->Lake.name should be changed", newName, mergedCanoe.getLake().getName());
+        } finally {
+            // clean up test data
+            if (canoeTD != null) {
+                EntityManager em = createEntityManager();
+                Canoe canoe = em.find(Canoe.class, canoeTD.getId());
+                if (canoe != null) {
+                    beginTransaction(em);
+                    em.remove(canoe);
+                    em.remove(canoe.getLake());
+                    commitTransaction(em);
+                }
+                closeEntityManager(em);
+            }
+        }
+    }
+    
 }
