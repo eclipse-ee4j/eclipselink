@@ -54,18 +54,42 @@
     <property name="eclipselink.jar"               value="eclipselink.jar"/>
 
     <!-- Allows a user to override certain user specific properties. -->
-    <property file="${user.home}/build.properties"/>
-    <property file="${perftest.build.location}/antbuild.properties"/>
-    <property environment="env" />
+    <property name="env" environment="env" value="env"/>
 
-    <property name="env.WARMUP_ITERATIONS" value="${warmup.iterations}"/>
-    <property name="env.RUN_ITERATIONS" value="${run.iterations}"/>
+    <!-- Allows a user to overide certain user specific properties. -->
+    <!-- local property overrides -->
+    <condition property="custom.bld.properties.message" value="Loading user-defined overrides from '${user.home}/build.properties'..."
+               else="No user-defined overrides found to load ('${user.home}/build.properties' non-existant).">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.bld.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+    <condition property="custom.tst.properties.message" value="Loading user-defined test overrides from '${user.home}/test.properties'..."
+               else="No user-defined test overrides found to load ('${user.home}/test.properties' non-existant).">
+        <available file="${user.home}/test.properties"/>
+    </condition>
+    <echo message="${custom.tst.properties.message}"/>
+    <property file="${user.home}/test.properties"/>
+    <!-- Allows overriding defaults where access to user.home isn't allowed -->
+    <condition property="custom.local.properties.message" value="Loading local overrides from '${basedir}/local.build.properties'..."
+               else="No Local overrides found to load. ('${basedir}/local.build.properties' non-existant).">
+        <available file="${basedir}/local.build.properties"/>
+    </condition>
+    <echo message="${custom.local.properties.message}"/>
+    <property file="${basedir}/local.build.properties"/>
+
+    <property file="${perftest.build.location}/antbuild.properties"/>
 
     <property name="asm.lib" value="${perftest.2.common.plugins.dir}/${asm.jar}"/>
     <property name="eclipselink.lib" value="${perftest.2.trunk.dir}/${eclipselink.jar}"/>
     <property name="javax.validation.lib"   value="${perftest.2.common.plugins.dir}/${javax.validation.jar}"/>
     <property name="jpa21.lib"   value="${perftest.2.trunk.dir}/jpa/plugins/${persistence21.jar}"/>
     <property name="json.lib" value="${perftest.2.common.plugins.dir}/${json.jar}"/>
+    <property name="extensions.depend.dir" value="../../../extension.lib.external"/>
+
+    <property name="jmh-core.lib" value="${extensions.depend.dir}/${jmh-core.jar}"/>
+    <property name="jmh-generator-annprocess.lib" value="${extensions.depend.dir}/${jmh-generator-annprocess.jar}"/>
+    <property name="commons-math.lib" value="${extensions.depend.dir}/${commons-math.jar}"/>
 
     <!-- Compile/run paths -->
     <path id="perf.compile.path">
@@ -160,8 +184,8 @@
         <attribute name="clsname"/>
         <sequential>
             <java classname="@{clsname}" dir="${report.dir}" fork="true" failonerror="false">
-                <arg value="${env.WARMUP_ITERATIONS}"/>
-                <arg value="${env.RUN_ITERATIONS}"/>
+                <arg value="${warmup.iterations}"/>
+                <arg value="${run.iterations}"/>
                 <classpath>
                     <path refid="@{runpathref}"/>
                 </classpath>
