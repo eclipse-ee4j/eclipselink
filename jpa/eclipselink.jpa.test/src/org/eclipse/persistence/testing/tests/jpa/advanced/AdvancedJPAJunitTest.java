@@ -3022,8 +3022,14 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             beginTransaction(em);
             
             Session session = ((JpaEntityManager)em.getDelegate()).getActiveSession();
-            session.executeNonSelectingSQL("UPDATE CMP3_EMPLOYEE t0 SET t0.F_NAME='Joe', t0.L_NAME='Josephson' WHERE t0.EMP_ID=" + emp.getId());
-            session.executeNonSelectingSQL("UPDATE CMP3_DEPT t1 SET t1.NAME='Xenobiology' WHERE t1.ID=" + dept.getId());
+            if(session.getDatasourcePlatform().isSQLServer()) {
+                session.executeNonSelectingSQL("UPDATE t0 SET t0.F_NAME='Joe', t0.L_NAME='Josephson' FROM CMP3_EMPLOYEE t0 WHERE t0.EMP_ID=" + emp.getId());
+                session.executeNonSelectingSQL("UPDATE t1 SET t1.NAME='Xenobiology' FROM CMP3_DEPT t1 WHERE t1.ID=" + dept.getId());
+            }
+            else {
+                session.executeNonSelectingSQL("UPDATE CMP3_EMPLOYEE t0 SET t0.F_NAME='Joe', t0.L_NAME='Josephson' WHERE t0.EMP_ID=" + emp.getId());
+                session.executeNonSelectingSQL("UPDATE CMP3_DEPT t1 SET t1.NAME='Xenobiology' WHERE t1.ID=" + dept.getId());
+            }
             
             commitTransaction(em);
         } finally {

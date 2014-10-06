@@ -165,7 +165,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATETIME", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("DATETIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME2", false));
 
         return fieldTypeMapping;
     }

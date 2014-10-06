@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -4326,8 +4326,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testReadOnlyTransactionalData(){
-        if (isOnServer() || getPlatform().isH2() || getPlatform().isDerby() || getPlatform().isSymfoware()) {
-            //Both H2, Derby and Symfoware will get lock timeouts because the transaction is holding a lock on the table for a change.  Test can not be run against these databases.
+        if (isOnServer() || getPlatform().isH2() || getPlatform().isDerby() || getPlatform().isSymfoware() || getPlatform().isSQLServer()) {
+            //H2, Derby, Symfoware and SQL Server will get lock timeouts because the transaction is holding a lock on the table for a change.  Test can not be run against these databases.
             return;
         }
         EntityManager em = createEntityManager();

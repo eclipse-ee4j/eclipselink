@@ -112,6 +112,23 @@ public class ClearDatabaseSchemaTest extends TestCase {
                 }
             }
             assertTrue(toRetry + " statements failed", toRetry.isEmpty());
+        } else if (platform.isSQLServer()) {
+            getSession().executeNonSelectingSQL(
+                    "DECLARE @name VARCHAR(256)\n" +
+                    "DECLARE @subName VARCHAR(256)\n" +
+                    "DECLARE @statement VARCHAR(256)\n" +
+                    "WHILE((SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME()) > 0)\n" +
+                    "BEGIN\n" +
+                    "\tSELECT TOP 1 @name=TABLE_NAME, @subName=CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE constraint_catalog=DB_NAME() ORDER BY CONSTRAINT_TYPE\n" +
+                    "    SELECT @statement = 'ALTER TABLE [dbo].[' + RTRIM(@name) +'] DROP CONSTRAINT [' + RTRIM(@subName) +']'\n" +
+                    "    EXEC (@statement)\n" +
+                    "END\n" +
+                    "WHILE((SELECT COUNT(1) FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0) > 0)\n" +
+                    "BEGIN\n" +
+                    "\tSELECT TOP 1 @name=[name], @subName=[type] FROM sysobjects WHERE [type] IN ('P', 'V', N'FN', N'IF', N'TF', N'FS', N'FT', 'U') AND category = 0\n" +
+                    "    SELECT @statement = 'DROP ' + CASE @subName WHEN 'P' THEN 'PROCEDURE' WHEN 'V' THEN 'VIEW' WHEN 'U' THEN 'TABLE' ELSE 'FUNCTION' END + ' [dbo].[' + RTRIM(@name) +']'\n" +
+                    "    EXEC (@statement)\n" +
+                    "END");
         } else {
             fail("Clear DB test run on unsupported DB");
         }

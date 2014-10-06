@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8478,6 +8478,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if (getPlatform(Address.class).isSymfoware()) {
             getDatabaseSession().logMessage("Test testEMCloseAndOpen skipped for this platform, "
                             + "Symfoware platform doesn't support failover.");
+            return;
+        }
+        // This may be removed after Bug 447549 is resolved.
+        if (getPlatform(Address.class).isSQLServer()) {
+            getDatabaseSession().logMessage("Test testEMCloseAndOpen skipped for this platform, " +
+                    "SQL Server platform doesn't support sequence preallocation.");
             return;
         }
         

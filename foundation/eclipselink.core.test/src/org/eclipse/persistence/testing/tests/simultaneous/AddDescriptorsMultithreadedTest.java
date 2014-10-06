@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -33,6 +33,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.interfaces.InterfaceHashtableProject;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
@@ -259,6 +260,11 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         }
         int testNumber;
         public void test() {
+            // Test execution causes deadlock on SQL Server
+            if (getAbstractSession().getParent().getPlatform().isSQLServer()) {
+                throw new TestWarningException("Not supported on MS SQL Server");
+            }
+
             int index = 0;
             while (!allTestsShouldStop) {
                 getAbstractSession().beginTransaction();
@@ -314,6 +320,11 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         static int numberOfCompletedTests = 0;
         static Object lock = new Boolean(true);
         public void test() {
+            // Test execution causes deadlock on SQL Server
+            if (getAbstractSession().getParent().getPlatform().isSQLServer()) {
+                throw new TestWarningException("Not supported on MS SQL Server");
+            }
+
             int index3 = testNumber % 3;
             String strTestNumber = Integer.toString(testNumber);
             while (!allTestsShouldStop) {

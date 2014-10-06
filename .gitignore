@@ -30,4 +30,4 @@ out/
 eclipselink_extracted/*
 /eclipselink.zip
 foundation/targets/target.oracle/oracle.libs/*.jar
-
+test_*.properties

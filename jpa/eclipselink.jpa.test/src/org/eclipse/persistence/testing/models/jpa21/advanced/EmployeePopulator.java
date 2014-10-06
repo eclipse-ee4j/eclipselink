@@ -1,28 +1,28 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/08/2012-2.4 Guy Pelletier 
+ *     02/08/2012-2.4 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     06/20/2012-2.5 Guy Pelletier 
+ *     06/20/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     07/13/2012-2.5 Guy Pelletier 
+ *     07/13/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/09/2012-2.5 Guy Pelletier
  *       - 374688: JPA 2.1 Converter support
- *     11/05/2012-2.5 Guy Pelletier 
+ *     11/05/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     01/23/2013-2.5 Guy Pelletier 
+ *     01/23/2013-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import java.util.Calendar;
@@ -38,19 +38,19 @@ import org.eclipse.persistence.tools.schemaframework.PackageDefinition;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
- 
+
 /**
- * <p><b>Purpose</b>: To build and populate the database for example and testing 
- * purposes. This population routine is fairly complex and makes use of the 
+ * <p><b>Purpose</b>: To build and populate the database for example and testing
+ * purposes. This population routine is fairly complex and makes use of the
  * population manager to resolve interrelated objects as the employee objects
  * are an interconnection graph of objects.
  *
  * This is not the recommended way to create new objects in your application,
- * this is just the easiest way to create interconnected new example objects 
- * from code. Normally in your application the objects will be defined as part 
+ * this is just the easiest way to create interconnected new example objects
+ * from code. Normally in your application the objects will be defined as part
  * of a transactional and user interactive process.
- * 
- * Be careful in changing any of the examples (names, projects etc) as they may 
+ *
+ * Be careful in changing any of the examples (names, projects etc) as they may
  * be used and relied on in testing.
  */
 public class EmployeePopulator {
@@ -271,7 +271,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample13() {
         Employee employee = createEmployee();
 
@@ -290,7 +290,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
      public Employee basicEmployeeExample14() {
         Employee employee = createEmployee();
 
@@ -303,14 +303,14 @@ public class EmployeePopulator {
             employee.addPhoneNumber(phoneNumberExample1());
             employee.addResponsibility("Attend technology conferences");
             employee.addResponsibility("Review design specifications");
-            employee.addResponsibility("Critique coding styles");            
+            employee.addResponsibility("Critique coding styles");
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample15() {
         Employee employee = createEmployee();
 
@@ -319,7 +319,7 @@ public class EmployeePopulator {
             employee.setLastName("Test case");
             employee.setSalary(new Long(555));
             employee.setPeriod(employmentPeriodExample1());
-            employee.setAddress(addressExample1());         
+            employee.setAddress(addressExample1());
             employee.addResponsibility("Find ways to make the days go by faster");
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
@@ -327,7 +327,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee basicEmployeeExample2() {
         Employee employee = createEmployee();
 
@@ -706,7 +706,7 @@ public class EmployeePopulator {
     }
 
     /**
-     * Call all of the example methods in this system to guarantee that all our 
+     * Call all of the example methods in this system to guarantee that all our
      * objects are registered in the population manager
      */
     public void buildExamples() {
@@ -727,8 +727,8 @@ public class EmployeePopulator {
         employeeExample10();
         employeeExample11();
         employeeExample12();
-        employeeExample13();   
-        employeeExample14(); 
+        employeeExample13();
+        employeeExample14();
         employeeExample15();
         largeProjectExample1();
         largeProjectExample2();
@@ -751,73 +751,78 @@ public class EmployeePopulator {
     public StoredProcedureDefinition buildMySQLResultSetProcedure() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Multiple_Result_Sets");
-        
+
         proc.addStatement("SELECT E.*, S.* FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
         proc.addStatement("SELECT A.* FROM JPA21_ADDRESS A");
         proc.addStatement("SELECT (t1.BUDGET/t0.PROJ_ID) AS BUDGET_SUM, t0.PROJ_ID, t0.PROJ_TYPE, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION, t1.BUDGET, t2.PROJ_ID AS SMALL_ID, t2.PROJ_TYPE AS SMALL_DESCRIM, t2.PROJ_NAME AS SMALL_NAME, t2.DESCRIP AS SMALL_DESCRIPTION, t2.LEADER_ID AS SMALL_TEAMLEAD, t2.VERSION AS SMALL_VERSION FROM JPA21_PROJECT t0, JPA21_PROJECT t2, JPA21_LPROJECT t1 WHERE t1.PROJ_ID = t0.PROJ_ID AND t2.PROJ_TYPE='S'");
         proc.addStatement("SELECT t0.EMP_ID, t0.F_NAME, t0.L_NAME, COUNT(t2.DESCRIPTION) AS R_COUNT FROM JPA21_EMPLOYEE t0, JPA21_RESPONS t2, JPA21_SALARY t1 WHERE ((t1.EMP_ID = t0.EMP_ID) AND (t2.EMP_ID = t0.EMP_ID)) GROUP BY t0.EMP_ID, t0.F_NAME, t0.L_NAME");
-         
+
         return proc;
     }
-    
+
     public PackageDefinition buildOraclePackage() {
         PackageDefinition types = new PackageDefinition();
         types.setName("Cursor_Type");
         types.addStatement("Type Any_Cursor is REF CURSOR");
         return types;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureDeleteAllResponsibilities() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Delete_All_Responsibilities");
         proc.addStatement("DELETE FROM JPA21_RESPONS");
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadAddressCity(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Address_City");
         proc.addArgument("address_id_v", Integer.class);
         proc.addOutputArgument("city_v", String.class);
-        
+
         String statement = null;
         if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            statement = "SELECT CITY INTO @city_v FROM JPA21_ADDRESS WHERE ADDRESS_ID = @address_id_v";
+            if (platform.isSQLServer()) {
+                statement = "SELECT @city_v = CITY FROM JPA21_ADDRESS WHERE ADDRESS_ID = @address_id_v";
+            }
+            else {
+                statement = "SELECT CITY INTO @city_v FROM JPA21_ADDRESS WHERE ADDRESS_ID = @address_id_v";
+            }
         } else {
             statement = "SELECT CITY INTO city_v FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
         }
-        
+
         proc.addStatement(statement);
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadAllAddresses() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_All_Addresses");
         proc.addStatement("SELECT ADDRESS_ID from JPA21_ADDRESS");
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadNoAddresses() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_No_Addresses");
         // no statement
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadAllEmployees() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_All_Employees");
         proc.addStatement("SELECT EMP_ID from JPA21_EMPLOYEE");
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadFromAddress(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Address");
         proc.addArgument("address_id_v", Integer.class);
-        
+
         String statement = null;
         if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
@@ -825,17 +830,17 @@ public class EmployeePopulator {
         } else {
             statement = "SELECT ADDRESS_ID, STREET, CITY, COUNTRY, PROVINCE, P_CODE FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
         }
-        
+
         proc.addStatement(statement);
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadFromAddressMappedNamed(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Address_Mapped_Named");
-        
+
         proc.addArgument("address_id_v", Integer.class);
-        
+
         String statement = null;
         if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
@@ -843,100 +848,110 @@ public class EmployeePopulator {
         } else {
             statement = "SELECT ADDRESS_ID AS 'address_id_v', STREET AS 'street_v', CITY AS 'city_v', COUNTRY AS 'country_v', PROVINCE AS 'province_v', P_CODE AS 'p_code_v' FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
         }
-        
+
         proc.addStatement(statement);
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadFromAddressMappedNumbered(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Address_Mapped_Numbered");
-        
+
         proc.addArgument("address_id_v", Integer.class);
-        
+
         String statement = null;
         if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            statement = "SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID";
+            statement = "SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID_V";
         } else {
             statement = "SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
         }
-        
+
         proc.addStatement(statement);
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureParameterTest(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Parameter_Testing");
-        
+
         proc.addArgument("redundant_v", String.class);
         proc.addInOutputArgument("address_id_v", Integer.class);
         proc.addOutputArgument("employee_count_v", Integer.class);
-        
+
         String statement = null;
         if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            proc.addStatement("SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID");
-            proc.addStatement("SELECT COUNT(E.EMP_ID) INTO @employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            proc.addStatement("SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID_V");
+            if (platform.isSQLServer()) {
+                proc.addStatement("SELECT @employee_count_v = COUNT(E.EMP_ID) FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            }
+            else {
+                proc.addStatement("SELECT COUNT(E.EMP_ID) INTO @employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            }
         } else {
             proc.addStatement("SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)");
             proc.addStatement("SELECT COUNT(E.EMP_ID) INTO employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
         }
-        
+
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadUsingNamedRefCursor() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Using_Named_Cursor");
-        
+
         proc.addOutputArgument("CUR1", "CURSOR_TYPE.ANY_CURSOR");
         proc.addOutputArgument("CUR2", "CURSOR_TYPE.ANY_CURSOR");
-        
+
         proc.addStatement("OPEN CUR1 FOR Select E.*, S.* from JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
         proc.addStatement("OPEN CUR2 FOR Select a.* from JPA21_ADDRESS a");
-        
+
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadUsingPosRefCursor() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Using_UnNamed_Cursor");
-        
+
         proc.addOutputArgument("RESULT_CURSOR", "CURSOR_TYPE.ANY_CURSOR");
 
         proc.addStatement("OPEN RESULT_CURSOR FOR Select E.*, S.* from JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
-        
+
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureReadUsingSysCursor() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Using_Sys_Cursor");
 
         proc.addArgument("f_name_v", String.class);
         proc.addOutputArgument("p_recordset", "SYS_REFCURSOR");
-        
+
         proc.addStatement("OPEN p_recordset FOR SELECT EMP_ID, F_NAME FROM JPA21_EMPLOYEE WHERE F_NAME = f_name_v ORDER BY EMP_ID");
-        
+
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureResultSetAndUpdateFromAddress(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Result_Set_And_Update_Address");
-        
+
         proc.addArgument("new_p_code_v", String.class);
         proc.addArgument("old_p_code_v", String.class);
         proc.addOutputArgument("employee_count_v", Integer.class);
-        
+
         String statement = null;
         if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
             proc.addStatement("SELECT A.* FROM JPA21_ADDRESS A WHERE A.P_CODE = @new_p_code_v");
             proc.addStatement("SELECT E.*, S.* FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
-            proc.addStatement("SELECT COUNT(E.EMP_ID) INTO @employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            if (platform.isSQLServer()) {
+                proc.addStatement("SELECT @employee_count_v = COUNT(E.EMP_ID) FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            }
+            else {
+                proc.addStatement("SELECT COUNT(E.EMP_ID) INTO @employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            }
             proc.addStatement("UPDATE JPA21_ADDRESS SET P_CODE = @new_p_code_v WHERE P_CODE = @old_p_code_v");
         } else {
             proc.addStatement("SELECT A.* FROM JPA21_ADDRESS A WHERE A.P_CODE = new_p_code_v");
@@ -944,31 +959,31 @@ public class EmployeePopulator {
             proc.addStatement("SELECT COUNT(E.EMP_ID) INTO employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
             proc.addStatement("UPDATE JPA21_ADDRESS SET P_CODE = new_p_code_v WHERE P_CODE = old_p_code_v");
         }
-        
+
         return proc;
     }
-    
+
     public StoredProcedureDefinition buildStoredProcedureUpdateFromAddress(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Update_Address_Postal_Code");
-        
+
         proc.addArgument("new_p_code_v", String.class);
         proc.addArgument("old_p_code_v", String.class);
-        
+
         String statement = null;
         if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
             statement = "UPDATE JPA21_ADDRESS SET P_CODE = @new_p_code_v WHERE P_CODE = @old_p_code_v";
-            
-        } else {            
+
+        } else {
             statement = "UPDATE JPA21_ADDRESS SET P_CODE = new_p_code_v WHERE P_CODE = old_p_code_v";
-            
+
         }
-        
+
         proc.addStatement(statement);
         return proc;
     }
-    
+
     protected boolean containsObject(Class domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }
@@ -984,19 +999,19 @@ public class EmployeePopulator {
     public SmallProject createSmallProject() {
         return new SmallProject();
     }
-    
+
     public Department departmentExample1() {
         Department department = new Department();
         department.setName("Department 1");
         return department;
     }
-    
+
     public Department departmentExample2() {
         Department department = new Department();
         department.setName("Department 2");
         return department;
     }
-    
+
     public Department departmentExample3() {
         Department department = new Department();
         department.setName("Department 3");
@@ -1034,7 +1049,7 @@ public class EmployeePopulator {
         try {
             employee.addManagedEmployee(employeeExample12());
         } catch (Exception exception) {}
-        
+
         registerObject(Employee.class, employee, "0010");
 
         return employee;
@@ -1049,7 +1064,7 @@ public class EmployeePopulator {
         try {
             employee.addManagedEmployee(employeeExample7());
         } catch (Exception exception) {}
-        
+
         registerObject(Employee.class, employee, "0011");
 
         return employee;
@@ -1071,7 +1086,7 @@ public class EmployeePopulator {
 
         return employee;
     }
-    
+
     public Employee employeeExample13() {
         if (containsObject(Employee.class, "0013")) {
             return (Employee)getObject(Employee.class, "0013");
@@ -1079,10 +1094,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample13();
         registerObject(Employee.class, employee, "0013");
-        
+
         return employee;
     }
-    
+
      public Employee employeeExample14() {
         if (containsObject(Employee.class, "0014")) {
             return (Employee)getObject(Employee.class, "0014");
@@ -1090,10 +1105,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample14();
         registerObject(Employee.class, employee, "0014");
-        
+
         return employee;
     }
-    
+
     public Employee employeeExample15() {
         if (containsObject(Employee.class, "0015")) {
             return (Employee)getObject(Employee.class, "0015");
@@ -1101,10 +1116,10 @@ public class EmployeePopulator {
 
         Employee employee = basicEmployeeExample15();
         registerObject(Employee.class, employee, "0015");
-        
+
         return employee;
     }
-    
+
     public Employee employeeExample2() {
         if (containsObject(Employee.class, "0002")) {
             return (Employee)getObject(Employee.class, "0002");
@@ -1343,7 +1358,7 @@ public class EmployeePopulator {
         employmentPeriod.setStartDate(new java.sql.Date(startCalendar.getTime().getTime()));
         return employmentPeriod;
     }
-    
+
     protected Vector getAllObjects() {
         return populationManager.getAllObjects();
     }
@@ -1432,20 +1447,20 @@ public class EmployeePopulator {
         return largeProject;
     }
 
-    public void persistExample(Session session) {        
-        Vector allObjects = new Vector();        
+    public void persistExample(Session session) {
+        Vector allObjects = new Vector();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         //unitOfWork.removeAllReadOnlyClasses();
-                
+
         PopulationManager.getDefaultManager().addAllObjectsForClass(Employee.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(SmallProject.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(LargeProject.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(Runner.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
-        
+
         DatabasePlatform platform = session.getLogin().getPlatform();
-        
+
         if (TestCase.supportsStoredProcedures(session)) {
             boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
             // on Symfoware, to avoid table locking issues only the first invocation
@@ -1453,27 +1468,27 @@ public class EmployeePopulator {
             if (useFastTableCreatorAfterInitialCreate && !isFirstCreation) {
                 SchemaManager.FAST_TABLE_CREATOR = true;
             }
-          
+
             try {
                 SchemaManager schema = new SchemaManager((DatabaseSession) session);
                 schema.replaceObject(buildStoredProcedureParameterTest(platform));
                 schema.replaceObject(buildStoredProcedureReadFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureReadFromAddressMappedNamed(platform));
-                schema.replaceObject(buildStoredProcedureReadFromAddressMappedNumbered(platform));                
+                schema.replaceObject(buildStoredProcedureReadFromAddressMappedNumbered(platform));
                 schema.replaceObject(buildStoredProcedureUpdateFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureResultSetAndUpdateFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureReadAllAddresses());
                 schema.replaceObject(buildStoredProcedureReadAllEmployees());
                 schema.replaceObject(buildStoredProcedureReadAddressCity(platform));
                 schema.replaceObject(buildStoredProcedureDeleteAllResponsibilities());
-                
+
                 if (platform.isOracle()) {
                     schema.replaceObject(buildOraclePackage());
                     schema.replaceObject(buildStoredProcedureReadUsingNamedRefCursor());
                     schema.replaceObject(buildStoredProcedureReadUsingPosRefCursor());
                     schema.replaceObject(buildStoredProcedureReadUsingSysCursor());
                 }
-                
+
                 if (platform.isMySQL()) {
                     schema.replaceObject(buildMySQLResultSetProcedure());
                     schema.replaceObject(buildStoredProcedureReadNoAddresses());
@@ -1486,13 +1501,13 @@ public class EmployeePopulator {
             // next time it deletes the rows instead.
             isFirstCreation = false;
         }
-        
+
         // Force uppercase for Postgres.
         if (platform.isPostgreSQL()) {
             session.getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
     }
-    
+
     public PhoneNumber phoneNumberExample1() {
         return new PhoneNumber("Work", "613", "2258812");
     }
@@ -1524,12 +1539,12 @@ public class EmployeePopulator {
     protected void registerObject(Object domainObject, String identifier) {
         populationManager.registerObject(domainObject, identifier);
     }
-    
+
     public Runner runnerExample1(){
         if (containsObject(Runner.class, "0001")){
             return (Runner)getObject(Runner.class, "0001");
         }
-        
+
         Runner runner = new Runner();
         runner.setAge(35);
         runner.setFirstName("John");
