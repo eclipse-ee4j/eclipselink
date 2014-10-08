@@ -186,6 +186,8 @@
             <java classname="@{clsname}" dir="${report.dir}" fork="true" failonerror="false">
                 <arg value="${warmup.iterations}"/>
                 <arg value="${run.iterations}"/>
+                <arg value="${jmh.resultFile}"/>
+                <arg value="${jmh.resultFormat}"/>
                 <classpath>
                     <path refid="@{runpathref}"/>
                 </classpath>

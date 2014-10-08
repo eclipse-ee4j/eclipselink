@@ -35,10 +35,14 @@ public class Benchmarks {
 
         int warmupIterations = 20;
         int measurementIterations = 20;
+        String resultFile = "jmh-result.txt";
+        String resultFormat = "text";
 
-        if (null != args && args.length == 2) {
+        if (null != args && args.length == 4) {
             warmupIterations = Integer.parseInt(args[0]);
             measurementIterations = Integer.parseInt(args[1]);
+            resultFile = args[2];
+            resultFormat = args[3];
         }
 
         Options opt = new OptionsBuilder()
@@ -48,8 +52,8 @@ public class Benchmarks {
                 .include(getInclude(JsonMarshalBenchmark.class))
                 .include(getInclude(JsonUnmarshalBenchmark.class))
                 .include(getInclude(JsonWriterBenchmark.class))
-                .result("jmh-results.txt")
-                .resultFormat(ResultFormatType.TEXT)
+                .result(resultFile)
+                .resultFormat(ResultFormatType.valueOf(resultFormat.toUpperCase()))
                 .warmupIterations(warmupIterations)
                 .measurementIterations(measurementIterations)
                 .forks(1)
