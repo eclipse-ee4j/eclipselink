@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,7 +86,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
         this(u.getAttributePrefix(), u.getNamespaceResolver(), u.getNamespaceResolver() != null, u.isIncludeRoot(), u.getNamespaceSeparator(), u.getErrorHandler(), u.getValueWrapper(), clazz);
     }
 
-    private JsonStructureReader(String attrPrefix, NamespaceResolver nr,boolean namespaceAware, boolean includeRoot,Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass) {
+    public JsonStructureReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass) {
         this.attributePrefix = attrPrefix;
         if (attributePrefix == Constants.EMPTY_STRING) {
             attributePrefix = null;
@@ -246,6 +246,9 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 }
             }
 
+        } else {
+            getContentHandler().startDocument();
+            parseValue(jsonValue);
         }
     }
 

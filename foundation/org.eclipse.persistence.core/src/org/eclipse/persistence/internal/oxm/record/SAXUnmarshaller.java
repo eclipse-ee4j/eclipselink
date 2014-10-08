@@ -48,7 +48,7 @@ import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.UnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
+import org.eclipse.persistence.internal.oxm.record.json.JsonStructureReader;
 import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -191,16 +191,16 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
     
     private XMLReader getNewXMLReader(MediaType mediaType) {
-    	return getNewXMLReader(null, mediaType);
+	return getNewXMLReader(null, mediaType);
     }
-    
+
     private XMLReader getNewXMLReader(Class clazz, MediaType mediaType) {
-              	
-        	if(null != mediaType && mediaType.isApplicationJSON()){        	
-        	 	return new JSONReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);        	 	
-        	}
+
+		if(null != mediaType && mediaType.isApplicationJSON()){
+            return new JsonStructureReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);
+		}
             try {
-            	XMLReader xmlReader = new XMLReader(getSAXParser().getXMLReader());
+		XMLReader xmlReader = new XMLReader(getSAXParser().getXMLReader());
                 if(null != errorHandler) {
                     xmlReader.setErrorHandler(errorHandler);
                 }
@@ -1090,7 +1090,7 @@ if(clazz == CoreClassConstants.OBJECT) {
 		                if (c == '[' || c == '{') {
 		                    return Constants.APPLICATION_JSON;
 		                }else if (c == '<'){
-		                	return Constants.APPLICATION_XML;	
+					return Constants.APPLICATION_XML;
 		                }
 
 		            }

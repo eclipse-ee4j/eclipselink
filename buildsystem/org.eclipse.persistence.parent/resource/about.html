@@ -52,12 +52,14 @@
   <li>Foundation Dependencies
     <ul>
       <li><a href="#ASM">ASM</a></li>
+      <li><a href="#JSON">Java API for JSON Processing - Reference Implementation</a></li>
     </ul>
   </li>
   <li>EclipseLink JPA
     <ul>
       <li><a href="#ANTLR">ANTLR</a></li>
       <li><a href="#JPA21">Java Persistence API (JPA) 2.1</a></li>
+      <li><a href="#JSON">Java API for JSON Processing - Reference Implementation</a></li>
     </ul>
   </li>
   <li>EclipseLink MOXy
@@ -66,6 +68,7 @@
       <li><a href="#MAIL">Java Mail</a></li>
       <li><a href="#ACTIVATION">Java Activation Framework</a></li>
       <li><a href="#StAX">Streaming API for XML (StAX)</a></li>
+      <li><a href="#JSON">Java API for JSON Processing - Reference Implementation</a></li>
     </ul>
   </li>
   <li>EclipseLink SDO
@@ -94,7 +97,7 @@
     project (org.persistence.eclipse.internal.libraries.asm.*) to avoid version
     collisions with other usage of ASM.
   </p>
-  <p>The source code is available within the project's subversion repository.
+  <p>The source code is available within the project's git repository.
     The binaries are distributed within the eclipselink.jar and in the org.eclipse.persistence.asm_*.jar
     bundle. </p>
   <p> <a href="http://asm.objectweb.org/license.html">http://asm.objectweb.org/license.html</a></p>
@@ -128,9 +131,15 @@
     is included within EclipseLink Project to enable parsing of the Java Persistence
     Query language (JP QL). The ANTLR library is re-packaged within the project
     in the org.eclipse.persistence.internal.libraries.antlr.* packages. </p>
-  <p>The source is available with the project's subversion repository. The binaries
+  <p>The source is available with the project's git repository. The binaries
     are distributed within the eclipselink.jar and in the org.eclipse.persistence.antlr_3.2.0.v*.jar
     bundle.</p>
+</blockquote>
+<h3><a name="JSON" id="JSON"></a>JSON Processing v1.0.4</h3>
+<blockquote>
+  <p>The <a href="https://jsonp.java.net">JSON Processing</a> (<a href="https://jsonp.java.net/license.html">license</a>)
+    is included within EclipseLink Project to enable parsing of JSON files.</p>
+  <p>The source is available with the project's git repository.</p>
 </blockquote>
 <h3><a name="JAXB" id="JAXB"></a>Java Architecture for XML Binding (JAXB) v2.2</h3>
 <blockquote>
@@ -138,12 +147,12 @@
     under <a href="http://glassfish.dev.java.net/public/CDDLv1.0.html">CDDL v1.0</a>
     are included within the EclipseLink Project to enable the MOXy component's
     implementation of JAXB.</p>
-    <p>JAXB Libraries: </p>
-    <ul>
-        <li>javax.xml.bind_2.2.0.v201105210648.jar</li>
-        <li>jaxb-core_2.2.11.v201407311112.jar</li>
-        <li>jaxb-xjc_2.2.11.v201407311112.jar</li>
-    </ul>
+  <p>JAXB Libraries: </p>
+  <ul>
+      <li>javax.xml.bind_2.2.0.v201105210648.jar</li>
+      <li>jaxb-core_2.2.11.v201407311112.jar</li>
+      <li>jaxb-xjc_2.2.11.v201407311112.jar</li>
+  </ul>
 </blockquote>
 <h3><a name="JPA21" id="JPA2"></a>Java Persistence (JPA) 2.1  </h3>
 <blockquote>

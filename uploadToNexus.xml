@@ -166,6 +166,10 @@
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
         <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
         <property name="sdoapi.name"          value="SDO API"/>
+        <property name="json.prefix"          value="org.glassfish.javax.json"/>
+        <property name="json.criteria"        value="[1.0.4,5.0.0)"/>
+        <property name="json.name"            value="Javax JSON"/>
+        <property name="json.version"         value="1.0.4"/>
         <property name="antlr.prefix"         value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria"       value="[3.0.0,4.0.0)"/>
         <property name="antlr.name"           value="EclipseLink ANTLR"/>
@@ -191,6 +195,9 @@
         <selectbundle basename="${sdoapi.prefix}"  directory="${maven.2.sdo.plugins.dir}"
                      criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
         />
+        <selectbundle basename="${json.prefix}"  directory="${maven.2.common.plugins.dir}"
+                     criterion="${json.criteria}" property="json.version" versiononly="true"
+        />
         <selectbundle basename="${antlr.prefix}"  directory="${maven.2.common.plugins.dir}"
                      criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
         />
@@ -212,6 +219,7 @@
 
         <echo message="jpaapi.version     = ${jpaapi.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
+        <echo message="json.version       = ${json.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
         <echo message="asm.version        = ${asm.version}"/>
         <echo message="oracleddl.version  = ${oracleddl.version}"/>
@@ -273,6 +281,8 @@
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <!-- These are APIs that are not EclipseLink maintained public API bundles but we want them to be included in EclipseLink pom.  -->
+        <property name="dep.json"          value="${dep.grp}javax.json${dep.art}${json.prefix}${dep.ver}${json.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}${antlr.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}${asm.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -292,17 +302,18 @@
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
         <!--   add-on). It will need to be downloaded independently for this feature (modelgen) to work.                  -->
-        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${deps.foot}"/> <!-- would need the modelgen.jar for modelgen but cannot include dep -->
+        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${dep.json}${deps.foot}"/>
+        <!-- would need the modelgen.jar for modelgen but cannot include dep -->
         <property name="jpql.dependencies"        value="${deps.head}${dep.hermes}${deps.foot}"/>
-        <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
+        <property name="core.dependencies"        value="${deps.head}${dep.asm}${dep.json}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/>
-        <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
+        <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.json}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="nosql.dependencies"       value="${deps.head}${dep.resource}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="ora.nosql.dependencies"   value="${deps.head}${dep.nosql}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="builder.dependencies"     value="${deps.head}${dep.core}${dep.dbws}${dep.moxy}${dep.jpa}${dep.nosql}${dep.oracle}${dep.servlet}${dep.wsdl}${dep.oracleddl}${deps.foot}"/>
-        <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.antlr}${deps.foot}"/>
+        <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.json}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
 

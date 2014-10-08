@@ -168,7 +168,7 @@
         <pathelement path="${eclipselink.plugins}/${jaxb-xjc.jar}"/>
         <pathelement path="${eclipselink.jpa.plugins}/${persistence21.jar}"/>
         <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${json-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${json.jar}"/>
         <pathelement path="${eclipselink.plugins}/${javax.validation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${ejb.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jms.jar}"/>
@@ -1377,7 +1377,7 @@
                 <include name="${jaxb-core.jar}"/>
                 <include name="${jaxb-xjc.jar}"/>
                 <include name="${javax.validation.jar}"/>
-                <include name="${json-api.jar}"/>
+                <include name="${json.jar}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy/api">
                 <include name="${jaxb-api.jar}"/>

@@ -117,8 +117,7 @@ public class JsonUnmarshalBenchmark {
         }
     }
 
-    // TODO: uncomment when antlr is replaced with json-p
-    //    @Benchmark
+    @Benchmark
     public void testJsonMOXyUnmarshal(Blackhole bh) throws Exception {
         InputStream inputStream = null;
         try {

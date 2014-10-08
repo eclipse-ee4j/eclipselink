@@ -106,6 +106,7 @@
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib"             value="${extensions.depend.dir}/junit.jar"/>
+        <property name="json.lib"          value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${json.jar}"/>
         <echo message="user.home             ='${user.home}'"/>
         <echo message="test.properties       ='${test.properties}'"/>
         <echo message="extensions.depend.dir ='${extensions.depend.dir}'"/>
@@ -143,16 +144,19 @@
         <selectbundle basename="javax.validation" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
                       criterion="[1.0.0,2.0.0)" property="validation.lib" includepath="true"/>
 
+
         <available file="${jaxb-api.lib}"      property="jaxb-api.lib.exist"/>
         <available file="${persistence20.lib}" property="persistence20.lib.exist"/>
         <available file="${jersey.lib}"        property="jersey.lib.exist"/>
         <available file="${javax.ws.rs.lib}"   property="javax.ws.rs.lib.exist"/>
         <available file="${validation.lib}"    property="validation.lib.exist"/>
+        <available file="${json.lib}"      property="json.lib.exists"/>
         <echo message="jaxb-api.lib          ='${jaxb-api.lib}'"/>
         <echo message="persistence20.lib     ='${persistence20.lib}'"/>
         <echo message="jersey.lib            ='${jersey.lib}'"/>
         <echo message="javax.ws.rs.lib       ='${javax.ws.rs.lib}'"/>
         <echo message="validation.lib        ='${validation.lib}'"/>
+        <echo message="json.lib          ='${json.lib}'"/>
 
         <!-- Test for Eclipselink dependencies -->
         <selectbundle basename="org.eclipse.persistence.antlr" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
@@ -211,6 +215,7 @@
             <pathelement path="${classes.dir}"/>
             <pathelement path="${antlr.lib}"/>
             <pathelement path="${hermes.lib}"/>
+            <pathelement path="${json.lib}"/>
             <fileset dir="${jparstest.2.common.plugins.dir}"
                      includes="${eclipselink.core.depend}"/>
         </path>

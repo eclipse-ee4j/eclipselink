@@ -88,6 +88,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.glassfish.javax.json"
+         download-size="0"
+         install-size="0"
+         version="@JSON_VERSION@"
+         unpack="false"/>
+
+   <plugin
          id="javax.servlet"
          download-size="0"
          install-size="0"

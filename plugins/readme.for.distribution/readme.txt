@@ -20,6 +20,7 @@ EclipseLink Core Functionality
 - javax.xml.soap
 - javax.xml.stream
 - org.apache.ant
+- org.glassfish.javax.json
 
 EclipseLink JPA
 ---------------

@@ -157,6 +157,8 @@
         <property name="wsdl.criteria" value="[0.0.1,5.0.0)"/>
         <property name="xml.soap.prefix" value="javax.xml.soap"/>
         <property name="xml.soap.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="json.prefix" value="org.glassfish.javax.json"/>
+        <property name="json.criteria" value="[1.0.4,5.0.0)"/>
         <!-- For EclipseLink bundles -->
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria" value="[3.0,5.0)"/>
@@ -219,8 +221,12 @@
                      criterion="${asm.criteria}" property="asm.version" versiononly="true"
         />
         <selectbundle basename="${validation.prefix}"  directory="${compdeps.2.common.plugins.dir}"
-                      criterion="${validation.criteria}" property="validation.version" versiononly="true"
+                     criterion="${validation.criteria}" property="validation.version" versiononly="true"
         />
+        <selectbundle basename="${json.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${json.criteria}" property="json.version" versiononly="true"
+        />
+
         <say  message="   javax.xml.bind.version   = '${javax.xml.bind.version}'"                                                   if="javax.xml.bind.version"/>
         <say  message="   '{$javax.xml.bind.prefix}_{$javax.xml.bind.criteria}' not found! Generated features will be invalid."   unless="javax.xml.bind.version"/>
         <say  message="   sun.tools.xjc.version    = '${sun.tools.xjc.version}'"                                                    if="sun.tools.xjc.version"/>
@@ -245,6 +251,8 @@
         <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."                   unless="asm.version"/>
         <say  message="   validation.version       = '${validation.version}'"                                                       if="validation.version"/>
         <say  message="   '${validation.prefix}_${validation.criteria}.jar' not found! Generated features will be invalid."     unless="validation.version"/>
+        <say  message="   json.version             = '${json.version}'"                                                                   if="json.version"/>
+        <say  message="   '${json.prefix}_${json.criteria}.jar' not found! Generated features will be invalid."                 unless="json.version"/>
 
         <echo message="Searching ${compdeps.2.jpa.plugins.dir}..."/>
         <selectbundle basename="${persistence.prefix}"  directory="${compdeps.2.jpa.plugins.dir}"
@@ -311,8 +319,8 @@
         <filter token="PERSISTENCE_VERSION"  value="${persistence.version}"/>
         <filter token="VALIDATION_VERSION"   value="${validation.version}"/>
         <filter token="SDO_VERSION"          value="${sdo.version}"/>
-        <filter token="WSDL_VERSION"         value="${wsdl.version}"/>
-        <!--          Filters for product bundles in feature.xml files -->
+        <filter token="JSON_VERSION"         value="${json.version}"/>
+        <filter token="WSDL_VERSION"         value="${wsdl.version}"/>        <!--          Filters for product bundles in feature.xml files -->
         <filter token="ANTLR_VERSION"        value="${antlr.version}"/>
         <filter token="ASM_VERSION"          value="${asm.version}"/>
         <filter token="ORACLEDDL_VERSION"    value="${oracleddl.version}"/>
@@ -351,6 +359,7 @@
                           ${asm.prefix}_${asm.version}.jar,
                           ${asm.prefix}.source_${asm.version}.jar,
                           ${validation.prefix}_${validation.version}.jar,
+                          ${json.prefix}_${json.version}.jar,
                           ${sun.tools.xjc.prefix}_${sun.tools.xjc.version}.jar,
                           ${sun.tools.xjc.prefix}.source_${sun.tools.xjc.version}.jar,
                           ${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar,
