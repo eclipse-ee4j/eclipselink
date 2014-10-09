@@ -1402,6 +1402,7 @@
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jpatest.basedir}/eclipselink-remote.jar"/>
         	<pathelement path="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
         <path id="jpa21.run.classpath">
             <pathelement path="${jpatest.basedir}/${classes.dir}"/>
@@ -1437,6 +1438,7 @@
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jpatest.basedir}/eclipselink-remote.jar"/>
         	<pathelement path="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.classpath"/>
@@ -1454,6 +1456,7 @@
             <pathelement path="${jpatest.basedir}/${jpatest.framework.jar}"/>
             <pathelement path="${jpatest.basedir}/${jpa21.test.jar}"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.jpa21.model}.jar"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
         <path id="run.extended.classpath">
             <pathelement path="${jpatest.basedir}/${classes.dir}"/>
@@ -1466,6 +1469,7 @@
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.extended.composite.advanced.model.member_1}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.extended.composite.advanced.model.member_2}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.extended.composite.advanced.model.member_3}.jar"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
         <path id="run.performance.classpath">
             <pathelement path="${jpatest.basedir}/${classes.dir}"/>
@@ -1475,6 +1479,7 @@
             <pathelement path="${jpatest.basedir}/${jpa.test.jar}"/>
             <pathelement path="${jpatest.basedir}/${jpa.performance}.jar"/>
             <pathelement path="${jpatest.basedir}/${jpa.performance2}.jar"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
          <path id="run.oracle.classpath">
             <path refid="run.classpath"/>
@@ -1773,6 +1778,7 @@
             <pathelement path="${jpatest.basedir}/${jpa.test.jar}"/>
         	<pathelement path="${jpatest.basedir}/woven-${eclipselink.xml.mapping.metadata.complete}.jar"/>
             <path refid="compile.path"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
         <path id="run.extended.classpath.static">
             <pathelement path="${jpatest.basedir}/woven-${eclipselink.xml.extended.model}.jar"/>
@@ -1785,6 +1791,7 @@
             <pathelement path="${jpatest.basedir}/${jpatest.framework.jar}"/>
             <pathelement path="${jpatest.basedir}/${jpa.test.jar}"/>
             <path refid="compile.path"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
