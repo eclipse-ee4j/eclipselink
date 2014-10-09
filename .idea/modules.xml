@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.core/core.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/core.iml" group="root/foundation" />
+      <module fileurl="file://$PROJECT_DIR$/foundation/eclipselink.core.test/core.test.iml" filepath="$PROJECT_DIR$/foundation/eclipselink.core.test/core.test.iml" group="root/foundation" />
+      <module fileurl="file://$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/jpa.iml" filepath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/jpa.iml" group="root/jpa" />
+      <module fileurl="file://$PROJECT_DIR$/jpa/eclipselink.jpa.modelgen.test/jpa.modelgen.test.iml" filepath="$PROJECT_DIR$/jpa/eclipselink.jpa.modelgen.test/jpa.modelgen.test.iml" group="root/jpa" />
+      <module fileurl="file://$PROJECT_DIR$/jpa/eclipselink.jpa.test/jpa.test.iml" filepath="$PROJECT_DIR$/jpa/eclipselink.jpa.test/jpa.test.iml" group="root/jpa" />
+      <module fileurl="file://$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/moxy.iml" filepath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy/moxy.iml" group="root/moxy" />
+      <module fileurl="file://$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy.dynamicxjc/moxy.dynamicxjc.iml" filepath="$PROJECT_DIR$/moxy/org.eclipse.persistence.moxy.dynamicxjc/moxy.dynamicxjc.iml" group="root/moxy" />
+      <module fileurl="file://$PROJECT_DIR$/moxy/eclipselink.moxy.test/moxy.test.iml" filepath="$PROJECT_DIR$/moxy/eclipselink.moxy.test/moxy.test.iml" group="root/moxy" />
+      <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/nosql.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/nosql.iml" group="root/foundation" />
+      <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/oracle.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/oracle.iml" group="root/foundation" />
+      <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" group="root" />
+    </modules>
+  </component>
+</project>
+

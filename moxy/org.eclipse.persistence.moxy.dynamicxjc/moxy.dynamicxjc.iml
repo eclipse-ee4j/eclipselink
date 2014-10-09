@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="EclipseModuleManager">
+    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" value="ECLIPSELINK_HOME/plugins/jaxb-xjc_2.2.11.v201407311112.jar" />
+    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/jaxb-xjc.source_2.2.11.v201407311112.jar!/" value="src:/ECLIPSELINK_HOME/plugins/jaxb-xjc.source_2.2.11.v201407311112.jar" />
+    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/jaxb-core_2.2.11.v201407311112.jar!/" value="ECLIPSELINK_HOME/plugins/jaxb-core_2.2.11.v201407311112.jar" />
+    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/jaxb-core.source_2.2.11.v201407311112.jar!/" value="src:/ECLIPSELINK_HOME/plugins/jaxb-core.source_2.2.11.v201407311112.jar" />
+    <src_description expected_position="0">
+      <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
+    </src_description>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="module" module-name="moxy" />
+    <orderEntry type="module" module-name="core" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc.source_2.2.11.v201407311112.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-core_2.2.11.v201407311112.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-core.source_2.2.11.v201407311112.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>
+
