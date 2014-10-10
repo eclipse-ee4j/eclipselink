@@ -1043,10 +1043,11 @@
         <zip destfile="${unified.javadoc.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="${unified.javadocs}/"/>
+            <zipfileset dir="${sdo.javadocs}/"/>
         </zip>
     </target>
 
-    <target name="build-unified-javadocs" depends="check-oracle-dependencies">
+    <target name="build-unified-javadocs" depends="check-oracle-dependencies, build-sdo-javadocs">
         <path id="unified.javadoc.path">
             <path refid="javadoc.path"/>
             <path refid="nosql.javadoc.path"/>
@@ -1060,11 +1061,9 @@
         </path>
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
         <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, ${javadoc.postfixTitle}"/>
-        <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
         <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
         <delete dir="${unified.javadocs}" failonerror="false"/>
         <unzip src="${eclipselink.jpa.plugins}/${persistence21.src.jar}" dest="${build.dir}/jpa21/src"/>
-        <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
             maxmemory="768m"
@@ -1092,9 +1091,6 @@
             </fileset>
             <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>
-            </fileset>
-            <fileset dir="${build.dir}/commonj.sdo/src" defaultexcludes="yes">
-                <include name="commonj/sdo/**/*.java"/>
             </fileset>
             <!-- *** EclipseLink modules *** -->
             <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes">
@@ -1125,10 +1121,6 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
-            <fileset dir="${eclipselink.sdo}/${src.dir}" defaultexcludes="yes">
-                <include name="org/eclipse/persistence/**/*.java"/>
-                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
-            </fileset>
             <fileset dir="${eclipselink.util.rename}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
@@ -1152,15 +1144,53 @@
 
     <target name="build-javadocs" depends="build-main-javadocs,build-nosql-javadocs,build-jpars-javadocs"/>
 
-    <!-- Generates the Javadocs for all public EclipseLink classes. -->
-    <target name="build-main-javadocs">
+    <target name="build-sdo-javadocs">
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
         <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, ${javadoc.postfixTitle}"/>
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
+        <delete dir="${sdo.javadocs}" failonerror="false"/>
+        <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
+        <condition property="additionalParamTmp" value="-breakiterator -quiet -notimestamp -Xdoclint:none" else="-breakiterator -quiet -notimestamp">
+            <!-- Detect compatible version of JDK (>= 1.8.0). -->
+            <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*"/>
+        </condition>
+        <javadoc
+                maxmemory="768m"
+                Verbose="false"
+                packagenames="org.eclipse.persistence.**"
+                destdir="${sdo.javadocs}"
+                useexternalfile="yes"
+                additionalparam="${additionalParamTmp}"
+                windowtitle="${eclipselink.javadoc.title}"
+                failonerror="true"
+                >
+            <classpath>
+                <path refid="javadoc.path"/>
+            </classpath>
+            <tag name ="author" enabled="true" description="Author:" />
+            <tag name ="since" scope="all" description="Since:" />
+            <tag name ="SBGen" scope="all" description="SBGen:" />
+            <tag name ="bug" enabled="true" description="Related Bugs:" />
+            <doctitle><![CDATA[${eclipselink.javadoc.title}]]></doctitle>
+            <header><![CDATA[${eclipselink.javadoc.title}]]></header>
+
+            <fileset dir="${build.dir}/commonj.sdo/src" defaultexcludes="yes">
+                <include name="commonj/sdo/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.sdo}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+    <!-- Generates the Javadocs for all public EclipseLink classes. -->
+    <target name="build-main-javadocs" depends="build-sdo-javadocs">
+        <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
+        <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, ${javadoc.postfixTitle}"/>
         <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
         <delete dir="${eclipselink.javadocs}" failonerror="false"/>
         <unzip src="${eclipselink.jpa.plugins}/${persistence21.src.jar}" dest="${build.dir}/jpa21/src"/>
-        <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
             maxmemory="768m"
@@ -1189,9 +1219,6 @@
             <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>
             </fileset>
-            <fileset dir="${build.dir}/commonj.sdo/src" defaultexcludes="yes">
-                <include name="commonj/sdo/**/*.java"/>
-            </fileset>
             <!-- *** EclipseLink modules *** -->
             <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
@@ -1219,10 +1246,6 @@
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
             <fileset dir="${eclipselink.moxy.dynamicxjc}/${src.dir}" defaultexcludes="yes">
-                <include name="org/eclipse/persistence/**/*.java"/>
-                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
-            </fileset>
-            <fileset dir="${eclipselink.sdo}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
@@ -1315,6 +1338,11 @@
         <zip destfile="${jpars.javadoc.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="${jpars.javadocs}/"/>
+        </zip>
+        <delete file="${sdo.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <zip destfile="${sdo.javadoc.install.prefix}${eclipselink.zip.suffix}">
+            <!-- miscellaneous files -->
+            <zipfileset dir="${sdo.javadocs}/"/>
         </zip>
     </target>
 
