@@ -9,7 +9,7 @@
    "phoneNumbers": [
       {
          "id": 743627,
-         "type": "cell",
+         "_type": "cell",
          "areaCode": "613"
       }
    ],

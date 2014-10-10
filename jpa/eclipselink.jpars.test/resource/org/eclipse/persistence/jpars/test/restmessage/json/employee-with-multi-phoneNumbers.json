@@ -9,32 +9,32 @@
    "phoneNumbers": [
       {
          "id": 3,
-         "type": "fire",
+         "_type": "fire",
          "areaCode": "416"
       },
       {
          "id": 5,
-         "type": "absent",
+         "_type": "absent",
          "areaCode": "613"
       },
       {
          "id": 0,
-         "type": "elf",
+         "_type": "elf",
          "areaCode": "901"
       },
       {
          "id": 4,
-         "type": "cell1",
+         "_type": "cell1",
          "areaCode": "613"
       },
       {
          "id": 2,
-         "type": "daily",
+         "_type": "daily",
          "areaCode": "12345"
       },
       {
          "id": 1,
-         "type": "bogus",
+         "_type": "bogus",
          "areaCode": "67890"
       }
    ]

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -32,7 +32,7 @@ public class PhoneNumber implements Serializable {
     private int id;
     @Id
     @Column(updatable = false)
-    private String type;
+    private String _type;
     @Basic
     @Column(name = "AREA_CODE")
     private String areaCode;
@@ -48,7 +48,7 @@ public class PhoneNumber implements Serializable {
 
     public PhoneNumber(String type, String areaCode, String number) {
         this();
-        setType(type);
+        set_type(type);
         setAreaCode(areaCode);
         setNumber(number);
     }
@@ -77,12 +77,12 @@ public class PhoneNumber implements Serializable {
         this.number = pNumber;
     }
 
-    public String getType() {
-        return type;
+    public String get_type() {
+        return _type;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void set_type(String _type) {
+        this._type = _type;
     }
 
     public Employee getEmployee() {
@@ -96,21 +96,21 @@ public class PhoneNumber implements Serializable {
 
     @Override
     public String toString() {
-        return "id=" + id + ", type=" + type + ", areaCode=" + areaCode + ", number=" + number;
+        return "id=" + id + ", type=" + _type + ", areaCode=" + areaCode + ", number=" + number;
     }
 
     public static class ID implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public int id;
-        public String type;
+        public String _type;
 
         public ID() {
         }
 
-        public ID(int empId, String type) {
+        public ID(int empId, String _type) {
             this.id = empId;
-            this.type = type;
+            this._type = _type;
         }
 
         public int getId() {
@@ -121,18 +121,18 @@ public class PhoneNumber implements Serializable {
             this.id = id;
         }
 
-        public String getType() {
-            return type;
+        public String get_type() {
+            return _type;
         }
 
-        public void setType(String type) {
-            this.type = type;
+        public void set_type(String _type) {
+            this._type = _type;
         }
 
         public boolean equals(Object other) {
             if (other instanceof ID) {
                 final ID otherID = (ID) other;
-                return otherID.id == id && otherID.type.equals(type);
+                return otherID.id == id && otherID._type.equals(_type);
             }
             return false;
         }
