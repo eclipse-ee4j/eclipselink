@@ -28,8 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
+
 
 // EclipseLink imports
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
@@ -585,7 +587,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         try {
             return dtBuilder.buildTables(dbwsBuilder.getConnection(), schemaPatterns, tableNamePatterns);
         } catch (ParseException e) {
-            // ignore for now
+            dbwsBuilder.logMessage(Level.WARNING, e.getMessage());
         }
         return null;
     }
@@ -648,7 +650,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     allProcsAndFuncs.addAll(topLevelProcedures);
                 }
             } catch (ParseException e) {
-                // ignore for now
+                dbwsBuilder.logMessage(Level.WARNING, e.getMessage());
             }
             try {
                 List<FunctionType> topLevelFunctions = dtBuilder.buildFunctions(dbwsBuilder.getConnection(), topLevelSchemaPatterns, topLevelProcedureNamePatterns);
@@ -656,7 +658,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     allProcsAndFuncs.addAll(topLevelFunctions);
                 }
             } catch (ParseException e) {
-                // ignore for now
+                dbwsBuilder.logMessage(Level.WARNING, e.getMessage());
             }
         }
         if (packagePatterns.size() > 0) {
@@ -709,7 +711,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	                }
                 }
             } catch (ParseException e) {
-                // ignore for now
+                dbwsBuilder.logMessage(Level.WARNING, e.getMessage());
             }
         }
         return allProcsAndFuncs.isEmpty() ? null : allProcsAndFuncs;
