@@ -24,7 +24,7 @@
 *     Oracle - initial API and implementation
 #******************************************************************************/-->
 
-<project name="Build Mappings Plug-in Tests" default="build.all" basedir=".">
+<project name="Build Mappings Plug-in Tests" default="build-all" basedir=".">
     <!-- =================================================================== -->
     <target name="init">
         <tstamp>
@@ -77,11 +77,7 @@
         <selectbundle basename="org.eclipse.persistence.nosql" directory="${basedir}/../../../plugins" separator="_"
             criterion="[2.0.0,9.0.0)" property="oep.nosql.lib" includepath="true"
         />
-        <selectbundle basename="org.eclipse.persistence.oracle.nosql" directory="${basedir}/../../../plugins" separator="_"
-            criterion="[2.0.0,9.0.0)" property="oep.oracle.nosql.lib" includepath="true"
-        />
         <echo message="oep.nosql.lib ='${oep.nosql.lib}'"/>
-        <echo message="oep.nosql.lib ='${oep.oracle.nosql.lib}'"/>
 
         <path id="compile.mappingsplugin.path">
             <pathelement path="${_jarDestDir}/utility_test.jar"/>
@@ -96,9 +92,9 @@
             <pathelement path="${_mwdevLibDir}/utility.jar"/>
             <pathelement path="${_eclipselinkJar}"/>
             <pathelement path="${_libDir}/compile/package-rename.jar"/>
+            <pathelement path="${_libDir}/compile/xercesImpl.jar"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${oep.nosql.lib}"/>
-            <pathelement path="${oep.oracle.nosql.lib}"/>
         </path>
 
     </target>

@@ -24,7 +24,7 @@
 *     Oracle - initial API and implementation
 #******************************************************************************/-->
 
-<project name="Build Platforms Model" default="build.all" basedir=".">
+<project name="Build Platforms Model" default="build-all" basedir=".">
     <!-- =================================================================== -->
     <target name="init">
         <tstamp>

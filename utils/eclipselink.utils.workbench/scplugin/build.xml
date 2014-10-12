@@ -24,7 +24,7 @@
 *     Oracle - initial API and implementation
 #******************************************************************************/-->
 
-<project name="Build SC Plug-in" default="build.all" basedir=".">
+<project name="Build SC Plug-in" default="build-all" basedir=".">
     <!-- =================================================================== -->
     <target name="init">
         <tstamp>

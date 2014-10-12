@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -27,7 +27,6 @@ import org.eclipse.persistence.tools.workbench.test.models.eis.employee.Project;
 import org.eclipse.persistence.eis.EISConnectionSpec;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.eis.EISLogin;
-import org.eclipse.persistence.eis.adapters.aq.AQPlatform;
 import org.eclipse.persistence.eis.adapters.jms.JMSPlatform;
 import org.eclipse.persistence.eis.interactions.XMLInteraction;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
@@ -46,7 +45,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
-import org.eclipse.persistence.platform.database.AttunityPlatform;
 
 public final class EmployeeEisRuntimeProject 
 {

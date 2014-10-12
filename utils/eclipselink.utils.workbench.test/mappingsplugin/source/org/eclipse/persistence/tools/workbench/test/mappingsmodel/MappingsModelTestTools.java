@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.tools.workbench.test.mappingsmodel;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -966,13 +967,13 @@ public class MappingsModelTestTools {
 					}
 					
 					private Diff bonusDiff(Object object1, Object object2) {
-						Vector parentInterfaces = ((InterfacePolicy) object1).getParentInterfaces();
-						Vector parentInterfaceNames1 = new Vector();
+						List<Class> parentInterfaces = ((InterfacePolicy) object1).getParentInterfaces();
+						List<String> parentInterfaceNames1 = new ArrayList<String>(2);
 						for (int i = 0; i < parentInterfaces.size(); i++) {
 							parentInterfaceNames1.add(((Class) parentInterfaces.get(i)).getName());
 						}
 						
-						Vector parentInterfaceNames2 = ((InterfacePolicy) object1).getParentInterfaceNames();
+						List<String> parentInterfaceNames2 = ((InterfacePolicy) object1).getParentInterfaceNames();
 						return EqualityDifferentiator.instance().diff(parentInterfaceNames1, parentInterfaceNames2);
 					}
 				});

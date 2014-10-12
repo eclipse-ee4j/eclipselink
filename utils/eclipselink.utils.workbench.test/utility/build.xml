@@ -24,7 +24,7 @@
 *     Oracle - initial API and implementation
 #******************************************************************************/-->
 
-<project name="Build Utility Library Tests" default="build.all" basedir=".">
+<project name="Build Utility Library Tests" default="build-all" basedir=".">
     <!-- =================================================================== -->
     <target name="init">
         <tstamp>
