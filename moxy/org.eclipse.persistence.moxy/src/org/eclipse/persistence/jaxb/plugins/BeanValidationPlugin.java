@@ -83,7 +83,7 @@ import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
 
 /**
  * XJC Plugin for generation of JSR349 (Bean Validation) annotations.
- * <p/>
+ * <p>
  * Has two mods:
  * <blockquote><pre>
  *  "jsr303" - enables backward compatibility.

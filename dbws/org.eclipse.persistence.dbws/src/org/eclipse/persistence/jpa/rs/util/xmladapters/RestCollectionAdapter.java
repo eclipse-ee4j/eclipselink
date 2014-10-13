@@ -30,7 +30,7 @@ import java.util.Collection;
 
 /**
  * Collections adapter used in JPARS V2. Collections are wrapped into CollectionWrapper which has 'links'.
- * {@see CollectionWrapper}
+ * @see CollectionWrapper
  *
  * @param <T> list generac type
  *

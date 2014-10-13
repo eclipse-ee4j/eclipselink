@@ -62,7 +62,6 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
      * @param headers the HTTP headers
      * @param uriInfo the URL
      * @return response containing a list of persistence contexts.
-     * @throws JAXBException
      */
     protected Response getContextsInternal(String version, HttpHeaders headers, UriInfo uriInfo) {
         JPARSLogger.entering(CLASS_NAME, "getContextsInternal", new Object[] { "GET", version, uriInfo.getRequestUri().toASCIIString() });
