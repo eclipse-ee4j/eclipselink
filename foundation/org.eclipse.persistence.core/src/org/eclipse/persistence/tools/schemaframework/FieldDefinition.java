@@ -15,7 +15,6 @@ package org.eclipse.persistence.tools.schemaframework;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -114,57 +113,42 @@ public class FieldDefinition implements Serializable, Cloneable {
     /**
      * INTERNAL:
      * Append the database field definition string to the table creation statement.
+     * @param writer  Target writer where to write field definition string.
+     * @param session Current session context.
+     * @param table   Database table being processed.
+     * @throws ValidationException When invalid or inconsistent data were found.
      */
-    public void appendDBString(Writer writer, AbstractSession session, TableDefinition table) throws ValidationException {
+    public void appendDBString(final Writer writer, final AbstractSession session,
+            final TableDefinition table) throws ValidationException {
         try {
-            writer.write(getName());
+            writer.write(name);
             writer.write(" ");
 
             if (getTypeDefinition() != null) { //apply user-defined complete type definition
-                writer.write(getTypeDefinition());
+                writer.write(typeDefinition);
 
             } else {
-                DatabasePlatform platform = session.getPlatform();
+                final DatabasePlatform platform = session.getPlatform();
                 // compose type definition - type name, size, unique, identity, constraints...
-                FieldTypeDefinition fieldType;
-                
-                if (getType() != null) { //translate Java 'type'
-                    fieldType = platform.getFieldTypeDefinition(getType());
-                    if (fieldType == null) {
-                        throw ValidationException.javaTypeIsNotAValidDatabaseType(getType());
-                    }
-                } else if (getTypeName() != null) { //translate generic type name
-                    Map<String, Class> fieldTypes = platform.getClassTypes();
-                    Class type = fieldTypes.get(getTypeName());
-                    if (type == null) { // if unknown type name, use as it is
-                        fieldType = new FieldTypeDefinition(getTypeName());
-                    } else {
-                        fieldType = platform.getFieldTypeDefinition(type);
-                        if (fieldType == null) {
-                            throw ValidationException.javaTypeIsNotAValidDatabaseType(type);
-                        }
-                    }
-                } else {
-                    // both type and typeName is null
-                    throw ValidationException.javaTypeIsNotAValidDatabaseType(null);
-                }
+                final FieldTypeDefinition fieldType
+                        = DatabaseObjectDefinition.getFieldTypeDefinition(platform, type, typeName);
 
-                String qualifiedName = table.getFullName() + '.' + getName();
-                boolean shouldPrintFieldIdentityClause = isIdentity() && platform.shouldPrintFieldIdentityClause(session, qualifiedName);
+                String qualifiedName = table.getFullName() + '.' + name;
+                boolean shouldPrintFieldIdentityClause = isIdentity && platform.shouldPrintFieldIdentityClause(session, qualifiedName);
                 platform.printFieldTypeSize(writer, this, fieldType, shouldPrintFieldIdentityClause);
-                
+
                 if (shouldPrintFieldIdentityClause) {
                     platform.printFieldIdentityClause(writer);
                 }
-                if (shouldAllowNull() && fieldType.shouldAllowNull()) {
+                if (shouldAllowNull && fieldType.shouldAllowNull()) {
                     platform.printFieldNullClause(writer);
                 } else {
                     platform.printFieldNotNullClause(writer);
                 }
-                if (isUnique()) {
+                if (isUnique) {
                     if (platform.supportsUniqueColumns()) {
                         // #282751: do not add UNIQUE if the field is also simple primary key
-                        if (!isPrimaryKey() || table.getPrimaryKeyFieldNames().size() > 1) {
+                        if (!isPrimaryKey || table.getPrimaryKeyFieldNames().size() > 1) {
                             platform.printFieldUnique(writer, shouldPrintFieldIdentityClause);
                         } else {
                             setUnique(false);
@@ -174,14 +158,14 @@ public class FieldDefinition implements Serializable, Cloneable {
                         // Need to move the unique column to be a constraint.
                         setUnique(false);
                         String constraintName = table.buildUniqueKeyConstraintName(table.getName(), table.getFields().indexOf(this), platform.getMaxUniqueKeyNameSize());
-                        table.addUniqueKeyConstraint(constraintName, getName());
+                        table.addUniqueKeyConstraint(constraintName, name);
                     }
-                }                
-                if (getConstraint() != null) {
-                    writer.write(" " + getConstraint());
                 }
-                if (getAdditional() != null) {
-                    writer.write(" " + getAdditional());
+                if (constraint != null) {
+                    writer.write(" " + constraint);
+                }
+                if (additional != null) {
+                    writer.write(" " + additional);
                 }
             }
         } catch (IOException ioException) {
@@ -189,44 +173,40 @@ public class FieldDefinition implements Serializable, Cloneable {
         }
     }
 
-
     /**
      * INTERNAL:
      * Append the database field definition string to the type creation statement.
      * Types do not support constraints.
+     * @param writer  Target writer where to write field definition string.
+     * @param session Current session context.
+     * @throws ValidationException When invalid or inconsistent data were found.
      */
-    public void appendTypeString(Writer writer, AbstractSession session) throws ValidationException {
-        FieldTypeDefinition fieldType;
-        if (getType() != null) {
-            fieldType = session.getPlatform().getFieldTypeDefinition(getType());
-            if (fieldType == null) {
-                throw ValidationException.javaTypeIsNotAValidDatabaseType(getType());
-            }
-        } else {
-            fieldType = new FieldTypeDefinition(getTypeName());
-        }
+    public void appendTypeString(final Writer writer, final AbstractSession session)
+            throws ValidationException {
+        final FieldTypeDefinition fieldType
+                = DatabaseObjectDefinition.getFieldTypeDefinition(session, type, typeName);
         try {
-            writer.write(getName());
+            writer.write(name);
             writer.write(" ");
             writer.write(fieldType.getName());
-            if ((fieldType.isSizeAllowed()) && ((getSize() != 0) || (fieldType.isSizeRequired()))) {
+            if ((fieldType.isSizeAllowed()) && ((size != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
-                if (getSize() == 0) {
-                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
+                if (size == 0) {
+                    writer.write(Integer.toString(fieldType.getDefaultSize()));
                 } else {
-                    writer.write(Integer.valueOf(getSize()).toString());
+                    writer.write(Integer.toString(size));
                 }
-                if (getSubSize() != 0) {
+                if (subSize != 0) {
                     writer.write(",");
-                    writer.write(Integer.valueOf(getSubSize()).toString());
+                    writer.write(Integer.toString(subSize));
                 } else if (fieldType.getDefaultSubSize() != 0) {
                     writer.write(",");
-                    writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
+                    writer.write(Integer.toString(fieldType.getDefaultSubSize()));
                 }
                 writer.write(")");
             }
-            if (getAdditional() != null) {
-                writer.write(" " + getAdditional());
+            if (additional != null) {
+                writer.write(" " + additional);
             }
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);

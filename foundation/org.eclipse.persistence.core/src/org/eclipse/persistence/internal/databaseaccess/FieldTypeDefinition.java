@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.*;
+
 import org.eclipse.persistence.internal.helper.*;
 
 /**
@@ -26,6 +27,7 @@ import org.eclipse.persistence.internal.helper.*;
  *    </ul>
  */
 public class FieldTypeDefinition implements Serializable {
+
     protected String name;
     protected int defaultSize;
     protected int defaultSubSize;
@@ -48,7 +50,7 @@ public class FieldTypeDefinition implements Serializable {
         typesuffix = null;
     }
 
-    /**
+   /**
     * Return a new field type.
     * @see #setName()
     */

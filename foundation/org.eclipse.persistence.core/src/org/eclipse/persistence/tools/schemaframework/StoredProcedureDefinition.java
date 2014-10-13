@@ -271,43 +271,43 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
 
     /**
      * Print the argument and its type.
+     * @param argument Stored procedure argument.
+     * @param writer   Target writer where to write argument string.
+     * @param session  Current session context.
+     * @throws IOException When any IO problem occurs.
      */
-    protected void printArgument(FieldDefinition argument, Writer writer, AbstractSession session) throws IOException {
-        DatabasePlatform platform = session.getPlatform();
-        FieldTypeDefinition fieldType;
-        if (argument.getType() != null) {
-            fieldType = platform.getFieldTypeDefinition(argument.getType());
-            if (fieldType == null) {
-                throw ValidationException.javaTypeIsNotAValidDatabaseType(argument.getType());
-            }
-        } else {
-            fieldType = new FieldTypeDefinition(argument.getTypeName());
-        }
+    protected void printArgument(final FieldDefinition argument, final Writer writer,
+            final AbstractSession session) throws IOException {
+        final DatabasePlatform platform = session.getPlatform();
+        final FieldTypeDefinition fieldType
+                = getFieldTypeDefinition(session, argument.type, argument.typeName);
+
         writer.write(platform.getProcedureArgumentString());
-        
+
         if (platform.shouldPrintInputTokenAtStart()) {
             writer.write(" ");
             writer.write(platform.getInputProcedureToken());
             writer.write(" ");
         }
-        
-        writer.write(argument.getName());
+
+        writer.write(argument.name);
         writer.write(" ");
         writer.write(fieldType.getName());
 
-        if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments() && ((argument.getSize() != 0) || (fieldType.isSizeRequired()))) {
+        if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments()
+                && ((argument.size != 0) || (fieldType.isSizeRequired()))) {
             writer.write("(");
-            if (argument.getSize() == 0) {
-                writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
+            if (argument.size == 0) {
+                writer.write(Integer.toString(fieldType.getDefaultSize()));
             } else {
-                writer.write(Integer.valueOf(argument.getSize()).toString());
+                writer.write(Integer.toString(argument.size));
             }
-            if (argument.getSubSize() != 0) {
+            if (argument.subSize != 0) {
                 writer.write(",");
-                writer.write(Integer.valueOf(argument.getSubSize()).toString());
+                writer.write(Integer.toString(argument.subSize));
             } else if (fieldType.getDefaultSubSize() != 0) {
                 writer.write(",");
-                writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
+                writer.write(Integer.toString(fieldType.getDefaultSubSize()));
             }
             writer.write(")");
         }
@@ -315,46 +315,52 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
 
     /**
      * Print the argument and its type.
+     * @param argument Stored procedure argument.
+     * @param writer   Target writer where to write argument string.
+     * @param session  Current session context.
+     * @throws ValidationException When invalid or inconsistent data were found.
      */
-    protected void printInOutputArgument(FieldDefinition argument, Writer writer, AbstractSession session) throws ValidationException {
+    protected void printInOutputArgument(final FieldDefinition argument, final Writer writer,
+            final AbstractSession session) throws ValidationException {
         try {
-            DatabasePlatform platform = session.getPlatform();
-            FieldTypeDefinition fieldType;
-            if (argument.getType() != null) {
-                fieldType = platform.getFieldTypeDefinition(argument.getType());
-                if (fieldType == null) {
-                    throw ValidationException.javaTypeIsNotAValidDatabaseType(argument.getType());
-                }
-            } else {
-                fieldType = new FieldTypeDefinition(argument.getTypeName());
-            }
-            writer.write(platform.getProcedureArgumentString());            
+            final DatabasePlatform platform = session.getPlatform();
+            final FieldTypeDefinition fieldType
+                    = getFieldTypeDefinition(session, argument.type, argument.typeName);
+
+            writer.write(platform.getProcedureArgumentString());
+
             if (platform.shouldPrintOutputTokenAtStart()) {
-                writer.write(" " + platform.getCreationInOutputProcedureToken() + " ");
+                writer.write(" ");
+                writer.write(platform.getCreationInOutputProcedureToken());
+                writer.write(" ");
             }
-            writer.write(argument.getName());
+            writer.write(argument.name);
             if ((!platform.shouldPrintOutputTokenAtStart()) && platform.shouldPrintOutputTokenBeforeType()) {
-                writer.write(" " + platform.getCreationInOutputProcedureToken());
+                writer.write(" ");
+                writer.write(platform.getCreationInOutputProcedureToken());
             }
-            writer.write(" " + fieldType.getName());
-            if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments() && ((argument.getSize() != 0) || (fieldType.isSizeRequired()))) {
+            writer.write(" ");
+            writer.write(fieldType.getName());
+            if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments()
+                    && ((argument.size != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
-                if (argument.getSize() == 0) {
-                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
+                if (argument.size == 0) {
+                    writer.write(Integer.toString(fieldType.getDefaultSize()));
                 } else {
-                    writer.write(Integer.valueOf(argument.getSize()).toString());
+                    writer.write(Integer.toString(argument.size));
                 }
-                if (argument.getSubSize() != 0) {
+                if (argument.subSize != 0) {
                     writer.write(",");
-                    writer.write(Integer.valueOf(argument.getSubSize()).toString());
+                    writer.write(Integer.toString(argument.subSize));
                 } else if (fieldType.getDefaultSubSize() != 0) {
                     writer.write(",");
-                    writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
+                    writer.write(Integer.toString(fieldType.getDefaultSubSize()));
                 }
                 writer.write(")");
             }
             if ((!platform.shouldPrintOutputTokenAtStart()) && (!platform.shouldPrintOutputTokenBeforeType())) {
-                writer.write(" " + platform.getCreationInOutputProcedureToken());
+                writer.write(" ");
+                writer.write(platform.getCreationInOutputProcedureToken());
             }
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
@@ -363,46 +369,52 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
 
     /**
      * Print the argument and its type.
+     * @param argument Stored procedure argument.
+     * @param writer   Target writer where to write argument string.
+     * @param session  Current session context.
+     * @throws ValidationException When invalid or inconsistent data were found.
      */
-    protected void printOutputArgument(FieldDefinition argument, Writer writer, AbstractSession session) throws ValidationException {
+    protected void printOutputArgument(final FieldDefinition argument, final Writer writer,
+            final AbstractSession session) throws ValidationException {
         try {
-            DatabasePlatform platform = session.getPlatform();
-            FieldTypeDefinition fieldType;
-            if (argument.getType() != null) {
-                fieldType = platform.getFieldTypeDefinition(argument.getType());
-                if (fieldType == null) {
-                    throw ValidationException.javaTypeIsNotAValidDatabaseType(argument.getType());
-                }
-            } else {
-                fieldType = new FieldTypeDefinition(argument.getTypeName());
-            }
+            final DatabasePlatform platform = session.getPlatform();
+            final FieldTypeDefinition fieldType
+                    = getFieldTypeDefinition(session, argument.type, argument.typeName);
+
             writer.write(platform.getProcedureArgumentString());
+
             if (platform.shouldPrintOutputTokenAtStart()) {
-                writer.write(" " + platform.getCreationOutputProcedureToken() + " ");
+                writer.write(" ");
+                writer.write(platform.getCreationOutputProcedureToken());
+                writer.write(" ");
             }
-            writer.write(argument.getName());
+            writer.write(argument.name);
             if ((!platform.shouldPrintOutputTokenAtStart()) && platform.shouldPrintOutputTokenBeforeType()) {
-                writer.write(" " + platform.getCreationOutputProcedureToken());
+                writer.write(" ");
+                writer.write(platform.getCreationOutputProcedureToken());
             }
-            writer.write(" " + fieldType.getName());
-            if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments() && ((argument.getSize() != 0) || (fieldType.isSizeRequired()))) {
+            writer.write(" ");
+            writer.write(fieldType.getName());
+            if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments()
+                    && ((argument.size != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
-                if (argument.getSize() == 0) {
-                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
+                if (argument.size == 0) {
+                    writer.write(Integer.toString(fieldType.getDefaultSize()));
                 } else {
-                    writer.write(Integer.valueOf(argument.getSize()).toString());
+                    writer.write(Integer.toString(argument.size));
                 }
-                if (argument.getSubSize() != 0) {
+                if (argument.subSize != 0) {
                     writer.write(",");
-                    writer.write(Integer.valueOf(argument.getSubSize()).toString());
+                    writer.write(Integer.toString(argument.subSize));
                 } else if (fieldType.getDefaultSubSize() != 0) {
                     writer.write(",");
-                    writer.write(Integer.valueOf(fieldType.getDefaultSubSize()).toString());
+                    writer.write(Integer.toString(fieldType.getDefaultSubSize()));
                 }
                 writer.write(")");
             }
             if ((!platform.shouldPrintOutputTokenAtStart()) && !platform.shouldPrintOutputTokenBeforeType()) {
-                writer.write(" " + platform.getCreationOutputProcedureToken());
+                writer.write(" ");
+                writer.write(platform.getCreationOutputProcedureToken());
             }
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);

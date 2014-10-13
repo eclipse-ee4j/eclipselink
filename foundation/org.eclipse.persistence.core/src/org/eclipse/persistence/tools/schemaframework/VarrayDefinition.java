@@ -13,6 +13,7 @@
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.*;
+
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
@@ -35,25 +36,21 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL:
      * Append the type.
+     * @param writer   Target writer where to write type string.
+     * @param session  Current session context.
+     * @throws ValidationException When invalid or inconsistent data were found.
      */
-    public void appendTypeString(Writer writer, AbstractSession session) throws ValidationException {
+    public void appendTypeString(final Writer writer, final AbstractSession session)
+            throws ValidationException {
         try {
-            FieldTypeDefinition fieldType;
-            if (getType() != null) {
-                fieldType = session.getPlatform().getFieldTypeDefinition(getType());
-                if (fieldType == null) {
-                    throw ValidationException.javaTypeIsNotAValidDatabaseType(getType());
-                }
-            } else {
-                fieldType = new FieldTypeDefinition(getTypeName());
-            }
+            final FieldTypeDefinition fieldType = getFieldTypeDefinition(session, type, typeName);
             writer.write(fieldType.getName());
-            if ((fieldType.isSizeAllowed()) && ((getTypeSize() != 0) || (fieldType.isSizeRequired()))) {
+            if ((fieldType.isSizeAllowed()) && ((typeSize != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
-                if (getTypeSize() == 0) {
-                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
+                if (typeSize == 0) {
+                    writer.write(Integer.toString(fieldType.getDefaultSize()));
                 } else {
-                    writer.write(Integer.valueOf(getTypeSize()).toString());
+                    writer.write(Integer.toString(typeSize));
                 }
                 writer.write(")");
             }
@@ -64,20 +61,26 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
 
     /**
      * INTERNAL:
-     * Return the DDL to create the varray.
+     * Return the DDL to create the {@code VARRAY}.
+     * @param writer   Target writer.
+     * @param session  Current session context.
+     * @return Target writer with {@code CREATE TYPE ... AS VARRAY (...) OF ...}
+     *         already written to it.
+     * @throws ValidationException When invalid or inconsistent data were found.
      */
-    public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
+    public Writer buildCreationWriter(final AbstractSession session, final Writer writer)
+            throws ValidationException {
         try {
             writer.write("CREATE TYPE ");
             writer.write(getFullName());
             writer.write(" AS VARRAY(");
 
             //when defining a VARRAY type, a maximum size MUST be specified
-            if (getSize() < 1) {
+            if (size < 1) {
                 throw ValidationException.oracleVarrayMaximumSizeNotDefined(getFullName());
             }
 
-            writer.write(Integer.valueOf(getSize()).toString());
+            writer.write(Integer.toString(size));
             writer.write(") OF ");
             appendTypeString(writer, session);
         } catch (IOException ioException) {
@@ -92,7 +95,8 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
      */
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
-            writer.write("DROP TYPE " + getFullName());
+            writer.write("DROP TYPE ");
+            writer.write(getFullName());
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }

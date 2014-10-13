@@ -13,6 +13,7 @@
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.*;
+
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
@@ -34,25 +35,21 @@ public class NestedTableDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL:
      * Append the type to the statement
+     * @param writer  Target writer where to write type string.
+     * @param session Current session context.
+     * @throws ValidationException When invalid or inconsistent data were found.
      */
-    public void appendTypeString(Writer writer, AbstractSession session) throws ValidationException {
-        FieldTypeDefinition fieldType;
-        if (getType() != null) {
-            fieldType = session.getPlatform().getFieldTypeDefinition(getType());
-            if (fieldType == null) {
-                throw ValidationException.javaTypeIsNotAValidDatabaseType(getType());
-            }
-        } else {
-            fieldType = new FieldTypeDefinition(getTypeName());
-        }
+    public void appendTypeString(final Writer writer, final AbstractSession session)
+            throws ValidationException {
+        final FieldTypeDefinition fieldType = getFieldTypeDefinition(session, type, typeName);
         try {
             writer.write(fieldType.getName());
-            if ((fieldType.isSizeAllowed()) && ((getTypeSize() != 0) || (fieldType.isSizeRequired()))) {
+            if ((fieldType.isSizeAllowed()) && ((typeSize != 0) || (fieldType.isSizeRequired()))) {
                 writer.write("(");
-                if (getTypeSize() == 0) {
-                    writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
+                if (typeSize == 0) {
+                    writer.write(Integer.toString(fieldType.getDefaultSize()     ));
                 } else {
-                    writer.write(Integer.valueOf(getTypeSize()).toString());
+                    writer.write(Integer.toString(typeSize));
                 }
                 writer.write(")");
             }
