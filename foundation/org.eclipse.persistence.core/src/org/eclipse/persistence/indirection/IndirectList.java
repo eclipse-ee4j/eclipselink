@@ -1,19 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.indirection;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.beans.PropertyChangeListener;
+
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -38,10 +41,10 @@ import org.eclipse.persistence.descriptors.changetracking.*;
  * @author Big Country
  * @since TOPLink/Java 2.5
  */
-public class IndirectList extends Vector implements CollectionChangeTracker, IndirectCollection {
+public class IndirectList<E> extends Vector<E> implements CollectionChangeTracker, IndirectCollection {
 
     /** Reduce type casting. */
-    protected volatile Vector delegate;
+    protected volatile Vector<E> delegate;
 
     /** Delegate indirection behavior to a value holder. */
     protected ValueHolderInterface valueHolder;
@@ -135,7 +138,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#add(int, java.lang.Object)
      */
-    public void add(int index, Object element) {
+    public void add(int index, E element) {
         getDelegate().add(index, element);
         raiseAddChangeEvent(element, index);
     }
@@ -181,7 +184,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#add(java.lang.Object)
      */
-    public boolean add(Object element) {
+    public boolean add(E element) {
         if (!this.isRegistered) {
             return getDelegate().add(element);
         }
@@ -206,8 +209,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#addAll(int, java.util.Collection)
      */
-    public boolean addAll(int index, Collection c) {
-        Iterator objects = c.iterator();
+    public boolean addAll(int index, Collection<? extends E> c) {
+        Iterator<? extends E> objects = c.iterator();
         // Must trigger add events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
             while (objects.hasNext()) {
@@ -224,10 +227,10 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#addAll(java.util.Collection)
      */
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends E> c) {
         // Must trigger add events if tracked or uow.
         if (hasBeenRegistered() || hasTrackedPropertyChangeListener()) {
-            Iterator objects = c.iterator();
+            Iterator<? extends E> objects = c.iterator();
             while (objects.hasNext()) {
                 this.add(objects.next());
             }
@@ -240,7 +243,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#addElement(java.lang.Object)
      */
-    public void addElement(Object obj) {
+    public void addElement(E obj) {
         add(obj);
     }
 
@@ -371,7 +374,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#elementAt(int)
      */
-    public Object elementAt(int index) {
+    public E elementAt(int index) {
         return getDelegate().elementAt(index);
     }
 
@@ -399,14 +402,14 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#firstElement()
      */
-    public Object firstElement() {
+    public E firstElement() {
         return getDelegate().firstElement();
     }
 
     /**
      * @see java.util.Vector#get(int)
      */
-    public Object get(int index) {
+    public E get(int index) {
         return getDelegate().get(index);
     }
 
@@ -416,7 +419,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
      * If they have not, read them and set the delegate.
      * This method used to be synchronized, which caused deadlock.
      */
-    protected Vector getDelegate() {
+    protected Vector<E> getDelegate() {
         if (delegate == null) {
             synchronized(this){
                 if (delegate == null) {
@@ -486,7 +489,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#insertElementAt(java.lang.Object, int)
      */
-    public void insertElementAt(Object obj, int index) {
+    public void insertElementAt(E obj, int index) {
         this.getDelegate().insertElementAt(obj, index);
         this.raiseAddChangeEvent(obj, Integer.valueOf(index));
     }
@@ -517,7 +520,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#lastElement()
      */
-    public Object lastElement() {
+    public E lastElement() {
         return getDelegate().lastElement();
     }
 
@@ -599,8 +602,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#remove(int)
      */
-    public Object remove(int index) {
-        Object value = getDelegate().remove(index);        
+    public E remove(int index) {
+        E value = getDelegate().remove(index);
         this.raiseRemoveChangeEvent(value, Integer.valueOf(index));
         return value;
     }
@@ -703,8 +706,8 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#set(int, java.lang.Object)
      */
-    public Object set(int index, Object element) {
-        Object oldValue = getDelegate().set(index, element);
+    public E set(int index, E element) {
+        E oldValue = getDelegate().set(index, element);
         Integer bigIntIndex = Integer.valueOf(index);
         raiseRemoveChangeEvent(oldValue, bigIntIndex, true);
         raiseAddChangeEvent(element, bigIntIndex, true);
@@ -714,7 +717,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
     /**
      * @see java.util.Vector#setElementAt(java.lang.Object, int)
      */
-    public void setElementAt(Object obj, int index) {
+    public void setElementAt(E obj, int index) {
         set(index, obj);
     }
 
@@ -761,8 +764,31 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         return getDelegate().size();
     }
 
+    // TODO: Rewrite to work directly with Vector#sort(Comparator) when source level will be at least 1.8
     /**
-     * Return whether this collection should attempt do deal with adds and removes without retrieving the 
+     * Sort content of this instance according to the order induced by provided comparator.
+     * @param c The comparator to determine the order of the array. A {@code null} value
+     *          indicates that the elements' {@linkplain Comparable natural ordering}
+     *          should be used.
+     * @throws UnsupportedOperationException when running with JDK < 1.8.
+     * @throws ReflectiveOperationException when there was an issue with invoking sort.
+     * @since 2.6.0 with JDK 1.8
+     */
+    public void sort(Comparator<? super E> c) {
+        Vector<E> delegate = getDelegate();
+        Method sortM;
+        try {
+            sortM = delegate.getClass().getMethod("sort", Comparator.class);
+            sortM.invoke(delegate, c);
+        } catch (IllegalArgumentException | NoSuchMethodException e) {
+            throw new UnsupportedOperationException(e);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * Return whether this collection should attempt do deal with adds and removes without retrieving the
      * collection from the dB
      * @return
      */

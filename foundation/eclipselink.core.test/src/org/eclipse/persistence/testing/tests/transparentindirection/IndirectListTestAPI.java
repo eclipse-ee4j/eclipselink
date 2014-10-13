@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -13,7 +13,10 @@
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
 import java.util.*;
+
 import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.internal.helper.JavaSEPlatform;
+import org.eclipse.persistence.internal.helper.JavaVersion;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.queries.*;
 
@@ -22,6 +25,76 @@ import org.eclipse.persistence.queries.*;
  * @author: Big Country
  */
 public class IndirectListTestAPI extends ZTestCase {
+
+    /**
+     * Vector with sort method to verify sorting with JDK < 1.8.
+     * @param <E> Object type stored inside.
+     */
+    public static final class VectorWithSort<E> extends Vector<E> {
+
+        /**
+         * Creates an instance of Vector with sort method with provided initial
+         * elements.
+         * @param collection The collection whose elements are to be placed into
+         *                   this vector.
+         */
+        private VectorWithSort(final Collection<? extends E> collection) {
+            super(collection);
+        }
+
+        /**
+         * Creates an instance of Vector.
+         */
+        private VectorWithSort() {
+            super();
+        }
+
+        /**
+         * JDK 1.8 sort implemented in Vector to verify sorting on JDK < 1.8
+         * @param c Comparator to define sorting order.
+         */
+        public synchronized void sort(final Comparator<? super E> c) {
+            final int expectedModCount = modCount;
+            Arrays.sort((E[]) elementData, 0, elementCount, c);
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+            modCount++;
+        }
+    }
+
+    /**
+     * Indirect list with delegate {@see Vector} setter.
+     * @param <E> Object type stored inside.
+     */
+    private static final class IndirectListWrapper<E> extends IndirectList<E> {
+
+        /**
+         * Creates an instance of IndirectList with provided initial capacity.
+         * @param initialCapacity Internal initial capacity.
+         */
+        private IndirectListWrapper(final int initialCapacity) {
+            super(0);
+        }
+
+        /**
+         * Allow to set delegate object from outside.
+         * @param delegate Delegate object to be set.
+         */
+        private final void setDelegate(final Vector<E> delegate) {
+            this.delegate = delegate;
+        }
+    }
+
+    /**
+     * Do we run with at least Java SE 1.8?
+     * @return Value of {@code true} when we run with Java SE 1.8 or higher
+     *         or {@code false} otherwise.
+     */
+    private static final boolean isJava8() {
+        return JavaVersion.currentPlatform().atLeast(JavaSEPlatform.v1_8);
+    }
+
     Vector list;
     IndirectList testList;
 
@@ -335,4 +408,36 @@ public class IndirectListTestAPI extends ZTestCase {
 
         this.assertEquals(v1, v2);
     }
+
+    // TODO: Rewrite to work directly with Vector#sort(Comparator) when source level will be at least 1.8
+    public void testSort() {
+        final Vector<String> data = isJava8() ? new Vector<String>(list) : new VectorWithSort<String>(list);
+        final VectorWithSort<String> sortedData = new VectorWithSort<String>(list);
+        final IndirectListWrapper<String> list = new IndirectListWrapper<String>(data.size());
+        sortedData.sort(null);
+        list.setDelegate(data);
+        list.sort(null);
+        assertEquals(data.size(), sortedData.size());
+        for (int i = 0; i < sortedData.size(); i++) {
+            this.assertEquals(data.get(i), sortedData.get(i));
+        }
+    }
+
+    // TODO: Rewrite to work directly with Vector#sort(Comparator) when source level will be at least 1.8
+    public void testSortOnCommonVector() {
+        final Vector<String> data = new Vector<String>(list);
+        final IndirectListWrapper<String> list = new IndirectListWrapper<String>(data.size());
+        list.setDelegate(data);
+        try {
+            list.sort(null);
+            if (!isJava8()) {
+                fail("Sort shall throw an exception on JDK < 1.8.");
+            }
+        } catch (UnsupportedOperationException e) {
+            if (isJava8()) {
+                fail("Sort shall work since JDK 1.8.");
+            }
+        }
+    }
+
 }

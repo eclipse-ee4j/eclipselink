@@ -48,7 +48,8 @@ public class TestRunModel extends TestModel {
         }
         Vector tests = new Vector();
 
-        if (isLight) {        
+        if (isLight) {
+            tests.add("org.eclipse.persistence.testing.tests.helper.HelperTestModel");
             tests.add("org.eclipse.persistence.testing.tests.workbenchintegration.MappingWMIntegrationStoredProcedureTestModel");
             tests.add("org.eclipse.persistence.testing.tests.workbenchintegration.MappingWorkbenchIntegrationTestModel");
             tests.add("org.eclipse.persistence.testing.tests.mapping.MappingTestModel");
