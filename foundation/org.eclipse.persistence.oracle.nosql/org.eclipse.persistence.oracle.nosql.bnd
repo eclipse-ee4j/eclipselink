@@ -1,6 +1,6 @@
 Export-Package: org.eclipse.persistence*;version="${release.version}";-noimport:=true,
 Bundle-Name: EclipseLink Oracle NoSQL Extensions
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
 Bundle-Vendor: ${implementation.vendor}
 Fragment-Host: org.eclipse.persistence.nosql;bundle-version="${release.version}"

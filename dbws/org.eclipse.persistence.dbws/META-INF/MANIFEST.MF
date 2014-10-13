@@ -21,7 +21,7 @@ Export-Package: org.eclipse.persistence.dbws;version="2.6.0",
 Bundle-ClassPath: .
 Bundle-Name: EclipseLink DBWS
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.dbws
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.6.0",
  org.eclipse.persistence.asm;bundle-version="5.0.1",

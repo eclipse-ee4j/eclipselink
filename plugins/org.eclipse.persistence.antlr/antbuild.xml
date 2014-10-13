@@ -120,7 +120,7 @@
 
         <!-- remove stored classes for recompile -->
         <delete dir="${antlr.build.location}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
-        <property name="javac.version" value="1.6"/>
+        <property name="javac.version" value="1.7"/>
         <javac srcdir="${src.dir}"
                destdir="${antlr.classes.dir}"
                includes="org/eclipse/persistence/**/*.java"

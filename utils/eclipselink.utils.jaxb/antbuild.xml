@@ -36,9 +36,6 @@
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail unless="jaxbutil.is.local" message="Not running from '${ant.project.name}' directory"/>
-    <condition property="is.java.version.16">
-        <equals arg1="${ant.java.version}" arg2="1.6"/>
-    </condition>
 
     <dirname  property="jaxbutil.build.location" file="${ant.file.eclipselink.utils.jaxb}"/>
     <condition property="jaxbutil.2.common.plugins.dir" value="../../plugins" else="../plugins">

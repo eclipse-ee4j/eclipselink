@@ -605,9 +605,9 @@
             deprecation="${javac.deprecation}"
                failonerror="true">
             <include name="${MODEL_PATH}/**/*.java"/>
-            <!-- compilerarg value="-Xlint:unchecked" compiler="javac1.6"/ -->
-            <compilerarg value="-Aeclipselink.persistencexml=${PERSISTENCE_XML_PATH}" compiler="javac1.6"/>
-            <!-- compilerarg value="-Aeclipselink.canonicalmodel.prefix=_" compiler="javac1.6"/ -->
+            <!-- compilerarg value="-Xlint:unchecked" compiler="javac1.7"/ -->
+            <compilerarg value="-Aeclipselink.persistencexml=${PERSISTENCE_XML_PATH}" compiler="javac1.7"/>
+            <!-- compilerarg value="-Aeclipselink.canonicalmodel.prefix=_" compiler="javac1.7"/ -->
            <classpath refid="${COMPILE_PATH_REF}"/>
         </javac>
     </target>

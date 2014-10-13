@@ -44,12 +44,12 @@
     <available file="../${ant.project.name}" type="dir" property="dbws_test_oracle.is.local"/>
     <fail unless="dbws_test_oracle.is.local" message="Not running from '${ant.project.name}' directory"/>
 
-    <condition property="is.java.version.16">
-        <equals arg1="${ant.java.version}" arg2="1.6"/>
-    </condition>
     <!-- Sets the warning message appropriately -->
-    <condition property="jdk_message" value="Warning: Minimum of JDK6 is required for this component to build." else="java.version='${java.version}'">
-        <contains string="${java.version}" substring="1.5"/>
+    <condition property="jdk_message" value="Warning: Minimum of JDK7 is required for this component to build." else="java.version='${java.version}'">
+        <or>
+            <contains string="${java.version}" substring="1.5"/>
+            <contains string="${java.version}" substring="1.6"/>
+        </or>
     </condition>
     <echo message="${jdk_message}"/>
 

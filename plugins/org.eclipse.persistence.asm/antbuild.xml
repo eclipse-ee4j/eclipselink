@@ -113,7 +113,7 @@
     <target name="compile" depends="compile-init" description="Compile bundle code">
         <!-- remove stored classes for recompile -->
         <delete dir="${asm.build.location}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
-        <property name="javac.version" value="1.6"/>
+        <property name="javac.version" value="1.7"/>
         <javac srcdir="${src.dir}"
                destdir="${asm.classes.dir}"
                includes="org/eclipse/persistence/**/*.java"

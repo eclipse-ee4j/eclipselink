@@ -2,7 +2,7 @@ Export-Package: org.eclipse.persistence*;version="${hermes.version.string}";-noi
 Implementation-Version: ${hermes.version.string}
 Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink Hermes Parser
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.jpql
 Implementation-Vendor: ${implementation.vendor}
 Bundle-Vendor: ${implementation.vendor}

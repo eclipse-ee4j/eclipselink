@@ -128,12 +128,12 @@
     <echo message="Ant version detected: '${ant.version}'"/>
     <fail message="An non-compatible version of Ant was detected! Build won't run properly unless running at least 1.7.x of Ant!." unless="compat.ant"/>
 
-    <!-- Detect compatible version of JDK (>= 1.6). -->
+    <!-- Detect compatible version of JDK (>= 1.7). -->
     <condition property="compat.jdk" value="true">
-        <matches string="${java.version}" pattern="1.(?:[6-9]|[1-9]\d)(?:.\d+)*.*"/>
+        <matches string="${java.version}" pattern="1.(?:[7-9]|[1-9]\d)(?:.\d+)*.*"/>
     </condition>
     <echo message="JDK version detected: '${java.version}'"/>
-    <fail message="An non-compatible version of JDK was detected! Build won't run properly unless running at least 1.6 of JDK!." unless="compat.jdk"/>
+    <fail message="An non-compatible version of JDK was detected! Build won't run properly unless running at least 1.7 of JDK!." unless="compat.jdk"/>
 
     <!-- JDBC driver settings info -->
     <condition property="msg.jdbc.driver.jar.configured" value="JDBC driver JAR: '${jdbc.driver.jar}'" else="JDBC driver JAR: jdbc.driver.jar property missing">
@@ -666,7 +666,6 @@
     </target>
 
     <target name="build-dbws-utils-test" if="compat.jdk">
-        <!-- Compiling dbws tests requires JDK 1.6 -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="build"/>
     </target>
 

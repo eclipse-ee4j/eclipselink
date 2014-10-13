@@ -2,7 +2,7 @@ Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=
 Implementation-Version: ${version.string}
 Specification-Vendor: ${specification.vendor}
 Bundle-Name: EclipseLink JPA
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa
 Require-Bundle: org.eclipse.persistence.core;bundle-version="${release.version}";visibility:=reexport,\
  org.eclipse.persistence.asm;bundle-version="${release.version}";resolution:=optional
