@@ -31,7 +31,7 @@ public class PhoneNumber implements Serializable {
     @Column(name = "EMP_ID", updatable = false, insertable = false)
     private int id;
     @Id
-    @Column(updatable = false)
+    @Column(name = "PHONE_TYPE", updatable = false)
     private String _type;
     @Basic
     @Column(name = "AREA_CODE")
