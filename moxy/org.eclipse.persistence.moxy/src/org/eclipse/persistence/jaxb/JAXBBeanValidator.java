@@ -27,6 +27,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 import java.security.AccessController;
+import java.security.CodeSource;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
@@ -359,35 +360,34 @@ class JAXBBeanValidator {
     }
 
     /**
-     * Should be called after successful assignment of validator.
-     * Calls context and asks it to print validation impl jar name.
+     * Logs the name of underlying validation impl jar used. Only logs once per context to avoid log cluttering.
+     * To be called after successful assignment of validator.
      */
     private void printValidatorInfo() {
-        String validationImplJar;
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            validationImplJar = AccessController.doPrivileged(new PrivilegedAction<String>() {
-                @Override
-                public String run() {
-                    return validator.getClass().getProtectionDomain().getCodeSource().toString();
-                }
-            });
-        } else {
-            validationImplJar = validator.getClass().getProtectionDomain().getCodeSource().toString();
-        }
-        printValidatorFirstTime(validationImplJar);
-    }
-
-
-    /**
-     * Logs the name of underlying validation impl jar used. Only logs once per context to avoid log cluttering.
-     *
-     * @param validationImplJar name of validation impl jar
-     */
-    private void printValidatorFirstTime(/* @NotNull */ String validationImplJar) {
         if (!context.getHasLoggedValidatorInfo().getAndSet(true)) {
+            CodeSource validationImplJar = getValidatorCodeSource();
             String msg = "EclipseLink is using " + validationImplJar + " as BeanValidation implementation.";
             AbstractSession abstractSession = (AbstractSession) context.getXMLContext().getSession();
             abstractSession.logMessage(CommandProcessor.LOG_INFO, msg);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Retrieves code source of validator.
+     *
+     * @return Validator code source. May be null.
+     */
+    private CodeSource getValidatorCodeSource() {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedAction<CodeSource>() {
+                @Override
+                public CodeSource run() {
+                    return validator.getClass().getProtectionDomain().getCodeSource();
+                }
+            });
+        } else {
+            return validator.getClass().getProtectionDomain().getCodeSource();
         }
     }
 
