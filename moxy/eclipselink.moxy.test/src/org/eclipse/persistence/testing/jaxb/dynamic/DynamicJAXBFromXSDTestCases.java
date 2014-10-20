@@ -65,7 +65,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         return "Dynamic JAXB: XSD: " + super.getName();
     }
 
-    // Ec;ipseLink requires JDK >= 1.7
+    // EclipseLink requires JDK >= 1.7
     public void testEclipseLinkSchema() throws Exception {
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(ECLIPSELINK_SCHEMA);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.helper.JavaSEPlatform;
  */
 public class Version {
     // The current copyright info for EclipseLink.
-    private static final String CopyrightString = "Copyright (c) 1998, 2013 Oracle.  All rights reserved.";
+    private static final String CopyrightString = "Copyright (c) 1998, 2014 Oracle.  All rights reserved.";
 
     // The current version of EclipseLink.
     // This will be used by all product components and included in exceptions.
@@ -120,16 +120,22 @@ public class Version {
      * INTERNAL:
      * Return the JDK version we are using.
      * @deprecated Use {@see JavaSEPlatform.current} instead.
-     * Will be removed in 2.7.
+     *             Will be removed in 2.7.
      */
     public static int getJDKVersion() {
-        switch(JavaSEPlatform.current) {
-            case v1_7: JDK_VERSION = JDK_1_7;
-            break;
-            case v1_8: JDK_VERSION = JDK_1_8;
-            break;
-            case v1_9: JDK_VERSION = JDK_1_9;
-            break;
+        switch(JavaSEPlatform.CURRENT) {
+            case v1_7:
+                JDK_VERSION = JDK_1_7;
+                break;
+            case v1_8:
+                JDK_VERSION = JDK_1_8;
+                break;
+            case v1_9:
+                JDK_VERSION = JDK_1_9;
+                break;
+            default:
+                throw new IllegalStateException("Running on unsupported Java SE: "
+                        + JavaSEPlatform.CURRENT.toString());
         }
         return JDK_VERSION;
     }
@@ -156,32 +162,63 @@ public class Version {
                 "Java SE 1.6 is not supported by current EclipseLink.");
     }
 
-    // There should be no references in current EclipseLink.
+    // Public API wrapper, use JavaSEPlatform.is(JavaSEPlatform.v1_5)
+    // internally.
     /**
      * Check whether we are running on Java SE 1.5.
      * This will always return {@code false} because Java SE 1.5 is not
      * supported by current EclipseLink.
      * @return Value of {@code true} when we do and value of {@code false}
      *         when we do not run on Java SE 1.5.
-     * @deprecated Use {@code JavaSEPlatform.current.equals(JavaSEPlatform.v1_5)}
-     *             instead. Will be removed in 2.7.
      */
     public static boolean isJDK15() {
-        return JavaSEPlatform.current.equals(JavaSEPlatform.v1_5);
+        return JavaSEPlatform.is(JavaSEPlatform.v1_5);
     }
 
-    // There should be no references in current EclipseLink.
+    // Public API wrapper, use JavaSEPlatform.is(JavaSEPlatform.v1_6)
+    // internally.
     /**
      * Check whether we are running on Java SE 1.6.
      * This will always return {@code false} because Java SE 1.6 is not
      * supported by current EclipseLink.
      * @return Value of {@code true} when we do and value of {@code false}
      *         when we do not run on Java SE 1.6.
-     * @deprecated Use {@code JavaSEPlatform.current.equals(JavaSEPlatform.v1_6)}
-     *             instead. Will be removed in 2.7.
      */
     public static boolean isJDK16() {
-        return JavaSEPlatform.current.equals(JavaSEPlatform.v1_6);
+        return JavaSEPlatform.is(JavaSEPlatform.v1_6);
+    }
+
+    // Public API wrapper, use JavaSEPlatform.is(JavaSEPlatform.v1_7)
+    // internally.
+    /**
+     * Check whether we are running on Java SE 1.7.
+     * @return Value of {@code true} when we do and value of {@code false}
+     *         when we do not run on Java SE 1.7.
+     */
+    public static boolean isJDK17() {
+        return JavaSEPlatform.is(JavaSEPlatform.v1_7);
+    }
+
+    // Public API wrapper, use JavaSEPlatform.is(JavaSEPlatform.v1_8)
+    // internally.
+    /**
+     * Check whether we are running on Java SE 1.8.
+     * @return Value of {@code true} when we do and value of {@code false}
+     *         when we do not run on Java SE 1.8.
+     */
+    public static boolean isJDK18() {
+        return JavaSEPlatform.is(JavaSEPlatform.v1_8);
+    }
+
+    // Public API wrapper, use JavaSEPlatform.is(JavaSEPlatform.v1_9)
+    // internally.
+    /**
+     * Check whether we are running on Java SE 1.9.
+     * @return Value of {@code true} when we do and value of {@code false}
+     *         when we do not run on Java SE 1.9.
+     */
+    public static boolean isJDK19() {
+        return JavaSEPlatform.is(JavaSEPlatform.v1_9);
     }
 
     public static void printVersion ( ) {

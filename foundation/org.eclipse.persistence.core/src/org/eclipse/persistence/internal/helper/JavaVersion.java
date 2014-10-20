@@ -194,11 +194,7 @@ public final class JavaVersion {
      * @return {@link JavaSEPlatform} matching this Java SE version.
      */
     public final JavaSEPlatform toPlatform() {
-        final StringBuilder sb = new StringBuilder(6);
-        sb.append(major);
-        sb.append('.');
-        sb.append(minor);
-        return JavaSEPlatform.toValue(sb.toString());
+        return JavaSEPlatform.toValue(major, minor);
     }
 
 }

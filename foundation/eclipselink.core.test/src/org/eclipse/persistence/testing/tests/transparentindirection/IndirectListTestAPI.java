@@ -91,7 +91,7 @@ public class IndirectListTestAPI extends ZTestCase {
      *         or {@code false} otherwise.
      */
     private static final boolean atLeastJava8() {
-        return JavaSEPlatform.current.atLeast(JavaSEPlatform.v1_8);
+        return JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8);
     }
 
     Vector list;

@@ -50,22 +50,34 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     // Initialize backward String conversion Map.
     static {
         for (JavaSEPlatform platform : JavaSEPlatform.values()) {
-            stringValuesMap.put(platform.toString().toUpperCase(), platform);
+            stringValuesMap.put(platform.versionString(), platform);
         }
     }
 
     /** GlassFish Java SE platform enumeration length. */
-    public static final int length = JavaSEPlatform.values().length;
+    public static final int LENGTH = JavaSEPlatform.values().length;
 
     /** Current Java SE platform. */
-    public static final JavaSEPlatform current
+    public static final JavaSEPlatform CURRENT
             = JavaVersion.vmVersion().toPlatform();
+
+    /** Lowest supported Java SE platform. Currently it's Java SE 1.7. */
+    public static final JavaSEPlatform MIN_SUPPORTED = v1_7;
+
+    /**
+     * Check whether current Java SE is exactly matching provided platform.
+     * @param platform Java SE platform to compare with.
+     */
+    public static boolean is(JavaSEPlatform platform) {
+        return CURRENT.equals(platform);
+    }
 
     /**
      * Returns a <code>JavaSEPlatform</code> with a value represented by the
      * specified <code>String</code>. The <code>JavaSEPlatform</code> returned
      * represents existing value only if specified <code>String</code>
-     * matches any <code>String</code> returned by <code>toString</code> method.
+     * matches any <code>String</code> returned by <code>versionString()</code>
+     * method.
      * Otherwise <code>null</code> value is returned.
      * @param platformName Value containing <code>JavaSEPlatform</code>
      *                     <code>toString</code> representation.
@@ -75,10 +87,54 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      */
     public static JavaSEPlatform toValue(final String platformName) {
         if (platformName != null) {
-            return (stringValuesMap.get(platformName.toUpperCase()));
+            return (stringValuesMap.get(platformName));
         } else {
             return null;
         }
+    }
+
+    // There are not too many versions yet so direct mapping in code is simple.
+    /**
+     * Returns a <code>JavaSEPlatform</code> matching provided
+     * <code>major</code> and <code>minor</code> version numbers.
+     * @param major Major version number.
+     * @param minor Minor version number.
+     * @return <code>JavaSEPlatform</code> value matching provided
+     *         <code>major</code> and <code>minor</code> version numbers
+     *         or <code>null</code> when such a value does not exist.
+     */
+    public static JavaSEPlatform toValue(final int major, final int minor) {
+        if (major == 1) {
+            switch (minor) {
+                case 1: return v1_1;
+                case 2: return v1_2;
+                case 3: return v1_3;
+                case 4: return v1_4;
+                case 5: return v1_5;
+                case 6: return v1_6;
+                case 7: return v1_7;
+                case 8: return v1_8;
+                case 9: return v1_9;
+                default: return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Generate {@link String} containing minor and major version numbers
+     * in {@code <major> '.' <minor>} format.
+     * @param major Major version number.
+     * @param minor Minor version number.
+     * @return Generated {@link String}
+     */
+    public static final String versionString(final int major, final int minor) {
+        StringBuilder sb = new StringBuilder(4);
+        sb.append(Integer.toString(major));
+        sb.append(JavaVersion.SEPARATOR);
+        sb.append(Integer.toString(minor));
+        return sb.toString();
     }
 
     /**
@@ -114,9 +170,9 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     }
 
     /**
-     * Check if current platform is equal or greater to specified platform.
+     * Check if this platform is equal or greater to specified platform.
      * @param platform Platform to compare with.
-     * @return Value of <code>true</code> if current platform is equal
+     * @return Value of <code>true</code> if this platform is equal
      *         or greater to specified platform or <code>false</code> otherwise.
      */
     public boolean atLeast(final JavaSEPlatform platform) {
@@ -124,17 +180,32 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     }
 
     /**
-     * Convert Java SE platform version value to <code>String</code>.
-     * <p/>
+     * Check whether this platform is supported platform.
+     * @return Value of <code>true</code> when this platform is supported
+     *         platform or <code>false</code> otherwise.
+     */
+    public boolean isSupported() {
+        return compareTo(MIN_SUPPORTED) >= 0;
+    }
+
+    /**
+     * Generate {@link String} containing minor and major version numbers
+     * in {@code <major> '.' <minor>} format.
+     * @return Generated {@link String}
+     */
+    public String versionString() {
+        return versionString(major, minor);
+    }
+
+    // Currently this is identical with versionString() method.
+    /**
+     * Convert Java SE platform version value to human readable
+     * <code>String</code>.
      * @return A <code>String</code> representation of the value of this object.
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(4);
-        sb.append(Integer.toString(major));
-        sb.append(JavaVersion.SEPARATOR);
-        sb.append(Integer.toString(minor));
-        return sb.toString();
+        return versionString(major, minor);
     }
 
 }

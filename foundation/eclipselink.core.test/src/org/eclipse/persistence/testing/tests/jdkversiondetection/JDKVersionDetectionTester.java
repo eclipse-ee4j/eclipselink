@@ -27,6 +27,6 @@ public class JDKVersionDetectionTester
 	{
 		System.out.println(Version.getProduct() + " " + Version.getVersion());
 		System.out.println("Build " + Version.getVersionString() + " on " + Version.getBuildDate());
-		System.out.println("Java SE platform - " + JavaSEPlatform.current.toString());
+		System.out.println("Java SE platform - " + JavaSEPlatform.CURRENT.toString());
 	}
 }

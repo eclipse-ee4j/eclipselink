@@ -37,7 +37,7 @@ public class CompileUtil {
 	public int compile(String classpath, Object[] javaFiles) {
         final String[] args = new String[javaFiles.length + 7];
         final String javac = getJavaC();
-        final String javaVersion = JavaSEPlatform.current.toString();
+        final String javaVersion = JavaSEPlatform.CURRENT.toString();
 
         args[0] = javac;
         args[1] = "-cp";
