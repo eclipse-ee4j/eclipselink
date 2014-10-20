@@ -14,8 +14,6 @@ package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
 import com.sun.tools.xjc.Driver;
 
-import junit.framework.Assert;
-
 import org.eclipse.persistence.jaxb.compiler.Generator;
 
 import javax.tools.Diagnostic;

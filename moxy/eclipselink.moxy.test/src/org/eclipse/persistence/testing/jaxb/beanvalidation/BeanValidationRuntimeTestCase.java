@@ -45,13 +45,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Tests Bean Validation for MOXy Runtime:
- *  - properties on JAXBContext, marshaller and unmarshaller, and their precedence,
- *  - validation on valid objects before marshalling and after unmarshalling,
- *  - validation on invalid objects before marshalling and after unmarshalling,
- *  - validation with Target groups,
- *  - retrieval of correct error messages when constraint violations happen.
- *  Uses both XML and JSON marshalling and unmarshalling.
+ *  Test suite for tests that can be run during runtime, i.e.
+ *  all that don't relate to XJC or SchemaGen.
  *
  * @author Marcel Valovy - marcel.valovy@oracle.com
  */
@@ -108,12 +103,25 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
             add(JAVAX_NOT_NULL_MESSAGE);   // department
         }};
 
+    /**
+     * Tests the Bean Validation for MOXy Runtime, with Target groups.
+     * Tested features:
+     *  - setting properties (mode, preferred validation factory) through JAXBContext,
+     *      marshaller and unmarshaller, and overriding them,
+     *  - validation on valid objects before marshalling and after unmarshalling,
+     *  - validation on invalid objects before marshalling and after unmarshalling,
+     *  - validation with Target groups,
+     *  - retrieval of correct error messages when constraint violations happen.
+     *  Everything is tested with both XML and JSON marshalling and unmarshalling.
+     */
     public void testBeanValidation() throws Exception{
         validEmployee(FILE_VALID);
         invalidEmployee(FILE_INVALID);
         switchToJson();
         validEmployee(FILE_JSON_VALID);
         invalidEmployee(FILE_JSON_INVALID);
+
+        clearResources();
     }
 
     private void validEmployee(File file) throws Exception {
@@ -212,6 +220,13 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
         unmarshallerValidOff.setProperty(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
     }
 
+    private void clearResources() {
+        assertTrue(FILE_VALID.delete());
+        assertTrue(FILE_INVALID.delete());
+        assertTrue(FILE_JSON_VALID.delete());
+        assertTrue(FILE_JSON_INVALID.delete());
+    }
+
     @Before
     public void setUp() throws Exception {
         preferredValidatorFactory = Validation.buildDefaultValidatorFactory();
@@ -236,10 +251,6 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
 
     @After
     public void tearDown() throws Exception {
-        assertTrue(FILE_VALID.delete());
-        assertTrue(FILE_INVALID.delete());
-        assertTrue(FILE_JSON_VALID.delete());
-        assertTrue(FILE_JSON_INVALID.delete());
         marshallerValidOn = marshallerValidOff = null;
         unmarshallerValidOn = unmarshallerValidOff = null;
         employeeValid = employeeInvalid = null;

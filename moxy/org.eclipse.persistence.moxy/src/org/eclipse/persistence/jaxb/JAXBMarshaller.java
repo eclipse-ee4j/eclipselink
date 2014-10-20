@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -20,6 +20,7 @@ import java.io.Writer;
 import java.io.File;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -45,7 +46,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.attachment.AttachmentMarshallerAdapter;
+import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
@@ -101,9 +104,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private ValidatorFactory preferredValidatorFactory;
     private Class<?>[] beanValidationGroups = JAXBBeanValidator.DEFAULT_GROUP_ARRAY;
 
+    private final XMLMarshaller xmlMarshaller;
+    private final JAXBContext jaxbContext;
     private ValidationEventHandler validationEventHandler;
-    private XMLMarshaller xmlMarshaller;
-    private JAXBContext jaxbContext;
 
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
 
@@ -127,18 +130,16 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private static final String OBJECT_IDENTITY_CYCLE_DETECTION = "com.sun.xml.bind.objectIdentitityCycleDetection";
 
     /**
-     * This constructor initializes various settings on the XML marshaller, and
-     * stores the provided JAXBIntrospector instance for usage in marshal()
-     * calls.
-     * 
-     * @param newXMLMarshaller
-     * @param newIntrospector
+     * This constructor initializes various settings on the XML marshaller.
+     *
+     * @param newXMLMarshaller xml marshaller
+     * @param jaxbContext jaxb context
      */
-    public JAXBMarshaller(XMLMarshaller newXMLMarshaller, JAXBIntrospector newIntrospector) {
-        super();
+    public JAXBMarshaller(XMLMarshaller newXMLMarshaller, JAXBContext jaxbContext) {
+        this.jaxbContext = jaxbContext;
         validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
         beanValidationMode = BeanValidationMode.AUTO;
-        beanValidator = JAXBBeanValidator.getMarshallingBeanValidator();
+        beanValidator = JAXBBeanValidator.getMarshallingBeanValidator(jaxbContext);
         xmlMarshaller = newXMLMarshaller;
         xmlMarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
         xmlMarshaller.setEncoding("UTF-8");
@@ -747,7 +748,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new MarshalException(e);
         }
     }
-    
+
     public void marshal(Object object, MarshalRecord record, TypeMappingInfo type) throws JAXBException {
         if (jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
             marshal(object, record);
@@ -963,14 +964,16 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return jaxbContext;
     }
 
-    public void setJaxbContext(JAXBContext jaxbContext) {
-        this.jaxbContext = jaxbContext;
-    }
-
     public XMLMarshaller getXMLMarshaller() {
         return this.xmlMarshaller;
     }
 
+    /**
+     * Returns constraint violations stored in the underlying
+     * {@link org.eclipse.persistence.jaxb.JAXBBeanValidator} instance.
+     *
+     * @return set of constraint violations from last unmarshal
+     */
     public Set<? extends ConstraintViolation<?>> getConstraintViolations() {
         return beanValidator.getConstraintViolations();
     }

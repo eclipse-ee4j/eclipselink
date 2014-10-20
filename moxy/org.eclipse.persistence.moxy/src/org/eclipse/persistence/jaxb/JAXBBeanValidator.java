@@ -13,7 +13,10 @@
 package org.eclipse.persistence.jaxb;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -23,6 +26,8 @@ import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -31,6 +36,8 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * INTERNAL:
+ *
  * JAXB Bean Validator. Serves three purposes:
  *  1. Determines if the validation callback should take place on the (un)marshal call.
  *  2. Processes the validation.
@@ -61,6 +68,11 @@ class JAXBBeanValidator {
      * {@link org.eclipse.persistence.jaxb.JAXBUnmarshaller}, otherwise stores empty String.
      */
     private final String prefix;
+
+    /**
+     * Reference to {@link org.eclipse.persistence.jaxb.JAXBContext}. Allows for callbacks.
+     */
+    private final JAXBContext context;
 
     /**
      * Stores the {@link javax.validation.Validator} implementation. Once found, the reference is preserved.
@@ -109,8 +121,9 @@ class JAXBBeanValidator {
     /**
      * Private constructor. Only to be called by factory methods.
      */
-    private JAXBBeanValidator(String prefix) {
+    private JAXBBeanValidator(String prefix, JAXBContext context) {
         this.prefix = prefix;
+        this.context = context;
     }
 
     /**
@@ -122,8 +135,8 @@ class JAXBBeanValidator {
      * @return
      *          a new instance of {@link JAXBBeanValidator}.
      */
-    static JAXBBeanValidator getMarshallingBeanValidator(){
-        return new JAXBBeanValidator("");
+    static JAXBBeanValidator getMarshallingBeanValidator(JAXBContext context){
+        return new JAXBBeanValidator("", context);
     }
 
     /**
@@ -135,8 +148,8 @@ class JAXBBeanValidator {
      * @return
      *          a new instance of {@link JAXBBeanValidator}.
      */
-    static JAXBBeanValidator getUnmarshallingBeanValidator(){
-        return new JAXBBeanValidator(PREFIX_UNMARSHALLING);
+    static JAXBBeanValidator getUnmarshallingBeanValidator(JAXBContext context){
+        return new JAXBBeanValidator(PREFIX_UNMARSHALLING, context);
     }
 
     /**
@@ -257,6 +270,7 @@ class JAXBBeanValidator {
             try {
                 ValidatorFactory factory = getValidatorFactory();
                 validator = factory.getValidator();
+                printValidatorInfo();
             } catch (ValidationException ve) {
                 if (beanValidationMode == BeanValidationMode.CALLBACK){
                     /* The following line ensures that changeInternalState() will be the
@@ -265,7 +279,7 @@ class JAXBBeanValidator {
                     beanValidationMode = BeanValidationMode.AUTO;
                     throw BeanValidationException.providerNotFound(prefix, ve);
                 } else { // mode AUTO
-                    stopSearchingForValidator = true; // will not try to initialize validator on next tries.
+                    stopSearchingForValidator = true; // Will not try to initialize validator on next tries.
                 }
             }
         }
@@ -328,10 +342,11 @@ class JAXBBeanValidator {
         };
         args[0] = prefix;
         Object bean = cv.getRootBean();
-        // NOTE: Don't use bean.toString(), it could leak secure information.
-        // Use identityHashCode, it:
-        //      1) prevents NPE which could be caused by a poorly implemented hashCode
-        //      2) serves as a better mean of identification of the bean.
+        // NOTE:
+        // 1. Don't use bean.toString(), it could leak secure information.
+        // 2. And use identityHashCode, for these reasons:
+        //      - prevents NPE which could be caused by a poorly implemented hashCode
+        //      - serves as a better mean of identification of the bean.
         args[1] = bean.getClass().toString().substring("class ".length())
                 + "@" + Integer.toHexString(System.identityHashCode(bean));
         args[2] = violatedConstraints;
@@ -343,6 +358,38 @@ class JAXBBeanValidator {
         return args;
     }
 
+    /**
+     * Should be called after successful assignment of validator.
+     * Calls context and asks it to print validation impl jar name.
+     */
+    private void printValidatorInfo() {
+        String validationImplJar;
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            validationImplJar = AccessController.doPrivileged(new PrivilegedAction<String>() {
+                @Override
+                public String run() {
+                    return validator.getClass().getProtectionDomain().getCodeSource().toString();
+                }
+            });
+        } else {
+            validationImplJar = validator.getClass().getProtectionDomain().getCodeSource().toString();
+        }
+        printValidatorFirstTime(validationImplJar);
+    }
+
+
+    /**
+     * Logs the name of underlying validation impl jar used. Only logs once per context to avoid log cluttering.
+     *
+     * @param validationImplJar name of validation impl jar
+     */
+    private void printValidatorFirstTime(/* @NotNull */ String validationImplJar) {
+        if (!context.getHasLoggedValidatorInfo().getAndSet(true)) {
+            String msg = "EclipseLink is using " + validationImplJar + " as BeanValidation implementation.";
+            AbstractSession abstractSession = (AbstractSession) context.getXMLContext().getSession();
+            abstractSession.logMessage(CommandProcessor.LOG_INFO, msg);
+        }
+    }
 
     /**
      * INTERNAL:
@@ -377,5 +424,4 @@ class JAXBBeanValidator {
             return "Violated constraint on property " + propertyPath + ": \"" + violationDescription + "\".";
         }
     }
-
 }

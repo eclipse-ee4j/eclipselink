@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
@@ -160,9 +161,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private static final String RI_XML_ACCESSOR_FACTORY_SUPPORT = "com.sun.xml.bind.XmlAccessorFactory";
 
     /**
-      * For JAXB 2 there is no explicitly defined default validation handler 
-      * and the default event handling only terminates the  operation after 
-      * encountering a fatal error. 
+      * For JAXB 2 there is no explicitly defined default validation handler
+      * and the default event handling only terminates the  operation after
+      * encountering a fatal error.
       */
     protected static final ValidationEventHandler DEFAULT_VALIDATION_EVENT_HANDER = new ValidationEventHandler() {
         public boolean handleEvent(ValidationEvent event) {
@@ -170,12 +171,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
     };
 
+    private final AtomicBoolean hasLoggedValidatorInfo = new AtomicBoolean();
     protected JAXBContextInput contextInput;
+
     protected volatile JAXBContextState contextState;
-
     private XMLInputFactory xmlInputFactory;
-    private boolean initializedXMLInputFactory = false;
 
+    private boolean initializedXMLInputFactory = false;
     private JAXBMarshaller jsonSchemaMarshaller;
 
     protected JAXBContext() {
@@ -222,6 +224,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
         }
         return xmlInputFactory;
+    }
+
+    AtomicBoolean getHasLoggedValidatorInfo() {
+        return hasLoggedValidatorInfo;
     }
 
     /**
@@ -1522,8 +1528,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         public JAXBMarshaller createMarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
             // create a JAXBIntrospector and set it on the marshaller
-            JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), new JAXBIntrospector(xmlContext));
-            marshaller.setJaxbContext(jaxbContext);
+            JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), jaxbContext);
             if (generator != null && generator.hasMarshalCallbacks()) {
                 // initialize each callback in the map
                 ClassLoader classLoader = getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager().getLoader();
@@ -1552,7 +1557,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         public JAXBUnmarshaller createUnmarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
 
-            JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES));
+            JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES), jaxbContext);
             if (generator != null && generator.hasUnmarshalCallbacks()) {
                 // initialize each callback in the map
                 ClassLoader classLoader = getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager().getLoader();
@@ -1562,7 +1567,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 }
                 unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());
             }
-            unmarshaller.setJaxbContext(jaxbContext);
             if (properties != null) {
                 setPropertyOnUnmarshaller(JAXBContextProperties.MEDIA_TYPE, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, unmarshaller);
@@ -1591,8 +1595,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 			marshaller = context.getXMLContext().createMarshaller();
 			unmarshaller = context.getXMLContext().createUnmarshaller();
 		}
-        	
-        	return new JAXBBinder(context, marshaller, unmarshaller);
+
+		return new JAXBBinder(context, marshaller, unmarshaller);
         }
 
         private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException {

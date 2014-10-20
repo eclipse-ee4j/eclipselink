@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -106,9 +107,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private ValidatorFactory preferredValidatorFactory;
     private Class<?>[] beanValidationGroups = JAXBBeanValidator.DEFAULT_GROUP_ARRAY;
 
+    private final XMLUnmarshaller xmlUnmarshaller;
+    private final JAXBContext jaxbContext;
     private ValidationEventHandler validationEventHandler;
-    private XMLUnmarshaller xmlUnmarshaller;
-    private JAXBContext jaxbContext;
 
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
@@ -116,11 +117,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private static final String SUN_ID_RESOLVER = "com.sun.xml.bind.IDResolver";
     private static final String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
 
-    public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
-        super();
+    public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller, JAXBContext jaxbContext) {
+        this.jaxbContext = jaxbContext;
         validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
         beanValidationMode = BeanValidationMode.AUTO;
-        beanValidator = JAXBBeanValidator.getUnmarshallingBeanValidator();
+        beanValidator = JAXBBeanValidator.getUnmarshallingBeanValidator(this.jaxbContext);
         xmlUnmarshaller = newXMLUnmarshaller;
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
@@ -1013,10 +1014,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
         return jaxbContext;
     }
 
-    public void setJaxbContext(JAXBContext jaxbContext) {
-        this.jaxbContext = jaxbContext;
-    }
-
     private Class getClassToUnmarshalTo(Class originalClass) {
         Class classToUnmarshalTo = originalClass;
         if(jaxbContext.getArrayClassesToGeneratedClasses() != null && jaxbContext.getArrayClassesToGeneratedClasses().size() >0) {
@@ -1073,6 +1070,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
         getXMLUnmarshaller().setIDResolver(idResolver);
     }
 
+    /**
+     * Returns constraint violations stored in the underlying
+     * {@link org.eclipse.persistence.jaxb.JAXBBeanValidator} instance.
+     *
+     * @return set of constraint violations from last unmarshal
+     */
     public Set<? extends ConstraintViolation<?>> getConstraintViolations() {
         return beanValidator.getConstraintViolations();
     }
