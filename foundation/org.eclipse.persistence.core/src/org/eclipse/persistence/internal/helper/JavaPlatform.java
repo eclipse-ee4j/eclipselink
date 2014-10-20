@@ -39,7 +39,7 @@ public class JavaPlatform {
      */
     protected static JDKPlatform getPlatform() {
         if (platform == null) {
-            if (Version.isJDK16()) {
+            if (JavaSEPlatform.current.equals(JavaSEPlatform.v1_6)) {
                 try {
                     Class platformClass = null;
                     // use class.forName() to avoid loading the JDK 1.6 class unless it is needed.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -42,6 +42,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;// 78aclt
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.helper.JavaVersion;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -950,7 +951,7 @@ public class ValidationException extends EclipseLinkException {
     }
 
     public static ValidationException featureIsNotAvailableInRunningJDKVersion(String feature) {
-        Object[] args = { feature, System.getProperty("java.version") };
+        Object[] args = { feature, JavaVersion.vmVersionString() };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FEATURE_NOT_SUPPORTED_IN_JDK_VERSION, args));
         validationException.setErrorCode(FEATURE_NOT_SUPPORTED_IN_JDK_VERSION);
         return validationException;

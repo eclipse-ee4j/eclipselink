@@ -15,8 +15,11 @@
  ******************************************************************************/
 package org.eclipse.persistence;
 
+import org.eclipse.persistence.internal.helper.JavaSEPlatform;
+
 /**
- * This class stores variables for the version and build numbers that are used in printouts and exceptions.
+ * This class stores variables for the version and build numbers that are used
+ * in printouts and exceptions.
  *
  * @author Eric Gwin
  * @since 1.0,
@@ -41,17 +44,40 @@ public class Version {
     // Typically SNAPSHOT, Milestone name (M1,M2,etc), or RELEASE
     private static final String buildType = "@BUILD_TYPE@";
  
-    /** Keep track of JDK version in order to make some decisions about data structures. **/
+    /** Version numbers separator. */
+    private static final char SEPARATOR = '.';
+
+    // This is replaced by JavaSEPlatform. It's here just because of backward compatibility.
+    /**
+     * Keep track of JDK version in order to make some decisions about data structures.
+     * @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7.
+     */
     public static final int JDK_VERSION_NOT_SET = 0;
+    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
     public static final int JDK_1_5 = 1;
+    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
     public static final int JDK_1_6 = 2;
+    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
+    public static final int JDK_1_7 = 3;
+    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
+    public static final int JDK_1_8 = 4;
+    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
+    public static final int JDK_1_9 = 5;
+    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
     public static int JDK_VERSION = JDK_VERSION_NOT_SET;
 
+    /**
+     * Returns version {@see String} containing three part version number
+     * and build qualifier.
+     * @return Version {@see String}.
+     */
     public static String getVersionString ( ) {
-        String verString;
-
-        verString = getVersion() + "." + getQualifier();
-        return( verString );
+        StringBuilder sb = new StringBuilder(
+                version.length() + 1 + qualifier.length());
+        sb.append(version);
+        sb.append(SEPARATOR);
+        sb.append(qualifier);
+        return sb.toString();
     }
 
     public static String getProduct() {
@@ -93,34 +119,69 @@ public class Version {
     /**
      * INTERNAL:
      * Return the JDK version we are using.
+     * @deprecated Use {@see JavaSEPlatform.current} instead.
+     * Will be removed in 2.7.
      */
     public static int getJDKVersion() {
-        if (JDK_VERSION == JDK_VERSION_NOT_SET) {
-            String version = System.getProperty("java.version");
-            if ((version != null) && version.startsWith("1.5")) {
-                useJDK15();
-            } else {
-                useJDK16();
-            }
+        switch(JavaSEPlatform.current) {
+            case v1_7: JDK_VERSION = JDK_1_7;
+            break;
+            case v1_8: JDK_VERSION = JDK_1_8;
+            break;
+            case v1_9: JDK_VERSION = JDK_1_9;
+            break;
         }
         return JDK_VERSION;
     }
 
-
+    /**
+     * Set 1.5 as current Java SE version.
+     * @throws UnsupportedOperationException when invoked because Java SE 1.5
+     *         is not supported by current EclipseLink.
+     * @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7.
+     */
     public static void useJDK15() {
-        JDK_VERSION = JDK_1_5;
+        throw new UnsupportedOperationException(
+                "Java SE 1.5 is not supported by current EclipseLink.");
     }
 
+    /**
+     * Set 1.6 as current Java SE version.
+     * @throws UnsupportedOperationException when invoked because Java SE 1.6
+     *         is not supported by current EclipseLink.
+     * @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7.
+     */
     public static void useJDK16() {
-        JDK_VERSION = JDK_1_6;
+        throw new UnsupportedOperationException(
+                "Java SE 1.6 is not supported by current EclipseLink.");
     }
 
+    // There should be no references in current EclipseLink.
+    /**
+     * Check whether we are running on Java SE 1.5.
+     * This will always return {@code false} because Java SE 1.5 is not
+     * supported by current EclipseLink.
+     * @return Value of {@code true} when we do and value of {@code false}
+     *         when we do not run on Java SE 1.5.
+     * @deprecated Use {@code JavaSEPlatform.current.equals(JavaSEPlatform.v1_5)}
+     *             instead. Will be removed in 2.7.
+     */
     public static boolean isJDK15() {
-        return getJDKVersion() == JDK_1_5;
+        return JavaSEPlatform.current.equals(JavaSEPlatform.v1_5);
     }
 
+    // There should be no references in current EclipseLink.
+    /**
+     * Check whether we are running on Java SE 1.6.
+     * This will always return {@code false} because Java SE 1.6 is not
+     * supported by current EclipseLink.
+     * @return Value of {@code true} when we do and value of {@code false}
+     *         when we do not run on Java SE 1.6.
+     * @deprecated Use {@code JavaSEPlatform.current.equals(JavaSEPlatform.v1_6)}
+     *             instead. Will be removed in 2.7.
+     */
     public static boolean isJDK16() {
-        return getJDKVersion() == JDK_1_6;
+        return JavaSEPlatform.current.equals(JavaSEPlatform.v1_6);
     }
 
     public static void printVersion ( ) {

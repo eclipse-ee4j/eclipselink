@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -42,19 +42,10 @@ public class ProxyIndirectionNotAvailableTest extends ExceptionTest {
     }
 
     protected void verify() {
-        String jdkVersion = System.getProperty("java.version");
-        if (jdkVersion.compareTo("1.3.0") < 0) { //jdk 1.2
-            if (caughtException == null) {
-                throw new TestErrorException("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "caught exception was null! \n\n[EXPECTING] " + expectedException + " with JDK less than 1.3.0");
-            }
-            if (caughtException.getErrorCode() != expectedException.getErrorCode()) {
-                throw new TestErrorException("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "[CAUGHT] " + caughtException + "\n\n[EXPECTING] " + expectedException + " with JDK less than 1.3.0");
-            }
-        } //end jdk 1.2 testing
-        else { //jdk 1.3 testing
-            if (caughtException != null) {
-                throw new TestErrorException("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "[CAUGHT] " + caughtException + "\n\n[EXPECTING] no Exception with JDK 1.3");
-            }
+        if (caughtException != null) {
+            throw new TestErrorException("The proper exception was not thrown:"
+                    + org.eclipse.persistence.internal.helper.Helper.cr() + "[CAUGHT] "
+                    + caughtException + "\n\n[EXPECTING] no Exception");
         }
     }
 
