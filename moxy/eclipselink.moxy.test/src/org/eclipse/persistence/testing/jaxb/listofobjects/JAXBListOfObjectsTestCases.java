@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -209,72 +209,60 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
             instream.close();
         }
     }
-    
-    
-	public void testObjectToXMLStreamWriter() throws Exception {
-		if (System.getProperty("java.version").contains("1.6")) {
-			StringWriter writer = new StringWriter();
-			Object objectToWrite = getWriteControlObject();
-			javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory
-					.newInstance();
-			javax.xml.stream.XMLStreamWriter streamWriter = factory
-					.createXMLStreamWriter(writer);
 
-			getJAXBMarshaller().marshal(objectToWrite, streamWriter);
+    public void testObjectToXMLStreamWriter() throws Exception {
+        StringWriter writer = new StringWriter();
+        Object objectToWrite = getWriteControlObject();
+        javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
+        javax.xml.stream.XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
 
-			StringReader reader = new StringReader(writer.toString());
-			InputSource inputSource = new InputSource(reader);
-			Document testDocument = parser.parse(inputSource);
-			writer.close();
-			reader.close();
+        getJAXBMarshaller().marshal(objectToWrite, streamWriter);
 
-			objectToXMLDocumentTest(testDocument);
-		}
-	}
-	
-	public void testObjectToXMLStreamWriterRecord() throws Exception {
-		if (System.getProperty("java.version").contains("1.6")) {
-			StringWriter writer = new StringWriter();
-			Object objectToWrite = getWriteControlObject();
-			javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory
-					.newInstance();
-			javax.xml.stream.XMLStreamWriter streamWriter = factory
-					.createXMLStreamWriter(writer);
+        StringReader reader = new StringReader(writer.toString());
+        InputSource inputSource = new InputSource(reader);
+        Document testDocument = parser.parse(inputSource);
+        writer.close();
+        reader.close();
 
-			XMLStreamWriterRecord record = new XMLStreamWriterRecord(streamWriter);
-			((JAXBMarshaller)getJAXBMarshaller()).marshal(objectToWrite, record);
+        objectToXMLDocumentTest(testDocument);
+    }
 
-			StringReader reader = new StringReader(writer.toString());
-			InputSource inputSource = new InputSource(reader);
-			Document testDocument = parser.parse(inputSource);
-			writer.close();
-			reader.close();
+    public void testObjectToXMLStreamWriterRecord() throws Exception {
+        StringWriter writer = new StringWriter();
+        Object objectToWrite = getWriteControlObject();
+        javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
+        javax.xml.stream.XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
 
-			objectToXMLDocumentTest(testDocument);
-		}
-	}
-	
+        XMLStreamWriterRecord record = new XMLStreamWriterRecord(streamWriter);
+        ((JAXBMarshaller) getJAXBMarshaller()).marshal(objectToWrite, record);
+
+        StringReader reader = new StringReader(writer.toString());
+        InputSource inputSource = new InputSource(reader);
+        Document testDocument = parser.parse(inputSource);
+        writer.close();
+        reader.close();
+
+        objectToXMLDocumentTest(testDocument);
+    }
+
     public void testObjectToXMLEventWriter() throws Exception {
-        if (System.getProperty("java.version").contains("1.6")) {
-            StringWriter writer = new StringWriter();
-            Object objectToWrite = getWriteControlObject();
-            javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory
-                    .newInstance();
-            javax.xml.stream.XMLEventWriter eventWriter = factory
-                    .createXMLEventWriter(writer);
+        StringWriter writer = new StringWriter();
+        Object objectToWrite = getWriteControlObject();
+        javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
+        javax.xml.stream.XMLEventWriter eventWriter = factory.createXMLEventWriter(writer);
 
-            getJAXBMarshaller().marshal(objectToWrite, eventWriter);
+        getJAXBMarshaller().marshal(objectToWrite, eventWriter);
 
-            StringReader reader = new StringReader(writer.toString());
-            InputSource inputSource = new InputSource(reader);
-            Document testDocument = parser.parse(inputSource);
-            writer.close();
-            reader.close();
+        StringReader reader = new StringReader(writer.toString());
+        InputSource inputSource = new InputSource(reader);
+        Document testDocument = parser.parse(inputSource);
+        writer.close();
+        reader.close();
 
-            objectToXMLDocumentTest(testDocument);
-        }
-    }	
-/*
+        objectToXMLDocumentTest(testDocument);
+    }
+
+    /*
     public void testObjectToXMLStreamWriterWithTypeMappingInfo() throws Exception {
         if(XML_OUTPUT_FACTORY != null) {
             StringWriter writer = new StringWriter();

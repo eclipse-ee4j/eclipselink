@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -70,56 +70,47 @@ public class JAXBUpperNameTransformerTestCases extends JAXBWithJSONTestCases {
 		addr.id = 10;
 		addr.cityName = "Ottawa";
 		employee.address = addr;
-		
+
         return employee;
     }
-    
 
     public void testXMLToObjectFromXMLStreamReader() throws Exception {
-        if(System.getProperty("java.version").contains("1.6")) {
-        	InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-        	javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
-        	javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(instream);
-        	
-        	Object obj = getJAXBUnmarshaller().unmarshal(reader);
-        	this.xmlToObjectTest(obj);
-        }
-    }
-    
-    public void testXMLToObjectFromXMLEventReader() throws Exception {
-        if(System.getProperty("java.version").contains("1.6")) {
-        	InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-        	javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
-        	javax.xml.stream.XMLEventReader reader = factory.createXMLEventReader(instream);
-        	
-        	Object obj = getJAXBUnmarshaller().unmarshal(reader);
-        	this.xmlToObjectTest(obj);
-        }
-    }
-    
-    public void testObjectToXMLStreamWriter() throws Exception {
-        if(System.getProperty("java.version").contains("1.6")) {
-        	StringWriter writer = new StringWriter();
-        	Object objectToWrite = getWriteControlObject();
-        	javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
-        	javax.xml.stream.XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
- 
- 
-        	getJAXBMarshaller().marshal(objectToWrite, streamWriter);
-        
-        
-        	StringReader reader = new StringReader(writer.toString());
-        	InputSource inputSource = new InputSource(reader);
-        	Document testDocument = parser.parse(inputSource);
-        	writer.close();
-        	reader.close();
+        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+        javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
+        javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(instream);
 
-        	objectToXMLDocumentTest(testDocument);
-        }
-    }  
-    
+        Object obj = getJAXBUnmarshaller().unmarshal(reader);
+        this.xmlToObjectTest(obj);
+    }
+
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+        javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
+        javax.xml.stream.XMLEventReader reader = factory.createXMLEventReader(instream);
+
+        Object obj = getJAXBUnmarshaller().unmarshal(reader);
+        this.xmlToObjectTest(obj);
+    }
+
+    public void testObjectToXMLStreamWriter() throws Exception {
+        StringWriter writer = new StringWriter();
+        Object objectToWrite = getWriteControlObject();
+        javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
+        javax.xml.stream.XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
+
+        getJAXBMarshaller().marshal(objectToWrite, streamWriter);
+
+        StringReader reader = new StringReader(writer.toString());
+        InputSource inputSource = new InputSource(reader);
+        Document testDocument = parser.parse(inputSource);
+        writer.close();
+        reader.close();
+
+        objectToXMLDocumentTest(testDocument);
+    }
+
     public void testSchemaGen() throws Exception {
-        List<InputStream> controlSchemas = new ArrayList<InputStream>();		
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();
         InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlnametransformer/employeeUpper.xsd");
         controlSchemas.add(is);		
         super.testSchemaGen(controlSchemas);

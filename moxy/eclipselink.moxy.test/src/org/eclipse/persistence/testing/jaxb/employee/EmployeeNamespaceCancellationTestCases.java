@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -71,50 +71,41 @@ public class EmployeeNamespaceCancellationTestCases extends JAXBTestCases {
               
         return employee;
     }
-    
-    public void testXMLToObjectFromXMLStreamReader() throws Exception {
-        if(System.getProperty("java.version").contains("1.6")) {
-        	InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-        	javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
-        	javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(instream);
-        	
-        	Object obj = getJAXBUnmarshaller().unmarshal(reader);
-        	this.xmlToObjectTest(obj);
-        }
-    }
-    //Bug #283424  needs to be fixed then this test can be added 
-    
-    public void testXMLToObjectFromXMLEventReader() throws Exception {    	
-    	if(System.getProperty("java.version").contains("1.6")) {
-        	InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-        	javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
-        	javax.xml.stream.XMLEventReader reader = factory.createXMLEventReader(instream);
-        	
-        	Object obj = getJAXBUnmarshaller().unmarshal(reader);
-        	this.xmlToObjectTest(obj);
-        }
-    }
-    
-    
-    public void testObjectToXMLStreamWriter() throws Exception {
-        if(System.getProperty("java.version").contains("1.6")) {
-        	StringWriter writer = new StringWriter();
-        	Object objectToWrite = getWriteControlObject();
-        	javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
-        	javax.xml.stream.XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
- 
- 
-        	getJAXBMarshaller().marshal(objectToWrite, streamWriter);
-        
-        
-        	StringReader reader = new StringReader(writer.toString());
-        	InputSource inputSource = new InputSource(reader);
-        	Document testDocument = parser.parse(inputSource);
-        	writer.close();
-        	reader.close();
 
-        	objectToXMLDocumentTest(testDocument);
-        }
+    public void testXMLToObjectFromXMLStreamReader() throws Exception {
+        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+        javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
+        javax.xml.stream.XMLStreamReader reader = factory.createXMLStreamReader(instream);
+
+        Object obj = getJAXBUnmarshaller().unmarshal(reader);
+        this.xmlToObjectTest(obj);
     }
-      
+
+    // Bug #283424 needs to be fixed then this test can be added
+    public void testXMLToObjectFromXMLEventReader() throws Exception {
+        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+        javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
+        javax.xml.stream.XMLEventReader reader = factory.createXMLEventReader(instream);
+
+        Object obj = getJAXBUnmarshaller().unmarshal(reader);
+        this.xmlToObjectTest(obj);
+    }
+
+    public void testObjectToXMLStreamWriter() throws Exception {
+        StringWriter writer = new StringWriter();
+        Object objectToWrite = getWriteControlObject();
+        javax.xml.stream.XMLOutputFactory factory = javax.xml.stream.XMLOutputFactory.newInstance();
+        javax.xml.stream.XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
+
+        getJAXBMarshaller().marshal(objectToWrite, streamWriter);
+
+        StringReader reader = new StringReader(writer.toString());
+        InputSource inputSource = new InputSource(reader);
+        Document testDocument = parser.parse(inputSource);
+        writer.close();
+        reader.close();
+
+        objectToXMLDocumentTest(testDocument);
+    }
+
 }

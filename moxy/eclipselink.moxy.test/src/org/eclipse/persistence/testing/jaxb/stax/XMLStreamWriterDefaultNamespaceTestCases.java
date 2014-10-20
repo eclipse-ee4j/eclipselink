@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,32 +38,28 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
 		super(name);
 	}
 
-	public void testDefaultNamespaceOverride() throws Exception {
-        if(System.getProperty("java.version").contains("1.6")) {
+    public void testDefaultNamespaceOverride() throws Exception {
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+        StringWriter writer = new StringWriter();
+        XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
+        streamWriter.writeStartElement("", "root", "someNamespace");
+        streamWriter.writeDefaultNamespace("someNamespace");
+        Marshaller marshaller = ctx.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, new Boolean(true));
 
-            JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{Employee.class}, null);
-            StringWriter writer = new StringWriter();
-            XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(writer);
-            streamWriter.writeStartElement("", "root", "someNamespace");
-            streamWriter.writeDefaultNamespace("someNamespace");
-            Marshaller marshaller = ctx.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, new Boolean(true));
+        marshaller.marshal(new JAXBElement(new QName("employee"), Employee.class, new Employee()), streamWriter);
+        streamWriter.writeEndElement();
+        streamWriter.writeEndDocument();
+        streamWriter.flush();
 
-            marshaller.marshal(new JAXBElement(new QName("employee"), Employee.class, new Employee()), streamWriter);
-            streamWriter.writeEndElement();
-            streamWriter.writeEndDocument();
-            streamWriter.flush();
+        String xml = "<root xmlns=\"someNamespace\"><employee xmlns=\"\"></employee></root>";
+        String xml2 = "<root xmlns=\"someNamespace\"><employee xmlns=\"\"/></root>";
 
-            String xml = "<root xmlns=\"someNamespace\"><employee xmlns=\"\"></employee></root>";
-            String xml2 = "<root xmlns=\"someNamespace\"><employee xmlns=\"\"/></root>";
+        String writerString = writer.toString();
 
-            String writerString = writer.toString();
-
-            assertTrue("Incorrect XML: " + writerString, writerString.equals(xml) || writerString.equals(xml2));
-        }
-
+        assertTrue("Incorrect XML: " + writerString, writerString.equals(xml) || writerString.equals(xml2));
     }
-    
+
     /**
      * Testcase for Bug 387464
      */

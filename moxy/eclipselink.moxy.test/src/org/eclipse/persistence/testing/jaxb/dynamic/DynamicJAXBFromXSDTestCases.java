@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,13 +65,10 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         return "Dynamic JAXB: XSD: " + super.getName();
     }
 
+    // Ec;ipseLink requires JDK >= 1.7
     public void testEclipseLinkSchema() throws Exception {
-        // Bootstrapping from eclipselink_oxm_2_4.xsd will trigger a JAXB 2.2 API (javax.xml.bind.annotation.XmlElementRef.required())
-        // so only run this test in Java 7
-        if (System.getProperty("java.version").contains("1.7")) {
-            InputStream inputStream = ClassLoader.getSystemResourceAsStream(ECLIPSELINK_SCHEMA);
-            jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
-        }
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(ECLIPSELINK_SCHEMA);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
     }
 
     // ====================================================================
@@ -179,12 +176,6 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     public void testXmlSchemaImport() throws Exception {
         // <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
         //       <xs:import schemaLocation="xmlschema-currency" namespace="bankNamespace"/>
-
-        // Do not run this test if we are not using JDK 1.6
-        String javaVersion = System.getProperty("java.version");
-        if (!(javaVersion.startsWith("1.6"))) {
-            return;
-        }
 
         // Do not run this test with the Oracle xmlparserv2, it will not properly hit the EntityResolver
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
