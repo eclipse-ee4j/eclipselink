@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -326,27 +326,26 @@ public final class FrameworkApplication
 		Toolkit.getDefaultToolkit().setDynamicLayout(this.generalPreferences().getBoolean(DYNAMIC_LAYOUT_PREFERENCE, true));
 	}
 
-	/**
-	 * Initialize the logger:
-	 * 	- add a handler that writes log entries to a file
-	 * 	- register a hook to clean up the lock file on system exit
-	 */
-	private void configureLoggerForLaunch() {
-		FileHandler fileHandler;
-		try {
-			// TODO get log file name and size from preferences?
-			fileHandler = new FileHandler(System.getProperty("user.home") + "/org.eclipse.persistence.tools.workbench.log", 50000, 1, true);	// true = append
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		// once the file handler is built, the lock file is present and open
-		String version = System.getProperty("java.version");
-		if (version.startsWith("1.4")) {
-			FileHandlerCleanup.register(fileHandler);
-		}
-		fileHandler.setFormatter(new SimpleFormatter());
-		this.logger.addHandler(fileHandler);
-	}
+    /**
+     * Initialize the logger:
+     *  - add a handler that writes log entries to a file
+     *  - register a hook to clean up the lock file on system exit
+     */
+    private void configureLoggerForLaunch() {
+        FileHandler fileHandler;
+        try {
+            // TODO get log file name and size from preferences?
+            // true = append
+            fileHandler = new FileHandler(System.getProperty("user.home")
+                    + "/org.eclipse.persistence.tools.workbench.log", 50000, 1, true);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        // once the file handler is built, the lock file is present and open
+        FileHandlerCleanup.register(fileHandler);
+        fileHandler.setFormatter(new SimpleFormatter());
+        this.logger.addHandler(fileHandler);
+    }
 
 	/**
 	 * Initialize the LAF to the user's preference.

@@ -18,6 +18,8 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.File;
 
+import org.eclipse.persistence.internal.helper.JavaSEPlatform;
+
 public class CompileUtil {
 
 	private static CompileUtil _instance;
@@ -33,11 +35,9 @@ public class CompileUtil {
 	}
 
 	public int compile(String classpath, Object[] javaFiles) {
-        String[] args = new String[javaFiles.length + 7];
-
-        String javac = getJavaC();
-
-        String javaVersion = getJavaVersion();
+        final String[] args = new String[javaFiles.length + 7];
+        final String javac = getJavaC();
+        final String javaVersion = JavaSEPlatform.current.toString();
 
         args[0] = javac;
         args[1] = "-cp";
@@ -73,16 +73,6 @@ public class CompileUtil {
 		
 		return exitVal;
 	}
-
-    private String getJavaVersion() {
-        String javaVersion = "java.version";
-        if (System.getProperty(javaVersion).contains("1.7")) {
-            return "1.7";
-        } else if (System.getProperty(javaVersion).contains("1.8")) {
-            return "1.8";
-        }
-        return "1.6";
-    }
 
     private String getJavaC() {
         String javaHome = System.getenv("JAVA_HOME");

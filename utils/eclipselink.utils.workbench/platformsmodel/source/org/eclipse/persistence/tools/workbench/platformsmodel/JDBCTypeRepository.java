@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -80,13 +80,6 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
 	private Collection javaTypeDeclarationToJDBCTypeMappings;
 		public static final String JAVA_TYPE_DECLARATION_TO_JDBC_TYPE_MAPPINGS_COLLECTION = "javaTypeDeclarationToJDBCTypeMappings";
 
-	private static final boolean JDK16 = jdkIsVersion("1.6");
-
-	private static boolean jdkIsVersion(String version) {
-		return System.getProperty("java.version").indexOf(version) != -1;
-	}
-
-
 	// ********** constructors **********
 
 	/**
@@ -125,16 +118,8 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
 	private void initializeDefaults() {
 		this.initializeDefaultJDBCTypes();
 		this.defaultJDBCType = this.jdbcTypeForCode(DEFAULT_DEFAULT_JDBC_TYPE_CODE);
-
 		this.initializeDefaultJDBCToJavaMappings();
-		// TODO change this conditional to
-		//     if (JDK16) {
-		// and uncomment Types in #initializeDefaultJDBCToJavaMappings()
-		// when we start compiling with jdk1.6
-		if ( ! JDK16) {
-			this.checkJDBCTypeToJavaTypeDeclarationMappings();
-		}
-
+		this.checkJDBCTypeToJavaTypeDeclarationMappings();
 		this.initializeDefaultJavaToJDBCMappings();
 	}
 
@@ -177,43 +162,43 @@ public final class JDBCTypeRepository extends AbstractNodeModel {
 	 */
 	// TODO uncomment 6 new Types when we start compiling with jdk1.6
 	private void initializeDefaultJDBCToJavaMappings() {
-		this.addJDBCToJavaMapping(Types.ARRAY,				java.sql.Array.class);
-		this.addJDBCToJavaMapping(Types.BIGINT,				long.class);
-		this.addJDBCToJavaMapping(Types.BINARY,				byte.class, 1);	// byte[]
-		this.addJDBCToJavaMapping(Types.BIT,					boolean.class);
-		this.addJDBCToJavaMapping(Types.BLOB,				java.sql.Blob.class);
-		this.addJDBCToJavaMapping(Types.BOOLEAN,			boolean.class);
-		this.addJDBCToJavaMapping(Types.CHAR,				java.lang.String.class);
-		this.addJDBCToJavaMapping(Types.CLOB,				java.sql.Clob.class);
-		this.addJDBCToJavaMapping(Types.DATALINK,			java.net.URL.class);
-		this.addJDBCToJavaMapping(Types.DATE,				java.sql.Date.class);
-		this.addJDBCToJavaMapping(Types.DECIMAL,			java.math.BigDecimal.class);
-		this.addJDBCToJavaMapping(Types.DISTINCT,			java.lang.Object.class);
-		this.addJDBCToJavaMapping(Types.DOUBLE,			double.class);
-		this.addJDBCToJavaMapping(Types.FLOAT,				double.class);
-		this.addJDBCToJavaMapping(Types.INTEGER,			int.class);
-		this.addJDBCToJavaMapping(Types.JAVA_OBJECT,	java.lang.Object.class);
-//		this.addJDBCToJavaMapping(Types.LONGNVARCHAR,					java.lang.String.class); // JDK1.6
-		this.addJDBCToJavaMapping(Types.LONGVARBINARY,	byte.class, 1);	// byte[]
-		this.addJDBCToJavaMapping(Types.LONGVARCHAR,	java.lang.String.class);
-//		this.addJDBCToJavaMapping(Types.NCHAR,					java.lang.String.class); // JDK1.6
-//		this.addJDBCToJavaMapping(Types.NCLOB,					java.sql.NClob.class); // JDK1.6
-//		this.addJDBCToJavaMapping(Types.NVARCHAR,					java.lang.String.class); // JDK1.6
+		this.addJDBCToJavaMapping(Types.ARRAY,          java.sql.Array.class);
+		this.addJDBCToJavaMapping(Types.BIGINT,         long.class);
+		this.addJDBCToJavaMapping(Types.BINARY,         byte.class, 1);	// byte[]
+		this.addJDBCToJavaMapping(Types.BIT,            boolean.class);
+		this.addJDBCToJavaMapping(Types.BLOB,           java.sql.Blob.class);
+		this.addJDBCToJavaMapping(Types.BOOLEAN,        boolean.class);
+		this.addJDBCToJavaMapping(Types.CHAR,           java.lang.String.class);
+		this.addJDBCToJavaMapping(Types.CLOB,           java.sql.Clob.class);
+		this.addJDBCToJavaMapping(Types.DATALINK,       java.net.URL.class);
+		this.addJDBCToJavaMapping(Types.DATE,           java.sql.Date.class);
+		this.addJDBCToJavaMapping(Types.DECIMAL,        java.math.BigDecimal.class);
+		this.addJDBCToJavaMapping(Types.DISTINCT,       java.lang.Object.class);
+		this.addJDBCToJavaMapping(Types.DOUBLE,         double.class);
+		this.addJDBCToJavaMapping(Types.FLOAT,          double.class);
+		this.addJDBCToJavaMapping(Types.INTEGER,        int.class);
+		this.addJDBCToJavaMapping(Types.JAVA_OBJECT,    java.lang.Object.class);
+		this.addJDBCToJavaMapping(Types.LONGNVARCHAR,   java.lang.String.class);
+		this.addJDBCToJavaMapping(Types.LONGVARBINARY,  byte.class, 1);	// byte[]
+		this.addJDBCToJavaMapping(Types.LONGVARCHAR,    java.lang.String.class);
+		this.addJDBCToJavaMapping(Types.NCHAR,          java.lang.String.class);
+		this.addJDBCToJavaMapping(Types.NCLOB,          java.sql.NClob.class);
+		this.addJDBCToJavaMapping(Types.NVARCHAR,       java.lang.String.class);
 		// not sure why this is defined in java.sql.Types
-//		this.addJDBCToJavaMapping(Types.NULL,					java.lang.Object.class);
-		this.addJDBCToJavaMapping(Types.NUMERIC,			java.math.BigDecimal.class);
-		this.addJDBCToJavaMapping(Types.OTHER,				java.lang.Object.class);	// ???
-		this.addJDBCToJavaMapping(Types.REAL,				float.class);
-		this.addJDBCToJavaMapping(Types.REF,					java.sql.Ref.class);
-//		this.addJDBCToJavaMapping(Types.ROWID,					java.sql.RowId.class); // JDK1.6
-		this.addJDBCToJavaMapping(Types.SMALLINT,			short.class);
-//		this.addJDBCToJavaMapping(Types.SQLXML,					java.sql.SQLXML.class); // JDK1.6
-		this.addJDBCToJavaMapping(Types.STRUCT,			java.sql.Struct.class);
-		this.addJDBCToJavaMapping(Types.TIME,				java.sql.Time.class);
-		this.addJDBCToJavaMapping(Types.TIMESTAMP,		java.sql.Timestamp.class);
-		this.addJDBCToJavaMapping(Types.TINYINT,			byte.class);
-		this.addJDBCToJavaMapping(Types.VARBINARY,		byte.class, 1);	// byte[]
-		this.addJDBCToJavaMapping(Types.VARCHAR,			java.lang.String.class);
+		this.addJDBCToJavaMapping(Types.NULL,           java.lang.Object.class);
+		this.addJDBCToJavaMapping(Types.NUMERIC,        java.math.BigDecimal.class);
+		this.addJDBCToJavaMapping(Types.OTHER,          java.lang.Object.class);
+		this.addJDBCToJavaMapping(Types.REAL,           float.class);
+		this.addJDBCToJavaMapping(Types.REF,            java.sql.Ref.class);
+		this.addJDBCToJavaMapping(Types.ROWID,          java.sql.RowId.class);
+		this.addJDBCToJavaMapping(Types.SMALLINT,       short.class);
+		this.addJDBCToJavaMapping(Types.SQLXML,         java.sql.SQLXML.class);
+		this.addJDBCToJavaMapping(Types.STRUCT,         java.sql.Struct.class);
+		this.addJDBCToJavaMapping(Types.TIME,           java.sql.Time.class);
+		this.addJDBCToJavaMapping(Types.TIMESTAMP,      java.sql.Timestamp.class);
+		this.addJDBCToJavaMapping(Types.TINYINT,        byte.class);
+		this.addJDBCToJavaMapping(Types.VARBINARY,      byte.class, 1);	// byte[]
+		this.addJDBCToJavaMapping(Types.VARCHAR,        java.lang.String.class);
 	}
 
 	private void addJDBCToJavaMapping(int jdbcTypeCode, Class javaClass) {
