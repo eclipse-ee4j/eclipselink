@@ -16,7 +16,6 @@ import java.util.*;
 
 import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.internal.helper.JavaSEPlatform;
-import org.eclipse.persistence.internal.helper.JavaVersion;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.queries.*;
 
@@ -91,8 +90,8 @@ public class IndirectListTestAPI extends ZTestCase {
      * @return Value of {@code true} when we run with Java SE 1.8 or higher
      *         or {@code false} otherwise.
      */
-    private static final boolean isJava8() {
-        return JavaVersion.currentPlatform().atLeast(JavaSEPlatform.v1_8);
+    private static final boolean atLeastJava8() {
+        return JavaSEPlatform.current.atLeast(JavaSEPlatform.v1_8);
     }
 
     Vector list;
@@ -411,7 +410,7 @@ public class IndirectListTestAPI extends ZTestCase {
 
     // TODO: Rewrite to work directly with Vector#sort(Comparator) when source level will be at least 1.8
     public void testSort() {
-        final Vector<String> data = isJava8() ? new Vector<String>(list) : new VectorWithSort<String>(list);
+        final Vector<String> data = atLeastJava8() ? new Vector<String>(list) : new VectorWithSort<String>(list);
         final VectorWithSort<String> sortedData = new VectorWithSort<String>(list);
         final IndirectListWrapper<String> list = new IndirectListWrapper<String>(data.size());
         sortedData.sort(null);
@@ -430,11 +429,11 @@ public class IndirectListTestAPI extends ZTestCase {
         list.setDelegate(data);
         try {
             list.sort(null);
-            if (!isJava8()) {
+            if (!atLeastJava8()) {
                 fail("Sort shall throw an exception on JDK < 1.8.");
             }
         } catch (UnsupportedOperationException e) {
-            if (isJava8()) {
+            if (atLeastJava8()) {
                 fail("Sort shall work since JDK 1.8.");
             }
         }

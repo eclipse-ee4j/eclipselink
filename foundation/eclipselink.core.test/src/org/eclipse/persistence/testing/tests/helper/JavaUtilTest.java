@@ -57,7 +57,7 @@ public class JavaUtilTest extends junit.framework.TestCase {
      */
     @Test
     public void testJavaVersion() {
-        JavaVersion version = JavaVersion.javaVmVersion();
+        JavaVersion version = JavaVersion.vmVersion();
         assertTrue(version.getMajor() > 0);
     }
 

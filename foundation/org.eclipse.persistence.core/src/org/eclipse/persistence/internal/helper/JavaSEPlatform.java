@@ -40,9 +40,6 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     /** Java SE 1.9. */
     v1_9(1,9);
 
-    /** GlassFish Java SE platform enumeration length. */
-    public static final int length = JavaSEPlatform.values().length;
-
     /**
      * Stored <code>String</code> values for backward <code>String</code>
      * conversion.
@@ -56,6 +53,13 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
             stringValuesMap.put(platform.toString().toUpperCase(), platform);
         }
     }
+
+    /** GlassFish Java SE platform enumeration length. */
+    public static final int length = JavaSEPlatform.values().length;
+
+    /** Current Java SE platform. */
+    public static final JavaSEPlatform current
+            = JavaVersion.vmVersion().toPlatform();
 
     /**
      * Returns a <code>JavaSEPlatform</code> with a value represented by the

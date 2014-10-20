@@ -46,15 +46,12 @@ public final class JavaVersion {
      *  version output. */
     private static final int VM_MIN_VERSION_TOKENS = 2;
 
-    /** Current Java SE platform. */
-    private static final JavaSEPlatform current = javaVmVersion().toPlatform();
-
     /**
-     * Returns current Java SE platform.
-     * @return Current Java SE platform.
+     * Retrieves Java VM version {@see String} from JDK system property.
+     * @return Java VM version {@see String} from JDK system property.
      */
-    public static final JavaSEPlatform currentPlatform() {
-        return current;
+    public static String vmVersionString() {
+        return System.getProperty(VM_VERSION_PROPERTY);
     }
 
     /**
@@ -71,8 +68,8 @@ public final class JavaVersion {
      * </ul>
      * Label <code>java version</code> is parsed as non case sensitive.
      */
-    public static JavaVersion javaVmVersion() {
-        final String version = System.getProperty(VM_VERSION_PROPERTY);
+    public static JavaVersion vmVersion() {
+        final String version = vmVersionString();
         final Pattern pattern = Pattern.compile(VM_VERSION_PATTERN);
         final Matcher matcher = pattern.matcher(version);
         int major = 0, minor = 0, revision = 0, patch = 0;
