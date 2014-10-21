@@ -137,7 +137,7 @@
         <!-- Set maven.version appropriately depending upon ${build.type}.           -->
         <!--    variable should only be used for maven version element in POM.       -->
         <condition property="maven.version" value="${release.version}"
-                                             else="${release.version}-${build.type}">
+                   else="${release.version}-${build.type}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
 
@@ -153,7 +153,7 @@
         </condition>
 
         <condition property="target.repo.message" value="Target repository ID: '${stagingId}' URL:'${stagingURL}'"
-                                                   else="Target repository ID: '${snapshotId}' URL:'${snapshotURL}'">
+                   else="Target repository ID: '${snapshotId}' URL:'${snapshotURL}'">
             <isset property="sign"/>
         </condition>
         <echo message="${target.repo.message}"/>
@@ -166,6 +166,10 @@
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
         <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
         <property name="sdoapi.name"          value="SDO API"/>
+        <property name="validation.prefix"    value="validation-api"/>
+        <property name="validation.criteria"  value="[1.1.0,2.2.0)"/>
+        <property name="validation.name"      value="Javax Validation"/>
+        <property name="validation.version"   value="1.1.0.Final"/>
         <property name="json.prefix"          value="org.glassfish.javax.json"/>
         <property name="json.criteria"        value="[1.0.4,5.0.0)"/>
         <property name="json.name"            value="Javax JSON"/>
@@ -190,35 +194,39 @@
         <property name="hermes.name"          value="EclipseLink Hermes JPQL Parser"/>
 
         <selectbundle basename="${jpaapi.prefix}"  directory="${maven.2.jpa.plugins.dir}"
-                     criterion="${jpaapi.criteria}" property="jpaapi.version" versiononly="true"
-        />
+                      criterion="${jpaapi.criteria}" property="jpaapi.version" versiononly="true"
+                />
         <selectbundle basename="${sdoapi.prefix}"  directory="${maven.2.sdo.plugins.dir}"
-                     criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
-        />
+                      criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
+                />
+        <selectbundle basename="${validation.prefix}"  directory="${maven.2.common.plugins.dir}"
+                      criterion="${validation.criteria}" property="validation.version" versiononly="true"
+                />
         <selectbundle basename="${json.prefix}"  directory="${maven.2.common.plugins.dir}"
-                     criterion="${json.criteria}" property="json.version" versiononly="true"
+                      criterion="${json.criteria}" property="json.version" versiononly="true"
         />
         <selectbundle basename="${antlr.prefix}"  directory="${maven.2.common.plugins.dir}"
-                     criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
-        />
+                      criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
+                />
         <selectbundle basename="${asm.prefix}"  directory="${maven.2.common.plugins.dir}"
-                     criterion="${asm.criteria}" property="asm.version" versiononly="true"
-        />
+                      criterion="${asm.criteria}" property="asm.version" versiononly="true"
+                />
         <selectbundle basename="${oracleddl.prefix}"  directory="${maven.2.util.plugins.dir}"
-                     criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
-        />
+                      criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
+                />
         <selectbundle basename="${oraclebndl.prefix}"  directory="${maven.2.common.plugins.dir}"
-                     criterion="${oraclebndl.criteria}" property="oraclebndl.version" versiononly="true"
-        />
+                      criterion="${oraclebndl.criteria}" property="oraclebndl.version" versiononly="true"
+                />
         <selectbundle basename="${oraclenosql.prefix}"  directory="${maven.2.common.plugins.dir}"
-                     criterion="${oraclenosql.criteria}" property="oraclenosql.version" versiononly="true"
-        />
+                      criterion="${oraclenosql.criteria}" property="oraclenosql.version" versiononly="true"
+                />
         <selectbundle basename="${hermes.prefix}"  directory="${maven.2.common.plugins.dir}"
-                     criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
-        />
+                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
+                />
 
         <echo message="jpaapi.version     = ${jpaapi.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
+        <echo message="validation.version = ${validation.version}"/>
         <echo message="json.version       = ${json.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
         <echo message="asm.version        = ${asm.version}"/>
@@ -281,7 +289,9 @@
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <!-- These are APIs that are not EclipseLink maintained public API bundles but we want them to be included in EclipseLink pom.  -->
+        <!-- APIs that are not EclipseLink's maintained public API bundles but are to be included in EclipseLink pom.xml.  -->
+        <property name="dep.validation"
+                  value="${dep.grp}javax.validation${dep.art}${validation.prefix}${dep.ver}${validation.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.json"          value="${dep.grp}javax.json${dep.art}${json.prefix}${dep.ver}${json.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}${antlr.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -302,7 +312,7 @@
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
         <!--   add-on). It will need to be downloaded independently for this feature (modelgen) to work.                  -->
-        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${dep.json}${deps.foot}"/>
+        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${dep.validation}${dep.json}${deps.foot}"/>
         <!-- would need the modelgen.jar for modelgen but cannot include dep -->
         <property name="jpql.dependencies"        value="${deps.head}${dep.hermes}${deps.foot}"/>
         <property name="core.dependencies"        value="${deps.head}${dep.asm}${dep.json}${deps.foot}"/>
