@@ -120,7 +120,6 @@ public class ObjectGraphBuilder {
 
         for (final DatabaseMapping mapping : classDescriptor.getMappings()) {
             if (ForeignReferenceMapping.class.isAssignableFrom(mapping.getClass())) {
-                //if (mapping.getAttributeClassification() != null && PersistenceWeavedRest.class.isAssignableFrom(mapping.getAttributeClassification())) {
                 final Node subNode = node.addSubNode(mapping.getAttributeName());
                 if (mapping.isCollectionMapping()) {
                     // Add CollectionWrapper links and items properties
@@ -141,7 +140,7 @@ public class ObjectGraphBuilder {
         for (final String attribute : node.getNodesMap().keySet()) {
             if (filter != null) {
                 if (filter.getType() == FieldsFilterType.INCLUDE) {
-                    if (!filter.getFields().contains(attribute)) {
+                    if (!(attribute.equals("_persistence_links") || filter.getFields().contains(attribute))) {
                         continue;
                     }
                 } else {
@@ -177,7 +176,7 @@ public class ObjectGraphBuilder {
      * Internal object graph node.
      */
     private static class Node {
-        private Map<String, Node> nodesMap = new HashMap<String, Node>();
+        private final Map<String, Node> nodesMap = new HashMap<String, Node>();
 
         public void addAttributeNode(final String attribute) {
             nodesMap.put(attribute, null);

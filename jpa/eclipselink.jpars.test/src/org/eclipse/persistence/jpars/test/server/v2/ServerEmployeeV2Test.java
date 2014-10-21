@@ -61,7 +61,6 @@ public class ServerEmployeeV2Test {
     private static final String JPARS_VERSION = "v2.0";
 
     private static PersistenceContext context;
-    private static long THREE_YEARS = 94608000000L;
 
     /**
      * Setup.
@@ -80,11 +79,8 @@ public class ServerEmployeeV2Test {
     }
 
     @After
-    public void cleanup() {
-        try {
-            RestUtils.restUpdateQuery(context, "Employee.deleteAll", "Employee", null, null, MediaType.APPLICATION_JSON_TYPE);
-        } catch (URISyntaxException e) {
-        }
+    public void cleanup() throws URISyntaxException {
+        RestUtils.restUpdateQuery(context, "Employee.deleteAll", "Employee", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
@@ -149,7 +145,7 @@ public class ServerEmployeeV2Test {
         assertNotNull(employee);
         String addressLink = "\"address\":{\"links\":[{\"rel\":\"self\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/20130/address\"}";
         assertTrue(employee.contains(addressLink));
-        RestUtils.restDelete(context, new Integer(20130), Employee.class.getSimpleName(), Employee.class, null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restDelete(context, 20130, Employee.class.getSimpleName(), Employee.class, null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
@@ -647,8 +643,8 @@ public class ServerEmployeeV2Test {
         assertTrue(queryResult.contains(employee1.getLastName()));
 
         // delete employees
-        RestUtils.restDelete(context, new Integer(employee1.getId()), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-        RestUtils.restDelete(context, new Integer(employee2.getId()), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee1.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee2.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
     }
 
     private void readEmployeeWithAddressLazyFetchOne2One(MediaType mediaType) throws Exception {
@@ -688,13 +684,13 @@ public class ServerEmployeeV2Test {
         assertTrue(result.contains(addressLinkHref));
 
         // read employee with an addresss
-        String employeeWithAddress = RestUtils.restRead(context, new Integer(employee.getId()), Employee.class.getSimpleName(), null, mediaType);
+        String employeeWithAddress = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), null, mediaType);
         assertNotNull("Employee read failed.", employeeWithAddress);
         // make sure employee has address
         assertTrue(employeeWithAddress.contains(addressLinkHref));
 
         // delete employee (cascade deletes address)
-        RestUtils.restDelete(context, new Integer(employee.getId()), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
     }
 
     private void getEmployeeAddressSingleResultNamedQueryWithBinaryData(MediaType mediaType) throws Exception {
@@ -743,7 +739,7 @@ public class ServerEmployeeV2Test {
         employee1.setFirstName("Miles");
         employee1.setLastName("Davis");
         employee1.setGender(Gender.Male);
-        employee1.setSalary(new Double(20000));
+        employee1.setSalary(20000.0);
 
         employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
         assertNotNull("Employee1 create failed.", employee1);
@@ -753,7 +749,7 @@ public class ServerEmployeeV2Test {
         employee2.setFirstName("Charlie");
         employee2.setLastName("Parker");
         employee2.setGender(Gender.Male);
-        employee2.setSalary(new Double(30000));
+        employee2.setSalary(30000.0);
 
         employee2 = RestUtils.restUpdate(context, employee2, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
         assertNotNull("Employee2 create failed.", employee2);
@@ -784,7 +780,7 @@ public class ServerEmployeeV2Test {
         employee.setFirstName("Miles");
         employee.setLastName("Davis");
         employee.setGender(Gender.Male);
-        employee.setSalary(new Double(20000));
+        employee.setSalary(20000.0);
 
         employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
@@ -954,12 +950,12 @@ public class ServerEmployeeV2Test {
         employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
 
-        employee = RestUtils.restRead(context, new Integer(11025), Employee.class.getSimpleName(), Employee.class, null, mediaType);
+        employee = RestUtils.restRead(context, 11025, Employee.class.getSimpleName(), Employee.class, null, mediaType);
         assertNotNull(employee.getResponsibilities());
         assertTrue(employee.getResponsibilities().size() == 3);
 
         // delete employee
-        RestUtils.restDelete(context, new Integer(11025), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, 11025, Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
     }
 
     private void executeQueryGetAll(MediaType mediaType) throws Exception {
@@ -1068,7 +1064,7 @@ public class ServerEmployeeV2Test {
             assertTrue(result.contains("\"postalCode\":\"10005\""));
             assertTrue(result.contains("\"province\":\"NY\""));
             assertTrue(result.contains("\"street\":\"Wall Street\""));
-            assertTrue(result.contains("\"rel\":\"self\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/9112\""));
+            assertTrue(result.contains("\"rel\":\"self\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/singleResultQuery/EmployeeAddress.getById;id=9112\""));
             assertTrue(result.contains("\"rel\":\"canonical\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/9112\""));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             assertTrue(result.contains(
@@ -1081,7 +1077,7 @@ public class ServerEmployeeV2Test {
             assertTrue(result.contains("<postalCode>10005</postalCode>"));
             assertTrue(result.contains("<province>NY</province>"));
             assertTrue(result.contains("<street>Wall Street</street>"));
-            assertTrue(result.contains("<links rel=\"self\" href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/9112\"/>"));
+            assertTrue(result.contains("<links rel=\"self\" href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/singleResultQuery/EmployeeAddress.getById;id=9112\"/>"));
             assertTrue(result.contains("<links rel=\"canonical\" href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/9112\"/>"));
         } else {
             // unsupported media type
@@ -1262,7 +1258,7 @@ public class ServerEmployeeV2Test {
         assertNotNull("Employee create failed.", employee);
 
         Calendar threeYearsLater = GregorianCalendar.getInstance();
-        long end = (now.getTimeInMillis() + THREE_YEARS);
+        long end = (now.getTimeInMillis() + 94608000000L); // + 3 years
         threeYearsLater.setTimeInMillis(end);
 
         employmentPeriod.setEndDate(threeYearsLater);
@@ -1275,7 +1271,7 @@ public class ServerEmployeeV2Test {
         assertNotNull("Employee's employment period end date is null", employee.getPeriod().getEndDate());
         assertTrue("Incorrect end date for employee", employee.getPeriod().getEndDate().getTimeInMillis() == threeYearsLater.getTimeInMillis());
 
-        RestUtils.restDelete(context, new Integer(10234), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, 10234, Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
     }
 
     private void readEmployee(MediaType mediaType) throws Exception {
@@ -1288,13 +1284,13 @@ public class ServerEmployeeV2Test {
         employee.setPeriod(employmentPeriod);
 
         Employee employeeCreated = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
-        Employee employeeRead = RestUtils.restRead(context, new Integer(18234), Employee.class.getSimpleName(), Employee.class, null, mediaType);
+        Employee employeeRead = RestUtils.restRead(context, 18234, Employee.class.getSimpleName(), Employee.class, null, mediaType);
 
         assertNotNull("Employee create failed.", employeeCreated);
         assertNotNull("Employee read failed.", employeeRead);
         assertTrue("Employee created and employee read is different", employeeCreated.getLastName().equals(employeeRead.getLastName()));
-        RestUtils.restDelete(context, new Integer(18234), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
-        Employee emp = DBUtils.dbRead(new Integer(18234), Employee.class, context.getEmf().createEntityManager());
+        RestUtils.restDelete(context, 18234, Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        Employee emp = DBUtils.dbRead(18234, Employee.class, context.getEmf().createEntityManager());
         assertNull("Employee could not be deleted", emp);
     }
 
@@ -1441,7 +1437,7 @@ public class ServerEmployeeV2Test {
         RestUtils.restCreate(context, msg, Employee.class.getSimpleName(), Employee.class, null, mediaType);
 
         // Read employee and check certifications attribute
-        final String employee = RestUtils.restRead(context, new Integer(201204), Employee.class.getSimpleName(), null, mediaType);
+        final String employee = RestUtils.restRead(context, 201204, Employee.class.getSimpleName(), null, mediaType);
         assertTrue("Certifications link doesn't exist.", employee.contains(RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/201204/certifications"));
 
         // Read certifications and check that 'Java' certification exists
@@ -1449,7 +1445,7 @@ public class ServerEmployeeV2Test {
         assertTrue("Invalid certifications list.", certifications.contains("Java"));
 
         // Delete employee
-        RestUtils.restDelete(context, new Integer(201204), Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
+        RestUtils.restDelete(context, 201204, Employee.class.getSimpleName(), Employee.class, null, null, mediaType);
     }
 
     private void databaseException(MediaType mediaType) throws Exception {
@@ -1461,12 +1457,12 @@ public class ServerEmployeeV2Test {
         employmentPeriod.setStartDate(GregorianCalendar.getInstance());
         employee.setPeriod(employmentPeriod);
 
-        Employee employeeCreated = (Employee) RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+        Employee employeeCreated = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
         assertNotNull("Employee create failed.", employeeCreated);
 
         // 2nd create call should fail, because of the violation of the integrity constraints
         try {
-            employeeCreated = (Employee) RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
+            RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, null, mediaType, true);
         } catch (RestCallFailedException ex) {
             ErrorResponse errorResponse = ex.getErrorDetails();
             assertNotNull(errorResponse);

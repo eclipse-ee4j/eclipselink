@@ -60,12 +60,9 @@ public class ServerFieldsFilteringTest {
     }
 
     @AfterClass
-    public static void cleanup() throws Exception {
-        try {
-            RestUtils.restUpdateQuery(context, "BasketItem.deleteAll", "BasketItem", null, null, MediaType.APPLICATION_JSON_TYPE);
-            RestUtils.restUpdateQuery(context, "Basket.deleteAll", "Basket", null, null, MediaType.APPLICATION_JSON_TYPE);
-        } catch (URISyntaxException e) {
-        }
+    public static void cleanup() throws URISyntaxException {
+        RestUtils.restUpdateQuery(context, "BasketItem.deleteAll", "BasketItem", null, null, MediaType.APPLICATION_JSON_TYPE);
+        RestUtils.restUpdateQuery(context, "Basket.deleteAll", "Basket", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     private static void initData() throws Exception {
@@ -99,6 +96,8 @@ public class ServerFieldsFilteringTest {
         // Check that 'name' and 'id' fields are present in the response and other fields are not
         assertTrue(queryResult.contains("\"id\":1,\"name\":\"Basket1\""));
         assertFalse(queryResult.contains("\"basketItems\":[\n{"));
+        assertTrue(checkLinkJson(queryResult, "self", "/entity/Basket/1?fields=name,id"));
+        assertTrue(checkLinkJson(queryResult, "canonical", "/entity/Basket/1"));
     }
 
     @Test
@@ -116,6 +115,8 @@ public class ServerFieldsFilteringTest {
         assertTrue(queryResult.contains("<name>Basket1</name>"));
         assertFalse(queryResult.contains("<basketItems>"));
         assertFalse(queryResult.contains("</basketItems>"));
+        assertTrue(checkLinkXml(queryResult, "self", "/entity/Basket/1?fields=name,id"));
+        assertTrue(checkLinkXml(queryResult, "canonical", "/entity/Basket/1"));
     }
 
     @Test
@@ -131,6 +132,8 @@ public class ServerFieldsFilteringTest {
         // Check that 'name' and 'id' fields are present in the response and other fields are not
         assertTrue(queryResult.contains("\"id\":1"));
         assertFalse(queryResult.contains("\"basketItems\":[\n{"));
+        assertTrue(checkLinkJson(queryResult, "self", "/entity/Basket/1?excludeFields=basketItems,name"));
+        assertTrue(checkLinkJson(queryResult, "canonical", "/entity/Basket/1"));
     }
 
     @Test
@@ -147,6 +150,8 @@ public class ServerFieldsFilteringTest {
         assertTrue(queryResult.contains("<id>1</id>"));
         assertFalse(queryResult.contains("<basketItems>"));
         assertFalse(queryResult.contains("</basketItems>"));
+        assertTrue(checkLinkXml(queryResult, "self", "/entity/Basket/1?excludeFields=basketItems,name"));
+        assertTrue(checkLinkXml(queryResult, "canonical", "/entity/Basket/1"));
     }
 
     @Test(expected = Exception.class)
@@ -159,5 +164,15 @@ public class ServerFieldsFilteringTest {
         // Get BasketItem with id = 1. Exception must be thrown because both 'fields' and 'excludeFields' parameters
         // cannot be present in the same request.
         RestUtils.restReadWithHints(context, 1, Basket.class.getSimpleName(), hints, MediaType.APPLICATION_XML_TYPE);
+    }
+
+    private boolean checkLinkXml(String response, String rel, String uri) throws URISyntaxException {
+        final String link = "<links rel=\"" + rel + "\" href=\"" + RestUtils.getServerURI(context.getVersion()) + context.getName() + uri + "\"/>";
+        return response.contains(link);
+    }
+
+    private boolean checkLinkJson(String response, String rel, String uri) throws URISyntaxException {
+        final String link = "{\"rel\":\"" + rel + "\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + context.getName() + uri + "\"}";
+        return response.contains(link);
     }
 }

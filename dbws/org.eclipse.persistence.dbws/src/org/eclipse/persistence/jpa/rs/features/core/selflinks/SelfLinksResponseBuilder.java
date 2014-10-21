@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Copyright (c) 2013, 2014 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -57,7 +57,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
      */
     @Override
     public Object buildReadAllQueryResponse(PersistenceContext context, Map<String, Object> queryParams, List<Object> items, UriInfo uriInfo) {
-        return response(context, items, uriInfo);
+        return collectionResponse(context, items, uriInfo);
     }
 
     /**
@@ -105,7 +105,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
     @Override
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object item, UriInfo uriInfo) {
         if (item instanceof Collection) {
-            return response(context, (List<Object>) item, uriInfo);
+            return collectionResponse(context, (List<Object>) item, uriInfo);
         }
         return item;
     }
@@ -116,37 +116,42 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
     @Override
     public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
         if (result instanceof PersistenceWeavedRest) {
-            return generateEntityLinks(context, (PersistenceWeavedRest) result, true);
+            final PersistenceWeavedRest entity = (PersistenceWeavedRest)result;
+            final ClassDescriptor classDescriptor = context.getServerSession().getProject().getDescriptor(result.getClass());
+            final String entityClassName = classDescriptor.getAlias();
+            final String entityId = IdHelper.stringifyId(entity, entityClassName, context);
+
+            final ItemLinksBuilder itemLinksBuilder = (new ItemLinksBuilder())
+                    .addSelf(uriInfo.getRequestUri().toString())
+                    .addCanonical(HrefHelper.buildEntityHref(context, entityClassName, entityId));
+
+            generateLinksForRelationships(context, entity);
+            entity._persistence_setLinks(itemLinksBuilder.build());
+            return entity;
         }
         return result;
     }
 
-    private Object callGetterForProperty(Object bean, String propertyName) {
-        try {
-            final BeanInfo info = Introspector.getBeanInfo(bean.getClass(), Object.class);
-            final PropertyDescriptor[] props = info.getPropertyDescriptors();
-            for (PropertyDescriptor pd : props) {
-                if (propertyName.equals(pd.getName())) {
-                    return pd.getReadMethod().invoke(bean);
-                }
-            }
-        } catch (InvocationTargetException e) {
-            throw JPARSException.exceptionOccurred(e);
-        } catch (IntrospectionException e) {
-            throw JPARSException.exceptionOccurred(e);
-        } catch (IllegalAccessException e) {
-            throw JPARSException.exceptionOccurred(e);
-        }
-
-        return null;
-    }
-
-    private Object response(PersistenceContext context, List<Object> results, UriInfo uriInfo) {
+    private Object collectionResponse(PersistenceContext context, List<Object> results, UriInfo uriInfo) {
         if ((results != null) && (!results.isEmpty())) {
             final ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
             for (Object item : results) {
-                final Object result = buildSingleEntityResponse(context, null, item, uriInfo);
-                response.addItem(result);
+                if (item instanceof PersistenceWeavedRest) {
+                    final PersistenceWeavedRest entity = (PersistenceWeavedRest) item;
+                    final ClassDescriptor classDescriptor = context.getServerSession().getProject().getDescriptor(item.getClass());
+                    final String entityClassName = classDescriptor.getAlias();
+                    final String entityId = IdHelper.stringifyId(entity, entityClassName, context);
+
+                    final String href = HrefHelper.buildEntityHref(context, entityClassName, entityId);
+                    final ItemLinksBuilder itemLinksBuilder = (new ItemLinksBuilder())
+                            .addCanonical(href);
+                    entity._persistence_setLinks(itemLinksBuilder.build());
+
+                    generateLinksForRelationships(context, entity);
+                    response.addItem(entity);
+                } else {
+                    response.addItem(item);
+                }
             }
 
             response.addLink(new LinkV2(ReservedWords.JPARS_REL_SELF, uriInfo.getRequestUri().toString()));
@@ -159,46 +164,58 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         for (JAXBElement field : fields) {
             if (field.getValue() instanceof PersistenceWeavedRest) {
                 final PersistenceWeavedRest entity = (PersistenceWeavedRest) field.getValue();
-                generateEntityLinks(context, entity, false);
+                final ClassDescriptor classDescriptor = context.getServerSession().getProject().getDescriptor(entity.getClass());
+                final String entityClassName = classDescriptor.getAlias();
+                final String entityId = IdHelper.stringifyId(entity, entityClassName, context);
+
+                // No links for embedded objects
+                if (!classDescriptor.isAggregateDescriptor()) {
+                    final String href = HrefHelper.buildEntityHref(context, entityClassName, entityId);
+                    final ItemLinksBuilder itemLinksBuilder = (new ItemLinksBuilder())
+                    .addSelf(href)
+                    .addCanonical(href);
+                    entity._persistence_setLinks(itemLinksBuilder.build());
+                }
             }
         }
     }
 
-    private PersistenceWeavedRest generateEntityLinks(PersistenceContext context, PersistenceWeavedRest entity, boolean processRelationships) {
+    private void generateLinksForRelationships(PersistenceContext context, PersistenceWeavedRest entity) {
         final ClassDescriptor classDescriptor = context.getServerSession().getProject().getDescriptor(entity.getClass());
         final String entityClassName = classDescriptor.getAlias();
         final String entityId = IdHelper.stringifyId(entity, entityClassName, context);
-        final String href = HrefHelper.buildEntityHref(context, entityClassName, entityId);
 
-        // No links for embedded objects
-        if (!classDescriptor.isAggregateDescriptor()) {
-            final ItemLinks itemLinks = (new ItemLinksBuilder())
-                    .addSelf(href)
-                    .addCanonical(href)
-                    .build();
+        for (final Field field : entity.getClass().getDeclaredFields()) {
+            if (PersistenceWeavedRest.class.isAssignableFrom(field.getType())) {
+                final PersistenceWeavedRest obj = (PersistenceWeavedRest) callGetterForProperty(entity, field.getName());
+                if (obj != null) {
+                    final String fieldClassName = context.getJAXBDescriptorForClass(field.getType()).getAlias();
+                    final String fieldId = IdHelper.stringifyId(obj, fieldClassName, context);
 
-            entity._persistence_setLinks(itemLinks);
-        }
+                    final ItemLinks links = (new ItemLinksBuilder())
+                            .addSelf(HrefHelper.buildEntityFieldHref(context, entityClassName, entityId, field.getName()))
+                            .addCanonical(HrefHelper.buildEntityHref(context, fieldClassName, fieldId))
+                            .build();
 
-        // Generate links for all referenced entities.
-        if (processRelationships) {
-            for (final Field field : entity.getClass().getDeclaredFields()) {
-                if (PersistenceWeavedRest.class.isAssignableFrom(field.getType())) {
-                    final PersistenceWeavedRest obj = (PersistenceWeavedRest) callGetterForProperty(entity, field.getName());
-                    if (obj != null) {
-                        final String fieldClassName = context.getJAXBDescriptorForClass(field.getType()).getAlias();
-                        final String fieldId = IdHelper.stringifyId(obj, fieldClassName, context);
-
-                        final ItemLinks links = (new ItemLinksBuilder())
-                                .addSelf(HrefHelper.buildEntityFieldHref(context, entityClassName, entityId, field.getName()))
-                                .addCanonical(HrefHelper.buildEntityHref(context, fieldClassName, fieldId))
-                                .build();
-
-                        obj._persistence_setLinks(links);
-                    }
+                    obj._persistence_setLinks(links);
                 }
             }
         }
-        return entity;
+    }
+
+    private Object callGetterForProperty(Object bean, String propertyName) {
+        try {
+            final BeanInfo info = Introspector.getBeanInfo(bean.getClass(), Object.class);
+            final PropertyDescriptor[] props = info.getPropertyDescriptors();
+            for (PropertyDescriptor pd : props) {
+                if (propertyName.equals(pd.getName())) {
+                    return pd.getReadMethod().invoke(bean);
+                }
+            }
+        } catch (InvocationTargetException| IntrospectionException | IllegalAccessException e) {
+            throw JPARSException.exceptionOccurred(e);
+        }
+
+        return null;
     }
 }
