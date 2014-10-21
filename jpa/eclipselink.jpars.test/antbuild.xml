@@ -474,7 +474,7 @@
             <filter token="DB_USER" value="${db.user}"/>
             <filter token="DB_PWD" value="${db.pwd}"/>
             <filter token="DB_DRIVER" value="${db.driver}"/>
-            <copy todir="classes/META-INF" filtering="true">
+            <copy todir="classes/META-INF" filtering="true" overwrite="true">
                 <fileset dir="src/META-INF" includes="**/*.xml" excludes=".svn"/>
             </copy>
         </sequential>
