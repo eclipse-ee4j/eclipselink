@@ -204,7 +204,7 @@
                 />
         <selectbundle basename="${json.prefix}"  directory="${maven.2.common.plugins.dir}"
                       criterion="${json.criteria}" property="json.version" versiononly="true"
-        />
+                />
         <selectbundle basename="${antlr.prefix}"  directory="${maven.2.common.plugins.dir}"
                       criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
                 />
@@ -323,7 +323,7 @@
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="builder.dependencies"     value="${deps.head}${dep.core}${dep.dbws}${dep.moxy}${dep.jpa}${dep.nosql}${dep.oracle}${dep.servlet}${dep.wsdl}${dep.oracleddl}${deps.foot}"/>
-        <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.json}${deps.foot}"/>
+        <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.validation}${dep.json}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
 
