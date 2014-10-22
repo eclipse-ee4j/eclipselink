@@ -770,8 +770,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
      * @param c The comparator to determine the order of the array. A {@code null} value
      *          indicates that the elements' {@linkplain Comparable natural ordering}
      *          should be used.
-     * @throws UnsupportedOperationException when running with JDK < 1.8.
-     * @throws ReflectiveOperationException when there was an issue with invoking sort.
+     * @throws UnsupportedOperationException when running with JDK &lt; 1.8.
      * @since 2.6.0 with JDK 1.8
      */
     public void sort(Comparator<? super E> c) {
