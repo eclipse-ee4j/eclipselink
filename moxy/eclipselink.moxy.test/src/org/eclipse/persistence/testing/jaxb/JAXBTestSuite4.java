@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.eclipse.persistence.testing.jaxb.casesensitivity.JAXBCaseInsensitivityTestCase;
 import org.eclipse.persistence.testing.jaxb.collections.CollectionsTestSuite;
 import org.eclipse.persistence.testing.jaxb.defaultvalue.DefaultValueTestSuite;
@@ -26,11 +29,14 @@ import org.eclipse.persistence.testing.jaxb.map.MapElementWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.map.MapNamespaceBarTestCases;
 import org.eclipse.persistence.testing.jaxb.map.MapNamespaceFooTestCases;
 import org.eclipse.persistence.testing.jaxb.map.MapTestCases;
+import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphBasicTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphDynamicTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphRefSubTestCases;
+import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphXmlAnyLaxCollectionTestCases;
+import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphXmlAnyLaxTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
 import org.eclipse.persistence.testing.jaxb.typevariable.TypeVariableTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlelementrefs.adapter.XmlElementRefsAdapterTestCases;
@@ -41,9 +47,6 @@ import org.eclipse.persistence.testing.jaxb.xmlvariablenode.AllVariableElementTe
 import org.eclipse.persistence.testing.jaxb.xsitype.OtherRootTestCases;
 import org.eclipse.persistence.testing.jaxb.xsitype.TypeAttributeInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.xsitype.TypeAttributeTestCases;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class JAXBTestSuite4 {
 
@@ -74,6 +77,9 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(ObjectGraphDynamicTestCases.class);
         suite.addTestSuite(ObjectGraphRefSubTestCases.class);
         suite.addTestSuite(ObjectGraphInheritanceTestCases.class);
+        suite.addTestSuite(ObjectGraphAttributeTestCases.class);
+        suite.addTestSuite(ObjectGraphXmlAnyLaxTestCases.class);
+        suite.addTestSuite(ObjectGraphXmlAnyLaxCollectionTestCases.class);
         suite.addTestSuite(XmlElementRefsAdapterTestCases.class);
         suite.addTest(AllVariableElementTestCases.suite());
         suite.addTestSuite(InheritanceOverrideTestCases.class);
@@ -83,10 +89,10 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(OtherRootTestCases.class);
         suite.addTest(TypeVariableTestSuite.suite());
         suite.addTestSuite(JAXBCaseInsensitivityTestCase.class);
-	    
+
 	    return suite;
 	}
-	
+
 	public static void main(String[] args) {
 	    String[] arguments = { "-c", "org.eclipse.persistence.testing.jaxb.JAXBTestSuite4" };
 	    junit.textui.TestRunner.main(arguments);

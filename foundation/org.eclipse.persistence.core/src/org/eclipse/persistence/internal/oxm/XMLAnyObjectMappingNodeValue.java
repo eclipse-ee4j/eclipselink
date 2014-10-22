@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -16,6 +16,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.core.queries.CoreAttributeItem;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -29,6 +31,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -99,7 +102,21 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, objectValue, session, namespaceResolver);
                 return true;
             }
+
             Descriptor descriptor = (Descriptor) childSession.getDescriptor(objectValue);
+            CoreAttributeGroup group = marshalRecord.getCurrentAttributeGroup();
+            CoreAttributeItem item = group.getItem(getMapping().getAttributeName());
+            CoreAttributeGroup nestedGroup = XMLRecord.DEFAULT_ATTRIBUTE_GROUP;
+            if(item != null) {
+                if(item.getGroups() != null) {
+                    nestedGroup = item.getGroup(descriptor.getJavaClass());
+                }
+                if(nestedGroup == null) {
+                    nestedGroup = item.getGroup() == null?XMLRecord.DEFAULT_ATTRIBUTE_GROUP:item.getGroup();
+                }
+            }
+
+            marshalRecord.pushAttributeGroup(nestedGroup);
             ObjectBuilder objectBuilder = (ObjectBuilder) descriptor.getObjectBuilder();
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);

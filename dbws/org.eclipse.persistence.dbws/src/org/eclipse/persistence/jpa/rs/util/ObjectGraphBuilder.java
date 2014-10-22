@@ -22,7 +22,6 @@ import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilterType;
 import org.eclipse.persistence.jpa.rs.util.list.PageableCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultCollection;
-import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryResult;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -65,10 +64,9 @@ public class ObjectGraphBuilder {
             createNodeForEntity(object, root);
         } else if (object instanceof SingleResultQueryResult) {
             root.addAttributeNode("links");
-            root.addSubNode("fields");
 
             final SingleResultQueryResult singleResultQueryResult = (SingleResultQueryResult)object;
-            replaceEntitiesWithLinks(singleResultQueryResult.getFields());
+            processFieldsList(root.addSubNode("fields"), singleResultQueryResult.getFields());
         } else if (object instanceof ReadAllQueryResultCollection) {
             createNodeForPageableCollection((PageableCollection) object, root);
         } else {
@@ -90,23 +88,21 @@ public class ObjectGraphBuilder {
         if (collection.getItems() != null && !collection.getItems().isEmpty()) {
             final Node subNode = node.addSubNode("items");
             if (collection instanceof ReportQueryResultCollection) {
-                subNode.addAttributeNode("fields");
-
                 final ReportQueryResultCollection reportQueryResultCollection = (ReportQueryResultCollection)collection;
-                for (ReportQueryResultListItem item : reportQueryResultCollection.getItems()) {
-                    replaceEntitiesWithLinks(item.getFields());
-                }
+                processFieldsList(subNode.addSubNode("fields"), reportQueryResultCollection.getItems().get(0).getFields());
             } else {
                 createNodeForEntity(collection.getItems().get(0), subNode);
             }
         }
     }
 
-    private void replaceEntitiesWithLinks(List<JAXBElement> fields) {
-        for (JAXBElement field : fields) {
+    private void processFieldsList(Node fieldsNode, List<JAXBElement> elements) {
+        for (JAXBElement field : elements) {
             if (field.getValue() instanceof PersistenceWeavedRest) {
-                final PersistenceWeavedRest entity = (PersistenceWeavedRest) field.getValue();
-                field.setValue(entity._persistence_getLinks());
+                final Node subNode = fieldsNode.addSubNode(field.getName().toString());
+                subNode.addAttributeNode("_persistence_links");
+            } else {
+                fieldsNode.addAttributeNode(field.getName().toString());
             }
         }
     }

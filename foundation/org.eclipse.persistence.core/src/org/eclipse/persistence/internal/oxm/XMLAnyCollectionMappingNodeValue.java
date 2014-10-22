@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -17,6 +17,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.core.queries.CoreAttributeItem;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -29,6 +31,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -371,12 +374,13 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             wasXMLRoot = true;
             value = ((Root) value).getObject();            
             if(null == value){            	   
-            	setupFragment(((Root) originalValue), xmlRootFragment, marshalRecord);
-            	marshalRecord.nilComplex(xmlRootFragment, namespaceResolver);
+		setupFragment(((Root) originalValue), xmlRootFragment, marshalRecord);
+		marshalRecord.nilComplex(xmlRootFragment, namespaceResolver);
                 return true;
             }
         }
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
+
         if (value instanceof String) {
             marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, value, session, namespaceResolver);
         } else if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && value instanceof org.w3c.dom.Node) {
@@ -384,13 +388,15 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         } else {
             try {
                 childSession = marshaller.getContext().getSession(value);
-            } catch (XMLMarshalException e) {               
+            } catch (XMLMarshalException e) {
                 marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, value, session, namespaceResolver);
                 return true;
             }
             descriptor = (Descriptor) childSession.getDescriptor(value);
+            pushAttributeGroup(marshalRecord, descriptor, getMapping().getAttributeName());
+
             objectBuilder = (ObjectBuilder) descriptor.getObjectBuilder();
-            
+
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);
             if(wasXMLRoot){
                 setupFragment(((Root) originalValue), xmlRootFragment, marshalRecord);
@@ -424,29 +430,68 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                     marshalRecord.setLeafElementType(descriptor.getDefaultRootElementType());
                 }
 
-                getXPathNode().startElement(marshalRecord, rootFragment, object, childSession, marshalRecord.getNamespaceResolver(), objectBuilder, value);                
+                getXPathNode().startElement(marshalRecord, rootFragment, object, childSession, marshalRecord.getNamespaceResolver(), objectBuilder, value);
 
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
-                marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, descriptor, (Field)xmlAnyCollectionMapping.getField(), originalValue, value, wasXMLRoot, false);               
+                pushAttributeGroup(marshalRecord, descriptor, rootFragment.getLocalName());
+
+                marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, descriptor, (Field)xmlAnyCollectionMapping.getField(), originalValue, value, wasXMLRoot, false);
                 objectBuilder.buildRow(marshalRecord, value, session, marshaller, null);
                 marshalRecord.afterContainmentMarshal(object, value);
                 marshalRecord.endElement(rootFragment, namespaceResolver);
                 marshalRecord.removeExtraNamespacesFromNamespaceResolver(extraNamespaces, session);
 
+                marshalRecord.popAttributeGroup();
+
             }
+            marshalRecord.popAttributeGroup();
         }
         return true;
     }
 
+    private void pushAttributeGroup(MarshalRecord marshalRecord, Descriptor descriptor, String attributeName) {
+        CoreAttributeGroup group = marshalRecord.getCurrentAttributeGroup();
+        CoreAttributeItem item = group.getItem(attributeName);
+        CoreAttributeGroup nestedGroup = XMLRecord.DEFAULT_ATTRIBUTE_GROUP;
+        if(item != null) {
+            if(item.getGroups() != null) {
+                nestedGroup = item.getGroup(descriptor.getJavaClass());
+            }
+            if(nestedGroup == null) {
+                nestedGroup = item.getGroup() == null?XMLRecord.DEFAULT_ATTRIBUTE_GROUP:item.getGroup();
+            }
+        }
+
+        marshalRecord.pushAttributeGroup(nestedGroup);
+    }
+
     private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
-    	 QName qname = null;
+	 QName qname = null;
+
         if (xmlRootFragment != null) {
+
             qname = ((Root) originalValue).getSchemaType();
             setupFragment(((Root) originalValue), xmlRootFragment, marshalRecord);
+
+            CoreAttributeGroup group = marshalRecord.getCurrentAttributeGroup();
+            CoreAttributeItem item = group.getItem(getMapping().getAttributeName());
+            CoreAttributeGroup nestedGroup = XMLRecord.DEFAULT_ATTRIBUTE_GROUP;
+            if(item != null) {
+                if (item.getGroup() != null && null != xmlRootFragment.getLocalName()) {
+                    CoreAttributeItem nestedItem = item.getGroup().getItem(xmlRootFragment.getLocalName());
+                    if (null != nestedItem) {
+                        nestedGroup = item.getGroup();
+                    } else {
+                        return;
+                    }
+                }
+            }
+
             getXPathNode().startElement(marshalRecord, xmlRootFragment, object, session, namespaceResolver, null, null);
-            updateNamespaces(qname, marshalRecord, null);     
+            updateNamespaces(qname, marshalRecord, null);
         }
+
         marshalRecord.characters(qname, value, null, false);
 
         if (xmlRootFragment != null) {

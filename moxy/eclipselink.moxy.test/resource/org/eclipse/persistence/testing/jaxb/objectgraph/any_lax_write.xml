@@ -1,0 +1,6 @@
+<laxFoo>
+    <elements>
+        <element1 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">element1Value</element1>
+        <element3 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">element3Value</element3>
+    </elements>
+</laxFoo>

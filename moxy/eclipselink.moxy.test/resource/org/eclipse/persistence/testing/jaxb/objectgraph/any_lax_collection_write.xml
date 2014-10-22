@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rootElement>
+    <element1>element1Value</element1>
+    <element3>
+        <element4 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">e1</element4>
+    </element3>
+    <element8>8</element8>
+</rootElement>

@@ -1,0 +1,7 @@
+{"laxFoo": {
+  "elements": {
+    "element1" :{"type":"string","value": "element1Value"},
+    "element3" :{"type":"string","value": "element3Value"}
+  }
+ }
+}
