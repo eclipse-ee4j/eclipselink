@@ -46,7 +46,7 @@ enum BeanValidationHelper {
     /**
      * Set of all default BeanValidation field annotations and known custom field constraints.
      */
-    private final Set<Class<? extends Annotation>> knownConstraints = new HashSet<>();
+    private final Set<Class<? extends Annotation>> knownConstraints = new HashSet<Class<? extends Annotation>>();
 
     {
         knownConstraints.add(Valid.class);
@@ -80,7 +80,7 @@ enum BeanValidationHelper {
      * Map of all classes that have undergone check for bean validation constraints.
      * Maps the key with boolean value telling whether the class contains an annotation from {@link #knownConstraints}.
      */
-    private final Map<Class<?>, Boolean> constraintsOnClasses = new HashMap<>();
+    private final Map<Class<?>, Boolean> constraintsOnClasses = new HashMap<Class<?>, Boolean>();
 
     /**
      * Tells whether any of the class's fields are constrained by Bean Validation annotations or custom constraints.

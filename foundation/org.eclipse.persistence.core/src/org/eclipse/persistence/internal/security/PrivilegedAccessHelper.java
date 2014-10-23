@@ -50,7 +50,7 @@ public class PrivilegedAccessHelper {
     private static Map<String, Class> primitiveClasses;
 
     static {
-        primitiveClasses = new HashMap<>();
+        primitiveClasses = new HashMap<String, Class>();
         primitiveClasses.put("boolean", boolean.class);
         primitiveClasses.put("int", int.class);
         primitiveClasses.put("long", long.class);
