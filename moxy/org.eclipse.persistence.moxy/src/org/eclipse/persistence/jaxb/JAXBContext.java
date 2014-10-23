@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property
+ *     Marcel Valovy - 2.6 - Bean Validation, case insensitive unmarshalling, refactoring
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -1023,7 +1023,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         TypeMappingInfoInput(TypeMappingInfo[] typeMappingInfo, Map properties, ClassLoader classLoader) {
             super(properties, classLoader);
             this.typeMappingInfo = Arrays.copyOf(typeMappingInfo, typeMappingInfo.length);
-           
+
             Arrays.sort(this.typeMappingInfo, new Comparator<TypeMappingInfo>() {
                 @Override
                 public int compare(TypeMappingInfo javaClass1, TypeMappingInfo javaClass2) {
@@ -1291,10 +1291,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         private void updateNamespaces() {
 
             Collection descriptors = xmlContext.getSession().getDescriptors().values();
-            Iterator iter = descriptors.iterator();
 
-            while (iter.hasNext()) {
-                Descriptor desc = (Descriptor) iter.next();
+            for (Object descriptor : descriptors) {
+                Descriptor desc = (Descriptor) descriptor;
                 processXMLDescriptor(new ArrayList<Descriptor>(), desc, desc.getNonNullNamespaceResolver());
             }
 
@@ -1302,9 +1301,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         private void processRefClasses(List processed, Set refClasses, org.eclipse.persistence.internal.oxm.NamespaceResolver nr) {
             if (refClasses != null) {
-                Iterator iter = refClasses.iterator();
-                while (iter.hasNext()) {
-                    Class nextClass = (Class) iter.next();
+                for (Object refClass : refClasses) {
+                    Class nextClass = (Class) refClass;
                     Descriptor desc = (Descriptor) xmlContext.getSession().getProject().getDescriptor(nextClass);
                     processXMLDescriptor(processed, desc, nr);
                 }
@@ -1439,11 +1437,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 return;
             }
 
-            Iterator descriptors = xmlContext.getSession().getProject().getOrderedDescriptors().iterator();
-
             //Add schema types generated for mapped domain classes
-            while (descriptors.hasNext()) {
-                Descriptor next = (Descriptor) descriptors.next();
+            for (Object o : xmlContext.getSession().getProject().getOrderedDescriptors()) {
+                Descriptor next = (Descriptor) o;
                 Class javaClass = next.getJavaClass();
 
                 if (next.getSchemaReference() != null) {
@@ -1464,9 +1460,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                             }
 
                             if (type == null && getTypeMappingInfoToGeneratedType() != null) {
-                                Iterator<Map.Entry<TypeMappingInfo, Class>> iter = getTypeMappingInfoToGeneratedType().entrySet().iterator();
-                                while (iter.hasNext()) {
-                                    Map.Entry<TypeMappingInfo, Class> entry = iter.next();
+                                for (Entry<TypeMappingInfo, Class> entry : getTypeMappingInfoToGeneratedType().entrySet()) {
                                     if (entry.getValue().equals(javaClass)) {
                                         type = entry.getKey().getType();
                                         break;
@@ -1528,6 +1522,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         public JAXBMarshaller createMarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
             // create a JAXBIntrospector and set it on the marshaller
+            JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), new JAXBIntrospector(xmlContext));
+            marshaller.setJaxbContext(jaxbContext);
+            if (generator != null && generator.hasMarshalCallbacks()) {
+                // initialize each callback in the map
+                ClassLoader classLoader = getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager().getLoader();
+                for (Object o : generator.getMarshalCallbacks().keySet()) {
+                    MarshalCallback cb = (MarshalCallback) generator.getMarshalCallbacks().get(o);
             JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), jaxbContext);
             if (generator != null && generator.hasMarshalCallbacks()) {
                 // initialize each callback in the map
@@ -1561,8 +1562,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             if (generator != null && generator.hasUnmarshalCallbacks()) {
                 // initialize each callback in the map
                 ClassLoader classLoader = getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager().getLoader();
-                for (Iterator callIt = generator.getUnmarshalCallbacks().keySet().iterator(); callIt.hasNext();) {
-                    UnmarshalCallback cb = (UnmarshalCallback) generator.getUnmarshalCallbacks().get(callIt.next());
+                for (Object o : generator.getUnmarshalCallbacks().keySet()) {
+                    UnmarshalCallback cb = (UnmarshalCallback) generator.getUnmarshalCallbacks().get(o);
                     cb.initialize(classLoader);
                 }
                 unmarshaller.setUnmarshalCallbacks(generator.getUnmarshalCallbacks());

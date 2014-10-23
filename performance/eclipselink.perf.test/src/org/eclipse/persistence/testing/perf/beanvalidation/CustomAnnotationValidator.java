@@ -10,11 +10,20 @@
  * Contributors:
  *     Marcel Valovy - 2.6 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom;
+package org.eclipse.persistence.testing.perf.beanvalidation;
 
-/**
- * BeanValidation Group 'Drivers.class'.
- */
-public interface Drivers {
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
+public class CustomAnnotationValidator implements ConstraintValidator<CustomAnnotation, Integer> {
+
+    @Override
+    public void initialize(CustomAnnotation constraintAnnotation) {
+
+    }
+
+    @Override
+    public boolean isValid(Integer object, ConstraintValidatorContext constraintContext) {
+        return true;
+    }
 }

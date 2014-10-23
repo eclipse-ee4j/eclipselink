@@ -10,11 +10,24 @@
  * Contributors:
  *     Marcel Valovy - 2.6 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom;
+package org.eclipse.persistence.testing.perf.beanvalidation;
 
-/**
- * BeanValidation Group 'Drivers.class'.
- */
-public interface Drivers {
+import javax.validation.Constraint;
+import javax.validation.Payload;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = CustomAnnotationValidator.class)
+public @interface CustomAnnotation {
+
+    String message() default "{org.eclipse.persistence.moxy.CustomAnnotation.message}";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 
 }
