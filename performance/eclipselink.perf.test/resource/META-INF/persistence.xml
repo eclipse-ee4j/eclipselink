@@ -1,0 +1,16 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd"
+             version="1.0">
+    <persistence-unit name="my-app" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.perf.beanvalidation.Employee</class>
+        <class>org.eclipse.persistence.testing.perf.beanvalidation.EmployeeAnnotated</class>
+        <properties>
+            <property name="javax.persistence.jdbc.driver"      value="%driver%"/>
+            <property name="javax.persistence.jdbc.url"         value="%url%"/>
+            <property name="javax.persistence.jdbc.user"        value="%user%"/>
+            <property name="javax.persistence.jdbc.password"    value="%pwd%"/>
+        </properties>
+    </persistence-unit>
+</persistence>
