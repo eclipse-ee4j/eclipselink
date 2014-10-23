@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     Marcel Valovy - 2.6 - Bean Validation, case insensitive unmarshalling, refactoring
+ *     Marcel Valovy - 2.6 - Bean Validation, case insensitive unmarshalling.
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -161,10 +161,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     private static final String RI_XML_ACCESSOR_FACTORY_SUPPORT = "com.sun.xml.bind.XmlAccessorFactory";
 
     /**
-      * For JAXB 2 there is no explicitly defined default validation handler
-      * and the default event handling only terminates the  operation after
-      * encountering a fatal error.
-      */
+     * For JAXB 2 there is no explicitly defined default validation handler
+     * and the default event handling only terminates the  operation after
+     * encountering a fatal error.
+     */
     protected static final ValidationEventHandler DEFAULT_VALIDATION_EVENT_HANDER = new ValidationEventHandler() {
         public boolean handleEvent(ValidationEvent event) {
             return event.getSeverity() < ValidationEvent.FATAL_ERROR;
@@ -1522,13 +1522,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         public JAXBMarshaller createMarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
             // create a JAXBIntrospector and set it on the marshaller
-            JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), new JAXBIntrospector(xmlContext));
-            marshaller.setJaxbContext(jaxbContext);
-            if (generator != null && generator.hasMarshalCallbacks()) {
-                // initialize each callback in the map
-                ClassLoader classLoader = getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager().getLoader();
-                for (Object o : generator.getMarshalCallbacks().keySet()) {
-                    MarshalCallback cb = (MarshalCallback) generator.getMarshalCallbacks().get(o);
             JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), jaxbContext);
             if (generator != null && generator.hasMarshalCallbacks()) {
                 // initialize each callback in the map
@@ -1586,18 +1579,18 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         public JAXBBinder createBinder(JAXBContext context) {
-		XMLMarshaller marshaller = null;
-		XMLUnmarshaller unmarshaller = null;
-		try {
-			marshaller = createMarshaller(context).getXMLMarshaller();
-			unmarshaller = createUnmarshaller(context).getXMLUnmarshaller();
-		} catch (javax.xml.bind.JAXBException e) {
-			// log something
-			marshaller = context.getXMLContext().createMarshaller();
-			unmarshaller = context.getXMLContext().createUnmarshaller();
-		}
+            XMLMarshaller marshaller = null;
+            XMLUnmarshaller unmarshaller = null;
+            try {
+                marshaller = createMarshaller(context).getXMLMarshaller();
+                unmarshaller = createUnmarshaller(context).getXMLUnmarshaller();
+            } catch (javax.xml.bind.JAXBException e) {
+                // log something
+                marshaller = context.getXMLContext().createMarshaller();
+                unmarshaller = context.getXMLContext().createUnmarshaller();
+            }
 
-		return new JAXBBinder(context, marshaller, unmarshaller);
+            return new JAXBBinder(context, marshaller, unmarshaller);
         }
 
         private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException {
