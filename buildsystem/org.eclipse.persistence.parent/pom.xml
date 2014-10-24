@@ -223,6 +223,7 @@
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+                    <executionEnvironmentDefault>JavaSE-1.7</executionEnvironmentDefault>
                     <pomDependencies>consider</pomDependencies>
                     <resolver>p2</resolver>
                     <environments>
