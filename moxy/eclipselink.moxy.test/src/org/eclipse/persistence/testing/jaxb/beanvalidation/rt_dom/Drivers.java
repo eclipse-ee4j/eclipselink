@@ -13,7 +13,8 @@
 package org.eclipse.persistence.testing.jaxb.beanvalidation.rt_dom;
 
 /**
- * BeanValidation Group 'Drivers.class'.
+ * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @since 2.6
  */
 public interface Drivers {
 

@@ -50,27 +50,27 @@ public final class BeanValidationException extends EclipseLinkException {
 
 
     /* Runtime. */
-    public static BeanValidationException constraintViolation(Object[] args, Throwable internalException){
+    public final static BeanValidationException constraintViolation(Object[] args, Throwable internalException){
         BeanValidationException bve = new BeanValidationException(ExceptionMessageGenerator.buildMessage(BeanValidationException.class, CONSTRAINT_VIOLATION, args), internalException);
         bve.setErrorCode(CONSTRAINT_VIOLATION);
         return bve;
     }
 
-    public static BeanValidationException providerNotFound(String prefix, Throwable internalException){
+    public final static BeanValidationException providerNotFound(String prefix, Throwable internalException){
         BeanValidationException bve = new BeanValidationException(ExceptionMessageGenerator.buildMessage(BeanValidationException.class, PROVIDER_NOT_FOUND, new Object[]{prefix}), internalException);
         bve.setErrorCode(PROVIDER_NOT_FOUND);
         return bve;
     }
 
 
-    public static BeanValidationException illegalValidationMode(String prefix, String modeName){
+    public final static BeanValidationException illegalValidationMode(String prefix, String modeName){
         BeanValidationException bve = new BeanValidationException(ExceptionMessageGenerator.buildMessage(BeanValidationException.class, ILLEGAL_VALIDATION_MODE, new Object[]{prefix, modeName}));
         bve.setErrorCode(ILLEGAL_VALIDATION_MODE);
         return bve;
     }
 
     /* SchemaGen. */
-    public static BeanValidationException notNullAndNillable(String propertyName) {
+    public final static BeanValidationException notNullAndNillable(String propertyName) {
         BeanValidationException bve = new BeanValidationException(ExceptionMessageGenerator.buildMessage(BeanValidationException.class, NOT_NULL_AND_NILLABLE, new Object[]{propertyName}));
         bve.setErrorCode(NOT_NULL_AND_NILLABLE);
         return bve;

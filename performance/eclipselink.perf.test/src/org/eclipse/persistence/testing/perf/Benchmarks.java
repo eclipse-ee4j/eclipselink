@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.perf;
 
-import org.eclipse.persistence.testing.perf.beanvalidation.ValidationBenchmark;
 import org.eclipse.persistence.testing.perf.jpa.persistence_content_handler.PersistenceContentHandlerBenchmark;
 import org.eclipse.persistence.testing.perf.json.marshal.JsonMarshalBenchmark;
 import org.eclipse.persistence.testing.perf.json.unmarshal.JsonUnmarshalBenchmark;
@@ -47,7 +46,6 @@ public class Benchmarks {
         }
 
         Options opt = new OptionsBuilder()
-                .include(getInclude(ValidationBenchmark.class))
                 .include(getInclude(SmallXmlBenchmark.class))
                 .include(getInclude(LargeXmlBenchmark.class))
                 .include(getInclude(PersistenceContentHandlerBenchmark.class))

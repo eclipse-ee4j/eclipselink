@@ -79,51 +79,33 @@
     <property file="${basedir}/local.build.properties"/>
 
     <property file="${perftest.build.location}/antbuild.properties"/>
-    <property name="extensions.depend.dir" value="../../../extension.lib.external"/>
 
     <property name="asm.lib" value="${perftest.2.common.plugins.dir}/${asm.jar}"/>
     <property name="eclipselink.lib" value="${perftest.2.trunk.dir}/${eclipselink.jar}"/>
     <property name="javax.validation.lib"   value="${perftest.2.common.plugins.dir}/${javax.validation.jar}"/>
     <property name="jpa21.lib"   value="${perftest.2.trunk.dir}/jpa/plugins/${persistence21.jar}"/>
     <property name="json.lib" value="${perftest.2.common.plugins.dir}/${json.jar}"/>
-    <property name="validation-impl.lib"   value="${extensions.depend.dir}/${validation-impl.jar}"/>
-    <property name="jboss-logging.lib"   value="${extensions.depend.dir}/${jboss-logging.jar}"/>
-    <property name="javax.el-api.lib"   value="${extensions.depend.dir}/${javax.el-api.jar}"/>
-    <property name="javax.el.lib"   value="${extensions.depend.dir}/${javax.el.jar}"/>
-    <property name="classmate.lib"   value="${extensions.depend.dir}/${classmate.jar}"/>
+    <property name="extensions.depend.dir" value="../../../extension.lib.external"/>
 
     <property name="jmh-core.lib" value="${extensions.depend.dir}/${jmh-core.jar}"/>
     <property name="jmh-generator-annprocess.lib" value="${extensions.depend.dir}/${jmh-generator-annprocess.jar}"/>
     <property name="commons-math.lib" value="${extensions.depend.dir}/${commons-math.jar}"/>
-
-    <!-- Loaded from ${user.home}/test.properties -->
-    <property name="jdbc.driver.lib"   value="${jdbc.driver.jar}"/>
-    <property name="persistence.xml" value="resource/META-INF/persistence.xml"/>
-    <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
     <!-- Compile/run paths -->
     <path id="perf.compile.path">
         <pathelement path="${jmh-core.lib}"/>
         <pathelement path="${jmh-generator-annprocess.lib}"/>
         <pathelement path="${json.lib}"/>
-        <pathelement path="${jpa21.lib}"/>
         <pathelement path="${perftest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${perftest.2.jpa.dir}/target/${classes.dir}"/>
         <pathelement path="${perftest.2.moxy.dir}/target/${classes.dir}"/>
-        <pathelement path="${javax.validation.lib}"/>
     </path>
     <path id="perf.run.path">
         <pathelement path="${jmh-core.lib}"/>
         <pathelement path="${jmh-generator-annprocess.lib}"/>
         <pathelement path="${commons-math.lib}"/>
         <pathelement path="${jpa21.lib}"/>
-        <pathelement path="${jdbc.driver.lib}"/>
         <pathelement path="${javax.validation.lib}"/>
-        <pathelement path="${validation-impl.lib}"/>
-        <pathelement path="${jboss-logging.lib}"/>
-        <pathelement path="${javax.el-api.lib}"/>
-        <pathelement path="${javax.el.lib}"/>
-        <pathelement path="${classmate.lib}"/>
         <pathelement path="${asm.lib}"/>
         <pathelement path="${json.lib}"/>
         <pathelement path="${perftest.2.moxy.dir}/target/${classes.dir}"/>
@@ -138,22 +120,14 @@
         <pathelement path="${jmh-core.lib}"/>
         <pathelement path="${jmh-generator-annprocess.lib}"/>
         <pathelement path="${json.lib}"/>
-        <pathelement path="${jpa21.lib}"/>
         <pathelement path="${eclipselink.lib}"/>
-        <pathelement path="${javax.validation.lib}"/>
     </path>
     <path id="perf.run.against.jar.path">
         <pathelement path="${jmh-core.lib}"/>
         <pathelement path="${jmh-generator-annprocess.lib}"/>
         <pathelement path="${commons-math.lib}"/>
         <pathelement path="${jpa21.lib}"/>
-        <pathelement path="${jdbc.driver.lib}"/>
         <pathelement path="${javax.validation.lib}"/>
-        <pathelement path="${validation-impl.lib}"/>
-        <pathelement path="${jboss-logging.lib}"/>
-        <pathelement path="${javax.el-api.lib}"/>
-        <pathelement path="${javax.el.lib}"/>
-        <pathelement path="${classmate.lib}"/>
         <pathelement path="${asm.lib}"/>
         <pathelement path="${eclipselink.lib}"/>
         <pathelement path="${json.lib}"/>
@@ -162,11 +136,8 @@
     </path>
 
     <!-- Test targets -->
-    <target name="test" depends="clean, clean-reports, filter-tokens, compile-and-run-tests"
-            description="run perf tests"/>
-    <target name="test-against-jar"
-            depends="clean, clean-reports, filter-tokens, compile-and-run-tests-against-jar"
-            description="run perf tests against eclipselink.jar"/>
+    <target name="test" depends="clean, clean-reports, compile-and-run-tests" description="run perf tests"/>
+    <target name="test-against-jar" depends="clean, clean-reports, compile-and-run-tests-against-jar" description="run perf tests against eclipselink.jar"/>
 
     <!-- Build targets -->
     <target name="compile-tests" depends="clean" description="build perf test classes">
@@ -200,20 +171,6 @@
         <mkdir dir="${report.dir}"/>
     </target>
 
-    <target name="filter-tokens" description="Filter tokens in configuration files.">
-        <filter token='%driver%'   value="${db.driver}"/>
-        <filter token='%url%'      value="${db.url}"/>
-        <filter token='%user%'     value="${db.user}"/>
-        <filter token='%pwd%'      value="${db.pwd}"/>
-        <copy todir="classes/META-INF" filtering="true" overwrite="true">
-            <fileset dir="resource/META-INF" includes="persistence.xml"/>
-        </copy>
-    </target>
-
-    <target name="restore-tokens" description="Restore token symbols from template.">
-        <copy file="${persistence.xml}.template" tofile="${persistence.xml}" overwrite="true"/>
-    </target>
-
     <macrodef name="run_perf_tests">
         <attribute name="runpathref" />
         <sequential>
@@ -227,7 +184,6 @@
         <attribute name="clsname"/>
         <sequential>
             <java classname="@{clsname}" dir="${report.dir}" fork="true" failonerror="false">
-                <jvmarg line="${additional.jvmargs}"/>
                 <arg value="${warmup.iterations}"/>
                 <arg value="${run.iterations}"/>
                 <arg value="${jmh.resultFile}"/>

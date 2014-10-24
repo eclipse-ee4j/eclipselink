@@ -8,19 +8,13 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     08/20/2014-2.5 Rick Curtis
+ *     08/20/2014-2.5 Rick Curtis 
  *       - 441890: Cache Validator instances.
- *     Marcel Valovy - 2.6 - skip validation on objects that are not constrained.
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.validation.TraversableResolver;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import javax.validation.*;
 import javax.validation.groups.Default;
 
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
@@ -36,10 +30,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.lang.annotation.ElementType;
 
-import static org.eclipse.persistence.internal.jpa.metadata.beanvalidation.BeanValidationHelper.BEAN_VALIDATION_HELPER;
-
 /**
- * Responsible for performing automatic bean validation on call back events.
+ * Responsible for performing automatic bean validation on call back events. 
  * @author Mitesh Meswani
  */
 public class BeanValidationListener extends DescriptorEventAdapter {
@@ -47,9 +39,9 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private final Class[] groupPrePersit;
     private final Class[] groupPreUpdate;
     private final Class[] groupPreRemove;
-    private static final Class[] groupDefault = new Class[]{Default.class};
+    private static final Class[] groupDefault = new Class[]{Default.class}; 
     private final Map<ClassDescriptor, Validator> validatorMap;
-
+    
     public BeanValidationListener(ValidatorFactory validatorFactory, Class[] groupPrePersit, Class[] groupPreUpdate, Class[] groupPreRemove) {
         this.validatorFactory = validatorFactory;
         //For prePersit and preUpdate, default the group to validation group Default if user has not specified one
@@ -96,21 +88,17 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     }
 
     private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class[] validationGroup) {
-        Object source = event.getSource();
-        boolean shouldValidate = BEAN_VALIDATION_HELPER.isConstrained(source.getClass());
-        if (shouldValidate) {
-            Set<ConstraintViolation<Object>> constraintViolations = getValidator(event).validate(source, validationGroup);
-            if (constraintViolations.size() > 0) {
-                // There were errors while call to validate above.
-                // Throw a ConstrainViolationException as required by the spec.
-                // The transaction would be rolled back automatically
-                // TODO need to I18N this.
-                throw new ConstraintViolationException(
-                        "Bean Validation constraint(s) violated while executing Automatic Bean Validation on callback event:'" +
-                                callbackEventName + "'. Please refer to embedded ConstraintViolations for details.",
-                        (Set<ConstraintViolation<?>>) (Object) constraintViolations); /* Do not remove the explicit
-                        cast. This issue is related to capture#a not being instance of capture#b. */
-            }
+        Set<ConstraintViolation<Object>> constraintViolations = getValidator(event).validate(event.getSource(), validationGroup);
+        if(constraintViolations.size() > 0) {
+            // There were errors while call to validate above.
+            // Throw a ConstrainViolationException as required by the spec.
+            // The transaction would be rolled back automatically
+            // TODO need to I18N this.
+            throw new ConstraintViolationException(
+                    "Bean Validation constraint(s) violated while executing Automatic Bean Validation on callback event:'" +
+                            callbackEventName + "'. Please refer to embedded ConstraintViolations for details.",
+                    (Set <ConstraintViolation<?>>)(Object)constraintViolations); //TODO The cast looks like an issue with BV API.
+
         }
     }
 
