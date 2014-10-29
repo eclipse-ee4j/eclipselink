@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,7 @@
  */
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -25,9 +26,12 @@ import javax.persistence.criteria.CriteriaBuilder.Case;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.EntityType;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -84,6 +88,9 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new CriteriaQueryTestSuite("simpleCriteriaDeleteTest"));
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaDelete"));
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaDeleteCompareSQL"));
+        suite.addTest(new CriteriaQueryTestSuite("testEqualsClauseSingleExpressionEmptyExpressionsList"));
+        suite.addTest(new CriteriaQueryTestSuite("testEqualsClauseExpressionConjunctionNonEmptyExpressionsList"));
+        suite.addTest(new CriteriaQueryTestSuite("testInClauseSingleExpressionEmptyExpressionsList"));
         //Downcast/treat support - needs to be moved so it can use the JPA 2.0 models
         //suite.addTest(CriteriaQueryCastTestSuite.suite());
 
@@ -566,6 +573,63 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
                     +testSQLStrings +" but JPQL generated "+baseSQLStrings, pass);
         }
     }
+
+    public void testEqualsClauseSingleExpressionEmptyExpressionsList(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> query = criteriaBuilder.createQuery(Employee.class);
+            Root<Employee> employee = query.from(Employee.class);
+            EntityType<Employee> employeeModel = employee.getModel();
+            Predicate predicate = criteriaBuilder.equal(employee.get(employeeModel.getSingularAttribute("firstName", String.class)), "Bob");
+
+            List<Expression<Boolean>> expressions = predicate.getExpressions();
+            assertTrue("An empty list should be returned", expressions.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testEqualsClauseExpressionConjunctionNonEmptyExpressionsList(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> query = criteriaBuilder.createQuery(Employee.class);
+            Root<Employee> employee = query.from(Employee.class);
+            EntityType<Employee> employeeModel = employee.getModel();
+            Predicate predicate1 = criteriaBuilder.equal(employee.get(employeeModel.getSingularAttribute("firstName", String.class)), "Bob");
+            Predicate predicate2 = criteriaBuilder.equal(employee.get(employeeModel.getSingularAttribute("firstName", String.class)), "Bobby");
+            Predicate predicate = criteriaBuilder.and(predicate1, predicate2);
+
+            List<Expression<Boolean>> expressions = predicate.getExpressions();
+            assertEquals("Two expressions should be returned", 2, expressions.size());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testInClauseSingleExpressionEmptyExpressionsList(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+            CriteriaDelete<Employee> criteriaDelete = criteriaBuilder.createCriteriaDelete(Employee.class);
+            Root<Employee> employee = criteriaDelete.from(Employee.class);
+            CriteriaDelete<Employee> where = criteriaDelete.where(employee.get("firstName").in(Arrays.asList("Bob", "Bobby")));
+            Predicate restriction = where.getRestriction();
+
+            List<Expression<Boolean>> expressions = restriction.getExpressions();
+            assertTrue("An empty list should be returned", expressions.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
     @Override
     public String getPersistenceUnitName() {
        return "MulitPU-1";
