@@ -12,38 +12,28 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.service.v2;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JPARSErrorCodes;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
 import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.assertTrue;
 
@@ -54,41 +44,20 @@ import static org.junit.Assert.assertTrue;
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class MarshalUnmarshalV2Test {
-    private static final String DEFAULT_PU = "jpars_auction-static";
-    private static final String JPARS_VERSION = "v2.0";
+public class MarshalUnmarshalV2Test extends BaseJparsTest {
+    protected static EntityManager em;
 
-    private static PersistenceContext context;
-    private static EntityManager em;
-
-    private static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars.test.service");
-
-    /**
-     * Setup.
-     *
-     * @throws URISyntaxException the uRI syntax exception
-     */
     @BeforeClass
-    public static void setup() throws URISyntaxException {
-        final Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-
-        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        final EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
-        context = factory.bootstrapPersistenceContext("jpars_auction-static", emf, RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, false);
+    public static void setup() throws Exception {
+        initContext("jpars_auction-static", "v2.0");
         em = context.getEmf().createEntityManager();
-
         initData();
     }
 
     /**
      * Creates test data in the database.
      */
-    private static void initData() {
+    protected static void initData() {
         // Create the bids referenced by hrefs, so that unmarshal can find them in PU
         em.getTransaction().begin();
 
@@ -142,6 +111,7 @@ public class MarshalUnmarshalV2Test {
         em.remove(em.find(StaticBid.class, 1234));
         em.remove(em.find(StaticBid.class, 5678));
         em.remove(em.find(StaticBid.class, 1001));
+        em.remove(em.find(StaticAuction.class, 1));
         em.getTransaction().commit();
     }
 
@@ -215,7 +185,7 @@ public class MarshalUnmarshalV2Test {
         auction.setDescription("Test Auction Description");
         auction.setName("Test Auction");
 
-        final List<StaticBid> bids = new ArrayList<StaticBid>(5);
+        final List<StaticBid> bids = new ArrayList<>(5);
         for (int i=1; i<5; i++) {
             final StaticBid bid = new StaticBid();
             bid.setId(i);

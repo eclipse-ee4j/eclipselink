@@ -55,8 +55,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
-
 /**
  * JPARS 2.0 metadata catalog. Resource metadata and schemas.
  *
@@ -65,7 +63,7 @@ import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.S
  */
 @Produces({ MediaType.APPLICATION_JSON })
 @Consumes({ MediaType.APPLICATION_JSON })
-@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/metadata-catalog/")
+@Path("/{version}/{context}/metadata-catalog/")
 public class MetadataResource extends AbstractResource {
     private static final String CLASS_NAME = MetadataResource.class.getName();
     private static final Map<Class<?>, String> PRIMITIVE_TO_JSON = new HashMap<Class<?>, String>();

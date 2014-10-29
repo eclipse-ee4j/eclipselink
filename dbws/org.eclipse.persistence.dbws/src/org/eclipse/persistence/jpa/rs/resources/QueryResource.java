@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -7,11 +7,13 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- *
+ * Contributors:
+ *     gonural - Initial implementation
+ *     Dmitry Kornilov - 'latest' keyword in version support
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources;
 
-import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractQueryResource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -25,27 +27,34 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.eclipse.persistence.jpa.rs.resources.common.AbstractQueryResource;
-
 /**
- * @author gonural
+ * Query resource.
  *
+ * @author gonural
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/query/")
+@Path("/{version}/{context}/query/")
 public class QueryResource extends AbstractQueryResource {
 
     @POST
     @Path("{name}")
-    public Response namedQueryUpdate(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
+    public Response namedQueryUpdate(@PathParam("version") String version,
+                                     @PathParam("context") String persistenceUnit,
+                                     @PathParam("name") String name,
+                                     @Context HttpHeaders hh,
+                                     @Context UriInfo ui) {
         setRequestUniqueId();
         return namedQueryUpdateInternal(version, persistenceUnit, name, hh, ui);
     }
 
     @GET
     @Path("{name}")
-    public Response namedQuery(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
+    public Response namedQuery(@PathParam("version") String version,
+                               @PathParam("context") String persistenceUnit,
+                               @PathParam("name") String name,
+                               @Context HttpHeaders hh,
+                               @Context UriInfo ui) {
         setRequestUniqueId();
         return namedQueryInternal(version, persistenceUnit, name, hh, ui);
     }

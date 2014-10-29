@@ -12,18 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.service.v2;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.service.noversion.EmployeeTest;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
-import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.BeforeClass;
-
-import javax.persistence.Persistence;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * EmployeeTest adapted for JPARS 2.0.
@@ -33,18 +23,9 @@ import java.util.Map;
  * @since EclipseLink 2.6.0
  */
 public class EmployeeV2Test extends EmployeeTest {
-    private static final String DEFAULT_PU = "jpars_employee-static";
-    private static final String JPARS_VERSION = "v2.0";
 
     @BeforeClass
-    public static void setup() throws URISyntaxException {
-        final Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties); 
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties),
-                RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, true);
+    public static void setup() throws Exception {
+        initContext("jpars_employee-static", "v2.0");
     }
 }

@@ -16,20 +16,16 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.WebResource;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.util.list.ReadAllQueryResultCollection;
+import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
 import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 import org.eclipse.persistence.jpars.test.model.multitenant.Account;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.junit.AfterClass;
@@ -37,8 +33,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -60,38 +54,16 @@ import static org.junit.Assert.fail;
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerCrudV2Test {
-    private static final String DEFAULT_PU = "jpars_auction-static";
-    private static final String JPARS_VERSION = "v2.0";
+public class ServerCrudV2Test extends BaseJparsTest {
+    protected static Client client = null;
 
-    private static Client client = null;
-    private static PersistenceContext context = null;
-
-    /**
-     * Setup.
-     *
-     * @throws java.net.URISyntaxException the uRI syntax exception
-     */
     @BeforeClass
-    public static void setup() throws URISyntaxException {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-
-        PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, emf, RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, false);
-
+    public static void setup() throws Exception {
+        initContext("jpars_auction-static", "v2.0");
         StaticModelDatabasePopulator.populateDB(emf);
         client = Client.create();
     }
 
-    /**
-     * Teardown.
-     */
     @AfterClass
     public static void teardown() {
         StaticModelDatabasePopulator.cleanupDB(context.getEmf());
@@ -118,7 +90,7 @@ public class ServerCrudV2Test {
      */
     @Test
     public void testReadXML() throws RestCallFailedException, URISyntaxException {
-        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE);
+        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", pu, null, MediaType.APPLICATION_XML_TYPE);
         StaticBid bid2 = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong bid in DB.", bid.getAmount() == bid2.getAmount());
     }
@@ -153,7 +125,7 @@ public class ServerCrudV2Test {
      */
     @Test(expected = RestCallFailedException.class)
     public void testReadNonExistantPU() throws RestCallFailedException, URISyntaxException {
-        restRead(1, "StaticBid", StaticBid.class, "non-existant", null, MediaType.APPLICATION_JSON_TYPE);
+        restRead(1, "StaticBid", "non-existant", null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
@@ -206,7 +178,7 @@ public class ServerCrudV2Test {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(101);
-        user = restCreate(user, "StaticUser", StaticUser.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
+        user = restCreate(user, "StaticUser", StaticUser.class, pu, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
         assertTrue("Wrong user retrieved.", user.getName().equals("Joe"));
         StaticUser dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("DB User not equal ", user.equals(dbUser));
@@ -253,7 +225,7 @@ public class ServerCrudV2Test {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(103);
-        user = restCreate(user, "StaticUser", StaticUser.class, "non-existant", null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
+        user = restCreate(user, "StaticUser", StaticUser.class, "non-existant", MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
     }
 
     /**
@@ -265,7 +237,7 @@ public class ServerCrudV2Test {
 
     @Test
     public void testCreateGarbage() throws IOException, URISyntaxException {
-        WebResource webResource = client.resource(RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/" + "StaticUser");
+        WebResource webResource = client.resource(getServerURI() + "/entity/" + "StaticUser");
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         byte[] b = "Garbage".getBytes();
         os.write(b);
@@ -282,9 +254,9 @@ public class ServerCrudV2Test {
      */
     @Test
     public void testUpdateXML() throws RestCallFailedException, URISyntaxException {
-        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE);
+        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", pu, null, MediaType.APPLICATION_XML_TYPE);
         bid.setAmount(120);
-        bid = restUpdate(bid, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE, true);
+        bid = restUpdate(bid, "StaticBid", StaticBid.class, pu, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE, true);
         assertTrue("Wrong bid retrieved.", bid.getAmount() == 120);
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong bid retrieved in db.", bid.getAmount() == 120);
@@ -344,7 +316,7 @@ public class ServerCrudV2Test {
      */
     @Test
     public void testUpdateGarbage() throws IOException, URISyntaxException {
-        WebResource webResource = client.resource(RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/" + "StaticUser");
+        WebResource webResource = client.resource(getServerURI() + "/entity/StaticUser");
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         byte[] b = "Garbage".getBytes();
         os.write(b);
@@ -365,13 +337,13 @@ public class ServerCrudV2Test {
         StaticUser user = bid.getUser();
         StaticUser newUser = new StaticUser();
         newUser.setName("Mark");
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
                 MediaType.APPLICATION_JSON_TYPE);
 
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
         newUser = bid.getUser();
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", user, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", user, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
 
         StaticBid dbBid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong user.", dbBid.getUser().getName().equals(bid.getUser().getName()));
@@ -409,7 +381,7 @@ public class ServerCrudV2Test {
      */
     @Test(expected = RestCallFailedException.class)
     public void testDeleteNonExistantPersistenceUnit() throws RestCallFailedException, URISyntaxException {
-        restDelete(1000, "StaticUser", StaticUser.class, "non-existant", null);
+        restDelete(1000, "StaticUser", "non-existant", null);
     }
 
     /**
@@ -433,7 +405,7 @@ public class ServerCrudV2Test {
     @SuppressWarnings("unchecked")
     @Test
     public void testNamedQueryParameter() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", null);
         ReadAllQueryResultCollection users = (ReadAllQueryResultCollection) restNamedQuery("User.byNameOrId", "ReadAllQueryResultCollection", parameters, null);
@@ -449,7 +421,7 @@ public class ServerCrudV2Test {
     @SuppressWarnings("unchecked")
     @Test
     public void testNamedQueryParameters() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "user2");
         ReadAllQueryResultCollection users = (ReadAllQueryResultCollection) restNamedQuery("User.byNameOrId", "ReadAllQueryResultCollection", parameters, null);
@@ -463,7 +435,7 @@ public class ServerCrudV2Test {
      */
     @Test(expected = RestCallFailedException.class)
     public void testNamedQueryWrongParameter() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("wrong", StaticModelDatabasePopulator.USER1_ID);
         restNamedQuery("User.byId", "StaticUser", parameters, null);
     }
@@ -475,7 +447,7 @@ public class ServerCrudV2Test {
      */
     @Test(expected = RestCallFailedException.class)
     public void testNamedQueryWrongNumberOfParameters() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         restNamedQuery("User.byNameOrId", "StaticUser", parameters, null);
     }
@@ -488,7 +460,7 @@ public class ServerCrudV2Test {
     @SuppressWarnings("unchecked")
     @Test
     public void testNamedQueryNoResults() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", 0);
         List<StaticUser> users = (List<StaticUser>) restNamedQuery("User.byId", "StaticUser", parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 0);
@@ -501,7 +473,7 @@ public class ServerCrudV2Test {
      */
     @Test(expected = RestCallFailedException.class)
     public void testNonExistantNamedQuery() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         restNamedQuery("User.nonExistant", "StaticUser", parameters, null);
     }
@@ -513,7 +485,7 @@ public class ServerCrudV2Test {
      */
     @Test(expected = RestCallFailedException.class)
     public void testNonExistantPersistenceUnitNamedQuery() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         restNamedQuery("User.all", "StatisUser", "nonExistant", parameters, null, MediaType.APPLICATION_JSON_TYPE);
     }
@@ -527,7 +499,7 @@ public class ServerCrudV2Test {
     @Test
     public void testNamedQueryHint() throws URISyntaxException {
         // load the cache
-        Map<String, String> hints = new HashMap<String, String>();
+        Map<String, String> hints = new HashMap<>();
         hints.put(QueryHints.REFRESH, "true");
         Object result = restNamedQuery("User.all", "ReadAllQueryResultCollection", null, hints);
         List<Object> users = ((ReadAllQueryResultCollection) result).getItems();
@@ -550,7 +522,7 @@ public class ServerCrudV2Test {
         dbUpdate(user1);
 
         // refresh cache
-        hints = new HashMap<String, String>();
+        hints = new HashMap<>();
         hints.put(QueryHints.REFRESH, "true");
         restNamedQuery("User.all", "ReadAllQueryResultCollection", null, hints);
     }
@@ -563,7 +535,7 @@ public class ServerCrudV2Test {
     @SuppressWarnings("unchecked")
     @Test
     public void testNamedQueryParameterHint() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
 
         // load the cache
@@ -578,7 +550,7 @@ public class ServerCrudV2Test {
         user1.setName("Changed2");
         dbUpdate(user1);
 
-        Map<String, String> hints = new HashMap<String, String>();
+        Map<String, String> hints = new HashMap<>();
         hints.put(QueryHints.REFRESH, "true");
 
         result = (ReadAllQueryResultCollection) restNamedQuery("User.byId", "ReadAllQueryResultCollection", parameters, hints);
@@ -588,7 +560,7 @@ public class ServerCrudV2Test {
         dbUpdate(user1);
 
         // refresh cache
-        hints = new HashMap<String, String>();
+        hints = new HashMap<>();
         hints.put(QueryHints.REFRESH, "true");
         restNamedQuery("User.all", "ReadAllQueryResultCollection", null, hints);
     }
@@ -600,9 +572,9 @@ public class ServerCrudV2Test {
      */
     @Test
     public void testNamedQuerySingleResult() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
-        StaticUser user = (StaticUser) restNamedSingleResultQuery("User.byId", "StaticUser", DEFAULT_PU, parameters, null, MediaType.APPLICATION_JSON_TYPE);
+        StaticUser user = (StaticUser) restNamedSingleResultQuery("User.byId", "StaticUser", pu, parameters, null, MediaType.APPLICATION_JSON_TYPE);
         assertTrue("user was not returned", user != null);
         assertTrue("incorrect user returned", user.getName().equals("user1"));
     }
@@ -614,9 +586,9 @@ public class ServerCrudV2Test {
      */
     @Test(expected = RestCallFailedException.class)
     public void testNamedQuerySingleResultNoResult() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", 0);
-        StaticUser user = (StaticUser) restNamedSingleResultQuery("User.byId", "StaticUser", DEFAULT_PU, parameters, null, MediaType.APPLICATION_JSON_TYPE);
+        StaticUser user = (StaticUser) restNamedSingleResultQuery("User.byId", "StaticUser", pu, parameters, null, MediaType.APPLICATION_JSON_TYPE);
         assertTrue("user should not have been returned", user == null);
     }
 
@@ -627,7 +599,7 @@ public class ServerCrudV2Test {
      */
     @Test
     public void testUpdateQuery() throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "newName");
 
@@ -650,23 +622,23 @@ public class ServerCrudV2Test {
     public void testMultitenant() throws RestCallFailedException, URISyntaxException {
         Account account = new Account();
         account.setAccoutNumber("AAA1");
-        Map<String, String> tenantId = new HashMap<String, String>();
+        Map<String, String> tenantId = new HashMap<>();
         tenantId.put("tenant.id", "AcctHolder1");
-        account = restUpdate(account, "Account", Account.class, DEFAULT_PU, tenantId, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, true);
+        account = restUpdate(account, "Account", Account.class, pu, tenantId, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, true);
 
         assertTrue("account not created.", account != null);
 
-        account = restRead(account.getId(), "Account", Account.class, DEFAULT_PU, tenantId, MediaType.APPLICATION_JSON_TYPE);
+        account = restRead(account.getId(), "Account", pu, tenantId, MediaType.APPLICATION_JSON_TYPE);
 
         assertTrue("account not read.", account != null);
         assertTrue("account not completely read.", account.getAccoutNumber().equals("AAA1"));
 
-        Map<String, String> tenantId2 = new HashMap<String, String>();
+        Map<String, String> tenantId2 = new HashMap<>();
         tenantId2.put("tenant.id", "AcctHolder2");
         try {
-            restRead(account.getId(), "Account", Account.class, DEFAULT_PU, tenantId2, MediaType.APPLICATION_JSON_TYPE);
+            restRead(account.getId(), "Account", pu, tenantId2, MediaType.APPLICATION_JSON_TYPE);
         } finally {
-            restDelete(account.getId(), "Account", Account.class, DEFAULT_PU, tenantId);
+            restDelete(account.getId(), "Account", pu, tenantId);
         }
     }
 
@@ -712,27 +684,27 @@ public class ServerCrudV2Test {
         user = restCreate(user, "StaticUser", StaticUser.class);
 
         // Update user with address
-        restUpdateBidirectionalRelationship(String.valueOf(user.getId()), "StaticUser", "address", address, DEFAULT_PU,
+        restUpdateBidirectionalRelationship(String.valueOf(user.getId()), "StaticUser", "address", address, pu,
                 MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "user", true);
 
         // read user again, because we will update the bid with user
-        user = restRead(String.valueOf(user.getId()), "StaticUser", StaticUser.class, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
+        user = restRead(String.valueOf(user.getId()), "StaticUser", pu, null, MediaType.APPLICATION_JSON_TYPE);
 
         // Update bid with the auction
         restUpdateBidirectionalRelationship(String.valueOf(777), "StaticBid",
-                "auction", auction, DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "bids", true);
+                "auction", auction, pu, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "bids", true);
 
         // update bid with the user
         String bidJsonResponse = restUpdateBidirectionalRelationship(
-                String.valueOf(777), "StaticBid", "user", user, DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE,
+                String.valueOf(777), "StaticBid", "user", user, pu, MediaType.APPLICATION_JSON_TYPE,
                 MediaType.APPLICATION_JSON_TYPE, null, true);
 
-        String expectedAuctionLink = RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/StaticBid/777/auction";
-        String expectedUserLink = RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/StaticBid/777/user";
+        String expectedAuctionLink = getServerURI() + "/entity/StaticBid/777/auction";
+        String expectedUserLink = getServerURI() + "/entity/StaticBid/777/user";
 
-        assertTrue(bidJsonResponse.toUpperCase().indexOf(expectedAuctionLink.toUpperCase()) != -1);
+        assertTrue(bidJsonResponse.toUpperCase().contains(expectedAuctionLink.toUpperCase()));
 
-        assertTrue(bidJsonResponse.toUpperCase().indexOf(expectedUserLink.toUpperCase()) != -1);
+        assertTrue(bidJsonResponse.toUpperCase().contains(expectedUserLink.toUpperCase()));
 
         // Read auction, using the link provided in the newly created bid above
         StaticAuction auctionByLink = restReadByHref(expectedAuctionLink, "StaticAuction", MediaType.APPLICATION_JSON_TYPE);
@@ -779,18 +751,18 @@ public class ServerCrudV2Test {
         user = restUpdate(user, "StaticUser", StaticUser.class, false);
 
         // Update bid with the auction
-        restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "auction", auction, DEFAULT_PU,
+        restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "auction", auction, pu,
                 MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "bids", true);
 
         // update bid with the user
         String bidJsonResponse = restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "user", user,
-                DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, null, true);
+                pu, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, null, true);
 
-        String expectedAuctionLink = RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/StaticBid/" + bid.getId() + "/auction";
-        String expectedUserLink = RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/StaticBid/" + bid.getId() + "/user";
+        String expectedAuctionLink = getServerURI() + "/entity/StaticBid/" + bid.getId() + "/auction";
+        String expectedUserLink = getServerURI() + "/entity/StaticBid/" + bid.getId() + "/user";
 
-        assertTrue(bidJsonResponse.toUpperCase().indexOf(expectedAuctionLink.toUpperCase()) != -1);
-        assertTrue(bidJsonResponse.toUpperCase().indexOf(expectedUserLink.toUpperCase()) != -1);
+        assertTrue(bidJsonResponse.toUpperCase().contains(expectedAuctionLink.toUpperCase()));
+        assertTrue(bidJsonResponse.toUpperCase().contains(expectedUserLink.toUpperCase()));
 
         // Read auction, using the link provided in the newly created bid above
         StaticAuction auctionByLink = restReadByHref(expectedAuctionLink, "StaticAuction", MediaType.APPLICATION_JSON_TYPE);
@@ -847,9 +819,7 @@ public class ServerCrudV2Test {
      */
     @Test
     public void testGetContextsXML() throws URISyntaxException {
-        StringBuffer uri = new StringBuffer();
-        uri.append(RestUtils.getServerURI(context.getVersion()));
-        WebResource webResource = client.resource(uri.toString());
+        WebResource webResource = client.resource(String.valueOf(RestUtils.getServerURI(context.getVersion())));
         ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK) {
@@ -874,9 +844,7 @@ public class ServerCrudV2Test {
      */
     @Test
     public void testGetContextsJSON() throws URISyntaxException {
-        StringBuffer uri = new StringBuffer();
-        uri.append(RestUtils.getServerURI(context.getVersion()));
-        WebResource webResource = client.resource(uri.toString());
+        WebResource webResource = client.resource(String.valueOf(RestUtils.getServerURI(context.getVersion())));
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK) {
@@ -900,9 +868,7 @@ public class ServerCrudV2Test {
      */
     @Test
     public void testGetTypesXML() throws URISyntaxException {
-        StringBuffer uri = new StringBuffer();
-        uri.append(RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/metadata");
-        WebResource webResource = client.resource(uri.toString());
+        WebResource webResource = client.resource((getServerURI() + "/metadata"));
         ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK) {
@@ -928,9 +894,7 @@ public class ServerCrudV2Test {
      */
     @Test
     public void testGetTypesJSON() throws URISyntaxException {
-        StringBuffer uri = new StringBuffer();
-        uri.append(RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/metadata");
-        WebResource webResource = client.resource(uri.toString());
+        WebResource webResource = client.resource((getServerURI() + "/metadata"));
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK) {
@@ -964,7 +928,7 @@ public class ServerCrudV2Test {
         newUser.setName("Mark");
 
         // add a user to bid
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
                 MediaType.APPLICATION_JSON_TYPE);
         assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
 
@@ -974,7 +938,7 @@ public class ServerCrudV2Test {
         dbDelete(newUser);
 
         // Put the original user back
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", origUser, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", origUser, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
         assertTrue("Wrong user.", bid.getUser().getName().equals("user1"));
     }
 
@@ -1020,22 +984,22 @@ public class ServerCrudV2Test {
     }
 
     private static <T> T restCreate(Object object, String type, Class<T> resultClass) throws RestCallFailedException, URISyntaxException {
-        return restCreate(object, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        return restCreate(object, type, resultClass, pu, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
     }
 
-    private static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
+    private static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
             context.marshall(object, inputMediaType, os, false);
         } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
-        return restCreate(os, type, resultClass, persistenceUnit, null, inputMediaType, outputMediaType);
+        return restCreate(os, type, persistenceUnit, null, inputMediaType, outputMediaType);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T restCreate(OutputStream os, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
-        StringBuffer uri = new StringBuffer();
+    private static <T> T restCreate(OutputStream os, String type, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
+        StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit);
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
@@ -1060,11 +1024,11 @@ public class ServerCrudV2Test {
     }
 
     private static <T> void restDelete(Object id, String type, Class<T> resultClass) throws RestCallFailedException, URISyntaxException {
-        restDelete(id, type, resultClass, DEFAULT_PU, null);
+        restDelete(id, type, pu, null);
     }
 
-    private static <T> void restDelete(Object id, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId) throws RestCallFailedException, URISyntaxException {
-        StringBuffer uri = new StringBuffer();
+    private static <T> void restDelete(Object id, String type, String persistenceUnit, Map<String, String> tenantId) throws RestCallFailedException, URISyntaxException {
+        StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit);
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
@@ -1081,7 +1045,7 @@ public class ServerCrudV2Test {
     }
 
     private static Object restNamedQuery(String queryName, String returnType, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
-        return restNamedQuery(queryName, returnType, DEFAULT_PU, parameters, hints, MediaType.APPLICATION_JSON_TYPE);
+        return restNamedQuery(queryName, returnType, pu, parameters, hints, MediaType.APPLICATION_JSON_TYPE);
     }
 
     private static Object restNamedQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
@@ -1139,17 +1103,18 @@ public class ServerCrudV2Test {
                     resourceURL.append("&");
                 }
                 resourceURL.append(key + "=" + hints.get(key));
+                firstElement = false;
             }
         }
     }
 
     private static <T> T restRead(Object id, String type, Class<T> resultClass) throws RestCallFailedException, URISyntaxException {
-        return restRead(id, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
+        return restRead(id, type, pu, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T restRead(Object id, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
-        StringBuffer uri = new StringBuffer();
+    private static <T> T restRead(Object id, String type, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
+        StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit);
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
@@ -1174,7 +1139,7 @@ public class ServerCrudV2Test {
     }
 
     private static <T> T restUpdate(Object object, String type, Class<T> resultClass, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
-        return restUpdate(object, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, sendLinks);
+        return restUpdate(object, type, resultClass, pu, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, sendLinks);
     }
 
     private static <T> T restUpdate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
@@ -1188,12 +1153,12 @@ public class ServerCrudV2Test {
         } catch (JAXBException e) {
             fail("Exception thrown unmarshalling: " + e);
         }
-        return restUpdate(os, type, resultClass, persistenceUnit, tenantId, inputMediaType, outputMediaType, sendLinks);
+        return restUpdate(os, type, persistenceUnit, tenantId, inputMediaType, outputMediaType);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T restUpdate(OutputStream os, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
-        StringBuffer uri = new StringBuffer();
+    private static <T> T restUpdate(OutputStream os, String type, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
+        StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI(context.getVersion()) + persistenceUnit);
         if (tenantId != null) {
             for (String key : tenantId.keySet()) {
@@ -1219,7 +1184,7 @@ public class ServerCrudV2Test {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T restUpdateRelationship(String objectId, String type, String relationshipName, Object newValue, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
+    private static <T> T restUpdateRelationship(String objectId, String type, String relationshipName, Object newValue, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         WebResource webResource = client.resource(RestUtils.getServerURI(context.getVersion()) + persistenceUnit + "/entity/" + type + "/" + objectId + "/" + relationshipName);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -7,11 +7,13 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- *
+ * Contributors:
+ *     gonural - Initial implementation
+ *     Dmitry Kornilov - 'latest' keyword in version support
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources;
 
-import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractPersistenceUnitResource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -24,40 +26,53 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.eclipse.persistence.jpa.rs.resources.common.AbstractPersistenceUnitResource;
-
 /**
- * @author gonural
+ * Metadata catalog resource in JPARS version less than 2.0.
  *
+ * @author gonural
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/metadata/")
+@Path("/{version}/{context}/metadata/")
 public class PersistenceUnitResource extends AbstractPersistenceUnitResource {
 
     @GET
     @Path("entity/{descriptorAlias}")
-    public Response getDescriptorMetadata(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("descriptorAlias") String descriptorAlias, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
+    public Response getDescriptorMetadata(@PathParam("version") String version,
+                                          @PathParam("context") String persistenceUnit,
+                                          @PathParam("descriptorAlias") String descriptorAlias,
+                                          @Context HttpHeaders hh,
+                                          @Context UriInfo uriInfo) {
         setRequestUniqueId();
         return getDescriptorMetadataInternal(version, persistenceUnit, descriptorAlias, hh, uriInfo);
     }
 
     @GET
-    public Response getTypes(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
+    public Response getTypes(@PathParam("version") String version,
+                             @PathParam("context") String persistenceUnit,
+                             @Context HttpHeaders hh,
+                             @Context UriInfo uriInfo) {
         setRequestUniqueId();
         return getTypesInternal(version, persistenceUnit, hh, uriInfo);
     }
 
     @GET
     @Path("query")
-    public Response getQueriesMetadata(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
+    public Response getQueriesMetadata(@PathParam("version") String version,
+                                       @PathParam("context") String persistenceUnit,
+                                       @Context HttpHeaders hh,
+                                       @Context UriInfo uriInfo) {
         setRequestUniqueId();
         return getQueriesMetadataInternal(version, persistenceUnit, hh, uriInfo);
     }
 
     @GET
     @Path("query/{queryName}")
-    public Response getQueryMetadata(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("queryName") String queryName, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
+    public Response getQueryMetadata(@PathParam("version") String version,
+                                     @PathParam("context") String persistenceUnit,
+                                     @PathParam("queryName") String queryName,
+                                     @Context HttpHeaders hh,
+                                     @Context UriInfo uriInfo) {
         setRequestUniqueId();
         return getQueryMetadataInternal(version, persistenceUnit, queryName, hh, uriInfo);
     }

@@ -1,4 +1,4 @@
-/*******************************************************************************
+/****************************************************************************
  * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
@@ -12,25 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test;
 
-import org.eclipse.persistence.jpars.test.server.v2.ServerCrudV2Test;
-import org.eclipse.persistence.jpars.test.server.v2.ServerEmployeeV2Test;
-import org.eclipse.persistence.jpars.test.server.v2.ServerFieldsFilteringTest;
-import org.eclipse.persistence.jpars.test.server.v2.ServerLinksTest;
-import org.eclipse.persistence.jpars.test.server.v2.ServerPageableTest;
-import org.eclipse.persistence.jpars.test.server.v2.ServerTravelerV2Test;
+import org.eclipse.persistence.jpars.test.service.latest.ContextsLatestTest;
+import org.eclipse.persistence.jpars.test.service.latest.EmployeeLatestTest;
+import org.eclipse.persistence.jpars.test.service.latest.LinksLatestTest;
+import org.eclipse.persistence.jpars.test.service.latest.MarshalUnmarshalLatestTest;
+import org.eclipse.persistence.jpars.test.service.latest.MetadataLatestTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ServerCrudV2Test.class,
-        ServerEmployeeV2Test.class,
-        ServerTravelerV2Test.class,
-        ServerPageableTest.class,
-        ServerFieldsFilteringTest.class,
-        ServerLinksTest.class
+        MetadataLatestTest.class,
+        MarshalUnmarshalLatestTest.class,
+        EmployeeLatestTest.class,
+        LinksLatestTest.class,
+        ContextsLatestTest.class
 })
-public class ServerV2Tests {
+public class ServiceLatestTests {
 
 }

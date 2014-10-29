@@ -12,22 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.v2;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
+import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.traveler.Traveler;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -39,38 +32,16 @@ import static org.junit.Assert.assertTrue;
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerTravelerV2Test {
-    private static final String DEFAULT_PU = "jpars_traveler-static";
-    private static final String JPARS_VERSION = "v2.0";
+public class ServerTravelerV2Test extends BaseJparsTest {
 
-    private static PersistenceContext context = null;
-    private static PersistenceFactoryBase factory = null;
-
-    /**
-     * Setup.
-     *
-     * @throws Exception the exception
-     */
     @BeforeClass
     public static void setup() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, true);
-        if (context == null) {
-            throw new Exception("Persistence context could not be created.");
-        }
+        initContext("jpars_traveler-static", "v2.0");
     }
 
     @After
-    public void cleanup() {
-        try {
-            RestUtils.restUpdateQuery(context, "Traveler.deleteAll", "Traveler", null, null, MediaType.APPLICATION_JSON_TYPE);
-        } catch (URISyntaxException e) {
-        }
+    public void cleanup() throws URISyntaxException {
+        RestUtils.restUpdateQuery(context, "Traveler.deleteAll", "Traveler", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**

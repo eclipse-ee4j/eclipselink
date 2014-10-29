@@ -8,28 +8,26 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - Initial implementation
+ * 		Dmitry Kornilov - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpars.test.server.v1;
+package org.eclipse.persistence.jpars.test.service.latest;
 
-import com.sun.jersey.api.client.Client;
-import org.eclipse.persistence.jpars.test.server.noversion.ServerCrudTest;
-import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
+import org.eclipse.persistence.jpa.rs.resources.MetadataResource;
+import org.eclipse.persistence.jpars.test.service.v2.MetadataTest;
 import org.junit.BeforeClass;
 
 /**
- * ServerCrudTest modified for JPARS v1.0.
- * {@see ServerCrudTest}
+ * A set of metadata tests.
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerCrudV1Test extends ServerCrudTest {
+public class MetadataLatestTest extends MetadataTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        initContext("jpars_auction-static", "v1.0");
-        StaticModelDatabasePopulator.populateDB(emf);
-        client = Client.create();
+        initContext("jpars_employee-static", "latest");
+        metadataResource = new MetadataResource();
+        metadataResource.setPersistenceFactory(factory);
     }
 }

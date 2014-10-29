@@ -13,12 +13,9 @@
 package org.eclipse.persistence.jpars.test.server.v2;
 
 import com.sun.jersey.api.client.ClientResponse.Status;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
+import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.employee.Employee;
 import org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress;
 import org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod;
@@ -29,13 +26,11 @@ import org.eclipse.persistence.jpars.test.model.employee.PhoneNumber;
 import org.eclipse.persistence.jpars.test.model.employee.SmallProject;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 import org.eclipse.persistence.jpars.test.util.DBUtils;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -56,26 +51,11 @@ import static org.junit.Assert.assertTrue;
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerEmployeeV2Test {
-    private static final String DEFAULT_PU = "jpars_employee-static";
-    private static final String JPARS_VERSION = "v2.0";
+public class ServerEmployeeV2Test extends BaseJparsTest {
 
-    private static PersistenceContext context;
-
-    /**
-     * Setup.
-     *
-     * @throws Exception the exception
-     */
     @BeforeClass
     public static void setup() throws Exception {
-        final Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, false);
+        initContext("jpars_employee-static", "v2.0");
     }
 
     @After
@@ -143,7 +123,7 @@ public class ServerEmployeeV2Test {
         String msg = RestUtils.getJSONMessage("employee-with-address-V2.json");
         String employee = RestUtils.restUpdate(context, msg, Employee.class.getSimpleName(), null, MediaType.APPLICATION_JSON_TYPE);
         assertNotNull(employee);
-        String addressLink = "\"address\":{\"links\":[{\"rel\":\"self\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/20130/address\"}";
+        String addressLink = "\"address\":{\"links\":[{\"rel\":\"self\",\"href\":\"" + getServerURI() + "/entity/Employee/20130/address\"}";
         assertTrue(employee.contains(addressLink));
         RestUtils.restDelete(context, 20130, Employee.class.getSimpleName(), Employee.class, null, null, MediaType.APPLICATION_JSON_TYPE);
     }
@@ -680,7 +660,7 @@ public class ServerEmployeeV2Test {
         assertNotNull(result);
 
         // make sure that response from restUpdateBidirectionalRelationship contains newly added address in employee object
-        String addressLinkHref = RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/" + address.getId();
+        String addressLinkHref = getServerURI() + "/entity/EmployeeAddress/" + address.getId();
         assertTrue(result.contains(addressLinkHref));
 
         // read employee with an addresss
@@ -707,7 +687,7 @@ public class ServerEmployeeV2Test {
         assertTrue("10005".equals(address.getPostalCode()));
         assertTrue("Wall Street".equals(address.getStreet()));
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", address.getId());
 
         // query
@@ -722,7 +702,7 @@ public class ServerEmployeeV2Test {
             assertNotNull(result);
             assertTrue(result.contains(expected));
         } else if (mediaType == MediaType.APPLICATION_OCTET_STREAM_TYPE) {
-            byte[] expectedResult = RestUtils.restNamedSingleResultQueryInByteArray(context, "EmployeeAddress.getPicture", DEFAULT_PU, parameters, null, mediaType);
+            byte[] expectedResult = RestUtils.restNamedSingleResultQueryInByteArray(context, "EmployeeAddress.getPicture", pu, parameters, null, mediaType);
             assertTrue(Arrays.equals(manhattan, expectedResult));
         } else {
             // unsupported media type
@@ -864,10 +844,10 @@ public class ServerEmployeeV2Test {
 
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.equals("{\"items\":[{\"COUNT\":2}],\"links\":[{\"rel\":\"self\",\"href\":\"" +
-                    RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/query/Employee.count\"}]}"));
+                    getServerURI() + "/query/Employee.count\"}]}"));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             assertTrue(queryResult.contains("<result><items><COUNT>2</COUNT></items><links rel=\"self\" href=\"" +
-                    RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/query/Employee.count\"/></result>"));
+                    getServerURI() + "/query/Employee.count\"/></result>"));
         } else {
             // unsupported media type
             throw new RestCallFailedException(Status.BAD_REQUEST);
@@ -919,11 +899,11 @@ public class ServerEmployeeV2Test {
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.contains("\"firstName\":\"Miles\""));
             assertTrue(queryResult.contains("\"lastName\":\"Davis\""));
-            assertTrue(queryResult.contains("\"rel\":\"self\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + manager.getId() + "\""));
+            assertTrue(queryResult.contains("\"rel\":\"self\",\"href\":\"" + getServerURI() + "/entity/Employee/" + manager.getId() + "\""));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             assertTrue(queryResult.contains("<firstName>Miles</firstName>"));
             assertTrue(queryResult.contains("<lastName>Davis</lastName>"));
-            assertTrue(queryResult.contains("<links rel=\"self\" href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + manager.getId() + "\"/>"));
+            assertTrue(queryResult.contains("<links rel=\"self\" href=\"" + getServerURI() + "/entity/Employee/" + manager.getId() + "\"/>"));
         } else {
             // unsupported media type
             throw new RestCallFailedException(Status.BAD_REQUEST);
@@ -982,8 +962,8 @@ public class ServerEmployeeV2Test {
         // Query
         final String result = RestUtils.restNamedMultiResultQuery(context, "EmployeeAddress.getAll", null, null, mediaType);
 
-        assertTrue("Address1 is missing in the result", result.contains(RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/" + address1.getId()));
-        assertTrue("Address2 is missing in the result", result.contains(RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/" + address2.getId()));
+        assertTrue("Address1 is missing in the result", result.contains(getServerURI() + "/entity/EmployeeAddress/" + address1.getId()));
+        assertTrue("Address2 is missing in the result", result.contains(getServerURI() + "/entity/EmployeeAddress/" + address2.getId()));
 
         // Delete employee addresses
         RestUtils.restDelete(context, address1.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, null, null, mediaType);
@@ -1018,14 +998,12 @@ public class ServerEmployeeV2Test {
             assertTrue(result.contains("{\"postalCode\":\"99999\",\"province\":\"WA\",\"street\":\"Main\"}"));
             assertTrue(result.contains("{\"postalCode\":\"K1A5A7\",\"province\":\"NS\",\"street\":\"Queen\"}"));
             assertTrue(result.contains("\"links\":[{\"rel\":\"self\",\"href\":\"" +
-                    RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU +
-                    "/query/EmployeeAddress.getRegion\"}]"));
+                    getServerURI() + "/query/EmployeeAddress.getRegion\"}]"));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             assertTrue(result.contains("<postalCode>99999</postalCode><province>WA</province><street>Main</street>"));
             assertTrue(result.contains("<postalCode>K1A5A7</postalCode><province>NS</province><street>Queen</street>"));
             assertTrue(result.contains("<links rel=\"self\" href=\"" +
-                    RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU +
-                    "/query/EmployeeAddress.getRegion\"/>"));
+                    getServerURI() + "/query/EmployeeAddress.getRegion\"/>"));
         } else {
             // unsupported media type
             throw new RestCallFailedException(Status.BAD_REQUEST);
@@ -1050,7 +1028,7 @@ public class ServerEmployeeV2Test {
         assertTrue("NY".equals(address.getProvince()));
         assertTrue("10005".equals(address.getPostalCode()));
         assertTrue("Wall Street".equals(address.getStreet()));
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", address.getId());
 
         String result = RestUtils.restNamedSingleResultQuery(context, "EmployeeAddress.getById", parameters, null, mediaType);
@@ -1064,8 +1042,8 @@ public class ServerEmployeeV2Test {
             assertTrue(result.contains("\"postalCode\":\"10005\""));
             assertTrue(result.contains("\"province\":\"NY\""));
             assertTrue(result.contains("\"street\":\"Wall Street\""));
-            assertTrue(result.contains("\"rel\":\"self\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/singleResultQuery/EmployeeAddress.getById;id=9112\""));
-            assertTrue(result.contains("\"rel\":\"canonical\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/9112\""));
+            assertTrue(result.contains("\"rel\":\"self\",\"href\":\"" + getServerURI() + "/singleResultQuery/EmployeeAddress.getById;id=9112\""));
+            assertTrue(result.contains("\"rel\":\"canonical\",\"href\":\"" + getServerURI() + "/entity/EmployeeAddress/9112\""));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             assertTrue(result.contains(
                 "<areaPicture>" +
@@ -1077,8 +1055,8 @@ public class ServerEmployeeV2Test {
             assertTrue(result.contains("<postalCode>10005</postalCode>"));
             assertTrue(result.contains("<province>NY</province>"));
             assertTrue(result.contains("<street>Wall Street</street>"));
-            assertTrue(result.contains("<links rel=\"self\" href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/singleResultQuery/EmployeeAddress.getById;id=9112\"/>"));
-            assertTrue(result.contains("<links rel=\"canonical\" href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/EmployeeAddress/9112\"/>"));
+            assertTrue(result.contains("<links rel=\"self\" href=\"" + getServerURI() + "/singleResultQuery/EmployeeAddress.getById;id=9112\"/>"));
+            assertTrue(result.contains("<links rel=\"canonical\" href=\"" + getServerURI() + "/entity/EmployeeAddress/9112\"/>"));
         } else {
             // unsupported media type
             throw new RestCallFailedException(Status.BAD_REQUEST);
@@ -1307,7 +1285,7 @@ public class ServerEmployeeV2Test {
         assertTrue("10005".equals(address.getPostalCode()));
         assertTrue("Wall Street".equals(address.getStreet()));
 
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", address.getId());
 
         final String expected;
@@ -1399,18 +1377,18 @@ public class ServerEmployeeV2Test {
         }
 
         // single result query
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", employee.getId());
 
         String queryResult = RestUtils.restNamedSingleResultQuery(context, "Employee.getManagerById", parameters, null, mediaType);
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.contains("\"firstName\":\"Miles\""));
             assertTrue(queryResult.contains("\"lastName\":\"Davis\""));
-            assertTrue(queryResult.contains("\"rel\":\"self\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + manager.getId() + "\""));
+            assertTrue(queryResult.contains("\"rel\":\"self\",\"href\":\"" + getServerURI() + "/entity/Employee/" + manager.getId() + "\""));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             assertTrue(queryResult.contains("<firstName>Miles</firstName>"));
             assertTrue(queryResult.contains("<lastName>Davis</lastName>"));
-            assertTrue(queryResult.contains("<links rel=\"self\" href=\"" + RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/" + manager.getId() + "\"/>"));
+            assertTrue(queryResult.contains("<links rel=\"self\" href=\"" + getServerURI() + "/entity/Employee/" + manager.getId() + "\"/>"));
         } else {
             // unsupported media type
             throw new RestCallFailedException(Status.BAD_REQUEST);
@@ -1438,7 +1416,7 @@ public class ServerEmployeeV2Test {
 
         // Read employee and check certifications attribute
         final String employee = RestUtils.restRead(context, 201204, Employee.class.getSimpleName(), null, mediaType);
-        assertTrue("Certifications link doesn't exist.", employee.contains(RestUtils.getServerURI(context.getVersion()) + DEFAULT_PU + "/entity/Employee/201204/certifications"));
+        assertTrue("Certifications link doesn't exist.", employee.contains(getServerURI() + "/entity/Employee/201204/certifications"));
 
         // Read certifications and check that 'Java' certification exists
         final String certifications = RestUtils.restFindAttribute(context, 201204, Employee.class.getSimpleName(), "certifications", null, mediaType);

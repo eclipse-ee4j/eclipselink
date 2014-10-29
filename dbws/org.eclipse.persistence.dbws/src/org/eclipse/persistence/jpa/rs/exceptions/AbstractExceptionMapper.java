@@ -19,6 +19,7 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 import javax.naming.NamingException;
@@ -98,7 +99,7 @@ public abstract class AbstractExceptionMapper {
             }
         }
 
-        if ((path != null) && (path.contains(ServiceVersion.VERSION_2_0.getCode()))) {
+        if ((path != null) && (path.contains(ServiceVersion.VERSION_2_0.getCode()) || path.contains(ServiceVersion.LATEST.getCode()))) {
             ErrorResponse errorResponse = new ErrorResponse(PROBLEM_TYPE, exception.getMessage(), String.valueOf(exception.getErrorCode()));
             errorResponse.setRequestId((String) DataStorage.get(DataStorage.REQUEST_ID));
             errorResponse.setHttpStatus(exception.getHttpStatusCode().getStatusCode());
@@ -115,13 +116,11 @@ public abstract class AbstractExceptionMapper {
         if (throwable != null) {
             Status httpStatusCode = HTTP_STATUS_CODE_MAPPING.get(throwable.getClass().getName());
             if (throwable instanceof RollbackException) {
-                if (throwable != null) {
-                    Throwable cause = throwable.getCause();
-                    if (cause != null) {
-                        if (cause instanceof DatabaseException) {
-                            //  409 Conflict ("The request could not be completed due to a conflict with the current state of the resource.")
-                            httpStatusCode = Status.CONFLICT;
-                        }
+                Throwable cause = throwable.getCause();
+                if (cause != null) {
+                    if (cause instanceof DatabaseException) {
+                        //  409 Conflict ("The request could not be completed due to a conflict with the current state of the resource.")
+                        httpStatusCode = Status.CONFLICT;
                     }
                 }
             }
@@ -145,6 +144,7 @@ public abstract class AbstractExceptionMapper {
             marshaller.marshal(errorResponse, writer);
             return writer.toString();
         } catch (Exception ex) {
+            JPARSLogger.exception(ex.getMessage(), null, ex);
         }
         return null;
     }

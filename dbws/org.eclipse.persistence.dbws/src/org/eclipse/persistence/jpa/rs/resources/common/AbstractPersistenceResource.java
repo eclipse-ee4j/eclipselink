@@ -58,7 +58,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
      * Produces a response containing a list of available persistence contexts.
      * Returns different responses depending version.
      *
-     * @param version the service version (null, "v1.0", "v2.0")
+     * @param version the service version (null, "v1.0", "v2.0", "latest")
      * @param headers the HTTP headers
      * @param uriInfo the URL
      * @return response containing a list of persistence contexts.
@@ -157,7 +157,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             final Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
             final String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
             final URI baseURI = uriInfo.getBaseUri();
-            final List<Link> links = new ArrayList<Link>();
+            final List<Link> links = new ArrayList<>();
 
             for (String context : contexts) {
                 if (version != null) {

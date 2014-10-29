@@ -14,35 +14,26 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.service.noversion;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JPARSErrorCodes;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
 import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
@@ -51,29 +42,11 @@ import static org.junit.Assert.assertTrue;
  *
  * @author gonural
  */
-public class MarshalUnmarshalTest {
-    private static final String DEFAULT_PU = "jpars_auction-static";
-    private static final String JPARS_VERSION = null;
+public class MarshalUnmarshalTest extends BaseJparsTest {
 
-    protected static PersistenceContext context = null;
-
-    /**
-     * Setup.
-     *
-     * @throws URISyntaxException the URI syntax exception
-     */
     @BeforeClass
-    public static void setup() throws URISyntaxException {
-        final Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION,PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        final EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
-        context = factory.bootstrapPersistenceContext("jpars_auction-static", emf,
-                RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, false);
+    public static void setup() throws Exception {
+        initContext("jpars_auction-static", null);
     }
 
     /**

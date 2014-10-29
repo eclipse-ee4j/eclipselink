@@ -12,17 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.v1;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.server.noversion.ServerTravelerTest;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
-import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.BeforeClass;
-
-import javax.persistence.Persistence;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * ServerTravelerNoVersionTest adapted for JPARS 1.0.
@@ -32,25 +23,9 @@ import java.util.Map;
  * @since EclipseLink 2.6.0
  */
 public class ServerTravelerV1Test extends ServerTravelerTest {
-    private static final String DEFAULT_PU = "jpars_traveler-static";
-    private static final String JPARS_VERSION = "v1.0";
 
-    /**
-     * Setup.
-     *
-     * @throws Exception the exception
-     */
     @BeforeClass
     public static void setup() throws Exception {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, true);
-        if (context == null) {
-            throw new Exception("Persistence context could not be created.");
-        }
+        initContext("jpars_traveler-static", "v1.0");
     }
 }

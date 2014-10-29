@@ -12,25 +12,25 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test;
 
-import org.eclipse.persistence.jpars.test.server.v2.ServerCrudV2Test;
-import org.eclipse.persistence.jpars.test.server.v2.ServerEmployeeV2Test;
-import org.eclipse.persistence.jpars.test.server.v2.ServerFieldsFilteringTest;
-import org.eclipse.persistence.jpars.test.server.v2.ServerLinksTest;
-import org.eclipse.persistence.jpars.test.server.v2.ServerPageableTest;
-import org.eclipse.persistence.jpars.test.server.v2.ServerTravelerV2Test;
+import org.eclipse.persistence.jpars.test.server.latest.ServerCrudLatestTest;
+import org.eclipse.persistence.jpars.test.server.latest.ServerEmployeeLatestTest;
+import org.eclipse.persistence.jpars.test.server.latest.ServerFieldsFilteringLatestTest;
+import org.eclipse.persistence.jpars.test.server.latest.ServerLinksLatestTest;
+import org.eclipse.persistence.jpars.test.server.latest.ServerPageableLatestTest;
+import org.eclipse.persistence.jpars.test.server.latest.ServerTravelerLatestTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-        ServerCrudV2Test.class,
-        ServerEmployeeV2Test.class,
-        ServerTravelerV2Test.class,
-        ServerPageableTest.class,
-        ServerFieldsFilteringTest.class,
-        ServerLinksTest.class
+        ServerCrudLatestTest.class,
+        ServerEmployeeLatestTest.class,
+        ServerTravelerLatestTest.class,
+        ServerPageableLatestTest.class,
+        ServerFieldsFilteringLatestTest.class,
+        ServerLinksLatestTest.class
 })
-public class ServerV2Tests {
+public class ServerLatestTests {
 
 }

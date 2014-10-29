@@ -10,26 +10,22 @@
  * Contributors:
  *      Dmitry Kornilov - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpars.test.server.v1;
+package org.eclipse.persistence.jpars.test.service.latest;
 
-import com.sun.jersey.api.client.Client;
-import org.eclipse.persistence.jpars.test.server.noversion.ServerCrudTest;
-import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
+import org.eclipse.persistence.jpars.test.service.v2.EmployeeV2Test;
 import org.junit.BeforeClass;
 
 /**
- * ServerCrudTest modified for JPARS v1.0.
- * {@see ServerCrudTest}
+ * EmployeeTest adapted for JPARS 2.0.
+ * {@see EmployeeTest}
  *
  * @author Dmitry Kornilov
  * @since EclipseLink 2.6.0
  */
-public class ServerCrudV1Test extends ServerCrudTest {
+public class EmployeeLatestTest extends EmployeeV2Test {
 
     @BeforeClass
     public static void setup() throws Exception {
-        initContext("jpars_auction-static", "v1.0");
-        StaticModelDatabasePopulator.populateDB(emf);
-        client = Client.create();
+        initContext("jpars_employee-static", "latest");
     }
 }

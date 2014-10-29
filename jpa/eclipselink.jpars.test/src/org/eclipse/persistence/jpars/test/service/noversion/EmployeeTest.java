@@ -12,10 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.service.noversion;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
+import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.employee.Employee;
 import org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress;
 import org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod;
@@ -23,23 +20,17 @@ import org.eclipse.persistence.jpars.test.model.employee.Expertise;
 import org.eclipse.persistence.jpars.test.model.employee.Gender;
 import org.eclipse.persistence.jpars.test.model.employee.PhoneNumber;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
@@ -48,26 +39,11 @@ import static org.junit.Assert.assertTrue;
  *
  * @author gonural
  */
-public class EmployeeTest {
-    private static final String DEFAULT_PU = "jpars_employee-static";
-    private static final String JPARS_VERSION = null;
-
-    protected static PersistenceContext context = null;
+public class EmployeeTest extends BaseJparsTest {
 
     @BeforeClass
-    public static void setup() throws URISyntaxException {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties); 
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties),
-                RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, true);
-    }
-
-    @AfterClass
-    public static void tearDown() {
+    public static void setup() throws Exception {
+        initContext("jpars_employee-static", null);
     }
 
     @Test
@@ -94,7 +70,7 @@ public class EmployeeTest {
         address.setProvince("NY");
         employee.setAddress(address);
 
-        List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+        List<PhoneNumber> phoneNumbers = new ArrayList<>();
         phoneNumbers.add(new PhoneNumber("Home", "613", "1234567"));
         phoneNumbers.add(new PhoneNumber("Work", "613", "9876543"));
         employee.setPhoneNumbers(phoneNumbers);
@@ -114,7 +90,7 @@ public class EmployeeTest {
         manager.setFirstName("Bill");
         manager.setLastName("Anderson");
         manager.setGender(Gender.Male);
-        List<Employee> managedEmployees = new ArrayList<Employee>();
+        List<Employee> managedEmployees = new ArrayList<>();
         managedEmployees.add(employee);
         manager.setManagedEmployees(managedEmployees);
         employee.setManager(manager);
@@ -170,7 +146,7 @@ public class EmployeeTest {
         address.setProvince("NY");
         employee.setAddress(address);
 
-        List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+        List<PhoneNumber> phoneNumbers = new ArrayList<>();
         phoneNumbers.add(new PhoneNumber("Home", "613", "1234567"));
         phoneNumbers.add(new PhoneNumber("Work", "613", "9876543"));
         employee.setPhoneNumbers(phoneNumbers);
@@ -190,7 +166,7 @@ public class EmployeeTest {
         manager.setFirstName("Bill");
         manager.setLastName("Anderson");
         manager.setGender(Gender.Male);
-        List<Employee> managedEmployees = new ArrayList<Employee>();
+        List<Employee> managedEmployees = new ArrayList<>();
         managedEmployees.add(employee);
         manager.setManagedEmployees(managedEmployees);
         employee.setManager(manager);

@@ -40,18 +40,41 @@ import java.util.Set;
  *
  */
 public class PersistenceFactoryBase implements PersistenceContextFactory {
-    protected Map<String, Set<PersistenceContext>> dynamicPersistenceContexts = new HashMap<String, Set<PersistenceContext>>();
+    protected final Map<String, Set<PersistenceContext>> dynamicPersistenceContexts = new HashMap<>();
 
     /**
-     * Bootstrap a PersistenceContext based on an pre-existing EntityManagerFactory
-     * @param name
-     * @param emf
-     * @param baseURI
-     * @param replace
-     * @return
+     * Bootstrap a PersistenceContext based on an pre-existing EntityManagerFactory.
+     *
+     * @param name      persistence context name
+     * @param emf       entity manager factory
+     * @param baseURI   base URI
+     * @param version   JPARS version. See {@link ServiceVersion} for more details.
+     * @param replace   Indicates that existing persistence context with given name and version must be replaced
+     *                  with the newly created one. If false passed the newly created context is not added to cache at all.
+     * @return newly created persistence context
      */
     public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, String version, boolean replace) {
-        return new PersistenceContext(name, (EntityManagerFactoryImpl) emf, baseURI, ServiceVersion.fromCode(version));
+        final PersistenceContext persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl) emf, baseURI, ServiceVersion.fromCode(version));
+
+        if (replace) {
+            synchronized (this) {
+                PersistenceContext existingContext = getDynamicPersistenceContext(name, version);
+
+                Set<PersistenceContext> persistenceContextSet = getDynamicPersistenceContextSet(name);
+                if (persistenceContextSet == null) {
+                    persistenceContextSet = new HashSet<>();
+                }
+
+                if (existingContext != null) {
+                    persistenceContextSet.remove(existingContext);
+                }
+
+                persistenceContextSet.add(persistenceContext);
+                dynamicPersistenceContexts.put(name, persistenceContextSet);
+            }
+        }
+
+        return persistenceContext;
     }
 
     /**
@@ -72,8 +95,9 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
     }
 
     /**
-     * Close the PersistenceContext of a given name and clean it out of our list of PersistenceContexts
-     * @param name
+     * Close the PersistenceContext of a given name and clean it out of our list of PersistenceContexts.
+     *
+     * @param name name of the persistence context to close.
      */
     public void closePersistenceContext(String name) {
         synchronized (this) {
@@ -94,7 +118,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
      * @return
      */
     protected static Map<String, Object> createProperties(DynamicClassLoader dcl, Map<String, ?> originalProperties) {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
 
         properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
         properties.put(PersistenceUnitProperties.WEAVING, "static");
@@ -114,7 +138,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
         if (persistenceContext == null) {
             try {
                 DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
-                Map<String, Object> properties = new HashMap<String, Object>();
+                Map<String, Object> properties = new HashMap<>();
                 properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
                 if (initializationProperties != null) {
                     properties.putAll(initializationProperties);
@@ -123,7 +147,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                 EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 ClassLoader sessionLoader = factory.getServerSession().getLoader();
                 if (!DynamicClassLoader.class.isAssignableFrom(sessionLoader.getClass())) {
-                    properties = new HashMap<String, Object>();
+                    properties = new HashMap<>();
                     dcl = new DynamicClassLoader(sessionLoader);
                     properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
                     if (initializationProperties != null) {
@@ -132,19 +156,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                     factory.refreshMetadata(properties);
                 }
 
-                if (factory != null) {
-                    persistenceContext = bootstrapPersistenceContext(persistenceUnitName, factory, defaultURI, version, true);
-                    Set<PersistenceContext> persistenceContextSet = getDynamicPersistenceContextSet(persistenceUnitName);
-                    if (persistenceContext != null) {
-                        if (persistenceContextSet == null) {
-                            persistenceContextSet = new HashSet<PersistenceContext>();
-                        }
-                        persistenceContextSet.add(persistenceContext);
-                        synchronized (this) {
-                            dynamicPersistenceContexts.put(persistenceUnitName, persistenceContextSet);
-                        }
-                    }
-                }
+                persistenceContext = bootstrapPersistenceContext(persistenceUnitName, factory, defaultURI, version, true);
             } catch (Exception e) {
                 JPARSLogger.exception("exception_creating_persistence_context", new Object[] { persistenceUnitName, e.toString() }, e);
             }
@@ -159,7 +171,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
     }
 
     public Set<String> getPersistenceContextNames() {
-        Set<String> contextNames = new HashSet<String>();
+        Set<String> contextNames = new HashSet<>();
         try {
             Set<Archive> archives = PersistenceUnitProcessor.findPersistenceArchives();
             for (Archive archive : archives) {
@@ -180,6 +192,13 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
         return contextNames;
     }
 
+    /**
+     * Gets cached persistence context by its name and JPARS version.
+     *
+     * @param name      persistent unit name.
+     * @param version   JPARS version. See {@link ServiceVersion} for more details.
+     * @return persistence context or null if doesn't exist.
+     */
     public PersistenceContext getDynamicPersistenceContext(String name, String version) {
         synchronized (this) {
             Set<PersistenceContext> persistenceContextSet = dynamicPersistenceContexts.get(name);

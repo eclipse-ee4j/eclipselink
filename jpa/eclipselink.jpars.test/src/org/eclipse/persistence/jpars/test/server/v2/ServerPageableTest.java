@@ -12,24 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.server.v2;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
+import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.basket.Basket;
 import org.eclipse.persistence.jpars.test.model.basket.BasketItem;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -39,23 +33,13 @@ import static org.junit.Assert.assertTrue;
  * This class tests paging feature introduced in V2.
  *
  * @author Dmitry Kornilov
+ * @since EclipseLink 2.6.0
  */
-public class ServerPageableTest {
-    private static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars.test.server");
-    private static final String DEFAULT_PU = "jpars_basket-static";
-    private static final String JPARS_VERSION = "v2.0";
-
-    private static PersistenceContext context;
+public class ServerPageableTest extends BaseJparsTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        final Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, false);
+        initContext("jpars_basket-static", "v2.0");
         initData();
     }
 
@@ -65,7 +49,7 @@ public class ServerPageableTest {
         RestUtils.restUpdateQuery(context, "Basket.deleteAll", "Basket", null, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
-    private static void initData() throws Exception {
+    protected static void initData() throws Exception {
         // Create a basket
         Basket basket = new Basket();
         basket.setId(1);
@@ -86,7 +70,7 @@ public class ServerPageableTest {
     @Test
     public void testPageableQueryLimitJson() throws URISyntaxException {
         // Run pageable query with limit = 2
-        final Map<String, String> hints = new HashMap<String, String>(1);
+        final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
 
         final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
@@ -115,7 +99,7 @@ public class ServerPageableTest {
     @Test
     public void testPageableQueryLimitXml() throws URISyntaxException {
         // Run pageable query with limit = 2
-        final Map<String, String> hints = new HashMap<String, String>(1);
+        final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
 
         final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_XML_TYPE);
@@ -144,7 +128,7 @@ public class ServerPageableTest {
     @Test
     public void testPageableQueryOffsetJson() throws URISyntaxException {
         // Run pageable query with limit = 2 and offset = 2
-        final Map<String, String> hints = new HashMap<String, String>(1);
+        final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
         hints.put("offset", "2");
 
@@ -178,7 +162,7 @@ public class ServerPageableTest {
     @Test
     public void testPageableQueryOffsetXml() throws URISyntaxException {
         // Run pageable query with limit = 2 and offset = 2
-        final Map<String, String> hints = new HashMap<String, String>(1);
+        final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
         hints.put("offset", "2");
 
@@ -256,7 +240,7 @@ public class ServerPageableTest {
     @Test
     public void testCountXml() throws URISyntaxException {
         // Run pageable query with limit = 2 and offset = 2
-        final Map<String, String> hints = new HashMap<String, String>(1);
+        final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
         hints.put("offset", "4");
 
@@ -287,7 +271,7 @@ public class ServerPageableTest {
     @Test(expected = Exception.class)
     public void testIncorrectLimitUsage() throws URISyntaxException {
         // Run pageable query with limit = 2
-        final Map<String, String> hints = new HashMap<String, String>(1);
+        final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
 
         // Call not pageable query with limit parameter. It suppose to throw an exception.
@@ -297,7 +281,7 @@ public class ServerPageableTest {
     @Test(expected = Exception.class)
     public void testIncorrectOffsetUsage() throws URISyntaxException {
         // Run pageable query with offset = 2
-        final Map<String, String> hints = new HashMap<String, String>(1);
+        final Map<String, String> hints = new HashMap<>(1);
         hints.put("offset", "2");
 
         // Call not pageable query with limit parameter. It suppose to throw an exception.
@@ -307,7 +291,7 @@ public class ServerPageableTest {
     @Test
     public void testPageableField() throws URISyntaxException {
         // Run pageable query with limit = 2
-        final Map<String, String> hints = new HashMap<String, String>(1);
+        final Map<String, String> hints = new HashMap<>(1);
         hints.put("limit", "2");
 
         final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
@@ -347,15 +331,5 @@ public class ServerPageableTest {
         assertTrue(response.contains("\"offset\":" + offset));
         assertTrue(response.contains("\"count\":" + count));
         assertTrue(response.contains("\"hasMore\":" + hasMore));
-    }
-
-    private boolean checkLinkXml(String response, String rel, String uri) throws URISyntaxException {
-        final String link = "<links rel=\"" + rel + "\" href=\"" + RestUtils.getServerURI(context.getVersion()) + context.getName() + uri + "\"/>";
-        return response.contains(link);
-    }
-
-    private boolean checkLinkJson(String response, String rel, String uri) throws URISyntaxException {
-        final String link = "{\"rel\":\"" + rel + "\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + context.getName() + uri + "\"}";
-        return response.contains(link);
     }
 }

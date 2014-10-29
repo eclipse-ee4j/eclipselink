@@ -23,7 +23,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
         ServerV2Tests.class,
         ServerV1Tests.class,
-        ServerNoVersionTests.class
+        ServerNoVersionTests.class,
+        ServerLatestTests.class
 })
 public class AllJavaEETests {
 

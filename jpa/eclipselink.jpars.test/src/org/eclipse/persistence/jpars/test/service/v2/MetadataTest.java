@@ -12,20 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.service.v2;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.resources.MetadataResource;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
+import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.eclipse.persistence.jpars.test.util.TestHttpHeaders;
 import org.eclipse.persistence.jpars.test.util.TestURIInfo;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -34,9 +29,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -45,36 +37,21 @@ import static org.junit.Assert.fail;
  * A set of metadata tests.
  *
  * @author Dmitry Kornilov
+ * @since EclipseLink 2.6.0
  */
-public class MetadataTest {
-    private static final String JPARS_VERSION = "v2.0";
-
-    private static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars.test.service");
-    private static final String DEFAULT_PU = "jpars_employee-static";
-
-    private static PersistenceContext context;
-    private static MetadataResource metadataResource;
+public class MetadataTest extends BaseJparsTest {
+    protected static MetadataResource metadataResource;
 
     @BeforeClass
     public static void setup() throws Exception {
-        final Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        properties.put(PersistenceUnitProperties.WEAVING, "static");
-
-        final PersistenceFactoryBase factory = new PersistenceFactoryBase();
-        factory.get(DEFAULT_PU, RestUtils.getServerURI(), JPARS_VERSION, properties);
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(JPARS_VERSION), JPARS_VERSION, false);
-
+        initContext("jpars_employee-static", "v2.0");
         metadataResource = new MetadataResource();
         metadataResource.setPersistenceFactory(factory);
     }
 
     @Test
     public void testMetadataCatalog() throws URISyntaxException, JAXBException, UnsupportedEncodingException {
-        final Response response = metadataResource.getMetadataCatalog(JPARS_VERSION, DEFAULT_PU,
+        final Response response = metadataResource.getMetadataCatalog(version, pu,
                 TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
                 new TestURIInfo());
         final String responseString = getResponseAsString(response);
@@ -107,7 +84,7 @@ public class MetadataTest {
 
     @Test
     public void testEntityMetadata() throws URISyntaxException, JAXBException, UnsupportedEncodingException {
-        final Response response = metadataResource.getEntityResource(JPARS_VERSION, DEFAULT_PU, "Employee",
+        final Response response = metadataResource.getEntityResource(version, pu, "Employee",
                 TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
                 new TestURIInfo());
         final String responseString = getResponseAsString(response);
@@ -121,7 +98,7 @@ public class MetadataTest {
 
     @Test
     public void testQueryMetadata() throws URISyntaxException, JAXBException, UnsupportedEncodingException {
-        final Response response = metadataResource.getQueryResource(JPARS_VERSION, DEFAULT_PU, "Employee.salaryMax",
+        final Response response = metadataResource.getQueryResource(version, pu, "Employee.salaryMax",
                 TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
                 new TestURIInfo());
         final String responseString = getResponseAsString(response);
@@ -135,7 +112,7 @@ public class MetadataTest {
 
     @Test
     public void testEntitySchema() throws URISyntaxException, JAXBException, UnsupportedEncodingException {
-        final Response response = metadataResource.getEntityResource(JPARS_VERSION, DEFAULT_PU, "Employee",
+        final Response response = metadataResource.getEntityResource(version, pu, "Employee",
                 TestHttpHeaders.generateHTTPHeader(AbstractResource.APPLICATION_SCHEMA_JSON_TYPE, AbstractResource.APPLICATION_SCHEMA_JSON),
                 new TestURIInfo());
         final String responseString = getResponseAsString(response);
@@ -173,7 +150,7 @@ public class MetadataTest {
 
     @Test
     public void testReadAllQuerySchema() throws URISyntaxException, JAXBException, UnsupportedEncodingException {
-        final Response response = metadataResource.getQueryResource(JPARS_VERSION, DEFAULT_PU, "Employee.findAll",
+        final Response response = metadataResource.getQueryResource(version, pu, "Employee.findAll",
                 TestHttpHeaders.generateHTTPHeader(AbstractResource.APPLICATION_SCHEMA_JSON_TYPE, AbstractResource.APPLICATION_SCHEMA_JSON),
                 new TestURIInfo());
         final String responseString = getResponseAsString(response);
@@ -193,7 +170,7 @@ public class MetadataTest {
 
     @Test
     public void testReportQuerySchema() throws URISyntaxException, JAXBException, UnsupportedEncodingException {
-        final Response response = metadataResource.getQueryResource(JPARS_VERSION, DEFAULT_PU, "Employee.getManager",
+        final Response response = metadataResource.getQueryResource(version, pu, "Employee.getManager",
                 TestHttpHeaders.generateHTTPHeader(AbstractResource.APPLICATION_SCHEMA_JSON_TYPE, AbstractResource.APPLICATION_SCHEMA_JSON),
                 new TestURIInfo());
         final String responseString = getResponseAsString(response);
@@ -221,7 +198,7 @@ public class MetadataTest {
 
     @Test
     public void testEntityOptions() throws URISyntaxException {
-        final Response response = metadataResource.getEntityOptions(JPARS_VERSION, DEFAULT_PU, "Employee",
+        final Response response = metadataResource.getEntityOptions(version, pu, "Employee",
                 TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
                 new TestURIInfo());
         assertTrue(response.getMetadata().containsKey("Link"));
@@ -232,7 +209,7 @@ public class MetadataTest {
 
     @Test
     public void testQueryOptions() throws URISyntaxException {
-        final Response response = metadataResource.getQueryOptions(JPARS_VERSION, DEFAULT_PU, "Employee.getManager",
+        final Response response = metadataResource.getQueryOptions(version, pu, "Employee.getManager",
                 TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
                 new TestURIInfo());
         assertTrue(response.getMetadata().containsKey("Link"));
@@ -283,7 +260,7 @@ public class MetadataTest {
         assertTrue(response.contains("\"name\":\"" + entityName + "\""));
         checkLinkWithMediaType(response, "alternate", "/metadata-catalog/entity/" + entityName, "application/schema+json");
         checkLinkWithMediaType(response, "canonical", "/metadata-catalog/entity/" + entityName, "application/json");
-        checkLink(response, "describes", "/entity/" + entityName);
+        checkLinkJson(response, "describes", "/entity/" + entityName);
     }
 
     private void checkQueryMetadata(String response, String queryName) throws URISyntaxException {
@@ -293,11 +270,6 @@ public class MetadataTest {
 
         final String describesLink = "{\"rel\":\"describes\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + context.getName() + "/query/" + queryName;
         assertTrue(response.contains(describesLink));
-    }
-
-    private void checkLink(String response, String rel, String uri) throws URISyntaxException {
-        final String link = "{\"rel\":\"" + rel + "\",\"href\":\"" + RestUtils.getServerURI(context.getVersion()) + context.getName() + uri + "\"}";
-        assertTrue(response.contains(link));
     }
 
     private void checkLinkWithMediaType(String response, String rel, String uri, String mediaType) throws URISyntaxException {

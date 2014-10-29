@@ -10,7 +10,6 @@
  * Contributors:
  *      Dmitry Kornilov - initial implementation
  ******************************************************************************/
-
 package org.eclipse.persistence.jpa.rs.features;
 
 import java.util.HashMap;
@@ -20,6 +19,7 @@ import java.util.Map;
  * JPARS service version.
  *
  * @author Dmitry Kornilov
+ * @since EclipseLink 2.6.0
  */
 public enum ServiceVersion {
     /**
@@ -33,14 +33,14 @@ public enum ServiceVersion {
     VERSION_1_0("v1.0"),
 
     /**
-     * The latest version at the moment, supports pagination and other new features.
+     * Version 2.0. Supports pagination and other new features.
      */
-    VERSION_2_0("v2.0");
+    VERSION_2_0("v2.0"),
 
     /**
-     * This constant defines a keywork used to access the latest service version.
+     * The latest version.
      */
-    public static final String LATEST_VERSION = "latest";
+    LATEST("latest");
 
     /**
      * String representation of the version number. As it appears in the URL. Ex. "v2.0"
@@ -50,7 +50,7 @@ public enum ServiceVersion {
     private static final Map<String, ServiceVersion> values;
 
     static {
-        values = new HashMap<String, ServiceVersion>();
+        values = new HashMap<>();
         for (final ServiceVersion e : ServiceVersion.values()) {
             values.put(e.getCode(), e);
         }
@@ -77,11 +77,6 @@ public enum ServiceVersion {
      * @throws IllegalArgumentException in case that the passed code does not match any enumeration value.
      */
     public static ServiceVersion fromCode(final String version) throws IllegalArgumentException {
-        // 'latest' keyword check
-        if (version != null && version.equalsIgnoreCase(LATEST_VERSION)) {
-            return VERSION_2_0;
-        }
-
         final ServiceVersion e = values.get(version);
         if (e == null) {
             throw new IllegalArgumentException("Unsupported version " + version);
@@ -95,7 +90,7 @@ public enum ServiceVersion {
      * @return {@link FeatureSet} related to this version.
      */
     public FeatureSet getFeatureSet() {
-        if (this.equals(VERSION_2_0))
+        if (this.compareTo(VERSION_2_0) >= 0)
             return new FeatureSetV2();
         else {
             return new FeatureSetPreV2();

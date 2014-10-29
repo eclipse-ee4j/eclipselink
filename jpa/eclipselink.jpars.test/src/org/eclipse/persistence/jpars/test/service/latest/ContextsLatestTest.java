@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -8,28 +8,26 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *      Dmitry Kornilov - Initial implementation
+ *     Dmitry Kornilov - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpars.test.server.v1;
+package org.eclipse.persistence.jpars.test.service.latest;
 
-import com.sun.jersey.api.client.Client;
-import org.eclipse.persistence.jpars.test.server.noversion.ServerCrudTest;
-import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
+import org.eclipse.persistence.jpa.rs.resources.PersistenceResource;
+import org.eclipse.persistence.jpars.test.service.v2.ContextsTest;
 import org.junit.BeforeClass;
 
 /**
- * ServerCrudTest modified for JPARS v1.0.
- * {@see ServerCrudTest}
+ * Tests a list of available contexts functionality.
  *
  * @author Dmitry Kornilov
- * @since EclipseLink 2.6.0
+ * @since EclipseLink 2.6.0.
  */
-public class ServerCrudV1Test extends ServerCrudTest {
+public class ContextsLatestTest extends ContextsTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        initContext("jpars_auction-static", "v1.0");
-        StaticModelDatabasePopulator.populateDB(emf);
-        client = Client.create();
+        initContext("jpars_employee-static", "latest");
+        persistenceResource = new PersistenceResource();
+        persistenceResource.setPersistenceFactory(factory);
     }
 }
