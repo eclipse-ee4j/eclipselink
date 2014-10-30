@@ -50,26 +50,26 @@ public class Version {
     // This is replaced by JavaSEPlatform. It's here just because of backward compatibility.
     /**
      * Keep track of JDK version in order to make some decisions about data structures.
-     * @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7.
+     * @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7.
      */
     public static final int JDK_VERSION_NOT_SET = 0;
-    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
+    /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
     public static final int JDK_1_5 = 1;
-    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
+    /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
     public static final int JDK_1_6 = 2;
-    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
+    /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
     public static final int JDK_1_7 = 3;
-    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
+    /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
     public static final int JDK_1_8 = 4;
-    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
+    /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
     public static final int JDK_1_9 = 5;
-    /** @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7. */
+    /** @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7. */
     public static int JDK_VERSION = JDK_VERSION_NOT_SET;
 
     /**
-     * Returns version {@see String} containing three part version number
+     * Returns version {@link String} containing three part version number
      * and build qualifier.
-     * @return Version {@see String}.
+     * @return Version {@link String}.
      */
     public static String getVersionString ( ) {
         StringBuilder sb = new StringBuilder(
@@ -119,7 +119,7 @@ public class Version {
     /**
      * INTERNAL:
      * Return the JDK version we are using.
-     * @deprecated Use {@see JavaSEPlatform.current} instead.
+     * @deprecated Use {@code JavaSEPlatform.CURRENT} instead.
      *             Will be removed in 2.7.
      */
     public static int getJDKVersion() {
@@ -144,7 +144,7 @@ public class Version {
      * Set 1.5 as current Java SE version.
      * @throws UnsupportedOperationException when invoked because Java SE 1.5
      *         is not supported by current EclipseLink.
-     * @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7.
+     * @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7.
      */
     public static void useJDK15() {
         throw new UnsupportedOperationException(
@@ -155,7 +155,7 @@ public class Version {
      * Set 1.6 as current Java SE version.
      * @throws UnsupportedOperationException when invoked because Java SE 1.6
      *         is not supported by current EclipseLink.
-     * @deprecated Use {@see JavaSEPlatform} instead. Will be removed in 2.7.
+     * @deprecated Use {@link JavaSEPlatform} instead. Will be removed in 2.7.
      */
     public static void useJDK16() {
         throw new UnsupportedOperationException(
