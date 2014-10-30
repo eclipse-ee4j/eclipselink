@@ -52,15 +52,21 @@ public class EntityListenerInjectionManagerImpl implements EntityListenerInjecti
 
         injectionTargets = new HashMap<Object, InjectionTarget<Object>>();
     }
-    
-    public Object createEntityListenerAndInjectDependancies(Class entityListenerClass) throws NamingException{
-        AnnotatedType<Object> aType = beanManager.createAnnotatedType(entityListenerClass);
-        InjectionTarget<Object> injectionTarget = beanManager.<Object>createInjectionTarget(aType);
-        Object entityListener = injectionTarget.produce(beanManager.<Object>createCreationalContext(null));
+
+    /**
+     * Creates an instance of {@link javax.persistence.Entity} listener.
+     * Calls CDI API to inject into listener.
+     * @param entityListenerClass Listener class to be instantiated.
+     * @return New instance of listener class with injected content.
+     */
+    public Object createEntityListenerAndInjectDependancies(final Class entityListenerClass) throws NamingException{
+        final AnnotatedType<Object> aType = beanManager.createAnnotatedType(entityListenerClass);
+        final InjectionTarget<Object> injectionTarget = beanManager.<Object>createInjectionTarget(aType);
+        creationalContext = beanManager.<Object>createCreationalContext(null);
+        final Object entityListener = injectionTarget.produce(creationalContext);
         synchronized (injectionTargets) {
             injectionTargets.put(entityListener, injectionTarget);
         }
-        creationalContext = beanManager.<Object>createCreationalContext(null);
         injectionTarget.inject(entityListener, creationalContext);
         injectionTarget.postConstruct(entityListener);
         return entityListener;
