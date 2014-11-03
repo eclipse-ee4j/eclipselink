@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,22 +18,22 @@ import java.util.Vector;
  * INTERNAL:
  */
 public class SessionBrokerConfig extends SessionConfig {
-    private Vector m_sessionNames;
+    private Vector<String> m_sessionNames;
 
     public SessionBrokerConfig() {
         super();
-        m_sessionNames = new Vector();
+        m_sessionNames = new Vector<>();
     }
 
     public void addSessionName(String sessionName) {
         m_sessionNames.add(sessionName);
     }
 
-    public void setSessionNames(Vector sessionNames) {
+    public void setSessionNames(Vector<String> sessionNames) {
         m_sessionNames = sessionNames;
     }
 
-    public Vector getSessionNames() {
+    public Vector<String> getSessionNames() {
         return m_sessionNames;
     }
 }

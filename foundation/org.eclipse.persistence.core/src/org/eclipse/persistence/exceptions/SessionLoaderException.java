@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,9 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
-import org.eclipse.persistence.exceptions.i18n.*;
-import java.util.*;
-import java.io.*;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
 public class SessionLoaderException extends EclipseLinkException {
     public static final int FINAL_EXCEPTION = 9000;
@@ -30,7 +32,7 @@ public class SessionLoaderException extends EclipseLinkException {
     public static final int XML_SCHEMA_PARSING_ERROR = 9010;
     public static final int SERVER_PLATFORM_NO_LONGER_SUPPORTED = 9011;
     public static final int INVALID_SESSION_XML = 9012;
-    private Vector exceptionList;
+    private Vector<Throwable> exceptionList;
 
     /**
      * INTERNAL:
@@ -163,11 +165,11 @@ public class SessionLoaderException extends EclipseLinkException {
     }
 
     
-    public void setExceptionList(Vector list) {
+    public void setExceptionList(Vector<Throwable> list) {
         this.exceptionList = list;
     }
 
-    public Vector getExceptionList() {
+    public Vector<Throwable> getExceptionList() {
         return this.exceptionList;
     }
 
@@ -179,11 +181,11 @@ public class SessionLoaderException extends EclipseLinkException {
         super.printStackTrace(writer);
         if (getExceptionList() != null) {
             writer.println("SessionLoaderExceptions:");
-            Iterator exceptionList = getExceptionList().iterator();
+            Iterator<Throwable> exceptionList = getExceptionList().iterator();
             while (exceptionList.hasNext()) {
                 writer.write("***");
                 writer.write(cr());
-                ((Throwable)exceptionList.next()).printStackTrace(writer);
+                exceptionList.next().printStackTrace(writer);
                 writer.write(cr());
             }
         }
@@ -196,7 +198,7 @@ public class SessionLoaderException extends EclipseLinkException {
             StringBuffer buffer = new StringBuffer();
             buffer.append(getMessage());
             buffer.append(cr());
-            Iterator exceptionList = getExceptionList().iterator();
+            Iterator<Throwable> exceptionList = getExceptionList().iterator();
             while (exceptionList.hasNext()) {
                 buffer.append("***");
                 buffer.append(cr());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,22 +19,22 @@ import org.eclipse.persistence.internal.sessions.factories.model.session.Session
  * INTERNAL:
  */
 public class SessionConfigs {
-    private Vector m_sessionConfigs;
+    private Vector<SessionConfig> m_sessionConfigs;
     private String m_version;
 
     public SessionConfigs() {
-        m_sessionConfigs = new Vector();
+        m_sessionConfigs = new Vector<>();
     }
 
     public void addSessionConfig(SessionConfig sessionConfig) {
         m_sessionConfigs.add(sessionConfig);
     }
 
-    public void setSessionConfigs(Vector sessionConfigs) {
+    public void setSessionConfigs(Vector<SessionConfig> sessionConfigs) {
         m_sessionConfigs = sessionConfigs;
     }
 
-    public Vector getSessionConfigs() {
+    public Vector<SessionConfig> getSessionConfigs() {
         return m_sessionConfigs;
     }
 

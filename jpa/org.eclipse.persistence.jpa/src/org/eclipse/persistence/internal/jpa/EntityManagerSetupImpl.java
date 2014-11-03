@@ -95,8 +95,6 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -178,7 +176,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.jpa.metamodel.ManagedTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
-import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.proxy.AttributeProxyImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.proxy.CollectionAttributeProxyImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.proxy.ListAttributeProxyImpl;
@@ -530,7 +527,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     getDatabaseSession().logout();
                 }
             } finally {
-                SessionManager.getManager().getSessions().remove(this.session.getName(), this.session);
+                SessionManager manager = SessionManager.getManager();
+                manager.getSessions().remove(this.session.getName(), this.session);
+                manager.destroy();
             }
         }
     }

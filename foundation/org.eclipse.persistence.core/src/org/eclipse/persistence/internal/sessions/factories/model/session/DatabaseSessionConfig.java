@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -21,14 +21,14 @@ import org.eclipse.persistence.internal.sessions.factories.model.project.*;
  */
 public class DatabaseSessionConfig extends SessionConfig {
     private LoginConfig m_loginConfig;
-    private Vector m_additionalProjects;
+    private Vector<ProjectConfig> m_additionalProjects;
     private ProjectConfig m_primaryProject;
 
     public DatabaseSessionConfig() {
         super();
     }
 
-    public Vector getAdditionalProjects() {
+    public Vector<ProjectConfig> getAdditionalProjects() {
         return m_additionalProjects;
     }
 
@@ -48,7 +48,7 @@ public class DatabaseSessionConfig extends SessionConfig {
         m_primaryProject = primaryProject;
     }
 
-    public void setAdditionalProjects(Vector additionalProjects) {
+    public void setAdditionalProjects(Vector<ProjectConfig> additionalProjects) {
         m_additionalProjects = additionalProjects;
     }
 }
