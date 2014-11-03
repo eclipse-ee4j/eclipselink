@@ -37,10 +37,10 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.persistence.annotations.Convert;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
@@ -123,11 +123,8 @@ public abstract class DirectAccessor extends MappingAccessor {
      */
     @Override
     protected void addConvert(ConvertMetadata convert) {
-        if (m_converts == null) {
-            m_converts = new ArrayList<ConvertMetadata>();
-        }
-        
-        m_converts.add(convert);
+        // Shall always call getter to lazy initialize.
+        getConverts().add(convert);
     }
     
     /**
@@ -176,6 +173,9 @@ public abstract class DirectAccessor extends MappingAccessor {
      * Used for OX mapping.
      */
     public List<ConvertMetadata> getConverts() {
+        if (m_converts == null) {
+            m_converts = new ArrayList<ConvertMetadata>();
+        }
         return m_converts;
     }
     

@@ -60,6 +60,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRUNNER_PBSTable());
         addTableDefinition(buildRUNNER_ACSTable());
         addTableDefinition(buildRUNNERS_RACESTable());
+        addTableDefinition(buildRUNNER_VICTORIES_THIS_YEARable());
+        addTableDefinition(buildRUNNER_VICTORIES_LAST_YEARable());
         addTableDefinition(buildSALARYTable());
         addTableDefinition(buildSHOETable());
         addTableDefinition(buildSHOETAGTable());
@@ -924,7 +926,29 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
             
         return table;
     }
-    
+
+    public TableDefinition buildRUNNER_VICTORIES_THIS_YEARable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_RUNNER_VICTORIES_THIS_YEAR");
+        table.addField(createNumericFk("RUNNER_ID", "JPA21_RUNNER.ID"));
+        table.addField(createStringColumn("COMPETITION", 64, true));
+        table.addField(createDateColumn("DATE"));
+        table.addField(createNumericPk("ID"));
+        table.addField(createStringColumn("NAME"));
+        return table;
+    }
+
+    public TableDefinition buildRUNNER_VICTORIES_LAST_YEARable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_RUNNER_VICTORIES_LAST_YEAR");
+        table.addField(createNumericFk("RUNNER_ID", "JPA21_RUNNER.ID"));
+        table.addField(createStringColumn("COMPETITION", 64, true));
+        table.addField(createDateColumn("DATE"));
+        table.addField(createNumericPk("ID"));
+        table.addField(createStringColumn("NAME"));
+        return table;
+    }
+
     public TableDefinition buildRUNNERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA21_RUNNER");

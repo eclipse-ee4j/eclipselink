@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
@@ -222,8 +223,7 @@ public class ConverterAccessor extends ORMetadata {
         } else if (mapping.isAggregateObjectMapping()) {
             ((AggregateObjectMapping) mapping).addConverter(converterClass, attributeName);
         } else if (mapping.isAggregateCollectionMapping()) {
-            // TODO: Be nice to support converters on AggregateCollections keys.
-            // For now they are silently ignored.
+            ((AggregateCollectionMapping) mapping).addConverter(converterClass, attributeName);
         }
     }
     

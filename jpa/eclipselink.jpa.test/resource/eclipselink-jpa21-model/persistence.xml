@@ -31,6 +31,7 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Order</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.CompetitionConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter</class>

@@ -1,20 +1,33 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.mapping;
 
+import org.eclipse.persistence.testing.framework.DeleteObjectTest;
+import org.eclipse.persistence.testing.framework.InsertObjectTest;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.UnitOfWorkBasicUpdateObjectTest;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.mapping.Address;
+import org.eclipse.persistence.testing.models.mapping.Computer;
+import org.eclipse.persistence.testing.models.mapping.Employee;
+import org.eclipse.persistence.testing.models.mapping.Employee1;
+import org.eclipse.persistence.testing.models.mapping.Employee2;
+import org.eclipse.persistence.testing.models.mapping.MappingSystem;
+import org.eclipse.persistence.testing.models.mapping.Shipment;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.mapping.*;
 
 /**
  * This model tests reading/writing/deleting through using the complex mapping model.
@@ -44,6 +57,7 @@ public class MappingTestModel extends TestModel {
         //CR3922  Test buildSelectionCriteria in one-to-one and one-to-many mapping
         addTest(getBuildSelectionCriteriaTestSuite());
         addTest(getSameNameMappingTestSuite());
+        addTest(getConvertAttributeNameTestSuite());
     }
 
     public static TestSuite getAdditionalJoinTest() {
@@ -268,6 +282,17 @@ public class MappingTestModel extends TestModel {
         suite.addTest(new SelectionCriteriaInOneToManyTest());
         suite.addTest(new SelectionCriteriaInTargetOneToOneTest());
 
+        return suite;
+    }
+
+    /**
+     * Creates test suite for {@code @Convert} annotation {@code attributeName} argument processing.
+     * @return Initialized test suite.
+     */
+    public static TestSuite getConvertAttributeNameTestSuite() {
+        TestSuite suite = new TestSuite();
+        suite.addTestSuite(org.eclipse.persistence.testing.tests.mapping.conversion.AttributeNamePrefixTest.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.tests.mapping.conversion.AttributeNameTokenizerTest.class);
         return suite;
     }
 }

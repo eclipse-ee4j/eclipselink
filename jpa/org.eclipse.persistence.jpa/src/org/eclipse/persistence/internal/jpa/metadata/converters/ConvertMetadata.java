@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.internal.mappings.converters.AttributeNamePrefix;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -47,7 +48,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since EclipseLink 2.5
  */
 public class ConvertMetadata extends ORMetadata {
-    public static final String KEY = "key";
     
     private String m_text;
     private Boolean m_isForMapKey;
@@ -110,7 +110,7 @@ public class ConvertMetadata extends ORMetadata {
         
         return false;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -197,9 +197,10 @@ public class ConvertMetadata extends ORMetadata {
      */
     public boolean isForMapKey() {
         if (m_isForMapKey == null) {
-            if (m_attributeName != null && m_attributeName.startsWith(KEY)) {
+            final String key = AttributeNamePrefix.KEY.getName();
+            if (m_attributeName != null && m_attributeName.startsWith(key)) {
                 // Update the attribute name.
-                m_attributeName = m_attributeName.equals(KEY) ? "" : m_attributeName.substring(KEY.length() + 1);
+                m_attributeName = m_attributeName.equals(key) ? "" : m_attributeName.substring(key.length() + 1);
                 m_isForMapKey = true;
             } else {
                 m_isForMapKey = false;
@@ -208,46 +209,80 @@ public class ConvertMetadata extends ORMetadata {
         
         return m_isForMapKey;
     }
-    
+
     /**
      * INTERNAL:
-     * By the time we get here, we have the mapping that needs to have the
-     * convert applied to. Do some validatation checks along with some embedded
-     * mapping traversing if need be and apply the converter. Will look an 
-     * auto-apply converter as well if one is not explicitely specified.
+     * Verify mapping passed to register {@code AttributeConverter} class.
+     * @param mapping        Database attribute mapping.
+     * @param referenceClass JPA annotated class.
+     * @param accessor       Class accessor.
+     * @param embeddedAttributeName Content of {@code <name>}
+     *        from {@code attributeName="value.<name>"}. This value shall never
+     *        be {@code null} when {@code @ElementCollection} mapping is being
+     *        processed.
      */
-    public void process(DatabaseMapping mapping, MetadataClass referenceClass, ClassAccessor accessor, boolean isForMapKey) {
-        // Process/validate the attribute name first if there is one.
+    private MetadataClass verify(final DatabaseMapping mapping, final MetadataClass referenceClass,
+            final ClassAccessor accessor, final String embeddedAttributeName)
+            throws ValidationException {
+        // Validate the attribute name first if there is one.
         if (hasAttributeName()) {
-            // If the mapping is an aggregate object mapping, validate the 
-            // attribute name existing on the embeddable and update the reference class.
+            String attributeName;
+            // Aggregate object mapping
             if (mapping.isAggregateObjectMapping()) {
-                ClassAccessor embeddableAccessor = getProject().getEmbeddableAccessor(referenceClass);
-                MappingAccessor mappingAccessor = embeddableAccessor.getDescriptor().getMappingAccessor(getAttributeName());
-                    
-                if (mappingAccessor == null) {
-                    throw ValidationException.embeddableAttributeNameForConvertNotFound(accessor.getJavaClassName(), mapping.getAttributeName(), embeddableAccessor.getJavaClassName(), getAttributeName());
-                }
-
-                referenceClass = mappingAccessor.getReferenceClass();
+                attributeName = getAttributeName();
+            // Coming from @ElementCollection mapping with value.<name> attributeName.
+            } else if (mapping.isAggregateCollectionMapping() && embeddedAttributeName != null
+                    && embeddedAttributeName.length() > 0) {
+                attributeName = embeddedAttributeName;
+            // Unsupported mapping, throw an exception
             } else {
-                throw ValidationException.invalidMappingForConvertWithAttributeName(accessor.getJavaClassName(), mapping.getAttributeName());
+                throw ValidationException.invalidMappingForConvertWithAttributeName(
+                        accessor.getJavaClassName(), mapping.getAttributeName());
             }
+            // Validate the attribute name existing on the embeddable and update
+            // the reference class.
+            final ClassAccessor embeddableAccessor
+                    = getProject().getEmbeddableAccessor(referenceClass);
+            final MappingAccessor mappingAccessor = embeddableAccessor
+                    .getDescriptor().getMappingAccessor(attributeName);
+
+            if (mappingAccessor == null) {
+                throw ValidationException.embeddableAttributeNameForConvertNotFound(
+                        accessor.getJavaClassName(), mapping.getAttributeName(),
+                        embeddableAccessor.getJavaClassName(), getAttributeName());
+            }
+            return mappingAccessor.getReferenceClass();
         } else {
             // In an aggregate object case, the attribute name must be specified.
             if (mapping.isAggregateObjectMapping()) {
-                throw ValidationException.missingMappingConvertAttributeName(accessor.getJavaClassName(), mapping.getAttributeName());
+                throw ValidationException.missingMappingConvertAttributeName(
+                        accessor.getJavaClassName(), mapping.getAttributeName());
             }
         }
-            
+        return referenceClass;
+    }
+
+    /**
+     * INTERNAL:
+     * Apply converter class.
+     * @param mapping        Database attribute mapping.
+     * @param referenceClass JPA annotated class.
+     * @param accessor       Class accessor.
+     * @param isForMapKey    Is this converter for MapKey?
+     */
+    private void apply(final DatabaseMapping mapping, final MetadataClass referenceClass,
+            final ClassAccessor accessor, final boolean isForMapKey) {
         // If we have a converter class, validate its existence and apply.
         if (hasConverterClass()) {
             if (getProject().hasConverterAccessor(getConverterClass())) {
-                getProject().getConverterAccessor(getConverterClass()).process(mapping, isForMapKey, getAttributeName());
+                getProject().getConverterAccessor(getConverterClass()).process(
+                        mapping, isForMapKey, getAttributeName());
             } else {
-                throw ValidationException.converterClassNotFound(accessor.getJavaClassName(), mapping.getAttributeName(), getConverterClass().getName());
+                throw ValidationException.converterClassNotFound(
+                        accessor.getJavaClassName(), mapping.getAttributeName(),
+                        getConverterClass().getName());
             }
-        } else {                
+        } else {
             // Check for an auto apply converter for the reference class.
             if (getProject().hasAutoApplyConverter(referenceClass)) {
                 if (disableConversion()) {
@@ -257,14 +292,54 @@ public class ConvertMetadata extends ORMetadata {
                     // descriptor initialization.
                     // All other mappings can just avoid adding the converter all together.
                     if (mapping.isAggregateObjectMapping()) {
-                        getProject().getAutoApplyConverter(referenceClass).process(mapping, isForMapKey, getAttributeName(), true);
+                        getProject().getAutoApplyConverter(referenceClass).process(
+                                mapping, isForMapKey, getAttributeName(), true);
                     }
                 } else {
                     // Apply the converter to the mapping.
-                    getProject().getAutoApplyConverter(referenceClass).process(mapping, isForMapKey, getAttributeName());
+                    getProject().getAutoApplyConverter(referenceClass).process(
+                            mapping, isForMapKey, getAttributeName());
                 }
             }
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Apply convert for {@code @ElementCollection} mapping where we expect
+     * {@code @Convert} annotation to contain {@code attributeName="value.<name>"}.
+     * @param mapping        Database attribute mapping.
+     * @param referenceClass JPA annotated class.
+     * @param accessor       Class accessor.
+     * @param embeddedAttributeName Content of {@code <name>}
+     *                              from {@code attributeName="value.<name>"}.
+     */
+    public void process(final DatabaseMapping mapping, final MetadataClass referenceClass,
+            final ClassAccessor accessor, final String embeddedAttributeName) {
+        // This code path is always coming from @ElementCollection mapping.
+        final MetadataClass targetReferenceClass
+                = verify(mapping, referenceClass, accessor, embeddedAttributeName);
+        apply(mapping, targetReferenceClass, accessor, false);
+    }
+
+    /**
+     * INTERNAL:
+     * By the time we get here, we have the mapping that needs to have the
+     * convert applied to. Do some validation checks along with some embedded
+     * mapping traversing if need be and apply the converter. Will look an
+     * auto-apply converter as well if one is not specified directly.
+     * @param mapping        Database attribute mapping.
+     * @param referenceClass JPA annotated class.
+     * @param accessor       Class accessor.
+     * @param isForMapKey    Is this converter for MapKey?
+     */
+    public void process(final DatabaseMapping mapping, final MetadataClass referenceClass,
+            final ClassAccessor accessor, final boolean isForMapKey) {
+        // This code path is not coming from @ElementCollection mapping
+        // so <name> from value.<name> attributeName is not expected here.
+        final MetadataClass targetReferenceClass
+                = verify(mapping, referenceClass, accessor, null);
+        apply(mapping, targetReferenceClass, accessor, isForMapKey);
     }
     
     /**

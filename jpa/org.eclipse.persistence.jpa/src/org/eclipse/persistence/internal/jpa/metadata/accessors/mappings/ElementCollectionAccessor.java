@@ -88,6 +88,7 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.OrderByMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.internal.mappings.converters.AttributeNameTokenizer;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -920,11 +921,30 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             // association overrides that are available to us and that may be used
             // to override any field name translations.
             processMappingsFromEmbeddable(referenceDescriptor, null, collectionMapping, getAttributeOverrides(m_attributeOverrides), getAssociationOverrides(m_associationOverrides), "");
+            processMappingValueConverters(getDescriptor());
         } else if (mapping.isAbstractCompositeCollectionMapping()) {
             ((AbstractCompositeCollectionMapping)mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
         }
     }
-    
+
+    /**
+     * INTERNAL:
+     * Process convertors registered for collection mapping.
+     * @param embeddableDescriptor Metadata descriptor for embedded collection.
+     */
+    protected void processMappingValueConverters(final MetadataDescriptor embeddableDescriptor) {
+        for (ConvertMetadata convert : getConverts()) {
+            final String attributeName
+                    = AttributeNameTokenizer.getNameAfterVersion(convert.getAttributeName());
+            final MappingAccessor mappingAccessor = attributeName != null
+                    ? embeddableDescriptor.getMappingAccessor(attributeName) : null;
+            if (mappingAccessor != null) {
+                convert.process(this.getMapping(),
+                        getReferenceClass(), getClassAccessor(), attributeName);
+            }
+        }
+    }
+
     /**
      * INTERNAL:
      */

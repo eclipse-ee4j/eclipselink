@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -27,35 +27,38 @@
  *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender" 
  *     07/16/2013-2.5.1 Guy Pelletier 
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
+ *     11/06/2014-2.6 Tomas Kraus
+ *       - 449818: Test to verify Convert annotation on ElementCollection of Embeddable class.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Embeddable;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
-import junit.framework.TestSuite;
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.converters.ConverterClass;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
-
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
-
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.server.ServerSession;
-
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Organizer;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Race;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Responsibility;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Runner;
 import org.eclipse.persistence.testing.models.jpa21.advanced.RunnerInfo;
 import org.eclipse.persistence.testing.models.jpa21.advanced.RunnerStatus;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa21.advanced.RunnerVictory;
+import org.eclipse.persistence.testing.models.jpa21.advanced.converters.CompetitionConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Health;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Level;
@@ -77,6 +80,7 @@ public class ConverterTestSuite extends JUnitTestCase {
         suite.addTest(new ConverterTestSuite("testAnnotationConverters"));
         suite.addTest(new ConverterTestSuite("testConverterExceptionWrapping1"));
         suite.addTest(new ConverterTestSuite("testConverterExceptionWrapping2"));
+        suite.addTest(new ConverterTestSuite("testConvertOnElementCollection"));
 
         return suite;
     }
@@ -283,6 +287,75 @@ public class ConverterTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
         }
     }
+
+    /**
+     * Verify {@code @Convert} annotation on {@code @ElementCollection} mapping. Two collections are defined, first
+     * with annotation and second one without it. Tests verifies if converter class is applied on both collections
+     * or not.
+     */
+    public void testConvertOnElementCollection() {
+        final EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            // Converter used in @ElementCollection mapping.
+            final CompetitionConverter converter = new CompetitionConverter();
+            // Run test for all existing Runner instances.
+            final TypedQuery<Runner> rq = em.createNamedQuery("Runner.listAll", Runner.class);
+            final List<Runner> runners = rq.getResultList();
+            assertTrue("No Runner object was returned", runners.size() > 0);
+            for (Runner runner : runners) {
+
+                // Verify Map processed with @Convert annotation.
+                final Map <String, RunnerVictory> victoriesThisYear = runner.getVictoriesThisYear();
+                final Query rvtq = em.createNamedQuery("RunnerVictoryThis.getById");
+                rvtq.setParameter(1, runner.getId());
+                final List<Object[]> victories = rvtq.getResultList();
+                assertEquals("Count of retrieved objects from database shall be the same.",
+                        runner.getVictoriesThisYear().size(), victories.size());
+                for (Object[] victory : victories) {
+                    final String name = (String)victory[0];
+                    final Long id = (Long)victory[1];
+                    final String competition = (String)victory[2];
+                    final RunnerVictory entityVictory = victoriesThisYear.get(name);
+                    String entityCompetitionConverted
+                            = converter.convertToDatabaseColumn(entityVictory.getCompetition());
+                    String dbCompetitionConverted = converter.convertToEntityAttribute(competition);
+                    assertFalse("Entity and database values shall not match.",
+                            competition.equals(entityVictory.getCompetition()));
+                    assertTrue("Manually converted entity value and plain database value shall match.",
+                            competition.equals(entityCompetitionConverted));
+                    assertTrue("Manually converted database value and plain entity value shall match.",
+                            entityVictory.getCompetition().equals(dbCompetitionConverted));
+                }
+            }
+            for (Runner runner : runners) {
+
+                // Verify Map not processed with @Convert annotation.
+                final Map <String, RunnerVictory> victoriesLastYear = runner.getVictoriesLastYear();
+                final Query rvlq = em.createNamedQuery("RunnerVictoryLast.getById");
+                rvlq.setParameter(1, runner.getId());
+                final List<Object[]> victories = rvlq.getResultList();
+                assertEquals("Count of retrieved objects from database shall be the same.",
+                        runner.getVictoriesLastYear().size(), victories.size());
+                for (Object[] victory : victories) {
+                    final String name = (String)victory[0];
+                    final Long id = (Long)victory[1];
+                    final String competition = (String)victory[2];
+                    final RunnerVictory entityVictory = victoriesLastYear.get(name);
+                    // Converter is missing so only entity to database conversion check makes sense.
+                    String entityCompetitionConverted
+                            = converter.convertToDatabaseColumn(entityVictory.getCompetition());
+                    assertTrue("Entity and database values shall match.",
+                            competition.equals(entityVictory.getCompetition()));
+                    assertFalse("Manually converted entity value and plain database value shall not match.",
+                            competition.equals(entityCompetitionConverted));
+                }
+            }
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+
     @Override
     public String getPersistenceUnitName() {
         return "MulitPU-1";

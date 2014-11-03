@@ -26,6 +26,9 @@
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -1545,17 +1548,39 @@ public class EmployeePopulator {
             return (Runner)getObject(Runner.class, "0001");
         }
 
-        Runner runner = new Runner();
+        final Runner runner = new Runner();
         runner.setAge(35);
         runner.setFirstName("John");
         runner.setLastName("Smith");
-        Shoe shoe = new Shoe("One", "Star");
+        final Shoe shoe = new Shoe("One", "Star");
         shoe.setRunner(runner);
         runner.getShoes().put(new ShoeTag("ONESTAR"), shoe);
         runner.setInfo(new RunnerInfo());
         runner.getInfo().setStatus(new RunnerStatus());
         runner.getInfo().getStatus().setRunningStatus(RunningStatus.RACING);
         registerObject(runner, "0001");
+        final Calendar c = Calendar.getInstance();
+        final Map <String, RunnerVictory> victoriesThisYear
+                = new HashMap<String, RunnerVictory>(3);
+        c.set(2014, 4, 18);
+        victoriesThisYear.put("LONDON", new RunnerVictory(
+                1, "London International Marathon", new Date(c.getTimeInMillis())));
+        c.set(2014, 6, 2);
+        victoriesThisYear.put("PARIS", new RunnerVictory(
+                2, "Around Paris", new Date(c.getTimeInMillis())));
+        c.set(2014, 9, 25);
+        victoriesThisYear.put("LINZ", new RunnerVictory(
+                3, "Austria International Championship", new Date(c.getTimeInMillis())));
+        runner.setVictoriesThisYear(victoriesThisYear);
+        final Map <String, RunnerVictory> victoriesLastYear
+                = new HashMap<String, RunnerVictory>(2);
+        c.set(2013, 4, 12);
+        victoriesLastYear.put("LONDON", new RunnerVictory(
+                1, "London International Marathon", new Date(c.getTimeInMillis())));
+        c.set(2013, 6, 2);
+        victoriesLastYear.put("PRAGUE", new RunnerVictory(
+                2, "Prague International Marathon", new Date(c.getTimeInMillis())));
+        runner.setVictoriesLastYear(victoriesLastYear);
         return runner;
     }
 

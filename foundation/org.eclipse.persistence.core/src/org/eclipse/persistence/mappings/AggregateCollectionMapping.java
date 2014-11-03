@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.mappings.converters.AttributeNameTokenizer.TokensIterator;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -117,7 +118,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     protected Map<String, Map<String, DatabaseField>> nestedAggregateToSourceFields;
 
-    /** In RemoteSession case the mapping needs the reference descriptor serialized from the server, 
+    /**
+     * List of converters to apply at initialize time to their cloned aggregate mappings.
+     */
+    protected Map<String, Converter> converters;
+
+    /** In RemoteSession case the mapping needs the reference descriptor serialized from the server,
      * but referenceDescriptor attribute defined as transient in the superclass. To overcome that
      * in non-remote case referenceDescriptor is assigned to remoteReferenceDescriptor; in remote - another way around.
      */  
@@ -162,6 +168,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public AggregateCollectionMapping() {
         this.aggregateToSourceFields = new HashMap(5);
         this.nestedAggregateToSourceFields = new HashMap<String, Map<String, DatabaseField>>(5);
+        this.converters = new HashMap<String, Converter>();
         this.targetForeignKeyToSourceKeys = new HashMap(5);
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
@@ -212,9 +219,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     @Override
     public void addConverter(Converter converter, String attributeName) {
-        // Not supported at this time ...
+        converters.put(attributeName, converter);
     }
-    
+
     /**
      * PUBLIC:
      * Maps a field name in the aggregate descriptor
@@ -442,6 +449,23 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void collectQueryParameters(Set<DatabaseField> cacheFields){
         for (DatabaseField field : getSourceKeyFields()) {
             cacheFields.add(field);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this mapping to actual
+     * class-based settings. This method is used when converting a project that
+     * has been built with class names to a project with classes.
+     * @param classLoader Where to search for classes.
+     */
+    @Override
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        super.convertClassNamesToClasses(classLoader);
+
+        for (Converter converter : converters.values()) {
+            // Convert and any Converter class names.
+            convertConverterClassNamesToClasses(converter, classLoader);
         }
     }
 
@@ -1663,6 +1687,23 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             clonedDescriptor.getAdditionalAggregateCollectionKeyFields().addAll(identityFields);
         }
         clonedDescriptor.initialize(session);
+
+        // Apply any converters to their cloned mappings (after initialization)
+        for (String attributeName : converters.keySet()) {
+            ClassDescriptor desc = clonedDescriptor;
+            DatabaseMapping mapping = null;
+            for (TokensIterator i = new TokensIterator(attributeName, true); i.hasNext();) {
+                mapping = desc != null ? desc.getMappingForAttributeName(i.next()) : null;
+                if (mapping == null) {
+                    break;
+                }
+                desc = mapping.getReferenceDescriptor();
+            }
+            if (mapping != null) {
+                converters.get(attributeName).initialize(mapping, session);
+            }
+        }
+
         if (clonedDescriptor.hasInheritance() && clonedDescriptor.getInheritancePolicy().hasChildren()) {
             //clone child descriptors
             initializeChildInheritance(clonedDescriptor, session, fieldTranslation, tableTranslation);

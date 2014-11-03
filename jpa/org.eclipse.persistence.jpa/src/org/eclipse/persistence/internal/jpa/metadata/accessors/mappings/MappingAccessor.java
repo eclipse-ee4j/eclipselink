@@ -145,6 +145,8 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata
 import org.eclipse.persistence.internal.jpa.metadata.converters.XMLMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.internal.mappings.converters.AttributeNamePrefix;
+import org.eclipse.persistence.internal.mappings.converters.AttributeNameTokenizer;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
@@ -185,9 +187,13 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  */
 public abstract class MappingAccessor extends MetadataAccessor {
 
-    // Used for looking up attribute overrides for a map accessor. 
-    protected static final String KEY_DOT_NOTATION = "key.";
-    protected static final String VALUE_DOT_NOTATION = "value.";
+    // Used for looking up attribute overrides for a map accessor.
+    /** Dot notation key prefix. */
+    protected static final String KEY_DOT_NOTATION
+            = AttributeNamePrefix.KEY.getName() + AttributeNameTokenizer.SEPARATOR;
+    /** Dot notation value prefix. */
+    protected static final String VALUE_DOT_NOTATION
+            = AttributeNamePrefix.VALUE.getName() + AttributeNameTokenizer.SEPARATOR;
 
     private final static String DEFAULT_MAP_KEY_COLUMN_SUFFIX = "_KEY";
 
@@ -415,7 +421,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             return getAccessibleObject().getAttributeName();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return the attribute override for this accessor.
@@ -427,11 +433,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
             if (getDescriptor().hasAttributeOverrideFor(VALUE_DOT_NOTATION + getAttributeName())) {
                 return getDescriptor().getAttributeOverrideFor(VALUE_DOT_NOTATION + getAttributeName());
             }
-        } 
-            
+        }
         return getDescriptor().getAttributeOverrideFor(getAttributeName());
     }
-    
+
     /**
      * INTERNAL:
      * Process the list of attribute overrides into a map, merging and 
@@ -1843,7 +1848,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     protected void processMappingValueConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass, MetadataClass referenceClassWithGenerics) {
         processMappingConverter(mapping, convertValue, getConverts(converts), referenceClass, referenceClassWithGenerics, false);
     }
-    
+
     /**
      * INTERNAL:
      * Process the join columns for the owning side of a one to one mapping.

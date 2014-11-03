@@ -80,7 +80,7 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      * method.
      * Otherwise <code>null</code> value is returned.
      * @param platformName Value containing <code>JavaSEPlatform</code>
-     *                     <code>toString</code> representation.
+     *                     <code>versionString</code> representation.
      * @return <code>JavaSEPlatform</code> value represented
      *         by <code>String</code> or <code>null</code> if value
      *         was not recognized.

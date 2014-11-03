@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,8 +18,12 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     07/16/2013-2.5.1 Guy Pelletier 
  *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
+ *     11/06/2014-2.6 Tomas Kraus
+ *       - 449818: Added mapping for Convert annotation test on ElementCollection of Embeddable class.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
+
+import static javax.persistence.InheritanceType.JOINED;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,26 +46,37 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter;
+import org.eclipse.persistence.testing.models.jpa21.advanced.converters.CompetitionConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter;
-import org.eclipse.persistence.testing.models.jpa21.advanced.converters.TagConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
-
-import static javax.persistence.InheritanceType.JOINED;
 
 @Entity
 @Inheritance(strategy=JOINED)
 @Table(name="JPA21_RUNNER")
+@NamedQueries({
+    @NamedQuery(name="Runner.listAll", query="SELECT r FROM Runner r")
+})
+@NamedNativeQueries({
+    @NamedNativeQuery(name="RunnerVictoryThis.getById",
+        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VICTORIES_THIS_YEAR WHERE RUNNER_ID=?"),
+    @NamedNativeQuery(name="RunnerVictoryLast.getById",
+        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VICTORIES_LAST_YEAR WHERE RUNNER_ID=?")
+})
 @Converts({
     @Convert(attributeName = "accomplishments.key", converter = AccomplishmentConverter.class),
     @Convert(attributeName = "accomplishments", converter = DateConverter.class),
@@ -119,6 +134,19 @@ public class Runner extends Athlete {
         @Convert(converter = TimeConverter.class)
     })
     protected Map<String, String> personalBests;
+
+    // Only this collection shall contain values modified by CompetitionConverter.
+    @Convert(converter=CompetitionConverter.class, attributeName = "value.competition")
+    @ElementCollection
+    @CollectionTable(name="JPA21_RUNNER_VICTORIES_THIS_YEAR", joinColumns=@JoinColumn(name="RUNNER_ID"))
+    @MapKeyColumn(name="NAME")
+    private Map <String, RunnerVictory> victoriesThisYear;
+
+    // This collection shall contain values unmodified.
+    @ElementCollection
+    @CollectionTable(name="JPA21_RUNNER_VICTORIES_LAST_YEAR", joinColumns=@JoinColumn(name="RUNNER_ID"))
+    @MapKeyColumn(name="NAME")
+    private Map <String, RunnerVictory> victoriesLastYear;
 
     public Runner() {
         races = new ArrayList<Race>();
@@ -217,5 +245,21 @@ public class Runner extends Athlete {
     
     public void setTags(List<RunnerTag> tags) {
         this.tags = tags;
+    }
+
+    public Map <String, RunnerVictory> getVictoriesThisYear() {
+        return victoriesThisYear;
+    }
+
+    public void setVictoriesThisYear(Map <String, RunnerVictory> victoriesThisYear) {
+        this.victoriesThisYear = victoriesThisYear;
+    }
+
+    public Map <String, RunnerVictory> getVictoriesLastYear() {
+        return victoriesLastYear;
+    }
+
+    public void setVictoriesLastYear(Map <String, RunnerVictory> victoriesLastYear) {
+        this.victoriesLastYear = victoriesLastYear;
     }
 }
