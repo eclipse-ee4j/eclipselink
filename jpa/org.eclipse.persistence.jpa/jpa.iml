@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.validation_1.1.0.v201304101302.jar!/" value="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar!/" value="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar!/" value="src:/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.validation_1.1.0.v201304101302.jar!/" value="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar!/" value="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar!/" value="src:/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
       <src_folder value="file://$MODULE_DIR$/resource" expected_position="1" />

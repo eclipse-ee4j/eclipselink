@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/cdi.api_1.0.0.v201105160744.jar!/" value="ECLIPSELINK_HOME/plugins/cdi.api_1.0.0.v201105160744.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.jms_1.1.0.v200906010428.jar!/" value="ECLIPSELINK_HOME/plugins/javax.jms_1.1.0.v200906010428.jar" />
-    <varelement var="file://$ECLIPSELINK_HOME$/plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" value="ECLIPSELINK_HOME/plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" />
-    <varelement var="file://$ECLIPSELINK_HOME$/plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" value="src:/ECLIPSELINK_HOME/plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.mail_1.4.0.v201005080615.jar!/" value="ECLIPSELINK_HOME/plugins/javax.mail_1.4.0.v201005080615.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.resource_1.6.0.v201204270900.jar!/" value="ECLIPSELINK_HOME/plugins/javax.resource_1.6.0.v201204270900.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar!/" value="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar!/" value="src:/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/cdi.api_1.0.0.v201105160744.jar!/" value="ECLIPSELINK_HOME/plugins/cdi.api_1.0.0.v201105160744.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.jms_1.1.0.v200906010428.jar!/" value="ECLIPSELINK_HOME/plugins/javax.jms_1.1.0.v200906010428.jar" />
+    <varelement var="file://$MODULE_DIR$/../../plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" value="ECLIPSELINK_HOME/plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" />
+    <varelement var="file://$MODULE_DIR$/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" value="src:/ECLIPSELINK_HOME/plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.mail_1.4.0.v201005080615.jar!/" value="ECLIPSELINK_HOME/plugins/javax.mail_1.4.0.v201005080615.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.resource_1.6.0.v201204270900.jar!/" value="ECLIPSELINK_HOME/plugins/javax.resource_1.6.0.v201204270900.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar!/" value="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar!/" value="src:/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
       <src_folder value="file://$MODULE_DIR$/resource" expected_position="1" />

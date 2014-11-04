@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$ECLIPSELINK_HOME$/jpa/plugins/javax.persistence_2.1.0.v201304241213.jar!/" value="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.0.v201304241213.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/jpa/plugins/javax.persistence.source_2.1.0.v201304241213.jar!/" value="src:/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.0.v201304241213.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.ws.rs_1.1.1.v20101004-1200.jar!/" value="ECLIPSELINK_HOME/plugins/javax.ws.rs_1.1.1.v20101004-1200.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar!/" value="src:/ECLIPSELINK_HOME/plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.validation_1.1.0.v201304101302.jar!/" value="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.ejb_3.1.0.v201205171433.jar!/" value="ECLIPSELINK_HOME/plugins/javax.ejb_3.1.0.v201205171433.jar" />
-    <varelement var="file://$ECLIPSELINK_HOME$/plugins/javax.ejb/src" value="src:/ECLIPSELINK_HOME/plugins/javax.ejb/src" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" />
-    <varelement var="file://$ECLIPSELINK_HOME$/plugins/javax.transaction/src" value="src:/ECLIPSELINK_HOME/plugins/javax.transaction/src" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar!/" value="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar" />
-    <varelement var="jar://$ECLIPSELINK_HOME$/plugins/org.eclipse.persistence.antlr.source_3.2.0.v201302191141.jar!/" value="src:/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.2.0.v201302191141.jar" />
+    <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence_2.1.0.v201304241213.jar!/" value="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.1.0.v201304241213.jar" />
+    <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence.source_2.1.0.v201304241213.jar!/" value="src:/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.1.0.v201304241213.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar!/" value="ECLIPSELINK_HOME/plugins/javax.ws.rs_1.1.1.v20101004-1200.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar!/" value="src:/ECLIPSELINK_HOME/plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.validation_1.1.0.v201304101302.jar!/" value="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ejb_3.1.0.v201205171433.jar!/" value="ECLIPSELINK_HOME/plugins/javax.ejb_3.1.0.v201205171433.jar" />
+    <varelement var="file://$MODULE_DIR$/../../plugins/javax.ejb/src" value="src:/ECLIPSELINK_HOME/plugins/javax.ejb/src" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction_1.1.0.v201002051055.jar!/" value="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" />
+    <varelement var="file://$MODULE_DIR$/../../plugins/javax.transaction/src" value="src:/ECLIPSELINK_HOME/plugins/javax.transaction/src" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar!/" value="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.antlr.source_3.2.0.v201302191141.jar!/" value="src:/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.2.0.v201302191141.jar" />
     <src_description expected_position="1">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="1" />
     </src_description>
