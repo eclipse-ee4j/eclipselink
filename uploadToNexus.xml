@@ -170,7 +170,7 @@
         <property name="validation.criteria"  value="[1.1.0,2.2.0)"/>
         <property name="validation.name"      value="Javax Validation"/>
         <property name="validation.version"   value="1.1.0.Final"/>
-        <property name="json.prefix"          value="org.glassfish.javax.json"/>
+        <property name="json.prefix"          value="javax.json"/>
         <property name="json.criteria"        value="[1.0.4,5.0.0)"/>
         <property name="json.name"            value="Javax JSON"/>
         <property name="json.version"         value="1.0.4"/>
@@ -292,7 +292,7 @@
         <!-- APIs that are not EclipseLink's maintained public API bundles but are to be included in EclipseLink pom.xml.  -->
         <property name="dep.validation"
                   value="${dep.grp}javax.validation${dep.art}${validation.prefix}${dep.ver}${validation.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.json"          value="${dep.grp}javax.json${dep.art}${json.prefix}${dep.ver}${json.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.json"          value="${dep.grp}org.glassfish${dep.art}${json.prefix}${dep.ver}${json.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}${antlr.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}${asm.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
