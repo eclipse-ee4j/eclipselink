@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -28,6 +28,9 @@ import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+
+import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
+import static org.eclipse.persistence.queries.ReadAllQuery.Direction.PARENT_TO_CHILD;
 
 /**
  * <p><b>Purpose</b>: Print SELECT statement.
@@ -83,6 +86,7 @@ public class SQLSelectStatement extends SQLStatement {
     protected Expression startWithExpression;
     protected Expression connectByExpression;
     protected List<Expression> orderSiblingsByExpressions;
+    protected ReadAllQuery.Direction direction;
 
     /** Variables used for aliasing and normalizing. */
     protected boolean requiresAliases;
@@ -657,11 +661,11 @@ public class SQLSelectStatement extends SQLStatement {
                 DatabaseField source = (DatabaseField)sourceKeys.next();
                 DatabaseField target = (DatabaseField)foreignKeys.get(source);
 
-                //OneToOneMappings -> Source in parent object goes to target in child object 
-                if (mapping.isOneToOneMapping()) {
+                ReadAllQuery.Direction direction = getDirection() != null ? getDirection() : ReadAllQuery.Direction.getDefault(mapping);
+                if (direction == CHILD_TO_PARENT) {
                     printer.getWriter().write("PRIOR " + tableName + "." + source.getNameDelimited(printer.getPlatform()));
                     printer.getWriter().write(" = " + tableName + "." + target.getNameDelimited(printer.getPlatform()));
-                } else {//collections are the opposite way
+                } else {
                     printer.getWriter().write(tableName + "." + source.getNameDelimited(printer.getPlatform()));
                     printer.getWriter().write(" = PRIOR " + tableName + "." + target.getNameDelimited(printer.getPlatform()));
                 }
@@ -671,10 +675,10 @@ public class SQLSelectStatement extends SQLStatement {
                     source = (DatabaseField)sourceKeys.next();
                     target = (DatabaseField)foreignKeys.get(source);
 
-                    if (mapping.isOneToOneMapping()) {
+                    if (direction == CHILD_TO_PARENT) {
                         printer.getWriter().write("PRIOR " + tableName + "." + source.getNameDelimited(printer.getPlatform()));
                         printer.getWriter().write(" = " + tableName + "." + target.getNameDelimited(printer.getPlatform()));
-                    } else {//collections are the opposite way
+                    } else {
                         printer.getWriter().write(tableName + "." + source.getNameDelimited(printer.getPlatform()));
                         printer.getWriter().write(" = PRIOR " + tableName + "." + target.getNameDelimited(printer.getPlatform()));
                     }
@@ -1076,6 +1080,14 @@ public class SQLSelectStatement extends SQLStatement {
     public List<Expression> getOrderSiblingsByExpressions() {
         return orderSiblingsByExpressions;
     }
+
+    /**
+     * INTERNAL:
+     * @return the position of the PRIOR keyword
+     */
+    public ReadAllQuery.Direction getDirection() {
+        return direction;
+    }
     
     /**
      * INTERNAL:
@@ -1303,7 +1315,6 @@ public class SQLSelectStatement extends SQLStatement {
      * Normalize an expression into a printable structure.
      * i.e. merge the expression with the join expressions.
      * Also replace table names with corresponding aliases.
-     * @param clonedExpressions
      */
     public final void normalize(AbstractSession session, ClassDescriptor descriptor) {
         // 2612538 - the default size of Map (32) is appropriate
@@ -1920,9 +1931,19 @@ public class SQLSelectStatement extends SQLStatement {
      * used to generate the Hierarchical Query Clause in the SQL
      */
     public void setHierarchicalQueryExpressions(Expression startWith, Expression connectBy, List<Expression> orderSiblingsExpressions) {
+        setHierarchicalQueryExpressions(startWith, connectBy, orderSiblingsExpressions, null);
+    }
+
+    /**
+     * INTERNAL:
+     * takes the hierarchical query expression which have been set on the query and sets them here
+     * used to generate the Hierarchical Query Clause in the SQL
+     */
+    public void setHierarchicalQueryExpressions(Expression startWith, Expression connectBy, List<Expression> orderSiblingsExpressions, ReadAllQuery.Direction direction) {
         this.startWithExpression = startWith;
         this.connectByExpression = connectBy;
         this.orderSiblingsByExpressions = orderSiblingsExpressions;
+        this.direction = direction;
     }
 
     public void setIsAggregateSelect(boolean isAggregateSelect) {

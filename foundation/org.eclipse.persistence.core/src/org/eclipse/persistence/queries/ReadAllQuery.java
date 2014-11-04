@@ -13,13 +13,14 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.queries;
 
 import java.util.*;
 import java.sql.*;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.queries.*;
@@ -31,10 +32,14 @@ import org.eclipse.persistence.internal.sessions.SimpleResultSetRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
+
+import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
+import static org.eclipse.persistence.queries.ReadAllQuery.Direction.PARENT_TO_CHILD;
 
 /**
  * <p><b>Purpose</b>:
@@ -55,6 +60,40 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     protected Expression startWithExpression;
     protected Expression connectByExpression;
     protected List<Expression> orderSiblingsByExpressions;
+    protected Direction direction;
+
+    /**
+     * Specifies the direction in which the hierarchy is traversed in a
+     * hierarchical query.
+     */
+    public static enum Direction {
+        /**
+         * Hierarchy will be traversed from parent to child - PRIOR keyword is
+         * generated on the left side of the equation
+         */
+        PARENT_TO_CHILD,
+        /**
+         * Hierarchy will be traversed from child to parent - PRIOR keyword is
+         * generated on the right side of the equation
+         */
+        CHILD_TO_PARENT;
+
+        /**
+         * PUBLIC: Returns the default hierarchy traversal direction for the
+         * specified mapping.<br>
+         * For OneToOne mappings, source in parent object goes to target in
+         * child object, collections are the opposite way.
+         * 
+         * @param mapping
+         *            The mapping for which to return default hierarchy
+         *            traversal direction
+         * @return The default hierarchy traversal direction for the mapping
+         *         passed
+         */
+        public static Direction getDefault(DatabaseMapping mapping) {
+            return mapping != null && mapping.isOneToOneMapping() ? CHILD_TO_PARENT : PARENT_TO_CHILD;
+        }
+    }
 
     /**
      * PUBLIC:
@@ -250,7 +289,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             builder.setSession(unitOfWork.getRootSession(null));
             builder.setQueryClass(getReferenceClass());
         }
-        
+
         // If the query is redirected then the collection returned might no longer
         // correspond to the original container policy.  CR#2342-S.M.
         ContainerPolicy cp;
@@ -270,7 +309,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Presently p intersect c = empty set, but later p subset c.
         // By checking cache now doesConform will be called p fewer times.
         Map<Object, Object> indexedInterimResult = unitOfWork.scanForConformingInstances(getSelectionCriteria(), getReferenceClass(), arguments, this);
-        
+
         Cursor cursor = null;
         // In the case of cursors just conform/register the initially read collection.
         if (cp.isCursorPolicy()) {
@@ -288,7 +327,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Now conform the result from the database.
         // Remove any deleted or changed objects that no longer conform.
         // Deletes will only work for simple queries, queries with or's or anyof's may not return
-        // correct results when untriggered indirection is in the model.		
+        // correct results when untriggered indirection is in the model.
         List fromDatabase = null;
 
         // When building directly from rows, one of the performance benefits
@@ -320,7 +359,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             }
         }
 
-        // Now add the unwrapped conforming instances into an appropriate container.  
+        // Now add the unwrapped conforming instances into an appropriate container.
         // Wrapping is done automatically.
         // Make sure a vector of exactly the right size is returned.
         Object conformedResult = cp.containerInstance(indexedInterimResult.size() + fromDatabase.size());
@@ -338,7 +377,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             cursor.setObjectCollection((List)conformedResult);
 
             // For nested UOW must copy all in object collection to
-            // initiallyConformingIndex, as some of these could have been from 
+            // initiallyConformingIndex, as some of these could have been from
             // the parent UnitOfWork.
             if (unitOfWork.isNestedUnitOfWork()) {
                 for (Object clone : cursor.getObjectCollection()) {
@@ -361,7 +400,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * @exception DatabaseException - an error has occurred on the database
      */
     @Override
-    public Object execute(AbstractSession session, AbstractRecord row) throws DatabaseException {        
+    public Object execute(AbstractSession session, AbstractRecord row) throws DatabaseException {
         if (shouldCacheQueryResults()) {
             if (getContainerPolicy().overridesRead()) {
                 throw QueryException.cannotCacheCursorResultsOnQuery(this);
@@ -376,7 +415,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                         QueryMonitor.incrementReadAllHits(this);
                     }
                     session.incrementProfile(SessionProfiler.CacheHits, this);
-                    // bug6138532 - check for "cached no results" (InvalidObject singleton) in query 
+                    // bug6138532 - check for "cached no results" (InvalidObject singleton) in query
                     // results, and return an empty container instance as configured
                     if (queryResults == InvalidObject.instance) {
                         return getContainerPolicy().containerInstance(0);
@@ -413,7 +452,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     @Override
     protected Object executeObjectLevelReadQuery() throws DatabaseException {
         Object result = null;
-        
+
         if (this.containerPolicy.overridesRead()) {
             this.executionTime = System.currentTimeMillis();
             return this.containerPolicy.execute();
@@ -427,7 +466,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
         if (this.descriptor.hasTablePerClassPolicy() && this.descriptor.isAbstract()) {
             result = this.containerPolicy.containerInstance();
-            
+
             if (this.shouldIncludeData) {
                 ComplexQueryResult complexResult = new ComplexQueryResult();
                 complexResult.setResult(result);
@@ -438,9 +477,9 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             Object sopObject = getTranslationRow().getSopObject();
             boolean useOptimization = false;
             if (sopObject == null) {
-                useOptimization = usesResultSetAccessOptimization(); 
-            }        
-            
+                useOptimization = usesResultSetAccessOptimization();
+            }
+
             if (useOptimization) {
                 DatabaseCall call = ((DatasourceCallQueryMechanism)this.queryMechanism).selectResultSet();
                 this.executionTime = System.currentTimeMillis();
@@ -450,7 +489,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                 boolean exceptionOccured = false;
                 try {
                     if (this.session.isUnitOfWork()) {
-                        result = registerResultSetInUnitOfWork(resultSet, call.getFields(), call.getFieldsArray(), (UnitOfWorkImpl)this.session, this.translationRow); 
+                        result = registerResultSetInUnitOfWork(resultSet, call.getFields(), call.getFieldsArray(), (UnitOfWorkImpl)this.session, this.translationRow);
                     } else {
                         result = this.containerPolicy.containerInstance();
                         this.descriptor.getObjectBuilder().buildObjectsFromResultSetInto(this, resultSet, call.getFields(), call.getFieldsArray(), result);
@@ -484,7 +523,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                             throw DatabaseException.sqlException(cleanupSQLException, call, dbAccessor, this.session, false);
                         }
                     }
-                }                
+                }
             } else {
                 List<AbstractRecord> rows;
                 if (sopObject != null) {
@@ -495,13 +534,13 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                         Object memberSopObject = this.containerPolicy.next(valuesIterator, this.session);
                         DatabaseRecord memberRow = new DatabaseRecord(0);
                         memberRow.setSopObject(memberSopObject);
-                        rows.add(memberRow);                        
+                        rows.add(memberRow);
                     }
                     this.executionTime = System.currentTimeMillis();
                 } else {
                     rows = getQueryMechanism().selectAllRows();
                     this.executionTime = System.currentTimeMillis();
-                    
+
                     // If using 1-m joins, must set all rows.
                     if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
                         this.joinedAttributeManager.setDataResults(rows, this.session);
@@ -511,9 +550,9 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                         this.batchFetchPolicy.setDataResults(rows);
                     }
                 }
-        
+
                 if (this.session.isUnitOfWork()) {
-                    result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
+                    result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);//
                 } else {
                     if (rows instanceof ThreadCursoredList) {
                         result = this.containerPolicy.containerInstance();
@@ -522,7 +561,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     }
                     this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
                 }
-        
+
                 if (sopObject != null) {
                 	if (!this.descriptor.getObjectBuilder().isSimple()) {
 	                	// remove sopObject so it's not stuck in any value holder.
@@ -551,7 +590,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (shouldCacheQueryResults() && this.containerPolicy.isEmpty(result)) {
             this.temporaryCachedQueryResults = InvalidObject.instance();
         }
-        
+
         return result;
     }
 
@@ -610,7 +649,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Extract the correct query result from the transporter.
@@ -664,13 +703,21 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     }
 
     /**
+     * PUBLIC:
+     * @return Direction - the direction in which the hierarchy is traversed
+     */
+    public Direction getDirection() {
+        return direction;
+    }
+
+    /**
      * INTERNAL:
      * Verify that we have hierarchical query expressions
      */
     public boolean hasHierarchicalExpressions() {
         return ((this.startWithExpression != null) || (this.connectByExpression != null) || (this.orderSiblingsByExpressions != null));
     }
-    
+
     /**
      * INTERNAL:
      * Return true if the query uses default properties.
@@ -685,7 +732,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             && (!hasHierarchicalExpressions())
             && (!this.containerPolicy.isCursorPolicy());
     }
-    
+
     /**
      * INTERNAL:
      * Return if the query is equal to the other.
@@ -705,7 +752,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         }
         return true;
     }
-    
+
     /**
      * PUBLIC:
      * Return if this is a read all query.
@@ -747,7 +794,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (this.descriptor.isDescriptorForInterface()) {
             return;
         }
-        
+
         prepareSelectAllRows();
 
         if (!isReportQuery()) {
@@ -755,7 +802,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             prepareResultSetAccessOptimization();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Prepare the query from the prepared query.
@@ -800,10 +847,10 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     @Override
     public void prepareForExecution() throws QueryException {
         super.prepareForExecution();
-        
+
         this.containerPolicy.prepareForExecution();
-        
-        // Modifying the translation row here will modify it on the original 
+
+        // Modifying the translation row here will modify it on the original
         // query which is not good. So we have to clone the translation row if
         // we are going to append tenant discriminator fields to it.
         if (descriptor.hasMultitenantPolicy()) {
@@ -843,7 +890,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     @Override
     public Object registerResultInUnitOfWork(Object result, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, boolean buildDirectlyFromRows) {
         // For bug 2612366: Conforming results in UOW extremely slow.
-        // Replacing results with registered versions in the UOW is a part of 
+        // Replacing results with registered versions in the UOW is a part of
         // conforming and is now done while conforming to maximize performance.
         if (unitOfWork.hasCloneMapping() // PERF: Avoid conforming empty uow.
                     && (shouldConformResultsInUnitOfWork() || this.descriptor.shouldAlwaysConformResultsInUnitOfWork())) {
@@ -876,7 +923,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             } else {
                 boolean quickAdd = (clones instanceof Collection) && !this.descriptor.getObjectBuilder().hasWrapperPolicy();
                 if (this.descriptor.getCachePolicy().shouldPrefetchCacheKeys()
-                        && shouldMaintainCache() 
+                        && shouldMaintainCache()
                         && ! shouldRetrieveBypassCache()
                         && ((!(unitOfWork.hasCommitManager() && unitOfWork.getCommitManager().isActive())
                                 && ! unitOfWork.wasTransactionBegunPrematurely()
@@ -955,10 +1002,10 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         ResultSetMetaData metaData = resultSet.getMetaData();
         boolean hasNext = resultSet.next();
         if (hasNext) {
-            // TODO: possibly add support for SortedListContainerPolicy (cp.shouldAddAll() == true) - this policy currently is not compatible with ResultSet optimization 
+            // TODO: possibly add support for SortedListContainerPolicy (cp.shouldAddAll() == true) - this policy currently is not compatible with ResultSet optimization
             boolean quickAdd = (clones instanceof Collection) && !this.descriptor.getObjectBuilder().hasWrapperPolicy();
             DatabaseAccessor dbAccessor = (DatabaseAccessor)getAccessor();
-            boolean useSimple = this.descriptor.getObjectBuilder().isSimple();  
+            boolean useSimple = this.descriptor.getObjectBuilder().isSimple();
             AbstractSession executionSession = getExecutionSession();
             DatabasePlatform platform = dbAccessor.getPlatform();
             boolean optimizeData = platform.shouldOptimizeDataConversion();
@@ -975,10 +1022,10 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                         ((Collection)clones).add(clone);
                     } else {
                         // TODO: investigate is it possible to support MappedKeyMapPolicy - this policy currently is not compatible with ResultSet optimization
-                        cp.addInto(clone, clones, unitOfWork);                            
+                        cp.addInto(clone, clones, unitOfWork);
                     }
-                    row.reset(); 
-                    hasNext = resultSet.next(); 
+                    row.reset();
+                    hasNext = resultSet.next();
                 }
             } else {
                 boolean shouldKeepRow = this.descriptor.getObjectBuilder().shouldKeepRow();
@@ -991,10 +1038,10 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                         // TODO: investigate is it possible to support MappedKeyMapPolicy - this policy currently is not compatible with ResultSet optimization
                         cp.addInto(clone, clones, unitOfWork);
                     }
-                    
+
                     if (shouldKeepRow) {
                         if (row.hasResultSet()) {
-                        	// ResultSet has not been fully triggered - that means the cached object was used. 
+                        	// ResultSet has not been fully triggered - that means the cached object was used.
                         	// Yet the row still may be cached in a value holder (see loadBatchReadAttributes and loadJoinedAttributes methods).
                         	// Remove ResultSet to avoid attempt to trigger it (already closed) when pk or fk values (already extracted) accessed when the value holder is instantiated.
                             row.removeResultSet();
@@ -1002,7 +1049,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                             row.removeNonIndirectionValues();
                         }
                     }
-                    hasNext = resultSet.next(); 
+                    hasNext = resultSet.next();
                 }
             }
         }
@@ -1063,15 +1110,55 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      *
      * <p>This query would generate SQL like this:
      * <p>SELECT * FROM EMPLOYEE START WITH ID=100 CONNECT BY PRIOR ID = MANAGER_ID ORDER SIBLINGS BY START_DATE
-     * 
+     *
      * @param startWith Describes the START WITH clause of the query - null if not needed
      * @param connectBy This should be a query key expression which indicates an attribute who's mapping describes the hierarchy
      * @param orderSiblingsExpressions Contains expressions which indicate fields to be included in the ORDER SIBLINGS BY clause - null if not required
      */
     public void setHierarchicalQueryClause(Expression startWith, Expression connectBy, List<Expression> orderSiblingsExpressions) {
+        setHierarchicalQueryClause(startWith, connectBy, orderSiblingsExpressions, null);
+    }
+
+    /**
+     * PUBLIC: Set the Hierarchical Query Clause for the query, specifying the
+     * hierarchy traversal direction
+     * <p>
+     * Example:
+     * <p>
+     * Expression startWith = builder.get("id").equal(new Integer(100)); //can
+     * be any expression which identifies a set of employees <br>
+     * Expression connectBy = builder.get("managedEmployees"); //indicated the
+     * relationship that the hierarchy is based on, must be self-referential <br>
+     * Vector orderBy = new Vector(); <br>
+     * orderBy.addElement(builder.get("startDate")); <br>
+     * readAllQuery.setHierarchicalQueryClause(startWith, connectBy, orderBy,
+     * Direction.CHILD_TO_PARENT);
+     *
+     * <p>
+     * This query would generate SQL like this:
+     * <p>
+     * SELECT * FROM EMPLOYEE START WITH ID=100 CONNECT BY ID = PRIOR MANAGER_ID
+     * ORDER SIBLINGS BY START_DATE
+     *
+     * @param startWith
+     *            Describes the START WITH clause of the query - null if not
+     *            needed
+     * @param connectBy
+     *            This should be a query key expression which indicates an
+     *            attribute who's mapping describes the hierarchy
+     * @param orderSiblingsExpressions
+     *            Contains expressions which indicate fields to be included in
+     *            the ORDER SIBLINGS BY clause - null if not required
+     * @param direction
+     *            The direction in which the hierarchy is traversed; if not
+     *            specified, CHILD_TO_PARENT is used for OneToOne relationships
+     *            and PARENT_TO_CHILD is used for collections
+     */
+    public void setHierarchicalQueryClause(Expression startWith, Expression connectBy, List<Expression> orderSiblingsExpressions, Direction direction) {
         this.startWithExpression = startWith;
         this.connectByExpression = connectBy;
         this.orderSiblingsByExpressions = orderSiblingsExpressions;
+        this.direction = direction;
         setIsPrepared(false);
     }
 
@@ -1177,10 +1264,10 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     /**
      * INTERNAL:
      * Indicates whether the query can use ResultSet optimization.
-     * The method is called when the query is prepared, 
+     * The method is called when the query is prepared,
      * so it should refer only to the attributes that cannot be altered without re-preparing the query.
      * If the query is a clone and the original has been already prepared
-     * this method will be called to set a (transient and therefore set to null) usesResultSetOptimization attribute. 
+     * this method will be called to set a (transient and therefore set to null) usesResultSetOptimization attribute.
      */
     @Override
     public boolean supportsResultSetAccessOptimizationOnPrepare() {
@@ -1188,14 +1275,14 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             return false;
         }
         return !this.containerPolicy.isMappedKeyMapPolicy() && !this.containerPolicy.shouldAddAll() &&  // MappedKeyMapPolicy requires the whole row, OrderListContainerPolicy requires all rows.
-                !this.descriptor.shouldAlwaysConformResultsInUnitOfWork();  // will be supported when conformResult method is adapted to use ResultSet;  
+                !this.descriptor.shouldAlwaysConformResultsInUnitOfWork();  // will be supported when conformResult method is adapted to use ResultSet;
     }
 
     /**
      * INTERNAL:
      * Indicates whether the query can use ResultSet optimization.
      * Note that the session must be already set.
-     * The method is called when the query is executed, 
+     * The method is called when the query is executed,
      * so it should refer only to the attributes that can be altered without re-preparing the query.
      */
     public boolean supportsResultSetAccessOptimizationOnExecute() {

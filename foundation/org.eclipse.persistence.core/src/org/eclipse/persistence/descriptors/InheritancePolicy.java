@@ -276,7 +276,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         selectStatement.setTranslationRow(query.getTranslationRow());
         if (query.isReadAllQuery() && ((ReadAllQuery)query).hasHierarchicalExpressions()) {
             ReadAllQuery readAllQuery = (ReadAllQuery)query;
-            selectStatement.setHierarchicalQueryExpressions(readAllQuery.getStartWithExpression(), readAllQuery.getConnectByExpression(), readAllQuery.getOrderSiblingsByExpressions());
+            selectStatement.setHierarchicalQueryExpressions(readAllQuery.getStartWithExpression(), readAllQuery.getConnectByExpression(), readAllQuery.getOrderSiblingsByExpressions(), readAllQuery.getDirection());
         }
         selectStatement.setHintString(query.getHintString());
 
