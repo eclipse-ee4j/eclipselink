@@ -32,6 +32,8 @@ import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
+import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
+
 /**
  * Persistence units catalog resource (JPARS version 2.0 and above).
  *
@@ -39,7 +41,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version}/")
+@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/")
 public class PersistenceResource extends AbstractPersistenceResource {
 
     @GET

@@ -26,6 +26,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
+
 /**
  * Metadata catalog resource in JPARS version less than 2.0.
  *
@@ -33,7 +35,7 @@ import javax.ws.rs.core.UriInfo;
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version}/{context}/metadata/")
+@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/metadata/")
 public class PersistenceUnitResource extends AbstractPersistenceUnitResource {
 
     @GET

@@ -25,13 +25,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
+
 /**
  * Single result query resource.
  *
  * @author gonural
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_OCTET_STREAM })
-@Path("/{version}/{context}/singleResultQuery/")
+@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/singleResultQuery/")
 public class SingleResultQueryResource extends AbstractSingleResultQueryResource {
 
     @GET

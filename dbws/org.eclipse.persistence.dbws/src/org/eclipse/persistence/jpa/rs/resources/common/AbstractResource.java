@@ -64,6 +64,7 @@ import java.util.UUID;
  * @author gonural
  */
 public abstract class AbstractResource {
+    public static final String SERVICE_VERSION_FORMAT = "v\\d\\.\\d|latest";
     public static final String APPLICATION_SCHEMA_JSON ="application/schema+json";
     public static final MediaType APPLICATION_SCHEMA_JSON_TYPE = new MediaType("application","schema+json");
     protected PersistenceContextFactory factory;

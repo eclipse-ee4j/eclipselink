@@ -27,6 +27,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
+
 /**
  * Query resource.
  *
@@ -34,7 +36,7 @@ import javax.ws.rs.core.UriInfo;
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version}/{context}/query/")
+@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/query/")
 public class QueryResource extends AbstractQueryResource {
 
     @POST

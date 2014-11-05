@@ -30,6 +30,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 
+import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
+
 /**
  * Entity resource.
  *
@@ -37,7 +39,7 @@ import java.io.InputStream;
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version}/{context}/entity/")
+@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/{context}/entity/")
 public class EntityResource extends AbstractEntityResource {
 
     @GET
