@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     gonural - Initial implementation
- *     Dmitry Kornilov - 'latest' keyword in version support
+ *     Dmitry Kornilov - JPARS 2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources;
 
@@ -17,6 +17,7 @@ import org.eclipse.persistence.jpa.rs.resources.common.AbstractQueryResource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -59,5 +60,16 @@ public class QueryResource extends AbstractQueryResource {
                                @Context UriInfo ui) {
         setRequestUniqueId();
         return namedQueryInternal(version, persistenceUnit, name, hh, ui);
+    }
+
+    @OPTIONS
+    @Path("{name}")
+    public Response getQueryOptions(@PathParam("version") String version,
+                                    @PathParam("context") String persistenceUnit,
+                                    @PathParam("name") String queryName,
+                                    @Context HttpHeaders httpHeaders,
+                                    @Context UriInfo uriInfo) {
+        setRequestUniqueId();
+        return buildQueryOptionsResponse(version, persistenceUnit, queryName, httpHeaders, uriInfo);
     }
 }

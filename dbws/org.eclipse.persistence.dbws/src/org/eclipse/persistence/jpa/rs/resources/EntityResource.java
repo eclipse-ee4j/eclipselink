@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     gonural - Initial implementation
- *     Dmitry Kornilov - 'latest' keyword in version support
+ *     Dmitry Kornilov - JPARS 2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources;
 
@@ -18,6 +18,7 @@ import org.eclipse.persistence.jpa.rs.resources.common.AbstractEntityResource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -127,5 +128,16 @@ public class EntityResource extends AbstractEntityResource {
                            @Context UriInfo ui) {
         setRequestUniqueId();
         return deleteInternal(version, persistenceUnit, type, id, hh, ui);
+    }
+
+    @OPTIONS
+    @Path("{entityName}")
+    public Response getEntityOptions(@PathParam("version") String version,
+                                     @PathParam("context") String persistenceUnit,
+                                     @PathParam("entityName") String entityName,
+                                     @Context HttpHeaders httpHeaders,
+                                     @Context UriInfo uriInfo) {
+        setRequestUniqueId();
+        return buildEntityOptionsResponse(version, persistenceUnit, entityName, httpHeaders, uriInfo);
     }
 }

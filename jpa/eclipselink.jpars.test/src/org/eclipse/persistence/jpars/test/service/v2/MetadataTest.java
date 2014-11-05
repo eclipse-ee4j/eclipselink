@@ -12,7 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.service.v2;
 
+import org.eclipse.persistence.jpa.rs.resources.EntityResource;
 import org.eclipse.persistence.jpa.rs.resources.MetadataResource;
+import org.eclipse.persistence.jpa.rs.resources.QueryResource;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
@@ -198,7 +200,10 @@ public class MetadataTest extends BaseJparsTest {
 
     @Test
     public void testEntityOptions() throws URISyntaxException {
-        final Response response = metadataResource.getEntityOptions(version, pu, "Employee",
+        final EntityResource entityResource = new EntityResource();
+        entityResource.setPersistenceFactory(factory);
+
+        final Response response = entityResource.getEntityOptions(version, pu, "Employee",
                 TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
                 new TestURIInfo());
         assertTrue(response.getMetadata().containsKey("Link"));
@@ -209,7 +214,10 @@ public class MetadataTest extends BaseJparsTest {
 
     @Test
     public void testQueryOptions() throws URISyntaxException {
-        final Response response = metadataResource.getQueryOptions(version, pu, "Employee.getManager",
+        final QueryResource queryResource = new QueryResource();
+        queryResource.setPersistenceFactory(factory);
+
+        final Response response = queryResource.getQueryOptions(version, pu, "Employee.getManager",
                 TestHttpHeaders.generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
                 new TestURIInfo());
         assertTrue(response.getMetadata().containsKey("Link"));

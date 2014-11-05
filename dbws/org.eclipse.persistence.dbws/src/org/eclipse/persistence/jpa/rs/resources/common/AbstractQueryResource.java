@@ -26,6 +26,7 @@ import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.core.selflinks.SelfLinksResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.paging.PageableQueryValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PagingResponseBuilder;
+import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -100,6 +101,25 @@ public abstract class AbstractQueryResource extends AbstractResource {
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
         }
+    }
+
+    protected Response buildQueryOptionsResponse(String version, String persistenceUnit, String queryName, HttpHeaders httpHeaders, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "buildQueryOptionsResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
+        final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
+
+        // We need to make sure that query with given name exists
+        final DatabaseQuery query = context.getServerSession().getQuery(queryName);
+        if (query == null) {
+            JPARSLogger.error("jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
+            throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
+        }
+
+        final String linkValue = "<" + HrefHelper.buildQueryMetadataHref(context, queryName) + ">; rel=describedby";
+        httpHeaders.getRequestHeaders().putSingle("Link", linkValue);
+
+        return Response.ok()
+                .header("Link", linkValue)
+                .build();
     }
 
     private Response processPageableQuery(PersistenceContext context, String queryName, DatabaseQuery dbQuery, Query query, HttpHeaders headers, UriInfo uriInfo) {

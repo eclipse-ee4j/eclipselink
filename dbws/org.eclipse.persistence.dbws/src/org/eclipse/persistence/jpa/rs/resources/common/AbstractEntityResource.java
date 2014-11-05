@@ -28,6 +28,7 @@ import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
 import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilteringValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PageableFieldValidator;
+import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -396,6 +397,25 @@ public abstract class AbstractEntityResource extends AbstractResource {
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
         }
+    }
+
+    protected Response buildEntityOptionsResponse(String version, String persistenceUnit, String entityName, HttpHeaders httpHeaders, UriInfo uriInfo) {
+        JPARSLogger.entering(CLASS_NAME, "buildEntityOptionsResponse", new Object[]{"GET", version, persistenceUnit, entityName, uriInfo.getRequestUri().toASCIIString()});
+        final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
+
+        // We need to make sure that entity with given name exists
+        final ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(entityName);
+        if (descriptor == null) {
+            JPARSLogger.error("jpars_could_not_find_entity_type", new Object[]{entityName, persistenceUnit});
+            throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(entityName, persistenceUnit);
+        }
+
+        final String linkValue = "<" + HrefHelper.buildEntityMetadataHref(context, entityName) + ">; rel=describedby";
+        httpHeaders.getRequestHeaders().putSingle("Link", linkValue);
+
+        return Response.ok()
+                .header("Link", linkValue)
+                .build();
     }
 
     private Response findAttributeResponse(PersistenceContext context, String attribute, String entityType, String id, String persistenceUnit, Object queryResults, Map<String, Object> queryParams, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {

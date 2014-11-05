@@ -40,7 +40,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -140,34 +139,6 @@ public class MetadataResource extends AbstractResource {
         } else {
             return buildQueryMetadataResponse(version, persistenceUnit, queryName, httpHeaders, uriInfo);
         }
-    }
-
-    /**
-     * Returns link to entity metadata in the header.
-     */
-    @OPTIONS
-    @Path("entity/{entityName}")
-    public Response getEntityOptions(@PathParam("version") String version,
-                                     @PathParam("context") String persistenceUnit,
-                                     @PathParam("entityName") String entityName,
-                                     @Context HttpHeaders httpHeaders,
-                                     @Context UriInfo uriInfo) {
-        setRequestUniqueId();
-        return buildEntityOptionsResponse(version, persistenceUnit, entityName, httpHeaders, uriInfo);
-    }
-
-    /**
-     * Returns link to query metadata in the header.
-     */
-    @OPTIONS
-    @Path("query/{queryName}")
-    public Response getQueryOptions(@PathParam("version") String version,
-                                    @PathParam("context") String persistenceUnit,
-                                    @PathParam("queryName") String queryName,
-                                    @Context HttpHeaders httpHeaders,
-                                    @Context UriInfo uriInfo) {
-        setRequestUniqueId();
-        return buildQueryOptionsResponse(version, persistenceUnit, queryName, httpHeaders, uriInfo);
     }
 
     private Response buildMetadataCatalogResponse(String version, String persistenceUnit, HttpHeaders httpHeaders, UriInfo uriInfo) {
@@ -288,44 +259,6 @@ public class MetadataResource extends AbstractResource {
             throw JPARSException.exceptionOccurred(e);
         }
         return Response.ok(new StreamingOutputMarshaller(null, result, AbstractResource.APPLICATION_SCHEMA_JSON_TYPE)).build();
-    }
-
-    private Response buildEntityOptionsResponse(String version, String persistenceUnit, String entityName, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "buildEntityOptionsResponse", new Object[]{"GET", version, persistenceUnit, entityName, uriInfo.getRequestUri().toASCIIString()});
-        final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
-
-        // We need to make sure that entity with given name exists
-        final ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(entityName);
-        if (descriptor == null) {
-            JPARSLogger.error("jpars_could_not_find_entity_type", new Object[]{entityName, persistenceUnit});
-            throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(entityName, persistenceUnit);
-        }
-
-        final String linkValue = "<" + HrefHelper.buildEntityMetadataHref(context, entityName) + ">; rel=describedby";
-        httpHeaders.getRequestHeaders().putSingle("Link", linkValue);
-
-        return Response.ok()
-                .header("Link", linkValue)
-                .build();
-    }
-
-    private Response buildQueryOptionsResponse(String version, String persistenceUnit, String queryName, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "buildQueryOptionsResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
-        final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
-
-        // We need to make sure that query with given name exists
-        final DatabaseQuery query = context.getServerSession().getQuery(queryName);
-        if (query == null) {
-            JPARSLogger.error("jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
-            throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
-        }
-
-        final String linkValue = "<" + HrefHelper.buildQueryMetadataHref(context, queryName) + ">; rel=describedby";
-        httpHeaders.getRequestHeaders().putSingle("Link", linkValue);
-
-        return Response.ok()
-                .header("Link", linkValue)
-                .build();
     }
 
     private MetadataCatalog buildMetadataCatalog(PersistenceContext context) {
