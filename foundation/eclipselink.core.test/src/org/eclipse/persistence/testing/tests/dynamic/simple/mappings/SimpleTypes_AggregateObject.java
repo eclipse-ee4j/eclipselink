@@ -18,19 +18,7 @@
 package org.eclipse.persistence.testing.tests.dynamic.simple.mappings;
 
 //JUnit4 imports
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -46,9 +34,22 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-//domain-specific (testing) imports
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+//EclipseLink imports
+//domain-specific (testing) imports
 
 public class SimpleTypes_AggregateObject {
 
@@ -167,9 +168,9 @@ public class SimpleTypes_AggregateObject {
         assertFalse(a.isSet("b"));
         DynamicType typeC = dynamicHelper.getType("SimpleC");
         assertEquals(a.get("c").getClass(), typeC.newDynamicEntity().getClass());
-        DynamicEntity c = a.<DynamicEntity>get("c");
+        DynamicEntity c = a.get("c");
         assertNotNull(c);
-        assertEquals(((Number) c.get("value4")).doubleValue(), 0.0);
+        assertEquals(((Number) c.get("value4")).doubleValue(), 0.0, 0.01);
         assertFalse(c.isSet("value5"));
     }
 

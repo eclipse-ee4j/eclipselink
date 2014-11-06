@@ -20,22 +20,7 @@ package org.eclipse.persistence.testing.tests.jpa.dynamic.simple.mappings;
 //javase imports
 
 //java eXtensions
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
-//JUnit4 imports
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assume.assumeTrue;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -43,13 +28,28 @@ import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.descriptors.changetracking.AggregateAttributeChangeListener;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+//JUnit4 imports
+//EclipseLink imports
 
 public class SimpleTypes_AggregateObject {
 
@@ -164,9 +164,9 @@ public class SimpleTypes_AggregateObject {
         assertFalse(a.isSet("b"));
         DynamicType typeC = helper.getType("SimpleC");
         assertEquals(a.get("c").getClass(), typeC.newDynamicEntity().getClass());
-        DynamicEntity c = a.<DynamicEntity>get("c");
+        DynamicEntity c = a.get("c");
         assertNotNull(c);
-        assertEquals(((Number) c.get("value4")).doubleValue(), 0.0);
+        assertEquals(((Number) c.get("value4")).doubleValue(), 0.0, 0.01);
         assertFalse(c.isSet("value5"));
     }
 
