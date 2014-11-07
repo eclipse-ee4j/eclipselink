@@ -59,7 +59,7 @@ public class SessionManagerTest extends TestCase {
         SessionManager m2 = SessionManager.getManager();
         Assert.assertNotNull(m2);
         Assert.assertEquals(2, registeredManagers.size());
-        Assert.assertNotEquals(m1, m2);
+        Assert.assertFalse(m1 == m2);
         
         Thread.currentThread().setContextClassLoader(cl1);
         Assert.assertEquals(m1, SessionManager.getManager());
@@ -90,7 +90,7 @@ public class SessionManagerTest extends TestCase {
         Assert.assertNotNull(getField("loader", m2));
         Assert.assertEquals(2, registeredManagers.size());
         Assert.assertFalse(m2 instanceof SM);
-        Assert.assertNotEquals(m1, m2);
+        Assert.assertFalse(m1 == m2);
         
         Thread.currentThread().setContextClassLoader(cl1);
         Assert.assertEquals(m1, SessionManager.getManager());
