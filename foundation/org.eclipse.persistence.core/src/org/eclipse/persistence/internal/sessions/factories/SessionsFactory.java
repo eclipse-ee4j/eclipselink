@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,107 +13,66 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories;
 
-import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.lang.reflect.Constructor;
 
 import org.eclipse.persistence.config.SessionCustomizer;
-import org.eclipse.persistence.eis.EISConnectionSpec;
-import org.eclipse.persistence.eis.EISLogin;
-import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.eclipse.persistence.exceptions.SessionLoaderException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.eis.*;
+//import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.logging.*;
+import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.sessions.coordination.*;
+import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
+import org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager;
+import org.eclipse.persistence.sessions.server.*;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.platform.database.converters.StructConverter;
+import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.platform.server.NoServerPlatform;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.SessionEventListener;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.DefaultSequence;
+import org.eclipse.persistence.sequencing.NativeSequence;
+import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sequencing.UnaryTableSequence;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.tools.profiler.*;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
-import org.eclipse.persistence.internal.sessions.factories.model.event.SessionEventManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.log.JavaLogConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.log.LogConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.log.ServerLogConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.login.EISLoginConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.login.LoginConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.login.StructConverterConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.login.XMLLoginConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.platform.CustomServerPlatformConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.platform.ServerPlatformConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.pool.ConnectionPolicyConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.pool.ConnectionPoolConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.pool.PoolsConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.pool.ReadConnectionPoolConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.property.PropertyConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.rcm.RemoteCommandManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.rcm.command.CommandsConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.sequencing.DefaultSequenceConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.sequencing.NativeSequenceConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.sequencing.SequenceConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.sequencing.TableSequenceConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.sequencing.UnaryTableSequenceConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.sequencing.XMLFileSequenceConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.session.ServerSessionConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.session.SessionBrokerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSPublishingTransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSTopicTransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.Oc4jJGroupsTransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.RMIIIOPTransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.RMITransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.SunCORBATransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.TransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.UserDefinedTransportManagerConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.discovery.DiscoveryConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.JNDINamingServiceConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.RMIRegistryNamingServiceConfig;
-import org.eclipse.persistence.logging.DefaultSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.platform.database.converters.StructConverter;
-import org.eclipse.persistence.platform.server.NoServerPlatform;
-import org.eclipse.persistence.platform.server.ServerPlatform;
-import org.eclipse.persistence.sequencing.DefaultSequence;
-import org.eclipse.persistence.sequencing.NativeSequence;
-import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sequencing.TableSequence;
-import org.eclipse.persistence.sequencing.UnaryTableSequence;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.DatasourceLogin;
-import org.eclipse.persistence.sessions.JNDIConnector;
-import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.SessionEventListener;
-import org.eclipse.persistence.sessions.broker.SessionBroker;
-import org.eclipse.persistence.sessions.coordination.DiscoveryManager;
-import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
-import org.eclipse.persistence.sessions.coordination.TransportManager;
-import org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager;
-import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
-import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
-import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.sessions.server.ConnectionPolicy;
-import org.eclipse.persistence.sessions.server.ConnectionPool;
-import org.eclipse.persistence.sessions.server.ReadConnectionPool;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
+import org.eclipse.persistence.internal.sessions.factories.model.*;
+import org.eclipse.persistence.internal.sessions.factories.model.log.*;
+import org.eclipse.persistence.internal.sessions.factories.model.pool.*;
+import org.eclipse.persistence.internal.sessions.factories.model.rcm.*;
+import org.eclipse.persistence.internal.sessions.factories.model.rcm.command.*;
+import org.eclipse.persistence.internal.sessions.factories.model.login.*;
+import org.eclipse.persistence.internal.sessions.factories.model.event.*;
+import org.eclipse.persistence.internal.sessions.factories.model.project.*;
+import org.eclipse.persistence.internal.sessions.factories.model.sequencing.*;
+import org.eclipse.persistence.internal.sessions.factories.model.session.*;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.*;
+import org.eclipse.persistence.internal.sessions.factories.model.property.*;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.*;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.*;
+import org.eclipse.persistence.internal.sessions.factories.model.transport.discovery.*;
 
 /**
  * INTERNAL:
@@ -125,48 +84,44 @@ import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
  * @date November 18, 2003
  */
 public class SessionsFactory {
-    protected Map<String, Session> m_sessions;
-    protected Map<String, Integer> m_logLevels;
+	protected Map m_sessions;
+    protected Map m_logLevels;
     protected ClassLoader m_classLoader;
 
     /**
      * INTERNAL:
      */
     public SessionsFactory() {
-        m_logLevels = new HashMap<>();
-        m_logLevels.put("off", SessionLog.OFF);
-        m_logLevels.put("severe", SessionLog.SEVERE);
-        m_logLevels.put("warning", SessionLog.WARNING);
-        m_logLevels.put("info", SessionLog.INFO);
-        m_logLevels.put("config", SessionLog.CONFIG);
-        m_logLevels.put("fine", SessionLog.FINE);
-        m_logLevels.put("finer", SessionLog.FINER);
-        m_logLevels.put("finest", SessionLog.FINEST);
-        m_logLevels.put("all", SessionLog.ALL);
+        m_logLevels = new HashMap();
+        m_logLevels.put("off", Integer.valueOf(SessionLog.OFF));
+        m_logLevels.put("severe", Integer.valueOf(SessionLog.SEVERE));
+        m_logLevels.put("warning", Integer.valueOf(SessionLog.WARNING));
+        m_logLevels.put("info", Integer.valueOf(SessionLog.INFO));
+        m_logLevels.put("config", Integer.valueOf(SessionLog.CONFIG));
+        m_logLevels.put("fine", Integer.valueOf(SessionLog.FINE));
+        m_logLevels.put("finer", Integer.valueOf(SessionLog.FINER));
+        m_logLevels.put("finest", Integer.valueOf(SessionLog.FINEST));
+        m_logLevels.put("all", Integer.valueOf(SessionLog.ALL));
     }
 
     /**
      * INTERNAL:
      * To build EclipseLink sessions, users must call this method with a
      * SessionConfigs object returned from an OX read in the
-     * {@link XMLSessionsConfigLoader}.
-     * 
-     * @param eclipseLinkSessions object returned from an OX read in the XMLSessionsConfigLoader
-     * @param classLoader class loader used in the XMLSessionsConfigLoader 
-     * @return EclipseLink sessions
+     * XMLSessionsConfigLoader
      */
-    public Map<String, Session> buildSessionConfigs(SessionConfigs eclipseLinkSessions, ClassLoader classLoader) {
-        m_sessions = new HashMap<>();
+    public Map buildSessionConfigs(SessionConfigs eclipseLinkSessions, ClassLoader classLoader) {
+        m_sessions = new HashMap();
         m_classLoader = classLoader;
-        List<SessionBrokerConfig> sessionBrokerConfigs = new ArrayList<>();
-        Enumeration<SessionConfig> e = eclipseLinkSessions.getSessionConfigs().elements();
+        Vector sessionBrokerConfigs = new Vector();
+        Enumeration e = eclipseLinkSessions.getSessionConfigs().elements();
 
         while (e.hasMoreElements()) {
-            SessionConfig sessionConfig = e.nextElement();
+            SessionConfig sessionConfig = (SessionConfig)e.nextElement();
 
             if (sessionConfig instanceof SessionBrokerConfig) {
                 // Hold all the session brokers till all the sessions have been built
-                sessionBrokerConfigs.add((SessionBrokerConfig) sessionConfig);
+                sessionBrokerConfigs.add(sessionConfig);
             } else {
                 AbstractSession session = buildSession(sessionConfig);
                 session.getDatasourcePlatform().getConversionManager().setLoader(classLoader);
@@ -176,7 +131,10 @@ public class SessionsFactory {
         }
 
         // All the sessions have been built now so we can process the Session Brokers
-        for (SessionBrokerConfig sessionBrokerConfig : sessionBrokerConfigs) {
+        Enumeration ee = sessionBrokerConfigs.elements();
+
+        while (ee.hasMoreElements()) {
+            SessionBrokerConfig sessionBrokerConfig = (SessionBrokerConfig)ee.nextElement();
             SessionBroker sessionBroker = buildSessionBrokerConfig(sessionBrokerConfig);
             sessionBroker.getDatasourcePlatform().getConversionManager().setLoader(classLoader);
             processSessionCustomizer(sessionBrokerConfig, sessionBroker);
@@ -202,7 +160,7 @@ public class SessionsFactory {
                 }else{
                     ((SessionCustomizer)PrivilegedAccessHelper.newInstanceFromClass(sessionCustomizerClass)).customize(session);
                 }
-            } catch (Exception exception) {
+            } catch (Throwable exception) {
                 throw SessionLoaderException.failedToLoadTag("session-customizer-class", sessionCustomizerClassName, exception);
             }
         }
@@ -298,10 +256,10 @@ public class SessionsFactory {
         // Append descriptors from all subsequent project.xml and project classes 
         // to the mainProject  
         if (sessionConfig.getAdditionalProjects() != null) {
-            Enumeration<ProjectConfig> additionalProjects = sessionConfig.getAdditionalProjects().elements();
+            Enumeration additionalProjects = sessionConfig.getAdditionalProjects().elements();
 
             while (additionalProjects.hasMoreElements()) {
-                Project subProject = loadProjectConfig(additionalProjects.nextElement());
+                Project subProject = loadProjectConfig((ProjectConfig)additionalProjects.nextElement());
                 primaryProject.addDescriptors(subProject, sessionToReturn);
             }
         }
@@ -352,7 +310,7 @@ public class SessionsFactory {
                 }else{
                     project = (Project) PrivilegedAccessHelper.newInstanceFromClass(m_classLoader.loadClass(projectString));
                 }
-            } catch (Exception exception) {
+            } catch (Throwable exception) {
                 throw SessionLoaderException.failedToLoadProjectClass(projectString, exception);
             }
         } else {
@@ -743,7 +701,7 @@ public class SessionsFactory {
                 Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false);
                 platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw SessionLoaderException.failedToLoadTag("server-class", serverClassName, e);
         }
 
@@ -859,7 +817,7 @@ public class SessionsFactory {
                 }else{
                     session.setExceptionHandler((ExceptionHandler)PrivilegedAccessHelper.newInstanceFromClass(exceptionHandlerClass));
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw SessionLoaderException.failedToLoadTag("exception-handler-class", exceptionHandlerClassName, e);
             }
         }
@@ -894,7 +852,7 @@ public class SessionsFactory {
                         Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false);
                         platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     try {
                         Class serverClass = getClass().getClassLoader().loadClass(serverClassName);
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -904,7 +862,7 @@ public class SessionsFactory {
                             Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false);
                             platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
                         }
-                    } catch (Exception ignore) {
+                    } catch (Throwable ignore) {
                         // Ignore, throw first error.
                     }
                     throw SessionLoaderException.failedToParseXML("Server platform class is invalid: " + serverClassName, e);
@@ -1107,7 +1065,7 @@ public class SessionsFactory {
                 Constructor constructor = PrivilegedAccessHelper.getConstructorFor(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false);
                 tm = (TransportManager)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() });
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw SessionLoaderException.failedToParseXML("Oc4jJGroupsTransportManager class is invalid: " + tmConfig.getTransportManagerClassName(), e);
         }
 
@@ -1134,7 +1092,7 @@ public class SessionsFactory {
                 }else{
                     tm = (TransportManager)PrivilegedAccessHelper.newInstanceFromClass(transportManagerClass);
                 }
-            } catch (Exception exception) {
+            } catch (Throwable exception) {
                 throw SessionLoaderException.failedToLoadTag("transport-class", transportManagerClassName, exception);
             }
 
@@ -1282,7 +1240,7 @@ public class SessionsFactory {
         DefaultSessionLog defaultSessionLog = new DefaultSessionLog();
 
         // Log level - XML Schema default is info
-        defaultSessionLog.setLevel(m_logLevels.get(defaultSessionLogConfig.getLogLevel()));
+        defaultSessionLog.setLevel(((Integer)m_logLevels.get(defaultSessionLogConfig.getLogLevel())).intValue());
 
         // Filename - setWriter will handle nulls
         defaultSessionLog.setWriter(defaultSessionLogConfig.getFilename());
@@ -1358,11 +1316,11 @@ public class SessionsFactory {
         SessionBroker sessionBroker = new SessionBroker();
 
         // Session names
-        Enumeration<String> sessionNames = sessionBrokerConfig.getSessionNames().elements();
+        Enumeration sessionNames = sessionBrokerConfig.getSessionNames().elements();
 
         while (sessionNames.hasMoreElements()) {
             // Register the sessions
-            String sessionName = sessionNames.nextElement();
+            String sessionName = (String)sessionNames.nextElement();
             sessionBroker.registerSession(sessionName, (AbstractSession)m_sessions.get(sessionName));
         }
 
