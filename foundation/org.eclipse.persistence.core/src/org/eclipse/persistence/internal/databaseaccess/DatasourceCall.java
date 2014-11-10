@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,20 +17,29 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/  
+ *     11/10/2014-2.6 Dmitry Kornilov
+ *       - 450818: Column names with hash mark => "java.sql.SQLException: Invalid column index"
+ ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
+import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -364,17 +373,19 @@ public abstract class DatasourceCall implements Call {
      * This is used by SQLCall and XQuery call, but can be reused by other query languages.
      */
     public void translateCustomQuery() {
-        if(this.shouldProcessTokenInQuotes){
+        if (this.shouldProcessTokenInQuotes) {
             if (getQueryString().indexOf(this.query.getParameterDelimiter()) == -1) {
-                if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf("?") == -1){
+                if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf("?") == -1) {
                     return;
                 }
                 translatePureSQLCustomQuery();
                 return;
             }
-        }else{
-            if (!hasArgumentMark(getQueryString(), this.query.getParameterDelimiterChar())) {
-                if (this.getQuery().shouldBindAllParameters() && !hasArgumentMark(getQueryString(),'?')){
+        } else {
+            if (!hasArgumentMark(getQueryString(), this.query.getParameterDelimiterChar(), '\'')
+                    || !hasArgumentMark(getQueryString(), this.query.getParameterDelimiterChar(), '\"')
+                    || !hasArgumentMark(getQueryString(), this.query.getParameterDelimiterChar(), '`')) {
+                if (this.getQuery().shouldBindAllParameters() && !hasArgumentMark(getQueryString(),'?', '\'')) {
                     return;
                 }
                 translatePureSQLCustomQuery();
@@ -863,8 +874,12 @@ public abstract class DatasourceCall implements Call {
     
     /**
      * Return true if the specific mark is existing and not quoted around.
+     *
+     * @param string    string to search
+     * @param mark      mark to find
+     * @param quote     quote char (usually ' or ")
      */
-    private boolean hasArgumentMark(String string, char mark){
+    private boolean hasArgumentMark(String string, char mark, char quote){
         int quoteIndex = -1;
         int lastEndQuoteIndex = -1;
         
@@ -873,20 +888,20 @@ public abstract class DatasourceCall implements Call {
             if(markIndex==-1){
                 return false; //no mark at all.
             }
-            quoteIndex = string.lastIndexOf('\'',markIndex);
+            quoteIndex = string.lastIndexOf(quote, markIndex);
             if(quoteIndex==-1){//no quote before the mark
                 return true;
             }else{//has quote before the mark
                 boolean hasPairedQuoteBeforeMark = false;
                 while(quoteIndex!=-1 && quoteIndex >= lastEndQuoteIndex){
-                    if((quoteIndex=string.lastIndexOf('\'',quoteIndex-1))!=-1){
+                    if((quoteIndex=string.lastIndexOf(quote, quoteIndex-1))!=-1){
                         hasPairedQuoteBeforeMark = !hasPairedQuoteBeforeMark;
                     }
                 }
                 if(hasPairedQuoteBeforeMark){//if there is paired quotes before the mark.
-                    return true; 
+                    return true;
                 }else{//might have quotes around the mark, need further check.
-                    lastEndQuoteIndex = string.indexOf('\'',markIndex+1);
+                    lastEndQuoteIndex = string.indexOf(quote, markIndex+1);
                     if(lastEndQuoteIndex==-1){
                         return true;//no end quote around the mark.
                     }
