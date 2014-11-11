@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xsd:schema 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sdoJava="commonj.sdo/java" 
+    xmlns:sdoXML="commonj.sdo/xml"
+    xmlns:sdo="commonj.sdo"
+    xmlns="http://www.example.org"
+    targetNamespace="http://www.example.org"
+    elementFormDefault="qualified">
+    
+    <xsd:include schemaLocation="Television.xsd"/>
+    <xsd:include schemaLocation="ExtendedAttributes.xsd"/>
+
+    <xsd:complexType name="Electronics">
+        <xsd:annotation>
+            <xsd:appinfo source="http://www.example.org/metadata/">
+                <key xmlns="http://www.example.org/metadata/">
+                    <attribute>ItemId</attribute>
+                    <attribute>OrganizationId</attribute>
+                </key>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="ExtendedAttributes">
+                <xsd:sequence>
+                    <xsd:element name="ItemOne" type="xsd:string" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+                    <xsd:element name="ItemTwo" type="xsd:string" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+                    <xsd:element name="ItemThree" type="xsd:string" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+                    <xsd:element name="ItemFour" type="xsd:string" minOccurs="0"  sdoXML:dataType="sdo:DataObject"/>
+                    <xsd:element name="ItemFive" type="xsd:string" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+                    <xsd:element name="ItemSix" type="xsd:string" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+                    <xsd:element name="ItemSeven" type="xsd:string" minOccurs="0"  sdoXML:dataType="sdo:DataObject"/>
+                    <xsd:element name="ItemEight" type="xsd:string" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+                    <xsd:element name="ItemNine" type="xsd:string" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+                    <xsd:element name="ItemTen" type="xsd:string" minOccurs="0" sdoXML:dataType="sdo:DataObject"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="Electronics" type="Electronics"/>
+</xsd:schema>

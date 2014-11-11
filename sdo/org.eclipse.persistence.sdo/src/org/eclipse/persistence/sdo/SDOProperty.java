@@ -1111,6 +1111,16 @@ public class SDOProperty implements Property, Serializable {
         }
         return indexInType;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    public void incrementIndexInType() {
+        // increment index in type if it is already set
+        if (indexInType != -1) {
+            setIndexInType(getIndexInType() + 1);
+        }
+    }
 
     /**
       * INTERNAL:

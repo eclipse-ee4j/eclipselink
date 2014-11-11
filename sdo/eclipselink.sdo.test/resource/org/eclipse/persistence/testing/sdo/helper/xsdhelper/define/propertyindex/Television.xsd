@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xsd:schema 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sdoJava="commonj.sdo/java" 
+    xmlns:sdoXML="commonj.sdo/xml"
+    xmlns:sdo="commonj.sdo"
+    xmlns="http://www.example.org"
+    targetNamespace="http://www.example.org"
+    elementFormDefault="qualified">
+    
+    <xsd:include schemaLocation="Electronics.xsd" />
+    
+    <xsd:complexType name="Television">
+        <xsd:annotation>
+            <xsd:appinfo source="http://www.example.org/metadata/">
+                <key xmlns="http://www.example.org/metadata/">
+                    <attribute>ItemId</attribute>
+                    <attribute>OrganizationId</attribute>
+                </key>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="Electronics">
+                <xsd:sequence>
+                    <xsd:element name="HDTVTuners" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+                    <xsd:element name="Resolution" type="xsd:string" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:element name="television" type="Television" />
+</xsd:schema>

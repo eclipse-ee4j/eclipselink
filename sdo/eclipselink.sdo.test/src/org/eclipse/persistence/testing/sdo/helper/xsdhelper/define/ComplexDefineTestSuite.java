@@ -47,6 +47,8 @@ public class ComplexDefineTestSuite {
         suite.addTestSuite(ComplexImportsAndIncludesTestCases.class);
         suite.addTestSuite(DefineFailsDontRegisterTypesTestCases.class);
         suite.addTestSuite(SchemaResolverSystemIdTestCases.class);
+        // EL bug 451041
+        suite.addTestSuite(TypePropertyIndexTest.class);
         return suite;
     }
 }

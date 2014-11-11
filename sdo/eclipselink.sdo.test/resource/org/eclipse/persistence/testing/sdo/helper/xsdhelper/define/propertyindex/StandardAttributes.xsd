@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xsd:schema 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:sdoJava="commonj.sdo/java" 
+    xmlns:sdoXML="commonj.sdo/xml"
+    xmlns:sdo="commonj.sdo"
+    xmlns="http://www.example.org"
+    targetNamespace="http://www.example.org"
+    elementFormDefault="qualified">
+    
+    <xsd:complexType name="StandardAttributes">
+        <xsd:annotation>
+            <xsd:appinfo source="http://www.example.org/metadata/">
+                <key xmlns="http://www.example.org/metadata/">
+                    <attribute>ItemId</attribute>
+                    <attribute>OrganizationId</attribute>
+                </key>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" nillable="true" />
+            <xsd:element name="ItemId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject" />
+            <xsd:element name="ItemType" type="xsd:int" minOccurs="0" nillable="true" />
+            <xsd:element name="Name" type="xsd:string" minOccurs="0" nillable="true" />
+            <xsd:element name="OrganizationId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject" />
+            <xsd:element name="AttributeCategory" type="xsd:string" minOccurs="0" nillable="true" />
+            <xsd:element name="CategoryCode" type="xsd:string" minOccurs="0" nillable="true" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="standardAttributes" type="StandardAttributes" />
+</xsd:schema>

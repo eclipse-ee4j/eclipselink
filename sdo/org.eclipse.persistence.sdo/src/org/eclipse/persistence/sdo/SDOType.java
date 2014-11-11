@@ -1020,7 +1020,7 @@ public class SDOType implements Type, Serializable {
         SDOProperty nextProp = null;
         for (int i = 0; i < declaredSize; i++) {
             nextProp = (SDOProperty)getDeclaredProperties().get(i);
-            nextProp.setIndexInType(nextProp.getIndexInType() + 1);
+            nextProp.incrementIndexInType();
         }
         getProperties().add(insertPosition, property);
         if(isBaseType()) {
