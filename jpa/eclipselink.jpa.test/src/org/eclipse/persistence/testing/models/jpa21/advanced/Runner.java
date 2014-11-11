@@ -75,7 +75,7 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
     @NamedNativeQuery(name="RunnerVictoryThis.getById",
         query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VTY WHERE RUNNER_ID=?"),
     @NamedNativeQuery(name="RunnerVictoryLast.getById",
-        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VLR WHERE RUNNER_ID=?")
+        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VLY WHERE RUNNER_ID=?")
 })
 @Converts({
     @Convert(attributeName = "accomplishments.key", converter = AccomplishmentConverter.class),
@@ -144,7 +144,7 @@ public class Runner extends Athlete {
 
     // This collection shall contain values unmodified.
     @ElementCollection
-    @CollectionTable(name="JPA21_RUNNER_VLR", joinColumns=@JoinColumn(name="RUNNER_ID"))
+    @CollectionTable(name="JPA21_RUNNER_VLY", joinColumns=@JoinColumn(name="RUNNER_ID"))
     @MapKeyColumn(name="NAME")
     private Map <String, RunnerVictory> victoriesLastYear;
 
