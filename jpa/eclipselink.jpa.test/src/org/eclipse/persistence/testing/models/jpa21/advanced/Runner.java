@@ -73,9 +73,9 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
 })
 @NamedNativeQueries({
     @NamedNativeQuery(name="RunnerVictoryThis.getById",
-        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VICTORIES_THIS_YEAR WHERE RUNNER_ID=?"),
+        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VTY WHERE RUNNER_ID=?"),
     @NamedNativeQuery(name="RunnerVictoryLast.getById",
-        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VICTORIES_LAST_YEAR WHERE RUNNER_ID=?")
+        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VLR WHERE RUNNER_ID=?")
 })
 @Converts({
     @Convert(attributeName = "accomplishments.key", converter = AccomplishmentConverter.class),
@@ -138,13 +138,13 @@ public class Runner extends Athlete {
     // Only this collection shall contain values modified by CompetitionConverter.
     @Convert(converter=CompetitionConverter.class, attributeName = "value.competition")
     @ElementCollection
-    @CollectionTable(name="JPA21_RUNNER_VICTORIES_THIS_YEAR", joinColumns=@JoinColumn(name="RUNNER_ID"))
+    @CollectionTable(name="JPA21_RUNNER_VTY", joinColumns=@JoinColumn(name="RUNNER_ID"))
     @MapKeyColumn(name="NAME")
     private Map <String, RunnerVictory> victoriesThisYear;
 
     // This collection shall contain values unmodified.
     @ElementCollection
-    @CollectionTable(name="JPA21_RUNNER_VICTORIES_LAST_YEAR", joinColumns=@JoinColumn(name="RUNNER_ID"))
+    @CollectionTable(name="JPA21_RUNNER_VLR", joinColumns=@JoinColumn(name="RUNNER_ID"))
     @MapKeyColumn(name="NAME")
     private Map <String, RunnerVictory> victoriesLastYear;
 

@@ -929,7 +929,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
     public TableDefinition buildRUNNER_VICTORIES_THIS_YEARable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_RUNNER_VICTORIES_THIS_YEAR");
+        table.setName("JPA21_RUNNER_VTY");
         table.addField(createNumericFk("RUNNER_ID", "JPA21_RUNNER.ID"));
         table.addField(createStringColumn("COMPETITION", 64, true));
         table.addField(createDateColumn("DATE"));
@@ -940,7 +940,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
     public TableDefinition buildRUNNER_VICTORIES_LAST_YEARable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_RUNNER_VICTORIES_LAST_YEAR");
+        table.setName("JPA21_RUNNER_VLY");
         table.addField(createNumericFk("RUNNER_ID", "JPA21_RUNNER.ID"));
         table.addField(createStringColumn("COMPETITION", 64, true));
         table.addField(createDateColumn("DATE"));
