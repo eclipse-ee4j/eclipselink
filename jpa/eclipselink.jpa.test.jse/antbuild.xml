@@ -1,0 +1,134 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+* Contributors:
+*     Rick Curtis- initial API and implementation
+#******************************************************************************/-->
+<project name="eclipselink.jpa.test.jse" default="test" basedir=".">
+    <property name="classes.dir" value="./classes" />
+    <property name="reports.dir" value="./reports" />
+
+    <property name="base.dir" value="../.."/>
+    <property name="plugins.dir" value="${base.dir}/plugins"/>
+    
+    <property name="jpa.base.dir" value="../"/>
+    <property name="jpa.plugins.dir" value="${jpa.base.dir}/plugins"/>
+
+    <!-- Not sure if there is a better way to refer to dependencies? -->
+    <property name="eclipselink.jar" value="${base.dir}/eclipselink.jar"/>
+    <property name="javax.transaction" value="${plugins.dir}/javax.transaction_1.1.0.v201002051055.jar"/>
+    <property name="javax.validation" value="${plugins.dir}/javax.validation_1.1.0.v201304101302.jar"/>
+    <property name="javax.persistence" value="${jpa.plugins.dir}/javax.persistence_2.1.0.v201304241213.jar"/>
+
+	<property file="${user.home}/build.properties"/>
+    <property file="./antbuild.properties" />
+    <property file="./test.properties" />
+
+	<path id="compile.path">
+		<pathelement path="${eclipselink.jar}" />
+
+		<pathelement path="${javax.transaction}" />
+		<pathelement path="${javax.validation}" />
+		<pathelement path="${javax.persistence}" />
+		<pathelement path="${junit.lib}" />
+	</path>
+	<path id="run.path">
+		<pathelement path="${classes.dir}" />
+		<pathelement path="${eclipselink.jar}" />
+
+		<pathelement path="${javax.transaction}" />
+		<pathelement path="${javax.validation}" />
+		<pathelement path="${javax.persistence}" />
+		<pathelement path="${junit.lib}" />
+		<pathelement path="${jdbc.driver.jar}" />
+	</path>
+			
+    <target name="test" depends="compile, weave">
+
+		
+        <mkdir dir="${reports.dir}"/>
+
+        <junit printsummary="on" haltonfailure="false" failureproperty="fail">
+
+            <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
+            <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>
+            <sysproperty key="javax.persistence.jdbc.user" value="${db.user}"/>
+            <sysproperty key="javax.persistence.jdbc.password" value="${db.pwd}"/>
+            <classpath>
+                <path refid="run.path" />
+            </classpath>
+
+            <formatter type="xml"/>
+			
+            <batchtest fork="no" todir="${reports.dir}">
+                <fileset dir="${src.dir}">
+                    <include name="**/Test*.java"/>
+                </fileset>
+            </batchtest>
+
+        </junit>
+		<junitreport todir="./reports">
+		  <fileset dir="./reports">
+			<include name="TEST-*.xml"/>
+		  </fileset>
+		  <report format="frames" todir="./reports/html"/>
+		</junitreport>
+		<echo message="JUNIT results in ${user.dir}/reports/html"/>
+		<fail if="fail" message="Test failures detected, please check the results."/>
+    </target>
+
+    <!-- 
+    Ideally we could do something smart here to have different weaving targets to weave with different properties. 
+    We can cross that bridge when / if it is needed.
+    -->
+    <target name="weave">
+        <weave source="${classes.dir}" target="${classes.dir}" loglevel="OFF">
+            <classpath>
+                <path refid="compile.path" />
+            </classpath>
+        </weave>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <copy todir="${classes.dir}/META-INF">
+            <fileset dir="${src.dir}/META-INF" includes="**/*" excludes=".git*"/>
+        </copy>
+
+
+        <config-compile-path/>
+        <javac debug="true" destdir="${classes.dir}" includeantruntime="false" source="${javac.version}" target="${javac.version}">
+            <classpath refid="compile.path"/>
+            <src path="src"/>
+        </javac>
+    </target>
+    <target name="clean">
+        <delete dir="${classes.dir}" />
+        <delete dir="${reports.dir}" />
+    </target>
+
+    <macrodef name="config-compile-path">
+        <sequential>
+            <path id="compile.path">
+                <pathelement path="${eclipselink.jar}" />
+
+                <pathelement path="${javax.transaction}" />
+                <pathelement path="${javax.validation}" />
+                <pathelement path="${javax.persistence}" />
+                <pathelement path="${junit.lib}" />
+            </path>
+        </sequential>
+    </macrodef>
+
+
+    <taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask">
+        <classpath>
+            <path refid="compile.path" />
+        </classpath>
+    </taskdef>
+</project>

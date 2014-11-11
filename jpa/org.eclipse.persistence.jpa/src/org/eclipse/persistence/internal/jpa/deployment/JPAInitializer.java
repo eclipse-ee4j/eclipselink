@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     tware, ssmith = 1.0 - Generic JPA deployment (OSGI, EE, SE)
+ *     11/04/2014 - Rick Curtis  
+ *       - 450010 : Add java se test bucket
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
@@ -130,6 +132,10 @@ public abstract class JPAInitializer {
             persistenceUnitInfo = initialPuInfos.get(puName);
         }
         if(persistenceUnitInfo != null) {
+            return persistenceUnitInfo;
+        }
+        persistenceUnitInfo = (SEPersistenceUnitInfo) m.get(PersistenceUnitProperties.ECLIPSELINK_SE_PUINFO);
+        if (persistenceUnitInfo != null) {
             return persistenceUnitInfo;
         }
         return findPersistenceUnitInfoInArchives(puName, m);

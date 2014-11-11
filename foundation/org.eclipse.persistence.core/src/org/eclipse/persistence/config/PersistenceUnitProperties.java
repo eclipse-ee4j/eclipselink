@@ -29,6 +29,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     08/11/2014-2.5 Rick Curtis 
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+ *     11/04/2014 - Rick Curtis
+ *       - 450010 : Add java se test bucket
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1902,6 +1904,14 @@ public class PersistenceUnitProperties {
      * container and will not use this configuration.
      */
     public static final String ECLIPSELINK_PERSISTENCE_XML = "eclipselink.persistencexml";
+
+    /**
+     * The <code>"eclipselink.se-puinfo"</code> property specifies a
+     * {@link org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo} that is used
+     * create an EntityManagerFactory. That datastructure is used in liu of a persistence.xml.
+     * <p><b>IMPORTANT</b>: This property is only supported for use in testing.
+     */
+    public static final String ECLIPSELINK_SE_PUINFO = "eclipselink.se-puinfo";
 
     /**
      * The default resource location used to locate the persistence.xml
