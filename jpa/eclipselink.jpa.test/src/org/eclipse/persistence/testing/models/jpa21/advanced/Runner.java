@@ -73,9 +73,9 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
 })
 @NamedNativeQueries({
     @NamedNativeQuery(name="RunnerVictoryThis.getById",
-        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VTY WHERE RUNNER_ID=?"),
+        query="SELECT NAME, ID, COMPETITION, VDATE FROM JPA21_RUNNER_VTY WHERE RUNNER_ID=?"),
     @NamedNativeQuery(name="RunnerVictoryLast.getById",
-        query="SELECT NAME, ID, COMPETITION, DATE FROM JPA21_RUNNER_VLY WHERE RUNNER_ID=?")
+        query="SELECT NAME, ID, COMPETITION, VDATE FROM JPA21_RUNNER_VLY WHERE RUNNER_ID=?")
 })
 @Converts({
     @Convert(attributeName = "accomplishments.key", converter = AccomplishmentConverter.class),

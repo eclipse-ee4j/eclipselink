@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
@@ -32,6 +33,7 @@ public class RunnerVictory {
     private String competition;
 
     /** Victory date. */
+    @Column(name="VDATE")
     private Date date;
 
     /**

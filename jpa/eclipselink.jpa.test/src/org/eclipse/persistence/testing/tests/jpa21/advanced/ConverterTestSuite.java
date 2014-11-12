@@ -314,7 +314,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                         runner.getVictoriesThisYear().size(), victories.size());
                 for (Object[] victory : victories) {
                     final String name = (String)victory[0];
-                    final Long id = (Long)victory[1];
+                    final Long id = ((Number)victory[1]).longValue();
                     final String competition = (String)victory[2];
                     final RunnerVictory entityVictory = victoriesThisYear.get(name);
                     String entityCompetitionConverted

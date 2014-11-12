@@ -932,7 +932,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.setName("JPA21_RUNNER_VTY");
         table.addField(createNumericFk("RUNNER_ID", "JPA21_RUNNER.ID"));
         table.addField(createStringColumn("COMPETITION", 64, true));
-        table.addField(createDateColumn("DATE"));
+        table.addField(createDateColumn("VDATE"));
         table.addField(createNumericPk("ID"));
         table.addField(createStringColumn("NAME"));
         return table;
@@ -943,7 +943,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.setName("JPA21_RUNNER_VLY");
         table.addField(createNumericFk("RUNNER_ID", "JPA21_RUNNER.ID"));
         table.addField(createStringColumn("COMPETITION", 64, true));
-        table.addField(createDateColumn("DATE"));
+        table.addField(createDateColumn("VDATE"));
         table.addField(createNumericPk("ID"));
         table.addField(createStringColumn("NAME"));
         return table;
