@@ -13,18 +13,24 @@
 package org.eclipse.persistence.sessions.factories;
 
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
-import org.eclipse.persistence.logging.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <p>
@@ -49,10 +55,13 @@ public class SessionManager {
     /** Allow for usage of schema validation to be configurable. */
     protected static boolean shouldUseSchemaValidation = true;
     
-    protected static SessionManager manager = initializeManager();
+    protected static SessionManager manager;
     protected AbstractSession defaultSession;
     protected ConcurrentMap<String, Session> sessions = null;
     protected static boolean shouldPerformDTDValidation;
+    private static final ConcurrentMap<ClassLoader, SessionManager> managers = new ConcurrentHashMap<>(4, 0.9f, 1);
+    private ClassLoader loader;
+    private static final Object[] lock = new Object[0];
 
     /**
      * PUBLIC:
@@ -78,6 +87,7 @@ public class SessionManager {
      */
     public SessionManager() {
         sessions = new ConcurrentHashMap<String, Session>(5);
+        loader = getCurrentLoader();
     }
 
     /**
@@ -113,11 +123,26 @@ public class SessionManager {
     }
 
     /**
+     * PUBLIC:
+     * Destroy current session manager instance.
+     */
+    public void destroy() {
+        if (loader != null) {
+            managers.remove(loader);
+        } else {
+            //should not happen
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "session_manager_no_loader");
+        }
+        loader = null;
+        manager = null;
+    }
+
+    /**
      * INTERNAL:
      * Destroy the session defined by sessionName on this manager.
      */
     public void destroySession(String sessionName) {
-        DatabaseSession session = (DatabaseSession)getSessions().get(sessionName);
+        Session session = getSessions().get(sessionName);
 
         if (session != null) {
             destroy(session);
@@ -126,10 +151,10 @@ public class SessionManager {
         }
     }
 
-    private void destroy(DatabaseSession session) {
+    private void destroy(Session session) {
         try {
             if (session.isConnected()) {
-                session.logout();
+                ((DatabaseSession) session).logout();
             }
         } catch (Throwable ignore) {
             // EL Bug 321843 - Must handle errors from logout.
@@ -145,10 +170,10 @@ public class SessionManager {
      * Destroy all sessions held onto by this manager.
      */
     public void destroyAllSessions() {
-        Iterator toRemoveSessions = new ArrayList(getSessions().values()).iterator();
+        Iterator<Session> toRemoveSessions = new ArrayList<>(getSessions().values()).iterator();
 
         while (toRemoveSessions.hasNext()) {
-            destroy((DatabaseSession)toRemoveSessions.next());
+            destroy(toRemoveSessions.next());
         }
     }
 
@@ -168,17 +193,35 @@ public class SessionManager {
 
     /**
      * PUBLIC:
-     * Return the singleton session manager.
+     * Return the session manager associated with current thread class loader.
      * This allow global access to a set of named sessions.
      */
     public static SessionManager getManager() {
-        if (manager == null) {
-            initializeManager();
+        ClassLoader currentLoader = getCurrentLoader();
+        if (manager != null && manager.loader == currentLoader) {
+            return manager;
         }
-
+        manager = managers.get(currentLoader);
+        if (manager == null) {
+            synchronized (lock) {
+                if (manager == null) {
+                    manager = initializeManager();
+                    managers.put(manager.loader, manager);
+                }
+            }
+        }
         return manager;
     }
-    
+
+    /**
+     * ADVANCED:
+     * Return all session managers.
+     * This allow global access to all instances of SessionManager.
+     */
+    public static Collection<SessionManager> getAllManagers() {
+        return managers.values();
+    }
+
     /**
      * INTERNAL:
      * Initialize the singleton session manager.
@@ -444,7 +487,7 @@ public class SessionManager {
      * INTERNAL:
      * Return a hashtable on all sessions.
      */
-    public ConcurrentMap getSessions() {
+    public ConcurrentMap<String, Session> getSessions() {
         return sessions;
     }
 
@@ -466,7 +509,30 @@ public class SessionManager {
      * This allows global access to a set of named sessions.
      */
     public static void setManager(SessionManager theManager) {
-        manager = theManager;
+        if (theManager.loader == null) {
+            synchronized (lock) {
+                if (theManager.loader == null) {
+                    theManager.loader = getCurrentLoader();
+                }
+            }
+        }
+        managers.put(theManager.loader, theManager);
     }
 
+    private static ClassLoader getCurrentLoader() {
+        ClassLoader current = ConversionManager.getDefaultManager().getLoader();
+        if (current == null) {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                current = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return ClassLoader.getSystemClassLoader();
+                    }
+                });
+            } else {
+                current = ClassLoader.getSystemClassLoader();
+            }
+        }
+        return current;
+    }
 }

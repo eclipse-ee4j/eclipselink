@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,30 +12,32 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.factories;
 
-import java.util.Vector;
 import java.io.File;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
-import org.xml.sax.*;
-import org.w3c.dom.Document;
+import java.util.Vector;
 
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.platform.xml.XMLParser;
-import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.SessionLoaderException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.internal.sessions.factories.PersistenceEntityResolver;
 import org.eclipse.persistence.internal.sessions.factories.SessionsFactory;
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject_11_1_1;
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigToplinkProject;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.platform.xml.XMLParser;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Provide a mechanism for loading Session configuration XML files.
@@ -75,7 +77,7 @@ public class XMLSessionConfigLoader {
     /** Defines if the session will be refreshed from the file if the class loader requesting the load is different than the loaded session's class loader. */
     protected boolean shouldCheckClassLoader = false;
     /** Stores any exceptions that occurred to provide all the exceptions up front if the load fails. */
-    protected Vector exceptionStore;
+    protected Vector<Throwable> exceptionStore;
     /** Used to store the entity resolver to validate the XML schema when parsing. */
     protected PersistenceEntityResolver entityResolver;
 
@@ -107,7 +109,7 @@ public class XMLSessionConfigLoader {
      */
     public XMLSessionConfigLoader(String resourceName) {
         this.resourceName = resourceName;
-        this.exceptionStore = new Vector();
+        this.exceptionStore = new Vector<>();
         this.entityResolver = new PersistenceEntityResolver();
         this.classLoader = ConversionManager.getDefaultManager().getLoader();
     }
@@ -123,7 +125,7 @@ public class XMLSessionConfigLoader {
     /**
      * INTERNAL:
      */
-    public Vector getExceptionStore() {
+    public Vector<Throwable> getExceptionStore() {
         return this.exceptionStore;
     }
 
@@ -258,12 +260,11 @@ public class XMLSessionConfigLoader {
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         SessionConfigs configs = (SessionConfigs)unmarshaller.unmarshal(document);
         SessionsFactory factory = new SessionsFactory();
-        Map sessions = factory.buildSessionConfigs(configs, loader);
-        for (Iterator iterator = sessions.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
+        Map<String, Session> sessions = factory.buildSessionConfigs(configs, loader);
+        for (Map.Entry<String, Session> entry: sessions.entrySet()) {
             // Only add the session if missing.
             if (!sessionManager.getSessions().containsKey(entry.getKey())) {
-                sessionManager.addSession((String)entry.getKey(), (Session)entry.getValue());
+                sessionManager.addSession(entry.getKey(), entry.getValue());
             }
         }
         return true;

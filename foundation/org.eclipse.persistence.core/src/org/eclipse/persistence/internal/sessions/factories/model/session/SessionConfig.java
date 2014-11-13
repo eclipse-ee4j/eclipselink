@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,10 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.factories.model.session;
 
-import org.eclipse.persistence.internal.sessions.factories.model.log.*;
-import org.eclipse.persistence.internal.sessions.factories.model.rcm.*;
-import org.eclipse.persistence.internal.sessions.factories.model.event.*;
-import org.eclipse.persistence.internal.sessions.factories.model.platform.*;
+import org.eclipse.persistence.internal.sessions.factories.model.event.SessionEventManagerConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.log.LogConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.ServerPlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.rcm.RemoteCommandManagerConfig;
 
 /**
  * INTERNAL:
