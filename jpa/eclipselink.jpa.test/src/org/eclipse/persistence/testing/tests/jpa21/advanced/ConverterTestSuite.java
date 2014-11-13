@@ -339,7 +339,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                         runner.getVictoriesLastYear().size(), victories.size());
                 for (Object[] victory : victories) {
                     final String name = (String)victory[0];
-                    final Long id = (Long)victory[1];
+                    final Long id = ((Number)victory[1]).longValue();
                     final String competition = (String)victory[2];
                     final RunnerVictory entityVictory = victoriesLastYear.get(name);
                     // Converter is missing so only entity to database conversion check makes sense.
