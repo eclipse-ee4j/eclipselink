@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employeeAnnotated id="250" age="51289">
+    <personalName>Robert Paulson</personalName>
+    <phoneNumber>(420)333-4444</phoneNumber>
+    <department>JavaSE</department>
+    <drivingLicense id="0"/>
+</employeeAnnotated>
