@@ -15,7 +15,6 @@ package org.eclipse.persistence.jaxb;
 import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 
 import javax.validation.ConstraintViolation;
@@ -35,6 +34,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_HELPER;
 
 /**
  * INTERNAL:
@@ -156,7 +157,7 @@ class JAXBBeanValidator {
     /**
      * PUBLIC:
      *
-     * First, determines whether the validation should proceed based on the provided parameters.
+     * First, if validation has not been turned off before, check if passed value is constrained.
      *
      * Second, depending on Bean Validation Mode, either returns false or tries to initialize Validator:
      *  - AUTO tries to initialize Validator:
@@ -165,29 +166,38 @@ class JAXBBeanValidator {
      *          returns true if succeeds, else throws {@link BeanValidationException#providerNotFound}.
      *  - NONE returns false;
      *
-     * BeanValidationMode is propagated from (un)marshaller upon each call.
-     * If change of mode is detected, the internal state of the JAXBBeanValidator will be switched.
+     * BeanValidationMode is fetched from (un)marshaller upon each call.
+     * If change in mode is detected, the internal state of the JAXBBeanValidator will be switched.
      *
+     * Third, analyses the value and determines whether validation may be skipped.
      *
      * @param beanValidationMode Bean validation mode - allowed values AUTO, CALLBACK, NONE.
-     * @param value Some objects should not be validated, e.g. XmlBindings.
+     * @param value validated object. It is passed because validation on some objects may be skipped, 
+     *              e.g. non-constrained objects (like XmlBindings).
      * @param preferredValidatorFactory May be null. Will use this factory as the preferred provider,
      *                                  if null, will use javax defaults.
-     * @return True if should proceed with validation, else false.
+     * @return 
+     *          true if should proceed with validation, else false.
      * @throws BeanValidationException
      *  {@link BeanValidationException#illegalValidationMode} or {@link BeanValidationException#providerNotFound}.
      * @since 2.6
      */
     boolean shouldValidate (Object value, BeanValidationMode beanValidationMode,
                             ValidatorFactory preferredValidatorFactory) throws BeanValidationException {
-        /* Do not validate XmlBindings. */
-        if (value instanceof XmlBindings) return false;
 
-        /* Stops the endless invocation loop which may occur when calling
+        /* Stops endless invocation loop which may occur when calling
          * Validation#buildDefaultValidatorFactory in a case when the user sets
          * custom validation configuration through "validation.xml" file and
          * the validation implementation tries to unmarshal the file with MOXy. */
-       if (lock.isHeldByCurrentThread()) return false;
+        if (lock.isHeldByCurrentThread()) return false;
+
+        if (isValidationEffectivelyOff(beanValidationMode)) return false;
+
+        if (!isConstrainedObject(value)) return false;
+
+
+        /* Json is allowed to pass a null root object. Avoid NPE & speed things up. */
+        if (value == null) return false;
 
         /* The beanValidationMode was changed externally (or it's the first time this method is called). */
         if (this.beanValidationMode != beanValidationMode) {
@@ -195,7 +205,36 @@ class JAXBBeanValidator {
             this.preferredValidatorFactory = preferredValidatorFactory;
             changeInternalState();
         }
+
+        /* Is Validation implementation ready to validate. */
         return canValidate;
+    }
+
+    /**
+     * Check if validation is effectively off, i.e. it was previously attempted to turn it on, but that failed.
+     * @param beanValidationMode user passed beanValidationMode
+     * @return true if validation is effectively off
+     */
+    private boolean isValidationEffectivelyOff(BeanValidationMode beanValidationMode) {
+        return !((beanValidationMode == BeanValidationMode.AUTO && canValidate) /* most common case */
+                || (beanValidationMode == BeanValidationMode.CALLBACK)
+                /* beanValidationMode is AUTO but canValidate is yet to be resolved */
+                || (beanValidationMode != BeanValidationMode.NONE && beanValidationMode != this.beanValidationMode)
+        );
+    }
+
+    /**
+     * Check if object contains any bean validation constraints or custom validation constraints.
+     * @param value object
+     * @return true if the object is not null and is constrained
+     */
+    private boolean isConstrainedObject(Object value) {
+        /* Json is allowed to pass a null root object. Avoid NPE & speed things up. */
+        if (value == null) return false;
+
+        /* Ensure that the class contains BV annotations. If not, skip validation & speed things up.
+         * note: This also effectively skips XmlBindings. */
+        return BEAN_VALIDATION_HELPER.isConstrained(value.getClass());
     }
 
     /**
@@ -316,7 +355,7 @@ class JAXBBeanValidator {
     @SuppressWarnings({"RedundantCast", "unchecked"})
     private BeanValidationException buildConstraintViolationException() throws BeanValidationException {
         ConstraintViolationException cve = new ConstraintViolationException(
-                (Set<ConstraintViolation<?>>) /* do NOT remove the cast */ constraintViolations);
+                (Set<ConstraintViolation<?>>) /* Do not remove the cast. */ constraintViolations);
         return BeanValidationException.constraintViolation(createConstraintViolationExceptionArgs(), cve);
     }
 
@@ -344,7 +383,7 @@ class JAXBBeanValidator {
         args[0] = prefix;
         Object bean = cv.getRootBean();
         // NOTE:
-        // 1. Don't use bean.toString(), it could leak secure information.
+        // 1. Do not use bean.toString(), it could leak secure information.
         // 2. And use identityHashCode, for these reasons:
         //      - prevents NPE which could be caused by a poorly implemented hashCode
         //      - serves as a better mean of identification of the bean.

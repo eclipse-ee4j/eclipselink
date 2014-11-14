@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -13,16 +13,20 @@
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
- *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier
  *       - 354678: Temp classloader is still being used during metadata processing
- *          
- ******************************************************************************/  
+ *
+ ******************************************************************************/
 package org.eclipse.persistence.internal.security;
 
-import java.security.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.HashMap;
 import java.util.Map;
-import java.lang.reflect.*;
 
 import org.eclipse.persistence.internal.helper.Helper;
 
@@ -42,9 +46,9 @@ public class PrivilegedAccessHelper {
     private static boolean defaultUseDoPrivilegedValue = false;
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
-    
+
     private static Map<String, Class> primitiveClasses;
-    
+
     static {
         primitiveClasses = new HashMap<String, Class>();
         primitiveClasses.put("boolean", boolean.class);
