@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -55,6 +54,16 @@ import org.xml.sax.SAXParseException;
 public final class ReferenceResolver {
 
     /**
+     * The default initial capacity of map - must be a power of two.
+     */
+    private static final int MAP_INITIAL_CAPACITY = 1 << 6; // aka 64
+
+    /**
+     * The default initial capacity of list - must be a power of two.
+     */
+    private static final int LIST_INITIAL_CAPACITY = 1 << 3; // aka 8
+
+    /**
      * This field is in fact used locally only. We're just saving resources by reusing one instance of the object.
      */
     private final ReferenceKey refKey;
@@ -71,7 +80,7 @@ public final class ReferenceResolver {
      * Stores positions of References that have been kicked out of the {@link #referencesMap}. The position is
      * the same this Reference would have if this code would run on a list instead of map.
      */
-    private LinkedList<Integer> unluckyRefPositions;
+    private List<Integer> unluckyRefPositions;
     /**
      * Speed-up cache that was introduced in 2.5 instead of the previous speed-up mechanisms using session cache.
      */
@@ -81,16 +90,144 @@ public final class ReferenceResolver {
      * The default constructor initializes the list of References.
      */
     public ReferenceResolver() {
-        referencesMap = new LinkedHashMap<ReferenceKey, Reference>();
-        unluckyReferences = new ArrayList<Reference>();
-        unluckyRefPositions = new LinkedList<Integer>();
-        cache = new HashMap<Class, Map<Object, Object>>();
+        referencesMap = new LinkedHashMap<>(MAP_INITIAL_CAPACITY);
+        unluckyReferences = new ArrayList<>(MAP_INITIAL_CAPACITY);
+        unluckyRefPositions = new ArrayList<>(MAP_INITIAL_CAPACITY);
+        cache = new HashMap<>(MAP_INITIAL_CAPACITY);
         refKey = new ReferenceKey();
+    }
+
+    /* Shows why the containers are not final. Keep this private method up here. */
+    /**
+     * Resets the references containers.
+     * <p/>
+     * PERF:
+     * Allocating a new object may be faster than clearing old objects, especially in this case.
+     * <p/>
+     * As 'Stephen C' points out: ,,There are locality and cross-generational issues that could affect performance. When
+     * you repeatedly recycle an ArrayList, the object and its backing array are likely to be tenured. That means that:
+     * <pre>
+     *   -  The list objects and the objects representing list elements are likely to be in different areas of the
+     *      heap, potentially increasing TLB misses and page traffic, especially at GC time.
+     *   -  Assignment of (young generation) references into the (tenured) list's backing array are likely to incur
+     *     write barrier overheads ... depending on the GC implementation."
+     * </pre>
+     * from <a href="http://stackoverflow.com/questions/18370780/empty-an-arraylist-or-just-create-a-new-one-and-let-the-old-one-be-garbage-colle">Stack Overflow.</a>
+     * <p/>
+     * Taking last size can give approximate prediction of the next size.
+     * Halving provides convergence and increases efficiency. Since the list will be empty after, it's efficient.
+     */
+    private void resetContainers() {
+        referencesMap = new LinkedHashMap<>(Math.max(referencesMap.size() / 2, MAP_INITIAL_CAPACITY));
+        unluckyReferences = new ArrayList<>(Math.max(unluckyReferences.size() / 2, LIST_INITIAL_CAPACITY));
+        unluckyRefPositions = new ArrayList<>(unluckyReferences.size());
+        cache = new HashMap<>(Math.max(cache.size() / 2, MAP_INITIAL_CAPACITY));
     }
 
     /**
      * Add a Reference object to the list - these References will
      * be resolved after unmarshalling is complete.
+     * <p>
+     * #############################
+     * # Strategy - Hash Collision #
+     * #############################
+     * Suppose that hashing function is h(k) = k % 9;
+     * __________Input 9 entries_________________________
+     * Key k           | 0, 8, 7, 5,  5,  5,  1,  14,  3 |
+     * Position# p     | 0, 1, 2, 3,  4,  5,  6,   7,  8 |
+     * Value = p * 3   | 0, 3, 6, 9, 12, 15, 18,  21, 24 |
+     * --------------------------------------------------
+     * e.g. eighth entry is Entry#7{ key = 14, value = 21 }
+     *
+     * ####################################
+     * # Insert element - O(1) guaranteed #
+     * ####################################
+     * Processing the 9th key:
+     *
+     * 1. Attempt to insert Entry#7 with key '14' into map of references.
+     * > h(14) = 5;
+     * HashMap buckets:
+     * position     | 0 1 2 3 4 5 6 7 8
+     * entry(key)   | 0 1   3   5   7 8
+     *                          ^
+     * > Bucket 5 is taken.
+     *
+     * 2. Store the entry in a separate list.
+     * List for unlucky references:
+     * position     | 0 1 2
+     * entry(key)   | 5 5
+     *                    ^
+     *
+     * position     | 0 1 2
+     * entry(key)   | 5 5 14
+     *                    ^
+     * 3. Store the position # p of this element, i.e. what spot it would have
+     * taken if all entries were stored in a position list, counting from zero.
+     *
+     * List storing position # of unlucky references:
+     * position     | 0 1 2
+     * entry # (p)  | 4 5
+     *                    ^
+     *
+     * position     | 0 1 2
+     * entry # (p)  | 4 5 7
+     *                    ^
+     *
+     * #####################################################
+     * # Retrieve element - O(1) expected, O(n) worst case #
+     * #####################################################
+     * Retrieve entry with key '14'
+     * 1. Attempt to retrieve it from map
+     * > h(14) = 5;
+     * HashMap buckets:
+     * position     | 0 1 2 3 4 5 6 7 8
+     * entry(key)   | 0 1   3   5   7 8
+     *                          ^
+     * Hash function points to bucket # 5. Stored key is 5.
+     * > key 5 != 14.
+     *
+     * 2. Iterate through list of unluckyReferences, comparing
+     * key to all keys in the list.
+     *
+     * position     | 0 1 2
+     * entry(key)   | 5 5 14
+     *                ^
+     * > key 5 != 14
+     *
+     * position     | 0 1 2
+     * entry(key)   | 5 5 14
+     *                  ^
+     *
+     * > key 5 != 14
+     *
+     * position     | 0 1 2
+     * entry(key)   | 5 5 14
+     *                    ^
+     *
+     * > key 14 = 14, retrieve entry.
+     *
+     * ##################################################
+     * # Iterate through all elements - O(n) guaranteed #
+     * ##################################################
+     *
+     * 1. Create boolean array of size n that keeps track
+     *  of unlucky positions:
+     * > boolean[] a = new boolean[lastPosition + 1];
+     *
+     * 2. Set a[p] = true for elements that did not fit into
+     *  hash map, p = position # of element.
+     *
+     * > for (Integer p : unluckyRefPositions) {
+     *   > a[p] = true;
+     * > }
+     *
+     * 3. Iterate through LinkedMap and List as if they were one joined collection
+     * of size s = map.size() + list.size(), ordered by p = position # of element:
+     *  > for (p = 0; p < s; p ++) {
+     *    > if a[p] = false, take next element from linked map iterator,
+     *    > if a[p] = true,  take next element from list iterator,
+     *  > }
+     *
      */
     public final void addReference(final Reference ref) {
         final ReferenceKey key = new ReferenceKey(ref);
@@ -99,9 +236,9 @@ public final class ReferenceResolver {
          * into the list of unluckyReferences. */
         final Reference previous = referencesMap.get(key);
         if (previous != null || ref.getSourceObject() instanceof Collection) {
-            // The input integer represents the position (starting from 0) of the new element that didn't fit into the map.
-            unluckyRefPositions.add(referencesMap.size() + unluckyReferences.size());
             unluckyReferences.add(ref);
+            // The input integer represents the position (starting from 0) of the new element that didn't fit into the map.
+            unluckyRefPositions.add(referencesMap.size() + unluckyReferences.size() - 1);
         } else {
             referencesMap.put(key, ref);
         }
@@ -109,7 +246,7 @@ public final class ReferenceResolver {
     }
 
     /**
-     * Retrieve the reference for a given mapping instance.
+     * Retrieve the reference for a given mapping instance. If more keys match, returns the first occurrence.
      */
     public final Reference getReference(final ObjectReferenceMapping mapping, final Object sourceObject) {
         refKey.setMapping(mapping);
@@ -168,7 +305,7 @@ public final class ReferenceResolver {
     public final void putValue(final Class clazz, final Object key, final Object object) {
         Map<Object, Object> keyToObject = cache.get(clazz);
         if (null == keyToObject) {
-            keyToObject = new HashMap<Object, Object>();
+            keyToObject = new HashMap<>();
             cache.put(clazz, keyToObject);
         }
         keyToObject.put(key, object);
@@ -176,6 +313,7 @@ public final class ReferenceResolver {
 
     /**
      * INTERNAL:
+     * Iterates through all references. Resolves them. Resets containers.
      *
      * @param session               typically will be a unit of work
      * @param userSpecifiedResolver a user-provided subclass of IDResolver, may be null
@@ -183,64 +321,41 @@ public final class ReferenceResolver {
     public final void resolveReferences(final CoreAbstractSession session, final IDResolver userSpecifiedResolver,
                                         final ErrorHandler handler) {
         final Collection<Reference> luckyReferences = referencesMap.values();
-        final Iterator<Reference> itLucky = luckyReferences.iterator();
-        final Iterator<Reference> itUnlucky = unluckyReferences.iterator();
-        /**
-         * Represents rational index of last Reference that was kicked out from original hashMap.
-         */
-        Integer lastValue = unluckyRefPositions.peekLast();
+        final Iterator<Reference> mapIterator = luckyReferences.iterator();
+        final Iterator<Reference> listIterator = unluckyReferences.iterator();
+
         /**
          * Speed up array which lowers time complexity by a factor of n.
          */
-        boolean[] a;
-        if (lastValue == null) {
-            lastValue = -1; // for the condition "i <= lastValue"
-            a = new boolean[1];
-        } else {
-            a = new boolean[lastValue + 1];
-            //noinspection ForLoopReplaceableByForEach
-            for (final Integer integer : unluckyRefPositions) {
-                a[integer] = true;
+        boolean[] a = null;
+
+        /**
+         * Represents position of last Reference that did not fit into hash map.
+         */
+        Integer lastPosition;
+
+        if (!unluckyReferences.isEmpty()) {
+            lastPosition = unluckyRefPositions.get(unluckyRefPositions.size() - 1);
+            a = new boolean[lastPosition + 1];
+            for (Integer position : unluckyRefPositions) {
+                a[position] = true;
             }
+        } else {
+            lastPosition = -1; // for the condition "i <= lastPosition"
         }
-        for (int i = 0, totalLength = luckyReferences.size() + unluckyReferences.size(); i < totalLength; i++) {
+        for (int i = 0, totalSize = luckyReferences.size() + unluckyReferences.size(); i < totalSize; i++) {
             final Reference reference;
-            // A quick check to see if position [i] originally
-            // contained a Reference that was later kicked out.
-            if (i <= lastValue && a[i]) {
-                reference = itUnlucky.next();
+            // Fast check to see if position [i] should have
+            // contained Reference that did not fit in into map.
+            //noinspection ConstantConditions
+            if (i <= lastPosition && a[i]) {
+                reference = listIterator.next();
             } else {
-                reference = itLucky.next();
+                reference = mapIterator.next();
             }
             perform(session, userSpecifiedResolver, handler, reference);
         }
         resetContainers();
-    }
-
-    /**
-     * Resets the references containers.
-     * <p/>
-     * PERF:
-     * Allocating a new object may be faster than clearing old objects, especially in this case.
-     * <p/>
-     * As 'Stephen C' says: ,,There are locality and cross-generational issues that could affect performance. When you
-     * repeatedly recycle an ArrayList, the object and its backing array are likely to be tenured. That means that:
-     * <pre>
-     *   -  The list objects and the objects representing list elements are likely to be in different areas of the
-     *      heap, potentially increasing TLB misses and page traffic, especially at GC time.
-     *   -  Assignment of (young generation) references into the (tenured) list's backing array are likely to incur
-     *     write barrier overheads ... depending on the GC implementation."
-     * </pre>
-     * from <a href="http://stackoverflow.com/questions/18370780/empty-an-arraylist-or-just-create-a-new-one-and-let-the-old-one-be-garbage-colle">Stack Overflow.</a>
-     * <p/>
-     * Taking last size can give approximate prediction of the next size.
-     * Halving provides convergence and increases efficiency. Since the list will be empty after, it's efficient.
-     */
-    private void resetContainers() {
-        referencesMap = new LinkedHashMap<ReferenceKey, Reference>(referencesMap.size() / 2 + 1);
-        unluckyReferences = new ArrayList<Reference>(unluckyReferences.size() / 2 + 1);
-        unluckyRefPositions = new LinkedList<Integer>();
-        cache = new HashMap<Class, Map<Object, Object>>(cache.size() / 2 + 1);
     }
 
     /**
@@ -271,7 +386,7 @@ public final class ReferenceResolver {
                         final Callable c;
                         try {
                             if (primaryKey.getPrimaryKey().length > 1) {
-                                final Map<String, Object> idWrapper = new HashMap<String, Object>();
+                                final Map<String, Object> idWrapper = new HashMap<>();
                                 for (int y = 0; y < primaryKey.getPrimaryKey().length; y++) {
                                     final ObjectReferenceMapping refMapping =
                                             (ObjectReferenceMapping) reference.getMapping();
@@ -325,7 +440,7 @@ public final class ReferenceResolver {
                 final Callable c;
                 try {
                     if (primaryKey.getPrimaryKey().length > 1) {
-                        final Map<String, Object> idWrapper = new HashMap<String, Object>();
+                        final Map<String, Object> idWrapper = new HashMap<>();
                         for (int y = 0; y < primaryKey.getPrimaryKey().length; y++) {
                             final ObjectReferenceMapping refMapping = (ObjectReferenceMapping) reference.getMapping();
                             final String idName = (String) refMapping.getReferenceDescriptor()
@@ -387,7 +502,7 @@ public final class ReferenceResolver {
      */
     private void createPKVectorsFromMap(final Reference reference, final CollectionReferenceMapping mapping) {
         final CoreDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
-        final Vector<CacheId> pks = new Vector<CacheId>();
+        final Vector<CacheId> pks = new Vector<>();
         if (null == referenceDescriptor) {
             final CacheId pkVals = (CacheId) reference.getPrimaryKeyMap().get(null);
             if (null == pkVals) {
@@ -457,7 +572,7 @@ public final class ReferenceResolver {
                                         .convertObject(pkValues[x], targetType);
                             }
                             value = getValue(targetDescriptor.getJavaClass(), new CacheId(convertedPkValues));
-                        } catch (ConversionException e) {
+                        } catch (ConversionException ignored) {
                         }
                     }
                     if (null != value) {
