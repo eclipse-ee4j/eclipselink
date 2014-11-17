@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/30/2014-2.6.0 Dalia Abo Sheasha
+ *       - 445546: NullPointerException thrown when an Array of Bytes contains null values
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
@@ -314,7 +316,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             Byte[] objectBytes = (Byte[])sourceObject;
             byte[] bytes = new byte[objectBytes.length];
             for (int index = 0; index < objectBytes.length; index++) {
-                bytes[index] = objectBytes[index].byteValue();
+                Byte value = objectBytes[index];
+                if (value != null) {
+                    bytes[index] = value.byteValue();
+                }
             }
             return bytes;
         } else if (sourceObject instanceof String) {
