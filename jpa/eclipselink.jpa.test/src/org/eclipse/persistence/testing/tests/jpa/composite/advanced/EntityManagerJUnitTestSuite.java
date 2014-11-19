@@ -8480,12 +8480,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             + "Symfoware platform doesn't support failover.");
             return;
         }
-        // This may be removed after Bug 447549 is resolved.
-        if (getPlatform(Address.class).isSQLServer()) {
-            getDatabaseSession().logMessage("Test testEMCloseAndOpen skipped for this platform, " +
-                    "SQL Server platform doesn't support sequence preallocation.");
-            return;
-        }
         
         // normally false; set to true for debug output for just this single test
         boolean shouldForceFinest = false;

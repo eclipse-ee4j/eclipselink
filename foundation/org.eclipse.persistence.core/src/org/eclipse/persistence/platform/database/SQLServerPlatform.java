@@ -15,6 +15,8 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
@@ -35,10 +37,23 @@ import org.eclipse.persistence.queries.*;
  * @since TOPLink/Java 1.0
  */
 public class SQLServerPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+    /** Support for sequence objects added in SQL Server 2012 */
+    private boolean supportsSequenceObjects;
+    private boolean isConnectionDataInitialized;
 
     public SQLServerPlatform(){
         super();
         this.pingSQL = "SELECT 1";
+    }
+
+    @Override
+    public void initializeConnectionData(Connection connection) throws SQLException {
+        if (isConnectionDataInitialized) {
+            return;
+        }
+        int databaseVersion = connection.getMetaData().getDatabaseMajorVersion();
+        supportsSequenceObjects = databaseVersion >= 11;
+        isConnectionDataInitialized = true;
     }
     
     /**
@@ -180,6 +195,18 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         writer.write("SELECT @@IDENTITY");
         selectQuery.setSQLString(writer.toString());
         return selectQuery;
+    }
+
+    /**
+     * INTERNAL: Produce a DataReadQuery which updates(!) the sequence number in
+     * the database and returns it.
+     *
+     * @param qualifiedSeqName
+     *            a defined database sequence
+     */
+    @Override
+    public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
+        return new ValueReadQuery("SELECT NEXT VALUE FOR " + qualifiedSeqName);
     }
 
     /**
@@ -649,6 +676,14 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      */
     public boolean supportsIdentity() {
         return true;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean supportsSequenceObjects() {
+        return supportsSequenceObjects;
     }
 
     /**
