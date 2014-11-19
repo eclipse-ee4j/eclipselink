@@ -50,6 +50,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     08/11/2014-2.5 Rick Curtis 
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+ *     11/20/2014-2.5 Rick Curtis
+ *       - 452187: Support multiple ClassLoaders to load properties.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -1256,13 +1258,28 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
     
     protected static Class findClassForProperty(String className, String propertyName, ClassLoader loader) {
-        try {
-            return findClass(className, loader);
-        } catch (PrivilegedActionException exception1) {
-            throw EntityManagerSetupException.classNotFoundForProperty(className, propertyName, exception1.getException());
-        } catch (ClassNotFoundException exception2) {
-            throw EntityManagerSetupException.classNotFoundForProperty(className, propertyName, exception2);
+        ClassLoader eclipselinkLoader = EntityManagerSetupImpl.class.getClassLoader();
+        boolean multipleLoaders = eclipselinkLoader != loader;
+        if (multipleLoaders) {
+            return findClassForPropertyInternal(className, propertyName, loader, eclipselinkLoader);
+        } else {
+            return findClassForPropertyInternal(className, propertyName, loader);
         }
+    }
+
+    private static Class findClassForPropertyInternal(String clsName, String propName, ClassLoader... loaders) {
+        RuntimeException e = null;
+        for (ClassLoader loader : loaders) {
+            try {
+                return findClass(clsName, loader);
+            } catch (PrivilegedActionException exception1) {
+                e = EntityManagerSetupException.classNotFoundForProperty(clsName, propName, exception1.getException());
+            } catch (ClassNotFoundException exception2) {
+                e = EntityManagerSetupException.classNotFoundForProperty(clsName, propName, exception2);
+            }
+        }
+
+        throw e;
     }
 
     /**
