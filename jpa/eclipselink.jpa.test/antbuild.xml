@@ -112,6 +112,7 @@
     <property name="jpatest.2.oracletest.dir"       value="${jpatest.2.base.dir}/foundation/eclipselink.extension.oracle.test"/>
     <property name="jpatest.2.oracle.nosqltest.dir" value="${jpatest.2.base.dir}/foundation/eclipselink.extension.oracle.nosql.test"/>
     <property name="jpatest.2.sdo.plugins.dir"      value="${jpatest.2.base.dir}/sdo/plugins"/>
+    <property name="oracle.extensions.depend.dir"   value="${jpatest.2.base.dir}/../extension.oracle.lib.external"/>
 
     <property name="version.qualifier"     value="qualifier"/>
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
@@ -1643,8 +1644,13 @@
         </antcall>
     </target>
 
-    <!-- Runs JPA Oracle-specific tests. -->
     <target name="oracle-test" if="is.oracle" depends="config-classpath">
+        <!-- Initializes Oracle database proxy users for ProxyAuthenticationTestSuite. -->
+        <ant antfile="${jpatest.2.oracletest.dir}/oracle-db-setup.xml" target="setup-proxy-authentication" inheritRefs="true">
+            <property name="oracle.proxy.user" value="PAS_PROXY"/>
+            <property name="oracle.proxy.user2" value="PAS_PROXY2"/>
+        </ant>
+
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPATestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
@@ -1658,8 +1664,16 @@
     </target>
 
     <!-- Oracle proxy authentication needs to be setup for the tests. -->
-    <target name="oracle-proxy-test" if="is.ready.for.proxy.authentication">
+    <target name="oracle-proxy-test">
+        <ant antfile="${jpatest.2.oracletest.dir}/oracle-db-setup.xml" target="setup-proxy-authentication" inheritRefs="true">
+            <property name="oracle.db.user" value="PAS_CONN"/>
+            <property name="oracle.db.pwd" value="pas_conn"/>
+            <property name="oracle.proxy.user" value="PAS_PROXY"/>
+        </ant>
+
         <antcall target="run-test" inheritRefs="true">
+            <param name="db.user" value="PAS_CONN"/>
+            <param name="db.pwd" value="pas_conn"/>
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
@@ -2094,10 +2108,12 @@
         </condition>
 
         <!-- default values for proxy test -->
-        <property name="pa.connection.user" value="PA_CONN"/>
-        <property name="pa.connection.password" value="PA_CONN"/>
-        <property name="pa.proxyuser" value="PA_PROXY"/>
-        <property name="pa.proxyuser2" value="PA_PROXY2"/>
+        <property name="pa.connection.user" value="${db.user}"/>
+        <property name="pa.connection.password" value="${db.pwd}"/>
+        <property name="pa.proxyuser" value="PAS_PROXY"/>
+        <property name="pa.proxyuser2" value="PAS_PROXY2"/>
+        <property name="oracle.proxy.user" value="PAS_PROXY"/>
+
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 

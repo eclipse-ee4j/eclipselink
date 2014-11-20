@@ -4,11 +4,12 @@
     <property file="${user.home}/test.properties"/>
     <property name="db.sys.user" value="sys as sysdba"/>
     <property name="db.sys.pwd" value="orasys9"/>
+    <property name="oracle.db.user" value="${db.user}"/>
+    <property name="oracle.db.pwd" value="${db.pwd}"/>
     <property name="oracle.proxy.user" value="${db.user}_PROXY"/>
     <property name="oracle.proxy.user2" value="${db.user}_PROXY2"/>
     <property name="oracle.proxy.pwd" value="password"/>
     <property name="oracle.proxy.pwd2" value="password"/>
-
 
     <target name="clean-schema">
         <sql driver="${db.driver}"
@@ -21,24 +22,24 @@
             <classpath>
                <pathelement location="${jdbc.driver.jar}"/>
             </classpath>
-DROP USER ${db.user} CASCADE;
+DROP USER ${oracle.db.user} CASCADE;
 
-CREATE USER ${db.user} PROFILE "DEFAULT" IDENTIFIED BY ${db.pwd} ACCOUNT UNLOCK;
+CREATE USER ${oracle.db.user} PROFILE "DEFAULT" IDENTIFIED BY ${oracle.db.pwd} ACCOUNT UNLOCK;
 REM "The following line is required for Oracle DB version 12.1"
-GRANT UNLIMITED TABLESPACE TO ${db.user};
-GRANT CONNECT TO ${db.user};
-GRANT RESOURCE TO ${db.user};
-GRANT CREATE SESSION TO ${db.user};
-GRANT create any view TO ${db.user};
-GRANT create any context TO ${db.user};
-GRANT drop any context TO ${db.user};
-GRANT execute on dbms_flashback TO ${db.user};
-GRANT execute on dbms_rls TO ${db.user};
-GRANT execute on dbms_session TO ${db.user};
-GRANT change notification TO ${db.user};
+GRANT UNLIMITED TABLESPACE TO ${oracle.db.user};
+GRANT CONNECT TO ${oracle.db.user};
+GRANT RESOURCE TO ${oracle.db.user};
+GRANT CREATE SESSION TO ${oracle.db.user};
+GRANT create any view TO ${oracle.db.user};
+GRANT create any context TO ${oracle.db.user};
+GRANT drop any context TO ${oracle.db.user};
+GRANT execute on dbms_flashback TO ${oracle.db.user};
+GRANT execute on dbms_rls TO ${oracle.db.user};
+GRANT execute on dbms_session TO ${oracle.db.user};
+GRANT change notification TO ${oracle.db.user};
 REM "The following 2 lines are required for DBWS Oracle-specific tests"
-GRANT create any directory TO ${db.user};
-GRANT drop any directory TO ${db.user};
+GRANT create any directory TO ${oracle.db.user};
+GRANT drop any directory TO ${oracle.db.user};
         </sql>
     </target>
 
@@ -46,13 +47,19 @@ GRANT drop any directory TO ${db.user};
         <property name="trunk.home" value="../.."/>
         <replace dir="${trunk.home}/foundation/eclipselink.extension.oracle.test/src/org/eclipse/persistence/testing/models/jpa/proxyauthentication">
              <replacefilter token="PAS_CONN"
-                 value="${db.user}" />
+                 value="${oracle.db.user}" />
              <replacefilter token="PAS_PROXY"
                  value="${oracle.proxy.user}" />
         </replace>
     </target>
 
     <target name="setup-proxy-authentication" depends="clean-schema">
+
+        <echo message="oracle.db.user = ${oracle.db.user}"/>
+        <echo message="oracle.db.pwd = ${oracle.db.pwd}"/>
+        <echo message="oracle.proxy.user = ${oracle.proxy.user}"/>
+        <echo message="oracle.proxy.pwd = ${oracle.proxy.pwd}"/>
+
         <sql driver="${db.driver}"
               url="${db.url}"
               userid="${db.sys.user}"
@@ -75,14 +82,14 @@ GRANT CONNECT TO ${oracle.proxy.user};
 GRANT CONNECT TO ${oracle.proxy.user2};
 GRANT RESOURCE TO ${oracle.proxy.user};
 GRANT CREATE SESSION TO ${oracle.proxy.user};
-ALTER USER ${oracle.proxy.user} GRANT CONNECT THROUGH ${db.user};
-ALTER USER ${oracle.proxy.user2} GRANT CONNECT THROUGH ${db.user};
+ALTER USER ${oracle.proxy.user} GRANT CONNECT THROUGH ${oracle.db.user};
+ALTER USER ${oracle.proxy.user2} GRANT CONNECT THROUGH ${oracle.db.user};
         </sql>
 
         <sql driver="${db.driver}"
               url="${db.url}"
-              userid="${db.user}"
-              password="${db.pwd}"
+              userid="${oracle.db.user}"
+              password="${oracle.db.pwd}"
               print="true"
               onerror="continue"
               expandProperties="true">
@@ -118,19 +125,19 @@ CREATE TABLE PROXY_PHONENUMBER (OWNER_ID NUMBER(15) NOT NULL, TYPE VARCHAR2(15) 
             <classpath>
                <pathelement location="${jdbc.driver.jar}"/>
             </classpath>
-GRANT ALTER ON ${db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT DELETE ON ${db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT INSERT ON ${db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT SELECT ON ${db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT UPDATE ON ${db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT INDEX ON ${db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
+GRANT ALTER ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
+GRANT DELETE ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
+GRANT INSERT ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
+GRANT SELECT ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
+GRANT UPDATE ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
+GRANT INDEX ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
 
-GRANT ALTER ON ${db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT DELETE ON ${db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT INSERT ON ${db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT SELECT ON ${db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT UPDATE ON ${db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT INDEX ON ${db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
+GRANT ALTER ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
+GRANT DELETE ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
+GRANT INSERT ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
+GRANT SELECT ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
+GRANT UPDATE ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
+GRANT INDEX ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
          </sql>
     </target>
 </project>
