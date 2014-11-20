@@ -87,7 +87,8 @@
             <available file="${oraclelibs.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
         <echo message="extensions.depend.dir          = '${extensions.depend.dir}'"/>
-        <property name="ojdbc.jar"     value="ojdbc6.jar"/>
+        <property name="ojdbc.jar"     value="ojdbc7.jar"/>
+        <property name="orai18n.jar"   value="orai18n.jar"/>
         <property name="sdoapi.jar"    value="sdoapi.jar"/>
         <property name="xdb.jar"       value="xdb.jar"/>
         <property name="xmlparser.jar" value="xmlparserv2.jar"/>
@@ -99,6 +100,7 @@
         <echo message=" "/>
         <echo message="Defined Oracle dependencies:"/>
         <echo message="   ojdbc.jar                  = '${ojdbc.jar}'"/>
+        <echo message="   orai18n.jar                = '${orai18n.jar}'"/>
         <echo message="   sdoapi.jar                 = '${sdoapi.jar}'"/>
         <echo message="   xdb.jar                    = '${xdb.jar}'"/>
         <echo message="   xmlparser.jar              = '${xmlparser.jar} '"/>

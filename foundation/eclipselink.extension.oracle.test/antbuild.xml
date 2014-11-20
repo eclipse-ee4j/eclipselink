@@ -153,6 +153,10 @@
                                              else="${extensions.depend.dir}/${oracle.xmlparser.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
         </condition>
+        <condition property="oracle.orai18n.lib" value="${oracle.extensions.depend.dir}/${oracle.orai18n.jar}"
+                                             else="${extensions.depend.dir}/${oracle.orai18n.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.orai18n.jar}"/>
+        </condition>
         <condition property="oracle.orai18n-mapping.lib" value="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"
                                              else="${extensions.depend.dir}/${oracle.orai18n-mapping.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
@@ -288,6 +292,7 @@
             <pathelement path="${oracle.aqapi.lib}"/>
             <pathelement path="${oracle.sdoapi.lib}"/>
             <pathelement path="${oracle.xmlparser.lib}"/>
+            <pathelement path="${oracle.orai18n.lib}"/>
             <pathelement path="${oracle.orai18n-mapping.lib}"/>
             <pathelement path="${oracle.ucp.lib}"/>
             <pathelement path="${junit.lib}"/>
@@ -353,6 +358,7 @@
         <echo message="    '${oracle.aqapi.lib}'"/>
         <echo message="    '${oracle.sdoapi.lib}'"/>
         <echo message="    '${oracle.xmlparser.lib}'"/>
+        <echo message="    '${oracle.orai18n.lib}'"/>
         <echo message="    '${oracle.orai18n-mapping.lib}'"/>
         <echo message="    '${oracle.ucp.lib}'"/>
         <mkdir dir="${oracle_test.classes.dir}"/>

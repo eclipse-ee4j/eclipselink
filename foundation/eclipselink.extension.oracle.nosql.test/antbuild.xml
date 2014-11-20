@@ -159,6 +159,10 @@
                                          else="${extensions.depend.dir}/${oracle.aqapi.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.aqapi.jar}"/>
         </condition>
+        <condition property="oracle.orai18n.lib" value="${oracle.extensions.depend.dir}/${oracle.orai18n.jar}"
+                                             else="${extensions.depend.dir}/${oracle.orai18n.jar}">
+            <available file="${oracle.extensions.depend.dir}/${oracle.orai18n.jar}"/>
+        </condition>
         <condition property="oracle.orai18n-mapping.lib" value="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"
                                              else="${extensions.depend.dir}/${oracle.orai18n-mapping.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
@@ -216,6 +220,8 @@
         <available file="${oracle.ojdbc.lib}"     property="oracle.ojdbc.lib.exist"/>
         <available file="${oracle.aqapi.lib}"     property="oracle.aqapi.lib.exist"/>
         <available file="${oracle.nosql.lib}"     property="oracle.nosql.lib.exist"/>
+        <available file="${oracle.orai18n.lib}"   property="oracle.orai18n.lib.exist"/>
+        <available file="${oracle.orai18n-mapping.lib}" property="oracle.orai18n-mapping.lib.exist"/>
 
         <say  message="persistence.lib:   '${persistence.lib}'"      if="persistence.lib"/>
         <say  message="antlr.lib:         '${antlr.lib}'"            if="antlr.lib"/>
@@ -275,6 +281,8 @@
                 <isset property="oracle.ojdbc.lib.exist"/>
                 <isset property="oracle.aqapi.lib.exist"/>
                 <isset property="oracle.nosql.lib.exist"/>
+                <isset property="oracle.orai18n.lib.exist"/>
+                <isset property="oracle.orai18n-mapping.lib.exist"/>
             </and>
         </condition>
         <condition property="run.ok">
@@ -325,6 +333,8 @@
         <path id="ora_nosql_test.oracle.dependency.path">
             <pathelement path="${oracle.nosql.lib}"/>
             <pathelement path="${oracle.aqapi.lib}"/>
+            <pathelement path="${oracle.orai18n.lib}"/>
+            <pathelement path="${oracle.orai18n-mapping.lib}"/>
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="ora_nosql_test.test.infrastructure.path">
@@ -383,6 +393,10 @@
         <say  message="        missing! :: '${extensions.depend.dir}'"                                      unless="ext.depend.dir.exist"/>
         <say  message="        found.   :: '${oracle.aqapi.lib}'"                                               if="oracle.aqapi.lib.exist"/>
         <say  message="        missing! :: '${oracle.aqapi.lib}'"                                           unless="oracle.aqapi.lib.exist"/>
+        <say  message="        found.   :: '${oracle.orai18n.lib}'"                                             if="oracle.orai18n.lib.exist"/>
+        <say  message="        missing! :: '${oracle.orai18n.lib}'"                                         unless="oracle.orai18n.lib.exist"/>
+        <say  message="        found.   :: '${oracle.orai18n-mapping.lib}'"                                     if="oracle.orai18n-mapping.lib.exist"/>
+        <say  message="        missing! :: '${oracle.orai18n-mapping.lib}'"                                 unless="oracle.orai18n-mapping.lib.exist"/>
         <say  message="        found.   :: '${oracle.nosql.lib}'"                                               if="oracle.nosql.lib.exist"/>
         <say  message="        missing! :: '${oracle.nosql.lib}'"                                           unless="oracle.nosql.lib.exist"/>
         <say  message="Please put your Oracle dependencies in one of the two 'dependency' locations (default or custom defined)."/>
@@ -394,6 +408,7 @@
         <echo message="Using the following oracle dependencies:"/>
         <echo message="    '${oracle.ojdbc.lib}'"/>
         <echo message="    '${oracle.aqapi.lib}'"/>
+        <echo message="    '${oracle.orai18n.lib}'"/>
         <echo message="    '${oracle.orai18n-mapping.lib}'"/>
         <echo message="    '${oracle.nosql.lib}'"/>
         <mkdir dir="${ora_nosql_test.classes.dir}"/>

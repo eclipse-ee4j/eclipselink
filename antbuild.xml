@@ -202,6 +202,18 @@
                                              else="${extensions.depend.dir}/${ojdbc.jar}">
             <available file="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>
         </condition>
+        <condition property="file.orai18n.jar" value="${oracle.extensions.depend.dir}/${orai18n.jar}"
+                                             else="${extensions.depend.dir}/${orai18n.jar}">
+            <available file="${oracle.extensions.depend.dir}/${orai18n.jar}"/>
+        </condition>
+        <condition property="file.orai18n-mapping.jar" value="${oracle.extensions.depend.dir}/${orai18n-mapping.jar}"
+                                             else="${extensions.depend.dir}/${orai18n-mapping.jar}">
+            <available file="${oracle.extensions.depend.dir}/${orai18n-mapping.jar}"/>
+        </condition>
+        <condition property="file.aqapi.jar" value="${oracle.extensions.depend.dir}/${aqapi.jar}"
+                                              else="${extensions.depend.dir}/${aqapi.jar}">
+            <available file="${oracle.extensions.depend.dir}/${aqapi.jar}"/>
+        </condition>
         <condition property="file.sdoapi.jar" value="${oracle.extensions.depend.dir}/${sdoapi.jar}"
                                               else="${extensions.depend.dir}/${sdoapi.jar}">
             <available file="${oracle.extensions.depend.dir}/${sdoapi.jar}"/>
@@ -222,9 +234,22 @@
                                            else="${extensions.depend.dir}/${dms.jar}">
             <available file="${oracle.extensions.depend.dir}/${dms.jar}"/>
         </condition>
+        <condition property="file.kvclient.jar" value="${oracle.extensions.depend.dir}/${kvclient.jar}"
+                                              else="${extensions.depend.dir}/${kvclient.jar}">
+            <available file="${oracle.extensions.depend.dir}/${kvclient.jar}"/>
+        </condition>
         <!-- Oracle libraries dependency check -->
         <condition property="is.ojdbc.jar">
             <available file="${file.ojdbc.jar}"/>
+        </condition>
+        <condition property="is.orai18n.jar">
+            <available file="${file.orai18n.jar}"/>
+        </condition>
+        <condition property="is.orai18n-mapping.jar">
+            <available file="${file.orai18n-mapping.jar}"/>
+        </condition>
+        <condition property="is.aqapi.jar">
+            <available file="${file.aqapi.jar}"/>
         </condition>
         <condition property="is.sdoapi.jar">
             <available file="${file.sdoapi.jar}"/>
@@ -241,15 +266,22 @@
         <condition property="is.dms.jar">
             <available file="${file.dms.jar}"/>
         </condition>
+        <condition property="is.kvclient.jar">
+            <available file="${file.kvclient.jar}"/>
+        </condition>
         <!-- All checks evaluation -->
         <condition property="oracle.dependencies.available">
             <and>
-            <isset property="is.ojdbc.jar"/>
+                <isset property="is.ojdbc.jar"/>
+                <isset property="is.orai18n.jar"/>
+                <isset property="is.orai18n-mapping.jar"/>
+                <isset property="is.aqapi.jar"/>
                 <isset property="is.sdoapi.jar"/>
                 <isset property="is.xdb.jar"/>
                 <isset property="is.xmlparser.jar"/>
                 <isset property="is.ucp.jar"/>
                 <isset property="is.dms.jar"/>
+                <isset property="is.kvclient.jar"/>
             </and>
         </condition>
         <!-- Check staus messages -->
@@ -259,8 +291,17 @@
         <condition property="msg.ojdbc.jar"     value=" + ${file.ojdbc.jar} library found"     else=" - ${ojdbc.jar} library missing">
             <isset property="is.ojdbc.jar"/>
         </condition>
+        <condition property="msg.orai18n.jar"   value=" + ${file.orai18n.jar} library found"   else=" - ${orai18n.jar} library missing">
+            <isset property="is.orai18n.jar"/>
+        </condition>
+        <condition property="msg.orai18n-mapping.jar" value=" + ${file.orai18n-mapping.jar} library found" else=" - ${orai18n-mapping.jar} library missing">
+            <isset property="is.orai18n-mapping.jar"/>
+        </condition>
         <condition property="msg.sdoapi.jar"    value=" + ${file.sdoapi.jar} library found"    else=" - ${sdoapi.jar} library missing">
             <isset property="is.sdoapi.jar"/>
+        </condition>
+        <condition property="msg.aqapi.jar"     value=" + ${file.aqapi.jar} library found"     else=" - ${aqapi.jar} library missing">
+            <isset property="is.aqapi.jar"/>
         </condition>
         <condition property="msg.xdb.jar"       value=" + ${file.xdb.jar} library found"       else=" - ${xdb.jar} library missing">
             <isset property="is.xdb.jar"/>
@@ -273,6 +314,9 @@
         </condition>
         <condition property="msg.dms.jar"       value=" + ${file.dms.jar} library found"       else=" - ${dms.jar} library missing">
             <isset property="is.dms.jar"/>
+        </condition>
+        <condition property="msg.kvclient.jar"  value=" + ${file.kvclient.jar} library found"  else=" - ${kvclient.jar} library missing">
+            <isset property="is.kvclient.jar"/>
         </condition>
     </target>
 
@@ -294,11 +338,15 @@
     <target name="oracle.dependencies" depends="check.oracle.dependencies">
         <echo message="${msg.oracle.dependencies}"/>
         <echo message="${msg.ojdbc.jar}"/>
+        <echo message="${msg.orai18n.jar}"/>
+        <echo message="${msg.orai18n-mapping.jar}"/>
+        <echo message="${msg.aqapi.jar}"/>
         <echo message="${msg.sdoapi.jar}"/>
         <echo message="${msg.xdb.jar}"/>
         <echo message="${msg.xmlparser.jar}"/>
         <echo message="${msg.ucp.jar}"/>
         <echo message="${msg.dms.jar}"/>
+        <echo message="${msg.kvclient.jar}"/>
     </target>
 
     <!-- Check oracle JDBC driver and extension dependencies and print check status helper target -->
@@ -311,12 +359,16 @@
         </condition>
         <echo message="${msg.oracle.jdbc.dependencies}"/>
         <echo message="${msg.jdbc.oracle}"/>
+        <echo message="${msg.orai18n.jar}"/>
+        <echo message="${msg.orai18n-mapping.jar}"/>
+        <echo message="${msg.aqapi.jar}"/>
         <echo message="${msg.ojdbc.jar}"/>
         <echo message="${msg.sdoapi.jar}"/>
         <echo message="${msg.xdb.jar}"/>
         <echo message="${msg.xmlparser.jar}"/>
         <echo message="${msg.ucp.jar}"/>
         <echo message="${msg.dms.jar}"/>
+        <echo message="${msg.kvclient.jar}"/>
     </target>
 
     <!-- Check oracle JDBC driver and extension dependencies. Fail when check did not passed. -->
