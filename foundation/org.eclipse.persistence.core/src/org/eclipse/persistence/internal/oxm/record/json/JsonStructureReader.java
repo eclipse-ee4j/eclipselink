@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.oxm.CollectionGroupingElementNodeValue;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
-import org.eclipse.persistence.internal.oxm.MappingNodeValue;
 import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NodeValue;
@@ -79,31 +78,26 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
 
     public JsonStructureReader(Unmarshaller u) {
-        this(u, null);        
+        this(u, null);
     }
-    
+
     public JsonStructureReader(Unmarshaller u, Class clazz) {
         this(u.getAttributePrefix(), u.getNamespaceResolver(), u.getNamespaceResolver() != null, u.isIncludeRoot(), u.getNamespaceSeparator(), u.getErrorHandler(), u.getValueWrapper(), clazz);
     }
 
-    public JsonStructureReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass) {
+    public JsonStructureReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, char namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass) {
         this.attributePrefix = attrPrefix;
-        if (attributePrefix == Constants.EMPTY_STRING) {
+        if (Constants.EMPTY_STRING.equals(attributePrefix)) {
             attributePrefix = null;
         }
         namespaces = nr;
         this.namespaceAware = namespaceAware;
-        if (namespaceSeparator == null) {
-            this.namespaceSeparator = Constants.DOT;
-        } else {
-            this.namespaceSeparator = namespaceSeparator;
-        }
+        this.namespaceSeparator = namespaceSeparator;
         this.includeRoot = includeRoot;
         this.setErrorHandler(errorHandler);
         this.textWrapper = textWrapper;
         this.unmarshalClass = unmarshalClass;
     }
-    
 
     public void setJsonStructure(JsonStructure jsonStructure) {
         this.jsonStructure = jsonStructure;
@@ -120,7 +114,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
         try {
             InputStream inputStream = null;
-            JsonReader jsonReader = null;
+            JsonReader jsonReader;
             if (null != input.getByteStream()) {
                 inputStream = input.getByteStream();
                 jsonReader = Json.createReader(new InputStreamReader(inputStream));
@@ -156,9 +150,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
     public void parse(String systemId) {
         try {
             parse(new InputSource(systemId));
-        } catch (IOException e) {
-            throw XMLMarshalException.unmarshalException(e);
-        } catch (SAXException e) {
+        } catch (IOException | SAXException e) {
             throw XMLMarshalException.unmarshalException(e);
         }
     }
@@ -166,10 +158,8 @@ public class JsonStructureReader extends XMLReaderAdapter {
     public void parseRoot(JsonValue jsonValue) throws SAXException {
         if (namespaces != null) {
             Map<String, String> namespacePairs = namespaces.getPrefixesToNamespaces();
-            Iterator<String> keys = namespacePairs.keySet().iterator();
-            while (keys.hasNext()) {
-                String nextKey = keys.next();
-                contentHandler.startPrefixMapping(nextKey, namespacePairs.get(nextKey));
+            for (Entry<String, String> namespacePair : namespacePairs.entrySet()) {
+                contentHandler.startPrefixMapping(namespacePair.getKey(), namespacePair.getValue());
             }
         }
 
@@ -178,7 +168,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             JsonObject jsonObject = (JsonObject) jsonValue;
 
             Set<Entry<String, JsonValue>> children = jsonObject.entrySet();
-            if (children == null || children.size() == 0 && unmarshalClass == null) {
+            if (children.size() == 0 && unmarshalClass == null) {
                 return;
             }
 
@@ -191,7 +181,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 }
 
             } else {
-        
+
                 contentHandler.startElement(Constants.EMPTY_STRING, Constants.EMPTY_STRING, null, attributes.setValue(jsonValue, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
 
                 while (iter.hasNext()) {
@@ -208,11 +198,10 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 rootContentHandler = (SAXUnmarshallerHandler) getContentHandler();
             }
             JsonArray jsonArray = (JsonArray) jsonValue;
-            int size = jsonArray.size();
 
-            List list = new ArrayList(size);
-            for (int x = 0; x < size; x++) {
-                parseRoot(jsonArray.get(x));
+            List<Object> list = new ArrayList<>(jsonArray.size());
+            for (JsonValue aJsonArray : jsonArray) {
+                parseRoot(aJsonArray);
                 if (getContentHandler() instanceof SAXUnmarshallerHandler) {
                     SAXUnmarshallerHandler saxUnmarshallerHandler = (SAXUnmarshallerHandler) contentHandler;
                     list.add(saxUnmarshallerHandler.getObject());
@@ -253,35 +242,42 @@ public class JsonStructureReader extends XMLReaderAdapter {
     }
 
     private void parseValue(JsonValue jsonValue) throws SAXException {
-        ValueType valueType = jsonValue.getValueType();
-        if (valueType == ValueType.STRING) {
-            String string = ((JsonString) jsonValue).getString();
-            contentHandler.characters(string);
-        } else if (valueType == ValueType.FALSE) {
-            contentHandler.characters(FALSE);
-        } else if (valueType == ValueType.TRUE) {
-            contentHandler.characters(TRUE);
-        } else if (valueType == ValueType.NULL) {
-            // do nothing
-        } else if (valueType == ValueType.NUMBER) {
-            JsonNumber number = ((JsonNumber)jsonValue);
-            contentHandler.characters(number.toString());    		    	   
-        } else if (valueType == ValueType.OBJECT) {
-            JsonObject childObject = (JsonObject) jsonValue;
-            Iterator<Entry<String, JsonValue>> iter = childObject.entrySet().iterator();
-            while (iter.hasNext()) {
-                Entry<String, JsonValue> nextEntry = iter.next();
-                parsePair(nextEntry.getKey(), nextEntry.getValue());
+        switch (jsonValue.getValueType()) {
+            case STRING: {
+                String string = ((JsonString) jsonValue).getString();
+                contentHandler.characters(string);
+                break;
             }
-        } else if(valueType == ValueType.ARRAY) {
-            JsonArray childArray = (JsonArray)jsonValue;
-            int size = childArray.size();
-         	    
-            List list = new ArrayList(size);            
-            for(int x=0; x<size; x++) {
-                JsonValue nextArrayValue = childArray.get(x);
-                parseValue(nextArrayValue);
+            case FALSE: {
+                contentHandler.characters(FALSE);
+                break;
             }
+            case TRUE: {
+                contentHandler.characters(TRUE);
+                break;
+            }
+            case NUMBER: {
+                JsonNumber number = ((JsonNumber) jsonValue);
+                contentHandler.characters(number.toString());
+                break;
+            }
+            case OBJECT: {
+                for (Entry<String, JsonValue> nextEntry : ((JsonObject) jsonValue).entrySet()) {
+                    parsePair(nextEntry.getKey(), nextEntry.getValue());
+                }
+                break;
+            }
+            case ARRAY: {
+                for (JsonValue value : (JsonArray) jsonValue) {
+                    parseValue(value);
+                }
+                break;
+            }
+            case NULL: {
+                break; // noop
+            }
+            default:
+                throw new IllegalStateException("Unhandled valueType: " + jsonValue.getValueType());
         }
 	}
 
@@ -317,11 +313,10 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 }
             }
 
-            boolean isTextValue = false;
+            boolean isTextValue;
             int arraySize = jsonArray.size();
             if (arraySize == 0) {
                 if (contentHandler instanceof UnmarshalRecord) {
-                    isTextValue = isTextValue(parentLocalName);
                     UnmarshalRecord ur = (UnmarshalRecord) contentHandler;
                     XPathNode node = ur.getNonAttributeXPathNode(uri, parentLocalName, parentLocalName, null);
                     if (node != null) {
@@ -359,7 +354,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                             } else if (groupingXPathNode.getUnmarshalNodeValue() == null) {
                                 XPathNode itemXPathNode = groupingXPathNode.getNonAttributeChildren().get(0);
                                 if (itemXPathNode != null) {
-                                    if (((MappingNodeValue) itemXPathNode.getUnmarshalNodeValue()).isContainerValue()) {
+                                    if ((itemXPathNode.getUnmarshalNodeValue()).isContainerValue()) {
                                         groupingXPathFragment = groupingXPathNode.getXPathFragment();
                                         contentHandler.startElement(uri, parentLocalName, parentLocalName, new AttributesImpl());
                                         itemXPathFragment = itemXPathNode.getXPathFragment();
@@ -370,10 +365,9 @@ public class JsonStructureReader extends XMLReaderAdapter {
                     }
                 }
 
-                for (int i = 0; i < arraySize; i++) {
-                    JsonValue nextArrayValue = jsonArray.get(i);
+                for (JsonValue nextArrayValue : jsonArray) {
                     if (nextArrayValue.getValueType() == ValueType.NULL) {
-                        ((UnmarshalRecord) contentHandler).setNil(true);
+                        contentHandler.setNil(true);
                     }
 
                     if (!isTextValue) {
@@ -399,11 +393,10 @@ public class JsonStructureReader extends XMLReaderAdapter {
             }
             endCollection();
         } else {
-            String qualifiedName = name;
-            if (attributePrefix != null && qualifiedName.startsWith(attributePrefix)) {
+            if (attributePrefix != null && name.startsWith(attributePrefix)) {
                 return;
             }
-            String localName = qualifiedName;
+            String localName = name;
             String uri = Constants.EMPTY_STRING;
             if (namespaceAware && namespaces != null) {
                 if (localName.length() > 2) {
@@ -435,7 +428,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 if (textWrapper != null && textWrapper.equals(localName)) {
                     parseValue(jsonValue);
                     return;
-                }               
+                }
             } else if (contentHandler instanceof UnmarshalRecord && ((UnmarshalRecord) contentHandler).getXPathNode() != null) {
                 if (!namespaceAware && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && !((UnmarshalRecord) contentHandler).getXPathNode().hasTypeChild()) {
                     return;
@@ -450,7 +443,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                   return;
                 }
             }
-            if (jsonValue != null && jsonValue.getValueType() == valueType.NULL) {
+            if (jsonValue.getValueType() == ValueType.NULL) {
                 contentHandler.setNil(true);
             }
 
@@ -484,7 +477,12 @@ public class JsonStructureReader extends XMLReaderAdapter {
             return textWrapper != null && textWrapper.equals(localName);
         }
 
-        return ((currentNode.getNonAttributeChildrenMap() == null || currentNode.getNonAttributeChildrenMap().size() == 0 || (currentNode.getNonAttributeChildrenMap().size() == 1 && currentNode.getTextNode() != null))&& textWrapper != null && textWrapper.equals(localName));
+        return ((currentNode.getNonAttributeChildrenMap() == null
+                        || currentNode.getNonAttributeChildrenMap().size() == 0
+                        || (currentNode.getNonAttributeChildrenMap().size() == 1
+                                && currentNode.getTextNode() != null)
+                ) && textWrapper != null && textWrapper.equals(localName)
+        );
     }
 
     @Override
@@ -494,8 +492,8 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 String stringValue = (String) value;
                 int indexOpen = stringValue.indexOf('{');
                 int indexClose = stringValue.indexOf('}');
-                String uri = null;
-                String localName = null;
+                String uri;
+                String localName;
                 if (indexOpen > -1 && indexClose > -1) {
                     uri = stringValue.substring(indexOpen + 1, indexClose);
                     localName = stringValue.substring(indexClose + 1);
@@ -522,8 +520,6 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
     /**
      * INTERNAL: The MediaType associated with this reader
-     * 
-     * @return
      */
     @Override
     public MediaType getMediaType() {
@@ -548,17 +544,31 @@ public class JsonStructureReader extends XMLReaderAdapter {
             return this;
         }
 
-        private void addSimpleAttribute(List attributes, String uri, String attributeLocalName, JsonValue childValue) {
-            if (childValue.getValueType() == ValueType.STRING) {
-                String stringValue = ((JsonString) childValue).getString();
-                attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue));
-            } else if (childValue.getValueType() == ValueType.NUMBER) {
-                attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, ((JsonNumber) childValue).toString()));
-            } else if (childValue.getValueType() == ValueType.NULL) {
-            } else if (childValue.getValueType() == ValueType.FALSE) {
-                attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, FALSE));
-            } else if (childValue.getValueType() == ValueType.TRUE) {
-                attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, TRUE));
+        private void addSimpleAttribute(List<Attribute> attributes, String uri, String attributeLocalName, JsonValue childValue) {
+            switch (childValue.getValueType()) {
+                case STRING: {
+                    String stringValue = ((JsonString) childValue).getString();
+                    attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue));
+                    break;
+                }
+                case NUMBER: {
+                    attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, childValue.toString()));
+                    break;
+                }
+                case FALSE: {
+                    attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, FALSE));
+                    break;
+                }
+                case TRUE: {
+                    attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, TRUE));
+                    break;
+                }
+                case ARRAY:
+                case OBJECT:
+                case NULL:
+                    break; // noop
+                default:
+                    throw new IllegalStateException("Unhandled valueType: " + childValue.getValueType());
             }
         }
 
@@ -569,7 +579,6 @@ public class JsonStructureReader extends XMLReaderAdapter {
             int index = 0;
             for (Attribute attribute : attributes()) {
                 if (namespaceAware) {
-                    QName testQName = new QName(uri, localName);
                     if (localName.equals(attribute.getLocalName()) && uri.equals(attribute.getUri())) {
                         return index;
                     }
@@ -587,65 +596,65 @@ public class JsonStructureReader extends XMLReaderAdapter {
         protected Attribute[] attributes() {
             if (null == attributes) {
 
-                if (value.getValueType() == ValueType.NULL) {
-                    return NO_ATTRIBUTES;
-                }
-
-                if (value.getValueType() == ValueType.OBJECT) {
-                    JsonObject jsonObject = (JsonObject) value;
-                    ArrayList<Attribute> attributesList = new ArrayList<Attribute>(jsonObject.values().size());
-
-                    Iterator<Entry<String, JsonValue>> iter = jsonObject.entrySet().iterator();
-                    while (iter.hasNext()) {
-                        Entry<String, JsonValue> nextEntry = iter.next();
-                        JsonValue nextValue = nextEntry.getValue();
-                        String attributeLocalName = nextEntry.getKey();                       
-
-                        if (attributePrefix != null) {
-                            if (attributeLocalName.startsWith(attributePrefix)) {
-                                attributeLocalName = attributeLocalName.substring(attributePrefix.length());
-                            } else {
-                                break;
-                            }
-                        }
-
-                        String uri = Constants.EMPTY_STRING;
-
-                        if (namespaceAware && namespaces != null) {
-                            if (attributeLocalName.length() > 2) {
-                                String prefix = Constants.EMPTY_STRING;
-                                int nsIndex = attributeLocalName.indexOf(namespaceSeparator, 1);
-                                if (nsIndex > -1) {
-                                    prefix = attributeLocalName.substring(0, nsIndex);
-                                }
-                                uri = namespaces.resolveNamespacePrefix(prefix);
-                                if (uri == null) {
-                                    uri = namespaces.getDefaultNamespaceURI();
-                                } else {
-                                    attributeLocalName = attributeLocalName.substring(nsIndex + 1);
-                                }
-                            } else {
-                                uri = namespaces.getDefaultNamespaceURI();
-                            }
-                        }
-
-                        if (nextValue.getValueType() == ValueType.ARRAY) {
-                            JsonArray jsonArray = (JsonArray) nextValue;
-                            if (jsonArray.size() == 0) {
-                                attributesList.add(new Attribute(uri, attributeLocalName, attributeLocalName, ""));
-                            }
-                            for (int y = 0; y < jsonArray.size(); y++) {
-                                JsonValue nextChildValue = jsonArray.get(y);
-                                addSimpleAttribute(attributesList, uri, attributeLocalName, nextChildValue);
-                            }
-                        } else {
-                            addSimpleAttribute(attributesList, uri, attributeLocalName, nextValue);
-                        }
+                switch (value.getValueType()) {
+                    case NULL: {
+                        return NO_ATTRIBUTES;
                     }
+                    case OBJECT: {
+                        JsonObject jsonObject = (JsonObject) value;
+                        ArrayList<Attribute> attributesList = new ArrayList<>(jsonObject.values().size());
 
-                    attributes = attributesList.toArray(new Attribute[attributesList.size()]);
-                } else {
-                    attributes = NO_ATTRIBUTES;
+                        for (Entry<String, JsonValue> nextEntry : jsonObject.entrySet()) {
+                            String attributeLocalName = nextEntry.getKey();
+
+                            if (attributePrefix != null) {
+                                if (attributeLocalName.startsWith(attributePrefix)) {
+                                    attributeLocalName = attributeLocalName.substring(attributePrefix.length());
+                                } else {
+                                    break;
+                                }
+                            }
+
+                            String uri = Constants.EMPTY_STRING;
+
+                            if (namespaceAware && namespaces != null) {
+                                if (attributeLocalName.length() > 2) {
+                                    String prefix = Constants.EMPTY_STRING;
+                                    int nsIndex = attributeLocalName.indexOf(namespaceSeparator, 1);
+                                    if (nsIndex > -1) {
+                                        prefix = attributeLocalName.substring(0, nsIndex);
+                                    }
+                                    uri = namespaces.resolveNamespacePrefix(prefix);
+                                    if (uri == null) {
+                                        uri = namespaces.getDefaultNamespaceURI();
+                                    } else {
+                                        attributeLocalName = attributeLocalName.substring(nsIndex + 1);
+                                    }
+                                } else {
+                                    uri = namespaces.getDefaultNamespaceURI();
+                                }
+                            }
+
+                            JsonValue nextValue = nextEntry.getValue();
+                            if (nextValue.getValueType() == ValueType.ARRAY) {
+                                JsonArray jsonArray = (JsonArray) nextValue;
+                                if (jsonArray.size() == 0) {
+                                    attributesList.add(new Attribute(uri, attributeLocalName, attributeLocalName, ""));
+                                }
+                                for (JsonValue nextChildValue : jsonArray) {
+                                    addSimpleAttribute(attributesList, uri, attributeLocalName, nextChildValue);
+                                }
+                            } else {
+                                addSimpleAttribute(attributesList, uri, attributeLocalName, nextValue);
+                            }
+                        }
+
+                        attributes = attributesList.toArray(new Attribute[attributesList.size()]);
+                        break;
+                    }
+                    default: {
+                        attributes = NO_ATTRIBUTES;
+                    }
                 }
             }
             return attributes;

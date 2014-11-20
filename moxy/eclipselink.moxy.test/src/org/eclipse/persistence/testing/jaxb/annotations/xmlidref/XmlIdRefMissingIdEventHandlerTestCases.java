@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,8 +65,17 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         }
         fail("An Exception should have occurred");
     }
-    
-    
+
+    @Override
+    public void testJsonUnmarshalFromJsonParserSource() throws Exception{
+        try{
+            super.testJsonUnmarshalFromJsonParserSource();
+            fail("An Exception should have occurred");
+        }catch (JAXBException e) {
+            assertEquals(ValidationEvent.ERROR, ((MyValidationEventHandler)jaxbUnmarshaller.getEventHandler()).severity);
+        }
+    }
+
     public void testJSONUnmarshalFromInputStream() throws Exception{
         try{
             super.testJSONUnmarshalFromInputStream();        
@@ -76,6 +85,7 @@ public class XmlIdRefMissingIdEventHandlerTestCases extends JAXBWithJSONTestCase
         }
         fail("An Exception should have occurred");
     }
+
     public void testJSONUnmarshalFromReader() throws Exception{
         try{
             super.testJSONUnmarshalFromReader();

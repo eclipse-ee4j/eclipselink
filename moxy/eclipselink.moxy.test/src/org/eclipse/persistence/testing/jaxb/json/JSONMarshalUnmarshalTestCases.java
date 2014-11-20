@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,11 +23,12 @@ import java.util.List;
 import javax.json.Json;
 import javax.json.JsonReader;
 import javax.json.JsonStructure;
+import javax.json.stream.JsonParser;
 import javax.xml.bind.JAXBElement;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.json.JsonParserSource;
 import org.eclipse.persistence.oxm.json.JsonStructureSource;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MyStreamSchemaOutputResolver;
 import org.xml.sax.InputSource;
@@ -66,7 +67,7 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
         JsonStructure jsonStructure = reader.read();     
         JsonStructureSource source = new JsonStructureSource(jsonStructure);
             
-        Object testObject = null;
+        Object testObject;
         if(getUnmarshalClass() != null){               
             testObject = jsonUnmarshaller.unmarshal(source, getUnmarshalClass());
         }else{
@@ -74,6 +75,23 @@ public abstract class JSONMarshalUnmarshalTestCases extends JSONTestCases{
         }
         jsonToObjectTest(testObject);        
     }
+
+	public void testJsonUnmarshalFromJsonParserSource() throws Exception {
+		try(
+			InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+			JsonParser parser = Json.createParser(inputStream)
+		) {
+			JsonParserSource source = new JsonParserSource(parser);
+
+			Object testObject;
+			if (getUnmarshalClass() != null) {
+				testObject = jsonUnmarshaller.unmarshal(source, getUnmarshalClass());
+			} else {
+				testObject = jsonUnmarshaller.unmarshal(source);
+			}
+			jsonToObjectTest(testObject);
+		}
+	}
 
 	public void testJSONUnmarshalFromInputSource() throws Exception {	
          InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
