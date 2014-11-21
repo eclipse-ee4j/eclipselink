@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -68,6 +68,7 @@ public class TablePerClassInheritanceDDLTest extends TablePerClassInheritanceJUn
      */
     public void testSetup() {
         clearCache();
+        clearServerSessionCache();
         createEntityManager().close();
         // Only test DDL on Oracle.
         if (!getServerSession().getPlatform().isOracle()) {
