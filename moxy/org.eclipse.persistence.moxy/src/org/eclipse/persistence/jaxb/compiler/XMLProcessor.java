@@ -959,6 +959,7 @@ public class XMLProcessor {
         // handle xml-id
         if (xmlAttribute.isXmlId()) {
             oldProperty.setIsXmlId(true);
+            oldProperty.setIsXmlIdExtension(true);
             typeInfo.setIDProperty(oldProperty);
         } else {
             // account for XmlID un-set via XML
@@ -1122,6 +1123,7 @@ public class XMLProcessor {
         // handle xml-id
         if (xmlElement.isXmlId()) {
             oldProperty.setIsXmlId(true);
+            oldProperty.setIsXmlIdExtension(true);
             typeInfo.setIDProperty(oldProperty);
         } else {
             // account for XmlID un-set via XML
@@ -1129,10 +1131,10 @@ public class XMLProcessor {
                 typeInfo.setIDProperty(null);
             }
         }
-        
+
         if(xmlElement.getXmlInverseReference() != null){
-        	String mappedBy = xmlElement.getXmlInverseReference().getMappedBy();
-        	oldProperty.setInverseReference(true, true);
+		String mappedBy = xmlElement.getXmlInverseReference().getMappedBy();
+		oldProperty.setInverseReference(true, true);
         	oldProperty.setInverseReferencePropertyName(mappedBy);
         }
 
@@ -1514,8 +1516,9 @@ public class XMLProcessor {
         resetProperty(oldProperty, info);
 
         oldProperty.setIsXmlValue(true);
+        oldProperty.setIsXmlValueExtension(true);
         info.setXmlValueProperty(oldProperty);
-        
+
         // handle get/set methods
         if (xmlValue.getXmlAccessMethods() != null) {
             oldProperty.setMethodProperty(true);
@@ -1836,6 +1839,7 @@ public class XMLProcessor {
      */
     private void unsetXmlID(Property oldProperty, TypeInfo tInfo) {
         oldProperty.setIsXmlId(false);
+        oldProperty.setIsXmlIdExtension(false);
         if (tInfo.isIDSet() && tInfo.getIDProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
             tInfo.setIDProperty(null);
         }
@@ -1917,6 +1921,7 @@ public class XMLProcessor {
      */
     private void unsetXmlValue(Property oldProperty, TypeInfo tInfo) {
         oldProperty.setIsXmlValue(false);
+        oldProperty.setIsXmlValueExtension(false);
         if (tInfo.isSetXmlValueProperty() && tInfo.getXmlValueProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
             tInfo.setXmlValueProperty(null);
         }

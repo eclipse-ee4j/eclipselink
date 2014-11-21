@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,7 @@
  *
  * Contributors:
  * dmccann - June 17/2009 - 2.0 - Initial implementation
+ * Martin Vojtek - November 14/2014 - Added test suites for XmlIDExtension and XmlValueExtension
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
@@ -85,6 +86,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.XmlEnum
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.XmlEnumQualifiedTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.XmlEnumTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.XmlEnumUnqualifiedTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlid.XmlIdExtensionOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref.XmlIdRefExceptionTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref.XmlIdRefTwoPackagesTestCases;
@@ -125,6 +127,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.Employe
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.XmlTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.factory.FactoryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.proporder.PropOrderTestSuite;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueCdnPriceInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueCdnPriceTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueCdnPricesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPriceTestCases;
@@ -194,6 +197,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlValueInternationalPriceTestCases.class);
         suite.addTestSuite(XmlValueInternationalPricesTestCases.class);
         suite.addTestSuite(XmlValueCdnPricesTestCases.class);
+        suite.addTestSuite(XmlValueCdnPriceInheritanceTestCases.class);
         suite.addTestSuite(XmlListTestCases.class);
         suite.addTestSuite(XmlListNoStringTestCases.class);
         suite.addTestSuite(XmlListOnXmlAttributeTestCases.class);
@@ -256,6 +260,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlNullPolicyPackageTypeOverrideTestCases.class);
         suite.addTestSuite(XmlNullPolicyTypeLevelOverrideTestCases.class);
         suite.addTestSuite(XmlNullPolicyTypeLevelTestCases.class);
+        suite.addTestSuite(XmlIdExtensionOverrideTestCases.class);
         return suite;
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -60,12 +60,11 @@ public class DuplicateListOfStringsTestCases extends TypeMappingInfoWithJSONTest
 		    typeMappingInfos = new TypeMappingInfo[4];
 		
 		    TypeMappingInfo tpi = new TypeMappingInfo();
-		    tpi.setXmlTagName(new QName("someUri","testTagname"));		
+		    tpi.setXmlTagName(new QName("someUri","testTagname"));
 		    tpi.setElementScope(ElementScope.Global);
-		    Annotation[] annotations = new Annotation[1];				
-		    annotations[0] = getClass().getField("myList").getAnnotations()[0];				
+		    Annotation[] annotations = getClass().getField("myList").getAnnotations();
 		    tpi.setAnnotations(annotations);
-		    tpi.setType(List.class);		
+		    tpi.setType(List.class);
 		    typeMappingInfos[0] = tpi;
 		
 		    TypeMappingInfo tpi2 = new TypeMappingInfo();

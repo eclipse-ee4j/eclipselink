@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,12 +15,15 @@ package org.eclipse.persistence.testing.jaxb.xmlvalue.none;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
+import org.eclipse.persistence.oxm.annotations.XmlValueExtension;
+
 @XmlRootElement(name="child")
 public class ValidChild extends ValidParent {
 
     private String childProperty;
 
     @XmlValue
+    @XmlValueExtension
     public String getChildProperty() {
         return childProperty;
     }

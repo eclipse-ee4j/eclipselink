@@ -2050,10 +2050,14 @@ public class SchemaGenerator {
         entrySequence.addElement(valueElement);
         entryComplexType.setSequence(entrySequence);
 
-        JavaClass descriptorClass = helper.getJavaClass(typeInfo.getDescriptor().getJavaClassName());
+        JavaClass descriptorClass = null;
+        if (null != typeInfo.getDescriptor()) {
+            descriptorClass = helper.getJavaClass(typeInfo.getDescriptor().getJavaClassName());
+        }
+
         JavaClass mapValueClass = helper.getJavaClass(MapValue.class);
 
-        if (mapValueClass.isAssignableFrom(descriptorClass)) {
+        if (null != descriptorClass && mapValueClass.isAssignableFrom(descriptorClass)) {
             element.setComplexType(entryComplexType);
             element.setMaxOccurs(Occurs.UNBOUNDED);
         } else {

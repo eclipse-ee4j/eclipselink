@@ -78,6 +78,8 @@ public class Property implements Cloneable {
     private Helper helper;
     private Map<Object, Object> userProperties;
     private List<Facet> facets = new ArrayList<Facet>();
+    private boolean isXmlValueExtension;
+    private boolean isXmlIdExtension;
 
     //Original get and set methods for this property
     //Used to keep track of overrides
@@ -827,10 +829,28 @@ public class Property implements Cloneable {
     public boolean isXmlValue() {
         return this.isXmlValue;
     }
-    
+
+    /**
+     * Set the isXmlValueExtension property.
+     *
+     * @param isXmlValueExtension
+     */
+    public void setIsXmlValueExtension(boolean isXmlValueExtension) {
+        this.isXmlValueExtension = isXmlValueExtension;
+    }
+
+    /**
+     * Indicates if this property is an XmlValueExtension.
+     *
+     * @return
+     */
+    public boolean isXmlValueExtension() {
+        return this.isXmlValueExtension;
+    }
+
     /**
      * Set the isXmlList property.
-     * 
+     *
      * @param isXmlList
      */
     public void setIsXmlList(boolean isXmlList) {
@@ -897,6 +917,24 @@ public class Property implements Cloneable {
      */
     public void setIsXmlId(boolean isXmlId) {
         this.isXmlId = isXmlId;
+    }
+
+    /**
+     * Indicates if this property is an ID extension field.
+     *
+     * @return
+     */
+    public boolean isXmlIdExtension() {
+        return isXmlIdExtension;
+    }
+
+    /**
+     * Sets the indicator that identifies this property as an ID extension field.
+     *
+     * @param isXmlIdExtension
+     */
+    public void setIsXmlIdExtension(boolean isXmlIdExtension) {
+        this.isXmlIdExtension = isXmlIdExtension;
     }
 
     /**

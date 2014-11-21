@@ -102,6 +102,7 @@ import org.eclipse.persistence.jaxb.compiler.facets.PatternListFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.SizeFacet;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
+
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
@@ -110,6 +111,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
@@ -130,6 +132,7 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.annotations.XmlIDExtension;
 import org.eclipse.persistence.oxm.annotations.XmlNamedAttributeNode;
 import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraph;
 import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraphs;
@@ -144,6 +147,7 @@ import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 import org.eclipse.persistence.oxm.annotations.XmlElementNillable;
 import org.eclipse.persistence.oxm.annotations.XmlElementsJoinNodes;
 import org.eclipse.persistence.oxm.annotations.XmlLocation;
+import org.eclipse.persistence.oxm.annotations.XmlValueExtension;
 import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
 import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
@@ -1016,10 +1020,18 @@ public final class AnnotationsProcessor {
                     this.hasSwaRef = true;
                 }
 
-                // there can only be one XmlID per type info
-                if (property.isXmlId() && tInfo.getIDProperty() != null && !(tInfo.getIDProperty().getPropertyName().equals(property.getPropertyName()))) {
-                    throw JAXBException.idAlreadySet(property.getPropertyName(), tInfo.getIDProperty().getPropertyName(), jClass.getName());
+                if (property.isXmlId()) {
+                    // there can only be one XmlID per type info
+                    if (tInfo.getIDProperty() != null && !(tInfo.getIDProperty().getPropertyName().equals(property.getPropertyName()))) {
+                        throw JAXBException.idAlreadySet(property.getPropertyName(), tInfo.getIDProperty().getPropertyName(), jClass.getName());
+                    }
+
+                    // XmlID property should be of java.lang.String type
+                    if (!"java.lang.String".equals(property.getActualType().getQualifiedName()) && !helper.isAnnotationPresent(property.getElement(), XmlIDExtension.class) && !property.isXmlIdExtension()) {
+                        throw JAXBException.invalidId(property.getPropertyName());
+                    }
                 }
+
                 // there can only be one XmlAnyAttribute per type info
                 if (property.isAnyAttribute() && tInfo.isSetAnyAttributePropertyName() && !(tInfo.getAnyAttributePropertyName().equals(property.getPropertyName()))) {
                     throw JAXBException.multipleAnyAttributeMapping(jClass.getName());
@@ -4076,12 +4088,17 @@ public final class AnnotationsProcessor {
         JavaClass ptype = property.getActualType();
         String propName = property.getPropertyName();
         JavaClass parent = cls.getSuperclass();
+
         while (parent != null && !(parent.getQualifiedName().equals(JAVA_LANG_OBJECT))) {
-            TypeInfo parentTypeInfo = typeInfos.get(parent.getQualifiedName());
-            if(hasElementMappedProperties(parentTypeInfo)) {
+            if (!helper.isAnnotationPresent(property.getElement(), XmlValueExtension.class) && !property.isXmlValueExtension()) {
                 throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
+            } else {
+                TypeInfo parentTypeInfo = typeInfos.get(parent.getQualifiedName());
+                if(hasElementMappedProperties(parentTypeInfo)) {
+                    throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
+                }
+                parent = parent.getSuperclass();
             }
-            parent = parent.getSuperclass();
         }
 
         QName schemaQName = getSchemaTypeOrNullFor(ptype);
@@ -4655,6 +4672,7 @@ public final class AnnotationsProcessor {
         if(hasXmlList) {
             // @XmlValue
             av = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlValue;", true);
+            av = mv.visitAnnotation("Lorg/eclipse/persistence/oxm/annotations/XmlValueExtension;", true);
             av.visitEnd();
         } else {
             // @XmlElement(name="item", nillable=true)
