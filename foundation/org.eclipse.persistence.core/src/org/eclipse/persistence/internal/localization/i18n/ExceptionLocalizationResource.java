@@ -245,7 +245,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "getpersistenceunitutil_called_on_closed_emf", "getPersistenceUnitUtil() was called on a closed EntityManagerFactory."},
                                            { "named_entity_graph_exists", "NamedEntityGraph with name {0} found on {1} already exists in this persistence unit."},
                                            { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." },
-                                           { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"}
+                                           { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
+                                           { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."}
                                            
 										};
     /**

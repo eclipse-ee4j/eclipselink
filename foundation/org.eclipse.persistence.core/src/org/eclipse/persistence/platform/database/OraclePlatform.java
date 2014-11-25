@@ -43,9 +43,11 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 
@@ -952,6 +954,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             printer.printString(END_FROM);
             printer.printString(MIN_ROW);
             printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+        }
+        // Pessimistic locking with query row limits does not work on Oracle DB.
+        if (statement.getQuery().isObjectBuildingQuery()
+                && ((ObjectBuildingQuery)statement.getQuery()).getLockMode() != ObjectBuildingQuery.DEFAULT_LOCK_MODE) {
+            throw new UnsupportedOperationException(
+                    ExceptionLocalization.buildMessage("ora_pessimistic_locking_with_rownum"));
         }
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);

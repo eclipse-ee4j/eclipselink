@@ -43,6 +43,7 @@ import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
@@ -2760,6 +2761,14 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em2);
                 }
                 closeEntityManager(em2);
+            }
+        // Oracle platform will throw UnsupportedOperationException when executing query with pessimistic locking
+        // and minimal query row limit.
+        } catch (PersistenceException e) {
+            // Let this test pass with UnsupportedOperationException on Oracle platform.
+            if (!getPlatform().isOracle() || !(e.getCause() instanceof QueryException)
+                    || !(e.getCause().getCause() instanceof UnsupportedOperationException)) {
+                throw e;
             }
         } finally {
             if (isTransactionActive(em)) {
