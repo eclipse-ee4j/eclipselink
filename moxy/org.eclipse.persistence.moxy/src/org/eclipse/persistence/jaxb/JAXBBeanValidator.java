@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_HELPER;
 
@@ -59,11 +58,6 @@ class JAXBBeanValidator {
      * Represents the difference between words 'marshalling' and 'unmarshalling';
      */
     private static final String PREFIX_UNMARSHALLING = "un";
-
-    /**
-     * Used to prevent endless invocation loops between unmarshaller - validator - unmarshaller.
-     */
-    private static final ReentrantLock lock = new ReentrantLock();
 
     /**
      * Stores {@link #PREFIX_UNMARSHALLING} if this instance belongs to
@@ -185,16 +179,11 @@ class JAXBBeanValidator {
     boolean shouldValidate (Object value, BeanValidationMode beanValidationMode,
                             ValidatorFactory preferredValidatorFactory) throws BeanValidationException {
 
-        /* Stops endless invocation loop which may occur when calling
-         * Validation#buildDefaultValidatorFactory in a case when the user sets
-         * custom validation configuration through "validation.xml" file and
-         * the validation implementation tries to unmarshal the file with MOXy. */
-        if (lock.isHeldByCurrentThread()) return false;
-
         if (isValidationEffectivelyOff(beanValidationMode)) return false;
 
+        /* If removed, infinite loop check (7e5f543e4dd8e55d084799b893138d085307c7f1) must be added back to prevent
+            bug caused by bean-validating validation.xml */
         if (!isConstrainedObject(value)) return false;
-
 
         /* Json is allowed to pass a null root object. Avoid NPE & speed things up. */
         if (value == null) return false;
@@ -216,7 +205,7 @@ class JAXBBeanValidator {
      * @return true if validation is effectively off
      */
     private boolean isValidationEffectivelyOff(BeanValidationMode beanValidationMode) {
-        return !((beanValidationMode == BeanValidationMode.AUTO && canValidate) /* most common case */
+        return !  ((beanValidationMode == BeanValidationMode.AUTO && canValidate) /* most common case */
                 || (beanValidationMode == BeanValidationMode.CALLBACK)
                 /* beanValidationMode is AUTO but canValidate is yet to be resolved */
                 || (beanValidationMode != BeanValidationMode.NONE && beanValidationMode != this.beanValidationMode)
@@ -335,12 +324,7 @@ class JAXBBeanValidator {
         if (preferredValidatorFactory != null) {
             return preferredValidatorFactory;
         }
-        lock.lock();
-        try {
-            return Validation.buildDefaultValidatorFactory();
-        } finally {
-            lock.unlock();
-        }
+        return Validation.buildDefaultValidatorFactory();
     }
 
     /**
