@@ -9,11 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     Dmitry Kornilov - added ApplicationAccessWLSTest
  ******************************************************************************/  
-/*
-   DESCRIPTION
- */
-
 package org.eclipse.persistence.testing.sdo.helper.helpercontext;
 
 import junit.framework.Test;
@@ -28,8 +25,8 @@ public class SDOHelperContextTestSuite {
     }
 
     /**
-    *  Inherited suite method for generating all test cases.
-    */
+     * Inherited suite method for generating all test cases.
+     */
     public static Test suite() {
         TestSuite suite = new TestSuite("All SDOHelperContext Tests");
         suite.addTest(new TestSuite(SDOHelperContextMultiThreadedTest.class));
@@ -46,6 +43,7 @@ public class SDOHelperContextTestSuite {
         // the implementation of this test is pending
         //suite.addTest(new TestSuite(SDOHelperContextMultiClassloaderTest.class));
         suite.addTest(new TestSuite(UserSetContextMapTestCases.class));
+        suite.addTest(new TestSuite(ApplicationAccessWLSTest.class));
         return suite;
     }
 }

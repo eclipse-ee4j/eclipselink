@@ -19,7 +19,9 @@
       <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/oracle.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/oracle.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/foundation/eclipselink.extension.oracle.test/oracle.test.iml" filepath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.test/oracle.test.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" group="root" />
+      <module fileurl="file://$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/sdo.iml" filepath="$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/sdo.iml" group="root/sdo" />
+      <module fileurl="file://$PROJECT_DIR$/sdo/eclipselink.sdo.test/sdo.test.iml" filepath="$PROJECT_DIR$/sdo/eclipselink.sdo.test/sdo.test.iml" group="root/sdo" />
+      <module fileurl="file://$PROJECT_DIR$/sdo/eclipselink.sdo.test.server/sdo.test.server.iml" filepath="$PROJECT_DIR$/sdo/eclipselink.sdo.test.server/sdo.test.server.iml" group="root/sdo" />
     </modules>
   </component>
 </project>
-

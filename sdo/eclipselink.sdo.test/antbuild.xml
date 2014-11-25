@@ -299,7 +299,7 @@
                 target="${javac.version}"
                 deprecation="${javac.deprecation}"
                 failonerror="true"
-                includes="org/eclipse/persistence/testing/sdo/**/*.java">
+                includes="org/eclipse/persistence/testing/sdo/**/*.java,weblogic/**/*.java">
                 <classpath>
                     <path refid="@{compilepathref}"/>
                 </classpath>

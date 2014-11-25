@@ -10,18 +10,27 @@
  * Contributors:
  *     Oracle  - initial API and implementation from Oracle TopLink
  *     dmccann - Nov. 7/2008 - Added delegate key logic from AbstractHelperDelegator
+ *     Dmitry Kornilov - 2014/11/25 - ApplicationAccessWLS fixed to reflect changes in WLS
  ******************************************************************************/  
 package org.eclipse.persistence.sdo.helper;
 
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import commonj.sdo.helper.CopyHelper;
+import commonj.sdo.helper.DataFactory;
+import commonj.sdo.helper.DataHelper;
+import commonj.sdo.helper.EqualityHelper;
+import commonj.sdo.helper.HelperContext;
+import commonj.sdo.helper.TypeHelper;
+import commonj.sdo.helper.XMLHelper;
+import commonj.sdo.helper.XSDHelper;
+import commonj.sdo.impl.ExternalizableDelegator;
+import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.SDOResolvable;
+import org.eclipse.persistence.sdo.helper.delegates.SDODataFactoryDelegate;
+import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate;
+import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
+import org.eclipse.persistence.sdo.helper.delegates.SDOXSDHelperDelegate;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.MBeanServer;
@@ -33,25 +42,15 @@ import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOResolvable;
-import org.eclipse.persistence.sdo.helper.delegates.SDODataFactoryDelegate;
-import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate;
-import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
-import org.eclipse.persistence.sdo.helper.delegates.SDOXSDHelperDelegate;
-
-import commonj.sdo.helper.CopyHelper;
-import commonj.sdo.helper.DataFactory;
-import commonj.sdo.helper.DataHelper;
-import commonj.sdo.helper.EqualityHelper;
-import commonj.sdo.helper.HelperContext;
-import commonj.sdo.helper.TypeHelper;
-import commonj.sdo.helper.XMLHelper;
-import commonj.sdo.helper.XSDHelper;
-import commonj.sdo.impl.ExternalizableDelegator;
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * <b>Purpose:</b>
@@ -1231,51 +1230,6 @@ public class SDOHelperContext implements HelperContext {
      */
     public Object getProperty(String name) {
         return getProperties().get(name);
-    }
-
-    private static class ApplicationAccessWLS {
-
-        private static final String APPLICATION_ACCESS_CLASS_NAME = "weblogic.application.ApplicationAccess";
-        private static final String GET_APPLICATION_ACCESS_METHOD_NAME = "getApplicationAccess";
-        private static final String GET_APPLICATION_NAME_METHOD_NAME = "getApplicationName";
-        private static final String GET_APPLICATION_VERSION_METHOD_NAME = "getApplicationVersion";
-
-        private Object applicationAccessInstance;
-        private Method getApplicationNameMethod;
-        private Method getApplicationVersionMethod;
-
-        public ApplicationAccessWLS() {
-            try {
-                Class applicationAccessClass = PrivilegedAccessHelper.getClassForName(APPLICATION_ACCESS_CLASS_NAME);
-                Method getApplicationAccessMethod = PrivilegedAccessHelper.getDeclaredMethod(applicationAccessClass, GET_APPLICATION_ACCESS_METHOD_NAME, new Class[] {});
-                applicationAccessInstance = PrivilegedAccessHelper.invokeMethod(getApplicationAccessMethod, applicationAccessClass);
-                Class [] methodParameterTypes = new Class[] {ClassLoader.class};
-                getApplicationNameMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, GET_APPLICATION_NAME_METHOD_NAME, methodParameterTypes, true);
-                getApplicationVersionMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, GET_APPLICATION_VERSION_METHOD_NAME, methodParameterTypes, true);
-            } catch(Exception e) {
-            }
-        }
-
-        public String getApplicationName(ClassLoader classLoader) {
-            if(null == getApplicationNameMethod) {
-                return null;
-            }
-            try {
-                Object[] parameters = new Object[] {classLoader};
-                String appName = (String) PrivilegedAccessHelper.invokeMethod(getApplicationNameMethod, applicationAccessInstance, parameters);
-                if (appName != null) {
-                    String appVersion = (String) PrivilegedAccessHelper.invokeMethod(getApplicationVersionMethod, applicationAccessInstance, parameters);
-                    if (appVersion != null) {
-                        return appName + "#" + appVersion;
-                    }
-                }
-                
-                return appName;
-            } catch(Exception e) {
-                return null;
-            }
-        }
-
     }
 
 }
