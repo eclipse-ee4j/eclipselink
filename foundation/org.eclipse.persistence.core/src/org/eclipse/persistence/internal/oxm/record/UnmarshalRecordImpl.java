@@ -963,7 +963,8 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     public void startUnmappedElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if(xmlReader.getMediaType().isApplicationXML() && null == selfRecords && !isSelfRecord) {
             ErrorHandler errorHandler = xmlReader.getErrorHandler();
-            if(null != errorHandler) {
+            // Bug 452584 - check if a warning exception should be generated when an unmapped element is encountered
+            if(null != errorHandler && unmarshaller.shouldWarnOnUnmappedElement()) {
                 StringBuilder messageBuilder = new StringBuilder("unexpected element (uri:\"");
                 if(null != namespaceURI) {
                     messageBuilder.append(namespaceURI);

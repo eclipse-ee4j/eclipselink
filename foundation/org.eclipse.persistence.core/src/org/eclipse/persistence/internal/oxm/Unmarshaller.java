@@ -192,6 +192,8 @@ public abstract class Unmarshaller<
 
     public abstract void setIDResolver(ID_RESOLVER idResolver); 
 
+    public abstract boolean shouldWarnOnUnmappedElement();
+    
     public void setUnmarshalListener(UNMARSHALLER_LISTENER unmarshalListener) {
         this.unmarshalListener = unmarshalListener;
     }

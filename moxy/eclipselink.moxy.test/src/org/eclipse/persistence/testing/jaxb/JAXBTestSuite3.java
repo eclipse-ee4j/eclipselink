@@ -31,6 +31,7 @@ import org.eclipse.persistence.testing.jaxb.properties.PropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamReaderEndEventTestCases;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
+import org.eclipse.persistence.testing.jaxb.unmapped.UnmappedElementsWarningTestCases;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.DefaultValueTestCases;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.JSONUnmarshalAutoDetectTestCases;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.JSONUnmarshalTestCases;
@@ -139,7 +140,8 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(ChildURITestCases.class);
         suite.addTestSuite(URITestCases.class);
         suite.addTestSuite(PropertyTestCases.class);               
-        		
+        suite.addTestSuite(UnmappedElementsWarningTestCases.class);
+        
         return suite;
     }
 

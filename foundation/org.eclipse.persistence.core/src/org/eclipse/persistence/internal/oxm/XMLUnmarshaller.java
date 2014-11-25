@@ -151,6 +151,7 @@ public class XMLUnmarshaller<
     private boolean caseInsensitive = false;
     private Object unmarshalAttributeGroup;
     private boolean wrapperAsCollectionName = false;
+    private boolean warnOnUnmappedElement = true;
 
     static {
         try {
@@ -889,6 +890,24 @@ public class XMLUnmarshaller<
     
     public void setUnmarshalAttributeGroup(Object attributeGroup) {
         this.unmarshalAttributeGroup = attributeGroup;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns true if a warning exception should be generated when an unmapped element is encountered.
+     * @since 2.6.0
+     */
+    public boolean shouldWarnOnUnmappedElement() {
+        return this.warnOnUnmappedElement;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set to true if a warning exception should be generated when an unmapped element is encountered, false otherwise.
+     * @since 2.6.0
+     */
+    public void setWarnOnUnmappedElement(boolean warnOnUnmappedElement) {
+        this.warnOnUnmappedElement = warnOnUnmappedElement; 
     }
 
 }

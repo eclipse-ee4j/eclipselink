@@ -126,6 +126,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
         xmlUnmarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
+        // Disable any warning exceptions when an unmapped element is found, if the 
+        // validationEventHandler and errorHandler are set to default values
+        xmlUnmarshaller.setWarnOnUnmappedElement(false);
     }
 
     public XMLUnmarshaller getXMLUnmarshaller() {
@@ -766,6 +769,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
             validationEventHandler = newValidationEventHandler;
         }
         xmlUnmarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
+        // Disable any warning exceptions when an unmapped element is found, if the 
+        // validationEventHandler and errorHandler are set to default values
+        xmlUnmarshaller.setWarnOnUnmappedElement(validationEventHandler != JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER);
     }
 
     public ValidationEventHandler getEventHandler() throws JAXBException {
