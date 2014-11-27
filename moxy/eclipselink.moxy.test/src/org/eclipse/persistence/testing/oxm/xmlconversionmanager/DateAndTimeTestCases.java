@@ -183,6 +183,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         // the default timezone will be applied such that the returned datetime
         // should be 5 hours earlier
         String control = "1965-01-01T00:00:00.001"+TIMEZONE_OFFSET;
+        String zControl = "1965-01-01T00:00:00.001Z";
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
@@ -193,7 +194,8 @@ public class DateAndTimeTestCases extends OXTestCase {
         java.util.Date utilDate = cal.getTime();
 
         String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
-        this.assertEquals(control, test);
+        boolean passed = control.equals(test) || zControl.equals(test);
+        this.assertTrue(passed);
     }
 
     public void testUtilDateToString_dateTime_negative_year() throws Exception{
@@ -1413,7 +1415,8 @@ public class DateAndTimeTestCases extends OXTestCase {
         java.sql.Time sqlTime = new java.sql.Time(CONTROL_TIME_0MS);
         String control = "07:47:15"+TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlTime, String.class);
-        this.assertEquals(control, test);
+        boolean passed = control.equals(test) || control.equals(test.replace("+01:00", "Z"));
+        this.assertTrue(passed);
     }
 
     public void testSqlTimeToString_default_0ms() {
@@ -1428,6 +1431,15 @@ public class DateAndTimeTestCases extends OXTestCase {
         String control = "07:47:15.001"+TIMEZONE_OFFSET;
         String test = (String)xcm.convertObject(sqlTime, String.class);
         this.assertEquals(control, test);
+    }
+
+    public static void assertEquals(String control, String test) {
+        if (control == null) {
+            assertNull(test);
+        } else {
+            boolean passed = control.equals(test) || control.equals(test.replace("+01:00", "Z"));
+            assertTrue(passed);
+        }
     }
 
     public void testSqlTimeToString_default_10ms() {

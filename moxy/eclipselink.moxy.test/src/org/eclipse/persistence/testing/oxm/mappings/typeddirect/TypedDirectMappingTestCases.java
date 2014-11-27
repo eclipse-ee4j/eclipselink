@@ -70,7 +70,8 @@ public class TypedDirectMappingTestCases extends XMLMappingTestCases {
                 "<untyped-sql-date>2013-02-20</untyped-sql-date>" +
                 "<typed-sql-date>2013-02-20</typed-sql-date>" +
                 "<untyped-timestamp>2013-02-20T01:00:00"+TIMEZONE_OFFSET+"</untyped-timestamp>" +
-                "<typed-timestamp>01:00:00"+TIMEZONE_OFFSET+"</typed-timestamp>" +
+                "<typed-timestamp>01:00:00"+(TIMEZONE_OFFSET.equals("Z") ? "+01:00" : TIMEZONE_OFFSET)
+        +"</typed-timestamp>" +
                 "</test-object>";
     }
 

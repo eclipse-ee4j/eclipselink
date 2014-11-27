@@ -100,7 +100,7 @@ public abstract class OXTestCase extends XMLTestCase {
 
         int offsetInMillis = TimeZone.getDefault().getRawOffset();
         String offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
-        TIMEZONE_OFFSET = (offsetInMillis >= 0 ? "+" : "-") + offset;
+        TIMEZONE_OFFSET = offsetInMillis == 0 ? "Z" : ((offsetInMillis >= 0 ? "+" : "-") + offset);
     }
 
     public boolean useLogging = false;
