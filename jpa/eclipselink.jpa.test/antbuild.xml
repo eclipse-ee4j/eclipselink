@@ -2115,6 +2115,7 @@
         <property name="oracle.proxy.user" value="PAS_PROXY"/>
 
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <!--property name="additional.jvmargs" value="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8787,suspend=y"/-->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
         <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
