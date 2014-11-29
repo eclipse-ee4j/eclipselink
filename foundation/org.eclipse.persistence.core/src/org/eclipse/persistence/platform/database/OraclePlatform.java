@@ -956,10 +956,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
         }
         // Pessimistic locking with query row limits does not work on Oracle DB.
-        if (statement.getQuery().isObjectBuildingQuery()
-                && ((ObjectBuildingQuery)statement.getQuery()).getLockMode() != ObjectBuildingQuery.DEFAULT_LOCK_MODE) {
-            throw new UnsupportedOperationException(
-                    ExceptionLocalization.buildMessage("ora_pessimistic_locking_with_rownum"));
+        if (statement.getQuery().isObjectBuildingQuery()) {
+            int lockMode = ((ObjectBuildingQuery)statement.getQuery()).getLockMode();
+            if (lockMode == ObjectBuildingQuery.LOCK || lockMode == ObjectBuildingQuery.LOCK_NOWAIT) {
+                throw new UnsupportedOperationException(
+                        ExceptionLocalization.buildMessage("ora_pessimistic_locking_with_rownum"));
+            }
         }
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
