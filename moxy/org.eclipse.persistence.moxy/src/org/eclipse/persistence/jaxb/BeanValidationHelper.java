@@ -27,6 +27,7 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -130,6 +131,23 @@ enum BeanValidationHelper {
                     return true;
                 }
                 // Check for custom annotations on the method (+ check inheritance on class annotations).
+                // Custom bean validation annotation is defined by having @Constraint annotation on its class.
+                for (Annotation typesClassAnnotation : type.getAnnotations()) {
+                    final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
+                    if (Constraint.class == classAnnotationType) {
+                        knownConstraints.add(type);
+                        return true;
+                    }
+                }
+            }
+        }
+        for (Constructor<?> c : ReflectionUtils.getDeclaredConstructors(clazz)) {
+            for (Annotation a : c.getDeclaredAnnotations()) {
+                final Class<? extends Annotation> type = a.annotationType();
+                if (knownConstraints.contains(type)){
+                    return true;
+                }
+                // Check for custom annotations on the constructor (+ check inheritance on class annotations).
                 // Custom bean validation annotation is defined by having @Constraint annotation on its class.
                 for (Annotation typesClassAnnotation : type.getAnnotations()) {
                     final Class<? extends Annotation> classAnnotationType = typesClassAnnotation.annotationType();
