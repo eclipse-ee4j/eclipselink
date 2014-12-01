@@ -12,9 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.beanvalidation;
 
+import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.CustomAnnotatedEmployee;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.special.MethodAnnotatedEmployee;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -34,6 +36,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
     private static final String MOXY_JAXBCONTEXT_FACTORY = JAXBContextFactory.class.getName();
     private static final String SYSTEM_PROPERTY_JAXBCONTEXT = "javax.xml.bind.JAXBContext";
     private static final String CUSTOM_ANNOTATION_MESSAGE = "{org.eclipse.persistence.moxy.CustomAnnotation.message}";
+    private static final String NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
     private static final boolean DEBUG = false;
     private static File DEACTIVATED_VALIDATION_XML;
     private static File ACTIVATED_VALIDATION_XML;
@@ -112,4 +115,28 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         }
     }
 
+    /**
+     * Tests that we do not skip validation on classes that do not have any bean validation annotations on fields but
+     * have some on methods.
+     */
+    public void testMethodAnnotations() throws Exception {
+        JAXBMarshaller marshaller = (JAXBMarshaller) JAXBContextFactory.createContext(new
+                Class[]{MethodAnnotatedEmployee.class}, null).createMarshaller();
+        MethodAnnotatedEmployee employee = new MethodAnnotatedEmployee().withId(null);
+
+        try {
+            marshaller.marshal(employee, new StringWriter());
+        } catch (BeanValidationException ignored) {
+        }
+
+        Set<? extends ConstraintViolation<?>> violations = marshaller.getConstraintViolations();
+
+        assertFalse(violations.isEmpty());
+
+
+        // For all, i.e. one constraintViolations.
+        for (ConstraintViolation constraintViolation : violations) {
+            assertEquals(NOT_NULL_MESSAGE, constraintViolation.getMessageTemplate());
+        }
+    }
 }

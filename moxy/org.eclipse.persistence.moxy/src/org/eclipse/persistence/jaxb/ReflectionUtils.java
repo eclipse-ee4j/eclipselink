@@ -12,8 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.PrivilegedAction;
@@ -21,28 +20,40 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
 import static java.security.AccessController.doPrivileged;
+import static org.eclipse.persistence.internal.security.PrivilegedAccessHelper.shouldUsePrivilegedAccess;
 
 /**
  * Utility class for handling reflection calls and using caller sensitive actions.
  *
  *  - Singleton lazy-loaded actions honoring Initialization On Demand Holder idiom.
  *  - Lazy-loaded inner classes and inner interfaces. Only loaded if security is enabled.
- *
- * todo: Thread-safety? So far used only in single-threaded environments.
  */
 final class ReflectionUtils {
-
-    /**
-     * States whether security is enabled.
-     * todo: Review underlying {@linkplain PrivilegedAccessHelper#shouldUsePrivilegedAccess() method}. Main concern: It
-     * checks for security manager and for system property only once. /endoftodo
-     */
-    private static final boolean SECURITY_MANAGED = PrivilegedAccessHelper.shouldUsePrivilegedAccess();
 
     /**
      * Non-instantiable utility class. Reflection instantiation permitted.
      */
     private ReflectionUtils() {
+    }
+
+    /**
+     * Retrieves class object.
+     * <p/>
+     * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
+     * privileged calls}.
+     *
+     * @param clazz name of class to be retrieved
+     * @return class object
+     * @see Class#forName(String)
+     */
+    static Class<?> forName(String clazz) throws ClassNotFoundException {
+        try {
+            return shouldUsePrivilegedAccess()
+                    ? doPrivileged(ForNameIODH.PREDICATE_EXCEPTION_ACTION.with(clazz))
+                    : forNameInternal(clazz);
+        } catch (PrivilegedActionException e) {
+            throw (ClassNotFoundException) e.getException();
+        }
     }
 
     /**
@@ -56,9 +67,41 @@ final class ReflectionUtils {
      * @see Class#getDeclaredFields()
      */
     static Field[] getDeclaredFields(Class<?> clazz) {
-        return SECURITY_MANAGED
+        return shouldUsePrivilegedAccess()
                 ? doPrivileged(DeclaredFieldsIODH.PREDICATE_ACTION.with(clazz))
                 : getDeclaredFieldsInternal(clazz);
+    }
+
+    /**
+     * Retrieves declared constructors.
+     *
+     * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
+     * privileged calls}.
+     *
+     * @param clazz class that will be scanned
+     * @return declared constructors
+     * @see Class#getDeclaredConstructors()
+     */
+    static Constructor<?>[] getDeclaredConstructors(Class<?> clazz) {
+        return shouldUsePrivilegedAccess()
+                ? doPrivileged(DeclaredConstructorsIODH.PREDICATE_ACTION.with(clazz))
+                : getDeclaredConstructorsInternal(clazz);
+    }
+
+    /**
+     * Retrieves declared methods.
+     *
+     * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
+     * privileged calls}.
+     *
+     * @param clazz class that will be scanned
+     * @return declared methods
+     * @see Class#getDeclaredMethods()
+     */
+    static Method[] getDeclaredMethods(Class<?> clazz) {
+        return shouldUsePrivilegedAccess()
+                ? doPrivileged(DeclaredMethodsIODH.PREDICATE_ACTION.with(clazz))
+                : getDeclaredMethodsInternal(clazz);
     }
 
     /**
@@ -77,9 +120,9 @@ final class ReflectionUtils {
     static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws
             NoSuchMethodException {
         try {
-            return SECURITY_MANAGED
-                    ? doPrivileged(MethodIODH.PREDICATE_EXCEPTION_ACTION.with(clazz).with(name).with(parameterTypes))
-                    : getMethodInternal(clazz, name, parameterTypes);
+            return shouldUsePrivilegedAccess()
+                    ? doPrivileged(DeclaredMethodIODH.PREDICATE_EXCEPTION_ACTION.with(clazz).with(name).with(parameterTypes))
+                    : getDeclaredMethodInternal(clazz, name, parameterTypes);
         } catch (PrivilegedActionException e) {
             throw (NoSuchMethodException) e.getException();
         }
@@ -87,6 +130,12 @@ final class ReflectionUtils {
 
 
     /* Internal Methods */
+    /**
+     * INTERNAL:
+     */
+    private static Class<?> forNameInternal(String clazz) throws ClassNotFoundException {
+        return Class.forName(clazz);
+    }
 
     /**
      * INTERNAL:
@@ -98,13 +147,65 @@ final class ReflectionUtils {
     /**
      * INTERNAL:
      */
-    private static Method getMethodInternal(Class<?> clazz, String name, Class<?>... parameterTypes) throws
+    private static Method[] getDeclaredMethodsInternal(Class<?> clazz) {
+        return clazz.getDeclaredMethods();
+    }
+
+    /**
+     * INTERNAL:
+     */
+    private static Constructor<?>[] getDeclaredConstructorsInternal(Class<?> clazz) {
+        return clazz.getDeclaredConstructors();
+    }
+
+    /**
+     * INTERNAL:
+     */
+    private static Method getDeclaredMethodInternal(Class<?> clazz, String name, Class<?>... parameterTypes) throws
             NoSuchMethodException {
         return clazz.getDeclaredMethod(name, parameterTypes);
     }
 
 
     /* Initialization on Demand Holders */
+    /**
+     * IODH for enhanced forName privileged action with exception using predicates.
+     */
+    private static final class ForNameIODH {
+
+        /**
+         * Enhanced {@link PrivilegedExceptionAction} using predicates.
+         *  - Singleton.
+         *  - Throws {@link java.lang.ClassNotFoundException}.
+         */
+        private static final PredicateWithException<Class<?>> PREDICATE_EXCEPTION_ACTION = new
+                PredicateWithException<Class<?>>() {
+
+                    /* Predicates */
+                    private String clazz;
+
+                    @Override
+                    public PredicateWithException<Class<?>> with(String with) {
+                        this.clazz = with;
+                        return this;
+                    }
+
+                    @Override
+                    public PredicateWithException<Class<?>> with(Class<?> with) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public PredicateWithException<Class<?>> with(Class<?>[] with) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public Class<?> run() throws NoSuchMethodException, ClassNotFoundException {
+                        return forNameInternal(clazz);
+                    }
+                };
+    }
 
     /**
      * IODH for enhanced getDeclaredFields privileged action using predicates.
@@ -114,7 +215,6 @@ final class ReflectionUtils {
         /**
          * Enhanced {@link java.security.PrivilegedAction} using predicates.
          *  - Singleton.
-         *  - Throws {@link NoSuchMethodException}.
          */
         private static final Predicate<Field[]> PREDICATE_ACTION = new Predicate<Field[]>() {
 
@@ -135,9 +235,65 @@ final class ReflectionUtils {
     }
 
     /**
+     * IODH for getDeclaredMethods privileged action using predicates.
+     */
+    private static final class DeclaredMethodsIODH {
+
+        /**
+         * Enhanced {@link PrivilegedAction} using predicates.
+         *  - Singleton.
+         */
+        private static final Predicate<Method[]> PREDICATE_ACTION = new
+                Predicate<Method[]>() {
+
+                    /* Predicates */
+                    private Class<?> clazz;
+
+                    @Override
+                    public Predicate<Method[]> with(Class<?> with) {
+                        this.clazz = with;
+                        return this;
+                    }
+
+                    @Override
+                    public Method[] run() {
+                        return getDeclaredMethodsInternal(clazz);
+                    }
+                };
+    }
+    /**
+     * IODH for getDeclaredConstructors privileged action using predicates.
+     */
+    private static final class DeclaredConstructorsIODH {
+
+        /**
+         * Enhanced {@link java.security.PrivilegedAction} using predicates.
+         *  - Singleton.
+         */
+        private static final Predicate<Constructor<?>[]> PREDICATE_ACTION = new
+                Predicate<Constructor<?>[]>() {
+
+                    /* Predicates */
+                    private Class<?> clazz;
+
+                    @Override
+                    public Predicate<Constructor<?>[]> with(Class<?> with) {
+                        this.clazz = with;
+                        return this;
+                    }
+
+                    @Override
+                    public Constructor<?>[] run() {
+                        return getDeclaredConstructorsInternal(clazz);
+                    }
+                };
+    }
+
+
+    /**
      * IODH for getMethod predicate wrapped privileged exception action.
      */
-    private static final class MethodIODH {
+    private static final class DeclaredMethodIODH {
 
         /**
          * Enhanced {@link PrivilegedExceptionAction} using predicates.
@@ -147,34 +303,34 @@ final class ReflectionUtils {
         private static final PredicateWithException<Method> PREDICATE_EXCEPTION_ACTION = new
                 PredicateWithException<Method>() {
 
-            /* Predicates */
-            private Class<?> clazz;
-            private String name;
-            private Class<?>[] parameterTypes;
+                    /* Predicates */
+                    private Class<?> clazz;
+                    private String name;
+                    private Class<?>[] parameterTypes;
 
-            @Override
-            public PredicateWithException<Method> with(Class<?> with) {
-                this.clazz = with;
-                return this;
-            }
+                    @Override
+                    public PredicateWithException<Method> with(Class<?> with) {
+                        this.clazz = with;
+                        return this;
+                    }
 
-            @Override
-            public PredicateWithException<Method> with(String with) {
-                this.name = with;
-                return this;
-            }
+                    @Override
+                    public PredicateWithException<Method> with(String with) {
+                        this.name = with;
+                        return this;
+                    }
 
-            @Override
-            public PredicateWithException<Method> with(Class<?>[] with) {
-                this.parameterTypes = with;
-                return this;
-            }
+                    @Override
+                    public PredicateWithException<Method> with(Class<?>[] with) {
+                        this.parameterTypes = with;
+                        return this;
+                    }
 
-            @Override
-            public Method run() throws NoSuchMethodException {
-                return getMethodInternal(clazz, name, parameterTypes);
-            }
-        };
+                    @Override
+                    public Method run() throws NoSuchMethodException {
+                        return getDeclaredMethodInternal(clazz, name, parameterTypes);
+                    }
+                };
     }
 
 
