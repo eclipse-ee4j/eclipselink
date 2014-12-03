@@ -132,6 +132,8 @@
     <echo message="jpatest.2.oracletest.dir     = '${jpatest.2.oracletest.dir}'"/>
     <echo message="jpatest.2.sdo.plugins.dir    = '${jpatest.2.sdo.plugins.dir}' (for GF)"/>
 
+    <import file="${jpatest.2.oracletest.dir}/oracle-db-setup.xml"/>
+
     <!-- Allows we run websphere tests from Windows & Linux both. -->
     <target name="detect-os">
         <condition property="is.windows" value="true">
@@ -1646,10 +1648,12 @@
 
     <target name="oracle-test" if="is.oracle" depends="config-classpath">
         <!-- Initializes Oracle database proxy users for ProxyAuthenticationTestSuite. -->
-        <ant antfile="${jpatest.2.oracletest.dir}/oracle-db-setup.xml" target="setup-proxy-authentication" inheritRefs="true">
-            <property name="oracle.proxy.user" value="PAS_PROXY"/>
-            <property name="oracle.proxy.user2" value="PAS_PROXY2"/>
-        </ant>
+        <property name="pa.proxyuser" value="${db.user}_PROXY"/>
+        <property name="pa.proxyuser2" value="${db.user}_PROXY2"/>
+        <antcall target="setup-proxy-authentication">
+            <param name="PROXY_USER" value="${pa.proxyuser}"/>
+            <param name="PROXY_USER2" value="${pa.proxyuser2}"/>
+        </antcall>
 
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPATestSuite"/>
@@ -1665,15 +1669,13 @@
 
     <!-- Oracle proxy authentication needs to be setup for the tests. -->
     <target name="oracle-proxy-test">
-        <ant antfile="${jpatest.2.oracletest.dir}/oracle-db-setup.xml" target="setup-proxy-authentication" inheritRefs="true">
-            <property name="oracle.db.user" value="PAS_CONN"/>
-            <property name="oracle.db.pwd" value="pas_conn"/>
-            <property name="oracle.proxy.user" value="PAS_PROXY"/>
-        </ant>
+        <antcall target="setup-proxy-authentication">
+            <param name="DB_USER" value="PAS_CONN"/>
+            <param name="DB_PWD" value="pas_conn"/>
+            <param name="PROXY_USER" value="PAS_PROXY"/>
+        </antcall>
 
         <antcall target="run-test" inheritRefs="true">
-            <param name="db.user" value="PAS_CONN"/>
-            <param name="db.pwd" value="pas_conn"/>
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"/>
             <param name="TEST_AGENT" value="${test.agent}"/>
             <param name="TEST_WEAVING" value="${test.weaving}"/>
@@ -1681,6 +1683,8 @@
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.oracle.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
+            <param name="DB_USER" value="PAS_CONN"/>
+            <param name="DB_PWD" value="pas_conn"/>
         </antcall>
     </target>
 
@@ -2108,20 +2112,19 @@
         </condition>
 
         <!-- default values for proxy test -->
-        <property name="pa.connection.user" value="${db.user}"/>
-        <property name="pa.connection.password" value="${db.pwd}"/>
-        <property name="pa.proxyuser" value="PAS_PROXY"/>
-        <property name="pa.proxyuser2" value="PAS_PROXY2"/>
-        <property name="oracle.proxy.user" value="PAS_PROXY"/>
+        <property name="DB_USER" value="${db.user}"/>
+        <property name="DB_PWD" value="${db.pwd}"/>
+        <property name="pa.proxyuser" value="${db.user}_PROXY"/>
+        <property name="pa.proxyuser2" value="${db.user}_PROXY2"/>
 
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <!--property name="additional.jvmargs" value="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8787,suspend=y"/-->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
         <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
-            <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
-            <sysproperty key="pa.connection.user" value="${pa.connection.user}"/>
-            <sysproperty key="pa.connection.password" value="${pa.connection.password}"/>
+            <sysproperty key="proxy.user.name" value="PAS_PROXY"/>
+            <sysproperty key="pa.connection.user" value="${db.user}"/>
+            <sysproperty key="pa.connection.password" value="${db.pwd}"/>
             <sysproperty key="pa.proxyuser" value="${pa.proxyuser}"/>
             <sysproperty key="pa.proxyuser2" value="${pa.proxyuser2}"/>
             <jvmarg value="${TEST_AGENT}"/>
@@ -2131,8 +2134,8 @@
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${DB_URL}"/>
-            <jvmarg value="-Ddb.user=${db.user}"/>
-            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="-Ddb.user=${DB_USER}"/>
+            <jvmarg value="-Ddb.pwd=${DB_PWD}"/>
             <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${jvmarg.db.platform.class}"/>
             <classpath>

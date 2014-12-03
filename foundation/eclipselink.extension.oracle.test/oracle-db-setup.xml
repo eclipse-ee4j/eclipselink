@@ -4,14 +4,20 @@
     <property file="${user.home}/test.properties"/>
     <property name="db.sys.user" value="sys as sysdba"/>
     <property name="db.sys.pwd" value="orasys9"/>
-    <property name="oracle.db.user" value="${db.user}"/>
-    <property name="oracle.db.pwd" value="${db.pwd}"/>
-    <property name="oracle.proxy.user" value="${db.user}_PROXY"/>
-    <property name="oracle.proxy.user2" value="${db.user}_PROXY2"/>
-    <property name="oracle.proxy.pwd" value="password"/>
-    <property name="oracle.proxy.pwd2" value="password"/>
+    <property name="DB_USER" value="${db.user}"/>
+    <property name="DB_PWD" value="${db.pwd}"/>
+    <property name="PROXY_USER" value="${db.user}_PROXY"/>
+    <property name="PROXY_USER2" value="${db.user}_PROXY2"/>
+    <property name="PROXY_PWD" value="password"/>
+    <property name="PROXY_PWD2" value="password"/>
 
     <target name="clean-schema">
+
+        <echo message="DB_USER = ${DB_USER}"/>
+        <echo message="DB_PWD = ${DB_PWD}"/>
+        <echo message="PROXY_USER = ${PROXY_USER}"/>
+        <echo message="PROXY_PWD = ${PROXY_PWD}"/>
+
         <sql driver="${db.driver}"
               url="${db.url}"
               userid="${db.sys.user}"
@@ -22,43 +28,33 @@
             <classpath>
                <pathelement location="${jdbc.driver.jar}"/>
             </classpath>
-DROP USER ${oracle.db.user} CASCADE;
+DROP USER ${DB_USER} CASCADE;
 
-CREATE USER ${oracle.db.user} PROFILE "DEFAULT" IDENTIFIED BY ${oracle.db.pwd} ACCOUNT UNLOCK;
+CREATE USER ${DB_USER} PROFILE "DEFAULT" IDENTIFIED BY ${DB_PWD} ACCOUNT UNLOCK;
 REM "The following line is required for Oracle DB version 12.1"
-GRANT UNLIMITED TABLESPACE TO ${oracle.db.user};
-GRANT CONNECT TO ${oracle.db.user};
-GRANT RESOURCE TO ${oracle.db.user};
-GRANT CREATE SESSION TO ${oracle.db.user};
-GRANT create any view TO ${oracle.db.user};
-GRANT create any context TO ${oracle.db.user};
-GRANT drop any context TO ${oracle.db.user};
-GRANT execute on dbms_flashback TO ${oracle.db.user};
-GRANT execute on dbms_rls TO ${oracle.db.user};
-GRANT execute on dbms_session TO ${oracle.db.user};
-GRANT change notification TO ${oracle.db.user};
+GRANT UNLIMITED TABLESPACE TO ${DB_USER};
+GRANT CONNECT TO ${DB_USER};
+GRANT RESOURCE TO ${DB_USER};
+GRANT CREATE SESSION TO ${DB_USER};
+GRANT create any view TO ${DB_USER};
+GRANT create any context TO ${DB_USER};
+GRANT drop any context TO ${DB_USER};
+GRANT execute on dbms_flashback TO ${DB_USER};
+GRANT execute on dbms_rls TO ${DB_USER};
+GRANT execute on dbms_session TO ${DB_USER};
+GRANT change notification TO ${DB_USER};
 REM "The following 2 lines are required for DBWS Oracle-specific tests"
-GRANT create any directory TO ${oracle.db.user};
-GRANT drop any directory TO ${oracle.db.user};
+GRANT create any directory TO ${DB_USER};
+GRANT drop any directory TO ${DB_USER};
         </sql>
-    </target>
-
-    <target name="modify-proxy-authentication-tests">
-        <property name="trunk.home" value="../.."/>
-        <replace dir="${trunk.home}/foundation/eclipselink.extension.oracle.test/src/org/eclipse/persistence/testing/models/jpa/proxyauthentication">
-             <replacefilter token="PAS_CONN"
-                 value="${oracle.db.user}" />
-             <replacefilter token="PAS_PROXY"
-                 value="${oracle.proxy.user}" />
-        </replace>
     </target>
 
     <target name="setup-proxy-authentication" depends="clean-schema">
 
-        <echo message="oracle.db.user = ${oracle.db.user}"/>
-        <echo message="oracle.db.pwd = ${oracle.db.pwd}"/>
-        <echo message="oracle.proxy.user = ${oracle.proxy.user}"/>
-        <echo message="oracle.proxy.pwd = ${oracle.proxy.pwd}"/>
+        <echo message="DB_USER = ${DB_USER}"/>
+        <echo message="DB_PWD = ${DB_PWD}"/>
+        <echo message="PROXY_USER = ${PROXY_USER}"/>
+        <echo message="PROXY_PWD = ${PROXY_PWD}"/>
 
         <sql driver="${db.driver}"
               url="${db.url}"
@@ -70,26 +66,26 @@ GRANT drop any directory TO ${oracle.db.user};
             <classpath>
                <pathelement location="${jdbc.driver.jar}"/>
             </classpath>
-DROP USER ${oracle.proxy.user} CASCADE;
-DROP USER ${oracle.proxy.user2} CASCADE;
+DROP USER ${PROXY_USER} CASCADE;
+DROP USER ${PROXY_USER2} CASCADE;
   
-CREATE USER ${oracle.proxy.user} IDENTIFIED BY ${oracle.proxy.pwd} ACCOUNT UNLOCK;
-CREATE USER ${oracle.proxy.user2} IDENTIFIED BY ${oracle.proxy.pwd2} ACCOUNT UNLOCK;
+CREATE USER ${PROXY_USER} IDENTIFIED BY ${PROXY_PWD} ACCOUNT UNLOCK;
+CREATE USER ${PROXY_USER2} IDENTIFIED BY ${PROXY_PWD2} ACCOUNT UNLOCK;
 REM "The following 2 lines are required for Oracle DB version 12.1"
-GRANT UNLIMITED TABLESPACE TO ${oracle.proxy.user};
-GRANT UNLIMITED TABLESPACE TO ${oracle.proxy.user2};
-GRANT CONNECT TO ${oracle.proxy.user};
-GRANT CONNECT TO ${oracle.proxy.user2};
-GRANT RESOURCE TO ${oracle.proxy.user};
-GRANT CREATE SESSION TO ${oracle.proxy.user};
-ALTER USER ${oracle.proxy.user} GRANT CONNECT THROUGH ${oracle.db.user};
-ALTER USER ${oracle.proxy.user2} GRANT CONNECT THROUGH ${oracle.db.user};
+GRANT UNLIMITED TABLESPACE TO ${PROXY_USER};
+GRANT UNLIMITED TABLESPACE TO ${PROXY_USER2};
+GRANT CONNECT TO ${PROXY_USER};
+GRANT CONNECT TO ${PROXY_USER2};
+GRANT RESOURCE TO ${PROXY_USER};
+GRANT CREATE SESSION TO ${PROXY_USER};
+ALTER USER ${PROXY_USER} GRANT CONNECT THROUGH ${DB_USER};
+ALTER USER ${PROXY_USER2} GRANT CONNECT THROUGH ${DB_USER};
         </sql>
 
         <sql driver="${db.driver}"
               url="${db.url}"
-              userid="${oracle.db.user}"
-              password="${oracle.db.pwd}"
+              userid="${DB_USER}"
+              password="${DB_PWD}"
               print="true"
               onerror="continue"
               expandProperties="true">
@@ -103,8 +99,8 @@ INSERT INTO PROXY_EMPLOYEE_SEQ(SEQ_NAME, SEQ_COUNT) values ('PROXY_EMPLOYEE_SEQ'
 
         <sql driver="${db.driver}"
               url="${db.url}"
-              userid="${oracle.proxy.user}"
-              password="${oracle.proxy.pwd}"
+              userid="${PROXY_USER}"
+              password="${PROXY_PWD}"
               print="true"
               onerror="continue"
               expandProperties="true">
@@ -125,19 +121,19 @@ CREATE TABLE PROXY_PHONENUMBER (OWNER_ID NUMBER(15) NOT NULL, TYPE VARCHAR2(15) 
             <classpath>
                <pathelement location="${jdbc.driver.jar}"/>
             </classpath>
-GRANT ALTER ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT DELETE ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT INSERT ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT SELECT ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT UPDATE ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
-GRANT INDEX ON ${oracle.db.user}.JPA_PROXY_EMPLOYEE TO ${oracle.proxy.user};
+GRANT ALTER ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
+GRANT DELETE ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
+GRANT INSERT ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
+GRANT SELECT ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
+GRANT UPDATE ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
+GRANT INDEX ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
 
-GRANT ALTER ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT DELETE ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT INSERT ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT SELECT ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT UPDATE ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
-GRANT INDEX ON ${oracle.db.user}.PROXY_EMPLOYEE_SEQ TO ${oracle.proxy.user};
+GRANT ALTER ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
+GRANT DELETE ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
+GRANT INSERT ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
+GRANT SELECT ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
+GRANT UPDATE ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
+GRANT INDEX ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
          </sql>
     </target>
 </project>
