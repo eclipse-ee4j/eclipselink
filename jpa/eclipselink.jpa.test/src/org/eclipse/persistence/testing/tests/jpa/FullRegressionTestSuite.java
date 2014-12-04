@@ -28,6 +28,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.InvalidNamedQueryTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.AbstractEntityWithColumnDiscriminatorTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
@@ -243,6 +244,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(JUnitJPQLQueryHelperTestSuite.suite());
         suite.addTest(AdvancedQueryTestSuite.suite());
         suite.addTest(JUnitNativeQueryTestSuite.suite());
+        suite.addTest(AbstractEntityWithColumnDiscriminatorTest.suite());
         fullSuite.addTest(suite);
 
         // XML model

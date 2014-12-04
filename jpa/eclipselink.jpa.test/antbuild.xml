@@ -845,6 +845,7 @@
                                org/eclipse/persistence/testing/models/jpa/cacheable/**
                                org/eclipse/persistence/testing/models/jpa/cascadedeletes/**
                                org/eclipse/persistence/testing/models/jpa/complexaggregate/**
+                               org/eclipse/persistence/testing/models/jpa/customer/**
                                org/eclipse/persistence/testing/models/jpa/datatypes/**
                                org/eclipse/persistence/testing/models/jpa/datetime/**
                                org/eclipse/persistence/testing/models/jpa/inheritance/**

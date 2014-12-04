@@ -403,4 +403,24 @@
 			<property name="eclipselink.validation-only" value="true"/>
 		</properties>
 	</persistence-unit>
+
+    <!-- Advanced customer model persistence unit. -->
+    <persistence-unit name="customer-pu" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <shared-cache-mode>NONE</shared-cache-mode>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.customer.CustomerAddress</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.customer.AddressType1</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.customer.AddressType2</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.customer.RegisteredCustomer</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="FINE" />
+            <property name="eclipselink.logging.level.sql" value="FINEST"/>
+            <property name="eclipselink.logging.level.cache" value="FINEST" />
+            <property name="eclipselink.logging.parameters" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+            <property name="eclipselink.ddl-generation.output-mode" value="database" />
+        </properties>
+    </persistence-unit>
+
 </persistence>

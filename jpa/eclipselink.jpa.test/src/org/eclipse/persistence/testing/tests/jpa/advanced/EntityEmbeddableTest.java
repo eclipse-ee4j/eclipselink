@@ -40,6 +40,7 @@ public class EntityEmbeddableTest extends JUnitTestCase {
      */
     public EntityEmbeddableTest() {
         super();
+        setPuName(PUName);
     }
 
     /**

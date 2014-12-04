@@ -326,22 +326,29 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
 
     /**
-     * This method is used when computing the indexes for joined mappings.
-     * It iterates through a list of join expressions and adds an index that represents where the
-     * fields represented by that expression will appear in the row returned by a read query.
-     * computeNestedQueriesForJoinedExpressions must be already called.
+     * This method is used when computing the indexes for joined mappings. It iterates through a list of join
+     * expressions and adds an index that represents where the fields represented by that expression will appear
+     * in the row returned by a read query.
+     * Method {@link #computeNestedQueriesForJoinedExpressions(List, AbstractSession, ObjectLevelReadQuery)}
+     * must be already called.
+     * @param joinedExpressions Join expressions {@link List}.
+     * @param currentIndex      Current joined mapping index.
+     * @param session           Current session.
+     * @return Current joined mapping index updated.
      */
-    protected int computeIndexesForJoinedExpressions(List joinedExpressions, int currentIndex, AbstractSession session) {
+    protected int computeIndexesForJoinedExpressions(final List joinedExpressions, int currentIndex,
+            final AbstractSession session) {
         for (int index = 0; index < joinedExpressions.size(); index++) {
-            ObjectExpression objectExpression = (ObjectExpression)joinedExpressions.get(index);
-            DatabaseMapping mapping = objectExpression.getMapping();
-            // only store the index if this is the local expression to avoid it being added multiple times
-            //This means the base local expression must be first on the list, followed by nested expressions
-            ObjectExpression localExpression = objectExpression.getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(1));
+            final ObjectExpression objectExpression = (ObjectExpression)joinedExpressions.get(index);
+            final DatabaseMapping mapping = objectExpression.getMapping();
+            // Only store the index if this is the local expression to avoid it being added multiple times.
+            // This means the base local expression must be first on the list, followed by nested expressions.
+            final ObjectExpression localExpression = objectExpression
+                    .getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(1));
             if ((localExpression == objectExpression) && (mapping != null) && mapping.isForeignReferenceMapping()) {
                 getJoinedMappingIndexes_().put(mapping, Integer.valueOf(currentIndex));
             }
-            ClassDescriptor descriptor = mapping.getReferenceDescriptor();
+            final ClassDescriptor descriptor = mapping.getReferenceDescriptor();
             int numberOfFields = 0;
             if (descriptor == null) {
                 // Direct-collection mappings do not have descriptor.
@@ -349,7 +356,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     numberOfFields = 1;
                 }
             } else {
-                ObjectLevelReadQuery nestedQuery = getNestedJoinedMappingQuery(objectExpression);
+                final ObjectLevelReadQuery nestedQuery = getNestedJoinedMappingQuery(objectExpression);
                 FetchGroup fetchGroup = null;
                 if(descriptor.hasFetchGroupManager()) {
                     fetchGroup = nestedQuery.getExecutionFetchGroup();
@@ -357,16 +364,23 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 if(fetchGroup != null) {
                     numberOfFields = nestedQuery.getFetchGroupNonNestedFieldsSet(mapping).size();
                 } else {
-                    if (objectExpression.isQueryKeyExpression() && objectExpression.isUsingOuterJoinForMultitableInheritance()) {
+                    if (objectExpression.isQueryKeyExpression()
+                            && objectExpression.isUsingOuterJoinForMultitableInheritance()) {
                         numberOfFields = descriptor.getAllSelectionFields(nestedQuery).size();
+                    } else if(objectExpression.isQueryKeyExpression() && objectExpression.getDescriptor() != null
+                            && objectExpression.getDescriptor().hasInheritance()
+                            && objectExpression.getDescriptor().getInheritancePolicy().shouldReadSubclasses()) {
+                        numberOfFields = descriptor.getAllFields().size();
                     } else {
                         numberOfFields = descriptor.getSelectionFields(nestedQuery).size();
                     }
                 }
             }
             if (mapping.isCollectionMapping()){
-                // map keys are indexed within the collection's row.  Therefore we use an offset from within the collections row
-                numberOfFields += ((CollectionMapping)mapping).getContainerPolicy().updateJoinedMappingIndexesForMapKey(getJoinedMappingIndexes_(), numberOfFields);
+                // map keys are indexed within the collection's row.
+                // Therefore we use an offset from within the collections row
+                numberOfFields += ((CollectionMapping)mapping).getContainerPolicy()
+                        .updateJoinedMappingIndexesForMapKey(getJoinedMappingIndexes_(), numberOfFields);
             }
             currentIndex = currentIndex + numberOfFields;
         }
