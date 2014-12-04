@@ -33,7 +33,7 @@
         </tstamp>
         <property environment="env"/>
 
-        <property name="stop.on.error" value="false"/>
+        <property name="stop.on.error" value="true"/>
         <property name="optimize.code"    value="off"/>
         <property name="report.deprecation" value="off"/>
         <property name="javac.debug"       value="off"/>
