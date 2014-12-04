@@ -18,6 +18,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -220,6 +223,34 @@ public final class AnnotationsProcessor {
     private static final Character DOT_CHR = '.';
     private static final Character DOLLAR_SIGN_CHR = '$';
     private static final Character SLASH_CHR = '/';
+
+    /**
+     * User can specify via org.eclipse.persistence.moxy.annotation.xml-id-extension property, that he wants to use extended behavior of XmlId annotation.
+     * When extended behavior is used, XmlId can be of different type than java.lang.String.
+     */
+    private static final Boolean useXmlIdExtension = getBoolean("org.eclipse.persistence.moxy.annotation.xml-id-extension");
+
+    /**
+     * User can specify via org.eclipse.persistence.moxy.annotation.xml-value-extension property, that he wants to use extended behavior of XmlValue annotation.
+     * When extended behavior is used, class with field annotated with XmlValue can extend classes different than java.lang.Object.
+     */
+    private static final Boolean useXmlValueExtension = getBoolean("org.eclipse.persistence.moxy.annotation.xml-value-extension");
+
+    private static Boolean getBoolean(final String propertyName) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            try {
+                return AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>() {
+                    @Override
+                    public Boolean run() throws Exception {
+                        return Boolean.getBoolean(propertyName);
+                    }});
+            } catch (PrivilegedActionException e) {
+                throw (RuntimeException) e.getCause();
+            }
+        } else {
+            return Boolean.getBoolean(propertyName);
+        }
+    }
 
     private List<JavaClass> typeInfoClasses;
     private Map<String, PackageInfo> packageToPackageInfoMappings;
@@ -1027,9 +1058,7 @@ public final class AnnotationsProcessor {
                     }
 
                     // XmlID property should be of java.lang.String type
-                    if (!"java.lang.String".equals(property.getActualType().getQualifiedName()) && !helper.isAnnotationPresent(property.getElement(), XmlIDExtension.class) && !property.isXmlIdExtension()) {
-                        throw JAXBException.invalidId(property.getPropertyName());
-                    }
+                    validateXmlIdStringType(property);
                 }
 
                 // there can only be one XmlAnyAttribute per type info
@@ -1084,6 +1113,12 @@ public final class AnnotationsProcessor {
                     }
                 }
             }
+        }
+    }
+
+    private void validateXmlIdStringType(Property property) {
+        if (!"java.lang.String".equals(property.getActualType().getQualifiedName()) && !useXmlIdExtension && !helper.isAnnotationPresent(property.getElement(), XmlIDExtension.class) && !property.isXmlIdExtension()) {
+            throw JAXBException.invalidId(property.getPropertyName());
         }
     }
 
@@ -4090,7 +4125,7 @@ public final class AnnotationsProcessor {
         JavaClass parent = cls.getSuperclass();
 
         while (parent != null && !(parent.getQualifiedName().equals(JAVA_LANG_OBJECT))) {
-            if (!helper.isAnnotationPresent(property.getElement(), XmlValueExtension.class) && !property.isXmlValueExtension()) {
+            if (!useXmlValueExtension(property)) {
                 throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
             } else {
                 TypeInfo parentTypeInfo = typeInfos.get(parent.getQualifiedName());
@@ -4108,6 +4143,10 @@ public final class AnnotationsProcessor {
                 throw JAXBException.invalidTypeForXmlValueField(propName);
             }
         }
+    }
+
+    private boolean useXmlValueExtension(Property property) {
+        return useXmlValueExtension || helper.isAnnotationPresent(property.getElement(), XmlValueExtension.class) || property.isXmlValueExtension();
     }
 
     private boolean hasElementMappedProperties(TypeInfo typeInfo) {
