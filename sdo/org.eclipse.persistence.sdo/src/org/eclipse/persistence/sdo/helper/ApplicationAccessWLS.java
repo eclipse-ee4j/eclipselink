@@ -16,6 +16,11 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * INTERNAL:
@@ -28,6 +33,10 @@ import java.lang.reflect.Method;
  * @since EclipseLink 2.6.0
  */
 public class ApplicationAccessWLS {
+    private static final Logger LOGGER = Logger.getLogger(ApplicationAccessWLS.class.getName());
+
+    /** ApplicationID cache **/
+    private final Map<ClassLoader, String> appNames = Collections.synchronizedMap(new WeakHashMap<ClassLoader, String>());
 
     /** Instance of ApplicationAccess or null if not initialized **/
     private Object applicationAccessInstance;
@@ -36,9 +45,10 @@ public class ApplicationAccessWLS {
     private Method getApplicationVersionMethod;
 
     /** Instance of CIC (Component Invocation Context) or null if not initialized **/
-    private Object cicInstance;
-
-    private Method getApplicationId;
+    private Object cicManagerInstance;
+    
+    private Method getCurrentCicMethod;
+    private Method getApplicationIdMethod;
 
     /**
      * Create and initialize.
@@ -47,29 +57,59 @@ public class ApplicationAccessWLS {
         try {
             // Try initializing using CIC
             initUsingCic();
+            LOGGER.fine("ApplicationAccessWLS initialized using ComponentInvocationContext.");
         } catch (Exception e) {
-            cicInstance = null;
+            LOGGER.log(Level.FINE, "Error initializing ApplicationAccessWLS using ComponentInvocationContext. " +
+                    "Trying to initialize it using ApplicationAccess.", e);
+
+            cicManagerInstance = null;
             try {
                 // Init using CIC failed, try to init using ApplicationAccess
                 initUsingApplicationAccess();
+                LOGGER.fine("ApplicationAccessWLS initialized using ApplicationAccess.");
             } catch (Exception ex) {
+                LOGGER.log(Level.FINE, "Error initializing ApplicationAccessWLS using ApplicationAccess.", ex);
                 applicationAccessInstance = null;
             }
         }
     }
 
     /**
-     * Gets a unique application name. Uses CIC if possible. If not using ApplicationAccess.
+     * Gets a unique application name.
      *
      * @param classLoader   the class loader
      * @return unique application name.
      */
     public String getApplicationName(ClassLoader classLoader) {
+        if (appNames.containsKey(classLoader)) {
+            return appNames.get(classLoader);
+        } else {
+            synchronized (appNames) {
+                if (appNames.containsKey(classLoader)) {
+                    return appNames.get(classLoader);
+                } else {
+                    final String appName = getApplicationNameInternal(classLoader);
+                    appNames.put(classLoader, appName);
+                    return appName;
+                }
+            }
+        }
+    }
+
+    /**
+     * Internal method to get a unique application name.
+     * Uses CIC if possible. If not using ApplicationAccess.
+     *
+     * @param classLoader   the class loader
+     * @return unique application name.
+     */
+    private String getApplicationNameInternal(ClassLoader classLoader) {
         // If CIC initialization was successful use CIC
-        if (cicInstance != null) {
+        if (cicManagerInstance != null) {
             try {
                 return getAppNameUsingCic();
             } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "ApplicationAccessWLS.getApplicationName error in getAppNameUsingCic.", e);
                 return null;
             }
         }
@@ -80,11 +120,13 @@ public class ApplicationAccessWLS {
             try {
                 return getAppNameUsingApplicationAccess(classLoader);
             } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "ApplicationAccessWLS.getApplicationName error in getAppNameUsingApplicationAccess.", e);
                 return null;
             }
         }
 
         // Both CIC and ApplicationAccess are failed to initialize
+        LOGGER.fine("ApplicationAccessWLS: null applicationName returned.");
         return null;
     }
 
@@ -95,14 +137,13 @@ public class ApplicationAccessWLS {
         // Get component invocation manager
         final Class cicManagerClass = PrivilegedAccessHelper.getClassForName("weblogic.invocation.ComponentInvocationContextManager");
         final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(cicManagerClass, "getInstance", new Class[] {});
-        final Object cicManager = PrivilegedAccessHelper.invokeMethod(getInstance, cicManagerClass);
+        cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, cicManagerClass);
 
         // Get component invocation context
-        final Method getCurrentCic = PrivilegedAccessHelper.getMethod(cicManagerClass, "getCurrentComponentInvocationContext", new Class[] {}, true);
-        cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCic, cicManager);
+        getCurrentCicMethod = PrivilegedAccessHelper.getMethod(cicManagerClass, "getCurrentComponentInvocationContext", new Class[] {}, true);
 
-        // Get getApplicationId method
-        getApplicationId = PrivilegedAccessHelper.getDeclaredMethod(cicInstance.getClass(), "getApplicationId", new Class[] {});
+        final Class cicClass = PrivilegedAccessHelper.getClassForName("weblogic.invocation.ComponentInvocationContext");
+        getApplicationIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getApplicationId", new Class[] {});
     }
 
     /**
@@ -119,10 +160,11 @@ public class ApplicationAccessWLS {
     }
 
     /**
-     * Gets unique application name using CIC. Calls cicInstance.getApplicationId().
+     * Gets unique application name using CIC. Calls cicInstance.getApplicationIdMethod().
      */
     private String getAppNameUsingCic() throws InvocationTargetException, IllegalAccessException {
-        return (String) PrivilegedAccessHelper.invokeMethod(getApplicationId, cicInstance);
+        final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
+        return (String) PrivilegedAccessHelper.invokeMethod(getApplicationIdMethod, cicInstance);
     }
 
     /**
