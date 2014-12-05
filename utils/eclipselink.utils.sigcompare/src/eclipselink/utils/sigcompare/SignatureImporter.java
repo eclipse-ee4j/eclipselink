@@ -43,6 +43,8 @@ public class SignatureImporter {
             }
         }
 
+        zipFile.close();
+
         for (ClassSignature classSig : visitor.classes.values()) {
             classSig.initialzeParent(visitor.classes);
         }
