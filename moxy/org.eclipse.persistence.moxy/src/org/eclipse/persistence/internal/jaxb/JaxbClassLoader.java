@@ -89,6 +89,20 @@ public class JaxbClassLoader extends ClassLoader {
 	
     public Class loadClass(String className) throws ClassNotFoundException {
         Class javaClass = null;
+        if (className.indexOf('.') == -1 &&
+            (className.equals("boolean") ||
+            className.equals("short") ||
+            className.equals("int") ||
+            className.equals("long") ||
+            className.equals("float") ||
+            className.equals("double") ||
+            className.equals("byte") ||
+            className.equals("char"))) {
+            javaClass = (Class)generatedClasses.get(className);
+            if (javaClass != null) {
+                return javaClass;
+            }
+        }
         try {
             javaClass = getParent().loadClass(className);
         } catch (ClassNotFoundException e) {
