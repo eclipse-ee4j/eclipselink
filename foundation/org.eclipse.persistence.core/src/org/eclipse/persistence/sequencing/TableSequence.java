@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -152,7 +152,7 @@ public class TableSequence extends QuerySequence {
     }
 
     public String getQualifiedTableName() {
-        return getQualified(getTableName());
+        return getQualified(getTable().getName());
     }
 
     public void setTable(DatabaseTable table) {
@@ -166,6 +166,10 @@ public class TableSequence extends QuerySequence {
     public void onConnect() {
         if(this.table.getName().length() == 0) {
             this.table.setName(((DatabasePlatform)getDatasourcePlatform()).getDefaultSequenceTableName());
+        }
+        if ((this.qualifier == null || this.qualifier.length() == 0) && 
+                (this.table.getTableQualifier() != null && this.table.getTableQualifier().length() != 0)) {
+            this.qualifier = this.table.getTableQualifier();
         }
         super.onConnect();
     }

@@ -59,7 +59,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("INSERT INTO ");
-            writer.write(getSequenceTableName());
+            writer.write(getSequenceTableQualifiedName());
             writer.write("(" + getSequenceNameFieldName());
             writer.write(", " + getSequenceCounterFieldName());
             writer.write(") values (");
@@ -82,7 +82,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
         } else {
             try {
                 writer.write("DELETE FROM ");
-            writer.write(getSequenceTableName());
+                writer.write(getSequenceTableQualifiedName());
                 writer.write(" WHERE " + getSequenceNameFieldName());
                 writer.write(" = '" + getName() + "'");
             } catch (IOException ioException) {
@@ -98,7 +98,15 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * Assume that the sequence table exists.
      */
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
-        Vector results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM " + getSequenceTableName() + " WHERE " + getSequenceNameFieldName() + " = '" + getName() + "'"));
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("SELECT * FROM ");
+        buffer.append(getSequenceTableQualifiedName());
+        buffer.append(" WHERE ");
+        buffer.append(getSequenceNameFieldName());
+        buffer.append(" = '");
+        buffer.append(getName());
+        buffer.append("'");
+        Vector results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall(buffer.toString()));
         return !results.isEmpty();
     }
 
@@ -169,7 +177,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * PUBLIC:
      */
     public String getSequenceTableName() {
-        return getTableSequence().getTableName();
+        return getSequenceTable().getName();
     }
     
     /**
@@ -177,6 +185,13 @@ public class TableSequenceDefinition extends SequenceDefinition {
      */
     public String getSequenceTableQualifier() {
         return getSequenceTable().getTableQualifier();
+    }
+    
+    /**
+     * PUBLIC:
+     */
+    public String getSequenceTableQualifiedName() {
+        return getSequenceTable().getQualifiedName();
     }
 
     /**
