@@ -217,17 +217,16 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
 
     public void testDateTimeMap() {
         EntityManager em = createEntityManager();
-        Query q;
-        DateTime dt, dt2;
 
         try {
             beginTransaction(em);
-            dt = em.find(DateTime.class, datetimeId);
+            DateTime dt = em.find(DateTime.class, datetimeId);
             assertNotNull(dt);
             Map<Date, DateTime> map = dt.getUniSelfMap();
             assertNotNull(map);
             // Make sure that we find ourselves in the map!
             assertTrue(map.values().contains(dt));
+            closeEntityManagerAndTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);

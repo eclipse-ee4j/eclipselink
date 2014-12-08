@@ -5320,7 +5320,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * The same persistence unit in the server should have the same session for container or application managed.
      */
     public void testApplicationManagedInServer() {
-        EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl)Persistence.createEntityManagerFactory("default");
+        /* This is a temporary workaround for Bug 454477. Commented out code should be restored when a proper solution is implemented */
+        HashMap<String, String> properties = new HashMap<>();
+        properties.put("weblogic.application-id", "eclipselink-advanced-model");
+        EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl)Persistence.createEntityManagerFactory("default", properties);
+//        EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl)Persistence.createEntityManagerFactory("default");
+        /* End of temporary workaround */
         try {
             if (getDatabaseSession() != factory.getServerSession()) {
                 fail("Application managed persistence unit is not the same as the container managed session.  Deployment is broken."
@@ -12658,6 +12663,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 Canoe canoe = em.find(Canoe.class, canoeTD.getId());
                 if (canoe != null) {
                     beginTransaction(em);
+                    canoe = em.merge(canoe);
                     em.remove(canoe);
                     em.remove(canoe.getLake());
                     commitTransaction(em);

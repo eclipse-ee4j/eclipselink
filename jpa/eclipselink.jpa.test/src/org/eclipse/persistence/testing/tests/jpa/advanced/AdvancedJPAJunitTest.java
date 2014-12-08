@@ -1432,9 +1432,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             productReRead.setCountryCode("USA");
             productReRead.setBarCode1(new BarCode("722-666-489", "USA"));
             productReRead.setBarCode2(null);
-            
+
             beginTransaction(em);
-            em.persist(product);
+            em.merge(productReRead);
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -3020,7 +3020,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         em = createEntityManager();
         try {
             beginTransaction(em);
-            
+
             Session session = ((JpaEntityManager)em.getDelegate()).getActiveSession();
             if(session.getDatasourcePlatform().isSQLServer()) {
                 session.executeNonSelectingSQL("UPDATE t0 SET t0.F_NAME='Joe', t0.L_NAME='Josephson' FROM CMP3_EMPLOYEE t0 WHERE t0.EMP_ID=" + emp.getId());
@@ -3030,7 +3030,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                 session.executeNonSelectingSQL("UPDATE CMP3_EMPLOYEE t0 SET t0.F_NAME='Joe', t0.L_NAME='Josephson' WHERE t0.EMP_ID=" + emp.getId());
                 session.executeNonSelectingSQL("UPDATE CMP3_DEPT t1 SET t1.NAME='Xenobiology' WHERE t1.ID=" + dept.getId());
             }
-            
+
             commitTransaction(em);
         } finally {
             closeEntityManager(em);

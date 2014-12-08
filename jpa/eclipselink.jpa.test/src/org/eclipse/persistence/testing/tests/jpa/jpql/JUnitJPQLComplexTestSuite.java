@@ -4338,18 +4338,20 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("time1", new java.util.Date());
         query.setParameter("time2", new java.util.Date());
         query.getResultList();
-        // Verify that no mapping exists for Employee.startTime
-        ReportQuery rq = (ReportQuery)((QueryImpl)query).getDatabaseQueryInternal();
-        CallQueryMechanism qm = rq != null ? (CallQueryMechanism)rq.getQueryMechanism() : null;
-        DatasourceCall sc = qm != null ? (DatasourceCall)qm.getDatabaseCall() : null;
-        List params = sc != null ? sc.getParameters() : null;
-        ParameterExpression pe = params != null && params.size() > 0 ? (ParameterExpression)params.get(0) : null;
-        QueryKeyExpression qke = pe != null ? (QueryKeyExpression)pe.getLocalBase() : null;
-        if (qke != null) {
-            DatabaseMapping mapping = qke.getMapping();
-            assertNull("There shall be no mapping for Employee.startTime", mapping);
-        } else {
-            fail("Could not retrieve mapping from QueryKeyExpression.");
+        // Verify that no mapping exists for Employee.startTime - test is not valid on server
+        if(!isOnServer()) {
+            ReportQuery rq = (ReportQuery) ((QueryImpl) query).getDatabaseQueryInternal();
+            CallQueryMechanism qm = rq != null ? (CallQueryMechanism) rq.getQueryMechanism() : null;
+            DatasourceCall sc = qm != null ? (DatasourceCall) qm.getDatabaseCall() : null;
+            List params = sc != null ? sc.getParameters() : null;
+            ParameterExpression pe = params != null && params.size() > 0 ? (ParameterExpression) params.get(0) : null;
+            QueryKeyExpression qke = pe != null ? (QueryKeyExpression) pe.getLocalBase() : null;
+            if (qke != null) {
+                DatabaseMapping mapping = qke.getMapping();
+                assertNull("There shall be no mapping for Employee.startTime", mapping);
+            } else {
+                fail("Could not retrieve mapping from QueryKeyExpression.");
+            }
         }
         closeEntityManager(em);
     }
@@ -4681,7 +4683,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
    	  Query query = em.createQuery(
    	      "select e from Employee e, Project p where e in (p.teamMembers)"
    	  );
-   	  assertFalse(query.getResultList().isEmpty());
-   	  closeEntityManager(em);
+	  assertFalse(query.getResultList().isEmpty());
+	  closeEntityManager(em);
     }
 }

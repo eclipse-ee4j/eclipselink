@@ -446,6 +446,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Never returns null.
      */
     public static String getOrBuildSessionName(Map properties, PersistenceUnitInfo puInfo, String persistenceUnitUniqueName) {
+        // Weblogic server was found to prefix the file path on Windows platform with a slash, so mandating that for compatibility
+        String persistenceUnitName = assertCompatiblePersistenceUnitName(persistenceUnitUniqueName);
+
         // if SESSION_NAME is specified in either properties or puInfo properties - use it as session name (unless it's an empty String).
         String sessionName = (String)properties.get(PersistenceUnitProperties.SESSION_NAME);
         if (sessionName == null) {
@@ -456,28 +459,35 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return sessionName;
         }
 
-        // ELBug 355603 - Prepend the application id if present in properties. 
-        // This property will be set by the WebLogic Server if the persistence unit 
+        // ELBug 355603 - Prepend the application id if present in properties.
+        // This property will be set by the WebLogic Server if the persistence unit
         // is deployed as part of shared library to construct a unique session name
         String applicationId = (String)properties.get("weblogic.application-id");
         if (isComposite(puInfo)) {
             // Composite doesn't use connection properties.
             if (applicationId != null) {
-                return applicationId + persistenceUnitUniqueName;
+                return applicationId + persistenceUnitName;
             }
             
-            return persistenceUnitUniqueName;
+            return persistenceUnitName;
         } else {
             // In case no SESSION_NAME specified (or empty String) - build one
             // by concatenating persistenceUnitUniqueName and suffix build of connection properties' names and values.
             if (applicationId != null) {
-                return applicationId + persistenceUnitUniqueName + buildSessionNameSuffixFromConnectionProperties(properties);
+                return applicationId + persistenceUnitName + buildSessionNameSuffixFromConnectionProperties(properties);
             }
             
-            return persistenceUnitUniqueName + buildSessionNameSuffixFromConnectionProperties(properties);
+            return persistenceUnitName + buildSessionNameSuffixFromConnectionProperties(properties);
         }
     }
-        
+
+    private static String assertCompatiblePersistenceUnitName(String persistenceUnitUniqueName) {
+        if(persistenceUnitUniqueName != null && !persistenceUnitUniqueName.startsWith("/")) {
+            return '/' + persistenceUnitUniqueName;
+        }
+        return persistenceUnitUniqueName;
+    }
+
     protected static String buildSessionNameSuffixFromConnectionProperties(Map properties) {
         StringBuilder suffix = new StringBuilder(32);
         for (int i=0; i < connectionPropertyNames.length; i++) {
