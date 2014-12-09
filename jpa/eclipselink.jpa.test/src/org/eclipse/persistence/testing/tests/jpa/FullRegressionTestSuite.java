@@ -27,13 +27,13 @@ package org.eclipse.persistence.testing.tests.jpa;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.testing.models.jpa.advanced.InvalidNamedQueryTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CallbackEventJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ExtendedPersistenceContextJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.InvalidNamedQueryTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JoinedAttributeAdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticConcurrencyJUnitTestSuite;
