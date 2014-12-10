@@ -48,14 +48,12 @@ import org.w3c.dom.Node;
  */
 public class JAXBBinder extends Binder {
 
-    private JAXBContext jaxbContext;
     private XMLBinder xmlBinder;
 
     public JAXBBinder(JAXBContext xmlContext, XMLMarshaller marshaller, XMLUnmarshaller unmarshaller) {
-        this.jaxbContext = xmlContext;
-        this.xmlBinder = this.jaxbContext.getXMLContext().createBinder(marshaller, unmarshaller);
+        this.xmlBinder = xmlContext.getXMLContext().createBinder(marshaller, unmarshaller);
         this.xmlBinder.getDocumentPreservationPolicy().setNodeOrderingPolicy(new RelativePositionOrderingPolicy());
-        this.xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER));
+        this.xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER));
     }
 
     public void marshal(Object obj, Object xmlNode) throws MarshalException {
@@ -203,7 +201,7 @@ public class JAXBBinder extends Binder {
 
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
         if (null == newValidationEventHandler) {            
-            xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER));
+            xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER));
         } else {            
             xmlBinder.setErrorHandler(new JAXBErrorHandler(newValidationEventHandler));
         }

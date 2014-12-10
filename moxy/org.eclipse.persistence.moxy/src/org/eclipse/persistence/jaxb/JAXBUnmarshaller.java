@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -119,7 +118,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller, JAXBContext jaxbContext) {
         this.jaxbContext = jaxbContext;
-        validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
+        validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER;
         beanValidationMode = BeanValidationMode.AUTO;
         beanValidator = JAXBBeanValidator.getUnmarshallingBeanValidator(this.jaxbContext);
         xmlUnmarshaller = newXMLUnmarshaller;
@@ -367,7 +366,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             Class unmarshalClass = jaxbContext.getCollectionClassesToGeneratedClasses().get(type);
             if(unmarshalClass != null){
                 JAXBElement unmarshalled =  unmarshal(source, unmarshalClass, Object.class);
-                Class declaredClass = null;
+                Class declaredClass;
                 if(type instanceof Class){
                     declaredClass = (Class)type;
                 }else{
@@ -764,14 +763,15 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
         if (null == newValidationEventHandler) {
-            validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
+            validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER;
         } else {
             validationEventHandler = newValidationEventHandler;
         }
         xmlUnmarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
         // Disable any warning exceptions when an unmapped element is found, if the 
         // validationEventHandler and errorHandler are set to default values
-        xmlUnmarshaller.setWarnOnUnmappedElement(validationEventHandler != JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER);
+        xmlUnmarshaller.setWarnOnUnmappedElement(validationEventHandler != JAXBContext
+                .DEFAULT_VALIDATION_EVENT_HANDLER);
     }
 
     public ValidationEventHandler getEventHandler() throws JAXBException {

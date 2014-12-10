@@ -20,7 +20,6 @@ import java.io.Writer;
 import java.io.File;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -46,9 +45,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.attachment.AttachmentMarshallerAdapter;
-import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
@@ -137,7 +134,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      */
     public JAXBMarshaller(XMLMarshaller newXMLMarshaller, JAXBContext jaxbContext) {
         this.jaxbContext = jaxbContext;
-        validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
+        validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER;
         beanValidationMode = BeanValidationMode.AUTO;
         beanValidator = JAXBBeanValidator.getMarshallingBeanValidator(jaxbContext);
         xmlMarshaller = newXMLMarshaller;
@@ -796,7 +793,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
         if (null == newValidationEventHandler) {
-            validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
+            validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDLER;
         } else {
             validationEventHandler = newValidationEventHandler;
         }

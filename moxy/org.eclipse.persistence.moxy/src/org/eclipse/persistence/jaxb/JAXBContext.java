@@ -152,7 +152,7 @@ import org.eclipse.persistence.sessions.SessionEventListener;
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
 
-    private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
+    private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<>(2);
     static {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/normalized-value", false);
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
@@ -165,7 +165,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
       * and the default event handling only terminates the  operation after
       * encountering a fatal error.
       */
-    protected static final ValidationEventHandler DEFAULT_VALIDATION_EVENT_HANDER = new ValidationEventHandler() {
+    protected static final ValidationEventHandler DEFAULT_VALIDATION_EVENT_HANDLER = new ValidationEventHandler() {
         public boolean handleEvent(ValidationEvent event) {
             return event.getSeverity() < ValidationEvent.FATAL_ERROR;
         }
