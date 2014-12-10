@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.oxm;
 
 import java.io.BufferedReader;
@@ -89,7 +89,7 @@ public abstract class OXTestCase extends XMLTestCase {
         } catch(Exception ex) {
             staxResultClass = null;
         }
-	    	    
+
         try {
             staxSourceClass = PrivilegedAccessHelper.getClassForName(staxSourceClassName);
             staxSourceStreamReaderConstructor = PrivilegedAccessHelper.getConstructorFor(staxSourceClass, new Class[]{XMLStreamReader.class}, true);
@@ -97,6 +97,16 @@ public abstract class OXTestCase extends XMLTestCase {
         } catch(Exception ex) {
             staxSourceClass = null;
         }
+
+        // Bug #454154 and #453330
+        // DateAndTime tests are susceptible to changes in time zone. And since they were not written to support
+        // GMT+00:00 time zone, which in Java translates to "Z" short-hand,
+        // and since further complications arise from the fact that TIME_OFFSET is computed only once per OXTestCase
+        // class and without having any information about daylight savings offset,
+        // some tests were failing under GMT+00:00 Time Zone.
+        // There are 2 options for how to solve this problem now: do massive rewrite of all DateAndTime tests or use a
+        // time zone that does not cause problems. Second option has been chosen for now.
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
 
         int offsetInMillis = TimeZone.getDefault().getRawOffset();
         String offset = String.format("%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
@@ -117,14 +127,14 @@ public abstract class OXTestCase extends XMLTestCase {
     public static final String METADATA_JAVA = "JAVA";
     public static final String METADATA_TOPLINK = "XML_TOPLINK";
     public static final String METADATA_XML_ECLIPSELINK = "XML_ECLIPSELINK";
-    
+
     public OXTestCase(String name) {
         super(name);
         useLogging = Boolean.getBoolean("useLogging");
         platform = getPlatform();
         metadata = getMetadata();
     }
-    
+
     public XMLContext getXMLContext(String name) {
         Session session = SessionManager.getManager().getSession(name, false);
         Project project = session.getProject();
@@ -160,51 +170,51 @@ public abstract class OXTestCase extends XMLTestCase {
 
     public Project getNewProject(Project originalProject, ClassLoader classLoader) {
         Project newProject = originalProject;
-        
+
         switch (metadata) {
-		case JAVA:
-			break;
-		default:
-            try {
-                // Write the deployment XML file to deploymentXML-file.xml
-                String fileName = "deploymentXML-file.xml";
-                FileWriter fWriter = new FileWriter(fileName);
-                write(originalProject, fWriter);
-                fWriter.close();
-                // Also write the deployment XML file to a stringwriter for logging
-                if (useLogging) {
+            case JAVA:
+                break;
+            default:
+                try {
+                    // Write the deployment XML file to deploymentXML-file.xml
+                    String fileName = "deploymentXML-file.xml";
+                    FileWriter fWriter = new FileWriter(fileName);
+                    write(originalProject, fWriter);
+                    fWriter.close();
+                    // Also write the deployment XML file to a stringwriter for logging
+                    if (useLogging) {
+                        StringWriter stringWriter = new StringWriter();
+                        write(originalProject, stringWriter);
+                        log("DEPLOYMENT XML " + stringWriter.toString());
+                    }
+                    // Read the deploymentXML-file.xml back in with XMLProjectReader
+                    FileInputStream inStream = new FileInputStream(fileName);
+                    FileReader fileReader = new FileReader(fileName);
+                    newProject = XMLProjectReader.read(fileReader, classLoader);
+                    inStream.close();
+                    fileReader.close();
+                    File f = new File(fileName);
+                    f.delete();
+                } catch (Exception e) {
+                    e.printStackTrace();
                     StringWriter stringWriter = new StringWriter();
                     write(originalProject, stringWriter);
-                    log("DEPLOYMENT XML " + stringWriter.toString());
+                    StringReader reader = new StringReader(stringWriter.toString());
+                    log("DEPLOYMENT XML" + stringWriter.toString());
+                    newProject = XMLProjectReader.read(reader, classLoader);
                 }
-                // Read the deploymentXML-file.xml back in with XMLProjectReader							
-                FileInputStream inStream = new FileInputStream(fileName);
-                FileReader fileReader = new FileReader(fileName);
-                newProject = XMLProjectReader.read(fileReader, classLoader);
-                inStream.close();
-                fileReader.close();
-                File f = new File(fileName);
-                f.delete();
-            } catch (Exception e) {
-                e.printStackTrace();
-                StringWriter stringWriter = new StringWriter();
-                write(originalProject, stringWriter);
-                StringReader reader = new StringReader(stringWriter.toString());
-                log("DEPLOYMENT XML" + stringWriter.toString());
-                newProject = XMLProjectReader.read(reader, classLoader);
-            }
-		}
+        }
 
         if ((newProject.getDatasourceLogin() == null) || (!(newProject.getDatasourceLogin() instanceof XMLLogin))) {
-        	newProject.setDatasourceLogin(new XMLLogin());
+            newProject.setDatasourceLogin(new XMLLogin());
         }
-        
+
         switch (platform) {
-        case SAX: 
-        	newProject.getDatasourceLogin().setPlatform(new SAXPlatform());
-        	break;
-        default: 
-        	newProject.getDatasourceLogin().setPlatform(new DOMPlatform());
+            case SAX:
+                newProject.getDatasourceLogin().setPlatform(new SAXPlatform());
+                break;
+            default:
+                newProject.getDatasourceLogin().setPlatform(new DOMPlatform());
         }
         return newProject;
     }
@@ -243,27 +253,27 @@ public abstract class OXTestCase extends XMLTestCase {
         String longClassName = this.getClass().getName();
         String shortClassName = longClassName.substring(longClassName.lastIndexOf(".") + 1, longClassName.length() - 1);
         String description = "";
-        
+
         switch (metadata) {
-		case XML_ECLIPSELINK:
-        	description = "Deployment XML w/";
-			break;
-		case XML_TOPLINK:
-        	description = "TL Deployment XML w/";
-			break;
-		default:
-        	description = "Java Project Source w/";
-		}
+            case XML_ECLIPSELINK:
+                description = "Deployment XML w/";
+                break;
+            case XML_TOPLINK:
+                description = "TL Deployment XML w/";
+                break;
+            default:
+                description = "Java Project Source w/";
+        }
 
         switch (platform) {
-        case DOC_PRES:
-        	description += "Doc Pres: ";
-        	break;
-        case DOM:
-        	description += "DOM Parsing: ";
-        	break;
-        default:
-        	description += "SAX Parsing: ";
+            case DOC_PRES:
+                description += "Doc Pres: ";
+                break;
+            case DOM:
+                description += "DOM Parsing: ";
+                break;
+            default:
+                description += "SAX Parsing: ";
         }
 
         return description + shortClassName + ": " + super.getName();
@@ -292,49 +302,49 @@ public abstract class OXTestCase extends XMLTestCase {
 
         return returnString;
     }
-    
+
     /**
      * Return the Platform to be used based on the "platformType" 
      * System property
-     * 
+     *
      * @see Platform
      */
     public Platform getPlatform() {
         String platformStr = System.getProperty(PLATFORM_KEY, PLATFORM_SAX);
         if (platformStr.equals(PLATFORM_SAX)) {
-        	return Platform.SAX;
+            return Platform.SAX;
         }
         if (platformStr.equals(PLATFORM_DOM)) {
-        	return Platform.DOM;
+            return Platform.DOM;
         }
-        return Platform.DOC_PRES; 
+        return Platform.DOC_PRES;
     }
 
     /**
      * Return the Metadata type based on the "metadataType" 
      * System property
-     * 
+     *
      * @see Metadata
      */
     public Metadata getMetadata() {
         String metadataStr = System.getProperty(METADATA_KEY, METADATA_JAVA);
         if (metadataStr.equals(METADATA_JAVA)) {
-        	return Metadata.JAVA;
+            return Metadata.JAVA;
         }
         if (metadataStr.equals(METADATA_XML_ECLIPSELINK)) {
-        	return Metadata.XML_ECLIPSELINK;
+            return Metadata.XML_ECLIPSELINK;
         }
         return Metadata.XML_TOPLINK;
     }
-    
+
     // Write out deployment XML
     public void write(Project project, Writer writer) {
-    	// Write out EclipseLink deployment XML
-    	if (metadata == Metadata.XML_ECLIPSELINK) {
-    		XMLProjectWriter.write(project, writer);
-    		return;
-    	}
-    	// Write out TL deployment XML 
+        // Write out EclipseLink deployment XML
+        if (metadata == Metadata.XML_ECLIPSELINK) {
+            XMLProjectWriter.write(project, writer);
+            return;
+        }
+        // Write out TL deployment XML
         XMLContext context = new XMLContext(new ObjectPersistenceRuntimeXMLProject_11_1_1());
         context.getSession(project).getEventManager().addListener(new MissingDescriptorListener());
         XMLMarshaller marshaller = context.createMarshaller();
@@ -345,9 +355,9 @@ public abstract class OXTestCase extends XMLTestCase {
             throw ValidationException.fileError(exception);
         }
     }
-    
+
     public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
-    	compareJAXBElementObjects(controlObj, testObj, true);
+        compareJAXBElementObjects(controlObj, testObj, true);
     }
     public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj, boolean namespaceAware) {
         assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
@@ -389,13 +399,13 @@ public abstract class OXTestCase extends XMLTestCase {
             compareValues(controlValue, testValue);
         }
     }
-  
+
     protected void compareValues(Object controlValue, Object testValue){
-    	if(controlValue instanceof JAXBElement && testValue instanceof JAXBElement){
-    		compareJAXBElementObjects((JAXBElement)controlValue, (JAXBElement)testValue);
-    	}else{
-		super.compareValues(controlValue, testValue);
-	}
+        if(controlValue instanceof JAXBElement && testValue instanceof JAXBElement){
+            compareJAXBElementObjects((JAXBElement)controlValue, (JAXBElement)testValue);
+        }else{
+            super.compareValues(controlValue, testValue);
+        }
     }
 
     protected String loadFileToString(String fileName){
@@ -413,12 +423,12 @@ public abstract class OXTestCase extends XMLTestCase {
             String str;
             //Don't add the lineSep the first time
             if(bufferedReader.ready()){
-		sb.append(bufferedReader.readLine());
+                sb.append(bufferedReader.readLine());
             }
-            while (bufferedReader.ready()) {         
-            	sb.append(lineSep);
-                sb.append(bufferedReader.readLine());                
-            }          
+            while (bufferedReader.ready()) {
+                sb.append(lineSep);
+                sb.append(bufferedReader.readLine());
+            }
             bufferedReader.close();
             inputStreamReader.close();
             inputStream.close();
