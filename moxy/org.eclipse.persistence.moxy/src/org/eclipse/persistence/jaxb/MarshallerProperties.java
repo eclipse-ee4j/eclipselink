@@ -10,7 +10,7 @@
  * Contributors:
  *     Blaise Doughan - 2.3.3 - initial implementation
  *     Marcel Valovy  - 2.6   - added case insensitive unmarshalling property
- *                            - added bean validation related properties
+ *                            - added bean validation properties
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -209,7 +209,7 @@ public class MarshallerProperties {
     public static final String BEAN_VALIDATION_FACTORY = JAXBContextProperties.BEAN_VALIDATION_FACTORY;
 
     /**
-     * Allows to set bean validation target groups. Must be of type {@literal Class<?>[]}.
+     * Allows to set bean validation target groups. Must be of type {@literal Class[]}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#BEAN_VALIDATION_GROUPS

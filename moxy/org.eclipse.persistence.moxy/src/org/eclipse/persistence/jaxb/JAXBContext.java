@@ -1610,7 +1610,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     private static void enableFacetsIfPropertySetTrue(JavaModelInputImpl inputImpl, Map properties) {
-        Object propertyValue = properties.get(JAXBContextProperties.GENERATE_FACETS);
+        Object propertyValue = properties.get(JAXBContextProperties.BEAN_VALIDATION_FACETS);
         if (propertyValue != null) inputImpl.setFacets((Boolean) propertyValue);
     }
 }

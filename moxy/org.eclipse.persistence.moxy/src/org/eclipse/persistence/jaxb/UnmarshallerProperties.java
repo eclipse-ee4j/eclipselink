@@ -10,7 +10,7 @@
  * Contributors:
  *     Blaise Doughan - 2.3.3 - initial implementation
  *     Marcel Valovy  - 2.6   - added case insensitive unmarshalling property
- *                            - added bean validation related properties
+ *                            - added bean validation properties
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -188,7 +188,7 @@ public class UnmarshallerProperties {
      *
      * }
      * </pre>
-     * <p>If the property is set to true, the following XML object will match the class and will be unmarshaled.</p>
+     * <p>If the property is set to true, the following XML object will match the class and will be unmarshalled.</p>
      * <pre>
      * &lt;customer iD="007"&gt;
      *   &lt;nAMe&gt;cafeBabe&lt;/nAMe&gt;
@@ -226,7 +226,7 @@ public class UnmarshallerProperties {
     public static final String BEAN_VALIDATION_FACTORY = JAXBContextProperties.BEAN_VALIDATION_FACTORY;
 
     /**
-     * Property for setting bean validation target groups. Must be of type {@literal Class<?>[]}.
+     * Property for setting bean validation target groups. Must be of type {@literal Class[]}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#BEAN_VALIDATION_GROUPS

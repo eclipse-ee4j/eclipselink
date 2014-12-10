@@ -10,7 +10,7 @@
  * Contributors:
  *     Blaise Doughan - 2.4.0 - initial implementation
  *     Marcel Valovy - 2.6 - added case insensitive unmarshalling property
- *                         - added bean validation related properties
+ *                         - added bean validation properties
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -284,7 +284,7 @@ public class JAXBContextProperties {
 
     /**
      * Property for setting bean validation target groups.
-     * The mapped value must be of type {@literal Class<?>[]}.
+     * The mapped value must be of type {@literal Class[]}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#BEAN_VALIDATION_GROUPS
@@ -294,12 +294,12 @@ public class JAXBContextProperties {
 
     /**
      * Property for disabling/enabling generation of XML Facets during schemagen.
-     * The mapped value must be of type Boolean.
-     * If it's true, then facets will be generated, based on the BV annotations.
-     * If false, the BV annotations processing will be skipped during schemagen
-     * and no facets will be generated.
+     * Allowed value are {@link Boolean#TRUE} or {@link Boolean#FALSE},
+     * effectively stating that facets (based on the BV annotations) will be generated,
+     * or that the BV annotations processing will be skipped during schemagen
+     * with no facets being generated, respectively.
      *
      * @since 2.6
      */
-    public static final String GENERATE_FACETS = "eclipselink.generate.facets";
+    public static final String BEAN_VALIDATION_FACETS = "eclipselink.beanvalidation.facets";
 }
