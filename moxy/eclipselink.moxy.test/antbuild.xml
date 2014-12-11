@@ -454,6 +454,7 @@
             <junit printsummary="yes" fork="true" dir="${resource.dir}" showoutput="yes" maxmemory="512m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <jvmarg value="-ea"/>
+		<jvmarg value="-javaagent:${jmockit.lib}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
                 <sysproperty key="metadataType" value="JAVA"/>
