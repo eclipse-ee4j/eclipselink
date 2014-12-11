@@ -19,7 +19,6 @@ import java.sql.SQLException;
 
 
 //JUnit4 imports
-import dbws.testing.nchartype.NcharTypeTestSuite;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -36,8 +35,10 @@ import dbws.testing.invalidinput.InvalidInputTestSuite;
 import dbws.testing.invalidpackage.InvalidPackageTestSuite;
 import dbws.testing.iottype.IOTTypeTestSuite;
 import dbws.testing.namingtransformer.NamingTransformerTestSuite;
+import dbws.testing.nchartype.NcharTypeTestSuite;
 import dbws.testing.nonassociativeplsql.NonAssociativePLSQLCollectionTestSuite;
 import dbws.testing.objecttabletype.ObjectTableTypeTestSuite;
+import dbws.testing.objecttype.ObjectTypeInLowercaseTestSuite;
 import dbws.testing.objecttype.ObjectTypeTestSuite;
 import dbws.testing.optionalarguments.OptionalArgumentTestSuite;
 import dbws.testing.ordescriptor.ORDescriptorTestSuite;
@@ -79,6 +80,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     NcharTypeTestSuite.class,
     NonAssociativePLSQLCollectionTestSuite.class,
     ObjectTableTypeTestSuite.class,
+    ObjectTypeInLowercaseTestSuite.class,
     ObjectTypeTestSuite.class,
     OptionalArgumentTestSuite.class,
     ORDescriptorTestSuite.class,

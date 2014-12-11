@@ -387,6 +387,9 @@
             name="dbws.testing.objecttype.ObjectTypeTestSuite"
           />
           <test
+            name="dbws.testing.objecttype.ObjectTypeInLowercaseTestSuite"
+          />
+          <test
             name="dbws.testing.optionalarguments.OptionalArgumentTestSuite"
           />
           <test

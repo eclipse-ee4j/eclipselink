@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -41,6 +41,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     protected String structureName;
     protected Vector orderedFields;
+    protected Vector allOrderedFields;
 
     public ObjectRelationalDataTypeDescriptor() {
         this.orderedFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
@@ -56,6 +57,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         if (orderedFields==null || orderedFields.size()==0){
            orderedFields=getAllFields();
         }
+        setAllOrderedFields();
     }
 
 
@@ -230,13 +232,32 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         
         AbstractRecord row = new DatabaseRecord();
         Object[] attributes = (Object[])fieldValue;
-
-        for (int index = 0; index < getOrderedFields().size(); index++) {
-            DatabaseField field = (DatabaseField)getOrderedFields().elementAt(index);
+         
+        for (int index = 0; index < getAllOrderedFields().size(); index++) {
+            DatabaseField field = (DatabaseField) getAllOrderedFields().get(index);
             row.put(field, attributes[index]);
         }
 
         return row;
+    }
+
+    /**
+     * INTERNAL:
+     * Creates allOrderedFields Vector, keeping allFields contents ordered.
+     */
+    private void setAllOrderedFields() {
+        allOrderedFields = new Vector(orderedFields.size());
+        Vector<DatabaseField> allFieldsCopy = new Vector(getAllFields());
+        for (DatabaseField orderedField : (Vector<DatabaseField>) getOrderedFields()) {
+            Iterator<DatabaseField> iterator = allFieldsCopy.iterator();
+            while (iterator.hasNext()) {
+                DatabaseField field = iterator.next();
+                if (orderedField.getName().equalsIgnoreCase(field.getName())) {
+                    allOrderedFields.add(field);
+                    iterator.remove();
+                }
+            }
+        }
     }
 
     /**
@@ -400,6 +421,14 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      */
     public Vector getOrderedFields() {
         return orderedFields;
+    }
+
+    /**
+     * INTERNAL:
+     * Return allFields contents ordered.
+     */
+    private Vector getAllOrderedFields() {
+        return allOrderedFields;
     }
 
     /**
