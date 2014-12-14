@@ -40,7 +40,7 @@ import java.util.Set;
  *
  * Utility class for bean validation related tasks.
  *  - Singleton.
- *  - Not thread-safe.
+ *  - Thread-safe.
  */
 enum BeanValidationHelper {
     BEAN_VALIDATION_HELPER;
@@ -91,7 +91,7 @@ enum BeanValidationHelper {
      * @param clazz checked class
      * @return true or false
      */
-    boolean isConstrained(Class<?> clazz) {
+    synchronized boolean isConstrained(Class<?> clazz) {
         Boolean annotated = constraintsOnClasses.get(clazz);
         if (annotated == null) {
             annotated = detectConstraints(clazz);
