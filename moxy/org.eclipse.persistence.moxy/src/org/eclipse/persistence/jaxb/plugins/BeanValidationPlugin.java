@@ -252,7 +252,7 @@ public class BeanValidationPlugin extends Plugin {
 
     /**
      * Processes an xsd value in form of xsd attribute from extended base.
-     * <p/>
+     * <p>
      * Example:
      * <xsd:complexType name="Employee">
      * <xsd:simpleContent>
@@ -261,7 +261,7 @@ public class BeanValidationPlugin extends Plugin {
      * </xsd:extension>
      * </xsd:simpleContent>
      * </xsd:complexType>
-     * <p/>
+     * <p>
      * <xsd:simpleType name="ShortId">
      * <xsd:restriction base="xsd:string">
      * <xsd:minLength value="1"/>        <- This is a special field that is added to the generated class, called "value" (corresponds to the valuePropertyName),
@@ -280,7 +280,7 @@ public class BeanValidationPlugin extends Plugin {
 
     /**
      * Processes an xsd attribute.
-     * <p/>
+     * <p>
      * Example:
      * <xsd:complexType name="Employee">
      * <xsd:simpleContent>
@@ -305,7 +305,7 @@ public class BeanValidationPlugin extends Plugin {
 
     /**
      * Processes an xsd element.
-     * <p/>
+     * <p>
      * Example:
      * <xsd:element name="someCollection" minOccurs="1" maxOccurs="unbounded"/>
      */
@@ -766,9 +766,9 @@ public class BeanValidationPlugin extends Plugin {
     /**
      * Provides means for maintaining compatibility between XML Schema regex and Java Pattern regex.
      * Replaces Java regex shorthands, which support only ASCII encoding, with full UNICODE equivalent.
-     * <p/>
+     * <p>
      * Also replaces the two special XML regex character sets which aren't supported in Java, \i and \c.
-     * <p/>
+     * <p>
      * Replaced shorthands and their negations:
      * <blockquote><pre>
      * \i - Matches any character that may be the first character of an XML name.
@@ -782,8 +782,9 @@ public class BeanValidationPlugin extends Plugin {
      * \X - Extended grapheme cluster.
      * \R - Carriage return.
      * </pre></blockquote>
-     * <p/>
-     * Changes to this class should also be reflected in the opposite {@link org.eclipse.persistence.jaxb.compiler.SchemaGenerator.RegexMutator RegexMutator} class within SchemaGen.
+     * <p>
+     * Changes to this class should also be reflected in the opposite
+     *  {@link org.eclipse.persistence.jaxb.compiler.SchemaGenerator.RegexMutator} class within SchemaGen.
      *
      * @see <a href="http://stackoverflow.com/questions/4304928/unicode-equivalents-for-w-and-b-in-java-regular-expressions">tchrist's work</a>
      * @see <a href="http://www.regular-expressions.info/shorthand.html#xml">Special shorthands in XML Schema.</a>

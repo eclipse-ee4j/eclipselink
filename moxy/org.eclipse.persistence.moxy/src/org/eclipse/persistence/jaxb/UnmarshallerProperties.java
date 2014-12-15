@@ -60,7 +60,7 @@ public class UnmarshallerProperties {
 
     /**
      * The Constant JSON_NAMESPACE_PREFIX_MAPPER. Provides a means to set a
-     * a {@literal Map<String, String>} of namespace URIs to prefixes.
+     * a {@literal Map} of namespace URIs to prefixes.
      * Alternatively can be an implementation of NamespacePrefixMapper.
      * @since 2.4
      * @see org.eclipse.persistence.oxm.NamespacePrefixMapper
@@ -199,8 +199,7 @@ public class UnmarshallerProperties {
      *
      * <p>The property can be set through {@link org.eclipse.persistence.jaxb.JAXBUnmarshaller#setProperty(String, Object)}.</p>
      *
-     * @since 2.6.0
-     *
+     * @since 2.6
      * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=331241">EclipseLink Forum, Bug 331241.</a>
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#UNMARSHALLING_CASE_INSENSITIVE
      */

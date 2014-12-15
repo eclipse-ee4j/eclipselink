@@ -27,6 +27,9 @@ import static org.eclipse.persistence.internal.security.PrivilegedAccessHelper.s
  *
  *  - Singleton lazy-loaded actions honoring Initialization On Demand Holder idiom.
  *  - Lazy-loaded inner classes and inner interfaces. Only loaded if security is enabled.
+ *
+ * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @since 2.6
  */
 final class ReflectionUtils {
 
@@ -38,7 +41,7 @@ final class ReflectionUtils {
 
     /**
      * Retrieves class object.
-     * <p/>
+     * <p>
      * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
      * privileged calls}.
      *
@@ -58,7 +61,7 @@ final class ReflectionUtils {
 
     /**
      * Retrieves declared fields.
-     * <p/>
+     * <p>
      * If security is enabled, makes {@linkplain java.security.AccessController#doPrivileged(PrivilegedAction)
      * privileged calls}.
      *

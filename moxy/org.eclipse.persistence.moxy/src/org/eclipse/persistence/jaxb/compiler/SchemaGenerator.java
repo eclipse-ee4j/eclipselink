@@ -2232,6 +2232,11 @@ public class SchemaGenerator {
         facet.accept(FacetVisitorHolder.VISITOR, restriction);
     }
 
+
+    /**
+     * @since 2.6
+     * @author Marcel Valovy
+     */
     private static final class FacetVisitorHolder {
         private static final FacetVisitor<Void, Restriction> VISITOR = new FacetVisitor<Void, Restriction>() {
             public Void visit(DecimalMinFacet t, Restriction restriction) {
@@ -2289,8 +2294,10 @@ public class SchemaGenerator {
                 if (minLength == maxLength) {
                     restriction.setLength(minLength);
                 } else {
-                    if (minLength > 0) restriction.setMinLength(minLength); // 0 is the default minBoundary.
-                    if (maxLength < Integer.MAX_VALUE) restriction.setMaxLength(maxLength); // 2^31 is the default maxBoundary.
+                    // 0 is the default minBoundary.
+                    if (minLength > 0) restriction.setMinLength(minLength);
+                    // 2^31 is the default maxBoundary.
+                    if (maxLength < Integer.MAX_VALUE) restriction.setMaxLength(maxLength);
                 }
                 return null;
             }
@@ -2303,7 +2310,6 @@ public class SchemaGenerator {
      * @param element the Property that the Element will be based on
      * @param compositor the sequence/choice/all that the Element will be added to
      * @param schema the schema currently being built
-     * @param compositor the TypeInfo that owns the given Property
      */
     private void addElementToSchema(Element element, String elementURI, boolean isPositional, TypeDefParticle compositor, Schema schema, String packageName) {
         String lookupNamespace = schema.getTargetNamespace();
@@ -2470,14 +2476,26 @@ public class SchemaGenerator {
      * \s - Whitespace character.
      *      "[\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
      * \b, \B - Boundary definitions.
-     *      "(?:(?<=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])|(?<![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]))"
-     *      "(?:(?<=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])|(?<![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])(?![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]))"
+     *      "(?:(?<=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])
+     *      (?![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])|
+     *      (?<![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])
+     *      (?=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]))"
+     *      "(?:(?<=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])
+     *      (?=[\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])|
+     *      (?<![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]])
+     *      (?![\\pL\\pM\\p{Nd}\\p{Nl}\\p{Pc}[\\p{InEnclosedAlphanumerics}&&\\p{So}]]))"
      * \h - Horizontal whitespace character - Java does not support, changed in Java 8 though.
      *      "[\\u0009\\u0020\\u00A0\\u1680\\u180E\\u2000-\\u200A\\u202F\\u205F\\u3000]"
      * \v - Vertical whitespace character - Java translates the shorthand to \cK only, meaning changed in Java 8 though.
      *      "[\\u000A-\\u000D\\u0085\\u2028\\u2029]"
      * \X - Extended grapheme cluster.
-     *      "(?:(?:\\u000D\\u000A)|(?:[\\u0E40\\u0E41\\u0E42\\u0E43\\u0E44\\u0EC0\\u0EC1\\u0EC2\\u0EC3\\u0EC4\\uAAB5\\uAAB6\\uAAB9\\uAABB\\uAABC]*(?:[\\u1100-\\u115F\\uA960-\\uA97C]+|([\\u1100-\\u115F\\uA960-\\uA97C]*((?:[[\\u1160-\\u11A2\\uD7B0-\\uD7C6][\\uAC00\\uAC1C\\uAC38]][\\u1160-\\u11A2\\uD7B0-\\uD7C6]*|[\\uAC01\\uAC02\\uAC03\\uAC04])[\\u11A8-\\u11F9\\uD7CB-\\uD7FB]*))|[\\u11A8-\\u11F9\\uD7CB-\\uD7FB]+|[^[\\p{Zl}\\p{Zp}\\p{Cc}\\p{Cf}&&[^\\u000D\\u000A\\u200C\\u200D]]\\u000D\\u000A])[[\\p{Mn}\\p{Me}\\u200C\\u200D\\u0488\\u0489\\u20DD\\u20DE\\u20DF\\u20E0\\u20E2\\u20E3\\u20E4\\uA670\\uA671\\uA672\\uFF9E\\uFF9F][\\p{Mc}\\u0E30\\u0E32\\u0E33\\u0E45\\u0EB0\\u0EB2\\u0EB3]]*)|(?s:.))"
+     *      "(?:(?:\\u000D\\u000A)|(?:[\\u0E40\\u0E41\\u0E42\\u0E43\\u0E44\\u0EC0\\u0EC1\\u0EC2\\u0EC3\\u0EC4\\uAAB5
+     *      \\uAAB6\\uAAB9\\uAABB\\uAABC]*(?:[\\u1100-\\u115F\\uA960-\\uA97C]+|([\\u1100-\\u115F\\uA960-\\uA97C]*(
+     *      (?:[[\\u1160-\\u11A2\\uD7B0-\\uD7C6][\\uAC00\\uAC1C\\uAC38]][\\u1160-\\u11A2\\uD7B0-\\uD7C6]*|[\\uAC01
+     *      \\uAC02\\uAC03\\uAC04])[\\u11A8-\\u11F9\\uD7CB-\\uD7FB]*))|[\\u11A8-\\u11F9\\uD7CB-\\uD7FB]+|[^[\\p{Zl}
+     *      \\p{Zp}\\p{Cc}\\p{Cf}&&[^\\u000D\\u000A\\u200C\\u200D]]\\u000D\\u000A])[[\\p{Mn}\\p{Me}\\u200C\\u200D\\
+     *      u0488\\u0489\\u20DD\\u20DE\\u20DF\\u20E0\\u20E2\\u20E3\\u20E4\\uA670\\uA671\\uA672\\uFF9E\\uFF9F][\\p{Mc
+     *      }\\u0E30\\u0E32\\u0E33\\u0E45\\u0EB0\\u0EB2\\u0EB3]]*)|(?s:.))"
      * \R - Carriage return.
      *      "(?:(?>\\u000D\\u000A)|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029])"
      * </pre></blockquote>

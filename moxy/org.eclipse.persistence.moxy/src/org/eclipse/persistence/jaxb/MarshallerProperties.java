@@ -114,7 +114,7 @@ public class MarshallerProperties {
      * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the
      * namespace prefixes used while marshalling to XML.  Used for both marshal
      * and unmarshal when mediaType is set to "application/json". Value is 
-     * either a {@literal Map<String, String>} of URIs to prefixes, or an
+     * either a {@literal Map} of URIs to prefixes, or an
      * implementation of org.eclipse.persistence.oxm.NamespacePrefixMapper.
      * @since 2.3.3
      * @see org.eclipse.persistence.oxm.NamespacePrefixMapper 

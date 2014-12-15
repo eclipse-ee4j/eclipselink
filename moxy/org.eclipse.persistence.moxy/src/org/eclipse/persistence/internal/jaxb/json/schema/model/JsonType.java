@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * Provides an enumeration of the json schema types for use by the JsonSchemaGenerator.
  * 
  * @see JsonSchema
- * @see JsonSchemaGenerator
  * @author mmacivor
  *
  */

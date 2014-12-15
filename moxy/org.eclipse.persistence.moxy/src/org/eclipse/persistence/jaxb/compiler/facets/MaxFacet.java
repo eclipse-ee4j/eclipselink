@@ -12,9 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler.facets;
 
-import org.eclipse.persistence.internal.oxm.schema.model.Element;
-import org.eclipse.persistence.internal.oxm.schema.model.Restriction;
-
 /**
  * @author Marcel Valovy - marcel.valovy@oracle.com
  * @since 2.6

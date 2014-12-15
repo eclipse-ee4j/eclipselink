@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler.facets;
 
-import org.eclipse.persistence.internal.oxm.schema.model.Element;
-import org.eclipse.persistence.internal.oxm.schema.model.Restriction;
 import javax.validation.constraints.Pattern;
 
 /**

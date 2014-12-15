@@ -1345,7 +1345,7 @@ public final class AnnotationsProcessor {
     /**
      * Adds additional classes to the given List, from inner classes,
      *
-     * @XmlRegistry or @XmlSeeAlso.
+     * See @XmlRegistry or @XmlSeeAlso.
      *
      * @param javaClass
      * @param classesToProcess
@@ -1761,6 +1761,11 @@ public final class AnnotationsProcessor {
         }
     }
 
+    /**
+     * @since 2.6
+     * @author Marcel Valovy
+     * @param property property for which facets will be generated
+     */
     private void addFacets(Property property) {
         final JavaHasAnnotations element = property.getElement();
         if (helper.isAnnotationPresent(element, DecimalMin.class)) {

@@ -48,7 +48,7 @@ public class SessionEventListener extends SessionEventAdapter {
      * 
      * @param value
      * @see InstantiationPolicy
-     * @see XMLDescriptor
+     * @see org.eclipse.persistence.oxm.XMLDescriptor
      */
     public void setShouldValidateInstantiationPolicy(boolean value) {
         shouldValidateInstantiationPolicy = value;

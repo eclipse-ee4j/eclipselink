@@ -86,7 +86,7 @@ class JAXBBeanValidator {
      * <blockquote><pre>
      *     - {@link #beanValidationMode}
      *     - {@link javax.validation.Validator} implementation present on classpath
-     * </blockquote></pre>
+     * </pre></blockquote>
      * <p>
      * Value is recomputed only on {@link #changeInternalState()} call.
      */
@@ -116,6 +116,8 @@ class JAXBBeanValidator {
 
     /**
      * Private constructor. Only to be called by factory methods.
+     * @param prefix differentiates between marshaller and unmarshaller during logging
+     * @param context jaxb context reference
      */
     private JAXBBeanValidator(String prefix, JAXBContext context) {
         this.prefix = prefix;
@@ -128,6 +130,7 @@ class JAXBBeanValidator {
      * The only difference between this method and {@link #getUnmarshallingBeanValidator} is not having
      * {@link #PREFIX_UNMARSHALLING} in String messages constructed for exceptions.
      *
+     * @param context jaxb context reference
      * @return
      *          a new instance of {@link JAXBBeanValidator}.
      */
@@ -141,6 +144,7 @@ class JAXBBeanValidator {
      * The only difference between this method and {@link #getMarshallingBeanValidator} is having
      * {@link #PREFIX_UNMARSHALLING} in String messages constructed for exceptions.
      *
+     * @param context jaxb context reference
      * @return
      *          a new instance of {@link JAXBBeanValidator}.
      */
@@ -259,7 +263,7 @@ class JAXBBeanValidator {
      *  --------------------------|-------------|--------------|--------------
      *  canValidate               | false       | true/false   | true/false
      *  stopSearchingForValidator | false       | true/false   | false
-     *  constraintViolations      | EmptySet<>  | n/a          | n/a
+     *  constraintViolations      | EmptySet    | n/a          | n/a
      *
      *  n/a ... state remains the same.
      *
@@ -293,6 +297,7 @@ class JAXBBeanValidator {
      *
      * @return {@code true} if validator initialization succeeded, otherwise {@code false}.
      * @throws BeanValidationException
+     *              throws {@link org.eclipse.persistence.exceptions.BeanValidationException#PROVIDER_NOT_FOUND}
      */
     private boolean initValidator() throws BeanValidationException {
         if (validator == null && !stopSearchingForValidator){
@@ -337,7 +342,7 @@ class JAXBBeanValidator {
      * @return BeanValidationException, containing ConstraintViolationException.
      */
     @SuppressWarnings({"RedundantCast", "unchecked"})
-    private BeanValidationException buildConstraintViolationException() throws BeanValidationException {
+    private BeanValidationException buildConstraintViolationException() {
         ConstraintViolationException cve = new ConstraintViolationException(
                 (Set<ConstraintViolation<?>>) /* Do not remove the cast. */ constraintViolations);
         return BeanValidationException.constraintViolation(createConstraintViolationExceptionArgs(), cve);

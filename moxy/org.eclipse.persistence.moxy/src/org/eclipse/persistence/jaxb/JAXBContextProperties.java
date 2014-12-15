@@ -17,7 +17,7 @@ package org.eclipse.persistence.jaxb;
 /**
  * These are properties that may be passed in to create a JAXBContext:
  * <pre>
- * {@literal Map<String, Object> properties = new HashMap<String, Object>(1);}
+ * {@literal Map properties = new HashMap<String, Object>(1);}
  * properties.put();
  * JAXBContext jc = JAXBContext.newInstance(new Class[] {Foo.class}, properties);
  * </pre>
@@ -97,7 +97,7 @@ public class JAXBContextProperties {
      * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the
      * namespace prefixes used  while marshalling to XML.  Used for both marshal
      * and unmarshal when mediaType is set to "application/json".  Value is
-     * either a {@literal Map<String, String>} of URIs to prefixes, or an
+     * either a {@literal Map} of URIs to prefixes, or an
      * implementation of org.eclipse.persistence.oxm.NamespacePrefixMapper.
      * @since 2.4
      * @see org.eclipse.persistence.oxm.NamespacePrefixMapper
@@ -136,7 +136,7 @@ public class JAXBContextProperties {
      * 
      * To specify multiple metadata sources, the following can be used:
      * <ul>
-     * <li>{@literal java.util.Map<String, Object>}
+     * <li>{@literal java.util.Map}
      * <li>{@literal java.util.List<Object>}
      * </ul>
      * 

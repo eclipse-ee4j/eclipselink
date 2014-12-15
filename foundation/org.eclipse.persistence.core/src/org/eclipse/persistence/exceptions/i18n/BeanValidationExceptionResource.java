@@ -30,7 +30,8 @@ public final class BeanValidationExceptionResource extends ListResourceBundle {
 
             { "7510", "Constraints violated on {0}marshalled bean:\n{1}{2}" },
 
-            { "7525", "Cannot parse property {0}, because it is both annotated with @NotNull and has attribute \"xs:nillable=true\"." }
+            { "7525", "Cannot parse property {0}, because it is both annotated with @NotNull and has attribute " +
+                    "\"xs:nillable=true\"." }
 
     };
 
