@@ -21,6 +21,8 @@
  *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
  *     09/24/2014-2.6 Rick Curtis 
  *       - 443762 : Misc message cleanup.
+ *     12/18/2014-2.6 Rick Curtis
+ *       - 454189 : Misc message cleanup.#2
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -182,7 +184,7 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6161", "MapEntryExpression with base: [{0}] refers to mapping [{1}] which does not refer to a map."},
        { "6162", "List order column [{0}] contains wrong values:{2}{1}"},
        { "6163", "index() requires QueryKeyExpression, cannot be applied to [{0}]"},
-       { "6164", "index() requires QueryKeyExpression with CollectionMapping that has non-null list order column. [{1}] in does not meet this condition in [{0}]"},
+       { "6164", "index() requires QueryKeyExpression with CollectionMapping that has non-null list order column. [{1}] does not meet this condition in [{0}]"},
        { "6165", "Batch fetch using IN requires singleton primary key."},
        { "6166", "An attempt was made to cast outside of an inheritance hierarchy.  [{0}] does not appear in the class heirarchy for [{1}]. Note: This exception could also indicate you are casting on a Table-Per-Class inheritance relationship which is not supported for casting."},
        { "6167", "A cast has been invoked on an expression that does not use inheritance: [{0}]."},

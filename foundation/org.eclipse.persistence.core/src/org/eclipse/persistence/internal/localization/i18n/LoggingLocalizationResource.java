@@ -41,6 +41,8 @@
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  *     09/24/2014-2.6 Rick Curtis 
  *       - 443762 : Misc message cleanup.
+ *     12/18/2014-2.6 Rick Curtis
+ *       - 454189 : Misc message cleanup.#2
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -451,7 +453,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jaxb_metadata_warning_invalid_type_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for class [{1}], and will be ignored."},
         { "jaxb_metadata_warning_invalid_property_level_xml_java_type_adapter", "An invalid XmlJavaTypeAdapter [{0}] was specified for field/property [{1}] on class [{2}], and will be ignored."},
         // 316513: JMX implementation for JBoss, WebSphere and Glassfish as well as WebLogic
-        { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances", "Multiple [{0}] JMX MBeanServer instances exist, we will use the server at index [{1}] : [{2}]." },
+        { "jmx_mbean_runtime_services_registration_encountered_multiple_mbeanserver_instances", "Multiple JMX MBeanServer instances [{0}] exist, we will use the server at index [{1}] : [{2}]." },
         { "jmx_mbean_runtime_services_registration_mbeanserver_print", "JMX MBeanServer instance found: [{0}], # of beans: [{1}], domain: [{2}] at index: [{3}]." },
         { "jmx_mbean_runtime_services_switching_to_alternate_mbeanserver", "JMX MBeanServer in use: [{0}] from index [{1}] " },
         { "metamodel_print_type_header", "Printed list of Metamodel [{0}] Types to follow:"},        

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/24/2014-2.6 Rick Curtis 
  *       - 443762 : Misc message cleanup.
+ *     12/18/2014-2.6 Rick Curtis
+ *       - 454189 : Misc message cleanup.#2
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -32,7 +34,7 @@ public class ToStringLocalizationResource extends ListResourceBundle {
                                            { "disconnected", "disconnected" },
                                            { "nest_level", "(nest level = {0})" },
                                            { "commit_depth", "(commit depth = {0})" },
-                                           { "empty_commit_order_dependency_node", "Empty Commit Order Dependency Node" },
+                                           { "empty_commit_order_dependency_node", "Empty CommitOrderDependencyNode" },
                                            { "node", "Node ({0})" },
                                            { "platform", "platform" },
                                            { "user_name", "user name" },

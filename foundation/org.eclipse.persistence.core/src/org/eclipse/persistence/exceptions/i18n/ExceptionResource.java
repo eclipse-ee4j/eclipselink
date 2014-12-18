@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/18/2014-2.6 Rick Curtis 
+ *       - 454189 : Misc message cleanup.#2
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -22,7 +24,7 @@ package org.eclipse.persistence.exceptions.i18n;
  */
 public class ExceptionResource extends java.util.ListResourceBundle {
     static final Object[][] contents = {
-                                           { "NoExceptionTranslationForThisLocale", "(There is no English translation for this exception.) {0}" },
+                                           { "NoExceptionTranslationForThisLocale", "(There is no translation for this exception.) {0}" },
                                            { "ExceptionHeader", "Exception [EclipseLink-" },
                                            { "DescriptionHeader", "Exception Description: " },
                                            { "InternalExceptionHeader", "Internal Exception: " },

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/24/2014-2.6 Rick Curtis 
  *       - 443762 : Misc message cleanup.
+ *     12/18/2014-2.6 Rick Curtis
+ *       - 454189 : Misc message cleanup.#2
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -28,7 +30,7 @@ public class JMSProcessingExceptionResource extends ListResourceBundle {
                                            { "18001", "Error while processing incoming JMS message" },
                                            { "18002", "The Topic created in the JMS Service for the interconnection of Sessions must be set in the JMSClusteringService" },
                                            { "18003", "Failed to lookup the session''s name defined it the env-entry element of the Message Driven Bean" },
-                                           { "18004", "The Message Driven Bean (MDB) cannot find the session.  The MDB getSession() method must returns a not null sessiion" }   
+                                           { "18004", "The Message Driven Bean (MDB) cannot find the session.  The MDB getSession() method must return a non null session." }   
     };
 
     /**

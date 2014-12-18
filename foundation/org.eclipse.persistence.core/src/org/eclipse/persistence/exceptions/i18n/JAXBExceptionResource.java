@@ -9,8 +9,10 @@
 *
 * Contributors:
 * mmacivor - June 11/2008 - 1.0 - Initial implementation
- *     09/24/2014-2.6 Rick Curtis 
+ *     09/24/2014-2.6 Rick Curtis
  *       - 443762 : Misc message cleanup.
+ *     12/18/2014-2.6 Rick Curtis
+ *       - 454189 : Misc message cleanup.#2
 ******************************************************************************/
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -104,7 +106,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50080", "XmlLocation is only allowed on properties of type org.xml.sax.Locator, but [{0}] is of type [{1}]."},
         {"50081", "An exception occurred during schema generation."},
         {"50082", "An attempt was made to write a value {0} without a key specified.  Try setting JSON_VALUE_WRAPPER on the JAXBMarshaller"},
-        {"50083", "An error occurred while trying to instantiate the AccessorFactoryClass {0}"},
+        {"50083", "An error occurred while trying to instantiate the AccessorFactory class {0}"},
         {"50084", "The specified AccessorFactory class: {0} is invalid. It must implement createFieldAccessor(Class, Field, boolean) and createPropertyAccessor(Class, Method, Method)."},
         {"50085", "An exception occurred while invoking the createFieldAccessor method on the AccessorFactory {0}"},
         {"50086", "An exception occurred while invoking the createPropertyAccessor method on the AccessorFactory {0}"},

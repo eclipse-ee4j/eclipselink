@@ -27,6 +27,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     09/24/2014-2.6 Rick Curtis 
  *       - 443762 : Misc message cleanup.
+ *     12/18/2014-2.6 Rick Curtis
+ *       - 454189 : Misc message cleanup.#2
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -149,7 +151,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "metamodel_class_incorrect_type_instance", "The type [{2}] is not the expected [{1}] for the key class [{0}].  Please verify that the [{2}] class was referenced in persistence.xml using a specific <class/> property or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element." },
                                            { "metamodel_class_null_type_instance", "No [{1}] was found for the key class [{0}] in the Metamodel - please verify that the [{2}] class was referenced in persistence.xml using a specific <class>{0}</class> property or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element." },
                                            { "metamodel_class_null_type_instance_for_null_key", "No [{0}] was found for the null key class parameter in the Metamodel - please specify the correct key class for the metamodel [{1}] class and verify that the key class was referenced in persistence.xml using a specific <class/> property or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element." },                                           
-                                           { "metamodel_interface_inheritance_not_supported", "The descriptor [{0}] using ({1} inheritance) is not currently supported during metamodel generation, try using Entity or MappedSuperclass (Abstract class) inheritance." },
+                                           { "metamodel_interface_inheritance_not_supported", "The descriptor [{0}] using ({1}) inheritance is not currently supported during metamodel generation, try using Entity or MappedSuperclass (Abstract class) inheritance." },
                                            { "sdo_helper_invalid_type", "The provided Type [{0}] is not an EclipseLink SDOType, and therefore could not be converted." },
                                            { "sdo_helper_invalid_property", "The provided Property [{0}] is not an EclipseLink SDOProperty, and therefore could not be converted." },
                                            { "sdo_helper_invalid_dataobject", "The provided DataObject [{0}] is not an EclipseLink SDODataObject, and therefore could not be converted." },
@@ -189,7 +191,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "metamodel_identifiable_no_version_attribute_present", "No @Version attribute exists on the identifiable type [{0}]." },
                                            { "metamodel_identifiable_no_id_attribute_present", "No @Id attribute exists on the identifiable type [{0}]." },
                                            { "metamodel_identifiable_id_attribute_is_incorrect_idclass", "The expected single @Id attribute for the identifiable type [{0}] is part of an unexpected @IdClass." },
-                                           { "criteria_no_constructor_found", "An exception occurred looking on class: {0} for constructor using selection criteria types as arguments.  If this CriteriaQuery was not intended to be a constructor query please verify that the selection matches the return type."},
+                                           { "criteria_no_constructor_found", "An exception occurred while inspecting class {0} for a constructor using selection criteria types as arguments.  If this CriteriaQuery was not intended to be a constructor query please verify that the selection matches the return type."},
                                            { "MULTIPLE_SELECTIONS_PASSED_TO_QUERY_WITH_PRIMITIVE_RESULT", "\"multiSelect\" was invoked on a CriteriaQuery with a primitive result type.  Either the return type is incorrect or \"select\" should be used instead."},
                                            { "CRITERIA_NON_LITERAL_PASSED_TO_IN", "\"in(Expression<?>... values)\" was invoked with an expression type: {0} that was neither a literal nor a parameter.  This is not supported."},
                                            { "CRITERIA_NO_ROOT_FOR_COMPOUND_QUERY", "Attempting to create a Criteria query with no Root."},
@@ -237,7 +239,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "managed_component_not_found", "An attribute: {1} listed in EntityGraph: {0} references a subgraph named: {2} which cannot be found."},
                                            { "only_one_root_subgraph", "Only the root subgraph may be listed without a type.  Any subgraphs that represent subclasses must have the type set."},
                                            { "subclass_sought_not_a_managed_type", "subgraph type sought: {0} is not a managed type for this attribute: {1}."},
-                                           { "attribute_is_not_map_with_managed_key", "Cannot added key subgraph to EntityGroup as attribute : {0} in class : {1} is not a Map with a managed type key."},
+                                           { "attribute_is_not_map_with_managed_key", "Cannot add key subgraph to EntityGroup as attribute : {0} in class : {1} because it is not a Map with a managed type key."},
                                            { "no_entity_graph_of_name", "No EntityGraph exists with name {0}"},
                                            { "not_usable_passed_to_entitygraph_hint", "value {1} passed to query hint {0} is not appropriate for this query hint"},
                                            { "operation_not_supported", "Calling {0} on a {1} is not supported by the specification."},
