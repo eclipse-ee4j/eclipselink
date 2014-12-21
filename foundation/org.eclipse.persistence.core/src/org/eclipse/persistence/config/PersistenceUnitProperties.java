@@ -1560,6 +1560,22 @@ public class PersistenceUnitProperties {
     public static final String MULTITENANT_PROPERTY_DEFAULT = "eclipselink.tenant-id";
 
     /**
+     * The "<code>eclipselink.tenant-schema-id</code>" property specifies the
+     * context property used to distinguish tenants when using global schema per tenant
+     * multitenant strategy. It is expected to be set by user when creating an {@link EntityManager}.
+     * <p>
+     * <b>Persistence XML example:</b><pre>
+     * {@code <property name="eclipselink.tenant-schema-id" value="Oracle" />}</pre>
+     * <p>
+     * <b>Java example:</b><pre>
+     * {@code props.put(PersistenceUnitProperties.MULTITENANT_SCHEMA_PROPERTY_DEFAULT, "Oracle");}</pre>
+     *
+     * @see #MULTITENANT_STRATEGY
+     * @see org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy
+     */
+    public static final String MULTITENANT_SCHEMA_PROPERTY_DEFAULT = "eclipselink.tenant-schema-id";
+
+    /**
      * Property "<code>eclipselink.multitenant.tenants-share-cache</code>"
      * specifies that multitenant entities will share the L2 cache. By default
      * this property is false meaning multitenant entities will have an ISOLATED
@@ -1595,6 +1611,31 @@ public class PersistenceUnitProperties {
      * @see #MULTITENANT_SHARED_CACHE
      */
     public static final String MULTITENANT_SHARED_EMF = "eclipselink.multitenant.tenants-share-emf";
+
+    /**
+     * The "<code>eclipselink.multitenant.strategy</code>" property specifies the
+     * global, project wide multitenancy strategy.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>schema</code>"
+     * <li>the fully qualified name for a class that implements {@link MultitenantPolicy} interface
+     * with public no-arg constructor
+     * </ul>
+     * <p>
+     * <b>Persistence XML example:</b><pre>
+     * {@code <property name="eclipselink.multitenant.strategy" value="schema"/>}</pre>
+     * <p>
+     * <b>Java example:</b><pre>
+     * {@code props.put(PersistenceUnitProperties.MULTITENANT_STRATEGY, "schema");}</pre>
+     *
+     * @see org.eclipse.persistence.descriptors.MultitenantPolicy
+     * @see org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy
+     * @see #MULTITENANT_SCHEMA_PROPERTY_DEFAULT
+     * @see #MULTITENANT_SHARED_CACHE
+     * @see #MULTITENANT_SHARED_EMF
+     */
+    public static final String MULTITENANT_STRATEGY = "eclipselink.multitenant.strategy";
 
     // Platforms & Customization
 

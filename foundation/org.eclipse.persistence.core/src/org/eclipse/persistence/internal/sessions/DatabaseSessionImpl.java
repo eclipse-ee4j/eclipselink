@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -574,6 +574,11 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         for (PartitioningPolicy policy : getProject().getPartitioningPolicies().values()) {
             policy.initialize(this);
         }
+
+        if (getProject().getMultitenantPolicy() != null) {
+            getProject().getMultitenantPolicy().initialize(this);
+        }
+
         // Process JPA named queries and add as session queries,
         // this must be done after descriptor init as requires to parse the JPQL.
         processJPAQueries();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
@@ -168,6 +167,14 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
         return false;
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isSchemaPerMultitenantPolicy() {
+        return false;
+    }
+
     /**
      * INTERNAL:
      * Subclasses that need to add field to an expresison should override this method.

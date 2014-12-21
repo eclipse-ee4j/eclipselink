@@ -355,7 +355,17 @@
             <property name="eclipselink.session-name" value="multi-tenant-C"/>
         </properties>
     </persistence-unit>
-    
+
+    <persistence-unit name="multi-tenant-schema-per-tenant">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <shared-cache-mode>NONE</shared-cache-mode>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Customer</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+        </properties>
+    </persistence-unit>
+
     <persistence-unit name="additional-criteria">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Person</class>

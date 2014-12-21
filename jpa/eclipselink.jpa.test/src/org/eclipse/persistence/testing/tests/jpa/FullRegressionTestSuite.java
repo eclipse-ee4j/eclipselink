@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,6 +54,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.Concurrenc
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantSchemaJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTestEnableSelective;
 import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
@@ -109,9 +110,9 @@ import org.eclipse.persistence.testing.tests.jpa.relationships.EMQueryJUnitTestS
 import org.eclipse.persistence.testing.tests.jpa.relationships.ExpressionJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.IsolatedCacheTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.RelationshipModelJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.relationships.TestKeyTypeToManyRelationship;
 import org.eclipse.persistence.testing.tests.jpa.relationships.UniAndBiDirectionalMappingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.relationships.VirtualAttributeTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.TestKeyTypeToManyRelationship;
 import org.eclipse.persistence.testing.tests.jpa.validation.QueryParameterValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.validation.ValidationTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
@@ -143,6 +144,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(AdvancedCompositePKJunitTest.suite());
         suite.addTest(AdvancedFetchGroupJunitTest.suite());
         suite.addTest(AdvancedMultiTenantJunitTest.suite());
+        suite.addTest(AdvancedMultiTenantSchemaJunitTest.suite());
         suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
         suite.addTest(PessimisticLockEntityRefreshTestSuite.suite());
         suite.addTest(UpdateAllQueryAdvancedJunitTest.suite());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Collections;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
+import javax.persistence.EntityManager;
 
 /**
  * The class defines EclipseLink properties' names for use at the EntityManager level.
@@ -76,7 +76,20 @@ public class EntityManagerProperties {
      * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
      */
     public static final String MULTITENANT_PROPERTY_DEFAULT = PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
-    
+
+    /**
+     * The "<code>eclipselink.tenant-schema-id</code>" property specifies the
+     * context property used to distinguish tenants when using global schema per tenant
+     * multitenant strategy. It is expected to be set by user when creating an {@link EntityManager}.
+     * <p>
+     * <b>Java example:</b><pre>
+     * {@code props.put(PersistenceUnitProperties.MULTITENANT_SCHEMA_PROPERTY_DEFAULT, "Oracle");}</pre>
+     *
+     * @see PersistenceUnitProperties#MULTITENANT_STRATEGY
+     * @see org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy
+     */
+    public static final String MULTITENANT_SCHEMA_PROPERTY_DEFAULT = PersistenceUnitProperties.MULTITENANT_SCHEMA_PROPERTY_DEFAULT;
+
     /**
      * Specifies that the EntityManager will be closed or not used after commit (not extended).
      * In general this is normally always the case for a container managed EntityManager,

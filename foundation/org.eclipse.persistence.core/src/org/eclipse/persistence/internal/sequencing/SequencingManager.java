@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,20 +12,31 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sequencing;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.persistence.sequencing.*;
-import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.MultitenantPolicy;
+import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sequencing.DefaultSequence;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.SequencingControl;
+import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.server.ConnectionPool;
+import org.eclipse.persistence.sessions.server.ExternalConnectionPool;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * SequencingManager is private to EclipseLink.
@@ -89,9 +100,9 @@ import org.eclipse.persistence.logging.SessionLog;
  *      resetSequencing;
  */
 class SequencingManager implements SequencingHome, SequencingServer, SequencingControl {
-    private DatabaseSessionImpl ownerSession;
+    private final DatabaseSessionImpl ownerSession;
     private SequencingConnectionHandler connectionHandler;
-    private PreallocationHandler preallocationHandler;
+    private Map<String, PreallocationHandler> preallocationHandler;
     private int whenShouldAcquireValueForAll;
     private Vector connectedSequences;
     boolean atLeastOneSequenceShouldUseTransaction;
@@ -267,14 +278,18 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
     }
 
     public void initializePreallocated() {
-        if (getPreallocationHandler() != null) {
-            getPreallocationHandler().initializePreallocated();
+        if (preallocationHandler != null) {
+            for (PreallocationHandler handler : preallocationHandler.values()) {
+                handler.initializePreallocated();
+            }
         }
     }
 
     public void initializePreallocated(String seqName) {
-        if (getPreallocationHandler() != null) {
-            getPreallocationHandler().initializePreallocated(seqName);
+        if (preallocationHandler != null) {
+            for (PreallocationHandler handler : preallocationHandler.values()) {
+                handler.initializePreallocated(seqName);
+            }
         }
     }
 
@@ -350,8 +365,9 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
      */
     class Preallocation_Transaction_NoAccessor_State extends State implements SequencingCallbackFactory {
 
-        public class SequencingCallbackImpl implements SequencingCallback {
+        final class SequencingCallbackImpl implements SequencingCallback {
             Map localSequences = new HashMap();
+            String context;
             
             /**
             * INTERNAL:
@@ -359,7 +375,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             * Should not be called after rollback.
             */
             public void afterCommit(Accessor accessor) {
-                afterCommitInternal(localSequences, accessor);
+                afterCommitInternal(context, localSequences, accessor);
             }
             
             public Map getPreallocatedSequenceValues() {
@@ -382,14 +398,14 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         /**
          * Release any locally allocated sequence back to the global sequence pool.
          */
-        void afterCommitInternal(Map localSequences, Accessor accessor) {
+        void afterCommitInternal(String context, Map localSequences, Accessor accessor) {
             Iterator it = localSequences.entrySet().iterator();
             while(it.hasNext()) {
                 Map.Entry entry = (Map.Entry)it.next();
                 String seqName = (String)entry.getKey();
                 Vector localSequenceForName = (Vector)entry.getValue();
                 if (!localSequenceForName.isEmpty()) {
-                    getPreallocationHandler().setPreallocated(seqName, localSequenceForName);
+                    getPreallocationHandler(context).setPreallocated(seqName, localSequenceForName);
                     // clear all localSequencesForName
                     localSequenceForName.clear();
                 }
@@ -412,6 +428,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             } else {
                 seqCallbackImpl = (SequencingCallbackImpl)accessor.getSequencingCallback(getSequencingCallbackFactory());
             }
+            seqCallbackImpl.context = getContext(writeSession);
             return seqCallbackImpl;
         }
 
@@ -422,7 +439,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
             if(sequence.getPreallocationSize() > 1) {
-                Queue sequencesForName = getPreallocationHandler().getPreallocated(seqName);
+                Queue sequencesForName = getPreallocationHandler(getContext(writeSession)).getPreallocated(seqName);
                 // First grab the first sequence value without locking, a lock is only required if empty.
                 Object sequenceValue = sequencesForName.poll();
                 if (sequenceValue != null) {
@@ -556,7 +573,8 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
             if(sequence.getPreallocationSize() > 1) {
-                Queue sequencesForName = getPreallocationHandler().getPreallocated(seqName);
+                PreallocationHandler handler = getPreallocationHandler(getContext(writeSession));
+                Queue sequencesForName = handler.getPreallocated(seqName);
                 // First try to get the next sequence value without locking.
                 Object sequenceValue = sequencesForName.poll();
                 if (sequenceValue != null) {
@@ -580,7 +598,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                             // Remove the first value before adding to the global cache to ensure this thread gets one.
                             sequenceValue = sequences.remove(0);
                             // copy remaining values to global cache.
-                            getPreallocationHandler().setPreallocated(seqName, sequences);
+                            handler.setPreallocated(seqName, sequences);
                             logDebugPreallocation(seqName, sequenceValue, sequences);
                         } catch (RuntimeException ex) {
                             try {
@@ -636,7 +654,8 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         public Object getNextValue(Sequence sequence, AbstractSession writeSession) {
             String seqName = sequence.getName();
             if(sequence.getPreallocationSize() > 1) {
-                Queue sequencesForName = getPreallocationHandler().getPreallocated(seqName);
+                PreallocationHandler handler = getPreallocationHandler(getContext(writeSession));
+                Queue sequencesForName = handler.getPreallocated(seqName);
                 // First try to get the next sequence value without locking.
                 Object sequenceValue = sequencesForName.poll();
                 if (sequenceValue != null) {
@@ -653,7 +672,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                     // Remove the first value before adding to the global cache to ensure this thread gets one.
                     sequenceValue = sequences.remove(0);
                     // copy remaining values to global cache.
-                    getPreallocationHandler().setPreallocated(seqName, sequences);
+                    handler.setPreallocated(seqName, sequences);
                     logDebugPreallocation(seqName, sequenceValue, sequences);
                 } finally {
                     lock.release();
@@ -755,7 +774,7 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
         boolean onExceptionDisconnectConnectionHandler = false;
         
         boolean hasConnectionHandler = getConnectionHandler() != null;
-        boolean hasPreallocationHandler = getPreallocationHandler() != null;
+        boolean hasPreallocationHandler = getPreallocationHandler(null) != null;
 
         try {
             // In AddDescriptors case the handler may have been already created 
@@ -776,10 +795,11 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             // In AddDescriptors case the handler may have been already created 
             if (!hasPreallocationHandler) {
                 if (atLeastOneSequenceShouldUsePreallocation) {
-                    if (getPreallocationHandler() == null) {
-                        createPreallocationHandler();
+                    String context = getContext(null);
+                    if (getPreallocationHandler(context) == null) {
+                        createPreallocationHandler(context);
                     }
-                    getPreallocationHandler().onConnect();
+                    getPreallocationHandler(context).onConnect();
                     onExceptionDisconnectPreallocationHandler = true;
                 }
             }
@@ -802,11 +822,11 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
                 }
                 setConnectionHandler(null);
             }
-            if (!hasPreallocationHandler && getPreallocationHandler() != null) {
+            if (!hasPreallocationHandler && getPreallocationHandler(null) != null) {
                 if (onExceptionDisconnectPreallocationHandler) {
-                    getPreallocationHandler().onDisconnect();
+                    getPreallocationHandler(null).onDisconnect();
                 }
-                clearPreallocationHandler();
+                clearPreallocationHandler(null);
             }
             throw ex;
         }
@@ -850,24 +870,44 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
             getConnectionHandler().onDisconnect();
             setConnectionHandler(null);
         }
-        if (getPreallocationHandler() != null) {
-            getPreallocationHandler().onDisconnect();
+        if (getPreallocationHandler(null) != null) {
+            getPreallocationHandler(null).onDisconnect();
             clearPreallocationHandler();
         }
         onDisconnectSequences(0);
         getOwnerSession().log(SessionLog.FINEST, SessionLog.SEQUENCING, "sequencing_disconnected");
     }
 
-    protected PreallocationHandler getPreallocationHandler() {
-        return preallocationHandler;
+    protected PreallocationHandler getPreallocationHandler(String context) {
+        if (preallocationHandler != null) {
+            if (context == null) {
+                return preallocationHandler.get("default");
+            } else {
+                PreallocationHandler handler = preallocationHandler.get(context);
+                if (handler == null && !"default".equals(context)) {
+                    handler = new PreallocationHandler();
+                    preallocationHandler.put(context, handler);
+                    handler.onConnect();
+                }
+                return handler;
+            }
+        }
+        return null;
     }
 
-    protected void createPreallocationHandler() {
-        preallocationHandler = new PreallocationHandler();
+    protected void createPreallocationHandler(String context) {
+        if (preallocationHandler == null) {
+            preallocationHandler = new ConcurrentHashMap<>(5);
+        }
+        preallocationHandler.put(context, new PreallocationHandler());
     }
 
     protected void clearPreallocationHandler() {
         preallocationHandler = null;
+    }
+
+    protected void clearPreallocationHandler(AbstractSession session) {
+        preallocationHandler.remove(getContext(session));
     }
 
     /*
@@ -1116,5 +1156,22 @@ class SequencingManager implements SequencingHome, SequencingServer, SequencingC
 
     public void setConnectionPool(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
+    }
+    
+    private String getContext(AbstractSession writeSession) {
+        String context = "default";
+        if (writeSession != null) {
+            MultitenantPolicy policy = writeSession.getProject().getMultitenantPolicy();
+            if (policy != null && policy.isSchemaPerMultitenantPolicy()) {
+                SchemaPerMultitenantPolicy tableMtPolicy = (SchemaPerMultitenantPolicy) policy;
+                if (tableMtPolicy.isSchemaPerTable()) {
+                    String tenantContext = (String) writeSession.getProperty(tableMtPolicy.getContextProperty());
+                    if (tenantContext != null) {
+                        context = tenantContext;
+                    }
+                }
+            }
+        }
+        return context;
     }
 }

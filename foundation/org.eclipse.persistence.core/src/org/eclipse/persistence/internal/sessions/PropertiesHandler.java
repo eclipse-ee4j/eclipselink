@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -205,6 +205,8 @@ public class PropertiesHandler {
             addProp(new ConnectionPoolProp());
             addProp(new BooleanProp(PersistenceUnitProperties.JDBC_RESULT_SET_ACCESS_OPTIMIZATION, Boolean.toString(ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault)));
             addProp(new BooleanProp(PersistenceUnitProperties.JPQL_TOLERATE, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, "false"));
+            addProp(new BooleanProp(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, "true"));
         }
         
         Prop(String name) {

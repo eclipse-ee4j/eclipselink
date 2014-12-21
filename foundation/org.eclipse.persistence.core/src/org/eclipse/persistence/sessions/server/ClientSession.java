@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -24,6 +24,7 @@ import java.io.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
@@ -73,7 +74,7 @@ public class ClientSession extends AbstractSession {
         super();
         // If we have table per tenant descriptors let's clone the project so
         // that we can have a separate jpql parse cache for each tenant.
-        if (parent.hasTablePerTenantDescriptors()) {
+        if (parent.hasTablePerTenantDescriptors() || parent.getProject().getMultitenantPolicy() != null) {
             this.project = parent.getProject().clone();
             this.project.setJPQLParseCacheMaxSize(parent.getProject().getJPQLParseCache().getMaxSize());
         } else {
@@ -84,6 +85,13 @@ public class ClientSession extends AbstractSession {
             // PERF: project only requires clone if login is different
             this.setProject(getProject().clone());
             this.setLogin(connectionPolicy.getLogin());
+        }
+        if (this.project.getMultitenantPolicy() != null && this.project.getMultitenantPolicy().isSchemaPerMultitenantPolicy()) {
+            SchemaPerMultitenantPolicy mp = (SchemaPerMultitenantPolicy) this.project.getMultitenantPolicy();
+            if (mp.shouldUseSharedEMF()) {
+                //force different login instance
+                this.setLogin(getLogin().clone());
+            }
         }
         this.isLoggingOff = parent.isLoggingOff();
         this.isActive = true;

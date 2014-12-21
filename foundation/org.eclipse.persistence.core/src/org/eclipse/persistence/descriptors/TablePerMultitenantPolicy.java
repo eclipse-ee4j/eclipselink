@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,7 +10,7 @@
  * Contributors:
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
 import java.util.HashMap;
@@ -48,6 +48,9 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     protected TenantTableDiscriminatorType type;
     protected String contextProperty;
     protected String contextTenant;
+
+    TablePerMultitenantPolicy() {
+    }
     
     public TablePerMultitenantPolicy(ClassDescriptor desc) {
         descriptor = desc;
@@ -169,6 +172,14 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
         return false;
     }
     
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isSchemaPerMultitenantPolicy() {
+        return false;
+    }
+
     /**
      * PUBLIC: 
      * Return true if this descriptor requires a suffix to the table per tenant.

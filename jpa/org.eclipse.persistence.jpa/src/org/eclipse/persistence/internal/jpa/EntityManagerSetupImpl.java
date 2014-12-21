@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -96,6 +96,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -142,6 +143,8 @@ import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.RemoteProtocol;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.MultitenantPolicy;
+import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.eis.EISConnectionSpec;
@@ -2235,6 +2238,34 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
        }
     }
     
+    protected void updateTenancy(Map m, ClassLoader loader) {
+        String tenantStrategy = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_STRATEGY, m, this.session);
+        if(tenantStrategy != null) {
+            if ("schema".equalsIgnoreCase(tenantStrategy)) {
+                SchemaPerMultitenantPolicy policy = new SchemaPerMultitenantPolicy();
+                String prop = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, m, session);
+                if (prop != null) {
+                    policy.setShouldUseSharedEMF(Boolean.valueOf(prop));
+                }
+                prop = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, m, session);
+                if (prop != null) {
+                    policy.setShouldUseSharedCache(Boolean.valueOf(prop));
+                }
+                session.getProject().setMultitenantPolicy(policy);
+            } else {
+                //assume it is a class with default constructor implementing existing interface
+                Class cls = findClassForProperty(tenantStrategy, PersistenceUnitProperties.MULTITENANT_STRATEGY, loader);
+                MultitenantPolicy policy = null;
+                try {
+                    Constructor constructor = cls.getConstructor();
+                    policy = (MultitenantPolicy) constructor.newInstance();
+                } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    throw EntityManagerSetupException.failedToInstantiateProperty(tenantStrategy, PersistenceUnitProperties.MULTITENANT_STRATEGY, ex);
+                }
+                session.getProject().setMultitenantPolicy(policy);
+            }
+        }
+    }
 
     /**
      * Update whether session should tolerate invalid JPQL at creation time.
@@ -2708,6 +2739,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateSerializer(m, loader);
             updateShouldOptimizeResultSetAccess(m);
             updateTolerateInvalidJPQL(m);
+            updateTenancy(m, loader);
             
             // Customizers should be processed last
             processDescriptorCustomizers(m, loader);
