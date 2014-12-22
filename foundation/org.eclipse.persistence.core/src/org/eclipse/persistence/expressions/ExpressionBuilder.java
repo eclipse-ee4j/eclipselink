@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -419,7 +419,11 @@ public class ExpressionBuilder extends ObjectExpression {
      * Stored session shall always be root session.
      */
     public void setSession(AbstractSession session) {
-        this.session = session.getRootSession(null);
+        if (session != null) {
+            this.session = session.getRootSession(null);
+        } else {
+            this.session = null;
+        }
     }
 
     /**
