@@ -36,7 +36,6 @@
 *     dmahar     - Jan 2012 - remove update-package-names targets
 *     bdoughan   - Sep 2012 - Added RESTful tests and necessary dependencies
 *     mvalovy    - Mar-Jul 2014 - Added Bean Validation support, JAXBBeanValidationTestSuite
-                   and JAXBPerformanceTestSuite
 #******************************************************************************/-->
 
 <project name="eclipselink.moxy.test" default="test" basedir=".">
@@ -479,7 +478,6 @@
                         <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/json/JSONTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/rs/RESTfulTestSuite.java"/>
-                        <!--<include name="org/eclipse/persistence/testing/jaxb/JAXBPerformanceTestSuite.java"/>-->
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
