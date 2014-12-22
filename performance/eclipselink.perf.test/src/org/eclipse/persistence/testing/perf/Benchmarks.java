@@ -18,6 +18,9 @@ import org.eclipse.persistence.testing.perf.json.marshal.JsonMarshalBenchmark;
 import org.eclipse.persistence.testing.perf.json.unmarshal.JsonUnmarshalBenchmark;
 import org.eclipse.persistence.testing.perf.json.writer.JsonWriterBenchmark;
 import org.eclipse.persistence.testing.perf.largexml.LargeXmlBenchmark;
+import org.eclipse.persistence.testing.perf.moxy.casesensitivity.JAXBCaseInsensitivityBenchmark;
+import org.eclipse.persistence.testing.perf.moxy.referenceresolver.ReferenceResolverBenchmark;
+import org.eclipse.persistence.testing.perf.moxy.referenceresolver.ReferenceResolverBenchmark;
 import org.eclipse.persistence.testing.perf.smallxml.SmallXmlBenchmark;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
@@ -47,13 +50,16 @@ public class Benchmarks {
         }
 
         Options opt = new OptionsBuilder()
-                .include(getInclude(ValidationBenchmark.class))
                 .include(getInclude(SmallXmlBenchmark.class))
                 .include(getInclude(LargeXmlBenchmark.class))
                 .include(getInclude(PersistenceContentHandlerBenchmark.class))
                 .include(getInclude(JsonMarshalBenchmark.class))
                 .include(getInclude(JsonUnmarshalBenchmark.class))
                 .include(getInclude(JsonWriterBenchmark.class))
+                // tests that are not part of regular test-harness
+//                .include(getInclude(ValidationBenchmark.class))
+//                .include(getInclude(ReferenceResolverBenchmark.class))
+//                .include(getInclude(JAXBCaseInsensitivityBenchmark.class))
                 .result(resultFile)
                 .resultFormat(ResultFormatType.valueOf(resultFormat.toUpperCase()))
                 .warmupIterations(warmupIterations)
