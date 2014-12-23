@@ -8,16 +8,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="sdo" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ejb_3.1.0.v201205171433.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -30,7 +20,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$EXTENSION_LIB_EXTERNAL$/hamcrest-core-1.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.servlet_2.4.0.v200806031604.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -39,18 +29,41 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../plugins/commonj.sdo_2.1.1.v201112051852.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/javax.wsdl_1.6.2.v201012040545.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../plugins/commonj.sdo.source_2.1.1.v201112051852.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/wsdl4j-src-1.6.2.zip!/wsdl4j-1_6_2/src" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../eclipselink.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.persistence_1.0.0.v200905011740.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="core" />
+    <orderEntry type="module" module-name="jpa" />
+    <orderEntry type="module" module-name="moxy" />
+    <orderEntry type="module" module-name="dbws" />
+    <orderEntry type="module" module-name="dbws.builder" />
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library>
+        <CLASSES>
+          <root url="jar://$EXTENSION_ORACLE_LIB_EXTERNAL$/ojdbc7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library>
+        <CLASSES>
+          <root url="jar://$EXTENSION_LIB_EXTERNAL$/mysql-connector-java-5.1.31-bin.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

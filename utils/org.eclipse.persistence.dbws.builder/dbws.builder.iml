@@ -9,29 +9,36 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="jpa" />
-    <orderEntry type="module" module-name="moxy" />
-    <orderEntry type="module" module-name="core" />
-    <orderEntry type="module" module-name="core.test" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/org.eclipse.persistence.oracleddlparser_1.0.0.v20141020.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs.source_1.1.1.v20101004-1200.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/org.eclipse.persistence.oracleddlparser.source_1.0.0.v20141020.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.1.0.v201304241213.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/javax.wsdl_1.6.2.v201012040545.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.1.0.v201304241213.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/wsdl4j-src-1.6.2.zip!/wsdl4j-1_6_2/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.xml.bind_2.2.12.v201410011542.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../plugins/javax.xml.bind.source_2.2.12.v1410011542.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -44,16 +51,9 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_5.0.1.v201405080102.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_5.0.1.v201405080102.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
+    <orderEntry type="module" module-name="core" />
+    <orderEntry type="module" module-name="dbws" />
+    <orderEntry type="module" module-name="jpa" />
+    <orderEntry type="module" module-name="moxy" />
   </component>
 </module>

@@ -5,8 +5,12 @@
       <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.core/core.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.core/core.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/foundation/eclipselink.core.test/core.test.iml" filepath="$PROJECT_DIR$/foundation/eclipselink.core.test/core.test.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/dbws/org.eclipse.persistence.dbws/dbws.iml" filepath="$PROJECT_DIR$/dbws/org.eclipse.persistence.dbws/dbws.iml" group="root/dbws" />
+      <module fileurl="file://$PROJECT_DIR$/utils/org.eclipse.persistence.dbws.builder/dbws.builder.iml" filepath="$PROJECT_DIR$/utils/org.eclipse.persistence.dbws.builder/dbws.builder.iml" group="root/dbws" />
+      <module fileurl="file://$PROJECT_DIR$/utils/eclipselink.dbws.builder.test/dbws.builder.test.iml" filepath="$PROJECT_DIR$/utils/eclipselink.dbws.builder.test/dbws.builder.test.iml" group="root/dbws" />
+      <module fileurl="file://$PROJECT_DIR$/utils/eclipselink.dbws.builder.test.oracle/dbws.builder.test.oracle.iml" filepath="$PROJECT_DIR$/utils/eclipselink.dbws.builder.test.oracle/dbws.builder.test.oracle.iml" group="root/dbws" />
       <module fileurl="file://$PROJECT_DIR$/dbws/eclipselink.dbws.test/dbws.test.iml" filepath="$PROJECT_DIR$/dbws/eclipselink.dbws.test/dbws.test.iml" group="root/dbws" />
       <module fileurl="file://$PROJECT_DIR$/dbws/eclipselink.dbws.test.oracle/dbws.test.oracle.iml" filepath="$PROJECT_DIR$/dbws/eclipselink.dbws.test.oracle/dbws.test.oracle.iml" group="root/dbws" />
+      <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/extension.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.extension/extension.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/jpa.iml" filepath="$PROJECT_DIR$/jpa/org.eclipse.persistence.jpa/jpa.iml" group="root/jpa" />
       <module fileurl="file://$PROJECT_DIR$/jpa/eclipselink.jpa.modelgen.test/jpa.modelgen.test.iml" filepath="$PROJECT_DIR$/jpa/eclipselink.jpa.modelgen.test/jpa.modelgen.test.iml" group="root/jpa" />
       <module fileurl="file://$PROJECT_DIR$/jpa/eclipselink.jpa.test/jpa.test.iml" filepath="$PROJECT_DIR$/jpa/eclipselink.jpa.test/jpa.test.iml" group="root/jpa" />
@@ -18,6 +22,7 @@
       <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/nosql.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.nosql/nosql.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/oracle.iml" filepath="$PROJECT_DIR$/foundation/org.eclipse.persistence.oracle/oracle.iml" group="root/foundation" />
       <module fileurl="file://$PROJECT_DIR$/foundation/eclipselink.extension.oracle.test/oracle.test.iml" filepath="$PROJECT_DIR$/foundation/eclipselink.extension.oracle.test/oracle.test.iml" group="root/foundation" />
+      <module fileurl="file://$PROJECT_DIR$/performance/eclipselink.perf.test/perf.test.iml" filepath="$PROJECT_DIR$/performance/eclipselink.perf.test/perf.test.iml" group="root/performance" />
       <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" group="root" />
       <module fileurl="file://$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/sdo.iml" filepath="$PROJECT_DIR$/sdo/org.eclipse.persistence.sdo/sdo.iml" group="root/sdo" />
       <module fileurl="file://$PROJECT_DIR$/sdo/eclipselink.sdo.test/sdo.test.iml" filepath="$PROJECT_DIR$/sdo/eclipselink.sdo.test/sdo.test.iml" group="root/sdo" />
