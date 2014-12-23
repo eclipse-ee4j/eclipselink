@@ -13,9 +13,8 @@
 package org.eclipse.persistence.testing.perf.moxy.casesensitivity;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.LoremIpsum;
+import org.eclipse.persistence.testing.perf.moxy.casesensitivity.correctCase.LoremIpsum;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +23,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -83,10 +80,11 @@ public class JAXBCaseInsensitivityBenchmark extends junit.framework.TestCase {
         return loremCorrectCase;
     }
 
-    private org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.LoremIpsum unmarshalOtherCaseInsensitive() throws JAXBException {
+    private org.eclipse.persistence.testing.perf.moxy.casesensitivity.otherCase.LoremIpsum
+    unmarshalOtherCaseInsensitive() throws JAXBException {
 
-        org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.LoremIpsum loremOtherCase
-                = (org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.LoremIpsum) unmOtherCaseInsensitive.unmarshal(FILE);
+        org.eclipse.persistence.testing.perf.moxy.casesensitivity.otherCase.LoremIpsum loremOtherCase
+                = (org.eclipse.persistence.testing.perf.moxy.casesensitivity.otherCase.LoremIpsum) unmOtherCaseInsensitive.unmarshal(FILE);
 
         return loremOtherCase;
     }
@@ -99,7 +97,8 @@ public class JAXBCaseInsensitivityBenchmark extends junit.framework.TestCase {
         unmCorrectCaseSensitive = ctxCorrectCaseSensitive.createUnmarshaller();
 
         /* Create and assign case-insensitive unmarshaller */
-        JAXBContext ctxOtherCaseInsensitive = JAXBContextFactory.createContext(new Class[]{ org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase.LoremIpsum.class}, null);
+        JAXBContext ctxOtherCaseInsensitive = JAXBContextFactory.createContext(new Class[]{ org.eclipse.persistence
+                .testing.perf.moxy.casesensitivity.otherCase.LoremIpsum.class}, null);
         unmOtherCaseInsensitive = ctxOtherCaseInsensitive.createUnmarshaller();
         unmOtherCaseInsensitive.setProperty(UnmarshallerProperties.UNMARSHALLING_CASE_INSENSITIVE, Boolean.TRUE);
     }
