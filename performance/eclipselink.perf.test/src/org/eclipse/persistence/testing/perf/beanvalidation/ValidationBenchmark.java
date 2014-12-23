@@ -19,9 +19,6 @@ import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -35,7 +32,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Performance baseline for JAXB and JPA processes using Bean Validation.
@@ -59,8 +55,6 @@ public class ValidationBenchmark {
     private EntityManager em;
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void testJpaAnnotated(Blackhole bh) throws Exception {
         final EntityTransaction transaction = em.getTransaction();
         transaction.begin();
@@ -73,8 +67,6 @@ public class ValidationBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void testJpa(Blackhole bh) throws Exception {
         final EntityTransaction transaction = em.getTransaction();
         transaction.begin();
@@ -87,8 +79,6 @@ public class ValidationBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void testMarshal(Blackhole bh) throws Exception {
         StringWriter writer = new StringWriter();
         Employee employee = new Employee().withAge(51289).withPersonalName("Robert Paulson")
@@ -99,8 +89,6 @@ public class ValidationBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void testUnmarshal(Blackhole bh) throws Exception {
         Employee result = (Employee) unm.unmarshal(Thread.currentThread().getContextClassLoader().getResource
                 (EMPLOYEE_XML));
@@ -108,8 +96,6 @@ public class ValidationBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void testMarshalAnnotated(Blackhole bh) throws Exception {
         StringWriter writer = new StringWriter();
         EmployeeAnnotated employee = new EmployeeAnnotated().withAge(51289).withPersonalName("Robert Paulson")
@@ -120,8 +106,6 @@ public class ValidationBenchmark {
     }
 
     @Benchmark
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    @BenchmarkMode(Mode.AverageTime)
     public void testUnmarshalAnnotated(Blackhole bh) throws Exception {
         EmployeeAnnotated result = (EmployeeAnnotated) unm.unmarshal(Thread.currentThread().getContextClassLoader()
                 .getResource(EMPLOYEE_ANNOTATED_XML));
