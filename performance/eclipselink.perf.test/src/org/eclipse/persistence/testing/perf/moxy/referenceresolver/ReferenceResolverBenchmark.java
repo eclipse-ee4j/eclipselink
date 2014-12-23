@@ -16,17 +16,22 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.junit.After;
-import org.junit.Before;
+import org.eclipse.persistence.testing.perf.moxy.referenceresolver.ClassicMoxyContainer;
+import org.eclipse.persistence.testing.perf.moxy.referenceresolver.Component;
+import org.eclipse.persistence.testing.perf.moxy.referenceresolver.Layer;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.infra.Blackhole;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 
 /**
@@ -35,80 +40,50 @@ import java.util.HashMap;
  * @author Marcel Valovy - marcel.valovy@oracle.com
  * @see <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=437920">EclipseLink Forum, Bug 437920.</a>
  */
-public class ReferenceResolverBenchmark extends junit.framework.TestCase {
-    private static final int LAPS = 1;
+@State(Scope.Benchmark)
+public class ReferenceResolverBenchmark {
 
     private ClassicMoxyContainer c;
-    private ClassicMoxyContainer cJaxb;
     private JAXBMarshaller marshaller;
     private JAXBUnmarshaller unmarshaller;
     private Unmarshaller unmarshallerJaxb;
     private Marshaller marshallerJaxb;
-    private long[][] meas = new long[4][2]; // 4 tests, 2 timings (start and elapsed)
 
-    private static final double THRESHOLD = 2.0;
+    @Benchmark
+    public void testReferenceResolverMarshal(Blackhole bh) throws Exception {
+        StringWriter writer = new StringWriter();
+        marshaller.marshal(c, writer);
 
-    public void testPerformance() throws Exception {
-
-        System.out.println("PerformanceReferenceResolverTestCase - Started");
-
-        System.out.println("Marshalling:");
-        meas[0][0] = System.nanoTime();
-        for (int i = 0; i < LAPS; i++) {
-            marshal();
-        }
-        meas[0][1] = System.nanoTime() - meas[0][0];
-        System.out.println("\t" + LAPS + " iterations took " + meas[0][1] + "ms.");
-
-        System.out.println("Unmarshalling:");
-        meas[1][0] = System.nanoTime();
-        for (int i = 0; i < LAPS; i++) {
-            unmarshal();
-        }
-        meas[1][1] = System.nanoTime() - meas[1][0];
-        System.out.println("\t" + LAPS + " iterations took " + meas[1][1] + "ms.");
-
-        jaxbRi();
-        checkThreshold();
-
-        System.out.println("PerformanceReferenceResolverTestCase - Ended");
+        bh.consume(writer);
     }
 
-    private void checkThreshold() {
-        System.out.printf("%s%.2f%s\n",
-                "EL Marshalling is ", (double) meas[0][1] / meas[2][1], " times slower than JAXB-RI."
-                + (((double) meas[0][1] / meas[2][1] > THRESHOLD) ? " ...................THRESHOLD EXCEEDED." :
-                " .....................THRESHOLD PASSED."));
-        System.out.printf("%s%.2f%s\n",
-                "EL Unmarshalling is ", (double) meas[1][1] / meas[3][1], " times slower than JAXB-RI."
-                + (((double) meas[1][1] / meas[3][1] > THRESHOLD) ? " ...................THRESHOLD EXCEEDED." :
-                " .....................THRESHOLD PASSED."));
+    @Benchmark
+    public void testReferenceResolverUnmarshal(Blackhole bh) throws Exception {
+        ClassicMoxyContainer cmc = ClassicMoxyContainer.class.cast(unmarshaller.unmarshal(new FileReader("fc.xml")));
+
+        bh.consume(cmc);
     }
 
-    private void jaxbRi() throws JAXBException, IOException {
-        System.out.println("JAXB-RI comparison tests:");
+    public void testReferenceResolverMarshalJAXBRI(Blackhole bh) throws Exception {
+        StringWriter writer = new StringWriter();
+        marshallerJaxb.marshal(c, writer);
 
-        System.out.println("Marshalling JAXB-RI:");
-        meas[2][0] = System.nanoTime();
-        for (int i = 0; i < LAPS; i++) {
-            marshalJaxbRi();
-        }
-        meas[2][1] = System.nanoTime() - meas[2][0];
-        System.out.println("\t" + LAPS + " iterations took " + meas[2][1] + "ms.");
-
-        System.out.println("Unmarshalling JAXB-RI:");
-        meas[3][0] = System.nanoTime();
-        for (int i = 0; i < LAPS; i++) {
-            unmarshalJaxbRi();
-        }
-        meas[3][1] = System.nanoTime() - meas[3][0];
-        System.out.println("\t" + LAPS + " iterations took " + meas[3][1] + "ms.");
+        bh.consume(writer);
     }
 
-    @Before
-    public void setUp() throws Exception {
+    @Benchmark
+    public void testReferenceResolverUnmarshalJAXBRI(Blackhole bh) throws Exception {
+        ClassicMoxyContainer cmc = ClassicMoxyContainer.class.cast(unmarshallerJaxb.unmarshal(new FileReader("fc.xml")));
+        bh.consume(cmc);
+    }
+
+    /**
+     * Initial setup.
+     */
+    @Setup
+    public void prepare() throws Exception {
+        /* Create and assign case-sensitive unmarshaller */
         c = ClassicMoxyContainer.createHugeContainer();
-        cJaxb = ClassicMoxyContainer.createHugeContainer();
         JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(
                 new Class[]{ClassicMoxyContainer.class, Layer.class, Component.class}, new HashMap());
         javax.xml.bind.JAXBContext contextJaxb = JAXBContext.newInstance(
@@ -119,27 +94,17 @@ public class ReferenceResolverBenchmark extends junit.framework.TestCase {
         marshallerJaxb = contextJaxb.createMarshaller();
         marshallerJaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         unmarshallerJaxb = contextJaxb.createUnmarshaller();
+
+        marshaller.marshal(c, new FileWriter("fc.xml"));
     }
 
-    @After
+    /**
+     * Clean-up.
+     */
+    @TearDown
     public void tearDown() throws Exception {
         //noinspection ResultOfMethodCallIgnored
         new File("fc.xml").delete();
     }
 
-    public void marshal() throws Exception {
-        marshaller.marshal(c, new FileWriter("fc.xml"));
-    }
-
-    public void unmarshal() throws Exception {
-        c = ClassicMoxyContainer.class.cast(unmarshaller.unmarshal(new FileReader("fc.xml")));
-    }
-
-    private void unmarshalJaxbRi() throws JAXBException, FileNotFoundException {
-        cJaxb = ClassicMoxyContainer.class.cast(unmarshallerJaxb.unmarshal(new FileReader("fc.xml")));
-    }
-
-    private void marshalJaxbRi() throws JAXBException, IOException {
-        marshallerJaxb.marshal(cJaxb, new FileWriter("fc.xml"));
-    }
 }
