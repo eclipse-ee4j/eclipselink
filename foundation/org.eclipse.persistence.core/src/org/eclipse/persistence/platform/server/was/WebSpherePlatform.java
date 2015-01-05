@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,17 +13,20 @@
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *     12/18/2014-2.6 Rick Curtis
+ *       455690: Move JNDIConnector lookup type to ServerPlatform.
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server.was;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Connection;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.Connection;
+import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.transaction.was.WebSphereTransactionController;
 
 /**
@@ -147,5 +150,8 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
 
         return super.unwrapConnection(connection);
     }
-    
+
+    public int getJNDIConnectorType() {
+        return JNDIConnector.STRING_LOOKUP;
+    }
 }

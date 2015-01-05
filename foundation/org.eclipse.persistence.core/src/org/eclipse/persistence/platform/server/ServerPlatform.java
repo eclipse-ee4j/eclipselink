@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,6 +14,8 @@
  *       Move JMX MBean generic registration code up from specific platforms
  *       add new isRuntimeServicesEnabledDefault()
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *     12/18/2014-2.6 Rick Curtis
+ *       - 455690: Move JNDIConnector lookup type to ServerPlatform.
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
@@ -263,4 +265,9 @@ public interface ServerPlatform {
      * before opening proxy session and before closing it.
      */
     void clearStatementCache(java.sql.Connection connection);
+
+    /**
+     * INTERNAL: Get JNDIConnector lookupType value for this platform.
+     */
+    public int getJNDIConnectorLookupType();
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/18/2014-2.6 Rick Curtis
+ *       - 455690: Move JNDIConnector lookup type to ServerPlatform.
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -35,11 +37,14 @@ public class JNDIConnector implements Connector {
     protected Context context;
     protected String name;
     protected boolean isCallbackRegistered;
+    
+    public static final int UNDEFINED_LOOKUP = -1;
     public static final int STRING_LOOKUP = 1;
     public static final int COMPOSITE_NAME_LOOKUP = 2;
     public static final int COMPOUND_NAME_LOOKUP = 3;
-		//default setting is composite name to be consistent with previous TopLink versions
-    protected int lookupType = COMPOSITE_NAME_LOOKUP;
+
+    @Deprecated
+    protected int lookupType = UNDEFINED_LOOKUP; 
 
     /**
      * PUBLIC:
@@ -96,10 +101,17 @@ public class JNDIConnector implements Connector {
         DataSource dataSource = getDataSource();
         if (dataSource == null) {
             try {
+                int type = lookupType;
+                // If lookupType is != UNDEFINED_LOOKUP that means that a user is using the deprecated method yet so
+                // we need to honor that value.
+                if(lookupType == UNDEFINED_LOOKUP) {
+                    type = session.getServerPlatform().getJNDIConnectorLookupType();
+                }
+
                 //bug#2761428 and 4405389 JBoss needs to look up datasources based on a string not a composite or compound name
-                if (lookupType == STRING_LOOKUP) {
+                if (type == STRING_LOOKUP) {
                     dataSource = (DataSource)getContext().lookup(getName());
-                } else if (lookupType == COMPOSITE_NAME_LOOKUP) {
+                } else if (type == COMPOSITE_NAME_LOOKUP) {
                     dataSource = (DataSource)getContext().lookup(new CompositeName(name));
                 } else {
                     dataSource = (DataSource)getContext().lookup(new CompoundName(name, new Properties()));
@@ -201,10 +213,19 @@ public class JNDIConnector implements Connector {
         this.name = name;
     }
 
+    /**
+     * @deprecated As of 2.6.0, replaced by configuration provided by
+     *             {@link org.eclipse.persistence.platform.server.ServerPlatform#getJNDIConnectorLookupType()}
+     * @param lookupType
+     */
     public void setLookupType(int lookupType) {
         this.lookupType = lookupType;
     }
 
+    /**
+     * @deprecated As of 2.6.0, replaced by configuration provided by
+     *             {@link org.eclipse.persistence.platform.server.ServerPlatform#getJNDIConnectorLookupType()}
+     */
     public int getLookupType() {
         return lookupType;
     }

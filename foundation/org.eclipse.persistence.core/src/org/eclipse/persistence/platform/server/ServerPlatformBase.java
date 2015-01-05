@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,6 +14,8 @@
  *       Move JMX MBean generic registration code up from specific platforms
  *       add new isRuntimeServicesEnabledDefault()
  *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *     12/18/2014-2.6 Rick Curtis
+ *       - 455690: Move JNDIConnector lookup type to ServerPlatform.
  ******************************************************************************/  
 package org.eclipse.persistence.platform.server;
 
@@ -30,6 +32,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
+import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.logging.SessionLog;
@@ -606,5 +609,12 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
-    public void serverSpecificRegisterMBean() { }       
+    public void serverSpecificRegisterMBean() { }
+
+    /**
+     * @return Return JNDIConnector.COMPOSITE_NAME_LOOKUP.
+     */
+    public int getJNDIConnectorLookupType() { 
+        return JNDIConnector.COMPOSITE_NAME_LOOKUP; 
+    }
 }
