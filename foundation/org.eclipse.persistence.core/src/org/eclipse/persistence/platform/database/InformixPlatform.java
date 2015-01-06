@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/11/2014 - Dalia Abo Sheasha
+ *       - 454917 : Wrong SQL statement generated for Informix when GenerationType.IDENTITY strategy is used
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -18,6 +20,7 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  *    <p><b>Purpose</b>: Provides Informix specific behavior.
@@ -247,6 +250,17 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
         return values;
     }
 
+    /**
+     * Append the field type to a writer unless the field uses an Identity strategy to generate its value.
+     * In this case, the field type 'SERIAL' will be appended later.  
+     */
+    @Override
+    public void printFieldTypeSize(Writer writer, FieldDefinition field, 
+            FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
+        if (!shouldPrintFieldIdentityClause)
+            printFieldTypeSize(writer, field, fieldType);
+    }
+    
     /**
      * Append the receiver's field serial constraint clause to a writer.
      */

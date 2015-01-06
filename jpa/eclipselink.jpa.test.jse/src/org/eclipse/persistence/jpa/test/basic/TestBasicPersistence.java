@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation. All rights reserved.
+ * Copyright (c) 2014, 2015 IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,6 +10,8 @@
  * Contributors:
  *     11/04/2014 - Rick Curtis  
  *       - 450010 : Add java se test bucket
+ *     12/19/2014 - Dalia Abo Sheasha
+ *       - 454917 : Added a test to use the IDENTITY strategy to generate values
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.basic;
 
@@ -19,8 +21,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.jpa.test.basic.model.Dog;
+import org.eclipse.persistence.jpa.test.basic.model.Employee;
 import org.eclipse.persistence.jpa.test.basic.model.Person;
 import org.eclipse.persistence.jpa.test.basic.model.XmlFish;
+import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
@@ -31,7 +35,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
 public class TestBasicPersistence {
-    @Emf(classes = { Dog.class, XmlFish.class, Person.class }, properties = {
+    @Emf(createTables = DDLGen.DROP_CREATE, classes = { Dog.class, XmlFish.class, Person.class, Employee.class }, properties = {
         @Property(name = "eclipselink.logging.level", value = "FINEST"),
         @Property(name = "eclipselink.cache.shared.default", value = "false") }, mappingFiles = { "META-INF/fish-orm.xml" })
     private EntityManagerFactory emf;
@@ -80,5 +84,26 @@ public class TestBasicPersistence {
             em.close();
         }
     }
-
+    
+    @Test
+    public void identityStrategyTest() {
+    	if (emf == null)
+            return;
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Employee e = new Employee();
+            em.persist(e);
+            em.getTransaction().commit();
+            em.clear();
+            
+            Employee foundEmp = em.find(Employee.class, e.getId());
+            Assert.assertNotNull(foundEmp);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
 }

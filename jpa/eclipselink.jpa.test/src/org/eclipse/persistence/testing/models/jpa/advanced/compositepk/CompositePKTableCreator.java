@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,6 +21,8 @@
  *       - 296078: JPA 2.0 with @MapsId, em.persist generates Internal Exception IllegalArgumentException
  *     02/02/2011-2.3 Chris Delahunt
  *       - 336122: ValidationException thrown for JoinColumns on OneToMany with composite primary key
+ *     01/06/2015-2.6 Dalia Abo Sheasha 
+ *       - 454917: Informix tables need to use INT fields when referencing SERIAL types.
  ******************************************************************************/
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
@@ -1138,6 +1140,11 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
      */
     @Override
     public void replaceTables(DatabaseSession session) {
+        if (session.getPlatform().isInformix()) {
+            // In Informix, when using GenerationType.IDENTITY to generate values, fields referring to the generated fields
+            // can't be non-integer. NUMERIC types map to DECIMAL which is incompatible with the generated value's SERIAL type.
+            adjustForeignKeyFieldTypes(session);
+        }
         try {
             if (session.getPlatform().supportsUniqueKeyConstraints()
                     && !session.getPlatform().requiresUniqueConstraintCreationOnTableCreate()) {

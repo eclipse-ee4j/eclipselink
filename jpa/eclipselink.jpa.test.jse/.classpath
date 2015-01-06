@@ -6,10 +6,10 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.persistence 2.1.0"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation_1.1.0.v201304101302.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.transaction_1.1.0.v201002051055.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.transaction/src"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.2.0.v201302191141.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.asm"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

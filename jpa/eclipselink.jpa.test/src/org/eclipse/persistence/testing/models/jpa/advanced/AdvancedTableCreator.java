@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,6 +17,8 @@
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
  *     10/27/2010-2.2 Guy Pelletier 
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
+ *     01/06/2015-2.6 Dalia Abo Sheasha 
+ *       - 454917: Informix tables need to use INT fields when referencing SERIAL types, moved helper methods to parent class
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
@@ -2813,7 +2815,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
     @Override
     public void replaceTables(DatabaseSession session) {
-        if (session.getPlatform().isPervasive()) {
+        DatabasePlatform dbPlatform = session.getPlatform();
+        if (dbPlatform.isPervasive() || dbPlatform.isInformix()) {
+        	// In Informix, when using GenerationType.IDENTITY to generate values, fields referring to the generated fields
+    		// can't be non-integer. NUMERIC types map to DECIMAL which is incompatible with the generated value's SERIAL type.
             adjustForeignKeyFieldTypes(session);
         }
         try {
@@ -2825,71 +2830,5 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
             //give it one more try in case of some possibly random failure
             super.replaceTables(session);
         }
-    }
-
-    private void adjustForeignKeyFieldTypes(DatabaseSession session) {
-        for (TableDefinition sourceTableDefinition : getTableDefinitions() ) {
-            for (FieldDefinition sourceFieldDefinition : sourceTableDefinition.getFields()) {  // see TableDefinition, l.789
-                if (sourceFieldDefinition.getForeignKeyFieldName() != null) {
-                    // We need to build each foreign key constraint on the fly, because TableDefinition.buildFieldTypes() has not been called yet
-                    ForeignKeyConstraint foreignKeyConstraint = buildForeignKeyConstraint(sourceFieldDefinition, session.getPlatform());
-                    // Assume only one of each (as in Field Defintion)
-                    String sourceFieldName = foreignKeyConstraint.getSourceFields().get(0);
-                    String targetFieldName = foreignKeyConstraint.getTargetFields().get(0);
-
-                    // Find the target table and the target field
-                    TableDefinition targetTableDefinition = getTableDefinition(foreignKeyConstraint.getTargetTable());
-                    // session.getSessionLog().log(SessionLog.FINEST, "AdvancedTableCreator: Found target table " +  foreignKeyConstraint.getTargetTable() + " for foreign key " + foreignKeyConstraint.getName());
-                    FieldDefinition targetFieldDefinition = getFieldDefinition(targetTableDefinition, targetFieldName); 
-                    // session.getSessionLog().log(SessionLog.FINEST, "AdvancedTableCreator: Found target field " + targetFieldDefinition.getName() + " in table " + targetTableDefinition.getName());
-                    // Only change source column if target is identity
-                    String qualifiedName = targetTableDefinition.getFullName() + '.' + targetFieldDefinition.getName();
-                    if (targetFieldDefinition.isIdentity() && session.getPlatform().shouldPrintFieldIdentityClause((AbstractSession)session, qualifiedName)) {
-                        session.getSessionLog().log(SessionLog.FINEST, "AdvancedTableCreator.adjustForeignKeyFieldTypes(): Changing data type of source field " + sourceFieldDefinition.getName() + "to INTEGER in table " + sourceTableDefinition.getName());
-                        sourceFieldDefinition.setTypeName("INTEGER");
-                        sourceFieldDefinition.setSize(0);                                             
-                    }
-                }
-            }
-        }
     }    
-
-
-    // Helper methods for adjustForeignKeyFieldTypes()
-
-    private FieldDefinition getFieldDefinition(TableDefinition tableDefinition, String fieldName) {
-        for (FieldDefinition targetField : tableDefinition.getFields()) { // see TableDefinition, l.351
-            if (targetField.getName().equals(fieldName)) {
-                return targetField;
-            }
-        }
-        return null;    
-    }
-
-    private TableDefinition getTableDefinition(String tableName) {
-        for (TableDefinition targetTable : getTableDefinitions()) { // see TableCreator, l.87
-            if (targetTable.getName().equals(tableName)) {
-                return targetTable;
-            }
-        }
-        return null;    
-    }
-
-    // Mostly cloned from TableDefinition.buildForeignKeyConstraint()
-    private ForeignKeyConstraint buildForeignKeyConstraint(FieldDefinition field, DatabasePlatform platform) {
-        Vector sourceFields = new Vector();
-        Vector targetFields = new Vector();
-        ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
-        DatabaseField tempTargetField = new DatabaseField(field.getForeignKeyFieldName());
-        DatabaseField tempSourceField = new DatabaseField(field.getName());
-
-        sourceFields.add(tempSourceField.getName());
-        targetFields.add(tempTargetField.getName());
-
-        fkConstraint.setSourceFields(sourceFields);
-        fkConstraint.setTargetFields(targetFields);
-        fkConstraint.setTargetTable(tempTargetField.getTable().getQualifiedNameDelimited(platform));
-
-        return fkConstraint;
-    }
 }
