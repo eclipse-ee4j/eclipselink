@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.test.framework;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 public enum DDLGen {
-    DROP_CREATE, CREATE_UPDATE;
+    DROP_CREATE, CREATE_UPDATE, NONE;
 
     public String toString() {
         switch (this) {
@@ -24,6 +24,8 @@ public enum DDLGen {
             return PersistenceUnitProperties.DROP_AND_CREATE;
         case CREATE_UPDATE:
             return PersistenceUnitProperties.CREATE_OR_EXTEND;
+        case NONE:
+            return "None";
         }
         // unexpected
         throw new RuntimeException("Unknown Table type.");

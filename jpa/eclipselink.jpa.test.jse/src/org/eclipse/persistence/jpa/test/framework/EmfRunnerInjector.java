@@ -162,7 +162,10 @@ public class EmfRunnerInjector {
         for (Property prop : anno.properties()) {
             persistenceProperties.put(prop.name(), prop.value());
         }
-        persistenceProperties.put(PersistenceUnitProperties.DDL_GENERATION, anno.createTables().toString());
+
+        if (anno.createTables() != DDLGen.NONE) {
+            persistenceProperties.put(PersistenceUnitProperties.DDL_GENERATION, anno.createTables());
+        }
 
         SEPersistenceUnitInfo pu = createSEPUInfo(anno.name(), classes, mappingFiles, persistenceProperties);
 

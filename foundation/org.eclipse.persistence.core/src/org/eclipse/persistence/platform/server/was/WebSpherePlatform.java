@@ -151,7 +151,8 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
         return super.unwrapConnection(connection);
     }
 
-    public int getJNDIConnectorType() {
+    @Override
+    public int getJNDIConnectorLookupType() {
         return JNDIConnector.STRING_LOOKUP;
     }
 }
