@@ -1,0 +1,71 @@
+/*******************************************************************************
+ * Copyright (c) 2015 IBM Corporation, Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     01/05/2015 Rick Curtis, Andrei Ilitchev
+ *       - 455683: Automatically detect target server
+ ******************************************************************************/
+package org.eclipse.persistence.platform.server.wls;
+
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+import org.eclipse.persistence.config.TargetServer;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.platform.server.ServerPlatformDetector;
+
+public class WebLogicPlatformDetector implements ServerPlatformDetector {
+    @Override
+    public String checkPlatform() {
+        String platform = null;
+        String serverNameAndVersion;
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            serverNameAndVersion = AccessController.doPrivileged(new PrivilegedAction<String>() {
+                @Override
+                public String run() {
+                    return getServerNameAndVersionInternal();
+                }
+            });
+        } else {
+            serverNameAndVersion = getServerNameAndVersionInternal();
+        }
+        if (serverNameAndVersion != null && Helper.compareVersions(serverNameAndVersion, "9") >= 0) {
+            if (Helper.compareVersions(serverNameAndVersion, "10") >= 0) {
+                platform = TargetServer.WebLogic_10;
+            } else {
+                platform = TargetServer.WebLogic_9;
+            }
+        }
+        return platform;
+    }
+
+    /**
+     * A private worker method that must be wrapped in a doPriv block if the
+     * security manager is enabled.
+     * 
+     * @return The server name and version String. null otherwise.
+     */
+    private String getServerNameAndVersionInternal() {
+        try {
+            String loaderStr = WebLogicPlatformDetector.class.getClassLoader().getClass().getName();
+            if (loaderStr.contains("weblogic")) {
+
+                Class versionCls = Class.forName("weblogic.version");
+                Method method = versionCls.getMethod("getReleaseBuildVersion");
+                return (String) method.invoke(null);
+            }
+        } catch (Throwable t) {
+
+        }
+
+        return null;
+    }
+}

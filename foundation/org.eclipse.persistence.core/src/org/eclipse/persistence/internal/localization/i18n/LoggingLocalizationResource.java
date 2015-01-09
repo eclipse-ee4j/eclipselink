@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -43,6 +43,8 @@
  *       - 443762 : Misc message cleanup.
  *     12/18/2014-2.6 Rick Curtis
  *       - 454189 : Misc message cleanup.#2
+ *     01/05/2015 Rick Curtis
+ *       - 455683: Automatically detect target server
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -775,6 +777,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 
          * id and string message entry in the 1st section at the top of this file.
          */
+        {"detect_server_platform","Detected server platform: {0}."}
         
     }; 
      

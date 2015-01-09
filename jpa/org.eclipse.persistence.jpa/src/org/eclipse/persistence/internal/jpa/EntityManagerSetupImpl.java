@@ -52,6 +52,8 @@
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  *     11/20/2014-2.5 Rick Curtis
  *       - 452187: Support multiple ClassLoaders to load properties.
+ *     01/05/2015 Rick Curtis
+ *       - 455683: Automatically detect target server
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -216,6 +218,7 @@ import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCa
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.platform.server.ServerPlatformUtils;
 import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.Connector;
@@ -953,10 +956,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * @return true if the ServerPlatform has changed.
      */  
     protected boolean updateServerPlatform(Map m, ClassLoader loader) {
-        String serverPlatformClassName = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_SERVER, m, session);
-        if(serverPlatformClassName == null) {
-            // property is not specified - nothing to do.
-            return false;
+        String serverPlatformClassName =
+            PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.TARGET_SERVER, m, session);
+        if (serverPlatformClassName == null) {
+            // property is not specified - try to detect.
+            serverPlatformClassName = ServerPlatformUtils.detectServerPlatform(getSession());
+            if (serverPlatformClassName == null) {
+                // Unable to detect what platform we're running on. Use default/NoServer.
+                return false;
+            }
         }
 
         // originalServerPlatform is always non-null - Session's constructor sets serverPlatform to NoServerPlatform
