@@ -2245,11 +2245,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
           this.session.setShouldOptimizeResultSetAccess(resultSetAccessOptimization.equals("true"));
        }
     }
-    
+
+    /**
+     * Update whether session should use externally defined multi tenancy.
+     */
     protected void updateTenancy(Map m, ClassLoader loader) {
         String tenantStrategy = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_STRATEGY, m, this.session);
         if(tenantStrategy != null) {
-            if ("schema".equalsIgnoreCase(tenantStrategy)) {
+            if ("external".equalsIgnoreCase(tenantStrategy)) {
                 SchemaPerMultitenantPolicy policy = new SchemaPerMultitenantPolicy();
                 String prop = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, m, session);
                 if (prop != null) {

@@ -1618,16 +1618,16 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>schema</code>"
+     * <li>"<code>external</code>"
      * <li>the fully qualified name for a class that implements {@link MultitenantPolicy} interface
      * with public no-arg constructor
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
-     * {@code <property name="eclipselink.multitenant.strategy" value="schema"/>}</pre>
+     * {@code <property name="eclipselink.multitenant.strategy" value="external"/>}</pre>
      * <p>
      * <b>Java example:</b><pre>
-     * {@code props.put(PersistenceUnitProperties.MULTITENANT_STRATEGY, "schema");}</pre>
+     * {@code props.put(PersistenceUnitProperties.MULTITENANT_STRATEGY, "external");}</pre>
      *
      * @see org.eclipse.persistence.descriptors.MultitenantPolicy
      * @see org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy

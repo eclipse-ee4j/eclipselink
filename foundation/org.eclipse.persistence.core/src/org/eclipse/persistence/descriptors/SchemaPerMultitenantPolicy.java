@@ -74,6 +74,7 @@ public class SchemaPerMultitenantPolicy extends TablePerMultitenantPolicy {
                     classDescriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
                 }
             }
+            session.getProject().setHasIsolatedClasses(true);
         }
     }
 
