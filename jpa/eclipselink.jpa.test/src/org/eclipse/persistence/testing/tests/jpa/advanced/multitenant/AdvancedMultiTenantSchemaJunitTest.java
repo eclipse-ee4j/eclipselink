@@ -161,7 +161,7 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
         emfProperties.remove(PersistenceUnitProperties.JDBC_PASSWORD);
         emfProperties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, proxyDataSource);
         emfProperties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.NONE);
-        emfProperties.put(PersistenceUnitProperties.MULTITENANT_STRATEGY, "schema");
+        emfProperties.put(PersistenceUnitProperties.MULTITENANT_STRATEGY, "external");
 
         // prepare 1st tenant
         proxyDataSource.setCurrentDS(schema1);
@@ -188,7 +188,7 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
             return;
         }
         // default configuration: shared EMF = true, shared cache = false
-        // strategy = 'schema'
+        // strategy = 'external'
         emf = Persistence.createEntityManagerFactory(getPersistenceUnitName(), emfProperties);
         ServerSession session = ((EntityManagerFactoryImpl) emf).getServerSession();
         MultitenantPolicy policy = session.getProject().getMultitenantPolicy();
