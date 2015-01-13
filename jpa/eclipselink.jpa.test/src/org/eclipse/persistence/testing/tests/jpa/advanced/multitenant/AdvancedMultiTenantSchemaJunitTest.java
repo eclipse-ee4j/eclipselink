@@ -35,6 +35,7 @@ import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -51,6 +52,8 @@ import org.eclipse.persistence.testing.tests.feature.TestDataSource;
  * @author lukas
  */
 public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
+
+    private static boolean skipTest = false;
 
     /** Contains properties required for working with proxy datasource*/
     private static Properties emfProperties;
@@ -129,8 +132,18 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
         } catch (Throwable t) {
             // ignore
         }
-        databaseSession.executeNonSelectingSQL("create schema " + schema2 + ";");
-        databaseSession.logout();
+        try {
+            databaseSession.executeNonSelectingSQL("create schema " + schema2 + ";");
+        } catch (Throwable t) {
+            // we may not have enough permissions to create additional schema,
+            // in such case, skip all tests and log a warning
+            skipTest = true;
+            warning("Cannot create additional schema to run related tests.");
+            databaseSession.logThrowable(SessionLog.WARNING, SessionLog.CONNECTION, t);
+            return;
+        } finally {
+            databaseSession.logout();
+        }
 
         Map<String, String> currentProps = JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName());
         TestDataSource ds1 = new TestDataSource(login.getDriverClassName(), login.getConnectionString(), (Properties) login.getProperties().clone());
@@ -170,6 +183,10 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
             warning("this test is supported on MySQL only");
             return;
         }
+        if (skipTest) {
+            warning("this test requires DB schema created in testSetup to be available.");
+            return;
+        }
         // default configuration: shared EMF = true, shared cache = false
         // strategy = 'schema'
         emf = Persistence.createEntityManagerFactory(getPersistenceUnitName(), emfProperties);
@@ -188,6 +205,10 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
     public void testPolicyConfigurationCustom() {
         if (!getPlatform().isMySQL()) {
             warning("this test is supported on MySQL only");
+            return;
+        }
+        if (skipTest) {
+            warning("this test requires DB schema created in testSetup to be available.");
             return;
         }
         // custom configuration: shared EMF = false, shared cache = true
@@ -221,6 +242,10 @@ public class AdvancedMultiTenantSchemaJunitTest extends JUnitTestCase {
     public void testSequencing() {
         if (!getPlatform().isMySQL()) {
             warning("this test is supported on MySQL only");
+            return;
+        }
+        if (skipTest) {
+            warning("this test requires DB schema created in testSetup to be available.");
             return;
         }
         emf = Persistence.createEntityManagerFactory(getPersistenceUnitName(), emfProperties);
