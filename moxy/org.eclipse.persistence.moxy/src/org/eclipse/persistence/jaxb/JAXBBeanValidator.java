@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb;
 import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 
 import javax.validation.ConstraintViolation;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_HELPER;
 
@@ -58,6 +60,17 @@ class JAXBBeanValidator {
      * Represents the difference between words 'marshalling' and 'unmarshalling';
      */
     private static final String PREFIX_UNMARSHALLING = "un";
+
+    /**
+     * Prevents endless invocation loops between unmarshaller - validator - unmarshaller.
+     * Only used / needed in case {@link #noOptimisation} is {@code true}.
+     */
+    private static final ReentrantLock lock = new ReentrantLock();
+
+    /**
+     * Disable optimisations that skip bean validation processes on non-constrained objects.
+     */
+    private boolean noOptimisation = false;
 
     /**
      * Stores {@link #PREFIX_UNMARSHALLING} if this instance belongs to
@@ -101,13 +114,12 @@ class JAXBBeanValidator {
     /**
      * This field will usually be {@code null}. However, user may pass his own instance of
      * {@link javax.validation.ValidatorFactory} to
-     * {@link #shouldValidate(Object, BeanValidationMode, javax.validation.ValidatorFactory)}, and it will be assigned
-     * to this field.
+     * {@link #shouldValidate}() method, and it will be assigned to this field.
      * <p>
      * If not null, {@link #validator} field will be assigned only by calling method
      * {@link javax.validation.ValidatorFactory#getValidator()} the instance assigned to this field.
      */
-    private ValidatorFactory preferredValidatorFactory;
+    private ValidatorFactory validatorFactory;
 
     /**
      * Setting initial value to "NONE" will not trigger internalStateChange() when validation is off and save resources.
@@ -172,8 +184,10 @@ class JAXBBeanValidator {
      * @param beanValidationMode Bean validation mode - allowed values AUTO, CALLBACK, NONE.
      * @param value validated object. It is passed because validation on some objects may be skipped, 
      *              e.g. non-constrained objects (like XmlBindings).
-     * @param preferredValidatorFactory May be null. Will use this factory as the preferred provider,
+     * @param preferredValidatorFactory May be null. Will use this factory as the preferred provider;
      *                                  if null, will use javax defaults.
+     * @param noOptimisation if true, bean validation optimisations that skip non-constrained objects will not be
+     *                       performed
      * @return 
      *          true if should proceed with validation, else false.
      * @throws BeanValidationException
@@ -181,21 +195,20 @@ class JAXBBeanValidator {
      * @since 2.6
      */
     boolean shouldValidate (Object value, BeanValidationMode beanValidationMode,
-                            ValidatorFactory preferredValidatorFactory) throws BeanValidationException {
+                            ValidatorFactory preferredValidatorFactory,
+                            boolean noOptimisation) throws BeanValidationException {
 
         if (isValidationEffectivelyOff(beanValidationMode)) return false;
 
-        /* If removed, infinite loop check (7e5f543e4dd8e55d084799b893138d085307c7f1) must be added back to prevent
-            bug caused by bean-validating validation.xml */
+        this.noOptimisation = noOptimisation;
+
         if (!isConstrainedObject(value)) return false;
 
-        /* Json is allowed to pass a null root object. Avoid NPE & speed things up. */
-        if (value == null) return false;
+        /* Mode or validator factory was changed externally (or it's the first time this method is called). */
+        if (this.beanValidationMode != beanValidationMode || this.validatorFactory != preferredValidatorFactory) {
 
-        /* The beanValidationMode was changed externally (or it's the first time this method is called). */
-        if (this.beanValidationMode != beanValidationMode) {
             this.beanValidationMode = beanValidationMode;
-            this.preferredValidatorFactory = preferredValidatorFactory;
+            this.validatorFactory = preferredValidatorFactory;
             changeInternalState();
         }
 
@@ -224,6 +237,17 @@ class JAXBBeanValidator {
     private boolean isConstrainedObject(Object value) {
         /* Json is allowed to pass a null root object. Avoid NPE & speed things up. */
         if (value == null) return false;
+
+        if (noOptimisation) {
+            /* Stops the endless invocation loop which may occur when calling
+             * Validation#buildDefaultValidatorFactory in a case when the user sets
+             * custom validation configuration through "validation.xml" file and
+             * the validation implementation tries to unmarshal the file with MOXy. */
+            if (lock.isHeldByCurrentThread()) return false;
+
+            /* Do not validate XmlBindings. */
+            return !(value instanceof XmlBindings);
+        }
 
         /* Ensure that the class contains BV annotations. If not, skip validation & speed things up.
          * note: This also effectively skips XmlBindings. */
@@ -265,7 +289,7 @@ class JAXBBeanValidator {
      *  stopSearchingForValidator | false       | true/false   | false
      *  constraintViolations      | EmptySet    | n/a          | n/a
      *
-     *  n/a ... state remains the same.
+     *  n/a ... value is not altered.
      *
      * @throws BeanValidationException illegalValidationMode or providerNotFound
      */
@@ -326,9 +350,19 @@ class JAXBBeanValidator {
      * @return Preferred ValidatorFactory if set, else {@link Validation#buildDefaultValidatorFactory()}.
      */
     private ValidatorFactory getValidatorFactory() {
-        if (preferredValidatorFactory != null) {
-            return preferredValidatorFactory;
+        if (validatorFactory != null) {
+            return validatorFactory;
         }
+
+        if (noOptimisation) {
+            lock.lock();
+            try {
+                return Validation.buildDefaultValidatorFactory();
+            } finally {
+                lock.unlock();
+            }
+        }
+
         return Validation.buildDefaultValidatorFactory();
     }
 
@@ -359,6 +393,7 @@ class JAXBBeanValidator {
     private Object[] createConstraintViolationExceptionArgs() {
         Object[] args = new Object[3];
         Iterator<? extends ConstraintViolation<?>> iterator = constraintViolations.iterator();
+        assert iterator.hasNext(); // this method is to be called only if constraints violations are not empty
         ConstraintViolation<?> cv = iterator.next();
         Collection<ConstraintViolationInfo> violatedConstraints = new LinkedList<ConstraintViolationInfo>(){
             public String toString() {

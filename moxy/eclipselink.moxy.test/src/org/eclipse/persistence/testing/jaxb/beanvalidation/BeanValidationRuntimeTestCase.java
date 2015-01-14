@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -189,7 +189,7 @@ public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
 
     private void checkValidationMessages(Set<? extends ConstraintViolation<?>> constraintViolations,
                                          List<String> expectedMessages) {
-        List<String> violationMessages = new ArrayList<String>();
+        List<String> violationMessages = new ArrayList<>();
         for (final ConstraintViolation<?> cv : constraintViolations)
             violationMessages.add(cv.getMessageTemplate());
 

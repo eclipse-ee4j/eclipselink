@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property
+ *     Marcel Valovy - 2.6 - added case insensitive unmarshalling property
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -1544,6 +1544,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_MODE, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_FACTORY, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_GROUPS, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_NO_OPTIMISATION, marshaller);
             }
 
             return marshaller;
@@ -1574,6 +1575,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_MODE, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_FACTORY, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_GROUPS, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_NO_OPTIMISATION, unmarshaller);
             }
             return unmarshaller;
         }

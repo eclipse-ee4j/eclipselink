@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -98,7 +98,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private final JAXBBeanValidator beanValidator;
 
     private BeanValidationMode beanValidationMode;
-    private ValidatorFactory preferredValidatorFactory;
+    private ValidatorFactory prefValidatorFactory;
+    private boolean bvNoOptimisation = false;
     private Class<?>[] beanValidationGroups = JAXBBeanValidator.DEFAULT_GROUP_ARRAY;
 
     private final XMLMarshaller xmlMarshaller;
@@ -325,9 +326,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         } else if (MarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
             return this.beanValidationMode;
         } else if (MarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
-            return this.preferredValidatorFactory;
+            return this.prefValidatorFactory;
         } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
             return this.beanValidationGroups;
+        } else if (MarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
+            return this.bvNoOptimisation;
         }
         throw new PropertyException(key);
     }
@@ -577,7 +580,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     private Object validateAndTransformIfNeeded(Object obj) throws BeanValidationException {
         Object result = modifyObjectIfNeeded(obj);
-        if (beanValidator.shouldValidate(obj, beanValidationMode, preferredValidatorFactory)) beanValidator.validate(result, beanValidationGroups);
+        if (beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
+            beanValidator.validate(result, beanValidationGroups);
+        }
         return result;
     }
 
@@ -930,17 +935,23 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 if(value == null){
                     throw new PropertyException(key, Constants.EMPTY_STRING);
                 }
-                this.beanValidationMode = ((BeanValidationMode)value);
+                this.beanValidationMode = ((BeanValidationMode) value);
             } else if (MarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
+                //noinspection StatementWithEmptyBody
                 if(value == null){
                     // Allow null value for preferred validation factory.
                 }
-                this.preferredValidatorFactory = ((ValidatorFactory)value);
+                this.prefValidatorFactory = ((ValidatorFactory) value);
             } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
                 if(value == null){
                     throw new PropertyException(key, Constants.EMPTY_STRING);
                 }
                 this.beanValidationGroups = ((Class<?>[]) value);
+            } else if (MarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
+                if(value == null){
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
+                }
+                this.bvNoOptimisation = ((boolean) value);
             } else {
                 throw new PropertyException(key, value);
             }

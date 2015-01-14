@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -274,7 +274,7 @@ public class JAXBContextProperties {
 
     /**
      * Property for setting preferred or custom validator factory.
-     * The mapped value must implement javax.validation.ValidatorFactory.
+     * Mapped value must be instance of {@link javax.validation.ValidatorFactory}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#BEAN_VALIDATION_FACTORY
@@ -284,7 +284,7 @@ public class JAXBContextProperties {
 
     /**
      * Property for setting bean validation target groups.
-     * The mapped value must be of type {@literal Class[]}.
+     * Mapped value must be of type {@literal Class[]}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#BEAN_VALIDATION_GROUPS
@@ -294,7 +294,7 @@ public class JAXBContextProperties {
 
     /**
      * Property for disabling/enabling generation of XML Facets during schemagen.
-     * Allowed value are {@link Boolean#TRUE} or {@link Boolean#FALSE},
+     * Allowed values are {@link Boolean#TRUE} or {@link Boolean#FALSE},
      * effectively stating that facets (based on the BV annotations) will be generated,
      * or that the BV annotations processing will be skipped during schemagen
      * with no facets being generated, respectively.
@@ -302,4 +302,22 @@ public class JAXBContextProperties {
      * @since 2.6
      */
     public static final String BEAN_VALIDATION_FACETS = "eclipselink.beanvalidation.facets";
+
+    /**
+     * Property for disabling Bean Validation optimisations.
+     * Bean Validation in MOXy features optimisations, which are used to skip BV processes on non-constrained objects.
+     *
+     * This is to make maintenance easier and to allow for debugging in case that some object is not validated,
+     * but should be.
+     *
+     * Usage: set to {@link Boolean#TRUE} to disable optimisations, set to {@link Boolean#FALSE} to re-enable them
+     * again.
+     *
+     * @since 2.6
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#BEAN_VALIDATION_NO_OPTIMISATION
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#BEAN_VALIDATION_NO_OPTIMISATION
+     */
+    public static final String BEAN_VALIDATION_NO_OPTIMISATION = "eclipselink.beanvalidation.no-optimisation";
+
+
 }

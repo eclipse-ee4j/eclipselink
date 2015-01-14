@@ -103,7 +103,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private final JAXBBeanValidator beanValidator;
 
     private BeanValidationMode beanValidationMode;
-    private ValidatorFactory preferredValidatorFactory;
+    private ValidatorFactory prefValidatorFactory;
+    private boolean bvNoOptimisation = false;
     private Class<?>[] beanValidationGroups = JAXBBeanValidator.DEFAULT_GROUP_ARRAY;
 
     private final XMLUnmarshaller xmlUnmarshaller;
@@ -232,7 +233,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     private JAXBElement validateAndBuildJAXBElement(Object obj, Class declaredClass) throws BeanValidationException {
-        if (beanValidator.shouldValidate(obj, beanValidationMode, preferredValidatorFactory)) beanValidator.validate(obj, beanValidationGroups);
+        if (beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
+            beanValidator.validate(obj, beanValidationGroups);
+        }
         return buildJAXBElementFromObject(obj, declaredClass);
     }
 
@@ -864,12 +867,17 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if(value == null){
                 // Allow null value for preferred validation factory.
             }
-            this.preferredValidatorFactory = ((ValidatorFactory)value);
+            this.prefValidatorFactory = ((ValidatorFactory)value);
         } else if (UnmarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
-            if(value == null){
-                // Allow null value for preferred validation factory.
+            if (value == null) {
+                throw new PropertyException(key, Constants.EMPTY_STRING);
             }
             this.beanValidationGroups = ((Class<?>[]) value);
+        } else if (UnmarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
+            if(value == null){
+                throw new PropertyException(key, Constants.EMPTY_STRING);
+            }
+            this.bvNoOptimisation = ((boolean) value);
         } else {
             throw new PropertyException(key, value);
         }
@@ -936,9 +944,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
         } else if (UnmarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
             return this.beanValidationMode;
         } else if (UnmarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
-            return this.preferredValidatorFactory;
+            return this.prefValidatorFactory;
         } else if (UnmarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
             return this.beanValidationGroups;
+        } else if (UnmarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
+            return this.bvNoOptimisation;
         }
         throw new PropertyException(key);
     }
@@ -999,9 +1009,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
         ((JAXBUnmarshalListener)xmlUnmarshaller.getUnmarshalListener()).setClassBasedUnmarshalEvents(callbacks);
     }
 
-    private Object validateAndTransformIfRequired(Object value) throws BeanValidationException {
-        if (beanValidator.shouldValidate(value, beanValidationMode, preferredValidatorFactory)) beanValidator.validate(value, beanValidationGroups);
-        return createJAXBElementOrUnwrapIfRequired(value);
+    private Object validateAndTransformIfRequired(Object obj) throws BeanValidationException {
+        if (beanValidator.shouldValidate(obj, beanValidationMode, prefValidatorFactory, bvNoOptimisation)) {
+            beanValidator.validate(obj, beanValidationGroups);
+        }
+        return createJAXBElementOrUnwrapIfRequired(obj);
     }
 
     private Object createJAXBElementOrUnwrapIfRequired(Object value) {
