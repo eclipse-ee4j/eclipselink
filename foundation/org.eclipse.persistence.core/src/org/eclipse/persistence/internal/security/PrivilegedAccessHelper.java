@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,7 +50,7 @@ public class PrivilegedAccessHelper {
     private static Map<String, Class> primitiveClasses;
 
     static {
-        primitiveClasses = new HashMap<String, Class>();
+        primitiveClasses = new HashMap<>();
         primitiveClasses.put("boolean", boolean.class);
         primitiveClasses.put("int", int.class);
         primitiveClasses.put("long", long.class);
@@ -445,7 +445,8 @@ public class PrivilegedAccessHelper {
      * enabled.
      */
     public static boolean shouldUsePrivilegedAccess() {
-        // We will only detect whether to use doPrivileged once.
+        // #shouldUsePrivilegedAccess will be evaluated the first time this method is called and then 'reevaluated' only
+        // after explicit call to #setDefaultUseDoPrivilegedValue().
         if (shouldCheckPrivilegedAccess) {
             if (System.getSecurityManager() != null) {    
                 String usePrivileged = (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty("eclipselink.security.usedoprivileged"));
