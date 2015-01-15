@@ -10,7 +10,7 @@
  * Contributors:
  *     Marcel Valovy - 2.6 - initial API and implementation
  ******************************************************************************/
- package org.eclipse.persistence.internal.jpa.metadata.beanvalidation;
+package org.eclipse.persistence.internal.jpa.metadata.beanvalidation;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
@@ -34,7 +34,40 @@ import java.util.concurrent.ConcurrentHashMap;
 public enum BeanValidationHelper {
     BEAN_VALIDATION_HELPER;
 
-    {
+    /**
+     * # default constraints in {@link #KNOWN_CONSTRAINTS} map.
+     *
+     * The value reflects the number of default constraints; if
+     * more default constraints are added, update the value.
+     */
+    private static final int DEFAULT_CONSTRAINTS_QUANTITY = 25;
+
+    /**
+     * Load factor for concurrent maps.
+     */
+    private static final float LOAD_FACTOR = 0.75f;
+
+    /**
+     * Size parameter for {@link #KNOWN_CONSTRAINTS} map.
+     */
+    private static final int KNOWN_CONSTRAINTS_DEFAULT_SIZE = nextPowerOfTwo(
+            (int) (DEFAULT_CONSTRAINTS_QUANTITY / LOAD_FACTOR));
+
+    /**
+     * Set of all default BeanValidation field annotations and discovered custom field constraints.
+     * Implemented as a ConcurrentHashMap with "Null Object" idiom.
+     */
+    private static final Set<String> KNOWN_CONSTRAINTS = Collections.newSetFromMap(new ConcurrentHashMap<String,
+            Boolean>( KNOWN_CONSTRAINTS_DEFAULT_SIZE, LOAD_FACTOR ));
+
+    /**
+     * Map of all classes that have undergone check for bean validation constraints.
+     * Maps the key with boolean value telling whether the class contains an annotation from {@link #KNOWN_CONSTRAINTS}.
+     */
+    private static final Map<Class<?>, Boolean> CONSTRAINTS_ON_CLASSES = Collections.synchronizedMap(new
+            WeakHashMap<Class<?>, Boolean>());
+
+    static {
         initializeKnownConstraints();
     }
 
@@ -115,7 +148,7 @@ public enum BeanValidationHelper {
      * i.e. anonymous classes receive a 'null' value as their canonical name,
      * which allows no ambiguity and is what we are looking for.
      */
-    private void initializeKnownConstraints() {
+    private static void initializeKnownConstraints() {
         KNOWN_CONSTRAINTS.add("javax.validation.Valid");
         KNOWN_CONSTRAINTS.add("javax.validation.constraints.Max");
         KNOWN_CONSTRAINTS.add("javax.validation.constraints.Min");
@@ -160,37 +193,4 @@ public enum BeanValidationHelper {
         x |= x >> 16;
         return x + 1;
     }
-
-    /**
-     * # default constraints in {@link #KNOWN_CONSTRAINTS} map.
-     *
-     * The value reflects the number of default constraints; if
-     * more default constraints are added, update the value.
-     */
-    private static final int DEFAULT_CONSTRAINTS_QUANTITY = 25;
-
-    /**
-     * Load factor for concurrent maps.
-     */
-    private static final float LOAD_FACTOR = 0.75f;
-
-    /**
-     * Size parameter for {@link #KNOWN_CONSTRAINTS} map.
-     */
-    private static final int KNOWN_CONSTRAINTS_DEFAULT_SIZE = nextPowerOfTwo(
-            (int) (DEFAULT_CONSTRAINTS_QUANTITY / LOAD_FACTOR));
-
-    /**
-     * Set of all default BeanValidation field annotations and discovered custom field constraints.
-     * Implemented as a ConcurrentHashMap with "Null Object" idiom.
-     */
-    private static final Set<String> KNOWN_CONSTRAINTS = Collections.newSetFromMap(new ConcurrentHashMap<String,
-            Boolean>( KNOWN_CONSTRAINTS_DEFAULT_SIZE, LOAD_FACTOR ));
-
-    /**
-     * Map of all classes that have undergone check for bean validation constraints.
-     * Maps the key with boolean value telling whether the class contains an annotation from {@link #KNOWN_CONSTRAINTS}.
-     */
-    private static final Map<Class<?>, Boolean> CONSTRAINTS_ON_CLASSES = Collections.synchronizedMap(new
-            WeakHashMap<Class<?>, Boolean>());
 }
