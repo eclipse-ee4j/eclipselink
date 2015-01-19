@@ -54,6 +54,8 @@
  *       - 452187: Support multiple ClassLoaders to load properties.
  *     01/05/2015 Rick Curtis
  *       - 455683: Automatically detect target server
+  *     01/13/2015 - Rick Curtis  
+ *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -110,6 +112,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -4133,7 +4136,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // These could be a string (file name urls) or actual writers.
                     Object createDDLJdbc = getConfigProperty(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
                     Object dropDDLJdbc = getConfigProperty(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME);
-                    writeDDLToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc, ddlType);                
+                    writeDDLToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc, ddlType, props);                
                 }
     
                 // Log a warning if we have an unknown ddl generation mode. 
@@ -4198,11 +4201,20 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         
         generateDefaultTables(mgr, ddlType);
     }
-    
+
+    /**
+     * @deprecated Extenders should now use
+     *             {@link #writeDDLToFiles(SchemaManager, String, Object, Object, TableCreationType, Map)}
+     */
+    protected void writeDDLToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc,
+            TableCreationType ddlType) {
+        writeDDLToFiles(mgr, appLocation, createDDLJdbc, dropDDLJdbc, ddlType, Collections.EMPTY_MAP);
+    }
+
     /**
      * Write the DDL to the files provided.
      */
-    protected void writeDDLToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc, TableCreationType ddlType) {
+    protected void writeDDLToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc, TableCreationType ddlType, Map props) {
         // Ensure that the appLocation string ends with File.separator if 
         // specified. In JPA there is no default for app location, however, if 
         // the user did specify one, we'll use it.
@@ -4235,7 +4247,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
 
-        mgr.setCreateSQLFiles(false);
+        String propString = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_TERMINATE_STATEMENTS, props);
+        boolean terminator = Boolean.parseBoolean(propString);
+        mgr.setCreateSQLFiles(terminator);
         generateDefaultTables(mgr, ddlType);
         mgr.closeDDLWriter();
     }
@@ -4265,7 +4279,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         String createSchemas = getConfigPropertyAsString(SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, props);
         mgr.setCreateDatabaseSchemas(createSchemas != null && createSchemas.equalsIgnoreCase("true"));
 
-        writeDDLToFiles(mgr, getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props),  getConfigProperty(SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, props),  getConfigProperty(SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, props), tableCreationType);
+        writeDDLToFiles(mgr, getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props),  getConfigProperty(SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, props),  getConfigProperty(SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, props), tableCreationType, props);
     }
     
     /**

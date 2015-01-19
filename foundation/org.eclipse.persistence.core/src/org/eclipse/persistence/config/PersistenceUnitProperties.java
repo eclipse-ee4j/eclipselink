@@ -31,6 +31,8 @@
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  *     11/04/2014 - Rick Curtis
  *       - 450010 : Add java se test bucket
+  *     01/13/2015 - Rick Curtis  
+ *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -2135,6 +2137,20 @@ public class PersistenceUnitProperties {
      * followed with the metadata.</p>
      */
     public static final String SCHEMA_GENERATION_SCRIPT_THEN_METADATA_SOURCE = "script-then-metadata";
+
+    /**
+     * When the "<code>eclipselink.ddlgen-terminate-statements</code>" property
+     * is set to true and a DDL script is being generated, the value of 
+     * {@link DatabasePlatform#getStoredProcedureTerminationToken()} is appended to the end of each statement.
+     * <p>
+     * <b>Allowed Values</b> (String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" - (DEFAULT) Do not print line terminator
+     * characters
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String SCHEMA_GENERATION_SCRIPT_TERMINATE_STATEMENTS = "eclipselink.ddlgen-terminate-statements";
 
     /**
      * The "<code>eclipselink.sequencing.default-sequence-to-table</code>" property

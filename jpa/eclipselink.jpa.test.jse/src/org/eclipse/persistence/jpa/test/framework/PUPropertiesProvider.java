@@ -8,34 +8,20 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     12/19/2014 - Dalia Abo Sheasha
- *       - 454917 : Added a test to use the IDENTITY strategy to generate values
+ *     01/13/2015 - Rick Curtis  
+ *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
  ******************************************************************************/
+package org.eclipse.persistence.jpa.test.framework;
 
-package org.eclipse.persistence.jpa.test.basic.model;
+import java.util.Map;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Version;
+/**
+ * This is a mechanism that allows a test to be called back prior to EMF
+ * creation to pass additional persistence unit properties. This is in place as
+ * you can't always pass properties via the annotation route.
+ */
+public interface PUPropertiesProvider {
 
-@Entity
-@Table(name="oepjtbmEmployee")
-public class Employee {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	int id;
+    public Map<String, Object> getAdditionalPersistenceProperties(String puName);
 
-	@Version
-	int version;
-
-	public Employee() {
-
-	}
-
-	public int getId() {
-		return id;
-	}
 }

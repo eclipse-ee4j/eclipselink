@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation. All rights reserved.
+ * Copyright (c) 2014, 2015 IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,6 +10,8 @@
  * Contributors:
  *     11/04/2014 - Rick Curtis  
  *       - 450010 : Add java se test bucket
+ *     01/13/2015 - Rick Curtis  
+ *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.framework;
 
@@ -83,7 +85,11 @@ public class EmfRunnerInjector {
             if (listenerField != null) {
                 sqlCollector = new SqlCollector();
             }
-            EntityManagerFactory factory = getEntityManagerFactory(emfAnno);
+            Map<String,Object> props = null;
+            if(testInstance instanceof PUPropertiesProvider) {
+                props = ((PUPropertiesProvider)testInstance).getAdditionalPersistenceProperties(emfName);
+            }
+            EntityManagerFactory factory = getEntityManagerFactory(emfAnno, props);
             if (!injectedEmfs.add(factory)) {
                 throw new RuntimeException("Attempted to inject the same EntityManagerFactory multiple times into "
                     + testInstance + ". Please remove the duplicate @Emf annotation, or change the name so that each "
@@ -142,7 +148,7 @@ public class EmfRunnerInjector {
         return res;
     }
 
-    private EntityManagerFactory getEntityManagerFactory(Emf anno) {
+    private EntityManagerFactory getEntityManagerFactory(Emf anno, Map<String, Object> additionalProperties) {
         String name = anno.name();
 
         // Check cache
@@ -162,9 +168,14 @@ public class EmfRunnerInjector {
         for (Property prop : anno.properties()) {
             persistenceProperties.put(prop.name(), prop.value());
         }
+        
+        if (additionalProperties != null) {
+            persistenceProperties.putAll(additionalProperties);
+        }
+
 
         if (anno.createTables() != DDLGen.NONE) {
-            persistenceProperties.put(PersistenceUnitProperties.DDL_GENERATION, anno.createTables());
+            persistenceProperties.put(PersistenceUnitProperties.DDL_GENERATION, anno.createTables().toString());
         }
 
         SEPersistenceUnitInfo pu = createSEPUInfo(anno.name(), classes, mappingFiles, persistenceProperties);
