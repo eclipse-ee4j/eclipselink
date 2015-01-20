@@ -19,6 +19,8 @@
  *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
  *     01/06/2015-2.6 Dalia Abo Sheasha 
  *       - 454917: Informix tables need to use INT fields when referencing SERIAL types, moved helper methods to parent class
+ *     01/15/2015-2.6 Mythily Parthasarathy 
+ *       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
@@ -99,6 +101,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_JIGSAW_PIECETable());
         addTableDefinition(buildRABBITTable());
         addTableDefinition(buildRABBITFOOTTable());
+        addTableDefinition(buildCMP3_HINGETable());//Bug#457480
         addTableDefinition(buildCMP3_ROOMTable());
         addTableDefinition(buildCMP3_DOORTable());
         addTableDefinition(buildCMP3_PRODUCTTable());
@@ -2665,6 +2668,41 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldBARCODE2.setUnique(false);
         fieldBARCODE2.setIsIdentity(false);
         table.addField(fieldBARCODE2);
+        
+        return table;
+    }
+    
+    //Bug#457480
+    public TableDefinition buildCMP3_HINGETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_HINGE");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDOOR_ID = new FieldDefinition();
+        fieldDOOR_ID.setName("DOOR_ID");
+        fieldDOOR_ID.setTypeName("NUMBER");
+        fieldDOOR_ID.setSize(10);
+        fieldDOOR_ID.setIsPrimaryKey(true);
+        fieldDOOR_ID.setIsIdentity(false);
+        fieldDOOR_ID.setUnique(false);
+        fieldDOOR_ID.setShouldAllowNull(true);
+        table.addField(fieldDOOR_ID);
+        
+        ForeignKeyConstraint foreignKeyCMP3_HINGE_CMP3_DOOR = new ForeignKeyConstraint();
+        foreignKeyCMP3_HINGE_CMP3_DOOR.setName("CMP3_HINGE_CMP3_DOOR");
+        foreignKeyCMP3_HINGE_CMP3_DOOR.setTargetTable("CMP3_DOOR");
+        foreignKeyCMP3_HINGE_CMP3_DOOR.addSourceField("DOOR_ID");
+        foreignKeyCMP3_HINGE_CMP3_DOOR.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyCMP3_HINGE_CMP3_DOOR);
         
         return table;
     }

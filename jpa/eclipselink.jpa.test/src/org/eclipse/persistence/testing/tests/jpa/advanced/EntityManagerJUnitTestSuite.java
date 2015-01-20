@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,6 +16,8 @@
  *         testDeleteEmployee*() will fail on DB2 9.7 Universal because cascade deletes
  *         of an uninstantiated collection of enums must inherently be deleted even if
  *         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
+ *     01/15/2015-2.6 Mythily Parthasarathy 
+ *       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -168,6 +170,7 @@ import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 import org.eclipse.persistence.testing.tests.feature.TestDataSource;
+import org.junit.Assert;
 
 /**
  * Test the EntityManager API using the advanced model.
@@ -419,6 +422,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testProviderPropertySetting");
         tests.add("testBeginTransactionOnClosedEM");
         tests.add("testUpdateDetachedEntityWithRelationshipCascadeRefresh");
+        tests.add("testForNPEInCloning"); //Bug#457480
 //        if (isJPA21()){
 //            tests.add("testUnsynchronizedPC");
 //        }
@@ -12254,6 +12258,96 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+    
+    //Bug#457480 :Load data, call flush() to force a refresh,
+    //remove a loaded entity to simulate "not loaded" and query
+    public void testForNPEInCloning() {
+        if (!isWeavingEnabled()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        Hinge hinge1;
+        Hinge hinge2;
+        Door east;
+        try {
+            beginTransaction(em);
+            
+            hinge1 = new Hinge();
+            hinge1.setId(1);
+            
+            hinge2 = new Hinge();
+            hinge2.setId(2);
+            
+            east = new Door();
+            east.setId(102);
+            east.setSaleDate(Helper.dateFromYearMonthDate(2013, 1, 20));
+            
+            hinge1.setDoor(east);
+            hinge2.setDoor(east);
+            em.persist(hinge1);
+            em.persist(hinge2);
+            
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            fail("Failed to create data for testForNPEInCloning" + ex);
+            return;
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            //Persist any entity to enable flush()
+            Room room = new Room();
+            room.setId(3);
+            em.persist(room);
+            
+            em.flush();
+            // The bug exhibits itself in a fresh session where this specific CacheKey isn't loaded yet. 
+            // To simulate this condition, removing from cache.
+            Session session = ((EntityManagerImpl)em).getDatabaseSession();
+            session.getIdentityMapAccessor().removeFromIdentityMap(session.getId(hinge2), Hinge.class);
+            
+            TypedQuery<Hinge> q = em.createNamedQuery("loadHinges", Hinge.class);
+            q.setParameter("doorid", east.getId());
+            q.setHint(QueryHints.LEFT_FETCH, "h.door");
+            List<Hinge> hinges = q.getResultList();
+            Assert.assertEquals(2, hinges.size());
+        } catch (Exception e) {
+            fail("Failed testForNPEInCloning due to " + e);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            try {
+                //cleanup persisted entities
+                beginTransaction(em);
+                hinge1 = em.merge(hinge1);
+                hinge2 = em.merge(hinge2);
+                east = em.merge(east);
+                if (hinge1 != null)
+                    em.remove(hinge1);
+                if (hinge2 != null)
+                    em.remove(hinge2);
+                if (east != null)
+                    em.remove(east);
+                
+                commitTransaction(em);
+            } catch (Exception e) {
+               //Do nothing.  This is cleanup code
+            } finally {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
             }
             closeEntityManager(em);
         }
