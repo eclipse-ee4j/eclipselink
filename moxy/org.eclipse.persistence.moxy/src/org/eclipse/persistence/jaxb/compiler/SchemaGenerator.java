@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,7 +36,6 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.oxm.Constants;
@@ -62,7 +61,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticleOwner;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMaxFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMinFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.DigitsFacet;
@@ -75,14 +74,11 @@ import org.eclipse.persistence.jaxb.compiler.facets.PatternListFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.SizeFacet;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethodsSchema;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -116,7 +112,6 @@ public class SchemaGenerator {
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
     private static final String SWA_REF_IMPORT = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";
-    private static final String BUILD_FIELD_VALUE_METHOD = "buildFieldValue";
 
     private static final String COLON = ":";
     private static final String ATT = "@";
@@ -1503,57 +1498,19 @@ public class SchemaGenerator {
      * @param schema current schema which ComplextType will be added to
      */
     private void addTransformerToSchema(Property property, TypeInfo typeInfo, TypeDefParticle compositor, ComplexType type, Schema schema) {
-        java.util.List<Property> props = new ArrayList<Property>();
-        for (XmlWriteTransformer writeTransformer : property.getXmlTransformation().getXmlWriteTransformer()) {
-            String xpath = writeTransformer.getXmlPath();
-            String pname = XMLProcessor.getNameFromXPath(xpath, property.getPropertyName(), xpath.contains(ATT));
-            Property prop = new Property(helper);
-            prop.setPropertyName(pname);
-            prop.setXmlPath(xpath);
-            prop.setSchemaName(new QName(pname));
-            // figure out the type based on transformer method return type
-            JavaClass jType = null;
-            JavaClass jClass = null;
-            JavaMethod jMethod = null;
-            String methodName;
-            if (writeTransformer.isSetTransformerClass()) {
-                // handle transformer class
-                try {
-                    jClass = helper.getJavaClass(writeTransformer.getTransformerClass());
-                } catch (JAXBException x) {
-                    throw JAXBException.transformerClassNotFound(writeTransformer.getTransformerClass());
-                }
-                methodName = BUILD_FIELD_VALUE_METHOD;
-                jMethod = jClass.getDeclaredMethod(methodName, new JavaClass[] { helper.getJavaClass(Object.class), helper.getJavaClass(String.class), helper.getJavaClass(Session.class) });
-                if (jMethod == null) {
-                    throw JAXBException.noSuchWriteTransformationMethod(methodName);
-                }
-                jType = jMethod.getReturnType();
-            } else {
-                // handle method
-                // here it is assumed that the JavaModel is aware of the TypeInfo's class, hence jClass cannot be null
-                jClass = helper.getJavaClass(typeInfo.getJavaClassName());
-                methodName = writeTransformer.getMethod();
-                // the method can have 0 args or 1 arg (either AbstractSession or Session)
-                // first check 0 arg
-                jMethod = jClass.getDeclaredMethod(methodName, new JavaClass[] {});
-                if (jMethod == null) {
-                    // try AbstractSession
-                    jMethod = jClass.getDeclaredMethod(methodName, new JavaClass[] { helper.getJavaClass(AbstractSession.class) });
-                    if (jMethod == null) {
-                        // try Session
-                        jMethod = jClass.getDeclaredMethod(methodName, new JavaClass[] { helper.getJavaClass(Session.class) });
-                        if (jMethod == null) {
-                            throw JAXBException.noSuchWriteTransformationMethod(methodName);
-                        }
-                    }
-                }
-                jType = jMethod.getReturnType();
-            }
-            prop.setType(jType);
-            props.add(prop);
-        }
+        java.util.List<Property> props = getTransformerPropertyBuilder(property, typeInfo).buildProperties();
         addToSchemaType(typeInfo, props, compositor, type, schema);
+    }
+
+    /**
+     * Returns TransformerPropertyBuilder which builds properties from xml transformers.
+     *
+     * @param property property holding xml transformers
+     * @param typeInfo typeInfo with transformer class
+     * @return  transformer property builder
+     */
+    protected TransformerPropertyBuilder getTransformerPropertyBuilder(Property property, TypeInfo typeInfo) {
+        return new TransformerPropertyBuilder(property, typeInfo, helper, ATT);
     }
 
     /**

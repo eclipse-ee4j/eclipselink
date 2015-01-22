@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -19,7 +19,6 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL
@@ -47,18 +46,11 @@ public class JAXBIntrospector extends javax.xml.bind.JAXBIntrospector {
     public boolean isElement(Object obj) {
     	if (obj instanceof JAXBElement) {
     		return true;
-    	}
-    	
+	}
+
         try {
-            Session session = context.getSession(obj);
-            if(session == null) {
-                return false;
-            }
-            Descriptor descriptor = (Descriptor)session.getDescriptor(obj);
-            if(descriptor == null) {
-                return false;
-            }
-            return descriptor.getDefaultRootElementField() != null;
+            Descriptor descriptor = context.getDescriptorForObject(obj);
+            return null != descriptor && null != descriptor.getDefaultRootElementField();
         } catch(XMLMarshalException e) {
             return false;
         }

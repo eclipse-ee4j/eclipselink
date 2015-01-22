@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -59,6 +59,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.mappings.querykeys.*;
+import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -4557,5 +4558,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     
     public boolean hasCacheIndexesInSopObject() {
         return this.hasCacheIndexesInSopObject;
+    }
+
+    @Override
+    public AbstractRecord createRecordFromXMLContext(XMLContext context) {
+        return createRecord((AbstractSession)context.getSession());
     }
 }

@@ -292,6 +292,7 @@
         <!-- fail message="Cannot find MOXY: '${moxytest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'." unless="moxy.bundle.exist"/ -->
         <compile_moxy_tests subcomponent="oxm" compilepathref="oxm.compile.path"/>
         <compile_moxy_tests subcomponent="jaxb" compilepathref="jaxb.compile.path"/>
+	<compile_moxy_tests subcomponent="moxy" compilepathref="jaxb.compile.path"/>
     </target>
     <target name="compile-tests-against-jar" depends="clean" description="build moxy test classes against eclipselink.jar">
         <echo message="Compiling OXM tests..."/>
@@ -299,6 +300,8 @@
         <echo message=""/>
         <echo message="Compiling JAXB tests..."/>
         <compile_moxy_tests subcomponent="jaxb" compilepathref="jaxb.compile.against.jar.path"/>
+	<echo message="Compiling MOXy unit tests..."/>
+	<compile_moxy_tests subcomponent="moxy" compilepathref="jaxb.compile.against.jar.path"/>
     </target>
 
     <!-- Build & Run targets -->
@@ -478,6 +481,7 @@
                         <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/json/JSONTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/rs/RESTfulTestSuite.java"/>
+			<include name="org/eclipse/persistence/testing/moxy/unit/**/*TestCase.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>

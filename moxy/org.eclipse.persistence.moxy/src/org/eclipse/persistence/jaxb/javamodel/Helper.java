@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,14 +16,15 @@ import static org.eclipse.persistence.jaxb.JAXBContextFactory.PKG_SEPARATOR;
 import static org.eclipse.persistence.jaxb.compiler.XMLProcessor.DEFAULT;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+
 import javax.xml.bind.JAXBElement;
+
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -202,6 +203,25 @@ public class Helper {
         return jModel.getClass(javaClass);
     }
     
+    /**
+     * Return array of JavaClass instances created based on the provided classes.
+     * This assumes provided classes exist on the classpath.
+     *
+     * @param classes
+     * @return JavaClass array
+     */
+    public JavaClass[] getJavaClassArray(Class... classes) {
+        if (0 == classes.length) {
+            return new JavaClass[0];
+        }
+        JavaClass[] result = new JavaClass[classes.length];
+        int i = 0;
+        for (Class clazz : classes) {
+            result[i++] = getJavaClass(clazz);
+        }
+        return result;
+    }
+
     /**
      * Return a JavaClass instance created based on fully qualified
      * class name.  This assumes that a class with the provided name

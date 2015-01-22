@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -27,6 +27,7 @@ import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Context;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.accessor.OrmAttributeAccessor;
@@ -48,6 +49,7 @@ import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionEventManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
@@ -917,6 +919,47 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
             return new XMLField();
         }
         return new XMLField(path);
+    }
+
+    /**
+     * Returns descriptors from all sessions.
+     *
+     * @return descriptors from all sessions
+     */
+    public List<Descriptor> getDescriptors() {
+        List<Descriptor> descriptors = new ArrayList<Descriptor>();
+        List<Session> sessions = getSessions();
+        for (Session session : sessions) {
+            List<Descriptor> orderedDescriptors = (List<Descriptor>) (List) session.getProject().getOrderedDescriptors();
+            for (Descriptor xDesc : orderedDescriptors) {
+                descriptors.add(xDesc);
+            }
+        }
+        return descriptors;
+    }
+
+    /**
+     * Returns conversion manager from session datasource platform.
+     *
+     * @return conversion manager
+     */
+    public ConversionManager getOxmConversionManager() {
+        return (org.eclipse.persistence.internal.oxm.ConversionManager) getSession().getDatasourcePlatform().getConversionManager();
+    }
+
+    /**
+     * Returns descriptor for given object.
+     *
+     * @param object
+     * @return descriptor for given object
+     */
+    public Descriptor getDescriptorForObject(Object object) {
+        Session session = getSession(object);
+        if (null != session && null != session.getDescriptor(object)) {
+            return (Descriptor)session.getDescriptor(object);
+        }
+
+        return null;
     }
 
 }

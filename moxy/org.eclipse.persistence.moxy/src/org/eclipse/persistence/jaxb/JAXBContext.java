@@ -96,7 +96,6 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEventListener;
 
 /**
@@ -368,16 +367,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         XMLContext xmlContext = currentJAXBContextState.getXMLContext();
         Generator generator = currentJAXBContextState.getGenerator();
         if (generator == null) {
-            List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
-            List<Session> sessions = xmlContext.getSessions();
-            for (Session session : sessions) {
-                List<Descriptor> descriptors = (List<Descriptor>) (List) session.getProject().getOrderedDescriptors();
-                for (Descriptor xDesc : descriptors) {
-                    descriptorsToProcess.add(xDesc);
-                }
-            }
-            SchemaModelGenerator smGen = new SchemaModelGenerator((org.eclipse.persistence.internal.oxm.ConversionManager) xmlContext.getSession().getDatasourcePlatform().getConversionManager());
-            smGen.generateSchemas(descriptorsToProcess, null, new JAXBSchemaOutputResolver(outputResolver), additonalGlobalElements);
+            SchemaModelGenerator smGen = new SchemaModelGenerator(xmlContext.getOxmConversionManager());
+            smGen.generateSchemas(xmlContext.getDescriptors(), null, new JAXBSchemaOutputResolver(outputResolver), additonalGlobalElements);
         } else {
             generator.generateSchemaFiles(outputResolver, additonalGlobalElements);
         }

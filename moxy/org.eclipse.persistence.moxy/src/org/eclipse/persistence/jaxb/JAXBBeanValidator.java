@@ -14,18 +14,9 @@ package org.eclipse.persistence.jaxb;
 
 import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
-import org.eclipse.persistence.sessions.coordination.CommandProcessor;
+import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_HELPER;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.validation.Validation;
-import javax.validation.ValidationException;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.groups.Default;
 import java.security.AccessController;
 import java.security.CodeSource;
 import java.security.PrivilegedAction;
@@ -35,8 +26,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_HELPER;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.groups.Default;
 
 /**
  * INTERNAL:
@@ -50,6 +50,9 @@ import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_
  * @since 2.6
  */
 class JAXBBeanValidator {
+
+    private static Logger logger =
+            Logger.getLogger(JAXBBeanValidator.class.getName());
 
     /**
      * Represents the Default validation group. Storing it in constant saves resources.
@@ -429,9 +432,9 @@ class JAXBBeanValidator {
     private void printValidatorInfo() {
         if (!context.getHasLoggedValidatorInfo().getAndSet(true)) {
             CodeSource validationImplJar = getValidatorCodeSource();
-            String msg = "EclipseLink is using " + validationImplJar + " as BeanValidation implementation.";
-            AbstractSession abstractSession = (AbstractSession) context.getXMLContext().getSession();
-            abstractSession.logMessage(CommandProcessor.LOG_INFO, msg);
+            if (logger.isLoggable(Level.INFO)) {
+                logger.info("EclipseLink is using " + validationImplJar + " as BeanValidation implementation.");
+            }
         }
     }
 
