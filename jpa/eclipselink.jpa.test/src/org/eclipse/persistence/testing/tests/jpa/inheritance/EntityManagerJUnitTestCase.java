@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,7 +14,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -26,11 +28,14 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Betta;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bicycle;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
 import org.eclipse.persistence.testing.models.jpa.inheritance.CitrusFruit;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
 import org.eclipse.persistence.testing.models.jpa.inheritance.DDD;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Fish;
+import org.eclipse.persistence.testing.models.jpa.inheritance.FishTank;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.testing.models.jpa.inheritance.PerformanceTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Seed;
@@ -85,6 +90,8 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestCase("testJoinedInheritanceOneToManyJoinFetch"));
         // Bug 415526
         suite.addTest(new EntityManagerJUnitTestCase("testCascadeMergeWithTargetInheritance"));
+        // Bug 458177
+        suite.addTest(new EntityManagerJUnitTestCase("testJoinedInheritanceWithAbstractSuperclass"));
         
         return suite;
     }
@@ -604,6 +611,58 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             }
         } finally {
         	rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    /*
+     * Added for Bug 458177
+     * - Instantiate a FishTank, unidirectionally lazy-referencing an
+     *   abstract Entity (Fish). Persist.
+     * - Instantiate a Betta (concrete extension of Fish) and reference
+     *   from FishTank's 'fishes' collection. Persist and commit.
+     * - Acquire new EM and retrieve cached FishTank. Remove Entity.
+     * - This 'simple' operation previously attempted to instantiate the abstract
+     *   Fish class during UOW resume (Resulting in InstantiationException).
+     */
+    public void testJoinedInheritanceWithAbstractSuperclass() {
+        Long tankId = null;
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            Betta fish = new Betta();
+            fish.setName("swimmy");
+            fish.setColor("blue");
+            
+            em.persist(fish);
+            
+            FishTank fishTank = new FishTank();
+            List<Fish> list = new ArrayList<Fish>();
+            list.add(fish);
+            fishTank.setFishes(list);
+            
+            em.persist(fishTank);
+            
+            tankId = fishTank.getId();
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        assertNotNull("FishTank ID should not be null", tankId);
+        
+        em = createEntityManager();
+        try {
+            beginTransaction(em);
+            FishTank fishTank = em.find(FishTank.class, tankId);
+            assertNotNull("FishTank should not be null", fishTank);
+            
+            em.remove(fishTank);
+            
+            commitTransaction(em);
+        } finally {
             closeEntityManager(em);
         }
     }

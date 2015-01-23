@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -5271,12 +5271,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // The change sets include new objects as well.
         if (this.unitOfWorkChangeSet != null) {
             for (Map<ObjectChangeSet, ObjectChangeSet> objectChanges : this.unitOfWorkChangeSet.getObjectChanges().values()) {
-                ClassDescriptor descriptor = null;
                 for (ObjectChangeSet changeSet : objectChanges.values()) {
-                    descriptor = changeSet.getDescriptor();
+                    Object clone = changeSet.getUnitOfWorkClone();
+                    ClassDescriptor descriptor = this.getDescriptor(clone);
                     // Build backup clone for DeferredChangeDetectionPolicy or ObjectChangeTrackingPolicy,
                     // but not for AttributeChangeTrackingPolicy.
-                    descriptor.getObjectChangePolicy().revertChanges(changeSet.getUnitOfWorkClone(), descriptor, this, cloneMapping, false);
+                    descriptor.getObjectChangePolicy().revertChanges(clone, descriptor, this, cloneMapping, false);
                 }
             }
         }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -94,6 +94,11 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCMP3_SEEDTable());
         addTableDefinition(buildCMP3_SEEDED_FRUITTable());
         addTableDefinition(buildCMP3_CITRUS_FRUITTable());
+        
+        // Bug 458177
+        addTableDefinition(buildJPA_FISHTable());
+        addTableDefinition(buildJPA_BETTATable());
+        addTableDefinition(buildJPA_FISH_TANKTable());
     }
 
     public TableDefinition buildSTI_SUPERCLASSTable() {
@@ -2285,6 +2290,117 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         table.addField(fieldSEEDEDFRUIT_ID);
 
         return table;
+    }
+    
+    public TableDefinition buildJPA_FISHTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_FISH");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(64);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldTYPE = new FieldDefinition();
+        fieldTYPE.setName("TYPE");
+        fieldTYPE.setTypeName("VARCHAR");
+        fieldTYPE.setSize(1);
+        fieldTYPE.setIsPrimaryKey(false);
+        fieldTYPE.setIsIdentity(false);
+        fieldTYPE.setUnique(false);
+        fieldTYPE.setShouldAllowNull(true);
+        table.addField(fieldTYPE);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMBER");
+        fieldVERSION.setSize(10);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+        
+        FieldDefinition fieldTANK_ID = new FieldDefinition();
+        fieldTANK_ID.setName("TANK_ID");
+        fieldTANK_ID.setTypeName("NUMBER");
+        fieldTANK_ID.setSize(10);
+        fieldTANK_ID.setShouldAllowNull(true);
+        fieldTANK_ID.setIsPrimaryKey(false);
+        fieldTANK_ID.setUnique(false);
+        fieldTANK_ID.setIsIdentity(false);
+        table.addField(fieldTANK_ID);
+        
+        return table;        
+    }
+    
+    public TableDefinition buildJPA_FISH_TANKTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_FISH_TANK");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMBER");
+        fieldVERSION.setSize(10);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+        
+        return table;        
+    }
+    
+    public TableDefinition buildJPA_BETTATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_BETTA");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldCOLOR = new FieldDefinition();
+        fieldCOLOR.setName("COLOR");
+        fieldCOLOR.setTypeName("VARCHAR");
+        fieldCOLOR.setSize(64);
+        fieldCOLOR.setIsPrimaryKey(false);
+        fieldCOLOR.setIsIdentity(false);
+        fieldCOLOR.setUnique(false);
+        fieldCOLOR.setShouldAllowNull(true);
+        table.addField(fieldCOLOR);
+        
+        return table;        
     }
 
     /**
