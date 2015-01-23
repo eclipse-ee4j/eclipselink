@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -71,7 +71,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
      * the underlying data.
      */
     public Object getRealAttributeValueFromObject(Object object, Object attribute) {
-        boolean wasInstantiated = ((ValueHolderInterface)attribute).isInstantiated();
+        boolean wasInstantiated = attribute != null && attribute instanceof ValueHolderInterface && ((ValueHolderInterface)attribute).isInstantiated();
         Object value = super.getRealAttributeValueFromObject(object, attribute);
         // Provide the indirection policy with a callback that allows it to do any updates it needs as the result of getting the value.
         if (!wasInstantiated && (value != attribute)) {
@@ -80,7 +80,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         }
         return value;
     }
-    
+
     /**
      * This method will lazily initialize the set method
      * Lazy initialization occurs to that we are not required to have a handle on
