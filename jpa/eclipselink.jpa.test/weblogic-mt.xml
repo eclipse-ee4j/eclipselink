@@ -1,0 +1,1278 @@
+<!--
+- Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
+- This program and the accompanying materials are made available under the
+- terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+- which accompanies this distribution.
+- The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+- and the Eclipse Distribution License is available at
+- http://www.eclipse.org/org/documents/edl-v10.php.
+-
+- Contributors:
+-     tkraus - initial API and implementation
+-->
+
+<!-- This ant project includes following common tasks:
+        - wls-config-partition  Configure WebLogic partitions for tests
+        - wls-create-domain     Create WebLogic domain for tests
+        - wls-create-partition  Create WebLogic partitions for tests
+        - wls-delete-domain     Delete WebLogic domain for tests
+        - wls-deploy            Deploy application to WebLogic
+        - wls-download          Download WebLogic server.
+        - wls-install           Install WebLogic server.
+        - wls-start-domain      Start WebLogic domain for tests
+        - wls-stop-domain       Stop WebLogic domain for tests
+        - wls-undeploy          Undeploy application from WebLogic
+
+     and tasks to support JPA tests ant tasks:
+        - weblogic-mt-deploy    Deploy an application into multitenant environment
+                                in WebLogic domain.
+        - weblogic-mt-install   Download and install WebLogic and initialize domain.
+        - weblogic-mt-reset     Reset multitenant environment in WebLogic domain
+                                (stop server, re-create domain, start server, setup server).
+        - weblogic-mt-setup     Setup multitenant environment on WebLogic domain.
+        - weblogic-mt-start     Start WebLogic domain.
+        - weblogic-mt-stop      Stop WebLogic domain.
+        - weblogic-mt-undeploy  Undeploy an application from  multitenant environment
+                                in WebLogic domain.
+-->
+<project name="Eclipse Persistence Services JPA WLS Testing" basedir=".">
+
+    <!-- Environment properties. -->
+    <property environment="sysenv"/>
+
+    <!-- Customized properties from user home directory are loaded first. -->
+    <property file="${user.home}/weblogic.properties"/>
+    <property file="${user.home}/weblogic-mt.properties"/>
+
+    <!-- Default properties are loaded later. -->
+    <property file="${test.properties}"/>
+    <property file="./weblogic-mt.properties"/>
+
+    <!-- Internal properties derived from property files. -->
+    <!--   Full path to EclipseLink library -->
+    <property name="wls.mt.eclipselink.lib"      location="${eclipselink.lib}"/>
+    <!--   Full path to jUnit library -->
+    <property name="wls.mt.junit.lib"            location="${junit.lib}"/>
+    <!--   Full path to JDBC driver JAR -->
+    <property name="wls.mt.jdbc.driver.jar"      location="${jdbc.driver.jar}"/>
+    <property name="wls.mt.generic.jar.url"      value="${weblogic.mt.builds.url}/${weblogic.mt.generic.jar}"/>
+    <property name="wls.mt.jrf_generic.jar.url"  value="${weblogic.mt.builds.url}/${weblogic.mt.jrf_generic.jar}"/>
+    <property name="wls.mt.generic.jar.file"     location="${weblogic.mt.packages.dir}/${weblogic.mt.generic.jar}"/>
+    <property name="wls.mt.jrf_generic.jar.file" location="${weblogic.mt.packages.dir}/${weblogic.mt.jrf_generic.jar}"/>
+    <property name="wls.mt.response.wls.file"    location="${weblogic.mt.install.dir}/response-wls"/>
+    <property name="wls.mt.response.wls.type"    value="WebLogic Server"/>
+    <property name="wls.mt.response.jrf.file"    location="${weblogic.mt.install.dir}/response-jrf"/>
+    <property name="wls.mt.response.jrf.type"    value="Fusion Middleware Infrastructure"/>
+    <!--   Fusion Middleware Infrastructure (FMI) installation directory full path. -->
+    <property name="wls.mt.install.mw.home"      location="${weblogic.mt.install.dir}/wls1221"/>
+    <property name="wls.mt.install.orainv"       location="${weblogic.mt.install.dir}/oraInventory"/>
+    <property name="wls.mt.install.orainst.loc"  location="${weblogic.mt.install.dir}/oraInst.loc"/>
+    <!--   WebLogic installation directory full path. -->
+    <property name="wls.mt.install.wl.home"      location="${wls.mt.install.mw.home}/wlserver"/>
+    <!--   Full (absilute) domain directory path. -->
+    <property name="wls.mt.domain.full.path"     location="${weblogic.mt.domain.path}"/>
+    <!--   Full (absilute) domain libraries directory path. -->
+    <property name="wls.mt.domain.lib.full.path" location="${wls.mt.domain.full.path}/lib"/>
+    <!--   Domain template path relative to WebLogic installation directory (wls.mt.install.wl.home). -->
+    <property name="wls.mt.domain.template"      value="common/templates/wls/wls.jar"/>
+    <!--   JRF template path relative to FMI installation directory (wls.mt.install.mw.home). -->
+    <property name="wls.mt.domain.jrf.template"  value="oracle_common/common/templates/wls/oracle.jrf_template.jar"/>
+
+    <!--   WebLogic configuration  utility. -->
+    <property name="wls.mt.config.tool"          location="./weblogic-mt.py"/>
+
+    <!-- WebLogic classpath. -->
+    <path id="wls.mt.path">
+        <pathelement location="${wls.mt.install.wl.home}/server/lib/weblogic.jar"/>
+        <pathelement location="${wls.mt.install.wl.home}/common/derby/lib/derby.jar"/>
+    </path>
+
+    <!-- JPA tests interface: Download and install WebLogic and initialize domain. -->
+    <target name="weblogic-mt-install"
+        description="JPA tests interface: Download and install WebLogic and initialize domain."
+        depends="wls-create-domain"/>
+
+    <!-- JPA tests interface: Start WebLogic domain. -->
+    <target name="weblogic-mt-start"
+        description="JPA tests interface: Start WebLogic domain."
+        depends="wls-start-domain"/>
+
+    <!-- JPA tests interface: Stop WebLogic domain. -->
+    <target name="weblogic-mt-stop"
+        description="JPA tests interface: Stop WebLogic domain."
+        depends="wls-stop-domain"/>
+
+    <!-- JPA tests interface: Setup multitenant environment in WebLogic domain. -->
+    <target name="weblogic-mt-setup"
+        description="JPA tests interface: Setup multitenant environment on WebLogic domain."
+        depends="wls-create-partition,wls-config-partition"/>
+
+    <!-- JPA tests interface: Reset multitenant environment in WebLogic domain. -->
+    <target name="weblogic-mt-reset"
+        description="JPA tests interface: Reset multitenant environment in WebLogic domain (stop server, re-create domain, start server, setup server)."
+        depends="wls-stop-domain,wls-delete-domain,wls-create-domain,wls-start-domain"/>
+
+    <!-- INTERNAL: Translate deployment properties from EclipseLink JPA build file. -->
+    <target name="weblogic-mt-deploy-translate">
+        <property name="weblogic.mt.application.name" value="${application.name}"/>
+        <property name="weblogic.mt.application.path" location="${jpatest.basedir}/${application.name}.ear"/>
+    </target>
+
+    <!-- JPA tests interface: Deploy an application into multitenant environment in WebLogic domain. -->
+    <target name="weblogic-mt-deploy"
+        description="JPA tests interface: Deploy an application into multitenant environment in WebLogic domain."
+        depends="weblogic-mt-deploy-translate,wls-deploy"/>
+
+    <!-- INTERNAL: Translate undeployment properties from EclipseLink JPA build file. -->
+    <target name="weblogic-mt-undeploy-translate">
+        <property name="weblogic.mt.application.name" value="${application.name}"/>
+    </target>
+
+    <!-- JPA tests interface: Undeploy an application from multitenant environment in WebLogic domain. -->
+    <target name="weblogic-mt-undeploy"
+        description="JPA tests interface: Undeploy an application from multitenant environment in WebLogic domain."
+        depends="weblogic-mt-undeploy-translate,wls-undeploy"/>
+
+    <!-- Download WebLogic installation packages from builds URL. -->
+    <target name="wls-download" description="Download WebLogic server."
+        depends="weblogic-mt-download-print-all-properties,weblogic-mt-download-verify-all-properties">
+        <mkdir dir="${weblogic.mt.packages.dir}"/>
+        <get src="${wls.mt.generic.jar.url}"
+            dest="${wls.mt.generic.jar.file}"     verbose="false" usetimestamp="true"/>
+        <get src="${wls.mt.jrf_generic.jar.url}"
+            dest="${wls.mt.jrf_generic.jar.file}" verbose="false" usetimestamp="true"/>
+    </target>
+
+    <!-- Install WebLogic from installation packages. -->
+    <target name="wls-install"
+        depends="wls-mt-packages-exists,wls-mt-packages-download,wls-install-weblogic,wls-install-fusion-middleware"
+        description="Install WebLogic server.">
+    </target>
+
+    <!-- Create WebLogic domain for tests. -->
+    <target name="wls-create-domain"
+        description="Create WebLogic domain for tests"
+        depends="weblogic-mt-create-domain-print-properties,weblogic-mt-create-domain-verify-properties">
+        <java classname="weblogic.WLST" fork="yes">
+            <env key="WL_HOME" value="${wls.mt.install.wl.home}"/>
+            <classpath>
+                <path refid="wls.mt.path"/>
+            </classpath>
+            <jvmarg value="-XX:MaxPermSize=256M"/>
+            <arg value="${wls.mt.config.tool}"/>
+            <arg value="create-domain"/>
+            <arg value="--domain=${wls.mt.domain.full.path}"/>
+            <arg value="--wls-home=${wls.mt.install.wl.home}"/>
+            <arg value="--template=${wls.mt.domain.template}"/>
+            <arg value="--name=${weblogic.mt.server.name}"/>
+            <arg value="--host=${weblogic.mt.host}"/>
+            <arg value="--port=${weblogic.mt.port}"/>
+            <arg value="--ssl-port=${weblogic.mt.ssl.port}"/>
+            <arg value="--admin-user=${weblogic.mt.admin.user}"/>
+            <arg value="--admin-password=${weblogic.mt.admin.password}"/>
+            <arg value="add-template"/>
+            <arg value="--domain=${wls.mt.domain.full.path}"/>
+            <arg value="--template=${wls.mt.install.mw.home}/${wls.mt.domain.jrf.template}"/>
+        </java>
+        <wls-install-libraries/>
+    </target>
+
+    <!-- INTERNAL: Copy EclipseLink, jUnit and JDBC driver libraries into domain's lib directory -->
+    <macrodef name="wls-install-libraries">
+        <sequential>
+            <copy file="${wls.mt.eclipselink.lib}" todir="${wls.mt.domain.lib.full.path}"/>
+            <copy file="${wls.mt.jdbc.driver.jar}" todir="${wls.mt.domain.lib.full.path}"/>
+            <copy file="${wls.mt.junit.lib}"       todir="${wls.mt.domain.lib.full.path}"/>
+        </sequential>
+    </macrodef>
+
+    <!-- Create WebLogic domain for tests. -->
+    <target name="wls-delete-domain"
+        description="Delete WebLogic domain for tests">
+        <delete dir="${wls.mt.domain.full.path}"/>
+    </target>
+
+    <!-- Start WebLogic domain for tests. -->
+    <target name="wls-start-domain"
+        description="Start WebLogic domain for tests"
+        depends="weblogic-mt-start-domain-print-properties,weblogic-mt-start-domain-verify-properties">
+        <condition property="wls.mt.can.start" value="true">
+            <socket server="${weblogic.mt.host}" port="${weblogic.mt.port}"/>
+        </condition>
+        <fail message="Could not start WebLogic server: ${weblogic.mt.host}:${weblogic.mt.port} is not free"
+              if="wls.mt.can.start"/>
+        <exec executable="${wls.mt.domain.full.path}/startWebLogic.sh" spawn="true"/>
+        <echo message="Waiting for WebLogic to start listening on ${weblogic.mt.host}:${weblogic.mt.port}"/>
+        <waitfor maxwait="120" maxwaitunit="second">
+            <socket server="${weblogic.mt.host}" port="${weblogic.mt.port}"/>
+        </waitfor>
+    </target>
+
+    <!-- Stop WebLogic domain for tests. -->
+    <target name="wls-stop-domain"
+        description="Stop WebLogic domain for tests"
+        depends="weblogic-mt-stop-domain-print-properties,weblogic-mt-stop-domain-verify-properties">
+        <condition property="wls.mt.can.stop" value="true">
+            <socket server="${weblogic.mt.host}" port="${weblogic.mt.port}"/>
+        </condition>
+        <fail message="Could not stop WebLogic server: Server is not listening on ${weblogic.mt.host}:${weblogic.mt.port}"
+              unless="wls.mt.can.stop"/>
+        <java classname="weblogic.WLST" fork="yes">
+            <env key="WL_HOME" value="${wls.mt.install.wl.home}"/>
+            <classpath>
+                <path refid="wls.mt.path"/>
+            </classpath>
+            <jvmarg value="-XX:MaxPermSize=256M"/>
+            <arg value="${wls.mt.config.tool}"/>
+            <arg value="--host=${weblogic.mt.host}"/>
+            <arg value="--port=${weblogic.mt.port}"/>
+            <arg value="--admin-user=${weblogic.mt.admin.user}"/>
+            <arg value="--admin-password=${weblogic.mt.admin.password}"/>
+            <arg value="stop-domain"/>
+        </java>
+    </target>
+
+    <!-- Create WebLogic partitions for tests. -->
+    <target name="wls-create-partition"
+        description="Create WebLogic partitions for tests">
+        <java classname="weblogic.WLST" fork="yes">
+            <env key="WL_HOME" value="${wls.mt.install.wl.home}"/>
+            <classpath>
+                <path refid="wls.mt.path"/>
+            </classpath>
+            <jvmarg value="-XX:MaxPermSize=256M"/>
+            <arg value="${wls.mt.config.tool}"/>
+            <arg value="--host=${weblogic.mt.host}"/>
+            <arg value="--port=${weblogic.mt.port}"/>
+            <arg value="--admin-user=${weblogic.mt.admin.user}"/>
+            <arg value="--admin-password=${weblogic.mt.admin.password}"/>
+            <arg value="set-jpa-provider"/>
+            <arg value="--provider=${weblogic.mt.persistence.provider}"/>
+            <arg value="create-resource-group-template"/>
+            <arg value="--name=${weblogic.mt.resource.group.template.name}"/>
+            <arg value="create-virtual-host"/>
+            <arg value="--name=${weblogic.mt.global.virtual.host.name}"/>
+            <arg value="--targets=${weblogic.mt.server.name}:Server"/>
+            <arg value="create-virtual-host"/>
+            <arg value="--name=${weblogic.mt.tenant1.virtual.host.name}"/>
+            <arg value="--targets=${weblogic.mt.server.name}:Server"/>
+            <arg value="create-virtual-host"/>
+            <arg value="--name=${weblogic.mt.tenant2.virtual.host.name}"/>
+            <arg value="--targets=${weblogic.mt.server.name}:Server"/>
+            <arg value="create-resource-group"/>
+            <arg value="--name=${weblogic.mt.resource.group.name}"/>
+            <arg value="--targets=${weblogic.mt.global.virtual.host.name}:VirtualHost"/>
+            <arg value="--template=${weblogic.mt.resource.group.template.name}"/>
+            <arg value="activate"/>
+            <arg value="create-partition"/>
+            <arg value="--name=${weblogic.mt.tenant1.partition.name}"/>
+            <arg value="--virtual-host=${weblogic.mt.tenant1.virtual.host.name}"/>
+            <arg value="--resource-group=${weblogic.mt.resource.group.name}"/>
+            <arg value="--resource-group-template=${weblogic.mt.resource.group.template.name}"/>
+            <arg value="create-partition"/>
+            <arg value="--name=${weblogic.mt.tenant2.partition.name}"/>
+            <arg value="--virtual-host=${weblogic.mt.tenant2.virtual.host.name}"/>
+            <arg value="--resource-group=${weblogic.mt.resource.group.name}"/>
+            <arg value="--resource-group-template=${weblogic.mt.resource.group.template.name}"/>
+            <arg value="create-proxy-resource"/>
+            <arg value="--name=${weblogic.mt.proxy.resource.name}"/>
+            <arg value="--targets=${weblogic.mt.server.name}:Server"/>
+            <arg value="--jndi-name=${weblogic.mt.proxy.resource.jndi.name}"/>
+        </java>
+    </target>
+
+    <!-- INTERNAL: Configure data source for two tenants. -->
+    <macrodef name="wls-create-datasource">
+        <attribute name="ds.name"/>
+        <attribute name="ds.jndi.name"/>
+        <attribute name="ds.url"/>
+        <attribute name="ds.driver"/>
+        <attribute name="ds.user.name"/>
+        <attribute name="ds.user.password"/>
+        <attribute name="ds.transactions"/>
+        <attribute name="ds.query"/>
+        <attribute name="override1.name"/>
+        <attribute name="override1.url"/>
+        <attribute name="override1.user.name"/>
+        <attribute name="override1.user.password"/>
+        <attribute name="override2.name"/>
+        <attribute name="override2.url"/>
+        <attribute name="override2.user.name"/>
+        <attribute name="override2.user.password"/>
+        <sequential>
+            <java classname="weblogic.WLST" fork="yes">
+                <env key="WL_HOME" value="${wls.mt.install.wl.home}" />
+                <classpath>
+                    <path refid="wls.mt.path" />
+                </classpath>
+                <jvmarg value="-XX:MaxPermSize=256M" />
+                <arg value="${wls.mt.config.tool}" />
+                <arg value="--host=${weblogic.mt.host}" />
+                <arg value="--port=${weblogic.mt.port}" />
+                <arg value="--admin-user=${weblogic.mt.admin.user}" />
+                <arg value="--admin-password=${weblogic.mt.admin.password}" />
+                <arg value="create-jdbc-resource" />
+                <arg value="--name=@{ds.name}" />
+                <arg value="--jndi-name=@{ds.jndi.name}" />
+                <arg value="--url=@{ds.url}" />
+                <arg value="--driver=@{ds.driver}" />
+                <arg value="--user=@{ds.user.name}" />
+                <arg value="--password=@{ds.user.password}" />
+                <arg value="--transactions-protocol=@{ds.transactions}" />
+                <arg value="--test-query=@{ds.query}" />
+                <arg value="--resource-group-template=${weblogic.mt.resource.group.template.name}" />
+                <arg value="activate" />
+                <arg value="create-resource-override" />
+                <arg value="--name=@{override1.name}" />
+                <arg value="--partition=${weblogic.mt.tenant1.partition.name}" />
+                <arg value="--resource=@{ds.name}" />
+                <arg value="--url=@{override1.url}" />
+                <arg value="--user=@{override1.user.name}" />
+                <arg value="--password=@{override1.user.password}" />
+                <arg value="create-resource-override" />
+                <arg value="--name=@{override2.name}" />
+                <arg value="--partition=${weblogic.mt.tenant2.partition.name}" />
+                <arg value="--resource=@{ds.name}" />
+                <arg value="--url=@{override2.url}" />
+                <arg value="--user=@{override2.user.name}" />
+                <arg value="--password=@{override2.user.password}" />
+            </java>
+        </sequential>
+    </macrodef>
+
+    <!-- Configure WebLogic partitions for tests. -->
+    <target name="wls-config-partition"
+        description="Configure WebLogic partitions for tests">
+        <wls-create-datasource
+            ds.name="${weblogic.mt.jdbc.jta.resource.name}"
+            ds.jndi.name="${weblogic.mt.jdbc.jta.resource.jndi.name}"
+            ds.url="${weblogic.mt.jdbc.resource.url}"
+            ds.driver="${weblogic.mt.jdbc.resource.driver}"
+            ds.user.name="${weblogic.mt.jdbc.resource.user.name}"
+            ds.user.password="${weblogic.mt.jdbc.resource.user.password}"
+            ds.transactions="${weblogic.mt.jdbc.jta.resource.transactions}"
+            ds.query="${weblogic.mt.jdbc.resource.test.query}"
+            override1.name="${weblogic.mt.tenant1.jdbc.resource.override.prefix}${weblogic.mt.jdbc.jta.resource.name}"
+            override1.url="${weblogic.mt.tenant1.jdbc.resource.url}"
+            override1.user.name="${weblogic.mt.tenant1.jdbc.resource.user.name}"
+            override1.user.password="${weblogic.mt.tenant1.jdbc.resource.user.password}"
+            override2.name="${weblogic.mt.tenant2.jdbc.resource.override.prefix}${weblogic.mt.jdbc.jta.resource.name}"
+            override2.url="${weblogic.mt.tenant2.jdbc.resource.url}"
+            override2.user.name="${weblogic.mt.tenant2.jdbc.resource.user.name}"
+            override2.user.password="${weblogic.mt.tenant2.jdbc.resource.user.password}"
+        />
+        <wls-create-datasource
+            ds.name="${weblogic.mt.jdbc.non.jta.resource.name}"
+            ds.jndi.name="${weblogic.mt.jdbc.non.jta.resource.jndi.name}"
+            ds.url="${weblogic.mt.jdbc.resource.url}"
+            ds.driver="${weblogic.mt.jdbc.resource.driver}"
+            ds.user.name="${weblogic.mt.jdbc.resource.user.name}"
+            ds.user.password="${weblogic.mt.jdbc.resource.user.password}"
+            ds.transactions="${weblogic.mt.jdbc.non.jta.resource.transactions}"
+            ds.query="${weblogic.mt.jdbc.resource.test.query}"
+            override1.name="${weblogic.mt.tenant1.jdbc.resource.override.prefix}${weblogic.mt.jdbc.non.jta.resource.name}"
+            override1.url="${weblogic.mt.tenant1.jdbc.resource.url}"
+            override1.user.name="${weblogic.mt.tenant1.jdbc.resource.user.name}"
+            override1.user.password="${weblogic.mt.tenant1.jdbc.resource.user.password}"
+            override2.name="${weblogic.mt.tenant2.jdbc.resource.override.prefix}${weblogic.mt.jdbc.non.jta.resource.name}"
+            override2.url="${weblogic.mt.tenant2.jdbc.resource.url}"
+            override2.user.name="${weblogic.mt.tenant2.jdbc.resource.user.name}"
+            override2.user.password="${weblogic.mt.tenant2.jdbc.resource.user.password}"
+        />
+    </target>
+
+    <!-- Deploy application to WebLogic. -->
+    <target name="wls-deploy"
+        description="Deploy application to WebLogic"
+        depends="weblogic-mt-deploy-print-properties,weblogic-mt-deploy-verify-properties">
+        <java classname="weblogic.WLST" fork="yes">
+            <env key="WL_HOME" value="${wls.mt.install.wl.home}" />
+            <classpath>
+                <path refid="wls.mt.path"/>
+            </classpath>
+            <jvmarg value="-XX:MaxPermSize=256M"/>
+            <arg value="${wls.mt.config.tool}"/>
+            <arg value="--host=${weblogic.mt.host}"/>
+            <arg value="--port=${weblogic.mt.port}"/>
+            <arg value="--admin-user=${weblogic.mt.admin.user}"/>
+            <arg value="--admin-password=${weblogic.mt.admin.password}"/>
+            <arg value="deploy"/>
+            <arg value="--name=${weblogic.mt.application.name}"/>
+            <arg value="--path=${weblogic.mt.application.path}"/>
+            <arg value="--template=${weblogic.mt.resource.group.template.name}"/>
+        </java>
+    </target>
+
+    <!-- Deploy application to WebLogic. -->
+    <target name="wls-undeploy"
+        description="Undeploy application from WebLogic"
+        depends="weblogic-mt-undeploy-print-properties,weblogic-mt-undeploy-verify-properties">
+        <java classname="weblogic.WLST" fork="yes">
+            <env key="WL_HOME" value="${wls.mt.install.wl.home}" />
+            <classpath>
+                <path refid="wls.mt.path"/>
+            </classpath>
+            <jvmarg value="-XX:MaxPermSize=256M"/>
+            <arg value="${wls.mt.config.tool}"/>
+            <arg value="--host=${weblogic.mt.host}"/>
+            <arg value="--port=${weblogic.mt.port}"/>
+            <arg value="--admin-user=${weblogic.mt.admin.user}"/>
+            <arg value="--admin-password=${weblogic.mt.admin.password}"/>
+            <arg value="undeploy"/>
+            <arg value="--name=${weblogic.mt.application.name}"/>
+            <arg value="--template=${weblogic.mt.resource.group.template.name}"/>
+        </java>
+    </target>
+
+    <!-- INTERNAL: Prepare properties messages for connecting to server and executing admin commands. -->
+    <macrodef name="weblogic-mt-server-access-properties-messages">
+        <sequential>
+            <!-- External properties messages -->
+            <condition property="weblogic.mt.install.dir.message"
+                value=" + weblogic.mt.install.dir = ${weblogic.mt.install.dir}"
+                else=" - weblogic.mt.install.dir is missing">
+                <isset property="weblogic.mt.install.dir"/>
+            </condition>
+            <condition property="weblogic.mt.host.message"
+                value=" + weblogic.mt.host = ${weblogic.mt.host}"
+                else=" - weblogic.mt.host is missing">
+                <isset property="weblogic.mt.host"/>
+            </condition>
+            <condition property="weblogic.mt.port.message"
+                value=" + weblogic.mt.port = ${weblogic.mt.port}"
+                else=" - weblogic.mt.port is missing">
+                <isset property="weblogic.mt.port"/>
+            </condition>
+            <condition property="weblogic.mt.admin.user.message"
+                value=" + weblogic.mt.admin.user = ${weblogic.mt.admin.user}"
+                else=" - weblogic.mt.admin.user is missing">
+                <isset property="weblogic.mt.admin.user"/>
+            </condition>
+            <condition property="weblogic.mt.admin.password.message"
+                value=" + weblogic.mt.admin.password = ${weblogic.mt.admin.password}"
+                else=" - weblogic.mt.admin.password is missing">
+                <isset property="weblogic.mt.admin.password"/>
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: Print properties messages for connecting to server and executing admin commands. -->
+    <macrodef name="weblogic-mt-server-access-properties-print">
+        <sequential>
+            <echo message="${weblogic.mt.install.dir.message}"/>
+            <echo message="${weblogic.mt.host.message}"/>
+            <echo message="${weblogic.mt.port.message}"/>
+            <echo message="${weblogic.mt.admin.user.message}"/>
+            <echo message="${weblogic.mt.admin.password.message}"/>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: Prepare WebLogic installation directory full path property message. -->
+    <macrodef name="weblogic-mt-server.wl.home-property-message">
+        <sequential>
+            <condition property="wls.mt.install.wl.home.message"
+                value=" + wls.mt.install.wl.home = ${wls.mt.install.wl.home}"
+                else=" - wls.mt.install.wl.home is not initialized">
+                <isset property="wls.mt.install.wl.home" />
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: WebLogic installation files check. -->
+    <macrodef name="weblogic-mt-install-files-check">
+        <sequential>
+            <condition property="wls.mt.generic.jar.file.exists" value="true">
+                <available file="${wls.mt.generic.jar.file}" />
+            </condition>
+            <condition property="wls.mt.jrf_generic.jar.file.exists" value="true">
+                <available file="${wls.mt.jrf_generic.jar.file}" />
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: WebLogic installation files messages. Make sure to call 'weblogic-mt-install-files-check' before. -->
+    <macrodef name="weblogic-mt-install-files-messages">
+        <sequential>
+            <condition property="wls.mt.generic.jar.file.check.message"
+                value=" + ${wls.mt.generic.jar.file} found"
+                else=" - ${wls.mt.generic.jar.file} is missing">
+                <isset property="wls.mt.generic.jar.file.exists"/>
+            </condition>
+            <condition property="wls.mt.jrf_generic.jar.file.check.message"
+                value=" + ${wls.mt.jrf_generic.jar.file} found"
+                else=" - ${wls.mt.jrf_generic.jar.file} is missing">
+                <isset property="wls.mt.jrf_generic.jar.file.exists"/>
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: WebLogic installation dependency files check. -->
+    <macrodef name="weblogic-mt-domain-files-check">
+        <sequential>
+            <condition property="wls.mt.eclipselink.lib.file.exists" value="true">
+                <available file="${wls.mt.eclipselink.lib}"/>
+            </condition>
+            <condition property="wls.mt.jdbc.driver.jar.file.exists" value="true">
+                <available file="${wls.mt.jdbc.driver.jar}"/>
+            </condition>
+            <condition property="wls.mt.junit.lib.file.exists" value="true">
+                <available file="${wls.mt.junit.lib}"/>
+            </condition>
+            <condition property="wls.mt.all.dependency.files.exists" value="true">
+                <and>
+                    <isset property="wls.mt.eclipselink.lib.file.exists"/>
+                    <isset property="wls.mt.jdbc.driver.jar.file.exists"/>
+                    <isset property="wls.mt.junit.lib.file.exists"/>
+                </and>
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: WebLogic domaion creation dependency files messages. Make sure to call 'weblogic-mt-domain-files-check' before. -->
+    <macrodef name="weblogic-mt-domain-files-messages">
+        <sequential>
+            <condition property="wls.mt.eclipselink.lib.file.check.message"
+                value=" + ${wls.mt.eclipselink.lib} found"
+                else=" - ${wls.mt.eclipselink.lib} is missing">
+                <isset property="wls.mt.eclipselink.lib.file.exists"/>
+            </condition>
+            <condition property="wls.mt.jdbc.driver.jar.file.check.message"
+                value=" + ${wls.mt.jdbc.driver.jar} found"
+                else=" - ${wls.mt.jdbc.driver.jar} is missing">
+                <isset property="wls.mt.jdbc.driver.jar.file.exists"/>
+            </condition>
+            <condition property="wls.mt.junit.lib.file.check.message"
+                value=" + ${wls.mt.junit.lib} found"
+                else=" - ${wls.mt.junit.lib} is missing">
+                <isset property="wls.mt.junit.lib.file.exists"/>
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: WebLogic connection properties check. -->
+    <macrodef name="weblogic-mt-connect-properties-check">
+        <sequential>
+            <condition property="wls.mt.connect.properties.valid" value="true">
+                <and>
+                    <isset property="weblogic.mt.install.dir" />
+                    <isset property="weblogic.mt.host" />
+                    <isset property="weblogic.mt.port" />
+                    <isset property="weblogic.mt.admin.user" />
+                    <isset property="weblogic.mt.admin.password" />
+                </and>
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: Verify properties for download. -->
+    <target name="weblogic-mt-download-verify-properties">
+        <condition property="wls.mt.download.properties.valid" value="true">
+            <and>
+                <isset property="weblogic.mt.generic.jar" />
+                <isset property="weblogic.mt.jrf_generic.jar" />
+                <isset property="weblogic.mt.packages.dir"/>
+            </and>
+        </condition>
+        <fail message="Missing Weblogic download properties" unless="wls.mt.download.properties.valid"/>
+    </target>
+
+    <!-- INTERNAL: Verify properties for download. -->
+    <target name="weblogic-mt-download-verify-all-properties">
+        <condition property="wls.mt.download.all.properties.valid" value="true">
+            <and>
+                <isset property="weblogic.mt.builds.url"/>
+                <isset property="weblogic.mt.generic.jar"/>
+                <isset property="weblogic.mt.jrf_generic.jar"/>
+                <isset property="weblogic.mt.packages.dir"/>
+            </and>
+        </condition>
+        <fail message="Missing Weblogic download properties" unless="wls.mt.download.all.properties.valid"/>
+    </target>
+
+    <!-- INTERNAL: Prepare printing of properties for download. -->
+    <target name="weblogic-mt-download-print-prepare">
+        <!-- External properties messages -->
+        <condition property="weblogic.mt.builds.url.message"
+            value=" + weblogic.mt.builds.url = ${weblogic.mt.builds.url}"
+            else=" - weblogic.mt.builds.url is missing">
+            <isset property="weblogic.mt.builds.url" />
+        </condition>
+        <condition property="weblogic.mt.generic.jar.message"
+            value=" + weblogic.mt.generic.jar = ${weblogic.mt.generic.jar}"
+            else=" - weblogic.mt.generic.jar is missing">
+            <isset property="weblogic.mt.generic.jar"/>
+        </condition>
+        <condition property="weblogic.mt.jrf_generic.jar.message"
+            value=" + weblogic.mt.jrf_generic.jar = ${weblogic.mt.jrf_generic.jar}"
+            else=" - weblogic.mt.jrf_generic.jar is missing">
+            <isset property="weblogic.mt.jrf_generic.jar"/>
+        </condition>
+        <condition property="weblogic.mt.packages.dir.message"
+            value=" + weblogic.mt.packages.dir = ${weblogic.mt.packages.dir}"
+            else=" - weblogic.mt.packages.dir is missing">
+            <isset property="weblogic.mt.packages.dir"/>
+        </condition>
+        <!-- Internal properties messages -->
+        <condition property="wls.mt.generic.jar.url.message"
+            value=" + wls.mt.generic.jar.url = ${wls.mt.generic.jar.url}"
+            else=" - wls.mt.generic.jar.url is not initialized">
+            <isset property="wls.mt.generic.jar.url"/>
+        </condition>
+        <condition property="wls.mt.generic.jar.file.message"
+            value=" + wls.mt.generic.jar.file = ${wls.mt.generic.jar.file}"
+            else=" - wls.mt.generic.jar.file is not initialized">
+            <isset property="wls.mt.generic.jar.url"/>
+        </condition>
+        <condition property="wls.mt.jrf_generic.jar.url.message"
+            value=" + wls.mt.jrf_generic.jar.url = ${wls.mt.jrf_generic.jar.url}"
+            else=" - wls.mt.jrf_generic.jar.url is not initialized">
+            <isset property="wls.mt.jrf_generic.jar.url"/>
+        </condition>
+        <condition property="wls.mt.jrf_generic.jar.file.message"
+            value=" + wls.mt.jrf_generic.jar.file = ${wls.mt.jrf_generic.jar.file}"
+            else=" - wls.mt.jrf_generic.jar.file is not initialized">
+            <isset property="wls.mt.jrf_generic.jar.url"/>
+        </condition>
+    </target>
+
+    <!-- INTERNAL: Print properties without URL for download. -->
+    <target name="weblogic-mt-download-print-properties"
+        depends="weblogic-mt-download-print-prepare">
+        <!-- External properties header -->
+        <condition property="wls.mt.download.properties.header"
+            value="Weblogic download properties passed:"
+            else="Some of Weblogic download properties are missing:">
+            <and>
+                <isset property="weblogic.mt.generic.jar"/>
+                <isset property="weblogic.mt.jrf_generic.jar"/>
+                <isset property="weblogic.mt.packages.dir"/>
+            </and>
+        </condition>
+        <echo message="${wls.mt.download.properties.header}"/>
+        <echo message="${weblogic.mt.generic.jar.message}"/>
+        <echo message="${weblogic.mt.jrf_generic.jar.message}"/>
+        <echo message="${weblogic.mt.packages.dir.message}"/>
+        <echo message="File properties generated:"/>
+        <echo message="${wls.mt.generic.jar.file.message}"/>
+        <echo message="${wls.mt.jrf_generic.jar.file.message}"/>
+    </target>
+
+    <!-- INTERNAL: Print all properties for download. -->
+    <target name="weblogic-mt-download-print-all-properties"
+        depends="weblogic-mt-download-print-prepare">
+        <condition property="wls.mt.download.all.properties.header"
+            value="Weblogic download properties passed:"
+            else="Some of Weblogic download properties are missing:">
+            <and>
+                <isset property="weblogic.mt.builds.url"/>
+                <isset property="weblogic.mt.generic.jar"/>
+                <isset property="weblogic.mt.jrf_generic.jar"/>
+                <isset property="weblogic.mt.packages.dir"/>
+            </and>
+        </condition>
+        <echo message="${wls.mt.download.all.properties.header}"/>
+        <echo message="${weblogic.mt.builds.url.message}"/>
+        <echo message="${weblogic.mt.generic.jar.message}"/>
+        <echo message="${weblogic.mt.jrf_generic.jar.message}"/>
+        <echo message="${weblogic.mt.packages.dir.message}"/>
+        <echo message="URL and file properties generated:"/>
+        <echo message="${wls.mt.generic.jar.url.message}"/>
+        <echo message="${wls.mt.generic.jar.file.message}"/>
+        <echo message="${wls.mt.jrf_generic.jar.url.message}"/>
+        <echo message="${wls.mt.jrf_generic.jar.file.message}"/>
+    </target>
+
+    <!-- INTERNAL: Verify properties for installation. -->
+    <target name="weblogic-mt-install-verify-properties">
+        <weblogic-mt-install-files-check/>
+        <condition property="wls.mt.install.properties.valid" value="true">
+            <and>
+                <isset property="weblogic.mt.install.dir"/>
+                <isset property="wls.mt.generic.jar.file.exists"/>
+                <isset property="wls.mt.jrf_generic.jar.file.exists"/>
+            </and>
+        </condition>
+        <fail message="Missing Weblogic installation properties or files"
+            unless="wls.mt.install.properties.valid"/>
+    </target>
+
+    <!-- INTERNAL: Print properties for installation. -->
+    <target name="weblogic-mt-install-print-properties">
+        <weblogic-mt-install-files-check/>
+        <!-- External properties header -->
+        <condition property="wls.mt.install.properties.header"
+            value="Weblogic installation properties passed:"
+            else="Some of Weblogic installation properties are missing:">
+            <and>
+                <isset property="weblogic.mt.install.dir"/>
+            </and>
+        </condition>
+        <!-- Files header -->
+        <condition property="wls.mt.install.files.header"
+            value="Weblogic installation files:" else="Some of Weblogic installation files are missing:">
+            <and>
+                <isset property="wls.mt.generic.jar.file.exists"/>
+                <isset property="wls.mt.jrf_generic.jar.file.exists"/>
+            </and>
+        </condition>
+        <!-- External properties messages -->
+        <condition property="weblogic.mt.install.dir.message"
+            value=" + weblogic.mt.install.dir = ${weblogic.mt.install.dir}"
+            else=" - weblogic.mt.install.dir is missing">
+            <isset property="weblogic.mt.install.dir"/>
+        </condition>
+        <!-- Internal properties messages -->
+        <weblogic-mt-server.wl.home-property-message/>
+        <condition property="wls.mt.install.mw.home.message"
+            value=" + wls.mt.install.mw.home = ${wls.mt.install.mw.home}"
+            else=" - wls.mt.install.mw.home is not initialized">
+            <isset property="wls.mt.install.mw.home"/>
+        </condition>
+        <condition property="wls.mt.response.wls.file.message"
+            value=" + wls.mt.response.wls.file = ${wls.mt.response.wls.file}"
+            else=" - wls.mt.response.wls.file is not initialized">
+            <isset property="wls.mt.response.wls.file"/>
+        </condition>
+        <condition property="wls.mt.response.wls.type.message"
+            value=" + wls.mt.response.wls.type = ${wls.mt.response.wls.type}"
+            else=" - wls.mt.response.wls.type is not initialized">
+            <isset property="wls.mt.response.wls.type"/>
+        </condition>
+        <condition property="wls.mt.response.jrf.file.message"
+            value=" + wls.mt.response.jrf.file = ${wls.mt.response.jrf.file}"
+            else=" - wls.mt.response.jrf.file is not initialized">
+            <isset property="wls.mt.response.jrf.file"/>
+        </condition>
+        <condition property="wls.mt.response.jrf.type.message"
+            value=" + wls.mt.response.jrf.type = ${wls.mt.response.jrf.type}"
+            else=" - wls.mt.response.jrf.type is not initialized">
+            <isset property="wls.mt.response.jrf.type"/>
+        </condition>
+        <condition property="wls.mt.install.orainv.message"
+            value=" + wls.mt.install.orainv = ${wls.mt.install.orainv}"
+            else=" - wls.mt.install.orainv is not initialized">
+            <isset property="wls.mt.install.orainv"/>
+        </condition>
+        <condition property="wls.mt.install.orainst.loc.message"
+            value=" + wls.mt.install.orainst.loc = ${wls.mt.install.orainst.loc}"
+            else=" - wls.mt.install.orainst.loc is not initialized">
+            <isset property="wls.mt.install.orainst.loc"/>
+        </condition>
+        <!-- Files verification -->
+        <weblogic-mt-install-files-messages/>
+        <echo message="${wls.mt.install.properties.header}"/>
+        <echo message="${weblogic.mt.install.dir.message}"/>
+        <echo message="${wls.mt.install.files.header}"/>
+        <echo message="${wls.mt.generic.jar.file.check.message}"/>
+        <echo message="${wls.mt.jrf_generic.jar.file.check.message}"/>
+        <echo message="Installation paths generated:"/>
+        <echo message="${wls.mt.response.wls.file.message}"/>
+        <echo message="${wls.mt.response.wls.type.message}"/>
+        <echo message="${wls.mt.response.jrf.file.message}"/>
+        <echo message="${wls.mt.response.jrf.type.message}"/>
+        <echo message="${wls.mt.install.mw.home.message}"/>
+        <echo message="${wls.mt.install.wl.home.message}"/>
+        <echo message="${wls.mt.install.orainv.message}"/>
+        <echo message="${wls.mt.install.orainst.loc.message}"/>
+    </target>
+
+    <!-- INTERNAL: Verify properties for domain creation. -->
+    <target name="weblogic-mt-create-domain-verify-properties">
+        <weblogic-mt-domain-files-check/>
+        <condition property="wls.mt.create.domain.properties.valid" value="true">
+            <and>
+                <isset property="weblogic.mt.install.dir"/>
+                <isset property="weblogic.mt.domain.path"/>
+                <isset property="weblogic.mt.server.name"/>
+                <isset property="weblogic.mt.host"/>
+                <isset property="weblogic.mt.port"/>
+                <isset property="weblogic.mt.ssl.port"/>
+                <isset property="weblogic.mt.admin.user"/>
+                <isset property="weblogic.mt.admin.password"/>
+                <isset property="eclipselink.lib"/>
+                <isset property="jdbc.driver.jar"/>
+                <isset property="wls.mt.all.dependency.files.exists"/>
+            </and>
+        </condition>
+        <fail message="Missing Weblogic domain creation properties or files"
+            unless="wls.mt.create.domain.properties.valid"/>
+    </target>
+
+    <!-- INTERNAL: Print properties for domain creation. -->
+    <target name="weblogic-mt-create-domain-print-properties">
+        <weblogic-mt-domain-files-check/>
+        <!-- External properties header -->
+        <condition property="wls.mt.create.domain.properties.header"
+            value="Weblogic domain creation properties passed:"
+            else="Some of Weblogic domain creation properties are missing:">
+            <and>
+                <isset property="weblogic.mt.install.dir"/>
+                <isset property="weblogic.mt.domain.path"/>
+                <isset property="weblogic.mt.server.name"/>
+                <isset property="weblogic.mt.host"/>
+                <isset property="weblogic.mt.port"/>
+                <isset property="weblogic.mt.ssl.port"/>
+                <isset property="weblogic.mt.admin.user"/>
+                <isset property="weblogic.mt.admin.password"/>
+                <isset property="eclipselink.lib"/>
+                <isset property="jdbc.driver.jar"/>
+            </and>
+        </condition>
+        <!-- Files header -->
+        <condition property="wls.mt.domain.files.header"
+            value="Weblogic domain initialization files:"
+            else="Some of Weblogic domain initialization files are missing:">
+            <and>
+                <isset property="wls.mt.all.dependency.files.exists"/>
+            </and>
+        </condition>
+        <!-- External properties messages -->
+        <condition property="weblogic.mt.install.dir.message"
+            value=" + weblogic.mt.install.dir = ${weblogic.mt.install.dir}"
+            else=" - weblogic.mt.install.dir is missing">
+            <isset property="weblogic.mt.install.dir"/>
+        </condition>
+        <condition property="weblogic.mt.domain.path.message"
+            value=" + weblogic.mt.domain.path = ${weblogic.mt.domain.path}"
+            else=" - weblogic.mt.domain.path is missing">
+            <isset property="weblogic.mt.domain.path"/>
+        </condition>
+        <condition property="weblogic.mt.server.name.message"
+            value=" + weblogic.mt.server.name = ${weblogic.mt.server.name}"
+            else=" - weblogic.mt.server.name is missing">
+            <isset property="weblogic.mt.server.name"/>
+        </condition>
+        <condition property="weblogic.mt.host.message"
+            value=" + weblogic.mt.host = ${weblogic.mt.host}"
+            else=" - weblogic.mt.host is missing">
+            <isset property="weblogic.mt.host"/>
+        </condition>
+        <condition property="weblogic.mt.port.message"
+            value=" + weblogic.mt.port = ${weblogic.mt.port}"
+            else=" - weblogic.mt.port is missing">
+            <isset property="weblogic.mt.port"/>
+        </condition>
+        <condition property="weblogic.mt.ssl.port.message"
+            value=" + weblogic.mt.ssl.port = ${weblogic.mt.ssl.port}"
+            else=" - weblogic.mt.ssl.port is missing">
+            <isset property="weblogic.mt.ssl.port"/>
+        </condition>
+        <condition property="weblogic.mt.admin.user.message"
+            value=" + weblogic.mt.admin.user = ${weblogic.mt.admin.user}"
+            else=" - weblogic.mt.admin.user is missing">
+            <isset property="weblogic.mt.admin.user"/>
+        </condition>
+        <condition property="weblogic.mt.admin.password.message"
+            value=" + weblogic.mt.admin.password = ${weblogic.mt.admin.password}"
+            else=" - weblogic.mt.admin.password is missing">
+            <isset property="weblogic.mt.admin.password"/>
+        </condition>
+        <condition property="weblogic.mt.admin.password.message"
+            value=" + weblogic.mt.admin.password = ${weblogic.mt.admin.password}"
+            else=" - weblogic.mt.admin.password is missing">
+            <isset property="weblogic.mt.admin.password"/>
+        </condition>
+        <condition property="weblogic.mt.admin.password.message"
+            value=" + weblogic.mt.admin.password = ${weblogic.mt.admin.password}"
+            else=" - weblogic.mt.admin.password is missing">
+            <isset property="weblogic.mt.admin.password"/>
+        </condition>
+        <condition property="eclipselink.lib.message"
+            value=" + eclipselink.lib = ${eclipselink.lib}"
+            else=" - eclipselink.lib is missing">
+            <isset property="eclipselink.lib" />
+        </condition>
+        <condition property="jdbc.driver.jar.message"
+            value=" + jdbc.driver.jar = ${jdbc.driver.jar}"
+            else=" - jdbc.driver.jar is missing">
+            <isset property="jdbc.driver.jar" />
+        </condition>
+        <!-- Internal properties messages -->
+        <condition property="wls.mt.install.wl.home.message"
+            value=" + wls.mt.install.wl.home = ${wls.mt.install.wl.home}"
+            else=" - wls.mt.install.wl.home is not initialized">
+            <isset property="wls.mt.install.wl.home"/>
+        </condition>
+        <condition property="wls.mt.config.tool.message"
+            value=" + wls.mt.config.tool = ${wls.mt.config.tool}"
+            else=" - wls.mt.config.tool is not initialized">
+            <isset property="wls.mt.config.tool" />
+        </condition>
+        <condition property="wls.mt.domain.full.path.message"
+            value=" + wls.mt.domain.full.path = ${wls.mt.domain.full.path}"
+            else=" - wls.mt.domain.full.path is not initialized">
+            <isset property="wls.mt.domain.full.path" />
+        </condition>
+        <condition property="wls.mt.domain.lib.full.path.message"
+            value=" + wls.mt.domain.lib.full.path = ${wls.mt.domain.lib.full.path}"
+            else=" - wls.mt.domain.lib.full.path is not initialized">
+            <isset property="wls.mt.domain.lib.full.path"/>
+        </condition>
+        <condition property="wls.mt.domain.template.message"
+            value=" + wls.mt.domain.template = ${wls.mt.domain.template}"
+            else=" - wls.mt.domain.template is not initialized">
+            <isset property="wls.mt.domain.template" />
+        </condition>
+        <condition property="wls.mt.domain.jrf.template.message"
+            value=" + wls.mt.domain.jrf.template = ${wls.mt.domain.jrf.template}"
+            else=" - wls.mt.domain.jrf.template is not initialized">
+            <isset property="wls.mt.domain.jrf.template" />
+        </condition>
+        <condition property="wls.mt.eclipselink.lib.message"
+            value=" + wls.mt.eclipselink.lib = ${wls.mt.eclipselink.lib}"
+            else=" - wls.mt.eclipselink.lib is not initialized">
+            <isset property="wls.mt.eclipselink.lib"/>
+        </condition>
+        <condition property="wls.mt.jdbc.driver.jar.message"
+            value=" + wls.mt.jdbc.driver.jar = ${wls.mt.jdbc.driver.jar}"
+            else=" - wls.mt.jdbc.driver.jar is not initialized">
+            <isset property="wls.mt.jdbc.driver.jar"/>
+        </condition>
+        <condition property="wls.mt.junit.lib.message"
+            value=" + wls.mt.junit.lib = ${wls.mt.junit.lib}"
+            else=" - wls.mt.junit.lib is not initialized">
+            <isset property="wls.mt.junit.lib"/>
+        </condition>
+        <!-- Files verification -->
+        <weblogic-mt-domain-files-messages/>
+        <echo message="${wls.mt.create.domain.properties.header}"/>
+        <echo message="${weblogic.mt.install.dir.message}"/>
+        <echo message="${weblogic.mt.domain.path.message}"/>
+        <echo message="${wls.mt.domain.lib.full.path.message}"/>
+        <echo message="${weblogic.mt.server.name.message}"/>
+        <echo message="${weblogic.mt.host.message}"/>
+        <echo message="${weblogic.mt.port.message}"/>
+        <echo message="${weblogic.mt.ssl.port.message}"/>
+        <echo message="${weblogic.mt.admin.user.message}"/>
+        <echo message="${weblogic.mt.admin.password.message}"/>
+        <echo message="${eclipselink.lib.message}"/>
+        <echo message="${jdbc.driver.jar.message}"/>
+        <echo message="${wls.mt.junit.lib.message}"/>
+        <echo message="${wls.mt.domain.files.header}"/>
+        <echo message="${wls.mt.eclipselink.lib.file.check.message}"/>
+        <echo message="${wls.mt.jdbc.driver.jar.file.check.message}"/>
+        <echo message="${wls.mt.junit.lib.file.check.message}"/>
+        <echo message="Domain creation properties generated:"/>
+        <echo message="${wls.mt.install.wl.home.message}"/>
+        <echo message="${wls.mt.config.tool.message}"/>
+        <echo message="${wls.mt.domain.full.path.message}"/>
+        <echo message="${wls.mt.domain.template.message}"/>
+        <echo message="${wls.mt.domain.jrf.template.message}"/>
+        <echo message="${wls.mt.eclipselink.lib.message}"/>
+        <echo message="${wls.mt.jdbc.driver.jar.message}"/>
+    </target>
+
+    <!-- INTERNAL: Verify properties for strating a domain. -->
+    <target name="weblogic-mt-start-domain-verify-properties">
+        <condition property="wls.mt.start.domain.properties.valid" value="true">
+            <and>
+                <isset property="weblogic.mt.domain.path"/>
+                <isset property="weblogic.mt.host"/>
+                <isset property="weblogic.mt.port"/>
+            </and>
+        </condition>
+        <fail message="Missing Weblogic domain startup properties"
+            unless="wls.mt.start.domain.properties.valid"/>
+    </target>
+
+    <!-- INTERNAL: Print properties for strating a domain. -->
+    <target name="weblogic-mt-start-domain-print-properties">
+        <!-- External properties header -->
+        <condition property="wls.mt.start.domain.properties.header"
+            value="Weblogic domain startup properties passed:"
+            else="Some of Weblogic domain startup properties are missing:">
+            <and>
+                <isset property="weblogic.mt.domain.path"/>
+                <isset property="weblogic.mt.host"/>
+                <isset property="weblogic.mt.port"/>
+            </and>
+        </condition>
+        <!-- External properties messages -->
+        <condition property="weblogic.mt.domain.path.message"
+            value=" + weblogic.mt.domain.path = ${weblogic.mt.domain.path}"
+            else=" - weblogic.mt.domain.path is missing">
+            <isset property="weblogic.mt.domain.path"/>
+        </condition>
+        <condition property="weblogic.mt.host.message"
+            value=" + weblogic.mt.host = ${weblogic.mt.host}"
+            else=" - weblogic.mt.host is missing">
+            <isset property="weblogic.mt.host"/>
+        </condition>
+        <condition property="weblogic.mt.port.message"
+            value=" + weblogic.mt.port = ${weblogic.mt.port}"
+            else=" - weblogic.mt.port is missing">
+            <isset property="weblogic.mt.port"/>
+        </condition>
+        <!-- Internal properties messages -->
+        <condition property="wls.mt.domain.full.path.message"
+            value=" + wls.mt.domain.full.path = ${wls.mt.domain.full.path}"
+            else=" - wls.mt.domain.full.path is not initialized">
+            <isset property="wls.mt.domain.full.path" />
+        </condition>
+        <echo message="${wls.mt.start.domain.properties.header}"/>
+        <echo message="${weblogic.mt.domain.path.message}"/>
+        <echo message="${weblogic.mt.host.message}"/>
+        <echo message="${weblogic.mt.port.message}"/>
+        <echo message="Domain path:"/>
+        <echo message="${wls.mt.domain.full.path.message}"/>
+    </target>
+
+    <!-- INTERNAL: Verify properties for stopping a domain. -->
+    <target name="weblogic-mt-stop-domain-verify-properties">
+        <condition property="wls.mt.stop.domain.properties.valid" value="true">
+            <and>
+                <isset property="weblogic.mt.install.dir"/>
+                <isset property="weblogic.mt.host"/>
+                <isset property="weblogic.mt.port"/>
+                <isset property="weblogic.mt.admin.user"/>
+                <isset property="weblogic.mt.admin.password"/>
+            </and>
+        </condition>
+        <fail message="Missing Weblogic domain stopping properties"
+            unless="wls.mt.stop.domain.properties.valid"/>
+    </target>
+
+    <!-- INTERNAL: Print properties for stopping a domain. -->
+    <target name="weblogic-mt-stop-domain-print-properties">
+        <!-- External properties header -->
+        <condition property="wls.mt.stop.domain.properties.header"
+            value="Weblogic domain stopping properties passed:"
+            else="Some of Weblogic domain stopping properties are missing:">
+            <and>
+                <isset property="weblogic.mt.install.dir"/>
+                <isset property="weblogic.mt.host"/>
+                <isset property="weblogic.mt.port"/>
+                <isset property="weblogic.mt.admin.user"/>
+                <isset property="weblogic.mt.admin.password"/>
+            </and>
+        </condition>
+        <!-- External properties messages -->
+        <weblogic-mt-server-access-properties-messages/>
+        <!-- Internal properties messages -->
+        <weblogic-mt-server.wl.home-property-message/>
+        <echo message="${wls.mt.stop.domain.properties.header}"/>
+        <echo message="${weblogic.mt.install.dir.message}"/>
+        <echo message="${weblogic.mt.host.message}"/>
+        <echo message="${weblogic.mt.port.message}"/>
+        <echo message="${weblogic.mt.admin.user.message}"/>
+        <echo message="${weblogic.mt.admin.password.message}"/>
+        <echo message="Weblogic path:"/>
+        <echo message="${wls.mt.install.wl.home.message}"/>
+    </target>
+
+    <!-- INTERNAL: Verify properties for deployment. -->
+    <target name="weblogic-mt-deploy-verify-properties">
+        <weblogic-mt-connect-properties-check/>
+        <condition property="wls.mt.deploy.properties.valid" value="true">
+            <and>
+                <isset property="wls.mt.connect.properties.valid"/>
+                <isset property="weblogic.mt.application.name"/>
+                <isset property="weblogic.mt.application.path"/>
+            </and>
+        </condition>
+        <fail message="Missing Weblogic deployment properties"
+            unless="wls.mt.deploy.properties.valid"/>
+    </target>
+
+    <!-- INTERNAL: Print properties for deployment. -->
+    <target name="weblogic-mt-deploy-print-properties">
+        <weblogic-mt-connect-properties-check/>
+        <!-- External properties header -->
+        <condition property="wls.mt.deploy.properties.header"
+            value="Weblogic deployment properties passed:"
+            else="Some of Weblogic deployment properties are missing:">
+            <and>
+                <isset property="wls.mt.connect.properties.valid"/>
+                <isset property="weblogic.mt.application.name"/>
+                <isset property="weblogic.mt.application.path"/>
+            </and>
+        </condition>
+        <!-- External properties messages -->
+        <weblogic-mt-server-access-properties-messages/>
+        <condition property="weblogic.mt.application.name.message"
+            value=" + weblogic.mt.application.name = ${weblogic.mt.application.name}"
+            else=" - weblogic.mt.application.name is missing">
+            <isset property="weblogic.mt.application.name"/>
+        </condition>
+        <condition property="weblogic.mt.application.path.message"
+            value=" + weblogic.mt.application.path = ${weblogic.mt.application.path}"
+            else=" - weblogic.mt.application.path is missing">
+            <isset property="weblogic.mt.application.path"/>
+        </condition>
+        <!-- Internal properties messages -->
+        <weblogic-mt-server.wl.home-property-message/>
+        <echo message="${wls.mt.deploy.properties.header}"/>
+        <weblogic-mt-server-access-properties-print/>
+        <echo message="${weblogic.mt.application.name.message}"/>
+        <echo message="${weblogic.mt.application.path.message}"/>
+        <echo message="Weblogic path:"/>
+        <echo message="${wls.mt.install.wl.home.message}"/>
+    </target>
+
+    <!-- INTERNAL: Verify properties for undeployment. -->
+    <target name="weblogic-mt-undeploy-verify-properties">
+        <weblogic-mt-connect-properties-check/>
+        <condition property="wls.mt.undeploy.properties.valid" value="true">
+            <and>
+                <isset property="wls.mt.connect.properties.valid"/>
+                <isset property="weblogic.mt.application.name"/>
+            </and>
+        </condition>
+        <fail message="Missing Weblogic undeployment properties"
+            unless="wls.mt.undeploy.properties.valid"/>
+    </target>
+
+    <!-- INTERNAL: Print properties for undeployment. -->
+    <target name="weblogic-mt-undeploy-print-properties">
+        <weblogic-mt-connect-properties-check/>
+        <!-- External properties header -->
+        <condition property="wls.mt.undeploy.properties.header"
+            value="Weblogic undeployment properties passed:"
+            else="Some of Weblogic undeployment properties are missing:">
+            <and>
+                <isset property="wls.mt.connect.properties.valid"/>
+                <isset property="weblogic.mt.application.name"/>
+            </and>
+        </condition>
+        <!-- External properties messages -->
+        <weblogic-mt-server-access-properties-messages/>
+        <condition property="weblogic.mt.application.name.message"
+            value=" + weblogic.mt.application.name = ${weblogic.mt.application.name}"
+            else=" - weblogic.mt.application.name is missing">
+            <isset property="weblogic.mt.application.name"/>
+        </condition>
+        <!-- Internal properties messages -->
+        <weblogic-mt-server.wl.home-property-message/>
+        <echo message="${wls.mt.undeploy.properties.header}"/>
+        <weblogic-mt-server-access-properties-print/>
+        <echo message="${weblogic.mt.application.name.message}"/>
+        <echo message="Weblogic path:"/>
+        <echo message="${wls.mt.install.wl.home.message}"/>
+    </target>
+
+    <!-- INTERNAL: Check if WebLogic installation packages are available locally. -->
+    <target name="wls-mt-packages-exists">
+        <weblogic-mt-install-files-check/>
+        <condition property="wls.mt.packages.exists" value="true">
+            <and>
+                <isset property="wls.mt.generic.jar.file.exists"/>
+                <isset property="wls.mt.jrf_generic.jar.file.exists"/>
+            </and>
+        </condition>
+    </target>
+
+    <!-- INTERNAL: Download WebLogic installation packages from builds URL only when they do not exist locally. -->
+    <target name="wls-mt-packages-download"
+        depends="wls-mt-builds-url-msg,wls-mt-builds-url-print,wls-mt-is-builds-url-and-not-packages"
+        if="wls.mt.is.builds.not.packages">
+        <antcall target="wls-download"/>
+    </target>
+
+    <!-- INTERNAL: Build message about missing builds URL when wls.mt.builds.url.set.msg property is set. -->
+    <target name="wls-mt-builds-url-msg" unless="wls.mt.packages.exists"
+        depends="weblogic-mt-download-print-properties,weblogic-mt-download-verify-properties">
+    </target>
+
+    <!-- INTERNAL: Print message about missing builds URL when such a message is set
+         as wls.mt.builds.url.set.msg property. -->
+    <target name="wls-mt-builds-url-print" if="wls.mt.builds.url.set.msg">
+        <echo message="${wls.mt.builds.url.set.msg}"/>
+    </target>
+
+    <!-- INTERNAL: Download condition for installation target:
+         weblogic.mt.builds.url != null && !wls.mt.packages.exists -->
+    <target name="wls-mt-is-builds-url-and-not-packages">
+        <!-- echo message="weblogic.mt.builds.url=${weblogic.mt.builds.url}"/ -->
+        <!-- echo message="wls.mt.packages.exists=${wls.mt.packages.exists}"/ -->
+        <condition property="wls.mt.is.builds.not.packages" value="true">
+            <not>
+                <isset property="wls.mt.packages.exists"/>
+            </not>
+        </condition>
+        <!-- echo message="wls.mt.is.builds.not.packages=${wls.mt.is.builds.not.packages}"/ -->
+    </target>
+
+    <!-- INTERNAL: Write response file for WebLogic installator. -->
+    <target name="wls-write-response-file">
+        <delete file="${RESPONSE.FILE}" failonerror="false" verbose="true"/>
+        <echo append="true" file="${RESPONSE.FILE}">[ENGINE]
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">Response File Version=1.0.0.0.0
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">[GENERIC]
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">INSTALL_TYPE=${RESPONSE.TYPE}
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">MYORACLESUPPORT_USERNAME=some.user@some.org
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">MYORACLESUPPORT_PASSWORD=
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">DECLINE_SECURITY_UPDATES=true
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">SECURITY_UPDATES_VIA_MYORACLESUPPORT=false
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">PROXY_HOST=
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">PROXY_PORT=
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">PROXY_USER=
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">PROXY_PWD=
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">COLLECTOR_SUPPORTHUB_URL=
+</echo>
+        <echo append="true" file="${RESPONSE.FILE}">ORACLE_HOME=${RESPONSE.HOME}
+</echo>
+    </target>
+
+    <!-- INTERNAL: Write oraInst.loc file for WebLogic installator. -->
+    <target name="wls-write-orainst-file">
+        <delete file="${ORAINST.FILE}" failonerror="false" verbose="true"/>
+        <echo append="true" file="${ORAINST.FILE}">inventory_loc=${ORAINST.INVENTORY}
+</echo>
+    </target>
+
+    <!-- INTERNAL: Create directory structure for WebLogic installation. -->
+    <target name="wls-install-create-dirs">
+        <mkdir dir="${weblogic.mt.install.dir}"/>
+        <mkdir dir="${wls.mt.install.mw.home}"/>
+        <!--mkdir dir="${wls.mt.install.wl.home}"/-->
+        <mkdir dir="${wls.mt.install.orainv}"/>
+    </target>
+
+    <!-- INTERNAL: Create directory structure and install WebLogic packages. -->
+    <target name="wls-install-weblogic"
+        depends="weblogic-mt-install-print-properties,weblogic-mt-install-verify-properties,wls-install-create-dirs">
+        <antcall target="wls-write-response-file">
+            <param name="RESPONSE.FILE" value="${wls.mt.response.wls.file}"/>
+            <param name="RESPONSE.TYPE" value="${wls.mt.response.wls.type}"/>
+            <param name="RESPONSE.HOME" value="${wls.mt.install.mw.home}"/>
+        </antcall>
+        <antcall target="wls-write-orainst-file">
+            <param name="ORAINST.FILE" value="${wls.mt.install.orainst.loc}"/>
+            <param name="ORAINST.INVENTORY" value="${wls.mt.install.orainv}"/>
+        </antcall>
+        <echo message="Installing WebLogic 12c"/>
+        <java jar="${wls.mt.generic.jar.file}" fork="true">
+            <arg value="-silent"/>
+            <arg line="-responseFile ${wls.mt.response.wls.file}"/>
+            <arg line="-invPtrLoc ${wls.mt.install.orainst.loc}"/>
+        </java>
+    </target>
+
+    <!-- INTERNAL: Create directory structure and install Fusion Middleware Infrastructure packages. -->
+    <target name="wls-install-fusion-middleware" depends="wls-install-create-dirs">
+        <antcall target="wls-write-response-file">
+            <param name="RESPONSE.FILE" value="${wls.mt.response.jrf.file}"/>
+            <param name="RESPONSE.TYPE" value="${wls.mt.response.jrf.type}"/>
+            <param name="RESPONSE.HOME" value="${wls.mt.install.mw.home}"/>
+        </antcall>
+        <echo message="Installing Fusion Middleware 12c Infrastructure"/>
+        <java jar="${wls.mt.jrf_generic.jar.file}" fork="true">
+            <arg value="-silent"/>
+            <arg line="-responseFile ${wls.mt.response.jrf.file}"/>
+            <arg line="-invPtrLoc ${wls.mt.install.orainst.loc}"/>
+        </java>
+    </target>
+
+</project>

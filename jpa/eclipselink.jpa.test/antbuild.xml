@@ -1,4 +1,5 @@
 <!--/*******************************************************************************
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -69,24 +70,36 @@
 
     <!-- Allows a user to overide certain user specific properties. -->
     <!-- local property overrides -->
-    <condition property="custom.bld.properties.message" value="Loading user-defined overrides from '${user.home}/build.properties'..."
-               else="No user-defined overrides found to load ('${user.home}/build.properties' non-existant).">
+    <condition property="custom.bld.properties.message"
+        value="Loading ${user.home}/build.properties"
+        else="Skipping ${user.home}/build.properties, file does not exist">
         <available file="${user.home}/build.properties"/>
     </condition>
-    <echo message="${custom.bld.properties.message}"/>
-    <property file="${user.home}/build.properties"/>
-    <condition property="custom.tst.properties.message" value="Loading user-defined test overrides from '${user.home}/test.properties'..."
-               else="No user-defined test overrides found to load ('${user.home}/test.properties' non-existant).">
+    <condition property="custom.tst.properties.message"
+        value="Loading ${user.home}/test.properties"
+        else="Skipping ${user.home}/test.properties, file does not exist">
         <available file="${user.home}/test.properties"/>
     </condition>
-    <echo message="${custom.tst.properties.message}"/>
-    <property file="${user.home}/test.properties"/>
-    <!-- Allows overriding defaults where access to user.home isn't allowed -->
-    <condition property="custom.local.properties.message" value="Loading local overrides from '${basedir}/local.build.properties'..."
-               else="No Local overrides found to load. ('${basedir}/local.build.properties' non-existant).">
+    <condition property="custom.cmd.properties.message"
+        value="Loading ${test.properties}"
+        else="Skipping ${test.properties}, file does not exist">
+        <and>
+            <isset property="test.properties"/>
+            <available file="${test.properties}"/>
+        </and>
+    </condition>
+    <condition property="custom.local.properties.message"
+        value="Loading ${basedir}/local.build.properties"
+        else="Skipping ${basedir}/local.build.properties, file does not exist">
         <available file="${basedir}/local.build.properties"/>
     </condition>
+    <echo message="${custom.tst.properties.message}"/>
+    <echo message="${custom.bld.properties.message}"/>
+    <echo message="${custom.cmd.properties.message}"/>
     <echo message="${custom.local.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+    <property file="${user.home}/test.properties"/>
+    <property file="${test.properties}"/>
     <property file="${basedir}/local.build.properties"/>
 
     <!-- property name="jpatest.basedir" value="."/ -->
@@ -366,10 +379,10 @@
 
         <condition property="is.jaxrs.or.jpars.testing">
             <or>
-                    <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
-                    <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
-					<contains string="${grid}" substring="true"/>
-					<contains string="${kryo}" substring="true"/>
+                <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
+                <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
+                <contains string="${grid}" substring="true"/>
+                <contains string="${kryo}" substring="true"/>
             </or>
         </condition>
         <condition property="is.jaxrs.testing.on.glassfish">
@@ -550,7 +563,7 @@
             <fileset file="${jpatest.basedir}/${eclipselink.xml.extended.composite.advanced.model.member_2}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.xml.extended.composite.advanced.model.member_3}.jar"/>
             <fileset file="${jpatest.basedir}/eclipselink-remote.jar"/>
-        	 <fileset file="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
+            <fileset file="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
         </delete>
     </target>
 
@@ -592,7 +605,7 @@
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_2}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_3}"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/eclipselink-remote"/>
-    	<mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}"/>    	
+        <mkdir dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}"/>
     </target>
 
     <target name="model-compile" description="compile models that need canonical processing">
@@ -869,29 +882,29 @@
             </fileset>
         </jar>
     </target>
-	
-	<target name="package-xml-mapping-metadata-complete" depends="">
-	    <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}/META-INF">
-	        <fileset dir="${jpatest.basedir}/resource/${eclipselink.xml.mapping.metadata.complete}" includes="*.xml"/>
-	    </copy>
-	    <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}/">
-	        <fileset dir="${jpatest.basedir}/resource/${eclipselink.xml.mapping.metadata.complete}" includes="org/eclipse/persistence/testing/models/jpa/xml/xmlmetadatacomplete/*"/>
-	    </copy>
-		<copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}">
+
+    <target name="package-xml-mapping-metadata-complete" depends="">
+        <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}/META-INF">
+            <fileset dir="${jpatest.basedir}/resource/${eclipselink.xml.mapping.metadata.complete}" includes="*.xml"/>
+        </copy>
+        <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}/">
+            <fileset dir="${jpatest.basedir}/resource/${eclipselink.xml.mapping.metadata.complete}" includes="org/eclipse/persistence/testing/models/jpa/xml/xmlmetadatacomplete/*"/>
+        </copy>
+        <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}">
             <fileset dir="${jpatest.basedir}/${classes.dir}"
-	                 includes="org/eclipse/persistence/testing/models/jpa/xml/xmlmetadatacomplete/**"/>
-		</copy>
-	    <antcall target="prepare-spring-xmls" inheritRefs="true">
-	        <param name="MODEL_NAME" value="${eclipselink.xml.mapping.metadata.complete}"/>
-	    </antcall>
-	    <antcall target="prepare-osgi-xmls" inheritRefs="true">
-	        <param name="MODEL_NAME" value="${eclipselink.xml.mapping.metadata.complete}"/>
-	    </antcall>
-	    <jar jarfile="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar">
-	        <fileset dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}">
-	        </fileset>
-	    </jar>
-	</target>
+                     includes="org/eclipse/persistence/testing/models/jpa/xml/xmlmetadatacomplete/**"/>
+        </copy>
+        <antcall target="prepare-spring-xmls" inheritRefs="true">
+            <param name="MODEL_NAME" value="${eclipselink.xml.mapping.metadata.complete}"/>
+        </antcall>
+        <antcall target="prepare-osgi-xmls" inheritRefs="true">
+            <param name="MODEL_NAME" value="${eclipselink.xml.mapping.metadata.complete}"/>
+        </antcall>
+        <jar jarfile="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar">
+            <fileset dir="${jpatest.basedir}/${build.dir}/${eclipselink.xml.mapping.metadata.complete}">
+            </fileset>
+        </jar>
+    </target>
 
     <target name="package-ddl" depends="">
         <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.ddl.generation.model}/META-INF">
@@ -1405,7 +1418,7 @@
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_2}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jpatest.basedir}/eclipselink-remote.jar"/>
-        	<pathelement path="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
+            <pathelement path="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
         <path id="jpa21.run.classpath">
@@ -1441,7 +1454,7 @@
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_2}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jpatest.basedir}/eclipselink-remote.jar"/>
-        	<pathelement path="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
+            <pathelement path="${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
         <path id="run.bean.validation.classpath">
@@ -1809,7 +1822,7 @@
             <pathelement path="${jpatest.basedir}/${classes.dir}"/>
             <pathelement path="${jpatest.basedir}/${jpatest.framework.jar}"/>
             <pathelement path="${jpatest.basedir}/${jpa.test.jar}"/>
-        	<pathelement path="${jpatest.basedir}/woven-${eclipselink.xml.mapping.metadata.complete}.jar"/>
+            <pathelement path="${jpatest.basedir}/woven-${eclipselink.xml.mapping.metadata.complete}.jar"/>
             <path refid="compile.path"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${json.jar}"/>
         </path>
@@ -2465,14 +2478,14 @@
                     <path refid="run.extended.classpath"/>
                </classpath>
         </weave>
-    	
-    	<weave source= "${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"
-    	       target = "${jpatest.basedir}/woven-${eclipselink.xml.mapping.metadata.complete}.jar"
-    	       loglevel="${logging.level}">
-    	       <classpath>
-    	           <path refid="run.classpath"/>
-    	       </classpath>
-    	</weave>
+
+        <weave source= "${jpatest.basedir}/${eclipselink.xml.mapping.metadata.complete}.jar"
+               target = "${jpatest.basedir}/woven-${eclipselink.xml.mapping.metadata.complete}.jar"
+               loglevel="${logging.level}">
+               <classpath>
+                   <path refid="run.classpath"/>
+               </classpath>
+        </weave>
     </target>
 
     <target name="run-weaver-server-test">
@@ -3107,18 +3120,18 @@
         <copy overwrite="true" file="../../../extension.lib.external/kryo-all.jar" todir="${build.dir}/APP-INF/lib"/>
         <copy overwrite="true" file="../../../extension.lib.external/jgroups.jar" todir="${build.dir}/APP-INF/lib"/>
         <copy overwrite="true" file="../../../extension.oracle.lib.external/toplink-exalogic.jar" todir="${build.dir}/APP-INF/lib"/>
-        <copy overwrite="true" todir="${build.dir}/APP-INF/lib">		
+        <copy overwrite="true" todir="${build.dir}/APP-INF/lib">
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.extension_*.jar"/>
-		</copy>
+        </copy>
         <copy overwrite="true" file="./resource/${MODEL_NAME}/server/kryo/META-INF/weblogic-application.xml" todir="${build.dir}/META-INF"/>
         <replace dir="${build.dir}/META-INF" token="%%modelname%%" value="${MODEL_NAME}">
             <include name="*.xml"/>
         </replace>
         <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
             <fileset dir="${jpatest.basedir}/${build.dir}">
-				<include name="META-INF/weblogic-application.xml"/>
-				<include name="${MODEL_NAME}_ejb.jar"/>
-				<include name="**/APP-INF/lib/*.jar"/>
+                <include name="META-INF/weblogic-application.xml"/>
+                <include name="${MODEL_NAME}_ejb.jar"/>
+                <include name="**/APP-INF/lib/*.jar"/>
             </fileset>
         </ear>
         <copy file="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" todir="."/>
@@ -3151,7 +3164,7 @@
         </replace>
         <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
             <fileset dir="${jpatest.basedir}/${build.dir}">
-				<include name="${MODEL_NAME}_ejb.jar"/>
+                <include name="${MODEL_NAME}_ejb.jar"/>
             </fileset>
         </ear>
         <copy file="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" todir="."/>
@@ -3351,15 +3364,34 @@
 
     <!-- Run an ear on the server. -->
     <target name="server-run-test" depends="config-classpath">
+        <property name="server.lib.full" location="${server.lib}"/>
         <path id="run.path">
             <pathelement path="${jpatest.basedir}/${build.dir}/${TEST_NAME}_client.jar"/>
             <pathelement path="${jpatest.basedir}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
             <!--this path is used for WebSphere and WebLogic JPA2.0 support, also for JBoss-eap testing ,and it actually point to JPA1.0 unsigned jar-->
-            <pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/>
-            <fileset dir="${server.lib}" includes="${server.depend}"/>
+            <!--pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/-->
+            <fileset dir="${server.lib.full}" includes="${server.depend}"/>
             <path refid="compile.server.path"/>
         </path>
+        <pathconvert property="run.path.message" refid="run.path"/>
         <echo>Running test ${EAR_NAME} on ${server.name}</echo>
+        <echo message=" * oracle.proxy.user = ${oracle.proxy.user}"/>
+        <echo message=" * server.platform = ${server.platform}"/>
+        <echo message=" * server.user = ${server.user}"/>
+        <echo message=" * server.pwd = ${server.pwd}"/>
+        <echo message=" * server.depend = ${server.depend}"/>
+        <echo message=" * server.lib = ${server.lib.full}"/>
+        <echo message=" * SERVER.URL = ${SERVER.URL}"/>
+        <echo message=" * SERVER.TESTRUNNER = ${SERVER.TESTRUNNER}"/>
+        <echo message=" * SERVER.TESTRUNNER1 = ${SERVER.TESTRUNNER1}"/>
+        <echo message=" * SERVER.TESTRUNNER2 = ${SERVER.TESTRUNNER2}"/>
+        <echo message=" * SERVER.TESTRUNNER3 = ${SERVER.TESTRUNNER3}"/>
+        <echo message=" * SERVER.TESTRUNNER4 = ${SERVER.TESTRUNNER4}"/>
+        <echo message=" * SERVER.TESTRUNNER5 = ${SERVER.TESTRUNNER5}"/>
+        <echo message=" * run.metadata.cache.test.suite = ${run.metadata.cache.test.suite}"/>
+        <echo message=" * run.path = ${run.path.message}"/>
+        <echo message=" * run.dir = ${run.dir}"/>
+        <echo message=" * TEST_SUITE = ${TEST_SUITE}"/>
         <mkdir dir="${jpatest.basedir}/${report.dir}"/>
         <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="256m" dir="${run.dir}">
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
@@ -4329,4 +4361,5 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     <target name="server-undeploy-concurrency" depends="detect-os,config-classpath">
         <ant antfile="${jpatest.basedir}/cachecoordination-cluster.xml" target="${server.name}-undeploy-concurrency" inheritRefs="true"/>
     </target>
+
 </project>
