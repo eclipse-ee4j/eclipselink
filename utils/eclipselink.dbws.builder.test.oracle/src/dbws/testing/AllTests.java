@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,6 +19,7 @@ import java.sql.SQLException;
 
 
 //JUnit4 imports
+import dbws.testing.nchartype.NcharTypeTestSuite;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -75,6 +76,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     InvalidPackageTestSuite.class,
     IOTTypeTestSuite.class,
     NamingTransformerTestSuite.class,
+    NcharTypeTestSuite.class,
     NonAssociativePLSQLCollectionTestSuite.class,
     ObjectTableTypeTestSuite.class,
     ObjectTypeTestSuite.class,

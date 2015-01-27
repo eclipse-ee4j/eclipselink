@@ -183,6 +183,9 @@
         <selectbundle basename="${activation.prefix}"  directory="${dbwsbldrorcltst.2.common.plugins.dir}"
                      criterion="${activation.criteria}" property="activation.jar"
         />
+        <selectbundle basename="${validation.prefix}"  directory="${dbwsbldrorcltst.2.common.plugins.dir}"
+                     criterion="${validation.criteria}" property="validation.jar"
+        />
         <selectbundle basename="${mail.prefix}"  directory="${dbwsbldrorcltst.2.common.plugins.dir}"
                      criterion="${mail.criteria}" property="mail.jar"
         />
@@ -190,14 +193,17 @@
         <echo message="jdbc.driver.jar  ='${jdbc.driver.jar}'"/>
         <echo message="dbwsbldrorcltst.jar ='./${dbwsbldrorcltst.jar}'"/>
         <echo message="activation.jar   ='${dbwsbldrorcltst.2.common.plugins.dir}/${activation.jar}'"/>
+        <echo message="validation.jar   ='${dbwsbldrorcltst.2.common.plugins.dir}/${validation.jar}'"/>
         <echo message="mail.jar         ='${dbwsbldrorcltst.2.common.plugins.dir}/${mail.jar}'"/>
         <echo message="xdb.jar          ='${oracle.extensions.depend.dir}/${xdb.jar}'"/>
         <echo message="xmlparser.jar    ='${oracle.extensions.depend.dir}/${xmlparser.jar}'"/>
         <property name="activation.lib" value="${dbwsbldrorcltst.2.common.plugins.dir}/${activation.jar}"/>
+        <property name="validation.lib" value="${dbwsbldrorcltst.2.common.plugins.dir}/${validation.jar}"/>
         <property name="mail.lib"       value="${dbwsbldrorcltst.2.common.plugins.dir}/${mail.jar}"/>
         <available file="${jdbc.driver.jar}"          property="jdbc.jar.exist"/>
         <available file="./${dbwsbldrorcltst.jar}"    property="dbwsbldrorcltst.jar.exist"/>
         <available file="${activation.lib}"           property="activation.lib.exist"/>
+        <available file="${validation.lib}"           property="validation.lib.exist"/>
         <available file="${mail.lib}"                 property="mail.lib.exist"/>
         <!-- oracle extension dir test -->
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
@@ -210,6 +216,7 @@
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="./${dbwsbldrorcltst.jar}"/>
             <pathelement path="${activation.lib}"/>
+            <pathelement path="${validation.lib}"/>
             <pathelement path="${mail.lib}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${xdb.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${xmlparser.jar}"/>
@@ -228,6 +235,7 @@
                 <isset property="jdbc.jar.exist"/>
                 <isset property="dbwsbldrorcltst.jar.exist"/>
                 <isset property="activation.lib.exist"/>
+                <isset property="validation.lib.exist"/>
                 <isset property="mail.lib.exist"/>
                 <isset property="oracle.depend.dir.exist"/>
                 <isset property="xdb.jar.exist"/>
@@ -247,6 +255,7 @@
         <say message="     jdbc.jar not found!"             unless="jdbc.jar.exist"/>
         <say message="     dbwsbldrorcltst.jar not found!"  unless="dbwsbldrorcltst.jar.exist"/>
         <say message="     activation.lib not found!"       unless="activation.lib.exist"/>
+        <say message="     validation.lib not found!"       unless="validation.lib.exist"/>
         <say message="     mail.lib not found!"             unless="mail.lib.exist"/>
 		<say message="     Oracle extension dir not found!" unless="oracle.depend.dir.exist"/>
 		<say message="     xdb.jar not found!"              unless="xdb.jar.exist"/>
@@ -285,7 +294,6 @@
         <junit
           printsummary="withOutAndErr"
           fork="yes"
-          forkmode="once"
           maxmemory="512m"
           >
           <formatter
@@ -365,6 +373,9 @@
           />
           <test
             name="dbws.testing.namingtransformer.NamingTransformerTestSuite"
+          />
+          <test
+            name="dbws.testing.nchartype.NcharTypeTestSuite"
           />
           <test
             name="dbws.testing.nonassociativeplsql.NonAssociativePLSQLCollectionTestSuite"

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -36,8 +36,10 @@ import static java.sql.Types.INTEGER;
 import static java.sql.Types.JAVA_OBJECT;
 import static java.sql.Types.LONGVARBINARY;
 import static java.sql.Types.LONGVARCHAR;
+import static java.sql.Types.NCHAR;
 import static java.sql.Types.NULL;
 import static java.sql.Types.NUMERIC;
+import static java.sql.Types.NVARCHAR;
 import static java.sql.Types.OTHER;
 import static java.sql.Types.REAL;
 import static java.sql.Types.REF;
@@ -84,6 +86,7 @@ public enum JDBCTypes implements JDBCType {
         BLOB_TYPE(BLOB, "BLOB"),
         BOOLEAN_TYPE(BOOLEAN, "BOOLEAN"),
         CHAR_TYPE(CHAR, "CHAR"),
+        NCHAR_TYPE(NCHAR, "NCHAR"),
         CLOB_TYPE(CLOB, "CLOB"),
         DATALINK_TYPE(DATALINK, "DATALINK"),
         DATE_TYPE(DATE, "DATE"),
@@ -157,7 +160,54 @@ public enum JDBCTypes implements JDBCType {
                 sb.append(NL);
             }
         },
-        ;
+        NVARCHAR_TYPE(NVARCHAR, "NVARCHAR") {
+            protected void buildInitialDeclare(StringBuilder sb, PLSQLargument arg) {
+                databaseTypeHelper.declareTarget(sb, arg, this);
+                if (arg.length != MIN_VALUE) {
+                    sb.append("(");
+                    sb.append(arg.length);
+                    sb.append(")");
+                }
+            }
+            @Override
+            public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
+                buildInitialDeclare(sb, inArg);
+                sb.append(" := :");
+                sb.append(inArg.inIndex);
+                sb.append(";");
+                sb.append(NL);
+            }
+            @Override
+            public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
+                buildInitialDeclare(sb, outArg);
+                sb.append(";");
+                sb.append(NL);
+            }
+        },
+        NVARCHAR2_TYPE(NVARCHAR, "NVARCHAR2") {
+            protected void buildInitialDeclare(StringBuilder sb, PLSQLargument arg) {
+                databaseTypeHelper.declareTarget(sb, arg, this);
+                if (arg.length != MIN_VALUE) {
+                    sb.append("(");
+                    sb.append(arg.length);
+                    sb.append(")");
+                }
+            }
+            @Override
+            public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
+                buildInitialDeclare(sb, inArg);
+                sb.append(" := :");
+                sb.append(inArg.inIndex);
+                sb.append(";");
+                sb.append(NL);
+            }
+            @Override
+            public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
+                buildInitialDeclare(sb, outArg);
+                sb.append(";");
+                sb.append(NL);
+            }
+        };
         
         private final int typeCode;
         private final String typeName;
@@ -296,11 +346,17 @@ public enum JDBCTypes implements JDBCType {
             case LONGVARCHAR :
                 databaseType = LONGVARCHAR_TYPE;
                 break;
+            case NCHAR :
+                databaseType = NCHAR_TYPE;
+                break;
             case NULL :
                 databaseType = NULL_TYPE;
                 break;
             case NUMERIC :
                 databaseType = NUMERIC_TYPE;
+                break;
+            case NVARCHAR :
+                databaseType = NVARCHAR_TYPE;
                 break;
             case OTHER :
                 databaseType = OTHER_TYPE;

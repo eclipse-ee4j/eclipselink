@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1881,6 +1881,30 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     procedureOperationModel.setXmlTag(tableType.getTableName());
                  }
             }
+        }
+    }
+
+    /**
+     * Overridden for wrapping call with call to {@link #translateToOracleType} method.
+     */
+    @Override
+    protected org.eclipse.persistence.internal.helper.DatabaseType buildDatabaseTypeFromMetadataType(DatabaseType dType, String catalog) {
+        org.eclipse.persistence.internal.helper.DatabaseType databaseType = super.buildDatabaseTypeFromMetadataType(dType, catalog);
+        return translateToOracleType(databaseType);
+    }
+
+    /**
+     * Provides the possibility to override generic type with applicable Oracle specific type.
+     * 
+     * @param databaseType the generic DatabaseType to override
+     * @return the Oracle specific DatabaseType if such exists
+     */
+    private org.eclipse.persistence.internal.helper.DatabaseType translateToOracleType(org.eclipse.persistence.internal.helper.DatabaseType databaseType) {
+        switch (databaseType.getTypeName()) {
+            case "NVARCHAR":
+                return JDBCTypes.NVARCHAR2_TYPE;
+            default:
+                return databaseType;
         }
     }
 }
