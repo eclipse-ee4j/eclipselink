@@ -1426,6 +1426,7 @@ public class PersistenceUnitProperties {
      * <tr><td>{@link SessionLog#EJB}</td><td>&nbsp;</td><td>ejb</td></tr>
      * <tr><td>{@link SessionLog#EJB_OR_METADATA}</td><td>&nbsp;</td><td>ejb_or_metadata</td></tr>
      * <tr><td>{@link SessionLog#EVENT}</td><td>&nbsp;</td><td>event</td></tr>
+     * <tr><td>{@link SessionLog#JPA}</td><td>&nbsp;</td><td>jpa</td></tr>
      * <tr><td>{@link SessionLog#METAMODEL}</td><td>&nbsp;</td><td>metamodel</td></tr>
      * <tr><td>{@link SessionLog#PROPAGATION}</td><td>&nbsp;</td><td>propagation</td></tr>
      * <tr><td>{@link SessionLog#PROPERTIES}</td><td>&nbsp;</td><td>properties</td></tr>
