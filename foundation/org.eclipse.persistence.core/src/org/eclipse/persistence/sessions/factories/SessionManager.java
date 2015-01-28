@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.factories;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
@@ -22,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -59,13 +60,17 @@ public class SessionManager {
     protected AbstractSession defaultSession;
     protected ConcurrentMap<String, Session> sessions = null;
     protected static boolean shouldPerformDTDValidation;
-    private static final ConcurrentMap<ClassLoader, SessionManager> managers = new ConcurrentHashMap<>(4, 0.9f, 1);
-    private ClassLoader loader;
+    private static final ConcurrentMap<String, SessionManager> managers = new ConcurrentHashMap<>(4, 0.9f, 1);
+    private String context;
     private static final Object[] lock = new Object[0];
+    private static final ContextHelper ctxHelper = ContextHelper.getContextHelper();
 
     /**
      * PUBLIC:
      * Return if schema validation will be used when parsing the 10g (10.1.3) sessions XML.
+     *
+     * @return {@code true} if schema validation will be used when parsing
+     * the 10g (10.1.3) sessions XML, {@code false} otherwise
      */
     public static boolean shouldUseSchemaValidation() {
         return shouldUseSchemaValidation;
@@ -76,9 +81,12 @@ public class SessionManager {
      * Set if schema validation will be used when parsing the 10g (10.1.3) sessions XML.
      * By default schema validation is on, but can be turned off if validation problems occur,
      * or to improve parsing performance.
+     *
+     * @param useSchemaValidation {@code true} if schema validation should be used when parsing
+     * the 10g (10.1.3) sessions XML, {@code false} otherwise
      */
-    public static void setShouldUseSchemaValidation(boolean value) {
-        shouldUseSchemaValidation = value;
+    public static void setShouldUseSchemaValidation(boolean useSchemaValidation) {
+        shouldUseSchemaValidation = useSchemaValidation;
     }
     
     /**
@@ -86,15 +94,16 @@ public class SessionManager {
      * The default constructor to create a new session manager.
      */
     public SessionManager() {
-        sessions = new ConcurrentHashMap<String, Session>(5);
-        loader = getCurrentLoader();
+        sessions = new ConcurrentHashMap<>(5);
     }
 
     /**
-       * INTERNAL:
-       * add an named session to the hashtable.
-       * session must have a name prior to setting into session Manager
-       */
+     * INTERNAL:
+     * Add an named session to the hashtable.
+     * Session must have a name prior to setting into session manager.
+     *
+     * @param session session to be added to the session manager
+     */
     public void addSession(Session session) {
         getSessions().put(session.getName(), session);
     }
@@ -102,6 +111,9 @@ public class SessionManager {
     /**
      * ADVANCED:
      * add an named session to the hashtable.
+     *
+     * @param sessionName session name
+     * @param session session to be added to the session manager
      */
     public void addSession(String sessionName, Session session) {
         session.setName(sessionName);
@@ -112,8 +124,10 @@ public class SessionManager {
      * PUBLIC:
      * Return the default session.
      * The session configuration is stored in a sessions.xml file in a
-    * directory on your classpath. Other sessions are supported through the
-    * getSession by name API.
+     * directory on your classpath. Other sessions are supported through the
+     * getSession by name API.
+     *
+     * @return default session
      */
     public Session getDefaultSession() {
         if (defaultSession == null) {
@@ -127,19 +141,21 @@ public class SessionManager {
      * Destroy current session manager instance.
      */
     public void destroy() {
-        if (loader != null) {
-            managers.remove(loader);
+        if (context != null) {
+            managers.remove(context);
         } else {
             //should not happen
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "session_manager_no_loader");
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, "session_manager_no_partition");
         }
-        loader = null;
+        context = null;
         manager = null;
     }
 
     /**
      * INTERNAL:
      * Destroy the session defined by sessionName on this manager.
+     *
+     * @param sessionName name of the session to be destroyed
      */
     public void destroySession(String sessionName) {
         Session session = getSessions().get(sessionName);
@@ -179,6 +195,12 @@ public class SessionManager {
 
     /**
      * INTERNAL:
+     * This method is to be used to load config objects for the Mapping Workbench
+     * only. Do not call this method.
+     *
+     * @param resourceName resource to load
+     * @param objectClassLoader ClassLoader used to load the resource
+     * @return parsed session configuration
      */
     public synchronized SessionConfigs getInternalMWConfigObjects(String resourceName, ClassLoader objectClassLoader) {
         return getInternalMWConfigObjects(resourceName, objectClassLoader, true);
@@ -186,6 +208,13 @@ public class SessionManager {
 
     /**
      * INTERNAL:
+     * This method is to be used to load config objects for the Mapping Workbench
+     * only. Do not call this method.
+     *
+     * @param resourceName resource to load
+     * @param objectClassLoader ClassLoader used to load the resource
+     * @param validate whether to validate the resource passed in
+     * @return parsed session configuration
      */
     public synchronized SessionConfigs getInternalMWConfigObjects(String resourceName, ClassLoader objectClassLoader, boolean validate) {
         return new XMLSessionConfigLoader(resourceName).loadConfigsForMappingWorkbench(objectClassLoader, validate);
@@ -193,20 +222,33 @@ public class SessionManager {
 
     /**
      * PUBLIC:
-     * Return the session manager associated with current thread class loader.
+     * Return the session manager for current context.
      * This allow global access to a set of named sessions.
+     *
+     * @return the session manager for current context
      */
     public static SessionManager getManager() {
-        ClassLoader currentLoader = getCurrentLoader();
-        if (manager != null && manager.loader == currentLoader) {
+        if (ctxHelper == null) {
+            if (manager == null) {
+                synchronized (lock) {
+                    if (manager == null) {
+                        manager = initializeManager();
+                    }
+                }
+            }
             return manager;
         }
-        manager = managers.get(currentLoader);
+        String currentCtx = ctxHelper.getPartitionID();
+        if (manager != null && currentCtx.equals(manager.context)) {
+            return manager;
+        }
+        manager = managers.get(currentCtx);
         if (manager == null) {
             synchronized (lock) {
                 if (manager == null) {
                     manager = initializeManager();
-                    managers.put(manager.loader, manager);
+                    manager.context = currentCtx;
+                    managers.put(manager.context, manager);
                 }
             }
         }
@@ -216,7 +258,9 @@ public class SessionManager {
     /**
      * ADVANCED:
      * Return all session managers.
-     * This allow global access to all instances of SessionManager.
+     * This allows global access to all instances of SessionManager.
+     *
+     * @return all SessionManager instances
      */
     public static Collection<SessionManager> getAllManagers() {
         return managers.values();
@@ -225,6 +269,8 @@ public class SessionManager {
     /**
      * INTERNAL:
      * Initialize the singleton session manager.
+     *
+     * @return initialized session manager
      */
     protected static SessionManager initializeManager() {
         return new SessionManager();
@@ -233,6 +279,9 @@ public class SessionManager {
     /**
      * PUBLIC:
      * Return the session by name.
+     *
+     * @param sessionName session name
+     * @return session with given session name
      */
     public org.eclipse.persistence.internal.sessions.AbstractSession getSession(String sessionName) {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
@@ -244,6 +293,10 @@ public class SessionManager {
      * PUBLIC:
      * Return the session by name.
      * Log the session in only if specified.
+     *
+     * @param sessionName session name
+     * @param shouldLoginSession whether the session should be logged in
+     * @return session with given session name
      */
     public org.eclipse.persistence.internal.sessions.AbstractSession getSession(String sessionName, boolean shouldLoginSession) {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
@@ -257,6 +310,11 @@ public class SessionManager {
      * Return the session by name.
      * Log the session in only if specified.
      * Refresh the session only if specified.
+     *
+     * @param sessionName session name
+     * @param shouldLoginSession whether the session should be logged in
+     * @param shouldRefreshSession whether the session should be refreshed
+     * @return session with given session name
      */
     public org.eclipse.persistence.internal.sessions.AbstractSession getSession(String sessionName, boolean shouldLoginSession, boolean shouldRefreshSession) {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
@@ -274,6 +332,10 @@ public class SessionManager {
      * compared with the classloader used to load the original session of this
      * name, with this classloader.  If they are not the same then the session
      * will be refreshed.
+     *
+     * @param sessionName session name
+     * @param objectBean object to get the ClassLoader from
+     * @return session with given session name
      */
     public org.eclipse.persistence.internal.sessions.AbstractSession getSession(String sessionName, Object objectBean) {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
@@ -296,6 +358,10 @@ public class SessionManager {
      * PUBLIC:
      * Return the session by name, in the file specified.
      * Login the session.
+     *
+     * @param sessionName session name
+     * @param filename file name containing session definition
+     * @return session with given session name
      */
     public org.eclipse.persistence.internal.sessions.AbstractSession getSession(String sessionName, String filename) {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
@@ -310,6 +376,11 @@ public class SessionManager {
      * This method will cause the class loader to be compared with the classloader
      * used to load the original session of this name.
      * If they are not the same then the session will be refreshed.
+     *
+     * @param sessionName session name
+     * @param filename file name containing session definition
+     * @param classLoader ClassLoader used to load the original session
+     * @return session with given session name
      */
     public AbstractSession getSession(String sessionName, String filename, ClassLoader classLoader) {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
@@ -329,6 +400,10 @@ public class SessionManager {
      * This method will cause the class loader to be compared with the classloader
      * used to load the original session of this name.
      * If they are not the same then the session will be refreshed.
+     *
+     * @param sessionName session name
+     * @param objectClassLoader ClassLoader used to load the original session
+     * @return session with given session name
      */
     public AbstractSession getSession(String sessionName, ClassLoader objectClassLoader) {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader();
@@ -346,6 +421,11 @@ public class SessionManager {
      * This method will cause the class loader to be compared with the classloader
      * used to load the original session of this name.
      * If they are not the same then the session will be refreshed.
+     *
+     * @param loader {@link XMLSessionConfigLoader} containing session configuration
+     * @param sessionName session name
+     * @param objectClassLoader ClassLoader used to load the original session
+     * @return session with given session name
      */
     public AbstractSession getSession(XMLSessionConfigLoader loader, String sessionName, ClassLoader objectClassLoader) {
         if (loader == null){
@@ -368,6 +448,13 @@ public class SessionManager {
      * XMLSessionConfigLoader should reparse the configuration file for new
      * sessions. False, will cause the XMLSessionConfigLoader not to parse the
      * file again.
+     *
+     * @param loader {@link XMLSessionConfigLoader} containing session configuration
+     * @param sessionName session name
+     * @param objectClassLoader ClassLoader used to load the original session
+     * @param shouldLoginSession whether the session should be logged in
+     * @param shouldRefreshSession whether the session should be refreshed
+     * @return session with given session name
      */
     public AbstractSession getSession(XMLSessionConfigLoader loader, String sessionName, ClassLoader objectClassLoader, boolean shouldLoginSession, boolean shouldRefreshSession) {
         if (loader == null){
@@ -393,6 +480,14 @@ public class SessionManager {
      * Pass true for shouldCheckClassLoader will cause the class loader to be compared with the classloader
      * used to load the original session of this name.
      * If they are not the same then the session will be refreshed, this can be used for re-deployment.
+     *
+     * @param loader {@link XMLSessionConfigLoader} containing session configuration
+     * @param sessionName session name
+     * @param objectClassLoader ClassLoader used to load the original session
+     * @param shouldLoginSession whether the session should be logged in
+     * @param shouldRefreshSession whether the session should be refreshed
+     * @param shouldCheckClassLoader whether to compare class loaders used to load given session
+     * @return session with given session name
      */
     public AbstractSession getSession(XMLSessionConfigLoader loader, String sessionName, ClassLoader objectClassLoader, boolean shouldLoginSession, boolean shouldRefreshSession, boolean shouldCheckClassLoader) {
         if (loader == null){
@@ -410,6 +505,9 @@ public class SessionManager {
      * PUBLIC:
      * Return the session by name, loading the configuration from the file
      * specified in the loader, using the loading options provided on the loader.
+     *
+     * @param loader {@link XMLSessionConfigLoader} containing session configuration
+     * @return session with given session name
      */
     public AbstractSession getSession(XMLSessionConfigLoader loader) { 
         AbstractSession session = (AbstractSession)getSessions().get(loader.getSessionName());
@@ -478,6 +576,8 @@ public class SessionManager {
     /**
      * INTERNAL:
      * Set a hashtable of all sessions
+     *
+     * @param sessions sessions for this session manager
      */
     public void setSessions(ConcurrentMap sessions) {
         this.sessions = sessions;
@@ -486,6 +586,8 @@ public class SessionManager {
     /**
      * INTERNAL:
      * Return a hashtable on all sessions.
+     *
+     * @return all sessions known by this session manager
      */
     public ConcurrentMap<String, Session> getSessions() {
         return sessions;
@@ -495,8 +597,10 @@ public class SessionManager {
      * PUBLIC:
      * Set the default session.
      * If not set the session configuration is stored in a sessions.xml 
-    * file in a TopLink directory on your classpath.
+     * file in a TopLink directory on your classpath.
      * Other sessions are supported through the getSession by name API.
+     *
+     * @param defaultSession default session
      */
     public void setDefaultSession(Session defaultSession) {
         this.defaultSession = (org.eclipse.persistence.internal.sessions.AbstractSession)defaultSession;
@@ -507,32 +611,134 @@ public class SessionManager {
      * INTERNAL:
      * Set the singleton session manager.
      * This allows global access to a set of named sessions.
+     *
+     * @param theManager session manager for current context
      */
     public static void setManager(SessionManager theManager) {
-        if (theManager.loader == null) {
-            synchronized (lock) {
-                if (theManager.loader == null) {
-                    theManager.loader = getCurrentLoader();
+        if (ctxHelper == null) {
+             manager = theManager;
+        } else {
+            if (theManager.context == null) {
+                synchronized (lock) {
+                    if (theManager.context == null) {
+                        theManager.context = ctxHelper.getPartitionID();
+                    }
                 }
             }
+            managers.put(theManager.context, theManager);
         }
-        managers.put(theManager.loader, theManager);
     }
 
-    private static ClassLoader getCurrentLoader() {
-        ClassLoader current = ConversionManager.getDefaultManager().getLoader();
-        if (current == null) {
+    private static class ContextHelper {
+
+        /**
+         * Instance of CIC (Component Invocation Context) or null if not
+         * initialized.
+         */
+        private Object cicManagerInstance;
+
+        private Method getCurrentCicMethod;
+        private Method getPartitionIdMethod;
+
+        private static final Class cicManagerClass;
+        private static ContextHelper instance;
+
+        static {
+            Class c = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                current = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                c = AccessController.doPrivileged(new PrivilegedAction<Class>() {
+
                     @Override
-                    public ClassLoader run() {
-                        return ClassLoader.getSystemClassLoader();
+                    public Class run() {
+                        try {
+                            return PrivilegedAccessHelper.getClassForName("weblogic.invocation.ComponentInvocationContextManager");
+                        } catch (ClassNotFoundException cnfe) {
+                            return null;
+                        }
                     }
                 });
             } else {
-                current = ClassLoader.getSystemClassLoader();
+                try {
+                    c = PrivilegedAccessHelper.getClassForName("weblogic.invocation.ComponentInvocationContextManager");
+                } catch (ClassNotFoundException cnfe) {
+                    // ignore
+                }
+            }
+            cicManagerClass = c;
+        }
+
+        private ContextHelper(final Class managerClass, final String contextClassName) {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+
+                    @Override
+                    public Void run() {
+                        initialize(managerClass, contextClassName);
+                        return null;
+                    }
+                });
+            } else {
+                initialize(managerClass, contextClassName);
             }
         }
-        return current;
+
+        private void initialize(final Class managerClass, final String contextClassName) {
+            try {
+                // Get component invocation manager
+                final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(managerClass, "getInstance", new Class[]{});
+                cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, managerClass);
+
+                // Get component invocation context
+                getCurrentCicMethod = PrivilegedAccessHelper.getMethod(managerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
+
+                final Class cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
+                getPartitionIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionId", new Class[]{});
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException ex) {
+                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
+            }
+        }
+
+        static ContextHelper getContextHelper() {
+            if (cicManagerClass == null) {
+                return null;
+            }
+            if (instance == null) {
+                synchronized (ContextHelper.class) {
+                    if (instance == null) {
+                        instance = new ContextHelper(cicManagerClass, "weblogic.invocation.ComponentInvocationContext");
+                    }
+                }
+            }
+            return instance;
+        }
+
+        /**
+         * Gets partition ID. Calls cicInstance.getPartitionIdMethod().
+         */
+        String getPartitionID() {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    return AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+                        @Override
+                        public String run() {
+                            try {
+                                final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
+                                return (String) PrivilegedAccessHelper.invokeMethod(getPartitionIdMethod, cicInstance);
+                            } catch (IllegalAccessException | InvocationTargetException ex) {
+                                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
+                                return "UNKNOWN";
+                            }
+                        }
+                    });
+                } else {
+                    final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
+                    return (String) PrivilegedAccessHelper.invokeMethod(getPartitionIdMethod, cicInstance);
+                }
+            } catch (IllegalAccessException | InvocationTargetException ex) {
+                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
+                return "UNKNOWN";
+            }
+        }
     }
 }

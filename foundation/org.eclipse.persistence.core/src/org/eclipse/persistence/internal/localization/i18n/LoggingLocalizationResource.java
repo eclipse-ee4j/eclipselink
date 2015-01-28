@@ -479,7 +479,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "sop_object_wrong_pk", "Removing serialized sopObject from the row because it has a wrong primary key [{0}] in [{1}] in [{2}]"},
         // 282751
         { "removing_unique_constraint", "Removing UNIQUE constraint definition from [{0}] because it is also a primary key."},
-        { "session_manager_no_loader", "No ClassLoader instance associated with current SessionManager instance."},
+        { "session_manager_no_partition", "No partition instance associated with current SessionManager instance."},
         // MESSAGES end
         
         
@@ -771,7 +771,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "unknown_ddl_generation_property.MSGID", "TOP-50252" },
         // 282751
         { "removing_unique_constraint.MSGID", "TOP-50253"},
-        { "session_manager_no_loader.MSGID", "TOP-50254"},
+        { "session_manager_no_partition.MSGID", "TOP-50254"},
         
         /**
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 
