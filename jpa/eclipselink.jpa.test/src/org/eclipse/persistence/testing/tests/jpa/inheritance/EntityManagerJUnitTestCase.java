@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.persistence.config.HintValues;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -44,6 +46,7 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.SeniorEngineer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
+import org.eclipse.persistence.testing.models.jpa.inheritance.PetStore;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Engineer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Computer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.ComputerPK;
@@ -56,6 +59,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 
 public class EntityManagerJUnitTestCase extends JUnitTestCase {
 
@@ -92,6 +96,8 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestCase("testCascadeMergeWithTargetInheritance"));
         // Bug 458177
         suite.addTest(new EntityManagerJUnitTestCase("testJoinedInheritanceWithAbstractSuperclass"));
+        // Bug 355721
+        suite.addTest(new EntityManagerJUnitTestCase("testJoinedInheritancePersistWithReadOnlyEntity"));
         
         return suite;
     }
@@ -660,6 +666,63 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             assertNotNull("FishTank should not be null", fishTank);
             
             em.remove(fishTank);
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /*
+     * Added for Bug 355721
+     * - Instantiate and persist (but do not associate) a FishTank Entity and 
+     *   PetStore Entity.
+     * - Clear the EMF cache
+     * - Acquire new EM and retrieve the PetStore Entity
+     * - Retrieve all FishTank Entities with a RO NamedQuery
+     * - Associate the PetStore (lazy unidirectional 1:M) with a FishTank, persist.
+     * - This operation previously failed with a ClassCastException.
+     */
+    public void testJoinedInheritancePersistWithReadOnlyEntity() {
+        EntityManager em = createEntityManager();
+        Long petStoreId = null;
+        
+        try {
+            beginTransaction(em);
+            
+            FishTank fishTank = new FishTank();
+            em.persist(fishTank);
+            
+            PetStore petStore = new PetStore();
+            petStore.setStoreName("Bob's Fish");
+            petStore.setFishTanks(new ArrayList<FishTank>());
+            
+            em.persist(petStore);
+            petStoreId = petStore.getId();
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        // cache clear is necessary (reset lazy loading)
+        getEntityManagerFactory().getCache().evictAll();
+        
+        em = createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            PetStore petStore = em.find(PetStore.class, petStoreId);
+            
+            Query query = em.createNamedQuery("findAllFishTanks");
+            query.setHint(QueryHints.READ_ONLY, HintValues.TRUE);
+            
+            List<FishTank> allFishTanks = query.getResultList(); 
+            FishTank fishTank = allFishTanks.get(0);
+            
+            // add read-only entity to referencing unidirectional relationship
+            petStore.getFishTanks().add(fishTank);
+            em.persist(petStore);
             
             commitTransaction(em);
         } finally {

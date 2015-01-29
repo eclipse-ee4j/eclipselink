@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -89,10 +89,12 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * database will these contents be copied to the backup clone.
      */
     protected Object buildBackupClone(IndirectContainer container) {
-        UnitOfWorkValueHolder containerValueHolder = (UnitOfWorkValueHolder)container.getValueHolder();
+        ValueHolderInterface containerValueHolder = container.getValueHolder();
         // CR#2852176 Use a BackupValueHolder to handle replacing of the original.
         BackupValueHolder backupValueHolder = new BackupValueHolder(containerValueHolder);
-        containerValueHolder.setBackupValueHolder(backupValueHolder);
+        if (containerValueHolder instanceof UnitOfWorkValueHolder) {
+           ((UnitOfWorkValueHolder) containerValueHolder).setBackupValueHolder(backupValueHolder);
+        }
         return this.buildIndirectContainer(backupValueHolder);
     }
 

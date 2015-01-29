@@ -99,6 +99,8 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildJPA_FISHTable());
         addTableDefinition(buildJPA_BETTATable());
         addTableDefinition(buildJPA_FISH_TANKTable());
+        // Bug 355721
+        addTableDefinition(buildJPA_PET_STORETable());
     }
 
     public TableDefinition buildSTI_SUPERCLASSTable() {
@@ -2373,6 +2375,16 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldVERSION.setIsIdentity(false);
         table.addField(fieldVERSION);
         
+        FieldDefinition fieldSTOREID = new FieldDefinition();
+        fieldSTOREID.setName("STORE_ID");
+        fieldSTOREID.setTypeName("NUMBER");
+        fieldSTOREID.setSize(10);
+        fieldSTOREID.setIsPrimaryKey(false);
+        fieldSTOREID.setIsIdentity(false);
+        fieldSTOREID.setUnique(false);
+        fieldSTOREID.setShouldAllowNull(true);
+        table.addField(fieldSTOREID);
+        
         return table;        
     }
     
@@ -2401,6 +2413,43 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         table.addField(fieldCOLOR);
         
         return table;        
+    }
+    
+    public TableDefinition buildJPA_PET_STORETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_PET_STORE");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldVERSION = new FieldDefinition();
+        fieldVERSION.setName("VERSION");
+        fieldVERSION.setTypeName("NUMBER");
+        fieldVERSION.setSize(10);
+        fieldVERSION.setShouldAllowNull(true);
+        fieldVERSION.setIsPrimaryKey(false);
+        fieldVERSION.setUnique(false);
+        fieldVERSION.setIsIdentity(false);
+        table.addField(fieldVERSION);
+        
+        FieldDefinition fieldSTORENAME = new FieldDefinition();
+        fieldSTORENAME.setName("STORE_NAME");
+        fieldSTORENAME.setTypeName("VARCHAR");
+        fieldSTORENAME.setSize(64);
+        fieldSTORENAME.setIsPrimaryKey(false);
+        fieldSTORENAME.setIsIdentity(false);
+        fieldSTORENAME.setUnique(false);
+        fieldSTORENAME.setShouldAllowNull(true);
+        table.addField(fieldSTORENAME);
+        
+        return table;
     }
 
     /**

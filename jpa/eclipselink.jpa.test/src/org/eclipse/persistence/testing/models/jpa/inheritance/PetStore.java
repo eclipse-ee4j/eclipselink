@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -22,61 +21,59 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 /**
- * Model a simple Entity referencing an abstract Entity with Joined Inheritance, 
- * via a unidirectional lazy 1:M mapping.
+ * Models an Entity with a unidirectional lazy 1:M reference to
+ * another Entity with a unidirectional lazy 1:M reference.
  */
 @Entity
-@Table(name="JPA_FISH_TANK")
-@NamedQueries( {
-    @NamedQuery(name="findAllFishTanks", query="select o from FishTank o order by o.id") })
-public class FishTank {
-
+@Table(name="JPA_PET_STORE")
+public class PetStore {
+    
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(nullable=false)
     private Long id;
-
+    
     @Version
     protected int version;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name="TANK_ID", insertable=false, updatable=false)
-    private List<Fish> fishes;
     
-    public FishTank() {
-        super();
-        this.fishes = new ArrayList<Fish>();
-    }
-
+    @Column(name="STORE_NAME")
+    private String storeName;
+    
+    @OneToMany(fetch=FetchType.LAZY)
+    @JoinColumn(name="STORE_ID")
+    private List<FishTank> fishTanks;
+    
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
-
+    
     public int getVersion() {
         return version;
     }
     
-    public void setVersion(int version) {
-        this.version = version;
+    public String getStoreName() {
+        return storeName;
     }
-
-    public List<Fish> getFishes() {
-        return this.fishes;
+    
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
-
-    public void setFishes(List<Fish> fishes) {
-        this.fishes = fishes;
+    
+    public List<FishTank> getFishTanks() {
+        return this.fishTanks;
     }
-
+    
+    public void setFishTanks(List<FishTank> fishTanks) {
+        this.fishTanks = fishTanks;
+    }
+    
 }
