@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+ *     02/02/2015-2.6.0 Rick Curtis
+ *       - 458204: Fix stored procedure termination character.
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -399,7 +401,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getStoredProcedureTerminationToken() {
-        return " go";
+        return "\ngo";
     }
 
     /**
