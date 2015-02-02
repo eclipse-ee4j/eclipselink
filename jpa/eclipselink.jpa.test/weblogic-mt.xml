@@ -55,27 +55,31 @@
     <property name="wls.mt.junit.lib"            location="${junit.lib}"/>
     <!--   Full path to JDBC driver JAR -->
     <property name="wls.mt.jdbc.driver.jar"      location="${jdbc.driver.jar}"/>
-    <property name="wls.mt.generic.jar.url"      value="${weblogic.mt.builds.url}/${weblogic.mt.generic.jar}"/>
+	<!--   Full path to Oracle products installation directory -->
+	<property name="oracle.mt.install.dir"     location="${oracle.installdir}"/>
+	<!--   Full path to WebLogic installation directory -->
+	<property name="weblogic.mt.install.dir"     location="${weblogic.installdir}"/>
+
+	<property name="wls.mt.generic.jar.url"      value="${weblogic.mt.builds.url}/${weblogic.mt.generic.jar}"/>
     <property name="wls.mt.jrf_generic.jar.url"  value="${weblogic.mt.builds.url}/${weblogic.mt.jrf_generic.jar}"/>
     <property name="wls.mt.generic.jar.file"     location="${weblogic.mt.packages.dir}/${weblogic.mt.generic.jar}"/>
     <property name="wls.mt.jrf_generic.jar.file" location="${weblogic.mt.packages.dir}/${weblogic.mt.jrf_generic.jar}"/>
-    <property name="wls.mt.response.wls.file"    location="${weblogic.mt.install.dir}/response-wls"/>
+    <property name="wls.mt.response.wls.file"    location="${oracle.mt.install.dir}/response-wls"/>
     <property name="wls.mt.response.wls.type"    value="WebLogic Server"/>
-    <property name="wls.mt.response.jrf.file"    location="${weblogic.mt.install.dir}/response-jrf"/>
+    <property name="wls.mt.response.jrf.file"    location="${oracle.mt.install.dir}/response-jrf"/>
     <property name="wls.mt.response.jrf.type"    value="Fusion Middleware Infrastructure"/>
     <!--   Fusion Middleware Infrastructure (FMI) installation directory full path. -->
-    <property name="wls.mt.install.mw.home"      location="${weblogic.mt.install.dir}/wls1221"/>
-    <property name="wls.mt.install.orainv"       location="${weblogic.mt.install.dir}/oraInventory"/>
-    <property name="wls.mt.install.orainst.loc"  location="${weblogic.mt.install.dir}/oraInst.loc"/>
+    <property name="wls.mt.install.orainv"       location="${oracle.mt.install.dir}/oraInventory"/>
+    <property name="wls.mt.install.orainst.loc"  location="${oracle.mt.install.dir}/oraInst.loc"/>
     <!--   WebLogic installation directory full path. -->
-    <property name="wls.mt.install.wl.home"      location="${wls.mt.install.mw.home}/wlserver"/>
+    <property name="wls.mt.install.wl.home"      location="${weblogic.mt.install.dir}/wlserver"/>
     <!--   Full (absilute) domain directory path. -->
     <property name="wls.mt.domain.full.path"     location="${weblogic.mt.domain.path}"/>
     <!--   Full (absilute) domain libraries directory path. -->
     <property name="wls.mt.domain.lib.full.path" location="${wls.mt.domain.full.path}/lib"/>
     <!--   Domain template path relative to WebLogic installation directory (wls.mt.install.wl.home). -->
     <property name="wls.mt.domain.template"      value="common/templates/wls/wls.jar"/>
-    <!--   JRF template path relative to FMI installation directory (wls.mt.install.mw.home). -->
+    <!--   JRF template path relative to FMI installation directory (weblogic.mt.install.dir). -->
     <property name="wls.mt.domain.jrf.template"  value="oracle_common/common/templates/wls/oracle.jrf_template.jar"/>
 
     <!--   WebLogic configuration  utility. -->
@@ -133,6 +137,52 @@
         description="JPA tests interface: Undeploy an application from multitenant environment in WebLogic domain."
         depends="weblogic-mt-undeploy-translate,wls-undeploy"/>
 
+	<!-- INTERNAL: Translate test properties from EclipseLink JPA build file. -->
+    <target name="weblogic-mt-test-translate">
+        <translate-property name="weblogic.mt.test.platform"   value="server.platform"/>
+        <translate-property name="weblogic.mt.test.libs"       value="server.depend"/>
+        <property           name="weblogic.mt.test.dir.lib"    location="${server.lib}"/>
+        <property           name="weblogic.mt.test.dir.base"   location="${jpatest.basedir}"/>
+        <translate-property name="weblogic.mt.test.dir.build"  value="build.dir"/>
+        <translate-property name="weblogic.mt.test.dir.run"    value="run.dir"/>
+        <translate-property name="weblogic.mt.test.dir.report" value="report.dir"/>
+        <translate-property name="weblogic.mt.test.test.name"  value="TEST_NAME"/>
+        <translate-property name="weblogic.mt.test.model.name" value="MODEL_NAME"/>
+        <translate-property name="weblogic.mt.test.srv.user"   value="server.user"/>
+        <translate-property name="weblogic.mt.test.srv.pwd"    value="server.pwd"/>
+        <translate-property name="weblogic.mt.test.proxy.user" value="oracle.proxy.user"/>
+        <translate-property name="weblogic.mt.test.suite"      value="TEST_SUITE"/>
+        <translate-property name="weblogic.mt.test.runner"     value="SERVER.TESTRUNNER"/>
+        <translate-property name="weblogic.mt.test.runner1"    value="SERVER.TESTRUNNER1"/>
+        <translate-property name="weblogic.mt.test.runner2"    value="SERVER.TESTRUNNER2"/>
+        <translate-property name="weblogic.mt.test.runner3"    value="SERVER.TESTRUNNER3"/>
+        <translate-property name="weblogic.mt.test.runner4"    value="SERVER.TESTRUNNER4"/>
+        <translate-property name="weblogic.mt.test.runner5"    value="SERVER.TESTRUNNER5"/>
+        <translate-property name="weblogic.mt.test.t1.host"    value="t1.host"/>
+        <translate-property name="weblogic.mt.test.t2.host"    value="t2.host"/>
+        <condition property="weblogic.mt.test.t1.url"
+            value="t3://${t1.host}:${weblogic.port}/${weblogic.mt.test.model.name}">
+            <and>
+                <isset property="t1.host"/>
+                <isset property="weblogic.port"/>
+                <isset property="weblogic.mt.test.model.name"/>
+            </and>
+        </condition>
+        <condition property="weblogic.mt.test.t2.url"
+            value="t3://${t2.host}:${weblogic.port}/${weblogic.mt.test.model.name}">
+            <and>
+                <isset property="t2.host"/>
+                <isset property="weblogic.port"/>
+                <isset property="weblogic.mt.test.model.name"/>
+            </and>
+        </condition>
+    </target>
+
+	<!-- JPA tests interface: Undeploy an application from multitenant environment in WebLogic domain. -->
+    <target name="weblogic-mt-test"
+        description="JPA tests interface: Run test suite on WebLogic."
+        depends="weblogic-mt-test-translate,wls-test"/>
+
     <!-- Download WebLogic installation packages from builds URL. -->
     <target name="wls-download" description="Download WebLogic server."
         depends="weblogic-mt-download-print-all-properties,weblogic-mt-download-verify-all-properties">
@@ -172,7 +222,7 @@
             <arg value="--admin-password=${weblogic.mt.admin.password}"/>
             <arg value="add-template"/>
             <arg value="--domain=${wls.mt.domain.full.path}"/>
-            <arg value="--template=${wls.mt.install.mw.home}/${wls.mt.domain.jrf.template}"/>
+            <arg value="--template=${weblogic.mt.install.dir}/${wls.mt.domain.jrf.template}"/>
         </java>
         <wls-install-libraries/>
     </target>
@@ -424,14 +474,220 @@
         </java>
     </target>
 
+    <!-- Run test suite on WebLogic. -->
+    <target name="wls-test"
+        description="Run test suite on WebLogic"
+        depends="weblogic-mt-test-call-print-properties,check-test-type,weblogic-mt-test-call-verify-properties,server-run-test-partition">
+    </target>
+
+    <!-- INTERNAL: Translate property.
+       -   param name  Name of new property to be set.
+       -   param value Name of property to be used as new property value.
+     -->
+    <macrodef name="translate-property">
+        <attribute name="name"/>
+        <attribute name="value"/>
+        <sequential>
+            <condition property="@{name}" value="${@{value}}">
+                <isset property="@{value}"/>
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: Translate path property.
+       -   param name  Name of new property to be set.
+       -   param value Name of property to be used as new property value.
+     -->
+    <macrodef name="weblogic-mt-translate-path">
+        <attribute name="name"/>
+        <attribute name="value"/>
+        <sequential>
+            <property name="tmp.@{value}.expanded" location="${@{value}}"/>
+            <condition property="@{name}" value="${tmp.@{value}.expanded}">
+                <isset property="@{value}"/>
+            </condition>
+        </sequential>
+    </macrodef>
+
+	<!-- INTERNAL: Switch between runing test on a single partition or two partitions in parallel.
+       - Both server-run-test-partition-single and server-run-test-partition-parallel tasks execution depends
+       - on is.test.with.second.tenant property:
+       -  * server-run-test-partition-single runs when is.test.with.second.tenant property is not set
+       -  * server-run-test-partition-parallel runs when is.test.with.second.tenant property is set
+     -->
+    <target name="server-run-test-partition" if="is.test.with.tenant"
+        depends="server-run-test-partition-single,server-run-test-partition-parallel"/>
+
+	<!-- INTERNAL: Runs single test suite on single partition (with multitenancy enabled). -->
+    <target name="server-run-test-partition-single" unless="is.test.with.second.tenant">
+        <weblogic-mt-test-call
+            platform="${weblogic.mt.test.platform}"
+            libs="${weblogic.mt.test.libs}"
+            host="${weblogic.mt.test.t1.host}"
+            dir.lib="${weblogic.mt.test.dir.lib}"
+            dir.base="${weblogic.mt.test.dir.base}"
+            dir.build="${weblogic.mt.test.dir.build}"
+            dir.run="${weblogic.mt.test.dir.run}"
+            dir.report="${weblogic.mt.test.dir.report}"
+            test.name="${weblogic.mt.test.test.name}"
+            model.name="${weblogic.mt.test.model.name}"
+            srv.user="${weblogic.mt.test.srv.user}"
+            srv.pwd="${weblogic.mt.test.srv.pwd}"
+            proxy.user="${weblogic.mt.test.proxy.user}"
+            url="${weblogic.mt.test.t1.url}"
+            suite="${weblogic.mt.test.suite}"
+            runner="${weblogic.mt.test.runner}"
+            runner1="${weblogic.mt.test.runner1}"
+            runner2="${weblogic.mt.test.runner2}"
+            runner3="${weblogic.mt.test.runner3}"
+            runner4="${weblogic.mt.test.runner4}"
+            runner5="${weblogic.mt.test.runner5}"
+        />
+    </target>
+
+    <!-- INTERNAL: Runs two instances of test suite on two partitions (with multitenancy enabled) in parallel. -->
+    <target name="server-run-test-partition-parallel" if="is.test.with.second.tenant">
+        <!--parallel-->
+            <weblogic-mt-test-call
+                platform="${weblogic.mt.test.platform}"
+                libs="${weblogic.mt.test.libs}"
+                host="${weblogic.mt.test.t1.host}"
+                dir.lib="${weblogic.mt.test.dir.lib}"
+                dir.base="${weblogic.mt.test.dir.base}"
+                dir.build="${weblogic.mt.test.dir.build}"
+                dir.run="${weblogic.mt.test.dir.run}"
+                dir.report="${weblogic.mt.test.dir.report}"
+                test.name="${weblogic.mt.test.test.name}"
+                model.name="${weblogic.mt.test.model.name}"
+                srv.user="${weblogic.mt.test.srv.user}"
+                srv.pwd="${weblogic.mt.test.srv.pwd}"
+                proxy.user="${weblogic.mt.test.proxy.user}"
+                url="${weblogic.mt.test.t1.url}"
+                suite="${weblogic.mt.test.suite}"
+                runner="${weblogic.mt.test.runner}"
+                runner1="${weblogic.mt.test.runner1}"
+                runner2="${weblogic.mt.test.runner2}"
+                runner3="${weblogic.mt.test.runner3}"
+                runner4="${weblogic.mt.test.runner4}"
+                runner5="${weblogic.mt.test.runner5}"
+            />
+            <weblogic-mt-test-call
+                platform="${weblogic.mt.test.platform}"
+                libs="${weblogic.mt.test.libs}"
+                host="${weblogic.mt.test.t2.host}"
+                dir.lib="${weblogic.mt.test.dir.lib}"
+                dir.base="${weblogic.mt.test.dir.base}"
+                dir.build="${weblogic.mt.test.dir.build}"
+                dir.run="${weblogic.mt.test.dir.run}"
+                dir.report="${weblogic.mt.test.dir.report}"
+                test.name="${weblogic.mt.test.test.name}"
+                model.name="${weblogic.mt.test.model.name}"
+                srv.user="${weblogic.mt.test.srv.user}"
+                srv.pwd="${weblogic.mt.test.srv.pwd}"
+                proxy.user="${weblogic.mt.test.proxy.user}"
+                url="${weblogic.mt.test.t2.url}"
+                suite="${weblogic.mt.test.suite}"
+                runner="${weblogic.mt.test.runner}"
+                runner1="${weblogic.mt.test.runner1}"
+                runner2="${weblogic.mt.test.runner2}"
+                runner3="${weblogic.mt.test.runner3}"
+                runner4="${weblogic.mt.test.runner4}"
+                runner5="${weblogic.mt.test.runner5}"
+            />
+        <!--/parallel-->
+    </target>
+
+	<!-- INTERNAL: Execute junit test suite on WebLogic server. -->
+    <macrodef name="weblogic-mt-test-call">
+        <attribute name="platform"/>
+        <attribute name="libs"/>
+        <attribute name="host"/>
+        <attribute name="dir.lib"/>
+        <attribute name="dir.base"/>
+        <attribute name="dir.build"/>
+        <attribute name="dir.run"/>
+        <attribute name="dir.report"/>
+        <attribute name="test.name"/>
+        <attribute name="model.name"/>
+        <attribute name="srv.user"/>
+        <attribute name="srv.pwd"/>
+        <attribute name="proxy.user"/>
+        <attribute name="url"/>
+        <attribute name="suite"/>
+        <attribute name="runner"/>
+        <attribute name="runner1"/>
+        <attribute name="runner2"/>
+        <attribute name="runner3"/>
+        <attribute name="runner4"/>
+        <attribute name="runner5"/>
+        <sequential>
+            <property name="server.lib.full" location="@{dir.lib}"/>
+            <path id="run.path">
+                <pathelement path="@{dir.base}/@{dir.build}/@{test.name}_client.jar"/>
+                <pathelement path="@{dir.base}/@{dir.build}/@{model.name}_ejb.jar"/>
+                <fileset dir="${server.lib.full}" includes="@{libs}"/>
+                <path refid="compile.server.path"/>
+            </path>
+            <mkdir dir="@{dir.base}/@{dir.report}"/>
+            <echo message="Tenant URL: @{url}"/>
+            <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes"
+                forkmode="once" showoutput="true" maxmemory="256m" dir="@{dir.run}">
+                <sysproperty key="proxy.user.name" value="@{proxy.user}"/>
+                <sysproperty key="server.platform" value="@{platform}"/>
+                <sysproperty key="server.user" value="@{srv.user}"/>
+                <sysproperty key="server.password" value="@{srv.pwd}"/>
+                <sysproperty key="server.url" value="@{url}"/>
+                <sysproperty key="server.testrunner" value="@{runner}"/>
+                <sysproperty key="server.testrunner1" value="@{runner1}"/>
+                <sysproperty key="server.testrunner2" value="@{runner2}"/>
+                <sysproperty key="server.testrunner3" value="@{runner3}"/>
+                <sysproperty key="server.testrunner4" value="@{runner4}"/>
+                <sysproperty key="server.testrunner5" value="@{runner5}"/>
+                <sysproperty key="server.run" value="TRUE"/>
+                <sysproperty key="com.ibm.SSL.ConfigURL" value="${com.ibm.SSL.ConfigURL}"/>
+                <sysproperty key="com.ibm.CORBA.ConfigURL" value="${com.ibm.CORBA.ConfigURL}"/>
+                <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
+                <classpath refid="run.path"/>
+                <formatter type="xml"/>
+                <test name="@{suite}" haltonfailure="no" outfile="@{dir.report}/@{suite}-@{host}-test-results"/>
+            </junit>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: Print property check message. -->
+    <macrodef name="property-check-message">
+        <attribute name="name"/>
+        <sequential>
+            <condition property="@{name}.msg"
+                value=" + @{name} = ${@{name}}"
+                 else=" - @{name} is not set">
+                <isset property="@{name}"/>
+            </condition>
+            <echo message="${@{name}.msg}"/>
+        </sequential>
+    </macrodef>
+
+    <!-- INTERNAL: Build message to print depending on property value. -->
+    <macrodef name="build-property-message">
+        <attribute name="name"/>
+        <attribute name="property"/>
+        <attribute name="value"/>
+        <attribute name="else"/>
+        <sequential>
+            <condition property="@{name}" value="@{value}" else="@{else}">
+                <isset property="@{property}"/>
+            </condition>
+        </sequential>
+    </macrodef>
+
     <!-- INTERNAL: Prepare properties messages for connecting to server and executing admin commands. -->
     <macrodef name="weblogic-mt-server-access-properties-messages">
         <sequential>
             <!-- External properties messages -->
-            <condition property="weblogic.mt.install.dir.message"
-                value=" + weblogic.mt.install.dir = ${weblogic.mt.install.dir}"
-                else=" - weblogic.mt.install.dir is missing">
-                <isset property="weblogic.mt.install.dir"/>
+            <condition property="oracle.mt.install.dir.message"
+                value=" + oracle.mt.install.dir = ${oracle.mt.install.dir}"
+                else=" - oracle.mt.install.dir is missing">
+                <isset property="oracle.mt.install.dir"/>
             </condition>
             <condition property="weblogic.mt.host.message"
                 value=" + weblogic.mt.host = ${weblogic.mt.host}"
@@ -459,7 +715,7 @@
     <!-- INTERNAL: Print properties messages for connecting to server and executing admin commands. -->
     <macrodef name="weblogic-mt-server-access-properties-print">
         <sequential>
-            <echo message="${weblogic.mt.install.dir.message}"/>
+            <echo message="${oracle.mt.install.dir.message}"/>
             <echo message="${weblogic.mt.host.message}"/>
             <echo message="${weblogic.mt.port.message}"/>
             <echo message="${weblogic.mt.admin.user.message}"/>
@@ -554,7 +810,7 @@
         <sequential>
             <condition property="wls.mt.connect.properties.valid" value="true">
                 <and>
-                    <isset property="weblogic.mt.install.dir" />
+                    <isset property="oracle.mt.install.dir" />
                     <isset property="weblogic.mt.host" />
                     <isset property="weblogic.mt.port" />
                     <isset property="weblogic.mt.admin.user" />
@@ -687,7 +943,7 @@
         <weblogic-mt-install-files-check/>
         <condition property="wls.mt.install.properties.valid" value="true">
             <and>
-                <isset property="weblogic.mt.install.dir"/>
+                <isset property="oracle.mt.install.dir"/>
                 <isset property="wls.mt.generic.jar.file.exists"/>
                 <isset property="wls.mt.jrf_generic.jar.file.exists"/>
             </and>
@@ -704,7 +960,7 @@
             value="Weblogic installation properties passed:"
             else="Some of Weblogic installation properties are missing:">
             <and>
-                <isset property="weblogic.mt.install.dir"/>
+                <isset property="oracle.mt.install.dir"/>
             </and>
         </condition>
         <!-- Files header -->
@@ -716,17 +972,17 @@
             </and>
         </condition>
         <!-- External properties messages -->
-        <condition property="weblogic.mt.install.dir.message"
-            value=" + weblogic.mt.install.dir = ${weblogic.mt.install.dir}"
-            else=" - weblogic.mt.install.dir is missing">
-            <isset property="weblogic.mt.install.dir"/>
+        <condition property="oracle.mt.install.dir.message"
+            value=" + oracle.mt.install.dir = ${oracle.mt.install.dir}"
+            else=" - oracle.mt.install.dir is missing">
+            <isset property="oracle.mt.install.dir"/>
         </condition>
         <!-- Internal properties messages -->
         <weblogic-mt-server.wl.home-property-message/>
-        <condition property="wls.mt.install.mw.home.message"
-            value=" + wls.mt.install.mw.home = ${wls.mt.install.mw.home}"
-            else=" - wls.mt.install.mw.home is not initialized">
-            <isset property="wls.mt.install.mw.home"/>
+        <condition property="weblogic.mt.install.dir.message"
+            value=" + weblogic.mt.install.dir = ${weblogic.mt.install.dir}"
+            else=" - weblogic.mt.install.dir is not initialized">
+            <isset property="weblogic.mt.install.dir"/>
         </condition>
         <condition property="wls.mt.response.wls.file.message"
             value=" + wls.mt.response.wls.file = ${wls.mt.response.wls.file}"
@@ -761,7 +1017,7 @@
         <!-- Files verification -->
         <weblogic-mt-install-files-messages/>
         <echo message="${wls.mt.install.properties.header}"/>
-        <echo message="${weblogic.mt.install.dir.message}"/>
+        <echo message="${oracle.mt.install.dir.message}"/>
         <echo message="${wls.mt.install.files.header}"/>
         <echo message="${wls.mt.generic.jar.file.check.message}"/>
         <echo message="${wls.mt.jrf_generic.jar.file.check.message}"/>
@@ -770,7 +1026,7 @@
         <echo message="${wls.mt.response.wls.type.message}"/>
         <echo message="${wls.mt.response.jrf.file.message}"/>
         <echo message="${wls.mt.response.jrf.type.message}"/>
-        <echo message="${wls.mt.install.mw.home.message}"/>
+        <echo message="${weblogic.mt.install.dir.message}"/>
         <echo message="${wls.mt.install.wl.home.message}"/>
         <echo message="${wls.mt.install.orainv.message}"/>
         <echo message="${wls.mt.install.orainst.loc.message}"/>
@@ -781,7 +1037,7 @@
         <weblogic-mt-domain-files-check/>
         <condition property="wls.mt.create.domain.properties.valid" value="true">
             <and>
-                <isset property="weblogic.mt.install.dir"/>
+                <isset property="oracle.mt.install.dir"/>
                 <isset property="weblogic.mt.domain.path"/>
                 <isset property="weblogic.mt.server.name"/>
                 <isset property="weblogic.mt.host"/>
@@ -806,7 +1062,7 @@
             value="Weblogic domain creation properties passed:"
             else="Some of Weblogic domain creation properties are missing:">
             <and>
-                <isset property="weblogic.mt.install.dir"/>
+                <isset property="oracle.mt.install.dir"/>
                 <isset property="weblogic.mt.domain.path"/>
                 <isset property="weblogic.mt.server.name"/>
                 <isset property="weblogic.mt.host"/>
@@ -827,10 +1083,10 @@
             </and>
         </condition>
         <!-- External properties messages -->
-        <condition property="weblogic.mt.install.dir.message"
-            value=" + weblogic.mt.install.dir = ${weblogic.mt.install.dir}"
-            else=" - weblogic.mt.install.dir is missing">
-            <isset property="weblogic.mt.install.dir"/>
+        <condition property="oracle.mt.install.dir.message"
+            value=" + oracle.mt.install.dir = ${oracle.mt.install.dir}"
+            else=" - oracle.mt.install.dir is missing">
+            <isset property="oracle.mt.install.dir"/>
         </condition>
         <condition property="weblogic.mt.domain.path.message"
             value=" + weblogic.mt.domain.path = ${weblogic.mt.domain.path}"
@@ -936,7 +1192,7 @@
         <!-- Files verification -->
         <weblogic-mt-domain-files-messages/>
         <echo message="${wls.mt.create.domain.properties.header}"/>
-        <echo message="${weblogic.mt.install.dir.message}"/>
+        <echo message="${oracle.mt.install.dir.message}"/>
         <echo message="${weblogic.mt.domain.path.message}"/>
         <echo message="${wls.mt.domain.lib.full.path.message}"/>
         <echo message="${weblogic.mt.server.name.message}"/>
@@ -1021,7 +1277,7 @@
     <target name="weblogic-mt-stop-domain-verify-properties">
         <condition property="wls.mt.stop.domain.properties.valid" value="true">
             <and>
-                <isset property="weblogic.mt.install.dir"/>
+                <isset property="oracle.mt.install.dir"/>
                 <isset property="weblogic.mt.host"/>
                 <isset property="weblogic.mt.port"/>
                 <isset property="weblogic.mt.admin.user"/>
@@ -1039,7 +1295,7 @@
             value="Weblogic domain stopping properties passed:"
             else="Some of Weblogic domain stopping properties are missing:">
             <and>
-                <isset property="weblogic.mt.install.dir"/>
+                <isset property="oracle.mt.install.dir"/>
                 <isset property="weblogic.mt.host"/>
                 <isset property="weblogic.mt.port"/>
                 <isset property="weblogic.mt.admin.user"/>
@@ -1051,7 +1307,7 @@
         <!-- Internal properties messages -->
         <weblogic-mt-server.wl.home-property-message/>
         <echo message="${wls.mt.stop.domain.properties.header}"/>
-        <echo message="${weblogic.mt.install.dir.message}"/>
+        <echo message="${oracle.mt.install.dir.message}"/>
         <echo message="${weblogic.mt.host.message}"/>
         <echo message="${weblogic.mt.port.message}"/>
         <echo message="${weblogic.mt.admin.user.message}"/>
@@ -1150,7 +1406,82 @@
         <echo message="${wls.mt.install.wl.home.message}"/>
     </target>
 
-    <!-- INTERNAL: Check if WebLogic installation packages are available locally. -->
+    <!-- INTERNAL: Check tenant related test properties. -->
+    <target name="check-test-type">
+        <!-- Check whether there is at least one tenant defined. -->
+        <condition property="is.test.with.tenant" value="true">
+            <and>
+                <isset property="weblogic.mt.test.t1.host"/>
+                <isset property="weblogic.mt.test.t1.url"/>
+            </and>
+        </condition>
+        <!-- Check whether there are two tenants set. -->
+        <condition property="is.test.with.second.tenant" value="true">
+            <and>
+                <isset property="weblogic.mt.test.t2.host"/>
+                <isset property="weblogic.mt.test.t2.url"/>
+            </and>
+        </condition>
+    </target>
+
+    <!-- INTERNAL: Verify junit test suite execution arguments. -->
+    <target name="weblogic-mt-test-call-verify-properties" depends="check-test-type">
+        <condition property="wls.mt.undeploy.properties.valid" value="true">
+            <and>
+                <isset property="is.test.with.tenant"/>
+                <isset property="weblogic.mt.test.platform"/>
+                <isset property="weblogic.mt.test.libs"/>
+                <isset property="weblogic.mt.test.dir.lib"/>
+                <isset property="weblogic.mt.test.dir.base"/>
+                <isset property="weblogic.mt.test.dir.build"/>
+                <isset property="weblogic.mt.test.dir.run"/>
+                <isset property="weblogic.mt.test.dir.report"/>
+                <isset property="weblogic.mt.test.test.name"/>
+                <isset property="weblogic.mt.test.model.name"/>
+                <isset property="weblogic.mt.test.srv.user"/>
+                <isset property="weblogic.mt.test.srv.pwd"/>
+                <isset property="weblogic.mt.test.suite"/>
+                <isset property="weblogic.mt.test.runner"/>
+                <isset property="weblogic.mt.test.runner1"/>
+                <isset property="weblogic.mt.test.runner2"/>
+                <isset property="weblogic.mt.test.runner3"/>
+                <isset property="weblogic.mt.test.runner4"/>
+                <isset property="weblogic.mt.test.runner5"/>
+            </and>
+        </condition>
+        <fail message="Missing Weblogic undeployment properties"
+            unless="wls.mt.undeploy.properties.valid"/>
+    </target>
+
+	<!-- INTERNAL: Print junit test suite execution arguments. -->
+    <target name="weblogic-mt-test-call-print-properties">
+        <echo message="Properties passed to test call:"/>
+        <property-check-message name="weblogic.mt.test.platform"/>
+        <property-check-message name="weblogic.mt.test.libs"/>
+        <property-check-message name="weblogic.mt.test.dir.lib"/>
+        <property-check-message name="weblogic.mt.test.dir.base"/>
+        <property-check-message name="weblogic.mt.test.dir.build"/>
+        <property-check-message name="weblogic.mt.test.dir.run"/>
+        <property-check-message name="weblogic.mt.test.dir.report"/>
+        <property-check-message name="weblogic.mt.test.test.name"/>
+        <property-check-message name="weblogic.mt.test.model.name"/>
+        <property-check-message name="weblogic.mt.test.srv.user"/>
+        <property-check-message name="weblogic.mt.test.srv.pwd"/>
+        <property-check-message name="weblogic.mt.test.proxy.user"/>
+        <property-check-message name="weblogic.mt.test.suite"/>
+        <property-check-message name="weblogic.mt.test.runner"/>
+        <property-check-message name="weblogic.mt.test.runner1"/>
+        <property-check-message name="weblogic.mt.test.runner2"/>
+        <property-check-message name="weblogic.mt.test.runner3"/>
+        <property-check-message name="weblogic.mt.test.runner4"/>
+        <property-check-message name="weblogic.mt.test.runner5"/>
+        <property-check-message name="weblogic.mt.test.t1.host"/>
+        <property-check-message name="weblogic.mt.test.t1.url"/>
+        <property-check-message name="weblogic.mt.test.t2.host"/>
+        <property-check-message name="weblogic.mt.test.t2.url"/>
+    </target>
+
+	<!-- INTERNAL: Check if WebLogic installation packages are available locally. -->
     <target name="wls-mt-packages-exists">
         <weblogic-mt-install-files-check/>
         <condition property="wls.mt.packages.exists" value="true">
@@ -1234,8 +1565,8 @@
 
     <!-- INTERNAL: Create directory structure for WebLogic installation. -->
     <target name="wls-install-create-dirs">
+        <mkdir dir="${oracle.mt.install.dir}"/>
         <mkdir dir="${weblogic.mt.install.dir}"/>
-        <mkdir dir="${wls.mt.install.mw.home}"/>
         <!--mkdir dir="${wls.mt.install.wl.home}"/-->
         <mkdir dir="${wls.mt.install.orainv}"/>
     </target>
@@ -1246,7 +1577,7 @@
         <antcall target="wls-write-response-file">
             <param name="RESPONSE.FILE" value="${wls.mt.response.wls.file}"/>
             <param name="RESPONSE.TYPE" value="${wls.mt.response.wls.type}"/>
-            <param name="RESPONSE.HOME" value="${wls.mt.install.mw.home}"/>
+            <param name="RESPONSE.HOME" value="${weblogic.mt.install.dir}"/>
         </antcall>
         <antcall target="wls-write-orainst-file">
             <param name="ORAINST.FILE" value="${wls.mt.install.orainst.loc}"/>
@@ -1265,7 +1596,7 @@
         <antcall target="wls-write-response-file">
             <param name="RESPONSE.FILE" value="${wls.mt.response.jrf.file}"/>
             <param name="RESPONSE.TYPE" value="${wls.mt.response.jrf.type}"/>
-            <param name="RESPONSE.HOME" value="${wls.mt.install.mw.home}"/>
+            <param name="RESPONSE.HOME" value="${weblogic.mt.install.dir}"/>
         </antcall>
         <echo message="Installing Fusion Middleware 12c Infrastructure"/>
         <java jar="${wls.mt.jrf_generic.jar.file}" fork="true">

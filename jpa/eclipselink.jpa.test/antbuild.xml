@@ -3362,8 +3362,153 @@
         </antcall-->
     </target>
 
-    <!-- Run an ear on the server. -->
-    <target name="server-run-test" depends="config-classpath">
+    <!-- Build message to print depending on property value. -->
+    <macrodef name="build-message">
+        <attribute name="name"/>
+        <attribute name="property"/>
+        <attribute name="value"/>
+        <attribute name="else"/>
+        <sequential>
+            <condition property="@{name}" value="@{value}" else="@{else}">
+                <isset property="@{property}"/>
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <!-- Build messages for test type checks. -->
+    <macrodef name="check-test-type-message">
+        <sequential>
+            <build-message name="test.with.tenant.msg" property="is.test.with.tenant"
+                value=" * Runing tests on WebLogic partition(s)"
+                else=" * Runing tests on common application server"/>
+            <build-message name="test.with.second.tenant.msg" property="is.test.with.second.tenant"
+            value=" * Runing two test suites on two WebLogic partitions in parallel"
+            else=" * Runing single test suite"/>
+            <echo message="Test setup check:"/>
+            <echo message="${test.with.tenant.msg}"/>
+            <echo message="${test.with.second.tenant.msg}"/>
+        </sequential>
+    </macrodef>
+
+    <target name="check-test-type">
+        <!-- Check whether there is at least one tenant defined. -->
+        <condition property="is.test.with.tenant" value="true">
+            <and>
+                <isset property="t1.host"/>
+                <isset property="db.t1.url"/>
+                <isset property="db.t1.user"/>
+                <isset property="db.t1.pwd"/>
+            </and>
+        </condition>
+        <!-- Check whether there are two tenants set. -->
+        <condition property="is.test.with.second.tenant" value="true">
+            <and>
+                <isset property="is.test.with.tenant"/>
+                <isset property="t2.host"/>
+                <isset property="db.t2.url"/>
+                <isset property="db.t2.user"/>
+                <isset property="db.t2.pwd"/>
+            </and>
+        </condition>
+    </target>
+
+    <!-- Switch between runing test in simple environment or in partition (with multitenancy enabled).
+       - Both server-run-test-simple and server-run-test-partition tasks execution depends on is.test.with.tenant
+       - property:
+       -  * server-run-test-simple runs when is.test.with.tenant property is not set
+       -  * server-run-test-partition runs when is.test.with.tenant property is set
+     -->
+    <target name="server-run-test-switch" depends="server-run-test-simple,server-run-test-partition"/>
+
+    <!-- Switch between runing test on a single partition or two partitions in parallel.
+       - Both server-run-test-partition-single and server-run-test-partition-parallel tasks execution depends
+       - on is.test.with.second.tenant property:
+       -  * server-run-test-partition-single runs when is.test.with.second.tenant property is not set
+       -  * server-run-test-partition-parallel runs when is.test.with.second.tenant property is set
+     -->
+    <target name="server-run-test-partition" if="is.test.with.tenant">
+        <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-test" inheritRefs="true"/>
+    </target>
+
+	<!-- Builds tests classpath and evaluates if multitenant test properties are passed before calling test switcher. -->
+    <target name="server-run-test" depends="config-classpath,check-test-type,server-run-test-switch"/>
+
+    <macrodef name="server-run-test-call">
+        <attribute name="platform"/>
+        <attribute name="libs"/>
+        <attribute name="dir.lib"/>
+        <attribute name="dir.base"/>
+        <attribute name="dir.build"/>
+        <attribute name="dir.report"/>
+        <attribute name="test.name"/>
+        <attribute name="model.name"/>
+        <attribute name="srv.name"/>
+        <attribute name="srv.user"/>
+        <attribute name="srv.pwd"/>
+        <attribute name="proxy.user"/>
+        <attribute name="ear"/>
+        <attribute name="url"/>
+        <attribute name="suite"/>
+        <attribute name="runner"/>
+        <attribute name="runner1"/>
+        <attribute name="runner2"/>
+        <attribute name="runner3"/>
+        <attribute name="runner4"/>
+        <attribute name="runner5"/>
+        <sequential>
+            <property name="server.lib.full" location="@{dir.lib}"/>
+            <path id="run.path">
+                <pathelement path="@{dir.base}/@{dir.build}/@{test.name}_client.jar"/>
+                <pathelement path="@{dir.base}/@{dir.build}/@{model.name}_ejb.jar"/>
+                <fileset dir="${server.lib.full}" includes="@{libs}"/>
+                <path refid="compile.server.path"/>
+            </path>
+            <pathconvert property="run.path.message" refid="run.path"/>
+            <echo>Running test @{ear} on @{srv.name}</echo>
+            <echo message=" * oracle.proxy.user = @{proxy.user}"/>
+            <echo message=" * server.platform = @{platform}"/>
+            <echo message=" * server.user = @{srv.user}"/>
+            <echo message=" * server.pwd = @{srv.pwd}"/>
+            <echo message=" * server.depend = @{libs}"/>
+            <echo message=" * server.lib = ${server.lib.full}"/>
+            <echo message=" * SERVER.URL = @{url}"/>
+            <echo message=" * SERVER.TESTRUNNER = @{runner}"/>
+            <echo message=" * SERVER.TESTRUNNER1 = @{runner1}"/>
+            <echo message=" * SERVER.TESTRUNNER2 = @{runner2}"/>
+            <echo message=" * SERVER.TESTRUNNER3 = @{runner3}"/>
+            <echo message=" * SERVER.TESTRUNNER4 = @{runner4}"/>
+            <echo message=" * SERVER.TESTRUNNER5 = @{runner5}"/>
+            <echo message=" * run.metadata.cache.test.suite = ${run.metadata.cache.test.suite}"/>
+            <echo message=" * run.path = ${run.path.message}"/>
+            <echo message=" * run.dir = ${run.dir}"/>
+            <echo message=" * TEST_SUITE = @{suite}"/>
+            <mkdir dir="@{dir.base}/@{dir.report}"/>
+            <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes"
+                forkmode="once" showoutput="true" maxmemory="256m" dir="${run.dir}">
+                <sysproperty key="proxy.user.name" value="@{proxy.user}"/>
+                <sysproperty key="server.platform" value="@{platform}"/>
+                <sysproperty key="server.user" value="@{srv.user}"/>
+                <sysproperty key="server.password" value="@{srv.pwd}"/>
+                <sysproperty key="server.url" value="@{url}"/>
+                <sysproperty key="server.testrunner" value="@{runner}"/>
+                <sysproperty key="server.testrunner1" value="@{runner1}"/>
+                <sysproperty key="server.testrunner2" value="@{runner2}"/>
+                <sysproperty key="server.testrunner3" value="@{runner3}"/>
+                <sysproperty key="server.testrunner4" value="@{runner4}"/>
+                <sysproperty key="server.testrunner5" value="@{runner5}"/>
+                <sysproperty key="server.run" value="TRUE"/>
+                <sysproperty key="com.ibm.SSL.ConfigURL" value="${com.ibm.SSL.ConfigURL}"/>
+                <sysproperty key="com.ibm.CORBA.ConfigURL" value="${com.ibm.CORBA.ConfigURL}"/>
+                <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
+                <classpath refid="run.path"/>
+                <formatter type="xml"/>
+                <test name="@{suite}" haltonfailure="no" outfile="@{dir.report}/@{suite}-test-results"/>
+            </junit>
+        </sequential>
+    </macrodef>
+
+	<!-- Run an ear on the server. -->
+    <target name="server-run-test-simple" unless="is.test.with.tenant">
         <property name="server.lib.full" location="${server.lib}"/>
         <path id="run.path">
             <pathelement path="${jpatest.basedir}/${build.dir}/${TEST_NAME}_client.jar"/>
