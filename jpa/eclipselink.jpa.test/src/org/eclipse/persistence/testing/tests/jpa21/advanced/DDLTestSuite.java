@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -24,6 +24,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/04/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     02/02/2015-2.6.0 Dalia Abo Sheasha
+ *       - 458462: generateSchema throws a ClassCastException within a container
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -33,6 +35,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Proxy;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,16 +43,21 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
+import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.Organizer;
+import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.PUInfoInvocationHandler;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.Race;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.Responsibility;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl.Runner;
@@ -102,6 +110,8 @@ public class DDLTestSuite extends JUnitTestCase {
         suite.addTest(new DDLTestSuite("testDatabaseSchemaGenerationDropAndCreate"));
         //suite.addTest(new DDLTestSuite("testDatabaseSchemaGenerationURLTargets"));
         
+        suite.addTest(new DDLTestSuite("testContainerGenerateSchema"));
+
         return suite;
     }
     
@@ -446,5 +456,38 @@ public class DDLTestSuite extends JUnitTestCase {
         } catch (Exception exception) {
             fail("Exception caught when generating schema: " + exception.getMessage());
         }
+    }
+
+    /**
+     * Test the container PersistenceProvider.generateSchema(PersistenceUnitInfo
+     * info, Map map) method from the Persistence API.
+     */
+    public void testContainerGenerateSchema() {
+        String CONTAINER_GENERATE_SCHEMA_DROP_TARGET = "jpa21-container-generate-schema-drop.jdbc";
+        String CONTAINER_GENERATE_SCHEMA_CREATE_TARGET = "jpa21-container-generate-schema-create.jdbc";
+        String CONTAINER_GENERATE_SCHEMA_SESSION_NAME = "container-generate-schema-session";
+        
+        Map properties = new HashMap();
+        // Get database properties will pick up test.properties database connection details.
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
+        properties.put(PersistenceUnitProperties.SESSION_NAME, CONTAINER_GENERATE_SCHEMA_SESSION_NAME);
+        properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, CONTAINER_GENERATE_SCHEMA_DROP_TARGET);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, CONTAINER_GENERATE_SCHEMA_CREATE_TARGET);
+        
+        // When a container calls PersistenceProvider.generateSchema(PersistenceUnitInfo info, Map map), 
+        // the container passes its own PUInfo Implementation. To avoid having to implement our own PUInfo,
+        // a proxy object is created that invokes SEPersistenceUnitInfo's methods in the background. 
+        PersistenceProvider provider = new PersistenceProvider();
+        JPAInitializer initializer = provider.getInitializer(puName, properties);
+        SEPersistenceUnitInfo sePUImpl = initializer.findPersistenceUnitInfo(puName, properties);
+        PersistenceUnitInfo puinfo = (PersistenceUnitInfo) Proxy.newProxyInstance(SEPersistenceUnitInfo.class.getClassLoader(), new Class[] { PersistenceUnitInfo.class }, new PUInfoInvocationHandler(sePUImpl));
+        provider.generateSchema(puinfo, properties);
+        
+        // Now create an entity manager and build some objects for this PU using
+        // the same session name. Create the schema on the database with the 
+        // target scripts built previously.
+        testPersistenceGenerateSchemaOnDatabase(CONTAINER_GENERATE_SCHEMA_CREATE_TARGET, CONTAINER_GENERATE_SCHEMA_DROP_TARGET, CONTAINER_GENERATE_SCHEMA_SESSION_NAME);
     }
 }

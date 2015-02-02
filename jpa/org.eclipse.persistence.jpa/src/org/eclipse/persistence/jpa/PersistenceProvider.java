@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -20,6 +20,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/04/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     02/02/2015-2.6 Dalia Abo Sheasha 
+ *       - 458462: generateSchema throws a ClassCastException within a container
  ******************************************************************************/  
 package org.eclipse.persistence.jpa;
 
@@ -203,12 +205,9 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      */
     public void generateSchema(PersistenceUnitInfo info, Map properties) {
         if (checkForProviderProperty(properties)) {
-            // Will cause a login if necessary, generate the DDL and then close.
-            // The false indicates that we do not require a connection if 
-            // generating only to script. Since the user may have connected with 
-            // specific database credentials for DDL generation or even provided
-            // a specific connection, close the emf once we're done.
-            createEntityManagerFactoryImpl(info, properties, false).close();
+            // Bug 458462 - Generate the DDL and then close. This method is
+            // called when running within a container.
+            createContainerEntityManagerFactoryImpl(info, properties, false).close();
         }
     }
     
@@ -239,8 +238,13 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             JPAInitializer initializer = getInitializer(puName, nonNullProperties);
             SEPersistenceUnitInfo puInfo = initializer.findPersistenceUnitInfo(puName, nonNullProperties);
             
-            if (puInfo != null) {
-                generateSchema(puInfo, nonNullProperties);
+            if (puInfo != null && checkForProviderProperty(properties)) {
+                // Will cause a login if necessary, generate the DDL and then close.
+                // The false indicates that we do not require a connection if 
+                // generating only to script. Since the user may have connected with 
+                // specific database credentials for DDL generation or even provided
+                // a specific connection, close the emf once we're done.
+                createEntityManagerFactoryImpl(puInfo, properties, false).close();
                 return true;
             }
         }
@@ -296,6 +300,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * by the persistence provider.
      */
     public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties) {
+        return createContainerEntityManagerFactoryImpl(info, properties, true);
+    }
+    
+    private EntityManagerFactory createContainerEntityManagerFactoryImpl(PersistenceUnitInfo info, Map properties, boolean requiresConnection) {
         // Record that we are inside a JEE container to allow weaving for non managed persistence units.
         JavaSECMPInitializer.setIsInContainer(true);
         
@@ -354,6 +362,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         EntityManagerFactoryImpl factory = null;
         try {
             factory = new EntityManagerFactoryImpl(emSetupImpl, nonNullProperties);
+            emSetupImpl.setRequiresConnection(requiresConnection);
             emSetupImpl.preInitializeCanonicalMetamodel(factory);
             
             // This code has been added to allow validation to occur without actually calling createEntityManager
