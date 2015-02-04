@@ -97,6 +97,7 @@ import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
 import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
 import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
@@ -12314,7 +12315,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.flush();
             // The bug exhibits itself in a fresh session where this specific CacheKey isn't loaded yet. 
             // To simulate this condition, removing from cache.
-            Session session = ((EntityManagerImpl)em).getDatabaseSession();
+            Session session = em.unwrap(DatabaseSession.class);
             session.getIdentityMapAccessor().removeFromIdentityMap(session.getId(hinge2), Hinge.class);
             
             TypedQuery<Hinge> q = em.createNamedQuery("loadHinges", Hinge.class);
