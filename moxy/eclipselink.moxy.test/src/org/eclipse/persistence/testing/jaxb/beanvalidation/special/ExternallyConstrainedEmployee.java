@@ -16,21 +16,27 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Contains only custom constraint, and as such serves as a good testing class for whether we recognize custom
- * constraints correctly.
+ * Constrained externally through validation.xml.
  */
 @XmlRootElement
-public class CustomAnnotatedEmployee {
+public class ExternallyConstrainedEmployee {
 
-    @CustomAnnotation
     @XmlAttribute
     private Integer id;
 
-    public CustomAnnotatedEmployee(){
+    @XmlAttribute
+    private Integer age;
+
+    public ExternallyConstrainedEmployee(){
     }
 
-    public CustomAnnotatedEmployee withId(Integer id){
+    public ExternallyConstrainedEmployee withId(Integer id){
         this.id = id;
+        return this;
+    }
+
+    public ExternallyConstrainedEmployee withAge(Integer age){
+        this.age = age;
         return this;
     }
 
@@ -39,8 +45,9 @@ public class CustomAnnotatedEmployee {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CustomAnnotatedEmployee that = (CustomAnnotatedEmployee) o;
+        ExternallyConstrainedEmployee that = (ExternallyConstrainedEmployee) o;
 
+        if (age != null ? !age.equals(that.age) : that.age != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
 
         return true;
@@ -48,6 +55,8 @@ public class CustomAnnotatedEmployee {
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (age != null ? age.hashCode() : 0);
+        return result;
     }
 }

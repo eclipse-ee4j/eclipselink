@@ -2,9 +2,13 @@
 <!-- Required for testing that JAXBBeanValidator doesn't end up in endless loop between
 Unmarshaller - Validator - Unmarshaller. -->
 <!-- Having this file deactivated prevents HV from flooding logs each time it discovers this file. -->
+<!-- Required for testing that BV optimizations do not surpass objects constrained via xml conf. -->
 <validation-config
         xmlns="http://jboss.org/xml/ns/javax/validation/configuration"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://jboss.org/xml/ns/javax/validation/configuration">
+
+    <constraint-mapping>META-INF/validation/constraints.xml</constraint-mapping>
+    <constraint-mapping>META-INF/validation/constraints2.xml</constraint-mapping>
 
 </validation-config>

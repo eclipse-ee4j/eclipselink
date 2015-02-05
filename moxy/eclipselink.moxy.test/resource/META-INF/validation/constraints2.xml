@@ -1,0 +1,14 @@
+<constraint-mappings
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://jboss.org/xml/ns/javax/validation/mapping validation-mapping-1.1.xsd"
+        xmlns="http://jboss.org/xml/ns/javax/validation/mapping" version="1.1">
+
+    <default-package>org.eclipse.persistence.testing.jaxb.beanvalidation.special</default-package>
+    <bean class="ExternallyConstrainedEmployee2" ignore-annotations="false">
+        <field name="age">
+            <constraint annotation="javax.validation.constraints.Min">
+                <element name="value">18</element>
+            </constraint>
+        </field>
+    </bean>
+</constraint-mappings>

@@ -16,21 +16,32 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Contains only custom constraint, and as such serves as a good testing class for whether we recognize custom
- * constraints correctly.
+ * Constrained externally through validation.xml.
+ * Obeying the rule:
+ * "Warning
+ * A given entity can only be configured once across all configuration files. The same applies for constraint
+ * definitions for a given constraint annotation. It can only occur in one mapping file. If these rules are violated a
+ * ValidationException is thrown." -> we need multiple classes if we wish to test multiple configuration files.
  */
 @XmlRootElement
-public class CustomAnnotatedEmployee {
+public class ExternallyConstrainedEmployee2 {
 
-    @CustomAnnotation
     @XmlAttribute
     private Integer id;
 
-    public CustomAnnotatedEmployee(){
+    @XmlAttribute
+    private Integer age;
+
+    public ExternallyConstrainedEmployee2(){
     }
 
-    public CustomAnnotatedEmployee withId(Integer id){
+    public ExternallyConstrainedEmployee2 withId(Integer id){
         this.id = id;
+        return this;
+    }
+
+    public ExternallyConstrainedEmployee2 withAge(Integer age){
+        this.age = age;
         return this;
     }
 
@@ -39,8 +50,9 @@ public class CustomAnnotatedEmployee {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CustomAnnotatedEmployee that = (CustomAnnotatedEmployee) o;
+        ExternallyConstrainedEmployee2 that = (ExternallyConstrainedEmployee2) o;
 
+        if (age != null ? !age.equals(that.age) : that.age != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
 
         return true;
@@ -48,6 +60,8 @@ public class CustomAnnotatedEmployee {
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (age != null ? age.hashCode() : 0);
+        return result;
     }
 }

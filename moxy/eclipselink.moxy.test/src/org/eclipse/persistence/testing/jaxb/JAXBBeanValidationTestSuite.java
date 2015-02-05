@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,6 +17,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationBindingsTestCase;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationRuntimeTestCase;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.BeanValidationSpecialtiesTestCase;
+import org.eclipse.persistence.testing.jaxb.beanvalidation.ValidationXMLTestCase;
 
 /**
  * @author Marcel Valovy - marcel.valovy@oracle.com
@@ -30,6 +31,7 @@ public class JAXBBeanValidationTestSuite {
         suite.addTestSuite(BeanValidationRuntimeTestCase.class);
         suite.addTestSuite(BeanValidationBindingsTestCase.class);
         suite.addTestSuite(BeanValidationSpecialtiesTestCase.class);
+        suite.addTestSuite(ValidationXMLTestCase.class);
 
         return suite;
     }

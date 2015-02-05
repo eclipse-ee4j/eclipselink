@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * INTERNAL:
@@ -48,12 +49,28 @@ import java.util.Set;
 enum BeanValidationHelper {
     BEAN_VALIDATION_HELPER;
 
+    static {
+        ValidationXMLReader.runAsynchronously();
+    }
+
+    /**
+     * How long to wait for {@link ValidationXMLReader#runAsynchronously()} to finish. This is only used
+     * to account for interrupts. If the asynchronous thread is interrupted and flag {@link
+     * ValidationXMLReader#firstTime} is false, deadlock occurs. This prevents such deadlock.
+     */
+    private static final int TIMEOUT = 10; // milliseconds, can specify in single digits since nanoTime is used.
+
+    /**
+     * Speed-up flag. Indicates that parsing of validation.xml file has finished.
+     */
+    private static boolean xmlParsed = false;
+
     /**
      * Set of all default BeanValidation field or method annotations and known custom field or method constraints.
      */
     private final Set<Class<? extends Annotation>> knownConstraints = new HashSet<>();
 
-    /**
+     /**
      * Map of all classes that have undergone check for bean validation constraints.
      * Maps the key with boolean value telling whether the class contains an annotation from {@link #knownConstraints}.
      */
@@ -88,6 +105,15 @@ enum BeanValidationHelper {
     }
 
     /**
+     * Put a class to map of constrained classes with value Boolean.TRUE. Specifying value is not allowed because
+     * there is no thing to detect that would make class not constrained after it was already found to be constrained.
+     * @return value previously associated with the class or null if the class was not in dictionary before
+     */
+    Boolean putConstrainedClass(Class<?> clazz) {
+        return constraintsOnClasses.put(clazz, Boolean.TRUE);
+    }
+
+    /**
      * Tells whether any of the class's fields, methods or constructors are constrained by Bean Validation annotations
      * or custom constraints.
      *
@@ -95,6 +121,8 @@ enum BeanValidationHelper {
      * @return true or false
      */
     boolean isConstrained(Class<?> clazz) {
+        if (!xmlParsed) ensureValidationXmlWasParsed();
+
         Boolean annotated = constraintsOnClasses.get(clazz);
         if (annotated == null) {
             annotated = detectConstraints(clazz);
@@ -162,6 +190,36 @@ enum BeanValidationHelper {
             }
         }
         return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Ensures that validation.xml was parsed and classes described externally were added to {@link
+     * #constraintsOnClasses}.
+     * Strategy:
+     *  - if {@link ValidationXMLReader#runAsynchronously()} is not doing anything,
+     *  run parsing synchronously.
+     *  - else if latch count set to 0 aka async call finished, return
+     *  - else wait for {@link #TIMEOUT} seconds to allow async thread to finish. If it does not finish till then,
+     *  run parsing synchronously.
+     *
+     *  Note: Run parsing synchronously is force of last resort. If that fails, we proceed with validation and do not
+     *  account for classes specified in validation.xml - there is high chance that if we cannot read validation.xml
+     *  successfully, neither will be able the Validation implementation.
+     */
+    private void ensureValidationXmlWasParsed() {
+        // loop handles InterruptedException
+        while (!xmlParsed) {
+            try {
+                if (ValidationXMLReader.asyncAttemptFailed()
+                        || !ValidationXMLReader.latch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
+                    ValidationXMLReader.runSynchronouslyForced();
+                }
+                xmlParsed = true;
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
 }

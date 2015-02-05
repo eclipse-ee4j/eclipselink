@@ -92,10 +92,10 @@ class JAXBBeanValidator {
     private Validator validator;
 
     /**
-     * Stores constraint violations returned by last call to {@link Validator#validate(Object, Class[])}.
+     * Stores constraint violations returned by last call to {@link javax.validation.Validator#validate(Object, Class[])}.
      * <p>After each {@link #validate(Object, Class[])} call, the reference is replaced.
      */
-    private Set<? extends ConstraintViolation<?>> constraintViolations = Collections.emptySet();
+    private Set<ConstraintViolation<Object>> constraintViolations = Collections.emptySet();
 
     /**
      * Computed value saying if the validation can proceed under current conditions, represented by:
@@ -276,7 +276,7 @@ class JAXBBeanValidator {
     /**
      * @return constraintViolations from the last {@link #validate} call.
      */
-    Set<? extends ConstraintViolation<?>> getConstraintViolations() {
+    Set<ConstraintViolation<Object>> getConstraintViolations() {
         return constraintViolations;
     }
 
@@ -381,7 +381,7 @@ class JAXBBeanValidator {
     @SuppressWarnings({"RedundantCast", "unchecked"})
     private BeanValidationException buildConstraintViolationException() {
         ConstraintViolationException cve = new ConstraintViolationException(
-                (Set<ConstraintViolation<?>>) /* Do not remove the cast. */ constraintViolations);
+                (Set<ConstraintViolation<Object>>) /* Do not remove the cast. */ constraintViolations);
         return BeanValidationException.constraintViolation(createConstraintViolationExceptionArgs(), cve);
     }
 

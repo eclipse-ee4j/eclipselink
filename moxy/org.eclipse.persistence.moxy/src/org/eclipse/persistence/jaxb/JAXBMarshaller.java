@@ -938,10 +938,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 this.beanValidationMode = ((BeanValidationMode) value);
             } else if (MarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
                 //noinspection StatementWithEmptyBody
-                if(value == null){
+                if(value == null) {
                     // Allow null value for preferred validation factory.
                 }
-                this.prefValidatorFactory = ((ValidatorFactory) value);
+                this.prefValidatorFactory = ((ValidatorFactory)value);
             } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
                 if(value == null){
                     throw new PropertyException(key, Constants.EMPTY_STRING);
@@ -982,7 +982,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      *
      * @return set of constraint violations from last unmarshal
      */
-    public Set<? extends ConstraintViolation<?>> getConstraintViolations() {
+    public Set<ConstraintViolation<Object>> getConstraintViolations() {
         return beanValidator.getConstraintViolations();
     }
 
