@@ -86,8 +86,6 @@
         <delete>
             <fileset dir="." includes="std*.log"/>
         </delete>
-        <delete dir="${jparstest.basedir}/${temp.dir}"/>
-        <mkdir dir="${jparstest.basedir}/${temp.dir}"/>
         <java classname="weblogic.WLST" fork="yes">
             <arg line="${jparstest.basedir}/${temp.dir}/wls_install.py"/>
             <classpath>
@@ -112,6 +110,8 @@
     </target>
 
     <target name="pass-weblogic-and-database-info">
+        <delete dir="${jparstest.basedir}/${temp.dir}"/>
+        <mkdir dir="${jparstest.basedir}/${temp.dir}"/>
         <copy todir="${jparstest.basedir}/${temp.dir}" overwrite="true">
             <fileset dir="${jparstest.basedir}/resource/weblogic" includes="*.py"/>
         </copy>
