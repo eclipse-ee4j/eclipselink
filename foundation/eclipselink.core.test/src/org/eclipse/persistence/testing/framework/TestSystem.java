@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -139,7 +139,17 @@ public class TestSystem {
         session = new Project(getLogin()).createDatabaseSession();
         addDescriptors(session);
         session.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(properties.get(PersistenceUnitProperties.LOGGING_LEVEL)));
-        session.login();
+        try {
+            session.login();
+        } catch (DatabaseException x) {
+            if (session.getPlatform().isMySQL()) {
+                AbstractSessionLog.getLog().warning("Cannot login to the database");
+                // Using System.err since session log may not print out the stack trace
+                x.printStackTrace(System.err);
+            } else {
+                throw x;
+            }
+        }
 
         return session;
     }

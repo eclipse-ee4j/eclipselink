@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,15 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ArrayRecord;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.TestCase;
 
 /**
@@ -59,9 +65,45 @@ public class ClearDatabaseSchemaTest extends TestCase {
     }
 
     private void resetMySQL(AbstractSession session) {
-        ArrayRecord record = (ArrayRecord) session.executeSQL("select DATABASE()").get(0);
-        session.executeNonSelectingSQL("drop database "+record.get("DATABASE()"));
-        session.executeNonSelectingSQL("create database "+record.get("DATABASE()"));
+        ArrayRecord record = null;
+        try {
+            record = (ArrayRecord) session.executeSQL("select DATABASE()").get(0);
+            session.executeNonSelectingSQL("drop database " + record.get("DATABASE()"));
+        } catch (DatabaseException x) {
+            AbstractSessionLog.getLog().warning("Failed to drop database");
+            // Using System.err since session log may not print out the stack trace
+            x.printStackTrace(System.err);
+        } finally {
+            if (record != null) {
+                session.executeNonSelectingSQL("create database " + record.get("DATABASE()"));
+            } else {
+                DatabaseLogin databaseLogin = (DatabaseLogin) session.getDatasourceLogin();
+                String url = databaseLogin.getDatabaseURL();
+
+                Properties properties = new Properties();
+                properties.put("user", databaseLogin.getUserName());
+                properties.put("password", databaseLogin.getPassword());
+
+                int databaseNameSeparatorIndex = url.lastIndexOf('/');
+                String databaseName = url.substring(databaseNameSeparatorIndex + 1);
+                int propertiesIndex = databaseName.indexOf('?');
+                if (propertiesIndex > 0) {
+                    for (String propertyString : databaseName.substring(propertiesIndex + 1).split("&")) {
+                        String[] propertyDetails = propertyString.split("=");
+                        properties.put(propertyDetails[0].trim(), propertyDetails[1].trim());
+                    }
+                    databaseName = databaseName.substring(0, propertiesIndex);
+                }
+                url = url.substring(0, databaseNameSeparatorIndex);
+
+                try (Connection connection = DriverManager.getConnection(url, properties)) {
+                    connection.prepareStatement("create database " + databaseName).execute();
+                } catch (SQLException e) {
+                    // Using System.err since session log may not print out the stack trace
+                    e.printStackTrace(System.err);
+                }
+            }
+        }
         //unused for now but kept here for alternate option
 //        Vector<ArrayRecord> result = session.executeSQL("SELECT concat('ALTER TABLE ', C.TABLE_SCHEMA, '.', C.TABLE_NAME, ' DROP FOREIGN KEY ', C.CONSTRAINT_NAME) "
 //                + "FROM information_schema.TABLE_CONSTRAINTS C "
