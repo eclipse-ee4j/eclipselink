@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +76,7 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
 
 /**
  * <p>This is an implementation of <i>MessageBodyReader</i>/<i>MessageBodyWriter
- * </i> that can be used to enable EclipseLink JAXB (MOXy) as the the JSON 
+ * </i> that can be used to enable EclipseLink JAXB (MOXy) as the JSON
  * provider.</p>
  * <p>
  * <b>Supported Media Type Patterns</b>
@@ -208,7 +210,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     protected Providers providers;
 
     private String attributePrefix = null;
-    private Map<Class<?>, JAXBContext> contextCache = new HashMap<Class<?>, JAXBContext>();
+    private Map<Set<Class<?>>, JAXBContext> contextCache = new HashMap<Set<Class<?>>, JAXBContext>();
     private boolean formattedOutput = false;
     private boolean includeRoot = false;
     private boolean marshalEmptyCollections = true;
@@ -228,49 +230,57 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
-     * A convenience method to get the domain class (i.e. <i>Customer</i>) from 
+     * A convenience method to get the domain class (i.e. <i>Customer</i> or <i>Foo, Bar</i>) from
      * the parameter/return type (i.e. <i>Customer</i>, <i>List&lt;Customer&gt;</i>,
      * <i>JAXBElement&lt;Customer&gt;</i>, <i>JAXBElement&lt;? extends Customer&gt;</i>,
      * <i>List&lt;JAXBElement&lt;Customer&gt;&gt;</i>, or
-     * <i>List&lt;JAXBElement&lt;? extends Customer&gt;&gt;</i>).
+     * <i>List&lt;JAXBElement&lt;? extends Customer&gt;&gt;</i>
+     * <i>List&lt;Foo&lt;Bar&gt;&gt;</i>).
      * @param genericType - The parameter/return type of the JAX-RS operation.
-     * @return The corresponding domain class.
+     * @return The corresponding domain classes.
      */
-    protected Class<?> getDomainClass(Type genericType) {
+    protected Set<Class<?>> getDomainClasses(Type genericType) {
         if(null == genericType) {
-            return Object.class;
+            return asSet(Object.class);
         }
         if(genericType instanceof Class && genericType != JAXBElement.class) {
             Class<?> clazz = (Class<?>) genericType;
             if(clazz.isArray()) {
-                return getDomainClass(clazz.getComponentType());
+                return getDomainClasses(clazz.getComponentType());
             }
-            return clazz;
+            return asSet(clazz);
         } else if(genericType instanceof ParameterizedType) {
-            Type type = ((ParameterizedType) genericType).getActualTypeArguments()[0];
-            if(type instanceof ParameterizedType) {
-                Type rawType = ((ParameterizedType) type).getRawType();
-                if(rawType == JAXBElement.class) {
-                    return getDomainClass(type);
+            Set<Class<?>> result = new LinkedHashSet<Class<?>>();
+            result.add((Class<?>)((ParameterizedType) genericType).getRawType());
+            Type[] types = ((ParameterizedType) genericType).getActualTypeArguments();
+            if(types.length > 0){
+                for (Type upperType : types) {
+                    result.addAll(getDomainClasses(upperType));
                 }
-            } else if(type instanceof WildcardType) {
-                Type[] upperTypes = ((WildcardType)type).getUpperBounds();
-                if(upperTypes.length > 0){
-                    Type upperType = upperTypes[0];
-                    if(upperType instanceof Class){
-                        return (Class<?>) upperType;
-                    }
-                }
-            } else if(JAXBElement.class == type) {
-                return Object.class;
             }
-            return (Class<?>) type;
+            return result;
         } else if (genericType instanceof GenericArrayType) {
             GenericArrayType genericArrayType = (GenericArrayType) genericType;
-            return getDomainClass(genericArrayType.getGenericComponentType());
+            return getDomainClasses(genericArrayType.getGenericComponentType());
+        } else if(genericType instanceof WildcardType) {
+            Set<Class<?>> result = new LinkedHashSet<Class<?>>();
+            result.add((Class<?>) genericType);
+            Type[] upperTypes = ((WildcardType)genericType).getUpperBounds();
+            if(upperTypes.length > 0){
+                for (Type upperType : upperTypes) {
+                    result.addAll(getDomainClasses(upperType));
+                }
+            }
+            return result;
         } else {
-            return Object.class;
+            return asSet(Object.class);
         }
+    }
+
+    private Set<Class<?>> asSet(Class<?> clazz) {
+        Set<Class<?>> result = new LinkedHashSet<>();
+        result.add(clazz);
+        return result;
     }
 
     /**
@@ -279,18 +289,19 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * <ol>
      * <li>If an EclipseLink JAXB (MOXy) <i>JAXBContext</i> is available from
      * a <i>ContextResolver</i> then use it.</li>
-     * <li>If an existing <i>JAXBContext</i> was not found in step one, then 
+     * <li>If an existing <i>JAXBContext</i> was not found in step one, then
      * create a new one on the domain class.</li>
      * </ol>
-     * @param domainClass - The domain class we need a <i>JAXBContext</i> for.
+     * @param domainClasses - The domain classes we need a <i>JAXBContext</i> for.
      * @param annotations - The annotations corresponding to domain object.
      * @param mediaType - The media type for the HTTP entity.
      * @param httpHeaders - HTTP headers associated with HTTP entity.
      * @return
      * @throws JAXBException
      */
-    protected JAXBContext getJAXBContext(Class<?> domainClass, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, ?> httpHeaders) throws JAXBException {
-        JAXBContext jaxbContext = contextCache.get(domainClass);
+    protected JAXBContext getJAXBContext(Set<Class<?>> domainClasses, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, ?> httpHeaders) throws JAXBException {
+
+        JAXBContext jaxbContext = contextCache.get(domainClasses);
         if(null != jaxbContext) {
             return jaxbContext;
         }
@@ -298,15 +309,20 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         if(null != providers) {
             resolver = providers.getContextResolver(JAXBContext.class, mediaType);
         }
-        if(null == resolver || null == (jaxbContext = resolver.getContext(domainClass))) {
-            jaxbContext = JAXBContextFactory.createContext(new Class[] {domainClass}, null);
-            contextCache.put(domainClass, jaxbContext);
+
+        if (null != resolver && domainClasses.size() == 1) {
+            jaxbContext = resolver.getContext(domainClasses.iterator().next());
+        }
+
+        if(null == jaxbContext) {
+            jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
+            contextCache.put(domainClasses, jaxbContext);
             return jaxbContext;
         } else if (jaxbContext instanceof org.eclipse.persistence.jaxb.JAXBContext) {
             return jaxbContext;
         } else {
-            jaxbContext = JAXBContextFactory.createContext(new Class[] {domainClass}, null);
-            contextCache.put(domainClass, jaxbContext);
+            jaxbContext = JAXBContextFactory.createContext(domainClasses.toArray(new Class[0]), null);
+            contextCache.put(domainClasses, jaxbContext);
             return jaxbContext;
         }
     }
@@ -317,8 +333,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         }
 
         try {
-            Class<?> domainClass = getDomainClass(genericType);
-            return getJAXBContext(domainClass, annotations, mediaType, null);
+            Set<Class<?>> domainClasses = getDomainClasses(genericType);
+            return getJAXBContext(domainClasses, annotations, mediaType, null);
         } catch(JAXBException e) {
             return null;
         }
@@ -427,11 +443,21 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         } else if(type.isArray() && (type.getComponentType().isArray() || type.getComponentType().isPrimitive() || type.getComponentType().getPackage().getName().startsWith("java."))) {
             return false;
         } else if(JAXBElement.class.isAssignableFrom(type)) {
-            Class domainClass = getDomainClass(genericType);
-            return isReadable(domainClass, null, annotations, mediaType) || String.class == domainClass;
+            Set<Class<?>> domainClasses = getDomainClasses(genericType);
+            for (Class<?> domainClass : domainClasses) {
+                if (isReadable(domainClass, null, annotations, mediaType) || String.class == domainClass) {
+                    return true;
+                }
+            }
+            return false;
         } else if(Collection.class.isAssignableFrom(type)) {
-            Class domainClass = getDomainClass(genericType);
-            return isReadable(domainClass, null, annotations, mediaType) || String.class == domainClass;
+            Set<Class<?>> domainClasses = getDomainClasses(genericType);
+            for (Class<?> domainClass : domainClasses) {
+                if (isReadable(domainClass, null, annotations, mediaType) || String.class == domainClass) {
+                    return true;
+                }
+            }
+            return false;
         } else {
             return null != getJAXBContext(type, genericType, annotations, mediaType);
         }
@@ -485,9 +511,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     /**
      * @return true indicating that <i>MOXyJsonProvider</i> will
-     * be used for the JSON binding if the media type is of the following 
-     * patterns *&#47;json or *&#47;*+json, and the type is not assignable from 
-     * any of (or a Collection or JAXBElement of) the the following:
+     * be used for the JSON binding if the media type is of the following
+     * patterns *&#47;json or *&#47;*+json, and the type is not assignable from
+     * any of (or a Collection or JAXBElement of) the following:
      * <ul>
      * <li>byte[]</li>
      * <li>java.io.File</li>
@@ -520,15 +546,26 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         } else if(type.isArray() && (type.getComponentType().isArray() || type.getComponentType().isPrimitive() || type.getComponentType().getPackage().getName().startsWith("java."))) {
             return false;
         } else if(JAXBElement.class.isAssignableFrom(type)) {
-            Class domainClass = getDomainClass(genericType);
-            return isWriteable(domainClass, null, annotations, mediaType) || domainClass == String.class;
-        } else if(Collection.class.isAssignableFrom(type)) {
-            Class domainClass = getDomainClass(genericType);
-            String packageName = domainClass.getPackage().getName();
-            if(null != packageName && packageName.startsWith("java.")) {
-                return false;
+            Set<Class<?>> domainClasses = getDomainClasses(genericType);
+
+            for (Class<?> domainClass : domainClasses) {
+                if (isWriteable(domainClass, null, annotations, mediaType) || domainClass == String.class) {
+                    return true;
+                }
             }
-            return isWriteable(domainClass, null, annotations, mediaType) || domainClass == String.class;
+
+            return false;
+        } else if(Collection.class.isAssignableFrom(type)) {
+            Set<Class<?>> domainClasses = getDomainClasses(genericType);
+            for (Class<?> domainClass : domainClasses) {
+                String packageName = domainClass.getPackage().getName();
+                if(null == packageName || !packageName.startsWith("java.")) {
+                    if (isWriteable(domainClass, null, annotations, mediaType) || domainClass == String.class) {
+                        return true;
+                    }
+                }
+            }
+            return false;
          } else {
              return null != getJAXBContext(type, genericType, annotations, mediaType);
         }
@@ -582,8 +619,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                 genericType = type;
             }
 
-            Class<?> domainClass = getDomainClass(genericType);
-            JAXBContext jaxbContext = getJAXBContext(domainClass, annotations, mediaType, httpHeaders);
+            Set<Class<?>> domainClasses = getDomainClasses(genericType);
+            JAXBContext jaxbContext = getJAXBContext(domainClasses, annotations, mediaType, httpHeaders);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             unmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, attributePrefix);
@@ -609,6 +646,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                 jsonSource = new StreamSource(entityStream);
             }
 
+            Class<?> domainClass = getDomainClass(domainClasses);
             JAXBElement<?> jaxbElement = unmarshaller.unmarshal(jsonSource, domainClass);
             if(type.isAssignableFrom(JAXBElement.class)) {
                 return jaxbElement;
@@ -661,6 +699,34 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
         }
+    }
+
+    /**
+     * Get first non java class if exists.
+     *
+     * @param domainClasses
+     * @return first domain class or first generic class or just the first class from the list
+     */
+    public Class<?> getDomainClass(Set<Class<?>> domainClasses) {
+
+        if (domainClasses.size() == 1) {
+            return domainClasses.iterator().next();
+        }
+
+        for (Class<?> clazz : domainClasses) {
+            if (!clazz.getName().startsWith("java.") && !clazz.getName().startsWith("javax.")) {
+                return clazz;
+            }
+        }
+
+        //handle simple generic case
+        if (domainClasses.size() == 2) {
+            Iterator<Class<?>> it = domainClasses.iterator();
+            it.next();
+            return it.next();
+        }
+
+        return domainClasses.iterator().next();
     }
 
     private boolean wrapItemInJAXBElement(Type genericType) {
@@ -830,8 +896,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                 genericType = type;
             }
 
-            Class<?> domainClass = getDomainClass(genericType);
-            JAXBContext jaxbContext = getJAXBContext(domainClass, annotations, mediaType, httpHeaders);
+            Set<Class<?>> domainClasses = getDomainClasses(genericType);
+            JAXBContext jaxbContext = getJAXBContext(domainClasses, annotations, mediaType, httpHeaders);
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formattedOutput);
             marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
@@ -855,10 +921,13 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             }
 
             preWriteTo(object, type, genericType, annotations, mediaType, httpHeaders, marshaller);
-            
-            if(domainClass.getPackage().getName().startsWith("java.") && !(List.class.isAssignableFrom(type) ||  type.isArray())) {
-                object = new JAXBElement(new QName((String) marshaller.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER)), domainClass, object);
+            if (domainClasses.size() == 1) {
+                Class<?> domainClass = domainClasses.iterator().next();
+                if(domainClass.getPackage().getName().startsWith("java.") && !(List.class.isAssignableFrom(type) ||  type.isArray())) {
+                    object = new JAXBElement(new QName((String) marshaller.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER)), domainClass, object);
+                }
             }
+
             marshaller.marshal(object, entityStream);
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
