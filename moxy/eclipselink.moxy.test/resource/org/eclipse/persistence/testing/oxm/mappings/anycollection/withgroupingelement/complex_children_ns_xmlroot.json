@@ -1,19 +1,19 @@
 
-{"root":{
-    "nested":{
-         "child":["Child1","Child2"],
-	 "theInteger":[{
-	    "type":"int",
+{"myns.root":{
+    "myns.nested":{
+         "myns.child":["Child1","Child2"],
+	 "myns.theInteger":[{
+	    "xsi.type":"int",
 	    "value":15
 	 }],
-	 "theString":["15"],
-         "theTime":[{
- 	    "type":"time",
+	 "myns.theString":["15"],
+         "myns.theTime":[{
+	    "xsi.type":"time",
 	    "value":"09:30:45"
 	 }],
-	 "someChild":["Child3",{}],
-         "blah":[{
-	      "type":"childType",
+	 "myns.someChild":["Child3",{}],
+         "myns.blah":[{
+	      "xsi.type":"myns.childType",
 	      "value":"Child4"
 	 }],
          "value":["myTextNode"]

@@ -1,5 +1,5 @@
 {"root":{
-   "type":"stringIntegerMap",
+   "xsi.type":"stringIntegerMap",
    "entry":[
       {
       "key":"aaa",

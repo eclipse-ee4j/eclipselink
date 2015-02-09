@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -17,6 +17,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
@@ -47,7 +49,15 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Employee.class;
-        setClasses(classes);      
+        setClasses(classes);
+        initXsiType();
+    }
+
+    @Override
+    protected Map<String, String> getAdditationalNamespaces() {
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("examplenamespace", "x");
+        return namespaces;
     }
 
     protected Object getControlObject() {
@@ -82,12 +92,13 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
     	return false;
     }  
-    
+
     public void testRepeatedUnmarshals() throws Exception{
-    	Unmarshaller u= jaxbContext.createUnmarshaller();
-    	unmarshalXML(u);
-    	unmarshalJSON(u);
-    	unmarshalJSON(u);
+	Unmarshaller u= jaxbContext.createUnmarshaller();
+	addXsiTypeToUnmarshaller(u);
+	unmarshalXML(u);
+	unmarshalJSON(u);
+	unmarshalJSON(u);
     	unmarshalXML(u);            
     	unmarshalJSON(u);
 
@@ -109,17 +120,17 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
          inputStream.close();
          jsonToObjectTest(testObject);
     }
-    
-    public void testRepeatedMarshals() throws Exception{
-    	Marshaller m= jaxbContext.createMarshaller();
-    	marshalXML(m);
-    	marshalJSON(m);
-    	marshalJSON(m);
-    	marshalXML(m);            
-    	marshalJSON(m);
 
+    public void testRepeatedMarshals() throws Exception{
+	Marshaller m= jaxbContext.createMarshaller();
+	addXsiTypeToMarshaller(m);
+	marshalXML(m);
+	marshalJSON(m);
+	marshalJSON(m);
+	marshalXML(m);
+	marshalJSON(m);
     }
-    
+
     private void marshalXML(Marshaller m) throws Exception{
     	m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML );
     	ByteArrayOutputStream stream = new ByteArrayOutputStream();

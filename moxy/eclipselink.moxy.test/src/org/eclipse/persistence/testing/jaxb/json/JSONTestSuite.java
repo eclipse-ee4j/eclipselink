@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,6 +11,9 @@
  *     Denise Smith - August 2011 - 2.4 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.jaxb.json.adapter.JsonMapAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.json.any.AnyTestCases;
@@ -26,6 +29,7 @@ import org.eclipse.persistence.testing.jaxb.json.characters.EscapeCharactersTest
 import org.eclipse.persistence.testing.jaxb.json.characters.UTF8TestCases;
 import org.eclipse.persistence.testing.jaxb.json.characters.UsAsciiTestCases;
 import org.eclipse.persistence.testing.jaxb.json.emptyroot.EmptyNullMarshalUnmarshalTestCases;
+import org.eclipse.persistence.testing.jaxb.json.multiline.MultiLineStringTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.DifferentNamespacesTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceSeparatorContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceSeparatorTestCases;
@@ -40,18 +44,18 @@ import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementNSTe
 import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.json.padding.JSONWithPaddingTestCases;
 import org.eclipse.persistence.testing.jaxb.json.rootlevellist.RootLevelListTestCases;
+import org.eclipse.persistence.testing.jaxb.json.type.TypeNameValueTestCases;
+import org.eclipse.persistence.testing.jaxb.json.type.TypePrefixTestCases;
+import org.eclipse.persistence.testing.jaxb.json.type.TypePropertyInheritanceTestCases;
+import org.eclipse.persistence.testing.jaxb.json.type.TypePropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.json.wrapper.AllWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropDifferentTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropTestCases;
-import org.eclipse.persistence.testing.jaxb.json.multiline.MultiLineStringTestCases;
 import org.eclipse.persistence.testing.oxm.xmlconversionmanager.NumberTestCases;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 public class JSONTestSuite extends TestSuite {
     public static Test suite() {
-    	  TestSuite suite = new TestSuite("JSONTestSuite");
+	  TestSuite suite = new TestSuite("JSONTestSuite");
           suite.addTestSuite(JSONAttributePrefixOnContextTestCases.class);
           suite.addTestSuite(JSONAttributePrefixEmptyStringTestCases.class);
           suite.addTestSuite(JSONAttributePrefixOnMarshallerTestCases.class);
@@ -85,7 +89,11 @@ public class JSONTestSuite extends TestSuite {
           suite.addTest(AnyTestCases.suite());
           suite.addTest(AllWrapperTestCases.suite());
           suite.addTestSuite(MultiLineStringTestCases.class);
-          
+          suite.addTestSuite(TypeNameValueTestCases.class);
+          suite.addTestSuite(TypePrefixTestCases.class);
+          suite.addTestSuite(TypePropertyInheritanceTestCases.class);
+          suite.addTestSuite(TypePropertyTestCases.class);
+
           return suite;
 	}
 }

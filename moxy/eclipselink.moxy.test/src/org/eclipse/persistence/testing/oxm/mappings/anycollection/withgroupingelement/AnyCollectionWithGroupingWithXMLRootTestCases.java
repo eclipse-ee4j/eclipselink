@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -13,8 +13,12 @@
 package org.eclipse.persistence.testing.oxm.mappings.anycollection.withgroupingelement;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
+
 import junit.textui.TestRunner;
+
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -36,6 +40,14 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
         setProject(project);
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/complex_children_ns_xmlroot.xml");
         setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/complex_children_ns_xmlroot.json");
+    }
+
+    @Override
+    protected Map<String, String> getNamespaces() {
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("www.example.com/some-dir/some.xsd", "myns");
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
+        return namespaces;
     }
 
     public Object getControlObject() {
@@ -138,14 +150,16 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
            xmlroot2.setObject(new Integer(15));
            //xmlroot2.setObject("15");
            xmlroot2.setLocalName("theInteger");
+           xmlroot2.setNamespaceURI("www.example.com/some-dir/some.xsd");
            xmlroot2.setSchemaType(XMLConstants.INT_QNAME);
            any.addElement(xmlroot2);
-           
+
             XMLRoot xmlroot1 = new XMLRoot();
            xmlroot1.setObject("15");
            xmlroot1.setLocalName("theString");
+           xmlroot1.setNamespaceURI("www.example.com/some-dir/some.xsd");
            any.addElement(xmlroot1);
-           
+
            XMLRoot next = new XMLRoot();
        
            Calendar theCalendar  =Calendar.getInstance();
@@ -157,22 +171,25 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
            theCalendar.set(Calendar.SECOND, 45);
            theCalendar.set(Calendar.MILLISECOND, 0);
            next.setSchemaType(XMLConstants.TIME_QNAME);
-           
+
            next.setObject(theCalendar);
-           next.setLocalName("theTime");        
+           next.setLocalName("theTime");
+           next.setNamespaceURI("www.example.com/some-dir/some.xsd");
            any.addElement(next);
-           
+
            XMLRoot xmlroot3 = new XMLRoot();
            child = new Child();
            child.setContent("Child3");
            xmlroot3.setObject(child);
            xmlroot3.setLocalName("someChild");
+           xmlroot3.setNamespaceURI("www.example.com/some-dir/some.xsd");
            any.addElement(xmlroot3);
-           
+
            XMLRoot xmlroot5 = new XMLRoot();
-           child = new Child();        
+           child = new Child();
            xmlroot5.setObject(child);
            xmlroot5.setLocalName("someChild");
+           xmlroot5.setNamespaceURI("www.example.com/some-dir/some.xsd");
            any.addElement(xmlroot5);
 
            XMLRoot xmlroot4 = new XMLRoot();
@@ -180,8 +197,9 @@ public class AnyCollectionWithGroupingWithXMLRootTestCases extends XMLWithJSONMa
            child.setContent("Child4");
            xmlroot4.setObject(child);
            xmlroot4.setLocalName("blah");
+           xmlroot4.setNamespaceURI("www.example.com/some-dir/some.xsd");
            any.addElement(xmlroot4);
-           
+
            any.add("myTextNode");
            
            

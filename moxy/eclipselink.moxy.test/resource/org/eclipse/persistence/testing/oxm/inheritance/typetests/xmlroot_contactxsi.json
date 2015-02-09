@@ -1,4 +1,4 @@
 {"some-root":{
-  "type":"contact-method-type",
+  "xsi.type":"oxm.contact-method-type",
   "id":"123"
 }}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,7 +14,9 @@ package org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -34,9 +36,10 @@ public class JAXBContextByClassArrayWithIndexTestCases extends JAXBWithJSONTestC
 		public void setUp() throws Exception {
 			setControlDocument(XML_RESOURCE);
 	        setControlJSON(JSON_RESOURCE);
-		    super.setUp();		    
+		    super.setUp();
 		    Class[] classes = new Class[]{ClassA.class};
-		    setTypes(classes);	    
+		    setTypes(classes);
+		    initXsiType();
 		}
 
 		protected Object getControlObject() {

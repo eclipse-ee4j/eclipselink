@@ -5,10 +5,10 @@
       },
       "collection2-wrapper" : {
          "collection2" : [ {
-            "type" : "int",
+            "xsi.type" : "int",
             "value" : 10
          }, {
-            "type" : "int",
+            "xsi.type" : "int",
             "value" : 20
          } ]
       },

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -38,11 +38,9 @@ public class XmlIdSystemPropertyNotSetTestCase {
     @Test
     public void testSystemXmlIdExtensionNotSet(final @Mocked({"isXmlIdExtension", "getActualType"}) Property property, final @Mocked({"isAnnotationPresent"}) Helper helper, final @Mocked JavaClass javaClass) {
         new Expectations(System.class) {{
-            System.getProperty("org.eclipse.persistence.moxy.annotation.xml-id-extension"); returns("false");
-        }};
-        new Expectations() {{
             property.getActualType(); returns(javaClass);
             javaClass.getQualifiedName(); returns("java.lang.Integer");
+            System.getProperty("org.eclipse.persistence.moxy.annotation.xml-id-extension"); returns("false");
             helper.isAnnotationPresent((JavaHasAnnotations)any, XmlIDExtension.class); returns(false);
             property.isXmlIdExtension(); returns(false);
         }};

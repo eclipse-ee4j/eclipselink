@@ -1,4 +1,4 @@
-{"EMPLOYEEROOT":{
+{"ns0.EMPLOYEEROOT":{
    "id":10,
    "BIRTHDAYATTR":"2005-05-24T16:06:53",
    "FIRSTNAMEELEM":"Bob",
@@ -11,30 +11,30 @@
    "responsibilities":{
       "responsibility":[ 
          {
-         "type":"string",
+         "xsi.type":"string",
 	 "value":"Fix Bugs"
 	 },
 	 {
-         "type":"string",
+         "xsi.type":"string",
 	 "value":"Write JAXB2.0 Prototype"
 	 },
 	 {
-         "type":"string",
+         "xsi.type":"string",
 	 "value":"Write Design Spec"
 	 }
        ]     
    },
    "RESPONSIBILITIES2ELEM":[
    {
-         "type":"string",
+         "xsi.type":"string",
 	 "value":"Fix Bugs"
 	 },
 	 {
-         "type":"string",
+         "xsi.type":"string",
 	 "value":"Write JAXB2.0 Prototype"
 	 },
 	 {
-         "type":"string",
+         "xsi.type":"string",
 	 "value":"Write Design Spec"
 	 }
    ]

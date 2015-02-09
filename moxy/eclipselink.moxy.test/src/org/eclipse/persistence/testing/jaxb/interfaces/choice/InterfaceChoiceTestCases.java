@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -13,6 +13,8 @@
 package org.eclipse.persistence.testing.jaxb.interfaces.choice;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -27,8 +29,16 @@ public class InterfaceChoiceTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[]{Root.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
+        initXsiType();
     }
-  
+
+    @Override
+    protected Map<String, String> getAdditationalNamespaces() {
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("someNamespace", "ns0");
+        return namespaces;
+    }
+
 	@Override
 	protected Object getControlObject() {
 		Root root = new Root();

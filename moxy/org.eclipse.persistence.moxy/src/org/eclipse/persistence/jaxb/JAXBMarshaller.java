@@ -14,10 +14,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidatorFactory;
@@ -35,19 +43,22 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.validation.Schema;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
+import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.JsonTypeConfiguration;
+import org.eclipse.persistence.internal.oxm.Root;
+import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
+import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
+import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentMarshallerAdapter;
-import org.w3c.dom.Node;
-import org.xml.sax.ContentHandler;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.MediaType;
@@ -57,19 +68,8 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLEventWriterRecord;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
-import org.eclipse.persistence.core.queries.CoreAttributeGroup;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.jaxb.many.ManyValue;
-import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
-import org.eclipse.persistence.internal.jaxb.WrappedValue;
-import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
-import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
-import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
+import org.w3c.dom.Node;
+import org.xml.sax.ContentHandler;
 
 /**
  * INTERNAL:
@@ -305,6 +305,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.getNamespaceSeparator();
         } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
             return xmlMarshaller.isWrapperAsCollectionName();
+        } else if (MarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
+            return xmlMarshaller.getJsonTypeConfiguration().isUseXsdTypesWithPrefix();
+        } else if (MarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
+            return xmlMarshaller.getJsonTypeConfiguration().isJsonTypeCompatibility();
         } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key) ||SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
             if (xmlMarshaller.getCharacterEscapeHandler() instanceof CharacterEscapeHandlerWrapper) {
                 CharacterEscapeHandlerWrapper wrapper = (CharacterEscapeHandlerWrapper) xmlMarshaller.getCharacterEscapeHandler();
@@ -872,6 +876,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.setReduceAnyArrays((Boolean) value);
             } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
                 xmlMarshaller.setWrapperAsCollectionName((Boolean) value);
+            } else if (MarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
+                xmlMarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean)value);
+            } else if (MarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
+                xmlMarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean)value);
             } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
                 xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
             } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)  ||SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {

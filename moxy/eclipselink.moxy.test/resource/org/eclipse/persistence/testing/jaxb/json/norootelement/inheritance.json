@@ -1,4 +1,4 @@
 {
-    "type":"customer",
+    "xsi.type":"customer",
     "name":"theName"
 }

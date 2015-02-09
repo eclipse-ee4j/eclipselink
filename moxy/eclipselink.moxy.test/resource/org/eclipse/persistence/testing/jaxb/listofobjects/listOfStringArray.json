@@ -1,6 +1,6 @@
 {
     "root" : {
-        "type":"listOfstringArray",
+        "xsi.type":"listOfstringArray",
         "item":[
             {"item":["foo","bar"]},
             {"item":["A","B","C"]}

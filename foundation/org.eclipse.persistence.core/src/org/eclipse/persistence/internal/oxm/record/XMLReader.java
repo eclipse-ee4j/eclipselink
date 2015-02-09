@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -60,9 +60,9 @@ public class XMLReader implements org.xml.sax.XMLReader {
     private boolean supportsLexicalHandler;
     private LexicalHandlerWrapper lexicalHandlerWrapper;
     protected ValidatingContentHandler validatingContentHandler;
-    protected boolean namespaceAware;
-    protected char namespaceSeparator;
-    protected Locator locator;    
+    private boolean namespaceAware;
+    private char namespaceSeparator;
+    protected Locator locator;
 
     public XMLReader(org.xml.sax.XMLReader internalReader) {
         this();
@@ -113,19 +113,39 @@ public class XMLReader implements org.xml.sax.XMLReader {
     public boolean isNamespaceAware() {
     	return namespaceAware;
     }
-    
+
+    /**
+     * If set to true, the reader will be aware of namespaces during marshal/unmarsal operations.
+     *
+     * @param namespaceAware if reader should be namespace aware
+     * @since 2.6.0
+     */
+    public void setNamespaceAware(boolean namespaceAware) {
+        this.namespaceAware = namespaceAware;
+    }
+
     /**
      * INTERNAL:
-	 * The character used to separate the prefix and uri portions when namespaces are present 
+	 * The character used to separate the prefix and uri portions when namespaces are present
      * @since 2.4
      */
     public char getNamespaceSeparator(){
     	return namespaceSeparator;
     }
-    
+
+    /**
+     * Sets namespace separator.
+     *
+     * @param namespaceSeparator namespace separator
+     * @since 2.6.0
+     */
+    public void setNamespaceSeparator(char namespaceSeparator) {
+        this.namespaceSeparator = namespaceSeparator;
+    }
+
     /**
      *  INTERNAL:
-     *  @return The MediaType associated with this reader  
+     *  @return The MediaType associated with this reader
      */
     public MediaType getMediaType(){
     	return Constants.APPLICATION_XML;

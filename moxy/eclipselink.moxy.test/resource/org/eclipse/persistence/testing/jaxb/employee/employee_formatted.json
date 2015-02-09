@@ -1,21 +1,21 @@
 {
-   "employee-data" : {
+   "x.employee-data" : {
       "id" : 10,
       "firstName" : "Bob",
       "lastName" : "Smith",
       "birthday" : "2005-05-24T16:06:53",
       "responsibilities" : {
          "responsibility" : [ {
-            "type" : "string",
+            "xsi.type" : "string",
             "value" : "Fix Bugs"
          }, {
-            "type" : "string",
+            "xsi.type" : "string",
             "value" : "Write JAXB2.0 Prototype"
          }, {
-            "type" : "string",
+            "xsi.type" : "string",
             "value" : "Write Design Spec"
          }, {
-            "type" : "int",
+            "xsi.type" : "int",
             "value" : 10
          } ]
       }

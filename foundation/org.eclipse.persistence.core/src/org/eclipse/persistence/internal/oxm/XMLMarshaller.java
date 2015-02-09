@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -776,7 +776,7 @@ public abstract class XMLMarshaller<
                           }
                           marshalRecord.namespaceDeclaration(Constants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
                           String typeValue = type.getLocalPart();
-                          if(marshalRecord.isNamespaceAware()){
+                          if(marshalRecord.isNamespaceAware() && (mediaType.isApplicationXML() || getJsonTypeConfiguration().useXsdTypesWithPrefix())){
                               typeValue = Constants.SCHEMA_PREFIX + marshalRecord.getNamespaceSeparator() + typeValue;
                           }
                           marshalRecord.attribute(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + Constants.COLON + Constants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
@@ -1360,4 +1360,5 @@ public abstract class XMLMarshaller<
     public Object getMarshalAttributeGroup() {
         return this.marshalAttributeGroup;
     }
+
 }

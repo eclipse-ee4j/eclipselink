@@ -1,4 +1,4 @@
-{"employee-data":{
+{"x.employee-data":{
    "id":10,
    "BIRTHDAY":"2005-05-24T16:06:53",
    "FIRSTNAME":"Bob",
@@ -8,14 +8,14 @@
        "CITYNAME":"Ottawa"
      },
    "responsibilities":{
-	   "responsibility":[{"type":"string","value":"Fix Bugs"},
-	                     {"type":"string","value":"Write JAXB2.0 Prototype"},
-			     {"type":"string","value":"Write Design Spec"}]
+	   "responsibility":[{"xsi.type":"string","value":"Fix Bugs"},
+	                     {"xsi.type":"string","value":"Write JAXB2.0 Prototype"},
+			     {"xsi.type":"string","value":"Write Design Spec"}]
       },
    "RESPONSIBILITIES2":[
-			     {"type":"string","value":"Fix Bugs"},
-	                     {"type":"string","value":"Write JAXB2.0 Prototype"},
-			     {"type":"string","value":"Write Design Spec"}
+			     {"xsi.type":"string","value":"Fix Bugs"},
+	                     {"xsi.type":"string","value":"Write JAXB2.0 Prototype"},
+			     {"xsi.type":"string","value":"Write Design Spec"}
    ],
    "SOMENUMBER":10
 

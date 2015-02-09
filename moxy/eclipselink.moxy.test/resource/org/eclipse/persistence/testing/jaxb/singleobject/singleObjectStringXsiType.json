@@ -1,4 +1,4 @@
-{"root":{
-   "type":"string",
+{"ns0.root":{
+   "xsi.type":"string",
    "value":"25"
    }}

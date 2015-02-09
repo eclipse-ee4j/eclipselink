@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ns0:ListmyObject xmlns:ns0="someNamespace">
+<ns0:ListmyObject xmlns:ns0="someNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <myObject>
       <test>1</test>
       <test2>1</test2>
       <props>
          <entry>
-            <key xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">formatted</key>
-            <value xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:boolean">true</value>
+            <key xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string">formatted</key>
+            <value xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:boolean">true</value>
          </entry>
       </props>
    </myObject>
    <otherObject>
       <properties>
          <entry>
-            <key xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">formatted</key>
-            <value xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:boolean">false</value>
+            <key xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string">formatted</key>
+            <value xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:boolean">false</value>
          </entry>
       </properties>
       <test>3</test>

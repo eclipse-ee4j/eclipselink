@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -16,8 +16,10 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -27,8 +29,16 @@ public class JAXBIntegerLinkedListTestCases extends JAXBIntegerArrayTestCases {
 	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerLinkedList.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/integerLinkedListNoXsiType.xml";
 
+	@Override
+	protected Map<String, String> getAdditationalNamespaces() {
+	    Map<String, String> namespaces = new HashMap<>();
+	    namespaces.put("examplenamespace", "ns0");
+	    return namespaces;
+	}
+
 	public JAXBIntegerLinkedListTestCases(String name) throws Exception {
 		super(name);
+		initXsiType();
 	}
 
 	public void init() throws Exception {

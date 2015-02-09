@@ -1,5 +1,5 @@
-{"root":{
-    "type":"intArrayArray",
+{"ns0.root":{
+    "xsi.type":"ns1.intArrayArray",
        "item":[
 	  {
 	    "item":[1,2,3]

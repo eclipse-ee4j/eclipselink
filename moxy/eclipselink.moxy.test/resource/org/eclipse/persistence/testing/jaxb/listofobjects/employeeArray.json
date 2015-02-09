@@ -1,5 +1,5 @@
-{"root":{
-  "type":"employeeArray",
+{"ns0.root":{
+  "xsi.type":"x.employeeArray",
   "item":[
      {
 	"id":10,
@@ -8,13 +8,13 @@
 	"responsibilities":{
 	     "responsibility":[
 	         {
-		     "type":"string",
+		     "xsi.type":"string",
 		     "value":"Fix Bugs"
 		 },{
-		     "type":"string",
+		     "xsi.type":"string",
 		     "value":"Write JAXB2.0 Prototype"
 		 },{
-		     "type":"string",
+		     "xsi.type":"string",
 		     "value":"Write Design Spec"
 		 }
 
@@ -27,7 +27,7 @@
 	"responsibilities":{
 	     "responsibility":[
 	         {
-		     "type":"string",
+		     "xsi.type":"string",
 		     "value":"Fix Bugs"
 		 }
 	    ]

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,7 +40,7 @@ import static org.junit.Assert.fail;
 public class XmlValueSystemPropertyNotSetTestCase {
 
     @Test
-    public void testSystemXmlValuextensionNotSet(final @Mocked({"isXmlIdExtension", "getActualType"}) Property property, final @Mocked({"isAnnotationPresent"}) Helper helper, final @Mocked JavaClass javaClass) {
+    public void testSystemXmlValuextensionNotSet(final @Mocked({"isXmlValueExtension", "getActualType"}) Property property, final @Mocked({"isAnnotationPresent"}) Helper helper, final @Mocked JavaClass javaClass) {
         new Expectations(System.class) {{
             System.getProperty("org.eclipse.persistence.moxy.annotation.xml-value-extension"); returns("false");
         }};

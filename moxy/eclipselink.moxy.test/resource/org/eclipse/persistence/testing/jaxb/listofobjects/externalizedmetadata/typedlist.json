@@ -1,5 +1,5 @@
-{"root":{ 
-   "type":"company",
+{"ns0.root":{
+   "xsi.type":"company",
    "departments":[1,2,3]
   }
 }

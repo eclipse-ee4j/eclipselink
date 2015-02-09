@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -167,10 +167,13 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.xmlanyelement.XMLBinderTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceRootChoiceOnlyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceRootCompositeCollectionObjectOnlyTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceRootCompositeCollectionObjectOnlyXMLTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceRootCompositeCollectionObjectOnlyNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceRootCompositeCollectionOnlyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceWithMultiplePackagesTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceWithMultiplePackagesXMLTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceWithMultiplePackagesNSTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceWithMultiplePackagesBackwardCompatibilityTestCases.class);
 
         return suite;
     }

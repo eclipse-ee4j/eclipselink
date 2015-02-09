@@ -1,5 +1,5 @@
 {"root":{
-   "type":"person",
+   "xsi.type":"person",
    "name":"theName"
 }}
 

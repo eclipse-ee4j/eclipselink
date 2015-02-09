@@ -1536,6 +1536,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_FACTORY, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_GROUPS, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.BEAN_VALIDATION_NO_OPTIMISATION, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, marshaller);
             }
 
             return marshaller;
@@ -1567,6 +1569,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_FACTORY, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_GROUPS, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.BEAN_VALIDATION_NO_OPTIMISATION, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, unmarshaller);
             }
             return unmarshaller;
         }

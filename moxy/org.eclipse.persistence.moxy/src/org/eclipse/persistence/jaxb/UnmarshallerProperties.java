@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -93,7 +93,24 @@ public class UnmarshallerProperties {
     public static final String JSON_VALUE_WRAPPER = JAXBContextProperties.JSON_VALUE_WRAPPER;
 
     /**
-     * The name of the property used to specify the type of binding to be 
+     * If there should be xsd prefix when using simple types, e.g. xsd.int.
+     *
+     * @since 2.6.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_USE_XSD_TYPES_WITH_PREFIX
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_USE_XSD_TYPES_WITH_PREFIX
+     */
+    public static final String JSON_USE_XSD_TYPES_WITH_PREFIX = JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX;
+
+    /**
+     * If we should treat unqualified type property in JSON as MOXy type discriminator.
+     * @since 2.6.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_TYPE_COMPATIBILITY
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_TYPE_COMPATIBILITY
+     */
+    public static final String JSON_TYPE_COMPATIBILITY = JAXBContextProperties.JSON_TYPE_COMPATIBILITY;
+
+    /**
+     * The name of the property used to specify the type of binding to be
      * performed.  When this property is specified at the <i>JAXBContext</i>
      * level all instances of <i>Marshaller</i> and <i>Unmarshaller</i> will
      * default to this media type. Supported values are:

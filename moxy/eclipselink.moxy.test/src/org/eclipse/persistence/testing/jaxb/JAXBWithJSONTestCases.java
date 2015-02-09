@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,7 +20,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -32,6 +34,7 @@ import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
@@ -57,12 +60,37 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         super(name);
     }
 
-    public void setControlJSON(String location) {
-        this.controlJSONLocation = location;        
+    protected Map<String, String> getAdditationalNamespaces() {
+        return new HashMap<String, String>();
     }
-    
+
+    public void initXsiType() throws Exception {
+        addXsiTypeToUnmarshaller(getJSONUnmarshaller());
+        addXsiTypeToMarshaller(getJSONMarshaller());
+    }
+
+    private Map<String, String> getXsiTypeNamespaces() {
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.putAll(getAdditationalNamespaces());
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
+
+        return namespaces;
+    }
+
+    protected void addXsiTypeToUnmarshaller(Unmarshaller u) throws Exception {
+        u.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, getXsiTypeNamespaces());
+    }
+
+    protected void addXsiTypeToMarshaller(Marshaller u) throws Exception {
+        u.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, getXsiTypeNamespaces());
+    }
+
+    public void setControlJSON(String location) {
+        this.controlJSONLocation = location;
+    }
+
     public void setWriteControlJSON(String location) {
-        this.controlJSONWriteLocation = location;        
+        this.controlJSONWriteLocation = location;
     }
 
     public void setWriteControlFormattedJSON(String location) {

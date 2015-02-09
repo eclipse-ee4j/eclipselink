@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,7 +17,9 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -44,7 +46,15 @@ public class JAXBArrayTestCases extends JAXBListOfObjectsTestCases {
         classes[2] = BigInteger[].class;
         classes[3] = QName[].class;
         setClasses(classes);
+        initXsiType();
+    }
 
+    @Override
+    protected Map<String, String> getAdditationalNamespaces() {
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("examplenamespace", "ns0");
+        namespaces.put("http://jaxb.dev.java.net/array", "ns1");
+        return namespaces;
     }
 
     protected Object getControlObject() {

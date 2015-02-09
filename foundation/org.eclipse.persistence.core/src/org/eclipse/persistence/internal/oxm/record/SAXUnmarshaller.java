@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -197,7 +197,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private XMLReader getNewXMLReader(Class clazz, MediaType mediaType) {
 
 		if(null != mediaType && mediaType.isApplicationJSON()){
-            return new JsonStructureReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);
+            return new JsonStructureReader(xmlUnmarshaller, clazz);
 		}
             try {
 		XMLReader xmlReader = new XMLReader(getSAXParser().getXMLReader());

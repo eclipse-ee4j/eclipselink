@@ -5,13 +5,13 @@
          "employee" : [ {
             "my-digits" : null,
             "thing" : {
-               "type" : "string",
+               "xsi.type" : "string",
                "value" : "Elmer"
             }
          }, {
             "my-digits" : null,
             "thing" : {
-               "type" : "string",
+               "xsi.type" : "string",
                "value" : "Sylvester"
             }
          } ]

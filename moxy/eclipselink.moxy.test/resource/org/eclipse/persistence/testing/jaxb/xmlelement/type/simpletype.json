@@ -1,6 +1,6 @@
 {"foo":{
    "field":{
-      "type":"integer",
+      "xsi.type":"integer",
       "value":10
       }
 }}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Denise Smith - 2.3
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.classlevel.upper;
 
 import java.io.InputStream;
@@ -17,7 +17,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
@@ -41,6 +43,14 @@ public class JAXBClassLevelUpperNameTransformerTestCases extends JAXBWithJSONTes
         Class[] classes = new Class[1];
         classes[0] = Employee.class;
         setClasses(classes);
+        initXsiType();
+    }
+
+    @Override
+    protected Map<String, String> getAdditationalNamespaces() {
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("examplenamespace", "x");
+        return namespaces;
     }
 
     protected Object getControlObject() {

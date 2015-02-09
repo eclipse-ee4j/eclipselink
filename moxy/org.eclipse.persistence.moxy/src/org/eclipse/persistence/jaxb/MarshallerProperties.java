@@ -136,9 +136,26 @@ public class MarshallerProperties {
      * @since 2.4.2
      */
     public static final String JSON_REDUCE_ANY_ARRAYS = "eclipselink.json.reduce-any-arrays";
-    
+
     /**
-     * 
+     * If there should be xsd prefix when using simple types, e.g. xsd.int.
+     *
+     * @since 2.6.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_USE_XSD_TYPES_WITH_PREFIX
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_USE_XSD_TYPES_WITH_PREFIX
+     */
+    public static final String JSON_USE_XSD_TYPES_WITH_PREFIX = JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX;
+
+    /**
+     * If we should treat unqualified type property in JSON as MOXy type discriminator.
+     * @since 2.6.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_TYPE_COMPATIBILITY
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_TYPE_COMPATIBILITY
+     */
+    public static final String JSON_TYPE_COMPATIBILITY = JAXBContextProperties.JSON_TYPE_COMPATIBILITY;
+
+    /**
+     *
      */
     public static final String OBJECT_GRAPH = JAXBContextProperties.OBJECT_GRAPH;
    

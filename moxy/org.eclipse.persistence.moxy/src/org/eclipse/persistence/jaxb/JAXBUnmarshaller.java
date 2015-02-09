@@ -839,6 +839,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 throw new PropertyException(key, Constants.EMPTY_STRING);
             }
             xmlUnmarshaller.setNamespaceSeparator((Character)value);
+        } else if (UnmarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
+            xmlUnmarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean)value);
+        } else if (UnmarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
+            xmlUnmarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean)value);
         } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
@@ -924,6 +928,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
         } else if (key.equals(UnmarshallerProperties.JSON_VALUE_WRAPPER)) {
             return xmlUnmarshaller.getValueWrapper();
+        } else if (UnmarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
+            return xmlUnmarshaller.getJsonTypeConfiguration().isUseXsdTypesWithPrefix();
+        } else if (UnmarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
+            return xmlUnmarshaller.getJsonTypeConfiguration().isJsonTypeCompatibility();
         } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             return xmlUnmarshaller.getIDResolver();
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {

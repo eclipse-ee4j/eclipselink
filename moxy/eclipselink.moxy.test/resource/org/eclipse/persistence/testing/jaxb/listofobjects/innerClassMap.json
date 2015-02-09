@@ -1,5 +1,5 @@
-{"root":{
-  "type":"myInnerMyInnerTreeMap",
+{"ns0.root":{
+  "xsi.type":"x.myInnerMyInnerTreeMap",
   "entry":[
      {
        "key":{

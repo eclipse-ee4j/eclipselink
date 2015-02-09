@@ -20,6 +20,7 @@ import javax.xml.transform.sax.SAXResult;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.FragmentContentHandler;
+import org.eclipse.persistence.internal.oxm.JsonTypeConfiguration;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
@@ -64,6 +65,7 @@ import org.w3c.dom.Node;
 public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarshaller<AbstractSession, CharacterEscapeHandler, XMLContext, XMLDescriptor, XMLMarshalListener, MediaType, NamespacePrefixMapper, TreeObjectBuilder, DatabaseSession> implements Cloneable {
 
     private Object marshalAttributeGroup;
+    private JsonTypeConfiguration jsonTypeConfiguration;
 
     /**
      * Create a new XMLMarshaller based on the specified session
@@ -554,6 +556,20 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
      */
     public MediaType getMediaType(){
         return mediaType;
+    }
+
+    /**
+     * Returns json type configuration.
+     *
+     * @return json type configuration
+     * @since 2.6.0
+     */
+    public JsonTypeConfiguration getJsonTypeConfiguration() {
+        if (null == jsonTypeConfiguration) {
+            jsonTypeConfiguration = new JsonTypeConfiguration();
+        }
+
+        return jsonTypeConfiguration;
     }
 
 }

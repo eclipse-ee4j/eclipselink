@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -13,7 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.singleobject;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -22,6 +24,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -43,6 +46,12 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
 		Class[] classes = new Class[1];
 		classes[0] = Object.class;
 		setClasses(classes);
+
+		Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
+        namespaces.put("rootNamespace", "ns0");
+        getJSONUnmarshaller().setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+        getJSONMarshaller().setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
 
 	public void testSchemaGen() throws Exception {
@@ -63,7 +72,7 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
 	protected Object getControlObject() {		
 		Integer testInteger = 25;		
 		QName qname = new QName("rootNamespace", "root");				
-		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, testInteger);		
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, testInteger);
 		return jaxbElement;
 	}
 

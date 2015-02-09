@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -12,14 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
-import org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata.JAXBMultipleMapsNamespaceTestCases;
-import org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata.JAXBMultipleMapsTestCases;
-import org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata.JAXBTypedListTestCases;
-import org.eclipse.persistence.testing.jaxb.listofobjects.ns.MapNamespaceTestCases;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata.JAXBMultipleMapsNamespaceTestCases;
+import org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata.JAXBMultipleMapsTestCases;
+import org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata.JAXBTypedListNoXsiTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata.JAXBTypedListTestCases;
+import org.eclipse.persistence.testing.jaxb.listofobjects.ns.MapNamespaceTestCases;
 
 public class JAXBListOfObjectsSuite extends TestCase {
 	public JAXBListOfObjectsSuite(String name) {
@@ -57,6 +58,7 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(JAXBMultipleMapsTestCases.class);
 		suite.addTestSuite(JAXBMultipleMapsNamespaceTestCases.class);
 		suite.addTestSuite(JAXBTypedListTestCases.class);
+	    suite.addTestSuite(JAXBTypedListNoXsiTypeTestCases.class);
 		suite.addTestSuite(JAXBListOfInnerClassTestCases.class);
 		suite.addTestSuite(JAXBArrayOfInnerClassTestCases.class);
 		suite.addTestSuite(JAXBArrayOfInnerEnumTestCases.class);

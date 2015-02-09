@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+* Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
 * which accompanies this distribution.
@@ -19,12 +19,12 @@ import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 
 /**
- * A node value corresponding to mapping. 
+ * A node value corresponding to mapping.
  */
 public abstract class MappingNodeValue extends NodeValue {
 
     /**
-     * Return the mapping associated with this node value. 
+     * Return the mapping associated with this node value.
      */
     public abstract Mapping getMapping();
     
@@ -58,13 +58,21 @@ public abstract class MappingNodeValue extends NodeValue {
                 }else{            	
                     prefix = marshalRecord.getNamespaceResolver().generatePrefix();              
                 }
-            	marshalRecord.namespaceDeclaration(prefix, qname.getNamespaceURI());
+		marshalRecord.namespaceDeclaration(prefix, qname.getNamespaceURI());
             }
             String typeValue = null;
-            if(marshalRecord.isNamespaceAware()){
-                typeValue = prefix + marshalRecord.getNamespaceSeparator() + qname.getLocalPart();
-            }else{
-            	typeValue = qname.getLocalPart();
+            if (marshalRecord.getMarshaller().getJsonTypeConfiguration().useJsonTypeCompatibility()) {
+                if (marshalRecord.isNamespaceAware()) {
+                    typeValue = prefix + marshalRecord.getNamespaceSeparator() + qname.getLocalPart();
+                } else{
+                    typeValue = qname.getLocalPart();
+                }
+            } else {
+                if (marshalRecord.isNamespaceAware() && (marshalRecord.getMarshaller().isApplicationXML() || marshalRecord.getMarshaller().getJsonTypeConfiguration().useXsdTypesWithPrefix())) {
+                    typeValue = prefix + marshalRecord.getNamespaceSeparator() + qname.getLocalPart();
+                } else{
+                    typeValue = qname.getLocalPart();
+                }
             }
 
             addTypeAttribute(marshalRecord, typeValue);

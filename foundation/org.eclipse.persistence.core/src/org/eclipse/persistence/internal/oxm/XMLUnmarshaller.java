@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -105,8 +105,10 @@ public class XMLUnmarshaller<
     private static Constructor xmlStreamReaderInputSourceConstructor;
     private static Constructor xmlEventReaderReaderConstructor;
     private static Constructor xmlEventReaderInputSourceConstructor;
-    
-   	/**
+
+    private JsonTypeConfiguration jsonTypeConfiguration;
+
+	/**
      * @since EclipseLink 2.4
      */
     private static final ErrorHandler DEFAULT_ERROR_HANDLER = new ErrorHandler() {
@@ -152,6 +154,16 @@ public class XMLUnmarshaller<
     private Object unmarshalAttributeGroup;
     private boolean wrapperAsCollectionName = false;
     private boolean warnOnUnmappedElement = true;
+
+    /**
+     * If there should be xsd prefix when using simple types, e.g. xsd.int.
+     */
+    private boolean useXsdTypesWithPrefix = false;
+
+    /**
+     * If we should treat unqualified type property in JSON as MOXy type discriminator.
+     */
+    private boolean jsonTypeCompatibility = false;
 
     static {
         try {
@@ -907,7 +919,21 @@ public class XMLUnmarshaller<
      * @since 2.6.0
      */
     public void setWarnOnUnmappedElement(boolean warnOnUnmappedElement) {
-        this.warnOnUnmappedElement = warnOnUnmappedElement; 
+        this.warnOnUnmappedElement = warnOnUnmappedElement;
+    }
+
+    /**
+     * Returns json type configuration.
+     *
+     * @return json type configuration
+     * @since 2.6.0
+     */
+    public JsonTypeConfiguration getJsonTypeConfiguration() {
+        if (null == jsonTypeConfiguration) {
+            jsonTypeConfiguration = new JsonTypeConfiguration();
+        }
+
+        return jsonTypeConfiguration;
     }
 
 }

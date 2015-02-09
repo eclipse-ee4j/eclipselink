@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,9 +28,7 @@ import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class InheritanceNoRootTestCases extends JAXBWithJSONTestCases {
 	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/inheritance.json";
-//	private final static String JSON_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/json/numbers/numberHolderWrite.json";
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/norootelement/inheritance.xml";
-//	private final static String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/json/numbers/numberHolderWrite.xml";
 	
 	public InheritanceNoRootTestCases(String name) throws Exception {
 		super(name);	
@@ -43,6 +41,7 @@ public class InheritanceNoRootTestCases extends JAXBWithJSONTestCases {
         super.setUp();
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);              
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+        initXsiType();
     }
 	
 	protected Object getJSONReadControlObject() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -222,5 +222,13 @@ public abstract class Unmarshaller<
         public void beforeUnmarshal(Object target, Object parent);
 
     }
+
+    /**
+     * Returns json type configuration.
+     *
+     * @return json type configuration
+     * @since 2.6.0
+     */
+    public abstract JsonTypeConfiguration getJsonTypeConfiguration();
 
 }

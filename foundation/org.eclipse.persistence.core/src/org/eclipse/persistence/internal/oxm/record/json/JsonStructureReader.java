@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -46,6 +46,7 @@ import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NodeValue;
+import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -58,7 +59,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
 import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -76,27 +76,29 @@ public class JsonStructureReader extends XMLReaderAdapter {
     private JsonStructure jsonStructure;
     private JsonAttributes attributes = new JsonAttributes();
 
+    /**
+     * If we should treat unqualified type property in JSON as MOXy type discriminator.
+     */
+    private boolean jsonTypeCompatibility;
 
     public JsonStructureReader(Unmarshaller u) {
         this(u, null);
     }
 
     public JsonStructureReader(Unmarshaller u, Class clazz) {
-        this(u.getAttributePrefix(), u.getNamespaceResolver(), u.getNamespaceResolver() != null, u.isIncludeRoot(), u.getNamespaceSeparator(), u.getErrorHandler(), u.getValueWrapper(), clazz);
-    }
-
-    public JsonStructureReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, char namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass) {
-        this.attributePrefix = attrPrefix;
+        this.attributePrefix = u.getAttributePrefix();
         if (Constants.EMPTY_STRING.equals(attributePrefix)) {
             attributePrefix = null;
         }
-        namespaces = nr;
-        this.namespaceAware = namespaceAware;
-        this.namespaceSeparator = namespaceSeparator;
-        this.includeRoot = includeRoot;
-        this.setErrorHandler(errorHandler);
-        this.textWrapper = textWrapper;
-        this.unmarshalClass = unmarshalClass;
+        namespaces = u.getNamespaceResolver();
+
+        setNamespaceAware(u.getNamespaceResolver() != null);
+        setNamespaceSeparator(u.getNamespaceSeparator());
+        this.includeRoot = u.isIncludeRoot();
+        this.setErrorHandler(u.getErrorHandler());
+        this.textWrapper = u.getValueWrapper();
+        this.unmarshalClass = clazz;
+        this.jsonTypeCompatibility = u.getJsonTypeConfiguration().useJsonTypeCompatibility();
     }
 
     public void setJsonStructure(JsonStructure jsonStructure) {
@@ -182,7 +184,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
             } else {
 
-                contentHandler.startElement(Constants.EMPTY_STRING, Constants.EMPTY_STRING, null, attributes.setValue(jsonValue, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
+                contentHandler.startElement(Constants.EMPTY_STRING, Constants.EMPTY_STRING, null, attributes.setValue(jsonValue, attributePrefix, namespaces, getNamespaceSeparator(), isNamespaceAware()));
 
                 while (iter.hasNext()) {
                     Entry<String, JsonValue> nextEntry = iter.next();
@@ -296,9 +298,9 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 return;
             }
             String uri = Constants.EMPTY_STRING;
-            if (namespaceAware && namespaces != null) {
+            if (isNamespaceAware() && namespaces != null) {
                 if (parentLocalName.length() > 2) {
-                    int nsIndex = parentLocalName.indexOf(namespaceSeparator, 1);
+                    int nsIndex = parentLocalName.indexOf(getNamespaceSeparator(), 1);
                     if (nsIndex > -1) {
                         String prefix = parentLocalName.substring(0, nsIndex);
                         uri = namespaces.resolveNamespacePrefix(prefix);
@@ -343,7 +345,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                         XPathFragment currentFragment = new XPathFragment();
                         currentFragment.setLocalName(parentLocalName);
                         currentFragment.setNamespaceURI(uri);
-                        currentFragment.setNamespaceAware(namespaceAware);
+                        currentFragment.setNamespaceAware(isNamespaceAware());
                         XPathNode groupingXPathNode = unmarshalRecordXPathNode.getNonAttributeChildrenMap().get(currentFragment);
                         if (groupingXPathNode != null) {
                             if (groupingXPathNode.getUnmarshalNodeValue() instanceof CollectionGroupingElementNodeValue) {
@@ -372,9 +374,9 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
                     if (!isTextValue) {
                         if (null != itemXPathFragment) {
-                            contentHandler.startElement(itemXPathFragment.getNamespaceURI(), itemXPathFragment.getLocalName(), itemXPathFragment.getLocalName(), attributes.setValue(nextArrayValue, attributePrefix,namespaces, namespaceSeparator,namespaceAware));
+                            contentHandler.startElement(itemXPathFragment.getNamespaceURI(), itemXPathFragment.getLocalName(), itemXPathFragment.getLocalName(), attributes.setValue(nextArrayValue, attributePrefix,namespaces, getNamespaceSeparator(), isNamespaceAware()));
                         } else {
-                            contentHandler.startElement(uri, parentLocalName,parentLocalName, attributes.setValue(nextArrayValue, attributePrefix,namespaces, namespaceSeparator,namespaceAware));
+                            contentHandler.startElement(uri, parentLocalName,parentLocalName, attributes.setValue(nextArrayValue, attributePrefix,namespaces, getNamespaceSeparator(), isNamespaceAware()));
                         }
 
                     }
@@ -398,9 +400,9 @@ public class JsonStructureReader extends XMLReaderAdapter {
             }
             String localName = name;
             String uri = Constants.EMPTY_STRING;
-            if (namespaceAware && namespaces != null) {
+            if (isNamespaceAware() && namespaces != null) {
                 if (localName.length() > 2) {
-                    int nsIndex = localName.indexOf(namespaceSeparator, 1);
+                    int nsIndex = localName.indexOf(getNamespaceSeparator(), 1);
                     String prefix = Constants.EMPTY_STRING;
                     if (nsIndex > -1) {
                         prefix = localName.substring(0, nsIndex);
@@ -420,18 +422,22 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 }
             }
             if (contentHandler instanceof XMLRootRecord || contentHandler instanceof DeferredContentHandler) {
-                // if its not namespaceAware don't report the "type" child as it
-                // is will be read by the xsi:type lookup
-                if (!namespaceAware && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE)) {
-                    return;
+                if (jsonTypeCompatibility) {
+                    // if its not namespaceAware don't report the "type" child as it
+                    // is will be read by the xsi:type lookup
+                    if (!isNamespaceAware() && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE)) {
+                        return;
+                    }
                 }
                 if (textWrapper != null && textWrapper.equals(localName)) {
                     parseValue(jsonValue);
                     return;
                 }
             } else if (contentHandler instanceof UnmarshalRecord && ((UnmarshalRecord) contentHandler).getXPathNode() != null) {
-                if (!namespaceAware && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && !((UnmarshalRecord) contentHandler).getXPathNode().hasTypeChild()) {
-                    return;
+                if (jsonTypeCompatibility) {
+                    if (!isNamespaceAware() && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && !((UnmarshalRecord) contentHandler).getXPathNode().hasTypeChild()) {
+                        return;
+                    }
                 }
                 boolean isTextValue = isTextValue(localName);
                 if (isTextValue) {
@@ -447,7 +453,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 contentHandler.setNil(true);
             }
 
-            contentHandler.startElement(uri, localName, localName, attributes.setValue(jsonValue, attributePrefix, namespaces,namespaceSeparator, namespaceAware));
+            contentHandler.startElement(uri, localName, localName, attributes.setValue(jsonValue, attributePrefix, namespaces, getNamespaceSeparator(), isNamespaceAware()));
             parseValue(jsonValue);
             contentHandler.endElement(uri, localName, localName);
 

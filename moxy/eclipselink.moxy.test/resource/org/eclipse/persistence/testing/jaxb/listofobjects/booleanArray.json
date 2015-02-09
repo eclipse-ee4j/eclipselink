@@ -1,5 +1,5 @@
-{"root":{
-  "type":"booleanArray",
+{"ns0.root":{
+  "xsi.type":"ns1.booleanArray",
   "item":[false,true,false,true]
   }
 }

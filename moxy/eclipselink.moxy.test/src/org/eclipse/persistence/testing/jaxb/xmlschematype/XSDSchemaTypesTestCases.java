@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,11 +14,9 @@ package org.eclipse.persistence.testing.jaxb.xmlschematype;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -42,6 +40,14 @@ public class XSDSchemaTypesTestCases extends JAXBWithJSONTestCases{
 	    Class[] classes = new Class[1];
 	    classes[0] = XSDTypesHolder.class;
 	    setClasses(classes);
+	    initXsiType();
+	}
+
+	@Override
+	protected Map<String, String> getAdditationalNamespaces() {
+	    Map<String, String> namespaces = new HashMap<>();
+	    namespaces.put("myns", "ns0");
+	    return namespaces;
 	}
 
 	@Override

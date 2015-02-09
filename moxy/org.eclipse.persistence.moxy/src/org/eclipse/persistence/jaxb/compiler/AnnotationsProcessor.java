@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,9 +18,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +30,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessorOrder;
@@ -64,8 +69,8 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlSchemaTypes;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.XmlType.DEFAULT;
+import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
@@ -86,15 +91,18 @@ import org.eclipse.persistence.internal.jaxb.many.MultiDimensionalCollectionValu
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.jaxb.MOXySystemProperties;
+import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMaxFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMinFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.DigitsFacet;
@@ -103,18 +111,6 @@ import org.eclipse.persistence.jaxb.compiler.facets.MinFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.PatternFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.PatternListFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.SizeFacet;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.jaxb.TypeMappingInfo;
-
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
 import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
@@ -133,13 +129,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransform
 import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.annotations.XmlIDExtension;
-import org.eclipse.persistence.oxm.annotations.XmlNamedAttributeNode;
-import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraph;
-import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraphs;
-import org.eclipse.persistence.oxm.annotations.XmlNamedSubgraph;
+import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlCDATA;
 import org.eclipse.persistence.oxm.annotations.XmlClassExtractor;
@@ -149,16 +140,18 @@ import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 import org.eclipse.persistence.oxm.annotations.XmlElementNillable;
 import org.eclipse.persistence.oxm.annotations.XmlElementsJoinNodes;
-import org.eclipse.persistence.oxm.annotations.XmlLocation;
-import org.eclipse.persistence.oxm.annotations.XmlValueExtension;
-import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
-import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
+import org.eclipse.persistence.oxm.annotations.XmlIDExtension;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNodes;
 import org.eclipse.persistence.oxm.annotations.XmlKey;
+import org.eclipse.persistence.oxm.annotations.XmlLocation;
 import org.eclipse.persistence.oxm.annotations.XmlNameTransformer;
+import org.eclipse.persistence.oxm.annotations.XmlNamedAttributeNode;
+import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraph;
+import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraphs;
+import org.eclipse.persistence.oxm.annotations.XmlNamedSubgraph;
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlParameter;
 import org.eclipse.persistence.oxm.annotations.XmlPath;
@@ -166,6 +159,9 @@ import org.eclipse.persistence.oxm.annotations.XmlPaths;
 import org.eclipse.persistence.oxm.annotations.XmlProperties;
 import org.eclipse.persistence.oxm.annotations.XmlProperty;
 import org.eclipse.persistence.oxm.annotations.XmlReadOnly;
+import org.eclipse.persistence.oxm.annotations.XmlValueExtension;
+import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
+import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
 import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
 
@@ -223,34 +219,6 @@ public final class AnnotationsProcessor {
     private static final Character DOT_CHR = '.';
     private static final Character DOLLAR_SIGN_CHR = '$';
     private static final Character SLASH_CHR = '/';
-
-    /**
-     * User can specify via org.eclipse.persistence.moxy.annotation.xml-id-extension property, that he wants to use extended behavior of XmlId annotation.
-     * When extended behavior is used, XmlId can be of different type than java.lang.String.
-     */
-    private static final Boolean useXmlIdExtension = getBoolean("org.eclipse.persistence.moxy.annotation.xml-id-extension");
-
-    /**
-     * User can specify via org.eclipse.persistence.moxy.annotation.xml-value-extension property, that he wants to use extended behavior of XmlValue annotation.
-     * When extended behavior is used, class with field annotated with XmlValue can extend classes different than java.lang.Object.
-     */
-    private static final Boolean useXmlValueExtension = getBoolean("org.eclipse.persistence.moxy.annotation.xml-value-extension");
-
-    private static Boolean getBoolean(final String propertyName) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                return AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>() {
-                    @Override
-                    public Boolean run() throws Exception {
-                        return Boolean.getBoolean(propertyName);
-                    }});
-            } catch (PrivilegedActionException e) {
-                throw (RuntimeException) e.getCause();
-            }
-        } else {
-            return Boolean.getBoolean(propertyName);
-        }
-    }
 
     private List<JavaClass> typeInfoClasses;
     private Map<String, PackageInfo> packageToPackageInfoMappings;
@@ -1117,7 +1085,7 @@ public final class AnnotationsProcessor {
     }
 
     private void validateXmlIdStringType(Property property) {
-        if (!"java.lang.String".equals(property.getActualType().getQualifiedName()) && !useXmlIdExtension && !helper.isAnnotationPresent(property.getElement(), XmlIDExtension.class) && !property.isXmlIdExtension()) {
+        if (!"java.lang.String".equals(property.getActualType().getQualifiedName()) && !MOXySystemProperties.xmlIdExtension && !helper.isAnnotationPresent(property.getElement(), XmlIDExtension.class) && !property.isXmlIdExtension()) {
             throw JAXBException.invalidId(property.getPropertyName());
         }
     }
@@ -4151,7 +4119,7 @@ public final class AnnotationsProcessor {
     }
 
     private boolean useXmlValueExtension(Property property) {
-        return useXmlValueExtension || helper.isAnnotationPresent(property.getElement(), XmlValueExtension.class) || property.isXmlValueExtension();
+        return MOXySystemProperties.xmlValueExtension || helper.isAnnotationPresent(property.getElement(), XmlValueExtension.class) || property.isXmlValueExtension();
     }
 
     private boolean hasElementMappedProperties(TypeInfo typeInfo) {

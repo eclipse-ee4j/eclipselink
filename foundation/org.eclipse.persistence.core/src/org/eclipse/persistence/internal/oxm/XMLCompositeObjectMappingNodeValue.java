@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -57,7 +57,7 @@ import org.xml.sax.SAXParseException;
  */
 public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNodeValue implements NullCapableValue {
     private CompositeObjectMapping xmlCompositeObjectMapping;
-    private boolean isInverseReference;  
+    private boolean isInverseReference;
 
     public XMLCompositeObjectMappingNodeValue(CompositeObjectMapping xmlCompositeObjectMapping) {
         this.xmlCompositeObjectMapping = xmlCompositeObjectMapping;
@@ -494,7 +494,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                             value = conversionManager.convertObject(element.getTextContent(), theClass, qName);
                         }
                     }else{
-                    	if(!unmarshalRecord.isNamespaceAware()){
+			if(!unmarshalRecord.isNamespaceAware() || !unmarshalRecord.getUnmarshaller().getJsonTypeConfiguration().useXsdTypesWithPrefix()){
                             QName qName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, xsiType);
 
                             ConversionManager conversionManager = unmarshalRecord.getConversionManager();

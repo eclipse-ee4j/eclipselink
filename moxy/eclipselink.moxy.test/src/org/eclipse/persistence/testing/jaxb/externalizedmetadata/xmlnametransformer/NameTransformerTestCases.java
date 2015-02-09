@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,15 +51,23 @@ public class NameTransformerTestCases extends JAXBWithJSONTestCases{
         types[1] = Address.class;
         types[2] = Phone.class;
         setTypes(types);
+        initXsiType();
     }
 
-    public void init() throws Exception {	
+    @Override
+    protected Map<String, String> getAdditationalNamespaces() {
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("myuri", "ns0");
+        return namespaces;
+    }
+
+
+    public void init() throws Exception {
         Type[] types = new Type[2];
         types[0] = Employee.class;
-        types[1] = Address.class;       
-        setTypes(types);
+        types[1] = Address.class;
     }
-	
+
     protected Object getControlObject() {
         ArrayList responsibilities = new ArrayList();
         responsibilities.add(CONTROL_RESPONSIBILITY1);

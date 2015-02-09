@@ -1,11 +1,11 @@
-<collectionHolderWrappers>
+<collectionHolderWrappers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <collection1>
       <collection1>10</collection1>
       <collection1>20</collection1>
    </collection1>
    <collection2-wrapper>
-      <collection2 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">10</collection2>
-      <collection2 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">20</collection2>
+      <collection2 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">10</collection2>
+      <collection2 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">20</collection2>
    </collection2-wrapper>
    <collection3-wrapper>
      <collectionHolderWrappers/>
