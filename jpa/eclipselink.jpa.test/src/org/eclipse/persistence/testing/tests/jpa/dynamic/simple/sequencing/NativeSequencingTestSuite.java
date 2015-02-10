@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -32,6 +32,8 @@ import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sessions.server.Server;
 
@@ -46,7 +48,12 @@ public class NativeSequencingTestSuite extends BaseSequencingTestSuite {
     @BeforeClass
     public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
-        assumeTrue(JpaHelper.getServerSession(emf).getPlatform().isMySQL());
+        final DatabasePlatform platform = JpaHelper.getServerSession(emf).getPlatform();
+        if (!platform.isMySQL()) {
+            JpaHelper.getServerSession(emf).getSessionLog().log(SessionLog.WARNING,
+                    NativeSequencingTestSuite.class.getName() + " requires MySQL.");
+        }
+        assumeTrue(platform.isMySQL());
         helper = new JPADynamicHelper(emf);
         DynamicClassLoader dcl = helper.getDynamicClassLoader();
         Class<?> javaType = dcl.createDynamicClass("model.sequencing." + ENTITY_TYPE);
@@ -77,7 +84,12 @@ public class NativeSequencingTestSuite extends BaseSequencingTestSuite {
 
     @Before
     public void clearSimpleTypeInstances() {
-        assumeTrue(JpaHelper.getServerSession(emf).getPlatform().isMySQL());
+        final DatabasePlatform platform = JpaHelper.getServerSession(emf).getPlatform();
+        if (!platform.isMySQL()) {
+            JpaHelper.getServerSession(emf).getSessionLog().log(SessionLog.WARNING,
+                    NativeSequencingTestSuite.class.getName() + " requires MySQL.");
+        }
+        assumeTrue(platform.isMySQL());
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.createQuery("DELETE FROM " + ENTITY_TYPE).executeUpdate();
