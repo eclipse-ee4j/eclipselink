@@ -557,10 +557,20 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return false;
         } else if(Collection.class.isAssignableFrom(type)) {
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
+
+            //special case for List<JAXBElement<String>>
+            //this is quick fix, MOXyJsonProvider should be refactored as stated in issue #459541
+            if (domainClasses.size() == 3) {
+                Class[] domainArray = domainClasses.toArray(new Class[domainClasses.size()]);
+                if (JAXBElement.class.isAssignableFrom(domainArray[1]) && String.class == domainArray[2]) {
+                    return true;
+                }
+            }
+
             for (Class<?> domainClass : domainClasses) {
                 String packageName = domainClass.getPackage().getName();
                 if(null == packageName || !packageName.startsWith("java.")) {
-                    if (isWriteable(domainClass, null, annotations, mediaType) || domainClass == String.class) {
+                    if (isWriteable(domainClass, null, annotations, mediaType)) {
                         return true;
                     }
                 }
@@ -713,14 +723,22 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return domainClasses.iterator().next();
         }
 
+        boolean isStringPresent = false;
+
         for (Class<?> clazz : domainClasses) {
             if (!clazz.getName().startsWith("java.") && !clazz.getName().startsWith("javax.")) {
                 return clazz;
+            } else if (clazz == String.class) {
+                isStringPresent = true;
             }
         }
 
+        if (isStringPresent) {
+            return String.class;
+        }
+
         //handle simple generic case
-        if (domainClasses.size() == 2) {
+        if (domainClasses.size() >= 2) {
             Iterator<Class<?>> it = domainClasses.iterator();
             it.next();
             return it.next();
