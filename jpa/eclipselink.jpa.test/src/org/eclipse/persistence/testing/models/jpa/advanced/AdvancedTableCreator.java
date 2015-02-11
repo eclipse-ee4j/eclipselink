@@ -2694,7 +2694,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldDOOR_ID.setIsPrimaryKey(true);
         fieldDOOR_ID.setIsIdentity(false);
         fieldDOOR_ID.setUnique(false);
-        fieldDOOR_ID.setShouldAllowNull(true);
+        fieldDOOR_ID.setShouldAllowNull(false);
         table.addField(fieldDOOR_ID);
         
         ForeignKeyConstraint foreignKeyCMP3_HINGE_CMP3_DOOR = new ForeignKeyConstraint();
