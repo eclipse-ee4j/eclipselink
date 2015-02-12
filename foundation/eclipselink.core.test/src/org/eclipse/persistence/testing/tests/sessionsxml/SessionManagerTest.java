@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.sessionsxml;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentMap;
@@ -131,6 +132,42 @@ public class SessionManagerTest extends TestCase {
         m1.destroy();
         m2.destroy();
         Assert.assertEquals(0, allManagers.size());
+    }
+    
+    @Test
+    public void testConcextHelper() {
+        Class contextHelperClass = null;
+        for (Class<?> declaredClass : SessionManager.class.getDeclaredClasses()) {
+            if(declaredClass.getName().equals("org.eclipse.persistence.sessions.factories.SessionManager$ContextHelper")) {
+                contextHelperClass = declaredClass;
+                break;
+            }
+        }
+        Assert.assertNotNull("ContextHelper class not found", contextHelperClass);
+
+        Method getCicManagerClassMethod = null;
+        try {
+            getCicManagerClassMethod = contextHelperClass.getDeclaredMethod("getCicManagerClass", String.class, String.class);
+        } catch (NoSuchMethodException e) {
+            Assert.fail("getCicManagerClass method not found: " + e.getMessage());
+        }
+        Assert.assertNotNull("getCicManagerClass method not found", getCicManagerClassMethod);
+        
+        getCicManagerClassMethod.setAccessible(true);
+        Object result = null;
+        try {
+            result = getCicManagerClassMethod.invoke(contextHelperClass, "org/eclipse/persistence/testing/tests/sessionsxml/SessionManagerTest.class", "org.eclipse.persistence.testing.tests.sessionsxml.SessionManagerTest");
+        } catch (Exception e) {
+            Assert.fail("Failed to invoke getCicManagerClass method: " + e.getMessage());
+        }
+        Assert.assertNotNull("Failed to retrieve test class", result);
+        try {
+            result = getCicManagerClassMethod.invoke(contextHelperClass, "this/should/not/resolve", "org.eclipse.persistence.testing.tests.sessionsxml.SessionManagerTest");
+        } catch (Exception e) {
+            Assert.fail("Failed to invoke getCicManagerClass method: " + e.getMessage());
+        }
+        Assert.assertNull("Should have failed to retrieve test class", result);
+        getCicManagerClassMethod.setAccessible(false);
     }
 
     private Object getField(String field, Object o) {

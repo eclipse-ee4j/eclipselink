@@ -642,29 +642,33 @@ public class SessionManager {
 
         private static final Class cicManagerClass;
         private static ContextHelper instance;
+        
+        private static final String CIC_MANAGER_RESOURCE_NAME = "META-INF/services/weblogic.invocation.ComponentInvocationContextManager";
+        private static final String CIC_MANAGER_CLASS_NAME = "weblogic.invocation.ComponentInvocationContextManager";
 
         static {
-            Class c = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                c = AccessController.doPrivileged(new PrivilegedAction<Class>() {
-
+                cicManagerClass = AccessController.doPrivileged(new PrivilegedAction<Class>() {
                     @Override
                     public Class run() {
-                        try {
-                            return PrivilegedAccessHelper.getClassForName("weblogic.invocation.ComponentInvocationContextManager");
-                        } catch (ClassNotFoundException cnfe) {
-                            return null;
-                        }
+                        return getCicManagerClass(CIC_MANAGER_RESOURCE_NAME, CIC_MANAGER_CLASS_NAME);
                     }
                 });
             } else {
-                try {
-                    c = PrivilegedAccessHelper.getClassForName("weblogic.invocation.ComponentInvocationContextManager");
-                } catch (ClassNotFoundException cnfe) {
-                    // ignore
-                }
+                cicManagerClass = getCicManagerClass(CIC_MANAGER_RESOURCE_NAME, CIC_MANAGER_CLASS_NAME);
             }
-            cicManagerClass = c;
+        }
+        
+        private static Class getCicManagerClass(String cicManagerResourceName, String cicManagerClassName) {
+            try {
+                if (SessionManager.class.getClassLoader().getResource(cicManagerResourceName) != null) {
+                    return PrivilegedAccessHelper.getClassForName(cicManagerClassName);
+                } else {
+                    return null;
+                }
+            } catch (ClassNotFoundException cnfe) {
+                return null;
+            }
         }
 
         private ContextHelper(final Class managerClass, final String contextClassName) {
