@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.rs.features.paging;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 
 import javax.ws.rs.core.UriInfo;
 import java.util.Map;
@@ -26,6 +27,7 @@ import java.util.Map;
  * @author Dmitry Kornilov
  */
 abstract class AbstractPagingValidator {
+
     private int offset;
     private int limit;
 
@@ -53,19 +55,24 @@ abstract class AbstractPagingValidator {
 
     /**
      * Checks pagination query parameters. Initializes 'limit' and 'offset' class properties.
-     * Throws {@link java.lang.IllegalArgumentException} in case of errors.
+     * Throws {@link org.eclipse.persistence.jpa.rs.exceptions.JPARSException} in case of errors.
      *
      * @param defaultLimit The value of limit if no 'limit' query parameter is present.
      */
     void checkParameters(int defaultLimit) {
         // Read query parameters
-        String paramLimit = (String) queryParameters.get(QueryParameters.JPARS_PAGING_LIMIT);
-        String paramOffset = (String) queryParameters.get(QueryParameters.JPARS_PAGING_OFFSET);
+        final String paramLimit = (String) queryParameters.get(QueryParameters.JPARS_PAGING_LIMIT);
+        final String paramOffset = (String) queryParameters.get(QueryParameters.JPARS_PAGING_OFFSET);
 
         // Check limit
         try {
             if (paramLimit != null) {
-                int intLimit = Integer.parseInt(paramLimit);
+                final int intLimit = Integer.parseInt(paramLimit);
+
+                if (intLimit <= 0) {
+                    throw JPARSException.invalidParameter("limit", paramLimit);
+                }
+
                 if (intLimit > defaultLimit) {
                     limit = defaultLimit;
                 } else {
@@ -75,7 +82,7 @@ abstract class AbstractPagingValidator {
                 limit = defaultLimit;
             }
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException(String.format("Invalid 'limit' parameter value (limit=%s).", paramLimit));
+            throw JPARSException.invalidParameter("limit", paramLimit);
         }
 
         // Check offset
@@ -83,8 +90,12 @@ abstract class AbstractPagingValidator {
             if (paramOffset != null) {
                 offset = Integer.parseInt(paramOffset);
             }
+
+            if (offset < 0) {
+                throw JPARSException.invalidParameter("offset", paramOffset);
+            }
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException(String.format("Invalid 'offset' parameter value (offset=%s).", paramOffset));
+            throw JPARSException.invalidParameter("offset", paramOffset);
         }
     }
 

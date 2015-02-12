@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -41,6 +41,7 @@ public class JPARSExceptionResource extends ListResourceBundle {
             { String.valueOf(JPARSErrorCodes.AN_EXCEPTION_OCCURRED), "{0} occurred." },
             { String.valueOf(JPARSErrorCodes.PAGINATION_PARAMETER_USED_FOR_NOT_PAGEABLE_RESOURCE), "Pagination query parameter (limit or offset) used for non-pageable resource." },
             { String.valueOf(JPARSErrorCodes.FIELDS_FILTERING_BOTH_PARAMETERS_PRESENT), "Both \"fields\" and \"excludeFields\" cannot be used in the same request." },
+            { String.valueOf(JPARSErrorCodes.INVALID_PARAMETER), "Invalid parameter value (\"{0}\" = \"{1}\")." },
     };
 
     @Override

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpars.test.server.v2;
 import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.basket.Basket;
 import org.eclipse.persistence.jpars.test.model.basket.BasketItem;
+import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -313,6 +314,36 @@ public class ServerPageableTest extends BaseJparsTest {
 
         // Check items (limit = 2, offset = 0, count = 2, hasMore = true)
         checkItemsXml(queryResult, 2, 0, 2, true);
+    }
+
+    @Test(expected = RestCallFailedException.class)
+    public void testNegativeLimit() throws URISyntaxException {
+        // Run pageable query with limit = -2
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("limit", "-2");
+
+        // It has to fail because negative limit is not permitted
+        RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    @Test(expected = RestCallFailedException.class)
+    public void testZeroLimit() throws URISyntaxException {
+        // Run pageable query with limit = 0
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("limit", "0");
+
+        // It has to fail because zero limit is not permitted
+        RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    @Test(expected = RestCallFailedException.class)
+    public void testNegativeOffset() throws URISyntaxException {
+        // Run pageable query with offset = -2
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("offset", "-2");
+
+        // It has to fail because negative offset is not permitted
+        RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
     }
 
     private boolean basketItemExists(String response, int id) {

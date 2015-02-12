@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.rs.exceptions;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.JPARSErrorCodes;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -156,6 +157,23 @@ public class JPARSException extends EclipseLinkException {
 
     /**
      * Invalid paging request.
+     *
+     * @return the JPARS exception
+     */
+    public static JPARSException invalidParameter(String parameterName, String invalidValue) {
+        final Object[] args = { parameterName, invalidValue };
+        final String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, JPARSErrorCodes.INVALID_PARAMETER, args);
+        AbstractSessionLog.getLog().info(msg);
+
+        final JPARSException exception = new JPARSException(msg);
+        exception.setErrorCode(JPARSErrorCodes.INVALID_PARAMETER);
+        exception.setHttpStatusCode(Status.BAD_REQUEST);
+
+        return exception;
+    }
+
+    /**
+     * Pagination parameters are used in non-pageable resource.
      *
      * @return the JPARS exception
      */
