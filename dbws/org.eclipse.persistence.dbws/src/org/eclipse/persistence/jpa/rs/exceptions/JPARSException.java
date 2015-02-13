@@ -412,6 +412,10 @@ public class JPARSException extends EclipseLinkException {
      * @return the JPARS exception
      */
     public static JPARSException exceptionOccurred(Exception exception) {
+        if (exception instanceof JPARSException) {
+            return (JPARSException)exception;
+        }
+
         int errorCode = JPARSErrorCodes.AN_EXCEPTION_OCCURRED;
         String msg = ExceptionMessageGenerator.buildMessage(JPARSException.class, errorCode, new Object[] { exception.getClass().getSimpleName() }).trim();
 
