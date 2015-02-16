@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -102,7 +102,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             if (featureSet.isSupported(Feature.PAGING)) {
                 final PageableFieldValidator validator = new PageableFieldValidator(entity.getClass(), attribute, uriInfo);
                 if (validator.isFeatureApplicable()) {
-                    query.setMaxRows(validator.getLimit());
+                    query.setMaxRows(validator.getLimit() + validator.getOffset());
                     query.setFirstResult(validator.getOffset());
 
                     // We need to add limit and offset to query parameters because request builder reads it from there

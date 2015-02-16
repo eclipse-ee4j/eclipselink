@@ -63,7 +63,7 @@ public class ServerPageableTest extends BaseJparsTest {
             BasketItem basketItem = new BasketItem();
             basketItem.setId(j);
             basketItem.setName("BasketItem" + j);
-            RestUtils.restUpdate(context, basketItem, BasketItem.class.getSimpleName(), BasketItem.class, null, MediaType.APPLICATION_XML_TYPE, false);
+            RestUtils.restCreate(context, basketItem, BasketItem.class.getSimpleName(), BasketItem.class, null, MediaType.APPLICATION_XML_TYPE, false);
             RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(basket.getId()), Basket.class.getSimpleName(), "basketItems", basketItem, MediaType.APPLICATION_XML_TYPE, "basket", true);
         }
     }
@@ -314,6 +314,35 @@ public class ServerPageableTest extends BaseJparsTest {
 
         // Check items (limit = 2, offset = 0, count = 2, hasMore = true)
         checkItemsXml(queryResult, 2, 0, 2, true);
+    }
+
+    @Test
+    public void testPageableFieldOffset() throws URISyntaxException {
+        // Run pageable query with offset=2
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("offset", "2");
+
+        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
+        logger.info(queryResult);
+
+        // First 2 items mustn't be in the response
+        assertFalse(queryResult.contains("Item1"));
+        assertFalse(queryResult.contains("Item2"));
+
+        // Next 2 must be in the response
+        assertTrue(queryResult.contains("Item3"));
+        assertTrue(queryResult.contains("Item4"));
+
+        // Last item mustn't be in the response
+        assertFalse(queryResult.contains("Item5"));
+
+        // Check links
+        assertTrue(checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?offset=4") ||
+                checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?offset=2"));
+        assertFalse(queryResult.contains("<rel>prev</rel>"));
+
+        // Check items (limit = 2, offset = 2, count = 2, hasMore = true)
+        checkItemsXml(queryResult, 2, 2, 2, true);
     }
 
     @Test(expected = RestCallFailedException.class)
