@@ -22,6 +22,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/02/2015-2.6 Dalia Abo Sheasha 
  *       - 458462: generateSchema throws a ClassCastException within a container
+ *     02/17/2015-2.6 Rick Curtis
+ *       - 460138: Change method visibility.
  ******************************************************************************/  
 package org.eclipse.persistence.jpa;
 
@@ -303,7 +305,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         return createContainerEntityManagerFactoryImpl(info, properties, true);
     }
     
-    private EntityManagerFactory createContainerEntityManagerFactoryImpl(PersistenceUnitInfo info, Map properties, boolean requiresConnection) {
+    protected EntityManagerFactory createContainerEntityManagerFactoryImpl(PersistenceUnitInfo info, Map properties, boolean requiresConnection) {
         // Record that we are inside a JEE container to allow weaving for non managed persistence units.
         JavaSECMPInitializer.setIsInContainer(true);
         
