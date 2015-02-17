@@ -102,7 +102,9 @@ public abstract class AbstractEntityResource extends AbstractResource {
             if (featureSet.isSupported(Feature.PAGING)) {
                 final PageableFieldValidator validator = new PageableFieldValidator(entity.getClass(), attribute, uriInfo);
                 if (validator.isFeatureApplicable()) {
-                    query.setMaxRows(validator.getLimit() + validator.getOffset());
+                    // Adding extra one to detect are there more rows or not. It will be removed later
+                    // on in response processor.
+                    query.setMaxRows(validator.getLimit() + validator.getOffset() + 1);
                     query.setFirstResult(validator.getOffset());
 
                     // We need to add limit and offset to query parameters because request builder reads it from there

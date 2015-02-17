@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -56,7 +56,6 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
             response.addItem(populatePagedReadAllQueryItemLinks(context, item));
         }
 
-        response.setCount(items.size());
         return populatePagedCollectionLinks(queryParams, uriInfo, response);
     }
 
@@ -75,11 +74,10 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
         if (results instanceof Collection) {
             if (containsDomainObjects(results)) {
-                List<Object> items = (Vector)results;
+                final List<Object> items = (Vector)results;
                 if ((items != null) && (!items.isEmpty())) {
                     ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
                     response.setItems(items);
-                    response.setCount(items.size());
                     return populatePagedCollectionLinks(queryParams, uriInfo, response);
                 }
             }
@@ -120,40 +118,38 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
         // populate links for entire response
         final ItemLinksBuilder itemLinksBuilder = new ItemLinksBuilder();
 
-        int limit = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_LIMIT));
-        int offset = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_OFFSET));
+        final int limit = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_LIMIT));
+        final int offset = Integer.parseInt((String) queryParams.get(QueryParameters.JPARS_PAGING_OFFSET));
 
-        String nextOffset;
-        String prevOffset;
-        if (limit > offset) {
-            nextOffset = String.valueOf(limit);
-            prevOffset = NO_PREVIOUS_CHUNK;
-        } else {
-            nextOffset = String.valueOf(limit + offset);
-            prevOffset = String.valueOf(offset - limit);
-        }
+        final UriBuilder uriBuilder = UriBuilder.fromUri(uriInfo.getRequestUri());
 
-        UriBuilder uriBuilder;
+        if (resultCollection.getItems() != null) {
+            final int actualCount = resultCollection.getItems().size();
+            if (actualCount > limit) {
+                // Remove the last item from collection. It was artificially added to indicate there are more records or not.
+                resultCollection.getItems().remove(actualCount - 1);
+                resultCollection.setCount(actualCount - 1);
 
-        if (resultCollection.getCount() != null) {
-            int actualCount = resultCollection.getCount();
-            if (actualCount >= limit) {
                 // next link
                 // The uri might have other query/matrix parameters, just replace the limit and offset 
                 // for next and prev links and leave the rest untouched
-                uriBuilder = UriBuilder.fromUri(uriInfo.getRequestUri());
-                uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, nextOffset);
+                uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, String.valueOf(limit + offset));
                 itemLinksBuilder.addNext(uriBuilder.build().toString());
                 resultCollection.setHasMore(true);
             } else {
                 resultCollection.setHasMore(false);
+                resultCollection.setCount(actualCount);
             }
+        } else {
+            resultCollection.setCount(0);
         }
 
-        if (!NO_PREVIOUS_CHUNK.equals(prevOffset)) {
-            // prev link
-            uriBuilder = UriBuilder.fromUri(uriInfo.getRequestUri());
-            uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, prevOffset);
+        if (offset != 0) {
+            if (offset > limit) {
+                uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, String.valueOf(offset - limit));
+            } else {
+                uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, "0");
+            }
             itemLinksBuilder.addPrev(uriBuilder.build().toString());
         }
 

@@ -337,12 +337,57 @@ public class ServerPageableTest extends BaseJparsTest {
         assertFalse(queryResult.contains("Item5"));
 
         // Check links
-        assertTrue(checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?offset=4") ||
-                checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?offset=2"));
-        assertFalse(queryResult.contains("<rel>prev</rel>"));
+        assertTrue(checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?offset=4"));
+        assertTrue(checkLinkXml(queryResult, "prev", "/entity/Basket/1/basketItems?offset=0"));
 
         // Check items (limit = 2, offset = 2, count = 2, hasMore = true)
         checkItemsXml(queryResult, 2, 2, 2, true);
+    }
+
+    @Test
+    public void testPageableFieldOffset1() throws URISyntaxException {
+        // Run pageable query with offset=1
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("offset", "1");
+
+        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
+        logger.info(queryResult);
+
+        assertFalse(queryResult.contains("Item1"));
+        assertTrue(queryResult.contains("Item2"));
+        assertTrue(queryResult.contains("Item3"));
+        assertFalse(queryResult.contains("Item4"));
+        assertFalse(queryResult.contains("Item5"));
+
+        // Check links
+        assertTrue(checkLinkXml(queryResult, "next", "/entity/Basket/1/basketItems?offset=3"));
+        assertFalse(queryResult.contains("<rel>prev</rel>"));
+
+        // Check items (limit = 2, offset = 1, count = 2, hasMore = true)
+        checkItemsXml(queryResult, 2, 1, 2, true);
+    }
+
+    @Test
+    public void testPageableFieldLastPage() throws URISyntaxException {
+        // Get the last page (offset=3)
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("offset", "3");
+
+        final String queryResult = RestUtils.restFindAttribute(context, 1, Basket.class.getSimpleName(), "basketItems", null, hints, MediaType.APPLICATION_XML_TYPE);
+        logger.info(queryResult);
+
+        assertFalse(queryResult.contains("Item1"));
+        assertFalse(queryResult.contains("Item2"));
+        assertFalse(queryResult.contains("Item3"));
+        assertTrue(queryResult.contains("Item4"));
+        assertTrue(queryResult.contains("Item5"));
+
+        // Check links
+        assertTrue(checkLinkXml(queryResult, "prev", "/entity/Basket/1/basketItems?offset=1"));
+        assertFalse(queryResult.contains("<rel>next</rel>"));
+
+        // Check items (limit = 2, offset = 3, count = 2, hasMore = false)
+        checkItemsXml(queryResult, 2, 3, 2, false);
     }
 
     @Test(expected = RestCallFailedException.class)
