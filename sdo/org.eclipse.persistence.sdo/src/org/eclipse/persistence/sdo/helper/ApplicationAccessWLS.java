@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,6 +35,9 @@ import java.util.logging.Logger;
 public class ApplicationAccessWLS {
     private static final Logger LOGGER = Logger.getLogger(ApplicationAccessWLS.class.getName());
 
+    private static final String CIC_MANAGER_CLASS_NAME = "weblogic.invocation.ComponentInvocationContextManager";
+    private static final String CIC_CLASS_NAME = "weblogic.invocation.ComponentInvocationContext";
+
     /** ApplicationID cache **/
     private final Map<ClassLoader, String> appNames = Collections.synchronizedMap(new WeakHashMap<ClassLoader, String>());
 
@@ -46,7 +49,7 @@ public class ApplicationAccessWLS {
 
     /** Instance of CIC (Component Invocation Context) or null if not initialized **/
     private Object cicManagerInstance;
-    
+
     private Method getCurrentCicMethod;
     private Method getApplicationIdMethod;
 
@@ -54,24 +57,21 @@ public class ApplicationAccessWLS {
      * Create and initialize.
      */
     public ApplicationAccessWLS() {
-        try {
-            // Try initializing using CIC
-            initUsingCic();
+        // Try initializing using CIC
+        if (initUsingCic()) {
             LOGGER.fine("ApplicationAccessWLS initialized using ComponentInvocationContext.");
-        } catch (Exception e) {
-            LOGGER.log(Level.FINE, "Error initializing ApplicationAccessWLS using ComponentInvocationContext. " +
-                    "Trying to initialize it using ApplicationAccess.", e);
-
-            cicManagerInstance = null;
-            try {
-                // Init using CIC failed, try to init using ApplicationAccess
-                initUsingApplicationAccess();
-                LOGGER.fine("ApplicationAccessWLS initialized using ApplicationAccess.");
-            } catch (Exception ex) {
-                LOGGER.log(Level.FINE, "Error initializing ApplicationAccessWLS using ApplicationAccess.", ex);
-                applicationAccessInstance = null;
-            }
+            return;
         }
+
+        // Init using CIC failed, try to init using ApplicationAccess
+        cicManagerInstance = null;
+        if (initUsingApplicationAccess()) {
+            LOGGER.fine("ApplicationAccessWLS initialized using ApplicationAccess.");
+            return;
+        }
+
+        applicationAccessInstance = null;
+        LOGGER.fine("Failed to initialize ApplicationAccessWLS.");
     }
 
     /**
@@ -131,32 +131,51 @@ public class ApplicationAccessWLS {
     }
 
     /**
-     * Initializes CIC.
+     * Initializes CIC. Returns true on success.
      */
-    protected void initUsingCic() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        // Get component invocation manager
-        final Class cicManagerClass = PrivilegedAccessHelper.getClassForName("weblogic.invocation.ComponentInvocationContextManager");
-        final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(cicManagerClass, "getInstance", new Class[] {});
-        cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, cicManagerClass);
+    protected boolean initUsingCic() {
+        // Check that CIC implementation exists.
+        if (ApplicationAccessWLS.class.getClassLoader().getResource(CIC_MANAGER_CLASS_NAME) == null) {
+            return false;
+        }
 
-        // Get component invocation context
-        getCurrentCicMethod = PrivilegedAccessHelper.getMethod(cicManagerClass, "getCurrentComponentInvocationContext", new Class[] {}, true);
+        try {
+            // Get component invocation manager
+            final Class cicManagerClass = PrivilegedAccessHelper.getClassForName(CIC_MANAGER_CLASS_NAME);
+            final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(cicManagerClass, "getInstance", new Class[]{});
+            cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, cicManagerClass);
 
-        final Class cicClass = PrivilegedAccessHelper.getClassForName("weblogic.invocation.ComponentInvocationContext");
-        getApplicationIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getApplicationId", new Class[] {});
+            // Get component invocation context
+            getCurrentCicMethod = PrivilegedAccessHelper.getMethod(cicManagerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
+
+            final Class cicClass = PrivilegedAccessHelper.getClassForName(CIC_CLASS_NAME);
+            getApplicationIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getApplicationId", new Class[]{});
+
+            return true;
+        } catch (ClassNotFoundException|NoSuchMethodException|InvocationTargetException|IllegalAccessException e) {
+            LOGGER.log(Level.FINE, "Error initializing ApplicationAccessWLS using ComponentInvocationContext.", e);
+            return false;
+        }
     }
 
     /**
      * Initializes ApplicationAccess.
      */
-    protected void initUsingApplicationAccess() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        final Class applicationAccessClass = PrivilegedAccessHelper.getClassForName("weblogic.application.ApplicationAccess");
-        final Method getApplicationAccessMethod = PrivilegedAccessHelper.getDeclaredMethod(applicationAccessClass, "getApplicationAccess", new Class[] {});
-        applicationAccessInstance = PrivilegedAccessHelper.invokeMethod(getApplicationAccessMethod, applicationAccessClass);
+    protected boolean initUsingApplicationAccess() {
+        try {
+            final Class applicationAccessClass = PrivilegedAccessHelper.getClassForName("weblogic.application.ApplicationAccess");
+            final Method getApplicationAccessMethod = PrivilegedAccessHelper.getDeclaredMethod(applicationAccessClass, "getApplicationAccess", new Class[]{});
+            applicationAccessInstance = PrivilegedAccessHelper.invokeMethod(getApplicationAccessMethod, applicationAccessClass);
 
-        final Class [] methodParameterTypes = new Class[] {ClassLoader.class};
-        getApplicationNameMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, "getApplicationName", methodParameterTypes, true);
-        getApplicationVersionMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, "getApplicationVersion", methodParameterTypes, true);
+            final Class[] methodParameterTypes = new Class[]{ClassLoader.class};
+            getApplicationNameMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, "getApplicationName", methodParameterTypes, true);
+            getApplicationVersionMethod = PrivilegedAccessHelper.getMethod(applicationAccessClass, "getApplicationVersion", methodParameterTypes, true);
+
+            return true;
+        } catch (ClassNotFoundException|NoSuchMethodException|InvocationTargetException|IllegalAccessException ex) {
+            LOGGER.log(Level.FINE, "Error initializing ApplicationAccessWLS using ApplicationAccess.", ex);
+            return false;
+        }
     }
 
     /**

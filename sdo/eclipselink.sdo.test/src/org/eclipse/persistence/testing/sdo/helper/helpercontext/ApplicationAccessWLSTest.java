@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,8 +14,6 @@ package org.eclipse.persistence.testing.sdo.helper.helpercontext;
 
 import junit.framework.TestCase;
 import org.eclipse.persistence.sdo.helper.ApplicationAccessWLS;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * A set of ApplicationAccessWLS tests.
@@ -41,8 +39,8 @@ public class ApplicationAccessWLSTest extends TestCase {
     public void testInitUsingApplicationAccess() throws Exception {
         final ApplicationAccessWLS appAccess = new ApplicationAccessWLS() {
             @Override
-            public void initUsingCic() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-                throw new NoSuchMethodException();
+            public boolean initUsingCic() {
+                return false;
             }
         };
         assertEquals(appAccess.getApplicationName(Thread.currentThread().getContextClassLoader()), "ApplicationAccess#1.0");
