@@ -26,6 +26,7 @@ import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
+import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilter;
 import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilteringValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PageableFieldValidator;
 import org.eclipse.persistence.jpa.rs.util.HrefHelper;
@@ -89,7 +90,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
                     throw JPARSException.attributeCouldNotBeFoundForEntity(attribute, type, id, persistenceUnit);
                 }
                 final FeatureResponseBuilder responseBuilder = context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING);
-                return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, responseBuilder);
+                return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, responseBuilder, null);
             }
 
             ReadQuery query = (ReadQuery) ((((ForeignReferenceMapping) attributeMapping).getSelectionQuery()).clone());
@@ -99,6 +100,17 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
             final FeatureSet featureSet = context.getSupportedFeatureSet();
             final AbstractSession clientSession = context.getClientSession(em);
+
+            // Fields filtering
+            FieldsFilter fieldsFilter = null;
+            if (context.getSupportedFeatureSet().isSupported(Feature.FIELDS_FILTERING)) {
+                final FieldsFilteringValidator fieldsFilteringValidator = new FieldsFilteringValidator(uriInfo);
+                if (fieldsFilteringValidator.isFeatureApplicable()) {
+                    fieldsFilter = fieldsFilteringValidator.getFilter();
+                }
+            }
+
+            // Pagination
             if (featureSet.isSupported(Feature.PAGING)) {
                 final PageableFieldValidator validator = new PageableFieldValidator(entity.getClass(), attribute, uriInfo);
                 if (validator.isFeatureApplicable()) {
@@ -117,13 +129,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
                     final Object result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
                     final FeatureResponseBuilder responseBuilder = context.getSupportedFeatureSet().getResponseBuilder(Feature.PAGING);
-                    return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, queryParams, headers, uriInfo, responseBuilder);
+                    return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, queryParams, headers, uriInfo, responseBuilder, fieldsFilter);
                 }
             }
 
             final Object result = clientSession.executeQuery(query, descriptor.getObjectBuilder().buildRow(entity, clientSession, WriteType.INSERT));
             final FeatureResponseBuilder responseBuilder = context.getSupportedFeatureSet().getResponseBuilder(Feature.NO_PAGING);
-            return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, responseBuilder);
+            return findAttributeResponse(context, attribute, type, id, persistenceUnit, result, getQueryParameters(uriInfo), headers, uriInfo, responseBuilder, fieldsFilter);
         } catch (Exception ex) {
             throw JPARSException.exceptionOccurred(ex);
         } finally {
@@ -420,17 +432,26 @@ public abstract class AbstractEntityResource extends AbstractResource {
                 .build();
     }
 
-    private Response findAttributeResponse(PersistenceContext context, String attribute, String entityType, String id, String persistenceUnit, Object queryResults, Map<String, Object> queryParams, HttpHeaders headers, UriInfo uriInfo, FeatureResponseBuilder responseBuilder) {
+    private Response findAttributeResponse(PersistenceContext context,
+                                           String attribute,
+                                           String entityType,
+                                           String id,
+                                           String persistenceUnit,
+                                           Object queryResults,
+                                           Map<String, Object> queryParams,
+                                           HttpHeaders headers, UriInfo uriInfo,
+                                           FeatureResponseBuilder responseBuilder,
+                                           FieldsFilter filter) {
         if (queryResults != null) {
             Object results = responseBuilder.buildAttributeResponse(context, queryParams, attribute, queryResults, uriInfo);
             if (results != null) {
-                return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes())).build();
+                return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes(), filter)).build();
             } else {
                 // something is wrong with the descriptors
                 throw JPARSException.responseCouldNotBeBuiltForFindAttributeRequest(attribute, entityType, id, persistenceUnit);
             }
         }
-        return Response.ok(new StreamingOutputMarshaller(context, null, headers.getAcceptableMediaTypes())).build();
+        return Response.ok(new StreamingOutputMarshaller(context, null, headers.getAcceptableMediaTypes(), filter)).build();
     }
 
     private void checkOrderBy(ReadQuery query) {

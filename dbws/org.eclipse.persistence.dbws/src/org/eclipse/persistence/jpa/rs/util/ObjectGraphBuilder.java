@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,6 +27,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 import javax.xml.bind.JAXBElement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import java.util.Map;
  */
 public class ObjectGraphBuilder {
     private final PersistenceContext context;
+    private final List<String> RESERVED_WORDS = Arrays.asList("hasMore", "limit", "offset", "links", "count", "items", "_persistence_links");
 
     /**
      * Creates an object graph builder.
@@ -136,7 +138,7 @@ public class ObjectGraphBuilder {
         for (final String attribute : node.getNodesMap().keySet()) {
             if (filter != null) {
                 if (filter.getType() == FieldsFilterType.INCLUDE) {
-                    if (!(attribute.equals("_persistence_links") || filter.getFields().contains(attribute))) {
+                    if (!(RESERVED_WORDS.contains(attribute) || filter.getFields().contains(attribute))) {
                         continue;
                     }
                 } else {
@@ -149,19 +151,31 @@ public class ObjectGraphBuilder {
             final Node value = node.get(attribute);
             if (value != null) {
                 final Subgraph subgraph = objectGraph.addSubgraph(attribute);
-                fillSubgraphFromNode(subgraph, value);
+                fillSubgraphFromNode(subgraph, value, filter);
             } else {
                 objectGraph.addAttributeNodes(attribute);
             }
         }
     }
 
-    private void fillSubgraphFromNode(Subgraph subgraph, Node node) {
+    private void fillSubgraphFromNode(Subgraph subgraph, Node node, FieldsFilter filter) {
         for (final String attribute : node.getNodesMap().keySet()) {
             final Node value = node.get(attribute);
+            if (filter != null) {
+                if (filter.getType() == FieldsFilterType.INCLUDE) {
+                    if (!(RESERVED_WORDS.contains(attribute) || filter.getFields().contains(attribute))) {
+                        continue;
+                    }
+                } else {
+                    if (filter.getFields().contains(attribute)) {
+                        continue;
+                    }
+                }
+            }
+
             if (value != null) {
                 final Subgraph childSubgraph = subgraph.addSubgraph(attribute);
-                fillSubgraphFromNode(childSubgraph, value);
+                fillSubgraphFromNode(childSubgraph, value, filter);
             } else {
                 subgraph.addAttributeNodes(attribute);
             }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -148,5 +148,37 @@ public class ServerFieldsFilteringTest extends BaseJparsTest {
         // Get BasketItem with id = 1. Exception must be thrown because both 'fields' and 'excludeFields' parameters
         // cannot be present in the same request.
         RestUtils.restReadWithHints(context, 1, Basket.class.getSimpleName(), hints, MediaType.APPLICATION_XML_TYPE);
+    }
+
+    @Test
+    public void testFieldsList() throws URISyntaxException {
+        // fields parameter
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("fields", "name,id");
+
+        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        logger.info(queryResult);
+        assertNotNull("Query all basket items failed.", queryResult);
+
+        // Check that 'name' and 'id' fields are present in the response and other fields are not
+        assertTrue(queryResult.contains("\"id\":1,\"name\":\"BasketItem1\""));
+        assertFalse(queryResult.contains("\"basket\":"));
+        assertFalse(queryResult.contains("\"qty\":"));
+    }
+
+    @Test
+    public void testExcludeFieldsList() throws URISyntaxException {
+        // fields parameter
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("excludeFields", "basket,qty");
+
+        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        logger.info(queryResult);
+        assertNotNull("Query all basket items failed.", queryResult);
+
+        // Check that 'name' and 'id' fields are present in the response and other fields are not
+        assertTrue(queryResult.contains("\"id\":1,\"name\":\"BasketItem1\""));
+        assertFalse(queryResult.contains("\"basket\":"));
+        assertFalse(queryResult.contains("\"qty\":"));
     }
 }

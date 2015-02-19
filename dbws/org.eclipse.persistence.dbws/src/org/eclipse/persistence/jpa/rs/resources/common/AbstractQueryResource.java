@@ -24,6 +24,8 @@ import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
 import org.eclipse.persistence.jpa.rs.features.core.selflinks.SelfLinksResponseBuilder;
+import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilter;
+import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilteringValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PageableQueryValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PagingResponseBuilder;
 import org.eclipse.persistence.jpa.rs.util.HrefHelper;
@@ -148,6 +150,15 @@ public abstract class AbstractQueryResource extends AbstractResource {
             queryParams.put(QueryParameters.JPARS_PAGING_OFFSET, String.valueOf(query.getFirstResult()));
         }
 
+        // Fields filtering
+        FieldsFilter fieldsFilter = null;
+        if (context.getSupportedFeatureSet().isSupported(Feature.FIELDS_FILTERING)) {
+            final FieldsFilteringValidator fieldsFilteringValidator = new FieldsFilteringValidator(uriInfo);
+            if (fieldsFilteringValidator.isFeatureApplicable()) {
+                fieldsFilter = fieldsFilteringValidator.getFilter();
+            }
+        }
+
         if (dbQuery instanceof ReportQuery) {
             // simple types selected : select u.name, u.age from employee
             List<ReportItem> reportItems = ((ReportQuery) dbQuery).getItems();
@@ -155,20 +166,20 @@ public abstract class AbstractQueryResource extends AbstractResource {
             if ((queryResults != null) && (!queryResults.isEmpty())) {
                 Object list = responseBuilder.buildReportQueryResponse(context, queryParams, queryResults, reportItems, uriInfo);
                 if (list != null) {
-                    return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes())).build();
+                    return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes(), fieldsFilter)).build();
                 } else {
                     // something is wrong with the descriptors
                     throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
                 }
             }
-            return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes())).build();
+            return Response.ok(new StreamingOutputMarshaller(context, queryResults, headers.getAcceptableMediaTypes(), fieldsFilter)).build();
         }
 
         List<Object> results = query.getResultList();
         if ((results != null) && (!results.isEmpty())) {
             Object list = responseBuilder.buildReadAllQueryResponse(context, queryParams, results, uriInfo);
-            return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes())).build();
+            return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes(), fieldsFilter)).build();
         }
-        return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes())).build();
+        return Response.ok(new StreamingOutputMarshaller(context, results, headers.getAcceptableMediaTypes(), fieldsFilter)).build();
     }
 }
