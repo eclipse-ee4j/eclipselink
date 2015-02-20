@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -843,7 +843,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
                 String xsiNilValue = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
                 if(xsiNilValue != null){
-                    isXsiNil = xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
+                    setNil(xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1"));
                 }
 
                 if(node.getNullCapableValue() != null){
@@ -1071,7 +1071,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                     if(textNode.isWhitespaceAware()){
 	                    if (textNodeUnmarshalNodeValue.isMappingNodeValue()) {
 	                        Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
-	                        if(mapping.isAbstractDirectMapping() && isXsiNil) {
+	                        if(mapping.isAbstractDirectMapping() && isNil()) {
 	                            Object nullValue = ((DirectMapping)mapping).getNullValue();
 	                            if(!(Constants.EMPTY_STRING.equals(nullValue))) {
 	                                setAttributeValue(null, mapping);
@@ -1080,14 +1080,14 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 	                        } else {
 	                            textNodeUnmarshalNodeValue.endElement(xPathFragment, this);
 	                        }
-	                        isXsiNil = false;
+	                        setNil(false);
 	                    }
                     }else{
 
                        //This means empty tag
                        if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
                             Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
-                            if(mapping.isAbstractDirectMapping() && !isXsiNil && ((DirectMapping)mapping).getNullPolicy().isNullRepresentedByXsiNil()){
+                            if(mapping.isAbstractDirectMapping() && !isNil() && ((DirectMapping)mapping).getNullPolicy().isNullRepresentedByXsiNil()){
                                 removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
                             }
                         }
@@ -1116,8 +1116,8 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
             typeQName = null;
             levelIndex--;
-            if(this.isNil() && levelIndex > 0) {
-                this.setNil(false);
+            if(isNil() && levelIndex > 0) {
+                setNil(false);
             }
             if ((0 == levelIndex) && (null !=parentRecord) && !isSelfRecord()) {
                 endDocument();
@@ -1156,7 +1156,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             xmlReader.setContentHandler(pRec);
             xmlReader.setLexicalHandler(pRec);
         }
-
+        setNil(false); // null unmapped element processed. We have to reset nil status
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {

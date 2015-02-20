@@ -48,6 +48,7 @@ import org.eclipse.persistence.testing.jaxb.json.type.TypeNameValueTestCases;
 import org.eclipse.persistence.testing.jaxb.json.type.TypePrefixTestCases;
 import org.eclipse.persistence.testing.jaxb.json.type.TypePropertyInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.json.type.TypePropertyTestCases;
+import org.eclipse.persistence.testing.jaxb.json.unmapped.JsonUnmappedTestCases;
 import org.eclipse.persistence.testing.jaxb.json.wrapper.AllWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropDifferentTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropTestCases;
@@ -93,6 +94,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(TypePrefixTestCases.class);
           suite.addTestSuite(TypePropertyInheritanceTestCases.class);
           suite.addTestSuite(TypePropertyTestCases.class);
+          suite.addTestSuite(JsonUnmappedTestCases.class);
 
           return suite;
 	}
