@@ -31,8 +31,10 @@
  *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
  *     11/04/2014 - Rick Curtis
  *       - 450010 : Add java se test bucket
-  *     01/13/2015 - Rick Curtis  
+ *     01/13/2015 - Rick Curtis  
  *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1674,6 +1676,35 @@ public class PersistenceUnitProperties {
      * @see DatabasePlatform
      */
     public static final String TARGET_DATABASE = "eclipselink.target-database";
+
+    /**
+     * The "<code>eclipselink.target-database-properties</code>" property
+     * configures additional properties for the configured target-database.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>A comma delimited key=value pairs (ie: key1=value1,key2=value2). Each
+     * key is expected to be a set[key_name] method on the configured
+     * target-database. The value must be the Stringified value to be passed
+     * into the set[key] method.
+     * </ul>
+     * <p>
+     * <b> Note: Keys and values cannot contain '=' or ','</b>
+     * <p>
+     * <b> If an invalid property is located a ConversionException will be thrown.
+     * <p>
+     * <b> Example : </b> To change the value of
+     * DatabasePlatform.shouldBindLiterals via configuration, provide the
+     * following :
+     * 
+     * <pre>
+     * {@code
+     *  <property name="eclipselink.target-database-properties" value="shouldBindLiterals=true"/>}
+     * </pre>
+     * @see TargetDatabase
+     * @see DatabasePlatform
+     */
+    public static final String TARGET_DATABASE_PROPERTIES = "eclipselink.target-database-properties";
 
     /**
      * The "<code>eclipselink.exclude-eclipselink-orm</code>" property

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
+ * Copyright (c) 2013, 2015 Oracle, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -126,7 +128,12 @@ public class SimpleResultSetRecord extends ResultSetRecord {
                         try {
                             Class fieldType = field.getType(); 
                             if (fieldType == ClassConstants.STRING) {
-                                value = resultSet.getString(index + 1);
+                                if(platform.shouldUseGetSetNString()){
+                                    value = resultSet.getNString(index + 1);
+                                }else {
+                                    value = resultSet.getString(index + 1);
+                                }
+                                
                             } else if (fieldType == ClassConstants.LONG) {
                                 value = resultSet.getLong(index + 1);
                             } else if (fieldType == ClassConstants.INTEGER) {
@@ -201,7 +208,11 @@ public class SimpleResultSetRecord extends ResultSetRecord {
                         try {
                             Class fieldType = field.getType(); 
                             if (fieldType == ClassConstants.STRING) {
-                                value = resultSet.getString(index + 1);
+                                if(platform.shouldUseGetSetNString()){
+                                    value = resultSet.getNString(index + 1);
+                                }else {
+                                    value = resultSet.getString(index + 1);
+                                }
                             } else if (fieldType == ClassConstants.LONG) {
                                 value = resultSet.getLong(index + 1);
                             } else if (fieldType == ClassConstants.INTEGER) {
@@ -236,7 +247,11 @@ public class SimpleResultSetRecord extends ResultSetRecord {
             try {
                 Class fieldType = field.getType(); 
                 if (fieldType == ClassConstants.STRING) {
-                    return resultSet.getString(index + 1);
+                    if(platform.shouldUseGetSetNString()){
+                        return resultSet.getNString(index + 1);
+                    }else {
+                        return resultSet.getString(index + 1);
+                    }
                 } else if (fieldType == ClassConstants.LONG) {
                     return resultSet.getLong(index + 1);
                 } else if (fieldType == ClassConstants.INTEGER) {

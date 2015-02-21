@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,13 +18,16 @@
  *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
  *     07/23/2014-2.6 Lukas Jungmann
  *       - 440278: Support fractional seconds in time values
- ******************************************************************************/
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
+ *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -80,8 +83,11 @@ public class MySQLPlatform extends DatabasePlatform {
         if (this.isConnectionDataInitialized) {
             return;
         }
-        String databaseVersion = connection.getMetaData().getDatabaseProductVersion();
+        DatabaseMetaData dmd = connection.getMetaData();
+        String databaseVersion = dmd.getDatabaseProductVersion();
         this.isFractionalTimeSupported = Helper.compareVersions(databaseVersion, "5.6.4") >= 0;
+        // Driver 5.1 supports NVARCHAR
+        this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "5.1.0") >= 0;
         this.isConnectionDataInitialized = true;
     }
 
@@ -169,7 +175,11 @@ public class MySQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL",38));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL",38));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        if(getUseNationalCharacterVaryingTypeForString()){
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR", DEFAULT_VARCHAR_SIZE));    
+        } else {
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));   
+        }
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
 
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONGBLOB", false));

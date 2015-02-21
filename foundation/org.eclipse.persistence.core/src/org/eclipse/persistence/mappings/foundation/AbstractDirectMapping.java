@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,7 +12,9 @@
  *     11/13/2009-2.0  mobrien - 294765: MapKey keyType DirectToField processing 
  *       should return attributeClassification class in getMapKeyTargetType when 
  *       accessor.attributeField is null in the absence of a MapKey annotation
- ******************************************************************************/  
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
+ *****************************************************************************/  
 package org.eclipse.persistence.mappings.foundation;
 
 import java.security.AccessController;
@@ -1228,7 +1230,13 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     @Override
     public Object valueFromResultSet(ResultSet resultSet, ObjectBuildingQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws SQLException {
         if (this.attributeObjectClassification == ClassConstants.STRING) {
-            return getObjectValueWithoutClassCheck(resultSet.getString(columnNumber), session);
+            Object val;
+            if(platform.shouldUseGetSetNString()){
+                val = resultSet.getNString(columnNumber);
+            }else {
+                val = resultSet.getString(columnNumber);
+            }
+            return getObjectValueWithoutClassCheck(val, session);
         } else if (this.attributeObjectClassification == ClassConstants.LONG) {
             return getObjectValueWithoutClassCheck(resultSet.getLong(columnNumber), session);
         } else if (this.attributeObjectClassification == ClassConstants.INTEGER) {

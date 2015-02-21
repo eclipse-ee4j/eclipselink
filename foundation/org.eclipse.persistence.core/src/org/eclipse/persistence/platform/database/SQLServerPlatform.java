@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,11 +11,14 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- ******************************************************************************/  
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
+ *****************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -51,9 +54,11 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         if (isConnectionDataInitialized) {
             return;
         }
-        int databaseVersion = connection.getMetaData().getDatabaseMajorVersion();
+        DatabaseMetaData dmd = connection.getMetaData();
+        int databaseVersion = dmd.getDatabaseMajorVersion();
         supportsSequenceObjects = databaseVersion >= 11;
         isConnectionDataInitialized = true;
+        this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "4.0.0") >= 0;
     }
     
     /**
@@ -167,8 +172,13 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMERIC", 28));
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMERIC", 28).setLimits(28, -19, 19));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMERIC", 28).setLimits(28, -19, 19));
+        // Create String column to support unicode characters
+        if(getUseNationalCharacterVaryingTypeForString()){
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR", DEFAULT_VARCHAR_SIZE));  
+        }else {
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE)); 
+        }
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
         
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("IMAGE", false));

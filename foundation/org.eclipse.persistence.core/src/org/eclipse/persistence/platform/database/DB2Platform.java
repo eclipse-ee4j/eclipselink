@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,7 +11,9 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- ******************************************************************************/
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
+ *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -29,6 +31,7 @@ import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * <p>
@@ -54,6 +57,15 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     public DB2Platform() {
         super();
         this.pingSQL = "VALUES(1)";
+    }
+    
+    @Override
+    public void initializeConnectionData(Connection connection) throws SQLException {
+        DatabaseMetaData dmd = connection.getMetaData();
+        String databaseVersion = dmd.getDatabaseProductVersion();
+        // DB2 database doesn't support NVARCHAR column types and as such doesn't support calling
+        // get/setNString() on the driver.
+        this.driverSupportsNationalCharacterVarying = false;
     }
 
     /**
@@ -275,8 +287,11 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("BIGINT", false));
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL", 15));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL", 15));
-
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        if(getUseNationalCharacterVaryingTypeForString()){
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE, "FOR MIXED DATA"));
+        }else {
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));   
+        }
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", 64000));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", 64000));
@@ -607,6 +622,15 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             writer.write(" GENERATED ALWAYS AS IDENTITY");
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
+        }
+    }
+    
+    @Override
+    protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition ftd) throws IOException {
+        super.printFieldTypeSize(writer, field, ftd);
+        String suffix = ftd.getTypesuffix();
+        if (suffix != null) {
+            writer.append(" " + suffix);
         }
     }
 

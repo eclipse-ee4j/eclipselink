@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,13 +16,16 @@
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  *     02/04/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
+ *****************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -74,6 +77,13 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public OraclePlatform(){
     	super();
     	this.pingSQL = "SELECT 1 FROM DUAL";
+    }
+    
+    @Override
+    public void initializeConnectionData(Connection connection) throws SQLException {
+        DatabaseMetaData dmd = connection.getMetaData();
+        // Tested with 11.1.0.6
+        this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "11.1") >= 0;
     }
     
     /*
@@ -192,7 +202,11 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMBER", 38).setLimits(38, -38, 38));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMBER", 38).setLimits(38, -38, 38));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR2", DEFAULT_VARCHAR_SIZE));
+        if(getUseNationalCharacterVaryingTypeForString()){
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR2", DEFAULT_VARCHAR_SIZE));
+        }else {
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR2", DEFAULT_VARCHAR_SIZE));
+        }
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
 
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));

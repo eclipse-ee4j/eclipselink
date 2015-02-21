@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,6 +20,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     04/30/2014-2.6 Lukas Jungmann
  *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -690,7 +692,6 @@ public class DatabasePlatform extends DatasourcePlatform {
         
         return classTypeMapping;
     }
-
     /**
      * Return the mapping of class types to database types for the schema framework.
      */
@@ -728,6 +729,41 @@ public class DatabasePlatform extends DatasourcePlatform {
         fieldTypeMapping.put(java.lang.Number.class, new FieldTypeDefinition("NUMBER", 10));
 
         return fieldTypeMapping;
+    }
+
+    /**
+     * Returns true iff:
+     * <li>tThe current driver supports calling get/setNString 
+     * <li> Strings are globally mapped to a national character varying type (useNationalCharacterVarying()).
+     */
+    public boolean shouldUseGetSetNString() {
+        return getDriverSupportsNVarChar() && getUseNationalCharacterVaryingTypeForString();
+    }
+
+    /**
+     * True if the current jdbc driver supports get/setNString methods
+     */
+    protected boolean driverSupportsNationalCharacterVarying = false;
+    /**
+     * If true, the platform should map String columns to a type that supports
+     * national characters.
+     */
+    protected boolean useNationalCharacterVarying = false;
+
+    public boolean getDriverSupportsNVarChar() {
+        return driverSupportsNationalCharacterVarying;
+    }
+
+    public void setDriverSupportsNVarChar(boolean b) {
+        driverSupportsNationalCharacterVarying = b;
+    }
+
+    public boolean getUseNationalCharacterVaryingTypeForString() {
+        return useNationalCharacterVarying;
+    }
+
+    public void setUseNationalCharacterVaryingTypeForString(boolean b) {
+        useNationalCharacterVarying = b;
     }
 
     /**
@@ -2380,7 +2416,11 @@ public class DatabasePlatform extends DatasourcePlatform {
                 CharArrayReader reader = new CharArrayReader(((String)parameter).toCharArray());
                 statement.setCharacterStream(index, reader, ((String)parameter).length());
             } else {
-                statement.setString(index, (String) parameter);
+                if (shouldUseGetSetNString()) {
+                    statement.setNString(index, (String) parameter);
+                } else {
+                    statement.setString(index, (String) parameter);
+                }
             }
         } else if (parameter instanceof Number) {
             Number number = (Number) parameter;

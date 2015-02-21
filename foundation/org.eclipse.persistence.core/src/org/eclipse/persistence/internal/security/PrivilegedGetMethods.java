@@ -12,9 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.security;
 
-import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedAction;
 
-public class PrivilegedGetMethods implements PrivilegedExceptionAction {
+public class PrivilegedGetMethods implements PrivilegedAction {
 
     private Class clazz;
     

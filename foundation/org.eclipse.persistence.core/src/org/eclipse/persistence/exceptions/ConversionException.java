@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -29,6 +31,7 @@ public class ConversionException extends EclipseLinkException {
     public final static int COULD_NOT_CONVERT_TO_BYTE_ARRAY = 3006;
     public final static int COULD_NOT_BE_CONVERTED_TO_CLASS = 3007;
     public final static int INCORRECT_DATE_TIME_FORMAT = 3008;
+    public final static int UNABLE_TO_SET_PROPERTIES = 3009;
 
     /**
      * INTERNAL:
@@ -94,6 +97,15 @@ public class ConversionException extends EclipseLinkException {
         String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, COULD_NOT_BE_CONVERTED_TO_CLASS, args);
         ConversionException conversionException = new ConversionException(message, object, javaClass, exception);
         conversionException.setErrorCode(COULD_NOT_BE_CONVERTED_TO_CLASS);
+        return conversionException;
+    }
+    
+    public static ConversionException couldNotTranslatePropertiesIntoObject(Object object, String propertyName, String propertyValue, Exception cause) {
+        // Unable to set {0} properties [{1}] into [{2}]
+        Object[] args = { propertyName, propertyValue, object};
+        String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, UNABLE_TO_SET_PROPERTIES, args);
+        ConversionException conversionException = new ConversionException(message, object, object.getClass(), cause);
+        conversionException.setErrorCode(UNABLE_TO_SET_PROPERTIES);
         return conversionException;
     }
 

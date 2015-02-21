@@ -243,13 +243,8 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * public) on the given class ONLY. It does not traverse the superclasses.
      */
     Method[] getDeclaredMethods(Class cls) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try {
-                return (Method[])AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
-            } catch (PrivilegedActionException exception) {
-                // we will not get here, there are no checked exceptions in this call
-                return null;
-            }
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            return (Method[]) AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
         } else {
             return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getDeclaredMethods(cls);
         }
@@ -307,12 +302,8 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * superclasses.
      */
     Method[] getMethods(Class cls) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-            try {
-                return (Method[])AccessController.doPrivileged(new PrivilegedGetMethods(cls));
-            } catch (PrivilegedActionException exception) {
-                return null;
-            }
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            return (Method[]) AccessController.doPrivileged(new PrivilegedGetMethods(cls));
         } else {
             return PrivilegedAccessHelper.getMethods(cls);
         }

@@ -11,11 +11,17 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     12/11/2014 - Dalia Abo Sheasha
  *       - 454917 : Wrong SQL statement generated for Informix when GenerationType.IDENTITY strategy is used
- ******************************************************************************/  
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
+ *****************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.*;
@@ -33,6 +39,15 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  */
 public class InformixPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
 
+    
+    @Override
+    public void initializeConnectionData(Connection connection) throws SQLException {
+        DatabaseMetaData dmd = connection.getMetaData();
+
+        // Wasn't able to find a driver that would support passing unicode values
+        this.driverSupportsNationalCharacterVarying = false;
+    }
+    
     /**
      * Answer a platform correct string representation of a Date, suitable for SQL generation.
      * Native format: 'yyyy-mm-dd
@@ -139,7 +154,11 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL", 32).setLimits(32, -19, 19));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL", 32).setLimits(32, -19, 19));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        if (getUseNationalCharacterVaryingTypeForString()) {
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR", DEFAULT_VARCHAR_SIZE));
+        } else {
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        }
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
         
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BYTE", false));

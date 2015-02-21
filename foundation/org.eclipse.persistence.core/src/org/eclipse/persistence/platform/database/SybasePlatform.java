@@ -13,7 +13,9 @@
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  *     02/02/2015-2.6.0 Rick Curtis
  *       - 458204: Fix stored procedure termination character.
- ******************************************************************************/  
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
+ *****************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -47,6 +49,12 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     public SybasePlatform(){
         super();
         this.pingSQL = "SELECT 1";
+    }
+    
+    @Override
+    public void initializeConnectionData(Connection connection) throws SQLException {
+        DatabaseMetaData dmd = connection.getMetaData();
+        this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "7.0.0") >= 0;
     }
     
     protected Map getTypeStrings() {
@@ -230,7 +238,12 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMERIC", 38).setLimits(38, -19, 19));
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMERIC", 38).setLimits(38, -19, 19));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        if(getUseNationalCharacterVaryingTypeForString()){
+            // http://infocenter.sybase.com/help/index.jsp?topic=/com.sybase.infocenter.dc36271.1570/html/blocks/CIHJCBJF.htm
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("UNIVARCHAR", DEFAULT_VARCHAR_SIZE));
+        } else {
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        }
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("IMAGE", false));
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));

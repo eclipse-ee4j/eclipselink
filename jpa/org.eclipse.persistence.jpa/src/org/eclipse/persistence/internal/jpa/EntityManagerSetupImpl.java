@@ -56,7 +56,9 @@
  *       - 455683: Automatically detect target server
   *     01/13/2015 - Rick Curtis  
  *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
- ******************************************************************************/  
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
+ *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
@@ -145,6 +147,7 @@ import org.eclipse.persistence.config.LoggerType;
 import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
+import org.eclipse.persistence.config.PropertiesUtils;
 import org.eclipse.persistence.config.RemoteProtocol;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -215,6 +218,7 @@ import org.eclipse.persistence.jpa.metadata.XMLMetadataSource;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
@@ -723,6 +727,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 } else {
                                     login(getDatabaseSession(), deployProperties, requiresConnection);
                                 }
+                                DatabasePlatform platform = getDatabaseSession().getPlatform();
+                                PropertiesUtils.set(platform, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, (String) deployProperties.get(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES));
+                                
                                 // Make JTA integration throw JPA exceptions.
                                 if (this.session.hasExternalTransactionController()) {
                                     if (this.session.getExternalTransactionController().getExceptionHandler() == null) {

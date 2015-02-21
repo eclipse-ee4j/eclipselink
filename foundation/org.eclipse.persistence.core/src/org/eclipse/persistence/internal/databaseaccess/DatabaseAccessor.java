@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -20,6 +20,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     01/08/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     02/19/2015 - Rick Curtis  
+ *       - 458877 : Add national character support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -1339,7 +1341,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
     protected Object getObjectThroughOptimizedDataConversion(ResultSet resultSet, DatabaseField field, int type, int columnNumber, DatabasePlatform platform, AbstractSession session) throws SQLException {
         Object value = this;// Means no optimization, need to distinguish from null.
         Class fieldType = field.type;
-        if ((type == Types.VARCHAR) || (type == Types.CHAR) || type == Types.NVARCHAR || type == Types.NCHAR) {
+
+        if (platform.shouldUseGetSetNString() && (type == Types.NVARCHAR || type == Types.NCHAR)) {
+            value = resultSet.getNString(columnNumber);
+            if (type == Types.NCHAR && value != null && platform.shouldTrimStrings()) {
+                value = Helper.rightTrimString((String) value);
+            }
+            return value;            
+        }else if (type == Types.VARCHAR || type == Types.CHAR || type == Types.NVARCHAR || type == Types.NCHAR) {
             // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets. 
             // Chars may require blanks to be trimmed.
             value = resultSet.getString(columnNumber);
