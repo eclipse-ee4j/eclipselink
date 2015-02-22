@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -19,7 +19,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +132,10 @@ public class CompilerHelper {
             return false;
         }
 
+        if (!hasSameClassName(tmi1,tmi2)) {
+            return false;
+        }
+
         boolean isXmlList1 = isXmlList(tmi1, element1);
         boolean isXmlList2 = isXmlList(tmi2, element2);
 
@@ -142,6 +145,35 @@ public class CompilerHelper {
             }
         } else if (isXmlList2) {
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Return true if tmi1 and tmi2 are instances of Class and have same class name.
+     *
+     * @param tmi1 instance of TypeMappingInfo
+     * @param tmi2 instance of typeMappingInfo
+     * @return true if TypeMappingInfos are instances of Class and have same class name
+     */
+    private static boolean hasSameClassName(TypeMappingInfo tmi1, TypeMappingInfo tmi2) {
+
+        Type type1 = tmi1.getType();
+        Type type2 = tmi2.getType();
+
+        if (type1 != null && type2 == null) {
+            return false;
+        } else if (type1 == null && type2 != null) {
+            return false;
+        } else if (type1 instanceof Class && type2 instanceof Class){
+
+            String typeName1 = ((Class)type1).getName();
+            String typeName2 = ((Class)type2).getName();
+
+            if (!typeName1.equals(typeName2)) {
+                return false;
+            }
         }
 
         return true;

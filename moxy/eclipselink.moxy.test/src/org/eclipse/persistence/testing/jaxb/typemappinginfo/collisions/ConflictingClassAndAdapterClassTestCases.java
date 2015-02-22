@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -16,15 +16,19 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.ListToStringAdapter;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 import org.w3c.dom.Element;
@@ -132,9 +136,25 @@ public class ConflictingClassAndAdapterClassTestCases extends TypeMappingInfoWit
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE;
 	}
-	
+
 	public void testDescriptorsSize(){
-		List descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
-		assertEquals(1, descriptors.size());
+		List<ClassDescriptor> descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
+		assertEquals(2, descriptors.size());
+	}
+
+	/**
+	 * Tests different descriptors for testTagName1 and testTagName2.
+	 */
+	public void testDifferentDescriptors() {
+	    List<ClassDescriptor> descriptors = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getOrderedDescriptors();
+
+	    Set<String> javaClasses = new HashSet<String>();
+
+	    for (ClassDescriptor descriptor : descriptors) {
+	        javaClasses.add(descriptor.getJavaClassName());
+	    }
+
+	    assertTrue("No generated class generated0", javaClasses.contains("org.eclipse.persistence.jaxb.generated0"));
+	    assertTrue("No generated class generated1", javaClasses.contains("org.eclipse.persistence.jaxb.generated1"));
 	}
 }
