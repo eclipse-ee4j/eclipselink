@@ -22,6 +22,8 @@
  *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
  *     02/19/2015 - Rick Curtis  
  *       - 458877 : Add national character support
+ *     02/23/2015-2.6 Dalia Abo Sheasha
+ *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
  ******************************************************************************/
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -243,6 +245,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected String tableCreationSuffix;
     
     /**
+     * The delimiter between stored procedures in multiple stored procedure
+     * calls.
+     */
+    protected String storedProcedureTerminationToken;
+
+    
+    /**
      * Used to integrate with data partitioning in an external DataSource such as UCP.
      */
     protected DataPartitioningCallback partitioningCallback;
@@ -275,6 +284,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.startDelimiter = "\"";
         this.endDelimiter = "\"";
         this.useJDBCStoredProcedureSyntax = null;
+        this.storedProcedureTerminationToken = ";";
     }
     
     /**
@@ -1553,8 +1563,16 @@ public class DatabasePlatform extends DatasourcePlatform {
         return "";
     }
 
+    /**
+     * Returns the delimiter between stored procedures in multiple stored
+     * procedure calls.
+     */
     public String getStoredProcedureTerminationToken() {
-        return ";";
+        return storedProcedureTerminationToken;
+    }
+
+    public void setStoredProcedureTerminationToken(String storedProcedureTerminationToken) {
+        this.storedProcedureTerminationToken = storedProcedureTerminationToken;
     }
 
     public int getStringBindingSize() {

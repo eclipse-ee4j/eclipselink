@@ -18,6 +18,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/19/2015 - Rick Curtis  
  *       - 458877 : Add national character support
+ *     02/23/2015-2.6 Dalia Abo Sheasha
+ *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
  *****************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -77,6 +79,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public OraclePlatform(){
     	super();
     	this.pingSQL = "SELECT 1 FROM DUAL";
+    	this.storedProcedureTerminationToken = "";
     }
     
     @Override
@@ -453,11 +456,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     @Override
     public String getStoredProcedureParameterPrefix() {
         return "P_";
-    }
-
-    @Override
-    public String getStoredProcedureTerminationToken() {
-        return "";
     }
 
     /**

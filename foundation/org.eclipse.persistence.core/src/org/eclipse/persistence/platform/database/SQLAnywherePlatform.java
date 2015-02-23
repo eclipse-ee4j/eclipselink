@@ -1,7 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates, Markus KARG(markus-karg@users.sourceforge.net). All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, Markus KARG(markus-karg@users.sourceforge.net),
+ * IBM Corporation. All rights reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
@@ -9,8 +9,10 @@
  *
  * Contributors:
  *     Markus Karg and Oracle - initial API and implementation from Oracle TopLink and TopLink Essentials
- *          05/16/2008-1.0 Markus Karg - 237843: CONCAT must be translated into || instead of + 
- *        
+ *     05/16/2008-1.0 Markus Karg
+ *       - 237843: CONCAT must be translated into || instead of +
+ *     02/23/2015-2.6 Dalia Abo Sheasha
+ *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -34,6 +36,7 @@ public class SQLAnywherePlatform extends SybasePlatform {
 
     public SQLAnywherePlatform() {
         super();
+        this.storedProcedureTerminationToken = ";";
     }
     
 // TODO: can't use these field types: none of them has sizes.
@@ -156,11 +159,6 @@ public class SQLAnywherePlatform extends SybasePlatform {
     @Override
     public String getStoredProcedureParameterPrefix() {
         return "";
-    }
-
-    @Override
-    public String getStoredProcedureTerminationToken() {
-        return ";";
     }
     
     @Override

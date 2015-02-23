@@ -13,6 +13,8 @@
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  *     02/19/2015 - Rick Curtis  
  *       - 458877 : Add national character support
+ *     02/23/2015-2.6 Dalia Abo Sheasha
+ *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
  *****************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -47,6 +49,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     public SQLServerPlatform(){
         super();
         this.pingSQL = "SELECT 1";
+        this.storedProcedureTerminationToken = " go";
     }
 
     @Override
@@ -318,15 +321,6 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
 
     public String getStoredProcedureParameterPrefix() {
         return "@";
-    }
-
-    /**
-     * INTERNAL:
-     *    This method returns the delimiter between stored procedures in multiple stored procedure
-     * calls.
-     */
-    public String getStoredProcedureTerminationToken() {
-        return " go";
     }
 
     /**

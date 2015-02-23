@@ -15,6 +15,8 @@
  *       - 458204: Fix stored procedure termination character.
  *     02/19/2015 - Rick Curtis  
  *       - 458877 : Add national character support
+ *     02/23/2015-2.6 Dalia Abo Sheasha
+ *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
  *****************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -49,6 +51,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     public SybasePlatform(){
         super();
         this.pingSQL = "SELECT 1";
+        this.storedProcedureTerminationToken = "\ngo";
     }
     
     @Override
@@ -405,16 +408,6 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     @Override
     public String getStoredProcedureParameterPrefix() {
         return "@";
-    }
-
-    /**
-     * INTERNAL:
-     * This method returns the delimiter between stored procedures in multiple stored procedure
-     * calls.
-     */
-    @Override
-    public String getStoredProcedureTerminationToken() {
-        return "\ngo";
     }
 
     /**
