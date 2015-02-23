@@ -61,8 +61,6 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     
     @Override
     public void initializeConnectionData(Connection connection) throws SQLException {
-        DatabaseMetaData dmd = connection.getMetaData();
-        String databaseVersion = dmd.getDatabaseProductVersion();
         // DB2 database doesn't support NVARCHAR column types and as such doesn't support calling
         // get/setNString() on the driver.
         this.driverSupportsNationalCharacterVarying = false;
