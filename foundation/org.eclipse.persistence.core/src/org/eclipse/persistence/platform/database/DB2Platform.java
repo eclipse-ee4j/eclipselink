@@ -13,6 +13,8 @@
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  *     02/19/2015 - Rick Curtis  
  *       - 458877 : Add national character support
+ *     02/24/2016-2.6.0 Rick Curtis
+ *       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
  *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -789,6 +791,10 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         return true;
     }
     
+    @Override
+    public boolean shouldPrintForUpdateClause() {
+        return false;
+    }
     /**
      * INTERNAL:
      * Print the SQL representation of the statement on a stream, storing the fields
@@ -807,22 +813,26 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         
         if ( !(this.shouldUseRownumFiltering()) || ( !(max>0) && !(firstRow>0) ) ){
             super.printSQLSelectStatement(call, printer, statement);
+            statement.appendForUpdateClause(printer);
             return;
         } else if ( max > 0 ){
             statement.setUseUniqueFieldAliases(true);
             printer.printString("SELECT * FROM (SELECT * FROM (SELECT ");
-            printer.printString("EL_TEMP.*, ROWNUMBER() OVER() AS EL_ROWNM FROM (");            
+            printer.printString("EL_TEMP.*, ROWNUMBER() OVER() AS EL_ROWNM FROM (");
             call.setFields(statement.printSQL(printer));
             printer.printString(") AS EL_TEMP) AS EL_TEMP2 WHERE EL_ROWNM <= ");
             printer.printParameter(DatabaseCall.MAXROW_FIELD);
             printer.printString(") AS EL_TEMP3 WHERE EL_ROWNM > ");
             printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+            // If we have a ForUpdate clause, it must be on the outermost query
+             statement.appendForUpdateClause(printer);
         } else {// firstRow>0
             statement.setUseUniqueFieldAliases(true);
-            printer.printString("SELECT * FROM (SELECT EL_TEMP.*, ROWNUMBER() OVER() AS EL_ROWNM FROM (");            
+            printer.printString("SELECT * FROM (SELECT EL_TEMP.*, ROWNUMBER() OVER() AS EL_ROWNM FROM (");
             call.setFields(statement.printSQL(printer));
             printer.printString(") AS EL_TEMP) AS EL_TEMP2 WHERE EL_ROWNM > ");
             printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+            statement.appendForUpdateClause(printer);
         }
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
