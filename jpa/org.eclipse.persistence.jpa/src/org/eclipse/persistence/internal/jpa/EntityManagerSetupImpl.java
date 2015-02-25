@@ -58,6 +58,8 @@
  *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
  *     02/19/2015 - Rick Curtis  
  *       - 458877 : Add national character support
+ *     03/04/2015 - Will Dazey 
+ *       - 460862 : Added support for JTA schema generation without JTA-DS
  *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -1839,7 +1841,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         
                         if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && transactionType == PersistenceUnitTransactionType.JTA) {
                             if (predeployProperties.get(PersistenceUnitProperties.JTA_DATASOURCE) == null && persistenceUnitInfo.getJtaDataSource() == null) {
-                                throw EntityManagerSetupException.jtaPersistenceUnitInfoMissingJtaDataSource(persistenceUnitInfo.getPersistenceUnitName());
+                                if (predeployProperties.get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME) == null || 
+                                        predeployProperties.get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION) == null || 
+                                        predeployProperties.get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION) == null) {
+                                    throw EntityManagerSetupException.jtaPersistenceUnitInfoMissingJtaDataSource(persistenceUnitInfo.getPersistenceUnitName());
+                                }
                             }
                         }
                     }
