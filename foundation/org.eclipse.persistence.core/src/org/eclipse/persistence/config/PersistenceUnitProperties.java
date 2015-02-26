@@ -1691,16 +1691,14 @@ public class PersistenceUnitProperties {
      * <p>
      * <b> Note: Keys and values cannot contain '=' or ','</b>
      * <p>
-     * <b> If an invalid property is located a ConversionException will be thrown.
+     * <b> If an invalid property is located a ConversionException will be thrown.</b>
      * <p>
      * <b> Example : </b> To change the value of
      * DatabasePlatform.shouldBindLiterals via configuration, provide the
-     * following :
+     * following :<br><br>
      * 
-     * <pre>
      * {@code
      *  <property name="eclipselink.target-database-properties" value="shouldBindLiterals=true"/>}
-     * </pre>
      * @see TargetDatabase
      * @see DatabasePlatform
      */

@@ -40,7 +40,7 @@ public class PropertiesUtils {
      * @param propertyName
      *            The configuration name that is being set into instance. This
      *            is only used for informational purposes.
-     * @param value
+     * @param kvs
      *            A String of key=value comma delimited ie: k1=v1,k2=v2,...
      * @throws org.eclipse.persistence.exceptions.ConversionException
      *             if unable to process the provided kvs
