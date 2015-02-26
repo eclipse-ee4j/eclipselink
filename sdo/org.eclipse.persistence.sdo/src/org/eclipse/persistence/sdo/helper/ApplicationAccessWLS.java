@@ -135,7 +135,7 @@ public class ApplicationAccessWLS {
      */
     protected boolean initUsingCic() {
         // Check that CIC implementation exists.
-        if (ApplicationAccessWLS.class.getClassLoader().getResource(CIC_MANAGER_CLASS_NAME) == null) {
+        if (ApplicationAccessWLS.class.getClassLoader().getResource("META-INF/services/" + CIC_MANAGER_CLASS_NAME) == null) {
             return false;
         }
 
