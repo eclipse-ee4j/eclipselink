@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,7 +14,7 @@ package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
 
-import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -56,7 +56,7 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
             return ((Vector)container).clone();
         } catch (Exception notVector) {
             // Could potentially be another Collection type as well.
-            return new IndirectList((Collection)container);
+            return IndirectCollectionsFactory.createIndirectList((Collection)container);
         }
     }
     
@@ -65,7 +65,7 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
      * Just return the Vector.
      */
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
-        return new IndirectList(vector);
+        return IndirectCollectionsFactory.createIndirectList(vector);
     }
     
     /**
@@ -73,7 +73,7 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
      * Return a new Vector.
      */
     public Object containerInstance() {
-        return new IndirectList();
+        return IndirectCollectionsFactory.createIndirectList();
     }
     
     /**
@@ -81,6 +81,6 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
      * Return a new Vector.
      */
     public Object containerInstance(int initialCapacity) {
-        return new IndirectList(initialCapacity);
+        return IndirectCollectionsFactory.createIndirectList(initialCapacity);
     }
 }

@@ -200,6 +200,11 @@
                 <artifactId>tycho-compiler-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+                    <excludes>
+                        <!-- some sources here require JDK 8 for compilation
+                             so exclude them from the tycho build -->
+                        <exclude>**/jdk8/**</exclude>
+                    </excludes>
                     <!-- Set to force OSGi Compatability settings (defaults to "false") (Only available as of Tycho 0.16.0) -->
                     <!-- requireJREPackageImports>true</requireJREPackageImports -->
                     <!-- compilerArgument>-nowarn</compilerArgument> <disable all warnings -->

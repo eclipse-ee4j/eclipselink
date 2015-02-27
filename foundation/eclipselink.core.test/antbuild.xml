@@ -111,6 +111,19 @@
         </delete>
     </target>
 
+    <target name="valid-junit-java">
+        <available property="valid.junit.java.home" file="${junit.java.home}/bin/java"/>
+    </target>
+
+    <target name="check-jdk8" description="Check availability of JDK 8" if="${valid.junit.java.home}" depends="valid-junit-java">
+        <exec outputproperty="jdk.detection.output" executable="${junit.java.home}/bin/java">
+            <arg line="-version"/>
+        </exec>
+        <condition property="compat.jdk8" value="true">
+            <matches string="${jdk.detection.output}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*"/>
+        </condition>
+    </target>
+
     <target name="init">
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
@@ -186,6 +199,9 @@
                 <isset property="tools.jar.exist"/>
             </and>
         </condition>
+
+        <!-- java tests should run with -->
+        <property name="junit.java.home" value="${java.home}"/>
 
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
@@ -336,6 +352,9 @@
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
         </antcall>
+        <ant target="test-jdk8" antfile="${ant.file}">
+            <property name="junit.java.home" value="${env.JAVA8_HOME}"/>
+        </ant>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
@@ -412,7 +431,16 @@
         <antcall target="run-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.TestRunModel"/>
         </antcall>
+        <ant target="test-jdk8" antfile="${ant.file}">
+            <property name="junit.java.home" value="${env.JAVA8_HOME}"/>
+        </ant>
         <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+    <target name="test-jdk8" depends="check-jdk8" if="${compat.jdk8}">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.transparentindirection.TransparentIndirectionModel"/>
+        </antcall>
     </target>
 
     <!-- Prompt runner test target, runs test.class from test.properties (default is LRG). -->
@@ -464,7 +492,7 @@
         <mkdir dir="${core_test.report.dir}"/>
         <!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
         <!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
-        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
+        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}" jvm="${junit.java.home}/bin/java">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>

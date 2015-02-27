@@ -1,23 +1,31 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
-import java.util.*;
-
-import org.eclipse.persistence.indirection.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Vector;
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.helper.JavaSEPlatform;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.indirection.QueryBasedValueHolder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * Test a simple IndirectList.
@@ -25,77 +33,8 @@ import org.eclipse.persistence.queries.*;
  */
 public class IndirectListTestAPI extends ZTestCase {
 
-    /**
-     * Vector with sort method to verify sorting with JDK < 1.8.
-     * @param <E> Object type stored inside.
-     */
-    public static final class VectorWithSort<E> extends Vector<E> {
-
-        /**
-         * Creates an instance of Vector with sort method with provided initial
-         * elements.
-         * @param collection The collection whose elements are to be placed into
-         *                   this vector.
-         */
-        private VectorWithSort(final Collection<? extends E> collection) {
-            super(collection);
-        }
-
-        /**
-         * Creates an instance of Vector.
-         */
-        private VectorWithSort() {
-            super();
-        }
-
-        /**
-         * JDK 1.8 sort implemented in Vector to verify sorting on JDK < 1.8
-         * @param c Comparator to define sorting order.
-         */
-        public synchronized void sort(final Comparator<? super E> c) {
-            final int expectedModCount = modCount;
-            Arrays.sort((E[]) elementData, 0, elementCount, c);
-            if (modCount != expectedModCount) {
-                throw new ConcurrentModificationException();
-            }
-            modCount++;
-        }
-    }
-
-    /**
-     * Indirect list with delegate {@see Vector} setter.
-     * @param <E> Object type stored inside.
-     */
-    private static final class IndirectListWrapper<E> extends IndirectList<E> {
-
-        /**
-         * Creates an instance of IndirectList with provided initial capacity.
-         * @param initialCapacity Internal initial capacity.
-         */
-        private IndirectListWrapper(final int initialCapacity) {
-            super(0);
-        }
-
-        /**
-         * Allow to set delegate object from outside.
-         * @param delegate Delegate object to be set.
-         */
-        private final void setDelegate(final Vector<E> delegate) {
-            this.delegate = delegate;
-        }
-    }
-
-    /**
-     * Do we run with at least Java SE 1.8?
-     * @return Value of {@code true} when we run with Java SE 1.8 or higher
-     *         or {@code false} otherwise.
-     */
-    private static final boolean atLeastJava8() {
-        return JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8);
-    }
-
-    Vector list;
-    IndirectList testList;
+    private Vector<String> list;
+    private IndirectList<String> testList;
 
     /**
      * Constructor
@@ -112,15 +51,15 @@ public class IndirectListTestAPI extends ZTestCase {
     protected void setUp() {
         super.setUp();
         list = this.setUpList();
-        Object temp = new Vector(list);
+        Object temp = new Vector<>(list);
 
-        org.eclipse.persistence.indirection.ValueHolderInterface vh = new org.eclipse.persistence.internal.indirection.QueryBasedValueHolder(new ReadAllQuery(), new DatabaseRecord(), new TestSession(temp));
-        testList = new IndirectList();
+        ValueHolderInterface vh = new QueryBasedValueHolder(new ReadAllQuery(), new DatabaseRecord(), new TestSession(temp));
+        testList = IndirectCollectionsFactory.createIndirectList();
         testList.setValueHolder(vh);
     }
 
     protected Vector setUpList() {
-        Vector result = new Vector();
+        Vector<String> result = new Vector<>();
         result.addElement("zero");
         result.addElement("one");
         result.addElement("two");
@@ -137,12 +76,13 @@ public class IndirectListTestAPI extends ZTestCase {
     /**
      * nothing for now...
      */
+    @Override
     protected void tearDown() {
         super.tearDown();
     }
 
     public void testAdd1() {
-        Object temp = "foo";
+        String temp = "foo";
 
         list.add(3, temp);
         testList.add(3, temp);
@@ -151,7 +91,7 @@ public class IndirectListTestAPI extends ZTestCase {
     }
 
     public void testAdd2() {
-        Object temp = "foo";
+        String temp = "foo";
 
         list.add(temp);
         testList.add(temp);
@@ -182,7 +122,7 @@ public class IndirectListTestAPI extends ZTestCase {
     }
 
     public void testAddElement() {
-        Object temp = "foo";
+        String temp = "foo";
         list.addElement(temp);
         testList.addElement(temp);
         this.assertEquals(list, testList);
@@ -239,7 +179,7 @@ public class IndirectListTestAPI extends ZTestCase {
     }
 
     public void testInsertElementAt() {
-        Object temp = "foo";
+        String temp = "foo";
         list.insertElementAt(temp, 3);
         testList.insertElementAt(temp, 3);
         this.assertEquals(list, testList);
@@ -354,7 +294,7 @@ public class IndirectListTestAPI extends ZTestCase {
     }
 
     public void testSet() {
-        Object temp = "foo";
+        String temp = "foo";
 
         list.set(3, temp);
         testList.set(3, temp);
@@ -363,7 +303,7 @@ public class IndirectListTestAPI extends ZTestCase {
     }
 
     public void testSetElementAt() {
-        Object temp = "foo";
+        String temp = "foo";
         list.setElementAt(temp, 3);
         testList.setElementAt(temp, 3);
         this.assertEquals(list, testList);
@@ -394,12 +334,12 @@ public class IndirectListTestAPI extends ZTestCase {
     }
 
     public void testToArray2() {
-        String[] temp = (String[])list.toArray(new String[0]);
+        String[] temp = list.toArray(new String[0]);
         Vector v1 = new Vector(temp.length);
         for (int i = 0; i < temp.length; i++) {
             v1.addElement(temp[i]);
         }
-        temp = (String[])testList.toArray(new String[0]);
+        temp = testList.toArray(new String[0]);
         Vector v2 = new Vector(temp.length);
         for (int i = 0; i < temp.length; i++) {
             v2.addElement(temp[i]);
@@ -408,35 +348,116 @@ public class IndirectListTestAPI extends ZTestCase {
         this.assertEquals(v1, v2);
     }
 
-    // TODO: Rewrite to work directly with Vector#sort(Comparator) when source level will be at least 1.8
+    //Java SE 8 API
     public void testSort() {
-        final Vector<String> data = atLeastJava8() ? new Vector<String>(list) : new VectorWithSort<String>(list);
-        final VectorWithSort<String> sortedData = new VectorWithSort<String>(list);
-        final IndirectListWrapper<String> list = new IndirectListWrapper<String>(data.size());
-        sortedData.sort(null);
-        list.setDelegate(data);
-        list.sort(null);
-        assertEquals(data.size(), sortedData.size());
-        for (int i = 0; i < sortedData.size(); i++) {
-            this.assertEquals(data.get(i), sortedData.get(i));
-        }
-    }
+        assertElementsEqual(list, testList);
+        Comparator c = new Comparator<String>() {
 
-    // TODO: Rewrite to work directly with Vector#sort(Comparator) when source level will be at least 1.8
-    public void testSortOnCommonVector() {
-        final Vector<String> data = new Vector<String>(list);
-        final IndirectListWrapper<String> list = new IndirectListWrapper<String>(data.size());
-        list.setDelegate(data);
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        };
         try {
-            list.sort(null);
-            if (!atLeastJava8()) {
-                fail("Sort shall throw an exception on JDK < 1.8.");
-            }
+            callMethod(testList, "sort", new Class[]{Comparator.class}, new Object[]{c});
         } catch (UnsupportedOperationException e) {
-            if (atLeastJava8()) {
-                fail("Sort shall work since JDK 1.8.");
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
             }
         }
+        list = new Vector<>();
+        list.addElement("eight");
+        list.addElement("five");
+        list.addElement("four");
+        list.addElement("nine");
+        list.addElement("one");
+        list.addElement("seven");
+        list.addElement("six");
+        list.addElement("three");
+        list.addElement("two");
+        list.addElement("zero");
+        assertElementsEqual(list, testList);
     }
 
+    public void testSpliterator() {
+        Object o = null;
+        try {
+            o = callMethod(testList, "spliterator", new Class[0], new Object[0]);
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should get an instance of java.util.Spliterator", o);
+        boolean streamFound = false;
+        for (Class c: o.getClass().getInterfaces()) {
+            if ("java.util.Spliterator".equals(c.getName())) {
+                streamFound = true;
+                break;
+            }
+        }
+        assertTrue("not implementing java.util.Spliterator", streamFound);
+    }
+
+    public void testStream() {
+        Object o = null;
+        try {
+            o = callMethod(testList, "stream", new Class[0], new Object[0]);
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should get an instance of java.util.stream.Stream", o);
+        boolean streamFound = false;
+        if (o.getClass().getEnclosingClass() != null) {
+            for (Class c: o.getClass().getEnclosingClass().getInterfaces()) {
+                if ("java.util.stream.Stream".equals(c.getName())) {
+                    streamFound = true;
+                    break;
+                }
+            }
+        }
+        assertTrue("not implementing java.util.stream.Stream", streamFound);
+    }
+
+    public void testParallelStream() {
+        Object o = null;
+        try {
+            o = callMethod(testList, "parallelStream", new Class[0], new Object[0]);
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should get an instance of java.util.stream.Stream", o);
+        boolean streamFound = false;
+        if (o.getClass().getEnclosingClass() != null) {
+            for (Class c: o.getClass().getEnclosingClass().getInterfaces()) {
+                if ("java.util.stream.Stream".equals(c.getName())) {
+                    streamFound = true;
+                    break;
+                }
+            }
+        }
+        assertTrue("not implementing java.util.stream.Stream", streamFound);
+    }
+
+    private Object callMethod(List list, String method, Class[] params, Object[] args) {
+        try {
+            Method m = list.getClass().getMethod(method, params);
+            return m.invoke(list, args);
+        } catch (NoSuchMethodException | SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
+            if (JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8)) {
+                fail("cannot call method '" + method + "' " + ex.getMessage());
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+        return null;
+    }
 }

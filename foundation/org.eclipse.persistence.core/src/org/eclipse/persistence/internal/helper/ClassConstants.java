@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -60,9 +61,9 @@ public class ClassConstants extends CoreClassConstants {
     public static final Class FunctionExpression_Class = org.eclipse.persistence.internal.expressions.FunctionExpression.class;
     public static final Class ArgumentListFunctionExpression_Class = org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression.class;
     public static final Class IndirectContainer_Class = org.eclipse.persistence.indirection.IndirectContainer.class;
-    public static final Class IndirectList_Class = org.eclipse.persistence.indirection.IndirectList.class;
-    public static final Class IndirectSet_Class = org.eclipse.persistence.indirection.IndirectSet.class;
-    public static final Class IndirectMap_Class = org.eclipse.persistence.indirection.IndirectMap.class;
+    public static final Class IndirectList_Class = IndirectCollectionsFactory.IndirectList_Class;
+    public static final Class IndirectSet_Class = IndirectCollectionsFactory.IndirectSet_Class;
+    public static final Class IndirectMap_Class = IndirectCollectionsFactory.IndirectMap_Class;
     public static final Class LogicalExpression_Class = org.eclipse.persistence.internal.expressions.LogicalExpression.class;
     public static final Class PublicInterfaceDatabaseSession_Class = DatabaseSessionImpl.class;
     public static final Class PerformanceProfiler_Class = org.eclipse.persistence.tools.profiler.PerformanceProfiler.class;

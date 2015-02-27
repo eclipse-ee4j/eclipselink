@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,8 +13,15 @@
 package org.eclipse.persistence.indirection;
 
 import java.beans.PropertyChangeListener;
-import java.util.*;
-import org.eclipse.persistence.descriptors.changetracking.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
+import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
 
 /**
  * IndirectMap allows a domain class to take advantage of TopLink indirection
@@ -29,15 +36,17 @@ import org.eclipse.persistence.descriptors.changetracking.*;
  * the datatabase. With the first message sent to the IndirectMap, the contents
  * are fetched from the database and normal Hashtable/Map behavior is resumed.
  *
+ * @param <K> the type of keys maintained by this map
+ * @param <V> the type of mapped values
  * @see org.eclipse.persistence.mappings.CollectionMapping
  * @see org.eclipse.persistence.indirection.IndirectList
  * @author Big Country
  * @since TOPLink/Java 2.5
  */
-public class IndirectMap extends Hashtable implements CollectionChangeTracker, IndirectCollection {
+public class IndirectMap<K, V> extends Hashtable<K, V> implements CollectionChangeTracker, IndirectCollection {
 
     /** Reduce type casting */
-    protected volatile Hashtable delegate;
+    protected volatile Hashtable<K, V> delegate;
 
     /** Delegate indirection behavior to a value holder */
     protected ValueHolderInterface valueHolder;
@@ -97,7 +106,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * in the given Map or 11 (whichever is greater), and a default load factor, which is 0.75.
      * @param m a map containing the mappings to use
      */
-    public IndirectMap(Map m) {
+    public IndirectMap(Map<? extends K, ? extends V> m) {
         super(0);
         this.initialize(m);
     }
@@ -105,10 +114,10 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * Return the freshly-built delegate.
      */
-    protected Hashtable buildDelegate() {
-        Hashtable value = (Hashtable)getValueHolder().getValue();
+    protected Hashtable<K, V> buildDelegate() {
+        Hashtable<K, V> value = (Hashtable<K, V>)getValueHolder().getValue();
         if (value == null) {
-            value = new Hashtable(this.initialCapacity, this.loadFactor);
+            value = new Hashtable<>(this.initialCapacity, this.loadFactor);
         }
         return value;
     }
@@ -116,11 +125,12 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#clear()
      */
+    @Override
     public synchronized void clear() {
         if (hasTrackedPropertyChangeListener()) {
-            Iterator objects = this.keySet().iterator();
+            Iterator<K> objects = this.keySet().iterator();
             while (objects.hasNext()) {
-                Object o = objects.next();
+                K o = objects.next();
                 objects.remove();
                 this.raiseRemoveChangeEvent(o, this.get(o));
             }
@@ -135,6 +145,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * clear any changes that have been deferred to instantiation.
      * Indirect collections with change tracking avoid instantiation on add/remove.
      */
+    @Override
     public void clearDeferredChanges(){
     }
     
@@ -155,9 +166,10 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
             and "target" are the same object?). But the MergeManager checks "instantiation"
             before merging collections (again, "un-instantiated" collections are not merged).
     */
+    @Override
     public synchronized Object clone() {
-        IndirectMap result = (IndirectMap)super.clone();
-        result.delegate = (Hashtable)this.getDelegate().clone();
+        IndirectMap<K, V> result = (IndirectMap<K, V>)super.clone();
+        result.delegate = (Hashtable<K, V>)this.getDelegate().clone();
         result.valueHolder = new ValueHolder(result.delegate);
         result.attributeName = null;
         result.changeListener = null;
@@ -167,6 +179,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#contains(java.lang.Object)
      */
+    @Override
     public synchronized boolean contains(Object value) {
         return this.getDelegate().contains(value);
     }
@@ -174,6 +187,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#containsKey(java.lang.Object)
      */
+    @Override
     public synchronized boolean containsKey(Object key) {
         return this.getDelegate().containsKey(key);
     }
@@ -181,6 +195,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#containsValue(java.lang.Object)
      */
+    @Override
     public boolean containsValue(Object value) {
         return this.getDelegate().containsValue(value);
     }
@@ -188,62 +203,75 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#elements()
      */
-    public synchronized Enumeration elements() {
+    @Override
+    public synchronized Enumeration<V> elements() {
         return this.getDelegate().elements();
     }
 
     /**
      * @see java.util.Hashtable#entrySet()
      */
-    public Set entrySet() {
-        return new Set (){
-            Set delegateSet = IndirectMap.this.getDelegate().entrySet();
+    @Override
+    public Set<Map.Entry<K,V>> entrySet() {
+        return new Set<Map.Entry<K,V>> (){
+            Set<Map.Entry<K,V>> delegateSet = IndirectMap.this.getDelegate().entrySet();
             
+            @Override
             public int size(){
                 return this.delegateSet.size();
             }
         
+            @Override
             public boolean isEmpty(){
                 return this.delegateSet.isEmpty();
             }
         
+            @Override
             public boolean contains(Object o){
                 return this.delegateSet.contains(o);
             }
         
-            public Iterator iterator(){
-                return new Iterator() {
-                    Iterator delegateIterator = delegateSet.iterator();
-                    Object currentObject;
+            @Override
+            public Iterator<Map.Entry<K,V>> iterator(){
+                return new Iterator<Map.Entry<K,V>>() {
+                    Iterator<Map.Entry<K, V>> delegateIterator = delegateSet.iterator();
+                    Map.Entry<K, V> currentObject;
                     
+                    @Override
                     public boolean hasNext() {
                         return this.delegateIterator.hasNext();
                     }
                     
-                    public Object next() {
+                    @Override
+                    public Map.Entry<K, V> next() {
                         this.currentObject = this.delegateIterator.next();
                         return this.currentObject;
                     }
                     
+                    @Override
                     public void remove() {
-                        raiseRemoveChangeEvent(((Map.Entry)currentObject).getKey(), ((Map.Entry)currentObject).getValue());
+                        raiseRemoveChangeEvent(currentObject.getKey(), currentObject.getValue());
                         this.delegateIterator.remove();
                     }
                 };
             }
         
+            @Override
             public Object[] toArray(){
                 return this.delegateSet.toArray();
             }
     
-            public Object[] toArray(Object a[]){
+            @Override
+            public <T> T[] toArray(T a[]){
                 return this.delegateSet.toArray(a);
             }
     
-            public boolean add(Object o){
+            @Override
+            public boolean add(Map.Entry<K, V> o){
                 return this.delegateSet.add(o);
             }
         
+            @Override
             public boolean remove(Object o){
                 if (!(o instanceof Map.Entry)) {
                     return false;
@@ -251,15 +279,18 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 return (IndirectMap.this.remove(((Map.Entry)o).getKey()) != null);
             }
         
-            public boolean containsAll(Collection c){
+            @Override
+            public boolean containsAll(Collection<?> c){
                 return this.delegateSet.containsAll(c);
             }
         
-            public boolean addAll(Collection c){
+            @Override
+            public boolean addAll(Collection<? extends Map.Entry<K, V>> c){
                 return this.delegateSet.addAll(c);
             }
         
-            public boolean retainAll(Collection c){
+            @Override
+            public boolean retainAll(Collection<?> c){
                 boolean result = false;
                 Iterator objects = delegateSet.iterator();
                 while (objects.hasNext()) {
@@ -273,7 +304,8 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 return result;
             }
             
-            public boolean removeAll(Collection c){
+            @Override
+            public boolean removeAll(Collection<?> c){
                 boolean result = false;
                 for (Iterator cs = c.iterator(); cs.hasNext(); ){
                     Object object = cs.next();
@@ -288,14 +320,17 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 return result;
             }
         
+            @Override
             public void clear(){
                 IndirectMap.this.clear();
             }
         
+            @Override
             public boolean equals(Object o){
                 return this.delegateSet.equals(o);
             }
             
+            @Override
             public int hashCode(){
                 return this.delegateSet.hashCode();
             }
@@ -305,6 +340,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#equals(java.lang.Object)
      */
+    @Override
     public synchronized boolean equals(Object o) {
         return this.getDelegate().equals(o);
     }
@@ -312,7 +348,8 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#get(java.lang.Object)
      */
-    public synchronized Object get(Object key) {
+    @Override
+    public synchronized V get(Object key) {
         return this.getDelegate().get(key);
     }
 
@@ -322,7 +359,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * If they have not, read them and set the delegate.
      * This method used to be synchronized, which caused deadlock.
      */
-    protected Hashtable getDelegate() {
+    protected Hashtable<K, V> getDelegate() {
         if (delegate == null) {
             synchronized(this){
                 if (delegate == null) {
@@ -338,6 +375,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * Return the real collection object.
      * This will force instantiation.
      */
+    @Override
     public Object getDelegateObject() {
         return getDelegate();
     }
@@ -346,6 +384,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * INTERNAL:
      * Return the mapping attribute name, used to raise change events.
      */
+    @Override
      public String getTrackedAttributeName() {
          return attributeName;
      }
@@ -353,6 +392,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * Return the property change listener for change tracking.
      */
+    @Override
      public PropertyChangeListener _persistence_getPropertyChangeListener() {
          return changeListener;
      }
@@ -362,12 +402,13 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
       * Return the valueHolder.
       * This method used to be synchronized, which caused deadlock.
       */
+    @Override
      public ValueHolderInterface getValueHolder() {
          // PERF: lazy initialize value holder and vector as are normally set after creation.
          if (valueHolder == null) {
              synchronized(this){
                  if (valueHolder == null) {
-                     valueHolder = new ValueHolder(new Hashtable(initialCapacity, loadFactor));
+                     valueHolder = new ValueHolder(new Hashtable<>(initialCapacity, loadFactor));
                  }
              }
          }
@@ -377,6 +418,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#hashCode()
      */
+    @Override
     public synchronized int hashCode() {
         return this.getDelegate().hashCode();
     }
@@ -402,9 +444,9 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * Initialize the instance.
      */
-    protected void initialize(Map m) {
+    protected void initialize(Map<? extends K, ? extends V> m) {
         this.delegate = null;
-        Hashtable temp = new Hashtable(m);
+        Hashtable<K, V> temp = new Hashtable<>(m);
 
         this.valueHolder = new ValueHolder(temp);
     }
@@ -412,6 +454,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#isEmpty()
      */
+    @Override
     public boolean isEmpty() {
         return this.getDelegate().isEmpty();
     }
@@ -420,6 +463,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * PUBLIC:
      * Return whether the contents have been read from the database.
      */
+    @Override
     public boolean isInstantiated() {
         return this.getValueHolder().isInstantiated();
     }
@@ -427,44 +471,53 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#keys()
      */
-    public synchronized Enumeration keys() {
+    @Override
+    public synchronized Enumeration<K> keys() {
         return this.getDelegate().keys();
     }
 
     /**
      * @see java.util.Hashtable#keySet()
      */
-    public Set keySet() {
+    @Override
+    public Set<K> keySet() {
         
-        return new Set (){
-            Set delegateSet = IndirectMap.this.getDelegate().keySet();
+        return new Set<K> (){
+            Set<K> delegateSet = IndirectMap.this.getDelegate().keySet();
             
+            @Override
             public int size(){
                 return this.delegateSet.size();
             }
         
+            @Override
             public boolean isEmpty(){
                 return this.delegateSet.isEmpty();
             }
         
+            @Override
             public boolean contains(Object o){
                 return this.delegateSet.contains(o);
             }
         
-            public Iterator iterator(){
-                return new Iterator() {
-                    Iterator delegateIterator = delegateSet.iterator();
-                    Object currentObject;
+            @Override
+            public Iterator<K> iterator(){
+                return new Iterator<K>() {
+                    Iterator<K> delegateIterator = delegateSet.iterator();
+                    K currentObject;
                     
+                    @Override
                     public boolean hasNext() {
                         return this.delegateIterator.hasNext();
                     }
                     
-                    public Object next() {
+                    @Override
+                    public K next() {
                         this.currentObject = this.delegateIterator.next();
                         return this.currentObject;
                     }
                     
+                    @Override
                     public void remove() {
                         IndirectMap.this.raiseRemoveChangeEvent(currentObject, IndirectMap.this.getDelegate().get(currentObject));
                         this.delegateIterator.remove();
@@ -472,31 +525,38 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 };
             }
         
+            @Override
             public Object[] toArray(){
                 return this.delegateSet.toArray();
             }
     
+            @Override
             public Object[] toArray(Object a[]){
                 return this.delegateSet.toArray(a);
             }
     
-            public boolean add(Object o){
+            @Override
+            public boolean add(K o){
                 return this.delegateSet.add(o);
             }
         
+            @Override
             public boolean remove(Object o){
                 return (IndirectMap.this.remove(o) != null);
             }
         
-            public boolean containsAll(Collection c){
+            @Override
+            public boolean containsAll(Collection<?> c){
                 return this.delegateSet.containsAll(c);
             }
         
-            public boolean addAll(Collection c){
+            @Override
+            public boolean addAll(Collection<? extends K> c){
                 return this.delegateSet.addAll(c);
             }
         
-            public boolean retainAll(Collection c){
+            @Override
+            public boolean retainAll(Collection<?> c){
                 boolean result = false;
                 Iterator objects = delegateSet.iterator();
                 while (objects.hasNext()) {
@@ -510,9 +570,10 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 return result;
             }
             
-            public boolean removeAll(Collection c){
+            @Override
+            public boolean removeAll(Collection<?> c){
                 boolean result = false;
-                for (Iterator cs = c.iterator(); cs.hasNext(); ){
+                for (Iterator<?> cs = c.iterator(); cs.hasNext(); ){
                     if (IndirectMap.this.remove(cs.next()) != null ) {
                         result = true;
                     }
@@ -520,14 +581,17 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 return result;
             }
         
+            @Override
             public void clear(){
                 IndirectMap.this.clear();
             }
         
+            @Override
             public boolean equals(Object o){
                 return this.delegateSet.equals(o);
             }
             
+            @Override
             public int hashCode(){
                 return this.delegateSet.hashCode();
             }
@@ -539,8 +603,9 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#put(java.lang.Object, java.lang.Object)
      */
-    public synchronized Object put(Object key, Object value) {
-        Object oldValue = this.getDelegate().put(key, value);
+    @Override
+    public synchronized V put(K key, V value) {
+        V oldValue = this.getDelegate().put(key, value);
         if (oldValue != null){
             raiseRemoveChangeEvent(key, oldValue);
         }
@@ -552,12 +617,13 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#putAll(java.util.Map)
      */
-    public synchronized void putAll(Map t) {
+    @Override
+    public synchronized void putAll(Map<? extends K,? extends V> t) {
         // Must trigger add events if tracked or uow.
         if (hasTrackedPropertyChangeListener()) {
-            Iterator objects = t.keySet().iterator();
+            Iterator<? extends K> objects = t.keySet().iterator();
             while (objects.hasNext()) {
-                Object key = objects.next();
+                K key = objects.next();
                 this.put(key, t.get(key));
             }
         }else{
@@ -568,6 +634,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#rehash()
      */
+    @Override
     protected void rehash() {
         throw new InternalError("unsupported");
     }
@@ -595,8 +662,9 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#remove(java.lang.Object)
      */
-    public synchronized Object remove(Object key) {
-        Object value = this.getDelegate().remove(key);
+    @Override
+    public synchronized V remove(Object key) {
+        V value = this.getDelegate().remove(key);
         if (value != null){
             raiseRemoveChangeEvent(key, value);
         }
@@ -608,6 +676,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * Set the mapping attribute name, used to raise change events.
      * This is required if the change listener is set.
      */
+    @Override
      public void setTrackedAttributeName(String attributeName) {
          this.attributeName = attributeName;
      }
@@ -616,6 +685,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * INTERNAL:
      * Set the property change listener for change tracking.
      */
+    @Override
      public void _persistence_setPropertyChangeListener(PropertyChangeListener changeListener) {
          this.changeListener = changeListener;
      }
@@ -624,6 +694,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * INTERNAL:
      * Set the value holder.
      */
+    @Override
     public void setValueHolder(ValueHolderInterface valueHolder) {
         this.delegate = null;
         this.valueHolder = valueHolder;
@@ -632,6 +703,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#size()
      */
+    @Override
     public int size() {
         return this.getDelegate().size();
     }
@@ -641,6 +713,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * Set whether this collection should attempt do deal with adds and removes without retrieving the 
      * collection from the dB
      */
+    @Override
     public void setUseLazyInstantiation(boolean useLazyInstantiation){
     }
     
@@ -648,6 +721,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * INTERNAL:
      * Return the elements that have been removed before instantiation.
      */
+    @Override
     public Collection getRemovedElements() {
         return null;
     }
@@ -656,6 +730,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * INTERNAL:
      * Return the elements that have been added before instantiation.
      */
+    @Override
     public Collection getAddedElements() {
         return null;
     }
@@ -664,6 +739,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * INTERNAL:
      * Return if any elements that have been added or removed before instantiation.
      */
+    @Override
     public boolean hasDeferredChanges() {
         return false;
     }
@@ -675,6 +751,7 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
      * Don't allow this method to trigger a database read.
      * @see java.util.Hashtable#toString()
      */
+    @Override
     public String toString() {
         if (ValueHolderInterface.shouldToStringInstantiate) {
             return this.getDelegate().toString();
@@ -689,36 +766,44 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
     /**
      * @see java.util.Hashtable#values()
      */
-    public Collection values() {
-        return new Collection() {
-            protected Collection delegateCollection = IndirectMap.this.getDelegate().values();
+    @Override
+    public Collection<V> values() {
+        return new Collection<V>() {
+            protected Collection<V> delegateCollection = IndirectMap.this.getDelegate().values();
 
+            @Override
             public int size(){
                 return delegateCollection.size();
             }
             
+            @Override
             public boolean isEmpty(){
                 return delegateCollection.isEmpty();
             }
             
+            @Override
             public boolean contains(Object o){
                 return delegateCollection.contains(o);
             }
             
-            public Iterator iterator() {
-                return new Iterator() {
-                    Iterator delegateIterator = delegateCollection.iterator();
-                    Object currentObject;
+            @Override
+            public Iterator<V> iterator() {
+                return new Iterator<V>() {
+                    Iterator<V> delegateIterator = delegateCollection.iterator();
+                    V currentObject;
                     
+                    @Override
                     public boolean hasNext() {
                         return this.delegateIterator.hasNext();
                     }
                     
-                    public Object next() {
+                    @Override
+                    public V next() {
                         this.currentObject = this.delegateIterator.next();
                         return this.currentObject;
                     }
                     
+                    @Override
                     public void remove() {
                         Iterator iterator = IndirectMap.this.getDelegate().entrySet().iterator();
                         while (iterator.hasNext()){
@@ -733,18 +818,22 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 };
             }
         
+            @Override
             public Object[] toArray(){
                 return this.delegateCollection.toArray();
             }
             
-            public Object[] toArray(Object a[]){
+            @Override
+            public <T> T[] toArray(T a[]){
                 return this.delegateCollection.toArray(a);
             }
             
-            public boolean add(Object o){
+            @Override
+            public boolean add(V o){
                 return this.delegateCollection.add(o);
             }
             
+            @Override
             public boolean remove(Object o){
                 Iterator iterator = IndirectMap.this.getDelegate().entrySet().iterator();
                 while (iterator.hasNext()){
@@ -757,17 +846,20 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 return false;
             }
             
-            public boolean containsAll(Collection c){
+            @Override
+            public boolean containsAll(Collection<?> c){
                 return this.delegateCollection.containsAll(c);
             }
             
-            public boolean addAll(Collection c){
+            @Override
+            public boolean addAll(Collection<? extends V> c){
                 return this.delegateCollection.addAll(c);
             }
             
-            public boolean removeAll(Collection c){
+            @Override
+            public boolean removeAll(Collection<?> c){
                 boolean result = false;
-                for (Iterator iterator = c.iterator(); iterator.hasNext();){
+                for (Iterator<?> iterator = c.iterator(); iterator.hasNext();){
                     if (remove(iterator.next()) ){
                         result = true;
                     }
@@ -775,7 +867,8 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 return result;
             }
             
-            public boolean retainAll(Collection c){
+            @Override
+            public boolean retainAll(Collection<?> c){
                 boolean result = false;
                 for (Iterator iterator = IndirectMap.this.entrySet().iterator(); iterator.hasNext();){
                     Map.Entry entry = (Map.Entry)iterator.next();
@@ -787,15 +880,18 @@ public class IndirectMap extends Hashtable implements CollectionChangeTracker, I
                 return result;
             }
             
+            @Override
             public void clear(){
                 IndirectMap.this.clear();
             }
             
             
+            @Override
             public boolean equals(Object o){
                 return this.delegateCollection.equals(o);
             }
             
+            @Override
             public int hashCode(){
                 return this.delegateCollection.hashCode();
             }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,18 +12,29 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
-import java.util.*;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.queries.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.fail;
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
+import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.helper.JavaSEPlatform;
+import org.eclipse.persistence.internal.indirection.QueryBasedValueHolder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * Test a simple IndirectMap.
  * @author: Big Country
  */
 public class IndirectMapTestAPI extends ZTestCase {
-    Hashtable map;
-    IndirectMap testMap;
+    private Hashtable<String, String> map;
+    private IndirectMap<String, String> testMap;
 
     public IndirectMapTestAPI(String name) {
         super(name);
@@ -70,13 +81,13 @@ public class IndirectMapTestAPI extends ZTestCase {
         map = this.setUpMap();
         Object temp = new Hashtable(map);
 
-        org.eclipse.persistence.indirection.ValueHolderInterface vh = new org.eclipse.persistence.internal.indirection.QueryBasedValueHolder(new ReadAllQuery(), new DatabaseRecord(), new TestSession(temp));
-        testMap = new IndirectMap();
+        ValueHolderInterface vh = new QueryBasedValueHolder(new ReadAllQuery(), new DatabaseRecord(), new TestSession(temp));
+        testMap = IndirectCollectionsFactory.createIndirectMap();
         testMap.setValueHolder(vh);
     }
 
-    protected Hashtable setUpMap() {
-        Hashtable result = new Hashtable();
+    protected Hashtable<String, String> setUpMap() {
+        Hashtable<String, String> result = new Hashtable<>();
         result.put("zero", "000");
         result.put("one", "111");
         result.put("two", "222");
@@ -154,8 +165,8 @@ public class IndirectMapTestAPI extends ZTestCase {
     }
 
     public void testPut() {
-        Object key = "foo";
-        Object value = "bar";
+        String key = "foo";
+        String value = "bar";
         map.put(key, value);
         testMap.put(key, value);
 
@@ -165,7 +176,7 @@ public class IndirectMapTestAPI extends ZTestCase {
     }
 
     public void testPutAll() {
-        Hashtable temp = new Hashtable();
+        Hashtable<String, String> temp = new Hashtable<>();
         temp.put("foo", "bar");
         temp.put("sna", "fu");
 
@@ -181,7 +192,7 @@ public class IndirectMapTestAPI extends ZTestCase {
     }
 
     public void testRemove() {
-        Object temp = "one";
+        String temp = "one";
         this.assertTrue(map.remove(temp) != null);
         this.assertTrue(testMap.remove(temp) != null);
         this.assertEquals(map, testMap);
@@ -200,5 +211,141 @@ public class IndirectMapTestAPI extends ZTestCase {
         }
         map.values().removeAll(testMap.values());
         this.assertTrue(map.values().isEmpty());
+    }
+
+    public void testReplace() {
+        assertEquals(map, testMap);
+        Object o = null;
+        try {
+            o = callMethod(testMap, "replace", new Class[] {Object.class, Object.class}, new Object[] {"one", "1"});
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should return value", o);
+        assertEquals("111", o);
+        assertEquals("1", testMap.get("one"));
+    }
+
+    public void testReplaceWithDefault() {
+        assertEquals("111", testMap.get("one"));
+        Object o = null;
+        try {
+            o = callMethod(testMap, "replace", new Class[] {Object.class, Object.class, Object.class}, new Object[] {"one", "1", "1234"});
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertFalse("Should return false", (boolean) o);
+        assertFalse("Should not have '1234'", testMap.containsValue("1234"));
+
+        assertEquals("111", testMap.get("one"));
+        try {
+            o = callMethod(testMap, "replace", new Class[] {Object.class, Object.class, Object.class}, new Object[] {"one", "111", "1234"});
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertTrue("Should return true", (boolean) o);
+        assertEquals("1234", testMap.get("one"));
+    }
+
+    public void testGetOrDefault() {
+        Object o = null;
+        assertFalse(testMap.containsKey("temp"));
+        try {
+            o = callMethod(testMap, "getOrDefault", new Class[] {Object.class, Object.class}, new Object[] {"temp", "1234"});
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should return value", o);
+        assertEquals("1234", o);
+
+        assertTrue(testMap.containsKey("one"));
+        try {
+            o = callMethod(testMap, "getOrDefault", new Class[] {Object.class, Object.class}, new Object[] {"one", "5678"});
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should return value", o);
+        assertEquals("111", o);
+    }
+
+    public void testPutIfAbsent() {
+        Object o = null;
+        assertFalse(testMap.containsKey("temp"));
+        try {
+            o = callMethod(testMap, "putIfAbsent", new Class[] {Object.class, Object.class}, new Object[] {"temp", "1234"});
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNull("Should return null", o);
+
+        assertTrue(testMap.containsKey("temp"));
+        try {
+            o = callMethod(testMap, "putIfAbsent", new Class[] {Object.class, Object.class}, new Object[] {"temp", "5678"});
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should return value", o);
+        assertEquals("1234", o);
+    }
+
+    public void testRemoveTwoArgs() {
+        Object o = null;
+        assertEquals("111", testMap.get("one"));
+        try {
+            o = callMethod(testMap, "remove", new Class[] {Object.class, Object.class}, new Object[] {"one", "1234"});
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertFalse("Should return false", (boolean) o);
+
+        assertEquals("111", testMap.get("one"));
+        try {
+            o = callMethod(testMap, "remove", new Class[] {Object.class, Object.class}, new Object[] {"one", "111"});
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertTrue("Should return true", (boolean) o);
+        assertNull(testMap.get("one"));
+    }
+
+    private Object callMethod(Map map, String method, Class[] params, Object[] args) {
+        try {
+            Method m = map.getClass().getMethod(method, params);
+            return m.invoke(map, args);
+        } catch (NoSuchMethodException | SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
+            if (JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8)) {
+                fail("cannot call method '" + method + "' " + ex.getMessage());
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+        return null;
     }
 }

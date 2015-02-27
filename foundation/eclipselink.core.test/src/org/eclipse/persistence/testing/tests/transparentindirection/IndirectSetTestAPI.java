@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,10 +12,22 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
-import java.util.*;
-import org.eclipse.persistence.sessions.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.indirection.IndirectSet;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.helper.JavaSEPlatform;
+import org.eclipse.persistence.internal.indirection.QueryBasedValueHolder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * Test a simple IndirectSet.
@@ -23,8 +35,8 @@ import org.eclipse.persistence.queries.*;
  * @author: Big Country
  */
 public class IndirectSetTestAPI extends ZTestCase {
-    Vector list;
-    IndirectSet testList;
+    Vector<String> list;
+    IndirectSet<String> testList;
 
     /**
      * Constructor
@@ -40,15 +52,15 @@ public class IndirectSetTestAPI extends ZTestCase {
     protected void setUp() {
         super.setUp();
         list = this.setUpList();
-        Object temp = new HashSet(list);
+        Object temp = new HashSet<>(list);
 
-        org.eclipse.persistence.indirection.ValueHolderInterface vh = new org.eclipse.persistence.internal.indirection.QueryBasedValueHolder(new ReadAllQuery(), new DatabaseRecord(), new TestSession(temp));
-        testList = new IndirectSet();
+        ValueHolderInterface vh = new QueryBasedValueHolder(new ReadAllQuery(), new DatabaseRecord(), new TestSession(temp));
+        testList = IndirectCollectionsFactory.createIndirectSet();
         testList.setValueHolder(vh);
     }
 
     protected Vector setUpList() {
-        Vector result = new Vector();
+        Vector<String> result = new Vector<>();
         result.addElement("zero");
         result.addElement("one");
         result.addElement("two");
@@ -70,7 +82,7 @@ public class IndirectSetTestAPI extends ZTestCase {
     }
 
     public void testAdd() {
-        Object temp = "foo";
+        String temp = "foo";
         list.add(temp);
         testList.add(temp);
         this.assertUnorderedElementsEqual(list, new Vector(testList));
@@ -78,7 +90,7 @@ public class IndirectSetTestAPI extends ZTestCase {
     }
 
     public void testAddAll() {
-        Vector temp = new Vector();
+        Vector<String> temp = new Vector<>();
         temp.addElement("foo");
         temp.addElement("bar");
 
@@ -121,7 +133,7 @@ public class IndirectSetTestAPI extends ZTestCase {
     }
 
     public void testRemove() {
-        Object temp = "one";
+        String temp = "one";
         this.assertTrue(list.remove(temp));
         this.assertTrue(testList.remove(temp));
         this.assertUnorderedElementsEqual(list, new Vector(testList));
@@ -129,7 +141,7 @@ public class IndirectSetTestAPI extends ZTestCase {
     }
 
     public void testRemoveAll() {
-        Vector temp = new Vector();
+        Vector<String> temp = new Vector<>();
         temp.addElement("one");
         temp.addElement("two");
 
@@ -140,7 +152,7 @@ public class IndirectSetTestAPI extends ZTestCase {
     }
 
     public void testRetainAll() {
-        Vector temp = new Vector();
+        Vector<String> temp = new Vector<>();
         temp.addElement("one");
         temp.addElement("two");
 
@@ -183,5 +195,86 @@ public class IndirectSetTestAPI extends ZTestCase {
             v2.addElement(temp[i]);
         }
         this.assertUnorderedElementsEqual(v1, v2);
+    }
+
+    public void testSpliterator() {
+        Object o = null;
+        try {
+            o = callMethod(testList, "spliterator", new Class[0], new Object[0]);
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should get an instance of java.util.Spliterator", o);
+        boolean streamFound = false;
+        for (Class c: o.getClass().getInterfaces()) {
+            if ("java.util.Spliterator".equals(c.getName())) {
+                streamFound = true;
+                break;
+            }
+        }
+        assertTrue("not implementing java.util.Spliterator", streamFound);
+    }
+
+    public void testStream() {
+        Object o = null;
+        try {
+            o = callMethod(testList, "stream", new Class[0], new Object[0]);
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should get an instance of java.util.stream.Stream", o);
+        boolean streamFound = false;
+        if (o.getClass().getEnclosingClass() != null) {
+            for (Class c: o.getClass().getEnclosingClass().getInterfaces()) {
+                if ("java.util.stream.Stream".equals(c.getName())) {
+                    streamFound = true;
+                    break;
+                }
+            }
+        }
+        assertTrue("not implementing java.util.stream.Stream", streamFound);
+    }
+
+    public void testParallelStream() {
+        Object o = null;
+        try {
+            o = callMethod(testList, "parallelStream", new Class[0], new Object[0]);
+        } catch (UnsupportedOperationException e) {
+            if (JavaSEPlatform.CURRENT.compareTo(JavaSEPlatform.v1_8) < 0) {
+                //nothing to check on JDK 7 and lower
+                return;
+            }
+        }
+        assertNotNull("Should get an instance of java.util.stream.Stream", o);
+        boolean streamFound = false;
+        if (o.getClass().getEnclosingClass() != null) {
+            for (Class c: o.getClass().getEnclosingClass().getInterfaces()) {
+                if ("java.util.stream.Stream".equals(c.getName())) {
+                    streamFound = true;
+                    break;
+                }
+            }
+        }
+        assertTrue("not implementing java.util.stream.Stream", streamFound);
+    }
+
+    private Object callMethod(Set set, String method, Class[] params, Object[] args) {
+        try {
+            Method m = set.getClass().getMethod(method, params);
+            return m.invoke(set, args);
+        } catch (NoSuchMethodException | SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
+            if (JavaSEPlatform.CURRENT.atLeast(JavaSEPlatform.v1_8)) {
+                fail("cannot call method '" + method + "' " + ex.getMessage());
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+        return null;
     }
 }

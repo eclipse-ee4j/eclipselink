@@ -588,6 +588,46 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="build"/>
     </target>
 
+    <target name="build-jdk8" description="compile JDK 8+ specific sources">
+        <!--
+            helper target to compile JDK 8 specific sources
+            expected flow:
+            - build eclipselink.jar on JDK 7
+            - switch to JDK 8
+            - run 'ant -f antbuild.xml build-jdk8'
+               -> this creates *.class files under resources
+                  and they should be commited into the repo
+            - switch back to JDK 7
+            - run regular build
+               -> tycho takes *.class files from resources
+                  and puts them into final jar files
+        -->
+        <fail message="This target requires JDK 8">
+            <condition>
+                <not>
+                    <equals arg1="${ant.java.version}" arg2="1.8"/>
+                </not>
+            </condition>
+        </fail>
+        <property name="jdk8.tmp.dir" value="${java.io.tmpdir}/el-jdk8-compilation"/>
+        <mkdir dir="${jdk8.tmp.dir}"/>
+        <javac srcdir="${eclipselink.core}/src"
+               destdir="${jdk8.tmp.dir}"
+               includes="**/jdk8/**"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpath="${eclipselink.jar}"
+        />
+        <copy todir="${eclipselink.core}/resource" includeemptydirs="false" verbose="true">
+            <fileset dir="${jdk8.tmp.dir}" includes="**/jdk8/**"/>
+        </copy>
+    </target>
     <!--      *** intended for dev use only ***
     *    Create runtime components (excluding Tests) from existing classes in project heirarchy.
     *    note: oracle extension tries to be tricksy and either jars from classes like others,

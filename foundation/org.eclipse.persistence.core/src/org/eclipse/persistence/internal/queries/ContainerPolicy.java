@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -34,7 +34,6 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -46,8 +45,7 @@ import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
-import org.eclipse.persistence.indirection.IndirectList;
-import org.eclipse.persistence.indirection.IndirectSet;
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -614,9 +612,9 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         Class containerClass = getContainerClass();
         // PERF: Avoid reflection for common cases.
         if (containerClass == ClassConstants.IndirectList_Class) {
-            return new IndirectList();
+            return IndirectCollectionsFactory.createIndirectList();
         } else if (containerClass == ClassConstants.IndirectSet_Class) {
-            return new IndirectSet();
+            return IndirectCollectionsFactory.createIndirectSet();
         } else if (containerClass == ClassConstants.ArrayList_class) {
             return new ArrayList();
         } else if (containerClass == ClassConstants.Vector_class) {
@@ -653,9 +651,9 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         try {
             // PERF: Avoid reflection for common cases.
             if (containerClass == ClassConstants.IndirectList_Class) {
-                return new IndirectList(initialCapacity);
+                return IndirectCollectionsFactory.createIndirectList(initialCapacity);
             } else if (containerClass == ClassConstants.IndirectSet_Class) {
-                return new IndirectSet(initialCapacity);
+                return IndirectCollectionsFactory.createIndirectSet(initialCapacity);
             } else if (containerClass == ClassConstants.ArrayList_class) {
                 return new ArrayList(initialCapacity);
             } else if (containerClass == ClassConstants.Vector_class) {

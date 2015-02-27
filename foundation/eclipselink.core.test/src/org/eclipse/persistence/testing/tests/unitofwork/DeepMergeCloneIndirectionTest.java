@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,10 +17,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import java.util.Collection;
 
-import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -51,8 +50,8 @@ public class DeepMergeCloneIndirectionTest extends org.eclipse.persistence.testi
         }
         getAbstractSession().beginTransaction();
         this.orderObject = new Order();
-        this.orderObject.contacts = new IndirectList();
-        this.orderObject.lines = new IndirectList();
+        this.orderObject.contacts = IndirectCollectionsFactory.createIndirectList();
+        this.orderObject.lines = IndirectCollectionsFactory.createIndirectList();
         this.orderObject.setTotal(56789);
         this.orderObject.customerName = "henry";
         //Using a unit of work here becuase this test is used in the clientSession Tests
