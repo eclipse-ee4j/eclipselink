@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -50,10 +50,6 @@ import org.eclipse.persistence.tools.dbws.TableOperationModel;
 import dbws.testing.DBWSTestSuite;
 
 public class SimpleSPTestSuite extends DBWSTestSuite {
-    
-    static {
-        System.setProperty("user.timezone", "Canada/Eastern");
-    }
     
     static final String CREATE_SIMPLESP_TABLE =
         "CREATE TABLE SIMPLESP (" +
@@ -586,7 +582,31 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
       public static final String SALARY =
       	"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
           "<value>1100</value>";
-      @Test      public void outInInOutTest() {          Invocation invocation = new Invocation("OutInInOutArgsTest");          invocation.setParameter("U", "this is a test");          invocation.setParameter("V", 665);          Operation op = xrService.getOperation(invocation.getName());          Object result = op.invoke(xrService, invocation);          assertNotNull("result is null", result);          Document doc = xmlPlatform.createDocument();          XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();          marshaller.marshal(result, doc);          Document controlDoc = xmlParser.parse(new StringReader(MULTIPLE_OUT_XML));          assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));      }            public static final String MULTIPLE_OUT_XML =          "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +          "<simple-xml-format>" +          "<simple-xml>" +          "<V>666</V>" +          "<T>barfoo-this is a test</T>" +          "</simple-xml>" +          "</simple-xml-format>";
+
+      @Test
+      public void outInInOutTest() {
+          Invocation invocation = new Invocation("OutInInOutArgsTest");
+          invocation.setParameter("U", "this is a test");
+          invocation.setParameter("V", 665);
+          Operation op = xrService.getOperation(invocation.getName());
+          Object result = op.invoke(xrService, invocation);
+          assertNotNull("result is null", result);
+          Document doc = xmlPlatform.createDocument();
+          XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+          marshaller.marshal(result, doc);
+          Document controlDoc = xmlParser.parse(new StringReader(MULTIPLE_OUT_XML));
+          assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+      }
+      
+      public static final String MULTIPLE_OUT_XML =
+          "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+          "<simple-xml-format>" +
+          "<simple-xml>" +
+          "<V>666</V>" +
+          "<T>barfoo-this is a test</T>" +
+          "</simple-xml>" +
+          "</simple-xml-format>";
+
       @Test
       public void getXMLTypeData() throws ParseException {
           Invocation invocation = new Invocation("getXMLTypeData");

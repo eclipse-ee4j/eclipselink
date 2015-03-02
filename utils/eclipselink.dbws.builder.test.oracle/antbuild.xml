@@ -249,6 +249,9 @@
                 <isset property="db.ddl.drop"/>
             </and>
         </condition>
+        <condition property="bfile_dir" value="${java.io.tmpdir}bfile_dir" else="${java.io.tmpdir}/bfile_dir">
+            <contains string="${os.name}" substring="Win"/>
+        </condition>
         <!-- Report unmet Run conditions -->
         <say message="Conditions not met to execute tests!" unless="support.test"/>
         <say message="     DB platform not set to Oracle!"  unless="is.oracle.platform"/>
@@ -267,6 +270,12 @@
         <say message="     db.pwd not set!"                 unless="db.pwd"/>
         <say message="     db.ddl not set!"                 unless="db.ddl.create"/>
         <say message="     db.ddl not set!"                 unless="db.ddl.drop"/>
+        
+        <!-- Create LOB source file directory required for BlobTypeTestSuite -->
+        <say message="Creating required LOB source file directory at: ${bfile_dir}"/>
+        <copy todir="${bfile_dir}">
+            <fileset dir="resource/dbws/testing/blobtype"/>
+        </copy>
     </target>
 
     <target name="compile" depends="init" description="Compile DBWS Util test Common classes">

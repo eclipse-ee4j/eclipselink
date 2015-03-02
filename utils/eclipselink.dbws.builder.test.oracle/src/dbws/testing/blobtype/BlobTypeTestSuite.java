@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -43,9 +43,8 @@ import dbws.testing.DBWSTestSuite;
  * Assumptions:
  * <ul>
  * <li>User has privileges to create/drop Oracle DIRECTORY objects</li>
- * <li>The database server contains the files '3343_bytes.jpg', 
- * '32179_bytes.jpg', and '924732_bytes.jpg' in the system directory 
- * '/scratch/temp/bfile_dir'</li>
+ * <li>Files '3343_bytes.jpg', '32179_bytes.jpg', and '924732_bytes.jpg'
+ * have been copied to the temp directory '${java.io.tmpdir}bfile_dir'</li>
  * </ul>
  *  
  */
@@ -53,7 +52,7 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
 
     // BFILE DRIECTORY
     static final String CREATE_BFILE_DIRECTORY =
-        "CREATE OR REPLACE DIRECTORY bfile_dir AS '/scratch/temp/bfile_dir'";
+        "CREATE OR REPLACE DIRECTORY bfile_dir AS '" + System.getProperty("java.io.tmpdir") + "bfile_dir'";
     
     // BLOB table
     static final String CREATE_BLOBDATA_TABLE =
