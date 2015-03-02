@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -138,6 +139,12 @@ public class DBWSTestSuite {
     public static ByteArrayOutputStream DBWS_WSDL_STREAM = null;
 
     public static DBWSLogger dbwsLogger;
+    
+    static {
+        // Fixing time zone issue introduced with JDK8
+        TimeZone.setDefault(TimeZone.getTimeZone("Canada/Eastern"));
+    }
+    
     public static void setUp(String stageDir) throws WSDLException {
         setUp(stageDir, false, false);
     }

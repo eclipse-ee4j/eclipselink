@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -230,9 +230,11 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    // Cater for case of Oracle 12c and usage of container database - name prefixed with C##
+    public static final String XML_USERNAME = username.toLowerCase().replaceAll("#", "_x0023_");
     public static final String TESMAN_TABLE2_ROWTYPE =
         STANDALONE_XML_HEADER +
-        "<xtesman_table2_rowtypeType xmlns=\"urn:PrependedSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<"+XML_USERNAME+".xtesman_table2_rowtypeType xmlns=\"urn:PrependedSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<srno>666</srno>" +
            "<detail>" +
               "<pnr>12</pnr>" +
@@ -246,5 +248,5 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
                  "<country>CANADA</country>" +
               "</tt>" +
            "</detail>" +
-        "</xtesman_table2_rowtypeType>";
+        "</"+XML_USERNAME+".xtesman_table2_rowtypeType>";
 }
