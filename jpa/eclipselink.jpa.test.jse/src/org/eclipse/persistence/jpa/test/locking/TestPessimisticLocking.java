@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
 
+import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
@@ -38,8 +39,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
 public class TestPessimisticLocking {
-    @Emf(/* createTables = DDLGen.DROP_CREATE,**/ classes = { LockingDog.class, }, properties = { @Property(
-            name = "eclipselink.cache.shared.default", value = "false")})
+    @Emf(createTables = DDLGen.DROP_CREATE, classes = { LockingDog.class, }, properties = { @Property(
+            name = "eclipselink.cache.shared.default", value = "false") })
     private EntityManagerFactory emf;
 
     static ExecutorService executor = null;
