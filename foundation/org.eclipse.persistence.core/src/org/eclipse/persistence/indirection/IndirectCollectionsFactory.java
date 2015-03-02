@@ -202,7 +202,7 @@ public final class IndirectCollectionsFactory {
                 return (IndirectCollectionsProvider) PrivilegedAccessHelper.newInstanceFromClass(support);
             }
         } catch (Throwable t) {
-            AbstractSessionLog.getLog().logThrowable(SessionLog.FINEST, SessionLog.MISC, t);
+            AbstractSessionLog.getLog().finest("IndirectCollections: Using JDK 7 compatible APIs.");
         }
 
         return new DefaultProvider();
