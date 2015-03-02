@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
 
 /**
  * Provides factory methods to create JDK specific implementation
@@ -202,7 +203,16 @@ public final class IndirectCollectionsFactory {
                 return (IndirectCollectionsProvider) PrivilegedAccessHelper.newInstanceFromClass(support);
             }
         } catch (Throwable t) {
-            AbstractSessionLog.getLog().finest("IndirectCollections: Using JDK 7 compatible APIs.");
+            SessionLogEntry sle = new SessionLogEntry(null, t);
+            sle.setMessage("IndirectCollections: Using JDK 7 compatible APIs.");
+            sle.setLevel(SessionLog.FINEST);
+            sle.setNameSpace(SessionLog.MISC);
+            //avoid printing date as that would cause an attempt to access
+            //a field of this class which has not been initialized yet
+            //see DefaultSessionLog.getDateString->ConversionManager.convertObject
+            //    ->ClassConstants
+            sle.setDate(null);
+            AbstractSessionLog.getLog().log(sle);
         }
 
         return new DefaultProvider();
