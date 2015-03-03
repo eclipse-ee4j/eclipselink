@@ -2690,7 +2690,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         FieldDefinition fieldDOOR_ID = new FieldDefinition();
         fieldDOOR_ID.setName("DOOR_ID");
         fieldDOOR_ID.setTypeName("NUMBER");
-        fieldDOOR_ID.setSize(10);
+        fieldDOOR_ID.setSize(15);
         fieldDOOR_ID.setIsPrimaryKey(true);
         fieldDOOR_ID.setIsIdentity(false);
         fieldDOOR_ID.setUnique(false);
