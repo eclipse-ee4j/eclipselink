@@ -26,7 +26,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -41,7 +40,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 import java.util.Iterator;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -161,7 +159,6 @@ import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.platform.server.was.WebSphere_7_Platform;
-
 import org.eclipse.persistence.testing.framework.ConnectionWrapper;
 import org.eclipse.persistence.testing.framework.DriverWrapper;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
@@ -171,6 +168,7 @@ import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 import org.eclipse.persistence.testing.tests.feature.TestDataSource;
+import org.eclipse.persistence.testing.tests.jpa.unit.EMFProviderTest;
 import org.junit.Assert;
 
 /**
@@ -192,6 +190,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTestSuite");
+        //add unit tests
+        suite.addTestSuite(EMFProviderTest.class);
         suite.addTest(new EntityManagerJUnitTestSuite("testSetup"));
         List<String> tests = new ArrayList<String>();
         tests.add("testSettingDetachedObject");

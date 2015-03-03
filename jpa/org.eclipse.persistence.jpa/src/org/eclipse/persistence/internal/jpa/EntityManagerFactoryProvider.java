@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -35,6 +35,7 @@ import java.util.HashMap;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl.TableCreationType;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -118,6 +119,13 @@ public class EntityManagerFactoryProvider {
             value = (String)overrides.get(propertyKey);
         }
         if (value == null){
+            if (propertyKey == null || !(propertyKey.startsWith("eclipselink.")
+                    || propertyKey.startsWith("javax.persistence.")
+                    || propertyKey.startsWith("persistence.")
+                    || PersistenceUnitProperties.JAVASE_DB_INTERACTION.equals(propertyKey))) {
+                throw new IllegalArgumentException(
+                        ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {propertyKey}));
+            }
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 value = (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
             } else {
