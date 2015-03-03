@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,6 +10,7 @@
  * Contributors:
  * 		dclarke/tware - initial implementation
  *      gonural - version based persistence context
+ *      Dmitry Kornilov - JPARS 2.0 related changes
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
@@ -29,15 +30,16 @@ import javax.persistence.Persistence;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Manages the PersistenceContexts that are used by a JPA-RS deployment.  Provides a single point to bootstrap
- * and look up PersistenceContexts 
- * @author tware
+ * and look up PersistenceContexts.
  *
+ * @author tware
  */
 public class PersistenceFactoryBase implements PersistenceContextFactory {
     protected final Map<String, Set<PersistenceContext>> dynamicPersistenceContexts = new HashMap<>();
@@ -57,21 +59,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
         final PersistenceContext persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl) emf, baseURI, ServiceVersion.fromCode(version));
 
         if (replace) {
-            synchronized (this) {
-                PersistenceContext existingContext = getDynamicPersistenceContext(name, version);
-
-                Set<PersistenceContext> persistenceContextSet = getDynamicPersistenceContextSet(name);
-                if (persistenceContextSet == null) {
-                    persistenceContextSet = new HashSet<>();
-                }
-
-                if (existingContext != null) {
-                    persistenceContextSet.remove(existingContext);
-                }
-
-                persistenceContextSet.add(persistenceContext);
-                dynamicPersistenceContexts.put(name, persistenceContextSet);
-            }
+            addReplacePersistenceContext(persistenceContext);
         }
 
         return persistenceContext;
@@ -80,6 +68,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
     /**
      * Stop the factory. Remove all the PersistenceContexts.
      */
+    @Override
     public void close() {
         synchronized (this) {
             for (String key : dynamicPersistenceContexts.keySet()) {
@@ -99,6 +88,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
      *
      * @param name name of the persistence context to close.
      */
+    @Override
     public void closePersistenceContext(String name) {
         synchronized (this) {
             Set<PersistenceContext> contextSet = dynamicPersistenceContexts.get(name);
@@ -108,6 +98,34 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                 }
             }
             dynamicPersistenceContexts.remove(name);
+        }
+    }
+
+    /**
+     * Close the PersistenceContext and clean it out of our list of PersistenceContexts.
+     *
+     * @param name name of the persistence context to close.
+     * @param version persistence context version
+     */
+    public void closePersistenceContext(String name, String version) {
+        synchronized (this) {
+            final Set<PersistenceContext> contextSet = dynamicPersistenceContexts.get(name);
+            if (contextSet != null) {
+                for (Iterator<PersistenceContext> iter = contextSet.iterator(); iter.hasNext();) {
+                    PersistenceContext context = iter.next();
+                    if (context.getVersion().equals(version)) {
+                        context.stop();
+                        iter.remove();
+                        break;
+                    }
+                }
+
+                if (contextSet.size() == 0) {
+                    dynamicPersistenceContexts.remove(name);
+                } else {
+                    dynamicPersistenceContexts.put(name, contextSet);
+                }
+            }
         }
     }
 
@@ -132,6 +150,10 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
         return properties;
     }
 
+    /**
+     * Gets existing persistence context or create new based on given parameters if it doesn't exist.
+     */
+    @Override
     public PersistenceContext get(String persistenceUnitName, URI defaultURI, String version, Map<String, Object> initializationProperties) {
         PersistenceContext persistenceContext = getDynamicPersistenceContext(persistenceUnitName, version);
 
@@ -170,6 +192,10 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
         return persistenceContext;
     }
 
+    /**
+     * Returns names of all currently cached persistence contexts.
+     */
+    @Override
     public Set<String> getPersistenceContextNames() {
         Set<String> contextNames = new HashSet<>();
         try {
@@ -218,9 +244,21 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
         return null;
     }
 
-    private Set<PersistenceContext> getDynamicPersistenceContextSet(String name) {
+    protected void addReplacePersistenceContext(PersistenceContext persistenceContext) {
         synchronized (this) {
-            return dynamicPersistenceContexts.get(name);
+            final PersistenceContext existingContext = getDynamicPersistenceContext(persistenceContext.getName(), persistenceContext.getVersion());
+
+            Set<PersistenceContext> persistenceContextSet = dynamicPersistenceContexts.get(persistenceContext.getName());
+            if (persistenceContextSet == null) {
+                persistenceContextSet = new HashSet<>();
+            }
+
+            if (existingContext != null) {
+                persistenceContextSet.remove(existingContext);
+            }
+
+            persistenceContextSet.add(persistenceContext);
+            dynamicPersistenceContexts.put(persistenceContext.getName(), persistenceContextSet);
         }
     }
 }
