@@ -2112,6 +2112,7 @@
         <antcall target="generate-report" inheritRefs="true"/>
         <antcall target="clean" inheritRefs="true"/>
     </target>
+
     <!-- Generic target for running tests. -->
     <target name="run-test" depends="config-classpath">
         <echo>Running test on ${DB_URL}</echo>
@@ -2145,6 +2146,7 @@
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="${TEST_WEAVING_OPTION}"/>
             <jvmarg value="${ORM_TESTING}"/>
+            <jvmarg value="-XX:CompileCommandFile=../../jdk_hotspot_compiler"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${DB_URL}"/>
@@ -2183,6 +2185,7 @@
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
             <jvmarg value="${ORM_TESTING}"/>
+            <jvmarg value="-XX:CompileCommandFile=../../jdk_hotspot_compiler"/>
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${DB_URL}"/>
