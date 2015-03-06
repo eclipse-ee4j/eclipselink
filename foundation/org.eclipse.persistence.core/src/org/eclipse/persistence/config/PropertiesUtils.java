@@ -10,6 +10,8 @@
  * Contributors:
  *     02/19/2015 - Rick Curtis  
  *       - 458877 : Add national character support
+ *     03/06/2015-2.7.0 Dalia Abo Sheasha
+ *       - 461607: PropertiesUtils does not process methods with String parameters correctly.
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -93,7 +95,7 @@ public class PropertiesUtils {
             if (params.length == 1) {
                 Class<?> param = params[0];
                 if (param == String.class) {
-                    parsedParameterValue = param;
+                    parsedParameterValue = parameter;
                 } else if (param == Integer.class || param == int.class) {
                     parsedParameterValue = Integer.parseInt(parameter);
                 } else if (param == Boolean.class || param == boolean.class) {

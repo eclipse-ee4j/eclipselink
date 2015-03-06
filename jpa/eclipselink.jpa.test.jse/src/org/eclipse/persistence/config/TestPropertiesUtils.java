@@ -10,10 +10,13 @@
  * Contributors:
  *     02/19/2015 - Rick Curtis  
  *       - 458877 : Add national character support
+ *     03/06/2015-2.7.0 Dalia Abo Sheasha
+ *       - 461607: PropertiesUtils does not process methods with String parameters correclty.
  *****************************************************************************/
 package org.eclipse.persistence.config;
 
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.platform.database.DB2Platform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.junit.Assert;
 import org.junit.Test;
@@ -76,4 +79,14 @@ public class TestPropertiesUtils {
 
     }
 
+    @Test
+    public void testStoredProcedureTerminationToken() {
+        DB2Platform db2 = new DB2Platform();
+        Assert.assertTrue(db2.getStoredProcedureTerminationToken().equals(";"));
+
+        String token = "test";
+        PropertiesUtils.set(db2, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, "StoredProcedureTerminationToken=" + token);
+
+        Assert.assertTrue(db2.getStoredProcedureTerminationToken().equals(token));
+    }
 }
