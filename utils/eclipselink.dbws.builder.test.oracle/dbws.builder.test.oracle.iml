@@ -42,11 +42,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../plugins/org.eclipse.persistence.oracleddlparser_1.0.0.v20141020.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/org.eclipse.persistence.oracleddlparser_1.0.0.v20150306.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../plugins/org.eclipse.persistence.oracleddlparser.source_1.0.0.v20141020.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/org.eclipse.persistence.oracleddlparser.source_1.0.0.v20150306.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

@@ -7,6 +7,6 @@
 	<classpathentry kind="src" path="resource"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser_1.0.0.v20141020.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser.source_1.0.0.v20141020.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser_1.0.0.v20150306.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser.source_1.0.0.v20150306.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
