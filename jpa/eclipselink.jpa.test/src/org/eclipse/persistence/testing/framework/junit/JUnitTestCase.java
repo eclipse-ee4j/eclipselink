@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -75,7 +75,10 @@ import org.eclipse.persistence.testing.framework.server.TestRunner5;
 public abstract class JUnitTestCase extends TestCase {
 
     private static Map<String, EntityManagerFactory> emfNamedPersistenceUnits = null;
-    
+
+    /** Default persistence unit name. */
+    private static String DEFAULT_PU_NAME = "default";
+
     /** Determine if the test is running on a JEE server, or in JSE. */
     protected static Boolean isOnServer;
     
@@ -108,7 +111,7 @@ public abstract class JUnitTestCase extends TestCase {
 
     /** Indicates whether SOP should be recoverable. Ignored unless useSOP is true */
     public static Boolean isSOPRecoverable;
-    
+
     /**
      * This is a hack to enable weaving in Spring tests.
      * The Spring agent does not load persistence units in premain
@@ -141,7 +144,7 @@ public abstract class JUnitTestCase extends TestCase {
      * This allow a subclass test to set this only in one place.
      */
     public String getPersistenceUnitName() {
-        return "default";
+        return DEFAULT_PU_NAME;
     }
     
     /**
