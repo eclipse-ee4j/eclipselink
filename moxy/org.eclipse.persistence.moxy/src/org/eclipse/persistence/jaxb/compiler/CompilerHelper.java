@@ -50,20 +50,22 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
  */
 public class CompilerHelper {
 
-    private static JAXBContext xmlBindingsModelContext;
-    private static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
+    public static final String XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.bind.annotation.XmlLocation";
+    public static final String INTERNAL_XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.internal.bind.annotation.XmlLocation";
 
     private static final String XML_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.bind.XmlAccessorFactory";
     private static final String INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.internal.bind.XmlAccessorFactory";
-    public static final String XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.bind.annotation.XmlLocation";
-    public static final String INTERNAL_XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.internal.bind.annotation.XmlLocation";
+    private static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
+
     public static Class ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
     public static Method ACCESSOR_FACTORY_VALUE_METHOD = null;
     public static Class INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
     public static Method INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = null;
     public static Class XML_LOCATION_ANNOTATION_CLASS = null;
     public static Class INTERNAL_XML_LOCATION_ANNOTATION_CLASS = null;
-    
+
+    private static JAXBContext xmlBindingsModelContext;
+
     static {
         try {
             ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_ACCESSOR_FACTORY_ANNOTATION_NAME, true, CompilerHelper.class.getClassLoader());

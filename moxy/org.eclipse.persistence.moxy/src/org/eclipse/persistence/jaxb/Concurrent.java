@@ -24,6 +24,9 @@ import java.util.concurrent.Executors;
 
 /**
  * Class for MOXy concurrency, exploiting advantages of memoizer concept.
+ *
+ * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @since 2.6
  */
 public class Concurrent {
 

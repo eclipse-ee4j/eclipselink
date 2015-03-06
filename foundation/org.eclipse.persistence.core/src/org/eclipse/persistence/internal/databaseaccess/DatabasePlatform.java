@@ -3090,9 +3090,9 @@ public class DatabasePlatform extends DatasourcePlatform {
         if ((fieldType.isSizeAllowed()) && ((field.getSize() != 0) || (fieldType.isSizeRequired()))) {
             writer.write("(");
             if (field.getSize() == 0) {
-                writer.write(Integer.valueOf(fieldType.getDefaultSize()).toString());
+                writer.write(String.valueOf(fieldType.getDefaultSize()));
             } else {
-                writer.write(Integer.valueOf(field.getSize()).toString());
+                writer.write(String.valueOf(field.getSize()));
             }
             if (field.getSubSize() != 0) {
                 writer.write(",");

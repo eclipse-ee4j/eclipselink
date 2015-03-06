@@ -35,6 +35,7 @@ import java.util.HashMap;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl.TableCreationType;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -117,7 +118,7 @@ public class EntityManagerFactoryProvider {
             value = (String)overrides.get(propertyKey);
         }
         if (value == null){
-            if (System.getSecurityManager() != null) {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 value = (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
             } else {
                 value = System.getProperty(propertyKey);
@@ -170,8 +171,8 @@ public class EntityManagerFactoryProvider {
             value = overrides.get(propertyKey);
         }
         if ((value == null) && useSystemAsDefault){
-            if (System.getSecurityManager() != null) {
-                value = (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
             } else {
                 value = System.getProperty(propertyKey);
             }
@@ -201,8 +202,8 @@ public class EntityManagerFactoryProvider {
             value = overrides.get(propertyKey);
         }
         if ((value == null) && useSystemAsDefault){
-            if (System.getSecurityManager() != null) {
-                value = (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
             } else {
                 value = System.getProperty(propertyKey);
             }

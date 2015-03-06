@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -59,6 +59,19 @@ public class AccessLevel {
 
         AccessLevel accessLevel = (AccessLevel)object;
         return ((this.level == accessLevel.level) && (this.isStatic == accessLevel.isStatic) && (this.isFinal == accessLevel.isFinal) && (this.isTransient == accessLevel.isTransient));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = level;
+        result = 31 * result + (isAbstract ? 1 : 0);
+        result = 31 * result + (isFinal ? 1 : 0);
+        result = 31 * result + (isNative ? 1 : 0);
+        result = 31 * result + (isStatic ? 1 : 0);
+        result = 31 * result + (isSynchronized ? 1 : 0);
+        result = 31 * result + (isTransient ? 1 : 0);
+        result = 31 * result + (isVolatile ? 1 : 0);
+        return result;
     }
 
     public int getLevel() {

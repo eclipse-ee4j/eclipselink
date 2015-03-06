@@ -212,7 +212,7 @@ enum BeanValidationHelper {
         while (!xmlParsed) {
             try {
                 if (ValidationXMLReader.asyncAttemptFailed()
-                        || !ValidationXMLReader.latch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
+                        || !ValidationXMLReader.getLatch().await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                     ValidationXMLReader.runSynchronouslyForced();
                 }
                 xmlParsed = true;

@@ -26,7 +26,9 @@ import java.util.concurrent.FutureTask;
  * Memoizer for computing resource expensive tasks asynchronously & concurrently.
  *
  * Inspired by D. Lea. <i>JCiP</i>, 2nd edition. Addison-Wesley, 2006. pp.109
- * @author Marcel Valovy
+ *
+ * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @since 2.6
  */
 public class Memoizer<A, V> implements LowLevelProcessor<A, V> {
 

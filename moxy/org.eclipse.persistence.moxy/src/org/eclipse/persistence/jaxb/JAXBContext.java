@@ -9,7 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     Marcel Valovy - 2.6 - added case insensitive unmarshalling property
+ *     Marcel Valovy - 2.6 - added ci unmarshalling & BV in JAXB
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
@@ -919,7 +919,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 jModel.setMetadataCompletePackageMap(metadataComplete);
             }
 
-            jModel.setHasXmlBindings(xmlBindings != null || !xmlBindings.isEmpty());
+            jModel.setHasXmlBindings(!xmlBindings.isEmpty());
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(classesToBeBound, jModel);
             if (properties != null) enableFacetsIfPropertySetTrue(inputImpl, properties);
             try {

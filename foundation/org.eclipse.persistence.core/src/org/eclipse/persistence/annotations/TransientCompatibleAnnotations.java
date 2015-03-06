@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,7 @@
 package org.eclipse.persistence.annotations;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,7 +28,14 @@ import java.util.List;
  */
 public class TransientCompatibleAnnotations {
 
-    private static List<String> transientCompatibleAnnotations = null;
+    private static final List<String> transientCompatibleAnnotations = Collections.unmodifiableList(new ArrayList<String>() {{
+        add("javax.persistence.PersistenceUnits");
+        add("javax.persistence.PersistenceUnit");
+        add("javax.persistence.PersistenceContext");
+        add("javax.persistence.PersistenceContexts");
+        add("javax.persistence.Access");
+        add("javax.persistence.Transient");
+    }});
     
     /**
      * PUBLIC:
@@ -36,15 +44,6 @@ public class TransientCompatibleAnnotations {
      * @return
      */
     public static List<String> getTransientCompatibleAnnotations(){
-        if (transientCompatibleAnnotations == null){
-            transientCompatibleAnnotations = new ArrayList();
-            transientCompatibleAnnotations.add("javax.persistence.PersistenceUnits");
-            transientCompatibleAnnotations.add("javax.persistence.PersistenceUnit");
-            transientCompatibleAnnotations.add("javax.persistence.PersistenceContext");
-            transientCompatibleAnnotations.add("javax.persistence.PersistenceContexts");
-            transientCompatibleAnnotations.add("javax.persistence.Access");
-            transientCompatibleAnnotations.add("javax.persistence.Transient");
-        }
         return transientCompatibleAnnotations;
     }
     

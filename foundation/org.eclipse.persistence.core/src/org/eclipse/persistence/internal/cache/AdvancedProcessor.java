@@ -18,6 +18,9 @@ package org.eclipse.persistence.internal.cache;
  * Processor for computable tasks.
  *
  * Concurrent.
+ *
+ * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @since 2.6
  */
 public class AdvancedProcessor implements Processor, Clearable {
 

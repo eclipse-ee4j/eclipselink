@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.io.*;
+import java.security.AccessController;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,6 +21,8 @@ import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.*;
 
 /**
@@ -36,15 +39,17 @@ import org.eclipse.persistence.logging.*;
  * </ul>
  */
 public class ConcurrencyManager implements Serializable {
-    
+
+    public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
+
+    protected static boolean shouldTrackStack = getPropertyRecordStackOnLock() != null;
+
     protected int numberOfReaders;
     protected int depth;
     protected int numberOfWritersWaiting;
     protected volatile transient Thread activeThread;
-    public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
+
     protected boolean lockedByMergeManager;
-    
-    protected static boolean shouldTrackStack = System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK) != null;
     protected Exception stack;
 
     /**
@@ -562,6 +567,12 @@ public class ConcurrencyManager implements Serializable {
      */
     public static void setShouldTrackStack(boolean shouldTrackStack) {
         ConcurrencyManager.shouldTrackStack = shouldTrackStack;
+    }
+
+    private static String getPropertyRecordStackOnLock() {
+        return (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
+                (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty(SystemProperties.RECORD_STACK_ON_LOCK))
+                : System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK);
     }
     
 }

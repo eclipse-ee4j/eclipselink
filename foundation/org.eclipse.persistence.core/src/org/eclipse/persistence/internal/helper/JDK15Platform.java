@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -26,13 +26,13 @@ public class JDK15Platform implements JDKPlatform {
      * PERF: The like expression compiled Pattern objects are cached
      * to avoid re-compilation on every usage.
      */
-    protected static ConcurrentHashMap patternCache = new ConcurrentHashMap();
+    protected static final ConcurrentHashMap patternCache = new ConcurrentHashMap();
 
     /**
      * PERF: The regular expression compiled Pattern objects are cached
      * to avoid re-compilation on every usage.
      */
-    protected static ConcurrentHashMap regexpPatternCache = new ConcurrentHashMap();
+    protected static final ConcurrentHashMap regexpPatternCache = new ConcurrentHashMap();
 
     /**
      * INTERNAL:

@@ -30,6 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Utility class for bean validation related tasks.
  *  - Singleton.
  *  - Thread-safe.
+ *
+ * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @since 2.6
  */
 public enum BeanValidationHelper {
     BEAN_VALIDATION_HELPER;

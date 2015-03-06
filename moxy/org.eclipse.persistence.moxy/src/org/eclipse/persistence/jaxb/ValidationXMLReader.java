@@ -48,6 +48,9 @@ import static org.eclipse.persistence.jaxb.BeanValidationHelper.BEAN_VALIDATION_
  * Not to be made singleton. The method #parse() shall be invoked only once per class load of this class,
  * i.e. once per VM in usual case. After that the instance and all its fields should be made available for garbage
  * collection.
+ *
+ * @author Marcel Valovy - marcel.valovy@oracle.com
+ * @since 2.6
  */
 class ValidationXMLReader implements Callable<Void> {
 
@@ -57,8 +60,7 @@ class ValidationXMLReader implements Callable<Void> {
     public static final String CLASS_QNAME = "class";
     public static final String PACKAGE_SEPARATOR = ".";
 
-    static final CountDownLatch latch = new CountDownLatch(1);
-
+    private static final CountDownLatch latch = new CountDownLatch(1);
     private static final String VALIDATION_XML = "META-INF/validation.xml";
     private static final Logger LOGGER = Logger.getLogger(ValidationXMLReader.class.getName());
 
@@ -106,17 +108,6 @@ class ValidationXMLReader implements Callable<Void> {
         }
     }
 
-    private static void runAsyncInternal() {
-        Callable<Void> callable = getInstance();
-
-        Crate.Tuple<ExecutorService, Boolean> crate = Concurrent.getManagedSingleThreadedExecutorService();
-
-        jdkExecutor = !crate.getPayload2();
-        ExecutorService executor = crate.getPayload1();
-        executor.submit(callable);
-        executor.shutdown();
-    }
-
     /**
      * Call if you think that you are waiting too long for the {@link #runAsynchronously()} to finish.
      * Someone might have interrupted/killed that thread... or didn't even allow it to be created,
@@ -138,6 +129,21 @@ class ValidationXMLReader implements Callable<Void> {
             return false;
         }
         return true;
+    }
+
+    static CountDownLatch getLatch() {
+        return latch;
+    }
+
+    private static void runAsyncInternal() {
+        Callable<Void> callable = getInstance();
+
+        Crate.Tuple<ExecutorService, Boolean> crate = Concurrent.getManagedSingleThreadedExecutorService();
+
+        jdkExecutor = !crate.getPayload2();
+        ExecutorService executor = crate.getPayload1();
+        executor.submit(callable);
+        executor.shutdown();
     }
 
     /**
