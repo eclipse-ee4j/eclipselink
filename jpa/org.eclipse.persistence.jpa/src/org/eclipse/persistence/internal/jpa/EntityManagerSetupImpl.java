@@ -1284,7 +1284,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     
     
     protected static Class findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
-        if (System.getSecurityManager() != null){
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return (Class)AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
         } else {
             return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, loader);
