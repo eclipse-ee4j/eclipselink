@@ -3461,7 +3461,7 @@
                 <pathelement path="@{dir.base}/@{dir.build}/@{test.name}_client.jar"/>
                 <pathelement path="@{dir.base}/@{dir.build}/@{model.name}_ejb.jar"/>
                 <fileset dir="${server.lib.full}" includes="@{libs}"/>
-                <path refid="compile.server.path"/>
+                <path refid="compile.jpa21.server.path"/>
             </path>
             <pathconvert property="run.path.message" refid="run.path"/>
             <echo>Running test @{ear} on @{srv.name}</echo>
@@ -3509,55 +3509,29 @@
 
 	<!-- Run an ear on the server. -->
     <target name="server-run-test-simple" unless="is.test.with.tenant">
-        <property name="server.lib.full" location="${server.lib}"/>
-        <path id="run.path">
-            <pathelement path="${jpatest.basedir}/${build.dir}/${TEST_NAME}_client.jar"/>
-            <pathelement path="${jpatest.basedir}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
-            <!--this path is used for WebSphere and WebLogic JPA2.0 support, also for JBoss-eap testing ,and it actually point to JPA1.0 unsigned jar-->
-            <!--pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/-->
-            <fileset dir="${server.lib.full}" includes="${server.depend}"/>
-            <path refid="compile.server.path"/>
-        </path>
-        <pathconvert property="run.path.message" refid="run.path"/>
-        <echo>Running test ${EAR_NAME} on ${server.name}</echo>
-        <echo message=" * oracle.proxy.user = ${oracle.proxy.user}"/>
-        <echo message=" * server.platform = ${server.platform}"/>
-        <echo message=" * server.user = ${server.user}"/>
-        <echo message=" * server.pwd = ${server.pwd}"/>
-        <echo message=" * server.depend = ${server.depend}"/>
-        <echo message=" * server.lib = ${server.lib.full}"/>
-        <echo message=" * SERVER.URL = ${SERVER.URL}"/>
-        <echo message=" * SERVER.TESTRUNNER = ${SERVER.TESTRUNNER}"/>
-        <echo message=" * SERVER.TESTRUNNER1 = ${SERVER.TESTRUNNER1}"/>
-        <echo message=" * SERVER.TESTRUNNER2 = ${SERVER.TESTRUNNER2}"/>
-        <echo message=" * SERVER.TESTRUNNER3 = ${SERVER.TESTRUNNER3}"/>
-        <echo message=" * SERVER.TESTRUNNER4 = ${SERVER.TESTRUNNER4}"/>
-        <echo message=" * SERVER.TESTRUNNER5 = ${SERVER.TESTRUNNER5}"/>
-        <echo message=" * run.metadata.cache.test.suite = ${run.metadata.cache.test.suite}"/>
-        <echo message=" * run.path = ${run.path.message}"/>
-        <echo message=" * run.dir = ${run.dir}"/>
-        <echo message=" * TEST_SUITE = ${TEST_SUITE}"/>
-        <mkdir dir="${jpatest.basedir}/${report.dir}"/>
-        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="256m" dir="${run.dir}">
-            <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
-            <sysproperty key="server.platform" value="${server.platform}"/>
-            <sysproperty key="server.user" value="${server.user}"/>
-            <sysproperty key="server.password" value="${server.pwd}"/>
-            <sysproperty key="server.url" value="${SERVER.URL}"/>
-            <sysproperty key="server.testrunner" value="${SERVER.TESTRUNNER}"/>
-            <sysproperty key="server.testrunner1" value="${SERVER.TESTRUNNER1}"/>
-            <sysproperty key="server.testrunner2" value="${SERVER.TESTRUNNER2}"/>
-            <sysproperty key="server.testrunner3" value="${SERVER.TESTRUNNER3}"/>
-            <sysproperty key="server.testrunner4" value="${SERVER.TESTRUNNER4}"/>
-            <sysproperty key="server.testrunner5" value="${SERVER.TESTRUNNER5}"/>
-            <sysproperty key="server.run" value="TRUE"/>
-            <sysproperty key="com.ibm.SSL.ConfigURL" value="${com.ibm.SSL.ConfigURL}"/>
-            <sysproperty key="com.ibm.CORBA.ConfigURL" value="${com.ibm.CORBA.ConfigURL}"/>
-            <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
-            <classpath refid="run.path"/>
-            <formatter type="xml"/>
-            <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/${TEST_SUITE}-test-results"/>
-        </junit>
+        <server-run-test-call
+            platform="${server.platform}"
+            libs="${server.depend}"
+            dir.lib="${server.lib}"
+            dir.base="${jpatest.basedir}"
+            dir.build="${build.dir}"
+            dir.report="${report.dir}"
+            test.name="${TEST_NAME}"
+            model.name="${MODEL_NAME}"
+            srv.name="${server.name}"
+            srv.user="${server.user}"
+            srv.pwd="${server.pwd}"
+            proxy.user="${oracle.proxy.user}"
+            ear="${EAR_NAME}"
+            url="${SERVER.URL}"
+            suite="${TEST_SUITE}"
+            runner="${SERVER.TESTRUNNER}"
+            runner1="${SERVER.TESTRUNNER1}"
+            runner2="${SERVER.TESTRUNNER2}"
+            runner3="${SERVER.TESTRUNNER3}"
+            runner4="${SERVER.TESTRUNNER4}"
+            runner5="${SERVER.TESTRUNNER5}"
+        />
     </target>
 
     <!-- Run an ear on the server using prompt runner. -->
