@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,6 +25,7 @@ import java.security.ProtectionDomain;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -165,10 +166,10 @@ public class JavaSECMPInitializer extends JPAInitializer {
         URL[] urlPath = ((URLClassLoader)currentLoader).getURLs();
         
         ClassLoader tempLoader = null;
-        if (System.getSecurityManager() != null) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Class[] argsClasses = new Class[] {URL[].class, ClassLoader.class, Collection.class, boolean.class};
-                Object[] args = new Object[] {urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers};
+                Class[] argsClasses = new Class[] { URL[].class, ClassLoader.class, Collection.class, boolean.class };
+                Object[] args = new Object[] { urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers };
                 Constructor classLoaderConstructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(TempEntityLoader.class, argsClasses, true));
                 tempLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedInvokeConstructor(classLoaderConstructor, args));
             } catch (PrivilegedActionException privilegedException) {
