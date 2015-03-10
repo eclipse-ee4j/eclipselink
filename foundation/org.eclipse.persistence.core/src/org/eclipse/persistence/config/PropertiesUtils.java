@@ -61,7 +61,7 @@ public class PropertiesUtils {
         String[] t = kv.split("=");
 
         if (t.length != 2) {
-            // We must have a single key and a single value. Die otherwise.
+            // We must have a single key and a single value.
             throw ConversionException.couldNotTranslatePropertiesIntoObject(instance, propertyName, kv, null);
         }
         String methodName = "set" + t[0].trim();
