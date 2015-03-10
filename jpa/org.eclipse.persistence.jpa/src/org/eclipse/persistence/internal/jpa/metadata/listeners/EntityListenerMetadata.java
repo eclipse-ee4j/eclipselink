@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -244,9 +244,9 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      */
     Method[] getDeclaredMethods(Class cls) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return (Method[]) AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
+            return AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
         } else {
-            return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getDeclaredMethods(cls);
+            return PrivilegedAccessHelper.getDeclaredMethods(cls);
         }
     }
 
