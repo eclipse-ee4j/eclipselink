@@ -100,9 +100,9 @@ public class PropertiesUtils {
                     // Don't use Boolean.parseBoolean(..) as it is to liberal
                     // with it's interpretation of false values
                     String lower = parameter.toLowerCase();
-                    if (lower.equals("true")) {
+                    if ("true".equals(lower)) {
                         parsedParameterValue = Boolean.TRUE;
-                    } else if (lower.equals("false")) {
+                    } else if ("false".equals(lower)) {
                         parsedParameterValue = Boolean.FALSE;
                     }
                 } else if (param == Long.class || param == long.class) {
@@ -121,7 +121,7 @@ public class PropertiesUtils {
     }
 
     private static List<Method> getMethodsMatchingName(Object instance, String methodName) {
-        List<Method> methods = new ArrayList<Method>();
+        List<Method> methods = new ArrayList<>();
         for (Method method : getMethods(instance.getClass())) {
             if (method.getName().equalsIgnoreCase(methodName)) {
                 methods.add(method);
@@ -131,14 +131,14 @@ public class PropertiesUtils {
     }
 
     private static Method[] getMethods(Class<?> cls) {
-        if (System.getSecurityManager() != null) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(cls));
         }
         return PrivilegedAccessHelper.getMethods(cls);
     }
 
     private static Object invokeMethod(Method method, Object instance, Object... params) throws Exception {
-        if (System.getSecurityManager() != null) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, instance, params));
         }
         return method.invoke(instance, params);
