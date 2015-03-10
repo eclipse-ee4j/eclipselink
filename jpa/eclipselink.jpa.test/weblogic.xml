@@ -63,10 +63,6 @@
         <contains string="${db.driver}" substring="derby"/>
     </condition>
 
-    <condition property="is.v1030">
-        <contains string="${server.version}" substring="10.3.0"/>
-    </condition>
-
     <condition property="WLS_SETUP_PY" value="wls_exalogic_setup.py" else="wls_setup.py">
         <contains string="${server.version}" substring="exalogic"/>
     </condition>
@@ -112,8 +108,8 @@
         <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
     </target>
 
-    <target name="copy-eclipselink-jar-to-domain-lib" if="is.v1030">
-        <copy file="${eclipselink.lib}" todir="${weblogic.domain}/lib"/>
+    <target name="copy-eclipselink-jar-to-domain-lib">
+        <copy file="${eclipselink.lib}" todir="${server.module.toplink}"/>
     </target>
 
     <target name="pass-weblogic-and-database-info">
