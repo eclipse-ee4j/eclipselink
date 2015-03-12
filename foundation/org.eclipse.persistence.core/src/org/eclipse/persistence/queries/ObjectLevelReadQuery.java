@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -20,6 +20,8 @@
  *         thrown otherwise.
  *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup 
  *     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE 
+ *     3/13/2015 - Will Dazey  
+ *       - 458301 : Added check so that aggregate results won't attempt force version lock if locking type is set
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -1219,7 +1221,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         } else {
             result = execute(unitOfWork, translationRow);
         }
-            
+
         // If a lockModeType was set (from JPA) we need to check if we need
         // to perform a force update to the version field.
         if (lockModeType != null && result != null) {
@@ -1236,16 +1238,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                             // also deal with null results.
                             if (obj instanceof Object[]) {    
                                 for (Object o : (Object[]) obj) {
-                                    if (o != null) {
+                                    if (o != null && unitOfWork.isObjectRegistered(o)) {
                                         unitOfWork.forceUpdateToVersionField(o, forceUpdateToVersionField);
                                     }
                                 }
-                            } else {
+                            } else if(unitOfWork.isObjectRegistered(obj)){
                                 unitOfWork.forceUpdateToVersionField(obj, forceUpdateToVersionField);
                             }
                         }
                     }
-                } else {
+                } else if(unitOfWork.isObjectRegistered(result)) {
                     unitOfWork.forceUpdateToVersionField(result, forceUpdateToVersionField);
                 }
             }

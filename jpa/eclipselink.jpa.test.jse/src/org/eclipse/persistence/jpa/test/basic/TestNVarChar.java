@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 public class TestNVarChar {
 
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { NvarcharEntity.class }, properties = {
-            // @Property(name = "eclipselink.logging.level", value = "FINE"),
             @Property(name = "eclipselink.cache.shared.default", value = "false"),
             // This property remaps String from VARCHAR->NVARCHAR(or db equivalent)
             @Property(name = "eclipselink.target-database-properties",

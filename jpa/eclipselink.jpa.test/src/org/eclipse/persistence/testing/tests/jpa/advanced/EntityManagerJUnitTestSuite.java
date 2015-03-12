@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -6279,7 +6279,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         int employeeVersionBefore = employeeBefore.getVersion();
                         Employee employeeAfter = em.find(Employee.class, employeeBefore.getId());
                         int employeeVersionAfter = employeeAfter.getVersion();
-                        assertTrue("The manager version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
+                        assertTrue("The employee version was not updated on the locking query.", (employeeVersionAfter - employeeVersionBefore) == 1);
                     }
                 }
             } finally {
