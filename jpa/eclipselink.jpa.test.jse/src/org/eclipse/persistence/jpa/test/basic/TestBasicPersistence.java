@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
 @RunWith(EmfRunner.class)
 public class TestBasicPersistence {
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { Dog.class, XmlFish.class, Person.class, Employee.class }, properties = {
-        @Property(name = "eclipselink.logging.level", value = "FINEST"),
         @Property(name = "eclipselink.cache.shared.default", value = "false") }, mappingFiles = { "META-INF/fish-orm.xml" })
     private EntityManagerFactory emf;
 

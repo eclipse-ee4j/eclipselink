@@ -8,8 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/24/2016-2.6.0 Rick Curtis
+ *     02/24/2015-2.6.0 Rick Curtis
  *       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
+ *     03/13/2015-2.6.0 Will Dazey
+ *       - 458301: Added tests for force increment on scalar results
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.locking;
 
@@ -39,8 +41,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
 public class TestPessimisticLocking {
-    @Emf(createTables = DDLGen.DROP_CREATE, classes = { LockingDog.class, }, properties = { @Property(
-            name = "eclipselink.cache.shared.default", value = "false") })
+    @Emf(createTables = DDLGen.DROP_CREATE, classes = { LockingDog.class, }, properties = { 
+            @Property(name = "eclipselink.cache.shared.default", value = "false") })
     private EntityManagerFactory emf;
 
     static ExecutorService executor = null;
@@ -119,13 +121,13 @@ public class TestPessimisticLocking {
         try {
             em.getTransaction().begin();
             em2.getTransaction().begin();
-            List<LockingDog> dogs = em.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(1).setFirstResult(4).getResultList();
+            em.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(1).setFirstResult(4).getResultList();
             // This worker should block as he is trying to lock already locked
             // rows
             Future<Boolean> result = executor.submit(new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
-                    List<LockingDog> dogs2 = em2.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(1).setFirstResult(5).getResultList();
+                    em2.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(1).setFirstResult(5).getResultList();
                     return true;
                 }
             });
@@ -151,7 +153,7 @@ public class TestPessimisticLocking {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            List<LockingDog> dogs = em.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(5).getResultList();
+            em.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(5).getResultList();
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -164,11 +166,51 @@ public class TestPessimisticLocking {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            List<LockingDog> dogs = em.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setFirstResult(5).setMaxResults(5).getResultList();
+            em.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setFirstResult(5).setMaxResults(5).getResultList();
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+        }
+    }
+
+    /**
+     * This test verifies that aggregate queries will not fail with locking
+     * set.
+     * 
+     * @see 
+     *      org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite
+     *      .testQueryPESSIMISTIC_FORCE_INCREMENTLock()
+     */
+    @Test
+    public void testAggregateResultPessimisticForceIncrement() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createNamedQuery("find.lockingdogs.avg").setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT).getSingleResult();
+        } finally {
+            em.getTransaction().rollback();
+            em.close();
+        }
+    }
+
+    /**
+     * This test verifies that queries that return non-Entity results will not
+     * fail up with locking set.
+     * 
+     * @see 
+     *      org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite
+     *      .testQueryPESSIMISTIC_FORCE_INCREMENTLock()
+     */
+    @Test
+    public void testObjectQueryPessimisticForceIncrement() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createNamedQuery("find.lockingdogs.id").setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT).getResultList();
+        } finally {
+            em.getTransaction().rollback();
+            em.close();
         }
     }
 }
