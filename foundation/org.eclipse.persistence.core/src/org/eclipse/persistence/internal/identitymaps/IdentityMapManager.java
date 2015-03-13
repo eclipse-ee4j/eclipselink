@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * Some parts Copyright (c) 2010 Mark Wolochuk
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
@@ -369,10 +369,10 @@ public class IdentityMapManager implements Serializable, Cloneable {
             Class[] parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
             Object[] values = new Object[]{Integer.valueOf(size), descriptor, this.session, isIsolated};
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                Constructor constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, parameters, false));
+                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, parameters, false));
                 IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, values));
                 if ((descriptor != null) && (descriptor.getCachePolicy().getCacheInterceptorClass() != null)) {
-                    constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
                     Object params[] = new Object[]{map, this.session};
                     map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, params));
                 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -198,7 +198,7 @@ public class ConstructorResult extends SQLResult {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(targetClass, constructorArgTypes, true));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(targetClass, constructorArgTypes, true));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.exceptionWhileInitializingConstructor(exception.getException(), query, targetClass);
                 }

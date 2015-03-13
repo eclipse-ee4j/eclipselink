@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1194,7 +1194,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     Class elim = (Class)AccessController.doPrivileged(new PrivilegedClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
-                    Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(elim, new Class[] {String.class}, false));
+                    Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(elim, new Class[] {String.class}, false));
                     return (EntityListenerInjectionManager) AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
             } else {
                 Class elim = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()); 

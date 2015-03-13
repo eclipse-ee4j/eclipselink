@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -646,7 +646,7 @@ public class QueryOperation extends Operation {
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                                 oracleOPAQUE = (Class) AccessController.doPrivileged(new PrivilegedClassForName(ORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
                                 xmlTypeFactoryClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader()));
-                                xmlTypeFactoryConstructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlTypeFactoryClass, new Class[0], true));
+                                xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlTypeFactoryClass, new Class[0], true));
                                 xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor(xmlTypeFactoryConstructor, new Object[0]));
                                 getStringMethod = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE}));
                                 fieldValue = (String) AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));

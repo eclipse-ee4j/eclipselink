@@ -914,7 +914,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             Constructor constructor = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[] { ClassConstants.PINT }, false));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[] { ClassConstants.PINT }, false));
                 } catch (PrivilegedActionException exception) {
                     // If there is no constructor then the default will be used.
                     return;

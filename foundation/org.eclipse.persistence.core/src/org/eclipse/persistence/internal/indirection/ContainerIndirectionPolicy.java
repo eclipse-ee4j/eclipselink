@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -214,7 +214,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    this.containerConstructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[] { ClassConstants.ValueHolderInterface_Class }, false));
+                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[] { ClassConstants.ValueHolderInterface_Class }, false));
                 }catch (PrivilegedActionException ex){
                     if (ex.getCause() instanceof NoSuchMethodException){
                         throw (NoSuchMethodException) ex.getCause();
@@ -232,7 +232,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    this.containerConstructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[0], false));
+                    this.containerConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(getContainerClass(), new Class[0], false));
                 }catch (PrivilegedActionException ex){
                     if (ex.getCause() instanceof NoSuchMethodException){
                         throw (NoSuchMethodException) ex.getCause();
