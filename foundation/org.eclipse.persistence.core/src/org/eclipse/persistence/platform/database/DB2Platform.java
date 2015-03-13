@@ -15,6 +15,8 @@
  *       - 458877 : Add national character support
  *     02/24/2016-2.6.0 Rick Curtis
  *       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
+ *     03/13/2015 - Jody Grassel  
+ *       - 462103 : SQL for Stored Procedure named parameter with DB2 generated with incorrect marker
  *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -408,6 +410,13 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     @Override
     public String getProcedureAsString() {
         return "";
+    }
+
+    /**
+     * Used for sp calls.
+     */
+    public String getProcedureArgumentSetter() {
+        return " => ";
     }
 
     /**
