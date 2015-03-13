@@ -56,7 +56,7 @@ public class SessionManager {
     /** Allow for usage of schema validation to be configurable. */
     protected static boolean shouldUseSchemaValidation = true;
     
-    protected static SessionManager manager;
+    protected static volatile SessionManager manager;
     protected AbstractSession defaultSession;
     protected ConcurrentMap<String, Session> sessions = null;
     protected static boolean shouldPerformDTDValidation;
@@ -238,21 +238,23 @@ public class SessionManager {
             }
             return manager;
         }
+        SessionManager current = manager;
         String currentCtx = ctxHelper.getPartitionID();
-        if (manager != null && currentCtx.equals(manager.context)) {
-            return manager;
+        if (current != null && currentCtx.equals(current.context)) {
+            return current;
         }
-        manager = managers.get(currentCtx);
-        if (manager == null) {
+        current = managers.get(currentCtx);
+        if (current == null) {
             synchronized (lock) {
-                if (manager == null) {
-                    manager = initializeManager();
-                    manager.context = currentCtx;
-                    managers.put(manager.context, manager);
+                if (current == null) {
+                    current = initializeManager();
+                    current.context = currentCtx;
+                    managers.put(current.context, current);
+                    manager = current;
                 }
             }
         }
-        return manager;
+        return current;
     }
 
     /**
@@ -641,7 +643,7 @@ public class SessionManager {
         private Method getPartitionIdMethod;
 
         private static final Class cicManagerClass;
-        private static ContextHelper instance;
+        private static volatile ContextHelper instance;
         
         private static final String CIC_MANAGER_RESOURCE_NAME = "META-INF/services/weblogic.invocation.ComponentInvocationContextManager";
         private static final String CIC_MANAGER_CLASS_NAME = "weblogic.invocation.ComponentInvocationContextManager";

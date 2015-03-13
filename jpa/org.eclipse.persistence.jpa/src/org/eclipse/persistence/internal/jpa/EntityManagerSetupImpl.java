@@ -122,6 +122,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
@@ -901,11 +902,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Put the given session into the session manager so it can be looked up later
      */
     protected void addSessionToGlobalSessionManager() {
-        AbstractSession oldSession = (AbstractSession)SessionManager.getManager().getSessions().get(session.getName());
+        SessionManager sm = SessionManager.getManager();
+        ConcurrentMap<String,Session> sessions = sm.getSessions();
+        AbstractSession oldSession = (AbstractSession) sessions.get(session.getName());
         if(oldSession != null) {
             throw new PersistenceException(EntityManagerSetupException.attemptedRedeployWithoutClose(session.getName()));
         }
-        SessionManager.getManager().addSession(session);
+        sm.addSession(session);
     }
 
     /**
