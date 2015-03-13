@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -737,7 +737,7 @@ public class SessionsFactory {
         try {
             Class serverClass = m_classLoader.loadClass(serverClassName);
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                Constructor constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false));
+                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false));
                 platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
             }else{
                 Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false);
@@ -888,7 +888,7 @@ public class SessionsFactory {
                 try {
                     Class serverClass = m_classLoader.loadClass(serverClassName);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false));
+                        Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false));
                         platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
                     } else {
                         Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false);
@@ -898,7 +898,7 @@ public class SessionsFactory {
                     try {
                         Class serverClass = getClass().getClassLoader().loadClass(serverClassName);
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false));
+                            Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false));
                             platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
                         } else {
                             Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false);
@@ -1101,7 +1101,7 @@ public class SessionsFactory {
         try {
             Class tmClass = m_classLoader.loadClass(tmConfig.getTransportManagerClassName());
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                Constructor constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false));
+                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false));
                 tm = (TransportManager)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { rcm, tmConfig.useSingleThreadedNotification(), tmConfig.getTopicName() }));
             }else{
                 Constructor constructor = PrivilegedAccessHelper.getConstructorFor(tmClass, new Class[] { RemoteCommandManager.class, boolean.class, String.class }, false);

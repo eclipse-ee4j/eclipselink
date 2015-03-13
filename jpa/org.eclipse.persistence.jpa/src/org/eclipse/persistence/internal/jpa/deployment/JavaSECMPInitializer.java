@@ -14,14 +14,19 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
-import java.util.*;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.lang.instrument.*;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.ProtectionDomain;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
@@ -29,7 +34,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.logging.SessionLog;
 
 import javax.persistence.PersistenceException;
@@ -170,7 +175,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
             try {
                 Class[] argsClasses = new Class[] { URL[].class, ClassLoader.class, Collection.class, boolean.class };
                 Object[] args = new Object[] { urlPath, currentLoader, col, shouldOverrideLoadClassForCollectionMembers };
-                Constructor classLoaderConstructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(TempEntityLoader.class, argsClasses, true));
+                Constructor classLoaderConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(TempEntityLoader.class, argsClasses, true));
                 tempLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedInvokeConstructor(classLoaderConstructor, args));
             } catch (PrivilegedActionException privilegedException) {
                 throw new PersistenceException(EntityManagerSetupException.failedToInstantiateTemporaryClassLoader(privilegedException));

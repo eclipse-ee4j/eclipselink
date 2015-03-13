@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -407,7 +407,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     private Object initObject(Class type, String value, boolean isData) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
             try {
-                Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
+                Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
                 return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
             } catch (PrivilegedActionException exception) {
                 throwInitObjectException(exception, type, value, isData);

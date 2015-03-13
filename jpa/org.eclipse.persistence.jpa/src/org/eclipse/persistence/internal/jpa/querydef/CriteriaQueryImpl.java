@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -395,7 +395,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         Constructor constructor = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(class1, constructorArgs, false));
+                constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(class1, constructorArgs, false));
             } else {
                 constructor = PrivilegedAccessHelper.getConstructorFor(class1, constructorArgs, false);
             }
