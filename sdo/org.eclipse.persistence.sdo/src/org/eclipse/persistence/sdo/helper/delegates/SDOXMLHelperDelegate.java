@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,7 @@ import commonj.sdo.DataObject;
 import commonj.sdo.Property;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,10 +25,12 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.WeakHashMap;
+
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -94,8 +97,9 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         aHelperContext = aContext;
         // This ClassLoader is internal to SDO so no inter servlet-ejb container context issues should arise
         loader = new SDOClassLoader(aClassLoader, aContext);
-        xmlMarshallerMap = new WeakHashMap<Thread, XMLMarshaller>();
-        xmlUnmarshallerMap = new WeakHashMap<Thread, XMLUnmarshaller>();        
+        // WeakHashMap needs to be synchronized to prevent endless loop under the heavy load
+        xmlMarshallerMap = Collections.synchronizedMap(new WeakHashMap<Thread, XMLMarshaller>());
+        xmlUnmarshallerMap = Collections.synchronizedMap(new WeakHashMap<Thread, XMLUnmarshaller>());
     }
 
     /**
