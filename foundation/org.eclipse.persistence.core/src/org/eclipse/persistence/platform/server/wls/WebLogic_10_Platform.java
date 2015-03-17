@@ -138,7 +138,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      */
     public void prepareServerSpecificServicesMBean() {
         // No check for an existing cached MBean - we will replace it if it exists
-        if(shouldRegisterRuntimeBean) {
+        if(getDatabaseSession() != null && shouldRegisterRuntimeBean) {
             this.setRuntimeServicesMBean(new MBeanWebLogicRuntimeServices(getDatabaseSession()));
         }
     }

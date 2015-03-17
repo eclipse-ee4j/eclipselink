@@ -183,6 +183,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * @return DatabaseSession databaseSession
      */
+    @Override
     public DatabaseSession getDatabaseSession() {
         return this.databaseSession;
     }
@@ -193,6 +194,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * 
      * @return String serverNameAndVersion
      */
+    @Override
     public String getServerNameAndVersion() {
         if(this.serverNameAndVersion == null) {
             this.initializeServerNameAndVersion();
@@ -219,6 +221,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * @return String moduleName
      */
+    @Override
     public String getModuleName() {
         return DEFAULT_SERVER_NAME_AND_VERSION;
     }
@@ -241,6 +244,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #isJTAEnabled()
      * @see #disableJTA()
      */
+    @Override
     public abstract Class getExternalTransactionControllerClass();
 
     /**
@@ -253,6 +257,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
      */
+    @Override
     public void setExternalTransactionControllerClass(Class newClass) {
         this.externalTransactionControllerClass = newClass;
     }
@@ -264,6 +269,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * To change the external transaction controller class, we recommend creating a subclass of
      * ServerPlatformBase, and overriding getExternalTransactionControllerClass().
      */
+    @Override
     public void initializeExternalTransactionController() {
         this.ensureNotLoggedIn();
 
@@ -331,6 +337,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #getExternalTransactionControllerClass()
      * @see #disableJTA()
      */
+    @Override
     public boolean isJTAEnabled() {
         return this.isJTAEnabled;
     }
@@ -344,6 +351,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * ServerPlatform. By default this is <code>false</code> but some platforms
      * can choose to have MBeans deployed by default.
      */
+    @Override
     public boolean isRuntimeServicesEnabledDefault() {
         return false;
     }
@@ -356,6 +364,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @return boolean isRuntimeServicesEnabled
      * @see #disableRuntimeServices()
      */
+    @Override
     public boolean isRuntimeServicesEnabled() {
         return this.isRuntimeServicesEnabled;
     }
@@ -366,6 +375,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * @see #isRuntimeServicesEnabled()
      */
+    @Override
     public void disableRuntimeServices() {
         this.ensureNotLoggedIn();
         this.isRuntimeServicesEnabled = false;
@@ -395,6 +405,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #getExternalTransactionControllerClass()
      * @see #isJTAEnabled()
      */
+    @Override
     public void disableJTA() {
         this.ensureNotLoggedIn();
         this.isJTAEnabled = false;
@@ -407,6 +418,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * 
      * Be default we will use the connection's metadata to try to get the connection
      */
+    @Override
     public java.sql.Connection unwrapConnection(java.sql.Connection connection){
         try {
             return connection.getMetaData().getConnection();
@@ -424,6 +436,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * @param runnable: the instance of runnable to be "started"
      */
+    @Override
     public void launchContainerRunnable(Runnable runnable) {
         if (getThreadPool() == null) {
             Thread thread = new Thread(runnable);
@@ -452,6 +465,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * @return org.eclipse.persistence.logging.SessionLog
      */
+    @Override
     public org.eclipse.persistence.logging.SessionLog getServerLog() {
         return new ServerLog();
     }
@@ -459,6 +473,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * Return the thread pool size.
      */
+    @Override
     public int getThreadPoolSize() {
         return threadPoolSize;
     }
@@ -466,6 +481,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * Set the thread pool size.
      */
+    @Override
     public void setThreadPoolSize(int threadPoolSize) {
         this.threadPoolSize = threadPoolSize;
     }
@@ -512,6 +528,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      *
      * @return boolean 
      */
+    @Override
     public boolean shouldUseDriverManager() {
         return true;
     }
@@ -524,10 +541,12 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * If this platform is unable to determine if the error was communication based it will return
      * false forcing the error to be thrown to the user.
      */    
+    @Override
     public boolean wasFailureCommunicationBased(SQLException exception, Accessor connection, AbstractSession sessionForProfile){
         return getDatabaseSession().getPlatform().wasFailureCommunicationBased(exception, connection.getConnection(), sessionForProfile);
     }
 
+    @Override
     public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo) {
         return new JPAClassLoaderHolder(puInfo.getNewTempClassLoader(), true);
     }
@@ -540,6 +559,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer  
      * before opening proxy session and before closing it.
      */
+    @Override
     public void clearStatementCache(java.sql.Connection connection) {   
     }
     
@@ -553,6 +573,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #disableRuntimeServices()
      * @see #unregisterMBean()
      */
+    @Override
     public void registerMBean() {
         if (!this.isRuntimeServicesEnabled()) {
             return;
@@ -568,6 +589,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
+    @Override
     public void unregisterMBean() {
         if (!this.isRuntimeServicesEnabled()) {
             return;
@@ -578,6 +600,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: perform any require shutdown tasks.
      */
+    @Override
     public void shutdown() {
         unregisterMBean();
         if (this.threadPool != null) {
@@ -614,7 +637,20 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * @return Return JNDIConnector.COMPOSITE_NAME_LOOKUP.
      */
+    @Override
     public int getJNDIConnectorLookupType() { 
         return JNDIConnector.COMPOSITE_NAME_LOOKUP; 
     }
+
+    @Override
+    public String getPartitionID() {
+        return "GLOBAL";
+    }
+
+    @Override
+    public boolean usesPartitions() {
+        return false;
+    }
+    
+    
 }
