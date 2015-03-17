@@ -87,13 +87,13 @@ import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.platform.server.ServerPlatformUtils;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.UnaryTableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Login;
@@ -885,30 +885,7 @@ public class SessionsFactory {
             // A supported platform so instantiate an object of its type.
             String serverClassName = platformConfig.getServerClassName();
             if (platformConfig.isSupported()) {
-                try {
-                    Class serverClass = m_classLoader.loadClass(serverClassName);
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false));
-                        platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
-                    } else {
-                        Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false);
-                        platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
-                    }
-                } catch (Exception e) {
-                    try {
-                        Class serverClass = getClass().getClassLoader().loadClass(serverClassName);
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false));
-                            platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
-                        } else {
-                            Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false);
-                            platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
-                        }
-                    } catch (Exception ignore) {
-                        // Ignore, throw first error.
-                    }
-                    throw SessionLoaderException.failedToParseXML("Server platform class is invalid: " + serverClassName, e);
-                }
+                platform = ServerPlatformUtils.createServerPlatform(session, serverClassName, m_classLoader);
             } else {
                 throw SessionLoaderException.serverPlatformNoLongerSupported(serverClassName);
             }
