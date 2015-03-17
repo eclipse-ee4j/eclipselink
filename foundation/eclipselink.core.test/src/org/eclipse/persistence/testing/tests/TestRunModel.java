@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -20,6 +20,7 @@ import junit.framework.Test;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.tests.platform.server.wls.WebLogic_12_PlatformTest;
 
 /**
  * This class create test runs, i.e. models of model to allow all tests to be run a once.
@@ -46,6 +47,7 @@ public class TestRunModel extends TestModel {
         if (!getTests().isEmpty()) {
             return;
         }
+        addTestSuite(WebLogic_12_PlatformTest.class);
         Vector tests = new Vector();
 
         if (isLight) {

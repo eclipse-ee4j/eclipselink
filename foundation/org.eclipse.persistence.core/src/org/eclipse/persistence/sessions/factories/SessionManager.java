@@ -12,13 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.factories;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -30,6 +28,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.platform.server.ServerPlatformUtils;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 
@@ -60,11 +60,38 @@ public class SessionManager {
     protected AbstractSession defaultSession;
     protected ConcurrentMap<String, Session> sessions = null;
     protected static boolean shouldPerformDTDValidation;
-    private static final ConcurrentMap<String, SessionManager> managers = new ConcurrentHashMap<>(4, 0.9f, 1);
+    private static volatile ConcurrentMap<String, SessionManager> managers;
+    private static volatile ServerPlatform detectedPlatform;
+    private static volatile boolean supportPartitions;
     private String context;
     private static final Object[] lock = new Object[0];
-    private static final ContextHelper ctxHelper = ContextHelper.getContextHelper();
+    private static final SessionLog LOG = AbstractSessionLog.getLog();
 
+    static {
+        init();
+    }
+    
+    private static void init() {
+        String platformClass = ServerPlatformUtils.detectServerPlatform(null);
+        try {
+            detectedPlatform = ServerPlatformUtils.createServerPlatform(null, platformClass, SessionManager.class.getClassLoader());
+        } catch (NullPointerException npe) {
+            //some platforms may not be handling 'null' session well,
+            //so be defensive here and only log throwable here
+            detectedPlatform = null;
+            LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, npe);
+        }
+        supportPartitions = detectedPlatform != null && detectedPlatform.usesPartitions();
+        if (supportPartitions) {
+            managers = new ConcurrentHashMap<String, SessionManager>(4, 0.9f, 1);
+            SessionManager sm = initializeManager();
+            manager = sm;
+            managers.put(sm.context, sm);
+        } else {
+            manager = initializeManager();
+        }
+    }
+    
     /**
      * PUBLIC:
      * Return if schema validation will be used when parsing the 10g (10.1.3) sessions XML.
@@ -95,6 +122,9 @@ public class SessionManager {
      */
     public SessionManager() {
         sessions = new ConcurrentHashMap<>(5);
+        if (supportPartitions) {
+            context = getPartitionID();
+        }
     }
 
     /**
@@ -141,14 +171,12 @@ public class SessionManager {
      * Destroy current session manager instance.
      */
     public void destroy() {
-        if (context != null) {
-            managers.remove(context);
-        } else {
-            //should not happen
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, "session_manager_no_partition");
+        if (supportPartitions) {
+            if (managers.remove(getPartitionID()) == null) {
+                //should not happen
+                LOG.log(SessionLog.WARNING, "session_manager_no_partition", new Object[0]);
+           }
         }
-        context = null;
-        manager = null;
     }
 
     /**
@@ -174,7 +202,7 @@ public class SessionManager {
             }
         } catch (Throwable ignore) {
             // EL Bug 321843 - Must handle errors from logout.
-            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ignore);
+            LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ignore);
         }
 
         sessions.remove(session.getName());
@@ -228,7 +256,7 @@ public class SessionManager {
      * @return the session manager for current context
      */
     public static SessionManager getManager() {
-        if (ctxHelper == null) {
+        if (!supportPartitions) {
             if (manager == null) {
                 synchronized (lock) {
                     if (manager == null) {
@@ -239,8 +267,11 @@ public class SessionManager {
             return manager;
         }
         SessionManager current = manager;
-        String currentCtx = ctxHelper.getPartitionID();
+        String currentCtx = getPartitionID();
         if (current != null && currentCtx.equals(current.context)) {
+            if (LOG.shouldLog(SessionLog.FINER)) {
+                LOG.log(SessionLog.FINER, "returning cached session manager for " + current.context);
+            }
             return current;
         }
         current = managers.get(currentCtx);
@@ -251,8 +282,14 @@ public class SessionManager {
                     current.context = currentCtx;
                     managers.put(current.context, current);
                     manager = current;
+                    if (LOG.shouldLog(SessionLog.FINER)) {
+                        LOG.log(SessionLog.FINER, "created session manager for " + current.context);
+                    }
                 }
             }
+        }
+        if (LOG.shouldLog(SessionLog.FINER)) {
+            LOG.log(SessionLog.FINER, "returning session manager for " + current.context);
         }
         return current;
     }
@@ -265,7 +302,7 @@ public class SessionManager {
      * @return all SessionManager instances
      */
     public static Collection<SessionManager> getAllManagers() {
-        return managers.values();
+        return supportPartitions ? managers.values() : Collections.singleton(getManager());
     }
 
     /**
@@ -275,6 +312,9 @@ public class SessionManager {
      * @return initialized session manager
      */
     protected static SessionManager initializeManager() {
+        if (LOG.shouldLog(SessionLog.FINER)) {
+            LOG.log(SessionLog.FINER, "initializing session manager");
+        }
         return new SessionManager();
     }
 
@@ -536,7 +576,7 @@ public class SessionManager {
                             try {
                                 ((DatabaseSession)session).logout();
                             } catch (Throwable ignore) {
-                                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ignore);
+                                LOG.logThrowable(SessionLog.WARNING, AbstractSessionLog.CONNECTION, ignore);
                             }
                         }        
                         getSessions().remove(loader.getSessionName());
@@ -570,7 +610,7 @@ public class SessionManager {
      * Log exceptions to the default log then throw them.
      */
     private void logAndThrowException(int level, RuntimeException exception) throws RuntimeException {
-        AbstractSessionLog.getLog().logThrowable(level, AbstractSessionLog.CONNECTION, exception);
+        LOG.logThrowable(level, AbstractSessionLog.CONNECTION, exception);
         throw exception;
     }
 
@@ -617,134 +657,29 @@ public class SessionManager {
      * @param theManager session manager for current context
      */
     public static void setManager(SessionManager theManager) {
-        if (ctxHelper == null) {
+        if (!supportPartitions) {
              manager = theManager;
         } else {
             if (theManager.context == null) {
                 synchronized (lock) {
                     if (theManager.context == null) {
-                        theManager.context = ctxHelper.getPartitionID();
+                        theManager.context = getPartitionID();
+                    }
+                    managers.put(theManager.context, theManager);
+                    if (LOG.shouldLog(SessionLog.FINER)) {
+                        LOG.log(SessionLog.FINER, "registered session manager w/o partitionId for " + theManager.context);
                     }
                 }
+            } else {
+                managers.put(theManager.context, theManager);
+                if (LOG.shouldLog(SessionLog.FINER)) {
+                    LOG.log(SessionLog.FINER, "registered session manager w/ partitionId for " + theManager.context);
+                }
             }
-            managers.put(theManager.context, theManager);
         }
     }
-
-    private static class ContextHelper {
-
-        /**
-         * Instance of CIC (Component Invocation Context) or null if not
-         * initialized.
-         */
-        private Object cicManagerInstance;
-
-        private Method getCurrentCicMethod;
-        private Method getPartitionIdMethod;
-
-        private static final Class cicManagerClass;
-        private static volatile ContextHelper instance;
-        
-        private static final String CIC_MANAGER_RESOURCE_NAME = "META-INF/services/weblogic.invocation.ComponentInvocationContextManager";
-        private static final String CIC_MANAGER_CLASS_NAME = "weblogic.invocation.ComponentInvocationContextManager";
-
-        static {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                cicManagerClass = AccessController.doPrivileged(new PrivilegedAction<Class>() {
-                    @Override
-                    public Class run() {
-                        return getCicManagerClass(CIC_MANAGER_RESOURCE_NAME, CIC_MANAGER_CLASS_NAME);
-                    }
-                });
-            } else {
-                cicManagerClass = getCicManagerClass(CIC_MANAGER_RESOURCE_NAME, CIC_MANAGER_CLASS_NAME);
-            }
-        }
-        
-        private static Class getCicManagerClass(String cicManagerResourceName, String cicManagerClassName) {
-            try {
-                if (SessionManager.class.getClassLoader().getResource(cicManagerResourceName) != null) {
-                    return PrivilegedAccessHelper.getClassForName(cicManagerClassName);
-                } else {
-                    return null;
-                }
-            } catch (ClassNotFoundException cnfe) {
-                return null;
-            }
-        }
-
-        private ContextHelper(final Class managerClass, final String contextClassName) {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
-                    @Override
-                    public Void run() {
-                        initialize(managerClass, contextClassName);
-                        return null;
-                    }
-                });
-            } else {
-                initialize(managerClass, contextClassName);
-            }
-        }
-
-        private void initialize(final Class managerClass, final String contextClassName) {
-            try {
-                // Get component invocation manager
-                final Method getInstance = PrivilegedAccessHelper.getDeclaredMethod(managerClass, "getInstance", new Class[]{});
-                cicManagerInstance = PrivilegedAccessHelper.invokeMethod(getInstance, managerClass);
-
-                // Get component invocation context
-                getCurrentCicMethod = PrivilegedAccessHelper.getMethod(managerClass, "getCurrentComponentInvocationContext", new Class[]{}, true);
-
-                final Class cicClass = PrivilegedAccessHelper.getClassForName(contextClassName);
-                getPartitionIdMethod = PrivilegedAccessHelper.getDeclaredMethod(cicClass, "getPartitionId", new Class[]{});
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException ex) {
-                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
-            }
-        }
-
-        static ContextHelper getContextHelper() {
-            if (cicManagerClass == null) {
-                return null;
-            }
-            if (instance == null) {
-                synchronized (ContextHelper.class) {
-                    if (instance == null) {
-                        instance = new ContextHelper(cicManagerClass, "weblogic.invocation.ComponentInvocationContext");
-                    }
-                }
-            }
-            return instance;
-        }
-
-        /**
-         * Gets partition ID. Calls cicInstance.getPartitionIdMethod().
-         */
-        String getPartitionID() {
-            try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    return AccessController.doPrivileged(new PrivilegedAction<String>() {
-
-                        @Override
-                        public String run() {
-                            try {
-                                final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                                return (String) PrivilegedAccessHelper.invokeMethod(getPartitionIdMethod, cicInstance);
-                            } catch (IllegalAccessException | InvocationTargetException ex) {
-                                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
-                                return "UNKNOWN";
-                            }
-                        }
-                    });
-                } else {
-                    final Object cicInstance = PrivilegedAccessHelper.invokeMethod(getCurrentCicMethod, cicManagerInstance);
-                    return (String) PrivilegedAccessHelper.invokeMethod(getPartitionIdMethod, cicInstance);
-                }
-            } catch (IllegalAccessException | InvocationTargetException ex) {
-                AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, null, ex);
-                return "UNKNOWN";
-            }
-        }
+    
+    private static String getPartitionID() {
+        return detectedPlatform.getPartitionID();
     }
 }

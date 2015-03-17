@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -37,6 +37,7 @@ public class TargetServer {
     public static final String  WebLogic = "WebLogic";
     public static final String  WebLogic_9 = "WebLogic_9";
     public static final String  WebLogic_10 = "WebLogic_10";
+    public static final String  WebLogic_12 = "WebLogic_12";
     public static final String  JBoss = "JBoss";
     public static final String  SAPNetWeaver_7_1 = "NetWeaver_7_1";
  

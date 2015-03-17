@@ -18,11 +18,11 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import org.eclipse.persistence.config.TargetServer;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.platform.server.ServerPlatformDetector;
 
 public class WebLogicPlatformDetector implements ServerPlatformDetector {
+
     @Override
     public String checkPlatform() {
         String platform = null;
@@ -37,11 +37,21 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
         } else {
             serverNameAndVersion = getServerNameAndVersionInternal();
         }
-        if (serverNameAndVersion != null && Helper.compareVersions(serverNameAndVersion, "9") >= 0) {
-            if (Helper.compareVersions(serverNameAndVersion, "10") >= 0) {
-                platform = TargetServer.WebLogic_10;
-            } else {
-                platform = TargetServer.WebLogic_9;
+        if (serverNameAndVersion != null) {
+            int idx = serverNameAndVersion.indexOf('.');
+            switch (serverNameAndVersion.substring(0, idx)) {
+                case "12":
+                    platform = TargetServer.WebLogic_12;
+                    break;
+                case "11":
+                case "10":
+                    platform = TargetServer.WebLogic_10;
+                    break;
+                case "9":
+                    platform = TargetServer.WebLogic_9;
+                    break;
+                default:
+                    platform = TargetServer.WebLogic;
             }
         }
         return platform;
@@ -57,15 +67,13 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
         try {
             String loaderStr = WebLogicPlatformDetector.class.getClassLoader().getClass().getName();
             if (loaderStr.contains("weblogic")) {
-
                 Class versionCls = Class.forName("weblogic.version");
                 Method method = versionCls.getMethod("getReleaseBuildVersion");
                 return (String) method.invoke(null);
             }
         } catch (Throwable t) {
-
+            //ignore
         }
-
         return null;
     }
 }

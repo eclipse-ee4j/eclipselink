@@ -13,7 +13,7 @@
  *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
  *       Move JMX MBean generic registration code up from specific platforms
  *       add new isRuntimeServicesEnabledDefault()
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>        
+ *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
  *     12/18/2014-2.6 Rick Curtis
  *       - 455690: Move JNDIConnector lookup type to ServerPlatform.
  ******************************************************************************/  
@@ -270,4 +270,16 @@ public interface ServerPlatform {
      * INTERNAL: Get JNDIConnector lookupType value for this platform.
      */
     public int getJNDIConnectorLookupType();
+
+    /**
+     * INTERNAL: Some servers may support partitioning
+     * @return true if server supports partitions, false otherwise
+     */
+    boolean usesPartitions();
+
+    /**
+     * INTERNAL: Get Partition ID.
+     * @return partition ID
+     */
+    String getPartitionID();
 }
