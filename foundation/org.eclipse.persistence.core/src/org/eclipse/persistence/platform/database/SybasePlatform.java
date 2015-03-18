@@ -17,6 +17,8 @@
  *       - 458877 : Add national character support
  *     02/23/2015-2.6 Dalia Abo Sheasha
  *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
+ *     03/18/2015-2.6.0 Jody Grassel
+ *       - 462511 : Update to SybasePlatform to support pessimistic locking
  *****************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -282,12 +284,12 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public boolean shouldPrintLockingClauseAfterWhereClause() {
-        return false;
+        return true;
     }
 
     @Override
     public String getSelectForUpdateString() {
-        return " HOLDLOCK";
+        return " FOR UPDATE AT ISOLATION SERIALIZABLE";
     }
 
     /**
