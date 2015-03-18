@@ -35,7 +35,7 @@ public class CacheableFalseEntity {
     protected int id;
     protected CacheableProtectedEntity protectedEntity;
     List<CacheableFalseDetail> details = new ArrayList<CacheableFalseDetail>();
-    List<CacheableFalseDetailWithBackPointer> detailsBackPointer;
+    List<CacheableFalseDetailWithBackPointer> detailsBackPointer = new ArrayList<CacheableFalseDetailWithBackPointer>();
     
     public CacheableFalseEntity() {}
     

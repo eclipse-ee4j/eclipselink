@@ -397,7 +397,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public boolean isAttributeValueFullyBuilt(Object attributeValue){
-        return attributeValue != null;
+    	return attributeValue instanceof IndirectContainer;
     }
 
     public Boolean getUseLazyInstantiation() {
