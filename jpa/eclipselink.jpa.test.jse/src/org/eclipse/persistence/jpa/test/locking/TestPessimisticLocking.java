@@ -12,6 +12,8 @@
  *       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
  *     03/13/2015-2.6.0 Will Dazey
  *       - 458301: Added tests for force increment on scalar results
+ *     03/18/2015-2.6.0 Joe Grassel
+ *       - 462498: Missing isolation level expression in SQL for Derby platform
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.locking;
 
@@ -27,6 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
 
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
@@ -98,6 +101,7 @@ public class TestPessimisticLocking {
             };
             Future<LockingDog> future = executor.submit(blocked);
             cdl.countDown();
+            Thread.sleep(3000);
             // Make sure worker is blocked
             Assert.assertFalse(future.isDone());
             // Rolling back of tran should allow worker to complete
@@ -153,7 +157,13 @@ public class TestPessimisticLocking {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(5).getResultList();
+            List<LockingDog> dogs = em.createNamedQuery("find.lockingdogs", LockingDog.class).
+                    setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(5).getResultList();
+            Assert.assertEquals(5, dogs.size());
+
+            dogs = em.createNamedQuery("find.lockingdogs", LockingDog.class).
+                    setFirstResult(1).setMaxResults(5).getResultList();
+            Assert.assertEquals(5, dogs.size());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -166,7 +176,9 @@ public class TestPessimisticLocking {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setFirstResult(5).setMaxResults(5).getResultList();
+            List<LockingDog> dogs = em.createNamedQuery("find.lockingdogs", LockingDog.class).
+                    setLockMode(LockModeType.PESSIMISTIC_READ).setFirstResult(5).setMaxResults(5).getResultList();
+            Assert.assertEquals(5, dogs.size());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -184,6 +196,9 @@ public class TestPessimisticLocking {
      */
     @Test
     public void testAggregateResultPessimisticForceIncrement() {
+        if (((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform().isDerby()) {
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

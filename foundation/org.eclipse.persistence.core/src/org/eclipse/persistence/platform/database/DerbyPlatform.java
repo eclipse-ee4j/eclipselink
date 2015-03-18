@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2005, 2014 Oracle and/or its affiliates,  Inc. All rights reserved.
+ * Copyright 2005, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,8 @@
  *     Sun Microsystems
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+ *     03/18/2015-2.6.0 Joe Grassel
+ *       - 462498: Missing isolation level expression in SQL for Derby platform
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -50,7 +52,11 @@ public class DerbyPlatform extends DB2Platform {
     public static final int MAX_BLOB = MAX_CLOB;
 
     /** Allow sequence support to be disabled for Derby {@literal <} 10.6.1. */
-    protected boolean isSequenceSupported;
+    protected boolean isSequenceSupported = false;
+
+    /** <= 10.6.1.0 supports parameters with OFFSET/FETCH - DERBY-4208 */
+    boolean isOffsetFetchParameterSupported = false;
+
     protected boolean isConnectionDataInitialized;
     
     /**
@@ -353,40 +359,62 @@ public class DerbyPlatform extends DB2Platform {
     
     /**
      * INTERNAL:
+     * Print the SQL representation of the statement on a stream, storing the fields
+     * in the DatabaseCall.
+     *
      * Derby supports pagination through its "OFFSET n ROWS FETCH NEXT m ROWS" syntax.
      */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
-        if (!this.isSequenceSupported) {
-            call.setFields(statement.printSQL(printer));
-            return;
-        }
         int max = 0;
         int firstRow = 0;
 
-        if (statement.getQuery()!=null) {
+        if (statement.getQuery() != null) {
             max = statement.getQuery().getMaxRows();
             firstRow = statement.getQuery().getFirstResult();
         }
         
-        if (!(this.shouldUseRownumFiltering()) || (!(max>0) && !(firstRow>0))) {
+        if (!(shouldUseRownumFiltering()) || (!(max > 0) && !(firstRow > 0))) {
             call.setFields(statement.printSQL(printer));
+            statement.appendForUpdateClause(printer);
             return;
-        } else if (max > 0) {
-            statement.setUseUniqueFieldAliases(true);
-            call.setFields(statement.printSQL(printer));
-            printer.printString(" OFFSET ");
-            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-            printer.printString(" ROWS FETCH NEXT ");
-            printer.printParameter(DatabaseCall.MAXROW_FIELD);
-            printer.printString(" ROWS ONLY");
-        } else {
-            statement.setUseUniqueFieldAliases(true);
-            call.setFields(statement.printSQL(printer));
-            printer.printString(" OFFSET ");
-            printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
-            printer.printString(" ROWS");
         }
+
+        statement.setUseUniqueFieldAliases(true);
+        call.setFields(statement.printSQL(printer));
+
+        // Derby Syntax:
+        //   OFFSET { integer-literal | ? } {ROW | ROWS}
+        //   FETCH { FIRST | NEXT } [integer-literal | ? ] {ROW | ROWS} ONLY
+        printer.printString(" OFFSET ");
+
+        if (isOffsetFetchParameterSupported) {
+            // Parameter support added in 10.6.1
+            if (max > 0) {
+                printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+                printer.printString(" ROWS FETCH NEXT ");
+                printer.printParameter(DatabaseCall.MAXROW_FIELD);
+                printer.printString(" ROWS ONLY ");
+            } else {
+                printer.printParameter(DatabaseCall.FIRSTRESULT_FIELD);
+                printer.printString(" ROWS ");
+            }
+        } else {
+            // Parameters not supported before 10.6.1
+            String frStr = Integer.toString(firstRow);
+            String maxStr = Integer.toString(max);
+
+            if (max > 0) {
+                printer.printString(frStr);
+                printer.printString(" ROWS FETCH NEXT ");
+                printer.printString(maxStr);
+                printer.printString(" ROWS ONLY ");
+            } else {
+                printer.printString(frStr);
+                printer.printString(" ROWS ");
+            }
+        }
+
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
     }
@@ -420,15 +448,16 @@ public class DerbyPlatform extends DB2Platform {
      */
     @Override
     public void initializeConnectionData(Connection connection) throws SQLException {
-        if (this.isConnectionDataInitialized) {
+        if (isConnectionDataInitialized) {
             return;
         }
+
         String databaseVersion = connection.getMetaData().getDatabaseProductVersion();
-        if (Helper.compareVersions(databaseVersion, "10.6.1") < 0) {
-            this.isSequenceSupported = false;
-        } else {
-            this.isSequenceSupported = true;            
+        if (Helper.compareVersions(databaseVersion, "10.6.1") >= 0) {
+            isSequenceSupported = true;
+            isOffsetFetchParameterSupported = true;
         }
-        this.isConnectionDataInitialized = true;
+
+        isConnectionDataInitialized = true;
     }
 }
