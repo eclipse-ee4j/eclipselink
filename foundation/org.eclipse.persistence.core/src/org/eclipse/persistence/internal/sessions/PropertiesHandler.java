@@ -20,15 +20,22 @@ package org.eclipse.persistence.internal.sessions;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import java.util.logging.Level;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import javax.persistence.FlushModeType;
-
 import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.config.*;
+import org.eclipse.persistence.config.BatchWriting;
+import org.eclipse.persistence.config.CacheType;
+import org.eclipse.persistence.config.CommitOrderType;
+import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.config.ExclusiveConnectionMode;
+import org.eclipse.persistence.config.FlushClearCache;
+import org.eclipse.persistence.config.LoggerType;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.ReferenceMode;
+import org.eclipse.persistence.config.TargetDatabase;
+import org.eclipse.persistence.config.TargetServer;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -494,10 +501,14 @@ public class PropertiesHandler {
     
     protected static class FlushModeProp extends Prop {
         FlushModeProp() {
-            super(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, FlushModeType.AUTO.toString());
+            //XXX - using javax.persistence.FlushModeType.* directly causes
+            //runtime dependency of this class on JPA API which is wrong
+            //and leads to transitive dependency from MOXy to JPA API
+            super(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE,
+                    /* FlushModeType.AUTO.toString() */ "AUTO");
             valueArray = new Object[] {
-                FlushModeType.AUTO.toString(),
-                FlushModeType.COMMIT.toString()
+                    /* FlushModeType.AUTO.toString() */ "AUTO",
+                    /* FlushModeType.COMMIT.toString() */"COMMIT"
             };
         }
     }
