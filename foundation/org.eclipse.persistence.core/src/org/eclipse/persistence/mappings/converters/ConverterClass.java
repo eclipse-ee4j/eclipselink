@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -83,7 +83,7 @@ public class ConverterClass implements Converter, ClassNameConversionRequired {
         try {        
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    attributeConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, classLoader));
+                    attributeConverterClass = AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, classLoader));
                     attributeConverter = (AttributeConverter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeConverterClass));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
@@ -103,7 +103,7 @@ public class ConverterClass implements Converter, ClassNameConversionRequired {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    fieldClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationName, true, classLoader));
+                    fieldClassification = AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationName, exception.getException());
                 }

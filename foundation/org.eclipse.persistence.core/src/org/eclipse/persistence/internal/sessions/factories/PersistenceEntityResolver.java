@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -98,7 +98,7 @@ public class PersistenceEntityResolver implements EntityResolver {
                 InputStream localDtdStream =  null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try{
-                        localDtdStream = ((ClassLoader)AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(getClass()))).getResourceAsStream(getDtdFileName(docTypeId));
+                        localDtdStream = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(getClass())).getResourceAsStream(getDtdFileName(docTypeId));
                     }catch (PrivilegedActionException ex){
                         throw (RuntimeException) ex.getCause();
                     }

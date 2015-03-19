@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -144,7 +144,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        converterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(converterClassName, true, classLoader));
+                        converterClass = AccessController.doPrivileged(new PrivilegedClassForName(converterClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exception.getException());
                     }
@@ -155,7 +155,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exception.getException());
                     }
                 } else {
-                    converterClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(converterClassName, true, classLoader);
+                    converterClass = PrivilegedAccessHelper.getClassForName(converterClassName, true, classLoader);
                     converter = (Converter)PrivilegedAccessHelper.newInstanceFromClass(converterClass);
                 }
             } catch (ClassNotFoundException exc) {

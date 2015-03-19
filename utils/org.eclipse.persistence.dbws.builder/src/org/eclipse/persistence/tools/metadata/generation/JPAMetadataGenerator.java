@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,8 +22,8 @@ import static org.eclipse.persistence.tools.metadata.generation.Util.CREATE_OPER
 import static org.eclipse.persistence.tools.metadata.generation.Util.CURSOR_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.DELETE_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.DOT;
-import static org.eclipse.persistence.tools.metadata.generation.Util.EQUALS_BINDING_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.EQUALS_BINDING1_STR;
+import static org.eclipse.persistence.tools.metadata.generation.Util.EQUALS_BINDING_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.INSERT_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.ITEMS_COL_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.ITEMS_FLD_STR;
@@ -31,7 +31,6 @@ import static org.eclipse.persistence.tools.metadata.generation.Util.OPEN_BRACKE
 import static org.eclipse.persistence.tools.metadata.generation.Util.OUT_CURSOR_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.PERCENT;
 import static org.eclipse.persistence.tools.metadata.generation.Util.PK_QUERYNAME;
-import static org.eclipse.persistence.tools.metadata.generation.Util.QUESTION_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.metadata.generation.Util.RESULT_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.ROWTYPE_STR;
@@ -40,8 +39,8 @@ import static org.eclipse.persistence.tools.metadata.generation.Util.SET_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.SINGLE_SPACE;
 import static org.eclipse.persistence.tools.metadata.generation.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.UNDERSCORE;
-import static org.eclipse.persistence.tools.metadata.generation.Util.UPDATE_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.UPDATE_OPERATION_NAME;
+import static org.eclipse.persistence.tools.metadata.generation.Util.UPDATE_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.VALUES_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.WHERE_STR;
 import static org.eclipse.persistence.tools.metadata.generation.Util.getAttributeTypeNameForFieldType;
@@ -61,11 +60,9 @@ import static org.eclipse.persistence.tools.metadata.generation.Util.processType
 import java.security.AccessController;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.descriptors.DescriptorHelper;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -1110,7 +1107,7 @@ public class JPAMetadataGenerator {
         Class platformClass = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                platformClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(platformClassName));
+                platformClass = AccessController.doPrivileged(new PrivilegedClassForName(platformClassName));
             } else {
                 platformClass = PrivilegedAccessHelper.getClassForName(platformClassName);
             }
@@ -1118,7 +1115,7 @@ public class JPAMetadataGenerator {
         } catch (Exception e) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    platformClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(DEFAULT_PLATFORM));
+                    platformClass = AccessController.doPrivileged(new PrivilegedClassForName(DEFAULT_PLATFORM));
                 } else {
                     platformClass = PrivilegedAccessHelper.getClassForName(DEFAULT_PLATFORM);
                 }

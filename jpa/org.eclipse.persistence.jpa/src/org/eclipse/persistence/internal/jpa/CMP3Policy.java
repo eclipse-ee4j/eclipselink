@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -139,7 +139,7 @@ public class CMP3Policy extends CMPPolicy {
                 Class aPKClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        aPKClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getPKClassName(), true, classLoader));
+                        aPKClass = AccessController.doPrivileged(new PrivilegedClassForName(getPKClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("pk_class_not_found", new Object[] {this.pkClassName}), exception.getException());
                         
@@ -284,7 +284,7 @@ public class CMP3Policy extends CMPPolicy {
         Field keyField = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
-                keyField = (Field)AccessController.doPrivileged(new PrivilegedGetField(cls, fieldName, true));
+                keyField = AccessController.doPrivileged(new PrivilegedGetField(cls, fieldName, true));
             } catch (PrivilegedActionException exception) {
                 throw (NoSuchFieldException) exception.getException();
             }
@@ -676,7 +676,7 @@ public class CMP3Policy extends CMPPolicy {
                 Field pkField = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        pkField = (Field)AccessController.doPrivileged(new PrivilegedGetField(object.getClass(), field.getName(), true));
+                        pkField = AccessController.doPrivileged(new PrivilegedGetField(object.getClass(), field.getName(), true));
                         AccessController.doPrivileged(new PrivilegedSetValueInField(pkField, object, value));
                     } catch (PrivilegedActionException exception) {
                         throw DescriptorException.errorUsingPrimaryKey(object, policy.getDescriptor(), exception.getException());

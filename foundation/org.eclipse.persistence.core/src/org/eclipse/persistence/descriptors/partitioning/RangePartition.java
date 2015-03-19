@@ -79,7 +79,7 @@ public class RangePartition  {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        partitionValueType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(partitionValueTypeName, true, classLoader));
+                        partitionValueType = AccessController.doPrivileged(new PrivilegedClassForName(partitionValueTypeName, true, classLoader));
                     } catch (PrivilegedActionException e) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, e.getException());
                     }

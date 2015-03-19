@@ -827,7 +827,7 @@ public class Oracle9Platform extends Oracle8Platform {
             String className = "org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl";
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    Class xmlTypeFactoryClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(className, true, this.getClass().getClassLoader()));
+                    Class xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName(className, true, this.getClass().getClassLoader()));
                     Constructor xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlTypeFactoryClass, new Class[0], true));
                     xmlTypeFactory = (XMLTypeFactory)AccessController.doPrivileged(new PrivilegedInvokeConstructor(xmlTypeFactoryConstructor, new Object[0]));
                 }else{

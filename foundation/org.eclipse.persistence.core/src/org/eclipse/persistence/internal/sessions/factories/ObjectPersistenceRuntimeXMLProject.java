@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -303,7 +303,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         addDescriptor(buildDirectToFieldMappingDescriptor());
         addDescriptor(buildXMLDirectMappingDescriptor());
         try {
-            Class typesafeenumClass = (Class)new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+            Class typesafeenumClass = new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
             addDescriptor(buildTypesafeEnumConverterDescriptor(typesafeenumClass));
         }
         catch (ClassNotFoundException cnfe) {
@@ -3073,7 +3073,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.getInheritancePolicy().addClassIndicator(TypeConversionConverter.class, getPrimaryNamespaceXPath() + "type-conversion-converter");
         descriptor.getInheritancePolicy().addClassIndicator(SerializedObjectConverter.class, getPrimaryNamespaceXPath() + "serialized-object-converter");
         try {
-            Class typesafeenumClass = (Class)new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
+            Class typesafeenumClass = new PrivilegedClassForName("org.eclipse.persistence.jaxb.JAXBTypesafeEnumConverter").run();
             descriptor.getInheritancePolicy().addClassIndicator(typesafeenumClass, getPrimaryNamespaceXPath() + "typesafe-enumeration-converter");
         }
         catch (ClassNotFoundException cnfe) {

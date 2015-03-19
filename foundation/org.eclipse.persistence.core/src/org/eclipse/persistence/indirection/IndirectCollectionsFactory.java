@@ -186,7 +186,7 @@ public final class IndirectCollectionsFactory {
     private static IndirectCollectionsProvider getProvider() {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                final Class support = (Class) AccessController.doPrivileged(new PrivilegedClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader()));
+                final Class support = AccessController.doPrivileged(new PrivilegedClassForName(JDK8_SUPPORT_PROVIDER, true, IndirectCollectionsFactory.class.getClassLoader()));
                 return AccessController.doPrivileged(new PrivilegedAction<IndirectCollectionsProvider>() {
 
                     @Override

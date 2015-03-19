@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -29,7 +29,6 @@
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -121,7 +120,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
                 try {
                     getMethodName = ((MethodAttributeAccessor)mapping.getAttributeAccessor()).getGetMethodName();   
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                        aMethod = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
+                        aMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
                                 this.getManagedTypeImpl().getJavaType(), getMethodName, null));
                     } else {
                         aMethod = PrivilegedAccessHelper.getDeclaredMethod(
@@ -164,7 +163,7 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
                     // Check declaredFields in the case where we have no getMethod or getMethodName
                     try {
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            aMember = (Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(
+                            aMember = AccessController.doPrivileged(new PrivilegedGetDeclaredField(
                                 this.getManagedTypeImpl().getJavaType(), mapping.getAttributeName(), false));
                         } else {
                             aMember = PrivilegedAccessHelper.getDeclaredField(

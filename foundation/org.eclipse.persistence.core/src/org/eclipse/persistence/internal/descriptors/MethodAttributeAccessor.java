@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -128,7 +128,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
         }
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
-                return (Class)AccessController.doPrivileged(new PrivilegedGetMethodReturnType(getGetMethod()));
+                return AccessController.doPrivileged(new PrivilegedGetMethodReturnType(getGetMethod()));
             } catch (PrivilegedActionException exception) {
                 // we should not get here since this call does not throw any checked exceptions
                return null;
@@ -159,7 +159,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     protected Class getSetMethodParameterType(int index) {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try {
-                return ((Class[])AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(getSetMethod())))[index];
+                return AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(getSetMethod()))[index];
             } catch (PrivilegedActionException exception) {
                 // we should not get here since this call does not throw any checked exceptions
                 return null;

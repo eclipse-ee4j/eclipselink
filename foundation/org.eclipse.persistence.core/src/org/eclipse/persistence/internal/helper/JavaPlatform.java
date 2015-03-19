@@ -45,7 +45,7 @@ public class JavaPlatform {
                     // use class.forName() to avoid loading the JDK 1.6 class unless it is needed.
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            platformClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName("org.eclipse.persistence.internal.helper.JDK16Platform"));
+                            platformClass = AccessController.doPrivileged(new PrivilegedClassForName("org.eclipse.persistence.internal.helper.JDK16Platform"));
                         } catch (PrivilegedActionException exception) {
                         }
                     } else {

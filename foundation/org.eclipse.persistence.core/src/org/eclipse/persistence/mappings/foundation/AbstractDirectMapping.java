@@ -463,12 +463,12 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        attributeClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getAttributeClassificationName(), true, classLoader));
+                        attributeClass = AccessController.doPrivileged(new PrivilegedClassForName(getAttributeClassificationName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getAttributeClassificationName(), exception.getException());
                     }
                 } else {
-                    attributeClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getAttributeClassificationName(), true, classLoader);
+                    attributeClass = PrivilegedAccessHelper.getClassForName(getAttributeClassificationName(), true, classLoader);
                 }
             } catch (ClassNotFoundException exc){
                 throw ValidationException.classNotFoundWhileConvertingClassNames(getAttributeClassificationName(), exc);
@@ -481,13 +481,13 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        fieldClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationClassName, true, classLoader));
+                        fieldClassification = AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationClassName, exception.getException());
                     }
 
                 } else {
-                    fieldClassification = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(fieldClassificationClassName, true, classLoader);
+                    fieldClassification = PrivilegedAccessHelper.getClassForName(fieldClassificationClassName, true, classLoader);
                 }
             } catch (ClassNotFoundException exc) {
                 throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationClassName, exc);

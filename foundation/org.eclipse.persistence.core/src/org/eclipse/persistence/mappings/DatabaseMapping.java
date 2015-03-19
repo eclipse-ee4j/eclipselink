@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -418,12 +418,12 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            valueType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(valueTypeName, true, classLoader));
+                            valueType = AccessController.doPrivileged(new PrivilegedClassForName(valueTypeName, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception.getException());
                         }
                     } else {
-                        valueType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(valueTypeName, true, classLoader);
+                        valueType = PrivilegedAccessHelper.getClassForName(valueTypeName, true, classLoader);
                     }
                 } catch (Exception exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception);

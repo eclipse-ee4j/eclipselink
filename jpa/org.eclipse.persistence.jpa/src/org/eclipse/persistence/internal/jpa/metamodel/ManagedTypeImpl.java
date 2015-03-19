@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1232,7 +1232,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                         Field field = null;
                                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                                             try {
-                                                field = (Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(
+                                                field = AccessController.doPrivileged(new PrivilegedGetDeclaredField(
                                                         this.getJavaType(), colMapping.getAttributeName(), false));
                                             } catch (PrivilegedActionException exception) {
                                                 member = initializePluralAttributeTypeNotFound(this, colMapping, true);                                            
@@ -1266,7 +1266,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                     try {
                                         Method aMethod = null;                                        
                                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                            aMethod = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
+                                            aMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
                                                     this.getJavaType(), getMethodName, null));
                                         } else {
                                             aMethod = PrivilegedAccessHelper.getDeclaredMethod(
@@ -1359,7 +1359,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             // Check declaredFields in the case where we have no getMethod or getMethodName
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    aField = (Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(
+                    aField = AccessController.doPrivileged(new PrivilegedGetDeclaredField(
                         this.getJavaType(), mapping.getAttributeName(), false));
                 } else {
                     aField = PrivilegedAccessHelper.getDeclaredField(
@@ -1381,7 +1381,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             Method aMethod = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    aMethod = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
+                    aMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(
                             this.getJavaType(), getMethodName, null));
                 } else {
                     aMethod = PrivilegedAccessHelper.getDeclaredMethod(

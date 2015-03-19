@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,15 +15,16 @@ package org.eclipse.persistence.internal.security;
 import java.lang.reflect.Method;
 import java.security.PrivilegedExceptionAction;
 
-public class PrivilegedGetMethodReturnType implements PrivilegedExceptionAction {
+public class PrivilegedGetMethodReturnType implements PrivilegedExceptionAction<Class> {
 
-    private Method method;
+    private final Method method;
     
     public PrivilegedGetMethodReturnType(Method method) {
         this.method = method;
     }
 
-    public Object run() {
+    @Override
+    public Class run() {
         return PrivilegedAccessHelper.getMethodReturnType(method);
     }
 

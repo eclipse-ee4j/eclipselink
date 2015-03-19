@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -144,15 +144,15 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
         Version version = null;
         Method method = null;
         try {
-            clazz = (Class)AccessController.doPrivileged(new PrivilegedClassForName(className));
-            Class[] methodParameterTypes = { (Class)AccessController.doPrivileged(new PrivilegedClassForName("java.lang.String")) };
-            ClassLoader clazzloader = (ClassLoader)AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
-            ClassLoader classloader = (ClassLoader)AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
+            clazz = AccessController.doPrivileged(new PrivilegedClassForName(className));
+            Class[] methodParameterTypes = { AccessController.doPrivileged(new PrivilegedClassForName("java.lang.String")) };
+            ClassLoader clazzloader = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
+            ClassLoader classloader = AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
             AccessController.doPrivileged(new PrivilegedClassForName(className, true, clazzloader));
             version = (Version)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(clazz));
 
-            Field[] fields = (Field[])AccessController.doPrivileged(new PrivilegedGetFields(clazz));
-            Field field = (Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, true));
+            Field[] fields = AccessController.doPrivileged(new PrivilegedGetFields(clazz));
+            Field field = AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, true));
             try {
                 int intValueFromField = ((Integer)AccessController.doPrivileged(new PrivilegedGetValueFromField(field, version))).intValue();
             } catch (Exception e) {
@@ -171,8 +171,8 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
             Object[] parameters = { "TopLink Blah." };
             AccessController.doPrivileged(new PrivilegedMethodInvoker(method, version, parameters));
 
-            Constructor constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(clazz, null, true));
-            Constructor declaredConstructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(clazz, null, true));
+            Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(clazz, null, true));
+            Constructor declaredConstructor = AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(clazz, null, true));
             AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, null));
 
             //					PrivilegedAccessController.loadDeploymentXML(new XMLSessionConfigLoader(),new SessionManager(), clazzloader, false, false);

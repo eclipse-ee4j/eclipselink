@@ -385,7 +385,7 @@ public class SessionManager {
         ClassLoader classLoader = null;
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
-                classLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(objectBean.getClass()));
+                classLoader = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(objectBean.getClass()));
             }catch (PrivilegedActionException ex){
                 throw (RuntimeException) ex.getCause();
             }

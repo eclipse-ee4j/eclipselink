@@ -624,8 +624,8 @@ public class QueryOperation extends Operation {
                             Class oracleSQLXML;
                             Method getStringMethod;
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                oracleSQLXML = (Class) AccessController.doPrivileged(new PrivilegedClassForName(ORACLESQLXML_STR, true, this.getClass().getClassLoader()));
-                                getStringMethod = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(oracleSQLXML, GETSTRING_METHOD, new Class[] {}));
+                                oracleSQLXML = AccessController.doPrivileged(new PrivilegedClassForName(ORACLESQLXML_STR, true, this.getClass().getClassLoader()));
+                                getStringMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(oracleSQLXML, GETSTRING_METHOD, new Class[] {}));
                                 fieldValue = (String) AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));
                             } else {
                                 oracleSQLXML = PrivilegedAccessHelper.getClassForName(ORACLESQLXML_STR, true, this.getClass().getClassLoader());
@@ -644,11 +644,11 @@ public class QueryOperation extends Operation {
                             Object xmlTypeFactory;
                             Method getStringMethod;
                             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                                oracleOPAQUE = (Class) AccessController.doPrivileged(new PrivilegedClassForName(ORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
-                                xmlTypeFactoryClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader()));
+                                oracleOPAQUE = AccessController.doPrivileged(new PrivilegedClassForName(ORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
+                                xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader()));
                                 xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlTypeFactoryClass, new Class[0], true));
                                 xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor(xmlTypeFactoryConstructor, new Object[0]));
-                                getStringMethod = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE}));
+                                getStringMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE}));
                                 fieldValue = (String) AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));
                             } else {
                                 oracleOPAQUE = PrivilegedAccessHelper.getClassForName(ORACLEOPAQUE_STR, false, this.getClass().getClassLoader());

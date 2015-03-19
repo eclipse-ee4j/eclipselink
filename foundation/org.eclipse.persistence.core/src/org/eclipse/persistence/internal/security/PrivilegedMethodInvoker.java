@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,9 +19,9 @@ import java.lang.reflect.InvocationTargetException;
 
 public class PrivilegedMethodInvoker implements PrivilegedExceptionAction {
 
-    private Method method;
-    private Object target;
-    private Object[] args;
+    private final Method method;
+    private final Object target;
+    private final Object[] args;
     
     public PrivilegedMethodInvoker(Method method, Object target) {
         this(method, target, (Object[]) null);
@@ -32,7 +32,8 @@ public class PrivilegedMethodInvoker implements PrivilegedExceptionAction {
         this.target = target;
         this.args = args;
     }
-    
+
+    @Override
     public Object run() throws IllegalAccessException, InvocationTargetException {
         return PrivilegedAccessHelper.invokeMethod(method, target, args);
     }

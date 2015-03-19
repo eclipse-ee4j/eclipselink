@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,16 +17,17 @@ import java.security.PrivilegedExceptionAction;
 
 public class PrivilegedSetValueInField implements PrivilegedExceptionAction {
 
-    private Field field;
-    private Object object;
-    private Object value;
+    private final Field field;
+    private final Object object;
+    private final Object value;
     
     public PrivilegedSetValueInField(Field field, Object object, Object value){
         this.field = field;
         this.object = object;
         this.value = value;
     }
-    
+
+    @Override
     public Object run() throws IllegalAccessException {
         PrivilegedAccessHelper.setValueInField(field, object, value);
         return null;

@@ -188,12 +188,12 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                    return AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
                 } catch (PrivilegedActionException e) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(className, e.getException());
                 }
             } else {
-                return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, classLoader);
+                return PrivilegedAccessHelper.getClassForName(className, true, classLoader);
             }
         } catch (Exception exception) {
             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception);

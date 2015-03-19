@@ -447,7 +447,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             // Use Class.forName not thread class loader to avoid class loader issues.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    parserClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(queryBuilderClassName));
+                    parserClass = AccessController.doPrivileged(new PrivilegedClassForName(queryBuilderClassName));
                 } catch (PrivilegedActionException exception) {
                 }
             } else {
@@ -1193,7 +1193,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public EntityListenerInjectionManager createEntityListenerInjectionManager(Object beanManager){
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    Class elim = (Class)AccessController.doPrivileged(new PrivilegedClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
+                    Class elim = AccessController.doPrivileged(new PrivilegedClassForName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()));
                     Constructor constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(elim, new Class[] {String.class}, false));
                     return (EntityListenerInjectionManager) AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {beanManager}));
             } else {

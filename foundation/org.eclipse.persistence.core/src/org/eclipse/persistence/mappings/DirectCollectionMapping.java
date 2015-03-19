@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -903,7 +903,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        valueConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(valueConverterClassName, true, classLoader));
+                        valueConverterClass = AccessController.doPrivileged(new PrivilegedClassForName(valueConverterClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(valueConverterClassName, exception.getException());
                     }
@@ -914,8 +914,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                         throw ValidationException.classNotFoundWhileConvertingClassNames(valueConverterClassName, exception.getException());
                     }
                 } else {
-                    valueConverterClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(valueConverterClassName, true, classLoader);
-                    valueConverter = (Converter) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(valueConverterClass);
+                    valueConverterClass = PrivilegedAccessHelper.getClassForName(valueConverterClassName, true, classLoader);
+                    valueConverter = (Converter) PrivilegedAccessHelper.newInstanceFromClass(valueConverterClass);
                 }
             } catch (ClassNotFoundException exc) {
                 throw ValidationException.classNotFoundWhileConvertingClassNames(valueConverterClassName, exc);
@@ -934,12 +934,12 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            attributeClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(attributeClassificationName, true, classLoader));
+                            attributeClassification = AccessController.doPrivileged(new PrivilegedClassForName(attributeClassificationName, true, classLoader));
                         } catch (PrivilegedActionException pae) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(attributeClassificationName, pae.getException());
                         }
                     } else {
-                        attributeClassification = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(attributeClassificationName, true, classLoader);
+                        attributeClassification = PrivilegedAccessHelper.getClassForName(attributeClassificationName, true, classLoader);
                     }
                 } catch (Exception exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(attributeClassificationName, exception);

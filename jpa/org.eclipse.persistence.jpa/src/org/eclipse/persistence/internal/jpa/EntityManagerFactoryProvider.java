@@ -127,7 +127,7 @@ public class EntityManagerFactoryProvider {
                         ExceptionLocalization.buildMessage("unexpect_argument", new Object[] {propertyKey}));
             }
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                value = (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
+                value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
             } else {
                 value = System.getProperty(propertyKey);
             }

@@ -571,7 +571,7 @@ public class ConcurrencyManager implements Serializable {
 
     private static String getPropertyRecordStackOnLock() {
         return (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty(SystemProperties.RECORD_STACK_ON_LOCK))
+                AccessController.doPrivileged(new PrivilegedGetSystemProperty(SystemProperties.RECORD_STACK_ON_LOCK))
                 : System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK);
     }
     
