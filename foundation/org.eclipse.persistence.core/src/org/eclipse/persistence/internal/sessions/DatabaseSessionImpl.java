@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,10 +19,13 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/  
+ *     03/19/2015 - Rick Curtis
+ *       - 462586 : Add national character support for z/OS.
+ *       ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -205,9 +208,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 // null out the cached platform because the platform on the login will be changed by the following line of code
                 this.platform = null;
                 String platformName = null;
-                
+
                 try {
-                    String vendorNameAndVersion = conn.getMetaData().getDatabaseProductName() + conn.getMetaData().getDatabaseMajorVersion();
+                    DatabaseMetaData dmd = conn.getMetaData();
+                    String vendorNameAndVersion = dmd.getDatabaseProductName() + dmd.getDatabaseMajorVersion() + dmd.getDatabaseProductVersion();
                     platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
                     getLogin().setPlatformClassName(platformName);
                 } catch (EclipseLinkException classNotFound) {
