@@ -87,7 +87,7 @@
                  hudson.workspace- WORKSPACE as defined by the Hudson slave
                  M2_HOME         - location of Maven3 install (on build server)
         -->
-        <property name="branch" value="2.6"/>
+        <property name="branch" value="2.6_WAS"/>
 
         <condition property="git.exec"   value="${env.GIT_EXEC}">
             <isset property="env.GIT_EXEC"/>
@@ -96,7 +96,8 @@
         <property name="build.deps.dir"  value="${extensions.depend.dir}"/>
         <property name="junit.dir"       value="${build.deps.dir}/junit"/>
         <property name="build.tool.root" value="${build.location}"/>
-        <property file="${build.tool.root}/db-${branch}.properties"/>
+        <property name="db-property.file" value="${build.tool.root}/db-${branch}.properties"/>
+        <property file="${db-propery.file}"/>
 
         <echo message=" "/>
         <echo message="git.exec        ='${git.exec}'"/>
@@ -166,8 +167,8 @@
 
         <!-- Set version.qualifier appropriately. variable should only be used    -->
         <!--    for uploaded filenames  or manifest entries.                      -->
-        <condition property="version.qualifier" value="qualifier"
-                                                else="v${build.date}-${git.hash}">
+        <condition property="version.qualifier" value="WAS"
+                                                else="WAS_v${build.date}-${git.hash}">
             <equals arg1="${git.hash}" arg2="NA"/>
         </condition>
 
@@ -223,13 +224,13 @@
         <property name="p2.archive.signed.zip"    value="eclipselink-P2signed-${version.string}.zip"/>
 
         <!-- generate Release Designation string for manifest                     -->
-        <property name="release.designation" value="EclipseLink ${release.version}"/>
+        <property name="release.designation" value="EclipseLink ${release.version}.WAS"/>
 
         <!-- generate string for tag creation (used for maven publish and handoff-version as well)  -->
-        <condition property="milestone.tag" value="${release.version}">
+        <condition property="milestone.tag" value="${release.version}.WAS">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="milestone.tag" value="${release.version}-${build.type}"/>
+        <property name="milestone.tag" value="${release.version}.WAS-${build.type}"/>
         <echo message="milestone.tag        ='${milestone.tag}'"/>
 
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
@@ -340,7 +341,7 @@
     <!--  =====  #####        Post 'build' Processing Targets            #####  =====  -->
     <target name="generate-nightly-p2-site" depends="common-init">
         <!-- Set here because needed by both nightly-P2, and extract-build-artifacts -->
-        <property name="build.extract.dir" value="${extract.root.dir}/build/${release.version}/${version.qualifier}"/>
+        <property name="build.extract.dir" value="${extract.root.dir}/build/${release.version}.WAS/${version.qualifier}"/>
         <mkdir dir="${build.extract.dir}"/>
 
         <property name="p2.archive.to.use"       value="${hudson.workspace}/features/${p2.archive.presigned.zip}"/>
@@ -394,7 +395,7 @@
     <target name="extract-test-results" depends="common-init">
         <!-- 'Publish' from Hudson to Build -->
         <property name="host" value="Eclipse"/>
-        <property name="test.extract.dir" value="${extract.root.dir}/test/${release.version}/${version.qualifier}/${host}"/>
+        <property name="test.extract.dir" value="${extract.root.dir}/test/${release.version}.WAS/${version.qualifier}/${host}"/>
         <mkdir dir="${test.extract.dir}"/>
         <echo message="Exporting test artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
