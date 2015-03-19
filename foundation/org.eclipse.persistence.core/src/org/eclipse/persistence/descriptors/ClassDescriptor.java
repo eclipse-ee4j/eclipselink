@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1394,7 +1394,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        descriptorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getJavaClassName(), true, classLoader));
+                        descriptorClass = AccessController.doPrivileged(new PrivilegedClassForName(getJavaClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), exception.getException());
                     }
@@ -1412,7 +1412,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        amendmentClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getAmendmentClassName(), true, classLoader));
+                        amendmentClass = AccessController.doPrivileged(new PrivilegedClassForName(getAmendmentClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), exception.getException());
                     }
@@ -1431,7 +1431,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        copyPolicyClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getCopyPolicyClassName(), true, classLoader));
+                        copyPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName(getCopyPolicyClassName(), true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exception.getException());
                     }
@@ -1461,7 +1461,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        serializedObjectPolicyClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(serializedObjectPolicyClassName, true, classLoader));
+                        serializedObjectPolicyClass = AccessController.doPrivileged(new PrivilegedClassForName(serializedObjectPolicyClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(serializedObjectPolicyClassName, exception.getException());
                     }
@@ -1490,7 +1490,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultQueryRedirectorClassName, exception.getException());
                     }
@@ -1515,7 +1515,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultReadObjectQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1539,7 +1539,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultReadAllQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReadAllQueryRedirectorClassName, exception.getException());
                     }
@@ -1563,7 +1563,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultReportQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultReportQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultReportQueryRedirectorClassName, exception.getException());
                     }
@@ -1587,7 +1587,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultInsertObjectQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultInsertObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1611,7 +1611,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultUpdateObjectQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultUpdateObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1635,7 +1635,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        redirectorClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader));
+                        redirectorClass = AccessController.doPrivileged(new PrivilegedClassForName(defaultDeleteObjectQueryRedirectorClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(defaultDeleteObjectQueryRedirectorClassName, exception.getException());
                     }
@@ -1690,7 +1690,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     try {
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                             try {
-                                valueType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(valueTypeName, true, classLoader));
+                                valueType = AccessController.doPrivileged(new PrivilegedClassForName(valueTypeName, true, classLoader));
                             } catch (PrivilegedActionException exception) {
                                 throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception.getException());
                             }

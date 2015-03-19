@@ -1287,7 +1287,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     
     protected static Class findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return (Class)AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
+            return AccessController.doPrivileged(new PrivilegedClassForName(className, true, loader));
         } else {
             return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, loader);
         }
@@ -3549,7 +3549,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         try {
             Method method = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                method = (Method) AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getValidationMode", null));
+                method = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getValidationMode", null));
                 validationMode = (ValidationMode) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, persitenceUnitInfo));
             } else {
                 method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getValidationMode", null);
@@ -3607,7 +3607,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     try {
                         fieldName = ((Attribute)attribute).getName();
                         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            ((Field)AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, false))).set(clazz, attribute);
+                            AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, false)).set(clazz, attribute);
                         } else {
                             PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false).set(clazz, attribute);
                         }  
@@ -3789,7 +3789,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className); 
                 Field[] fields = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    fields = (Field[]) AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
+                    fields = AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
                 } else {
                     fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
                 }

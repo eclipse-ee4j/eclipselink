@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -51,7 +51,7 @@ public class JotmTransactionController extends JTATransactionController {
     protected TransactionManager acquireTransactionManager() throws Exception {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
-                Class clazz = (Class) AccessController.doPrivileged(new PrivilegedClassForName(TX_CURRENT_FACTORY_CLASS));
+                Class clazz = AccessController.doPrivileged(new PrivilegedClassForName(TX_CURRENT_FACTORY_CLASS));
                 Method method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, TX_CURRENT_FACTORY_METHOD, null, false));
                 Method txMethod = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, TX_MANAGER_FACTORY_METHOD, null, false));
                 Object current = AccessController.doPrivileged(new PrivilegedMethodInvoker(method, null, null));

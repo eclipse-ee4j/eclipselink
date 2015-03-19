@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -245,21 +245,21 @@ public class DefaultConnector implements Connector {
             if(session != null) {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        driverClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(this.getDriverClassName(), true, session.getPlatform().getConversionManager().getLoader()));
+                        driverClass = AccessController.doPrivileged(new PrivilegedClassForName(this.getDriverClassName(), true, session.getPlatform().getConversionManager().getLoader()));
                     } catch (PrivilegedActionException exception) {
                         throw DatabaseException.configurationErrorClassNotFound(this.getDriverClassName());
                     }
                 } else {
-                    driverClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(this.getDriverClassName(), true, session.getPlatform().getConversionManager().getLoader());
+                    driverClass = PrivilegedAccessHelper.getClassForName(this.getDriverClassName(), true, session.getPlatform().getConversionManager().getLoader());
                 }
             } else {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        driverClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(this.getDriverClassName(), true, ConversionManager.getDefaultManager().getLoader()));
+                        driverClass = AccessController.doPrivileged(new PrivilegedClassForName(this.getDriverClassName(), true, ConversionManager.getDefaultManager().getLoader()));
                     } catch (PrivilegedActionException exception) {
                         throw DatabaseException.configurationErrorClassNotFound(this.getDriverClassName());                }
                 } else {
-                    driverClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(this.getDriverClassName(), true, ConversionManager.getDefaultManager().getLoader());
+                    driverClass = PrivilegedAccessHelper.getClassForName(this.getDriverClassName(), true, ConversionManager.getDefaultManager().getLoader());
                 }
             }
         } catch (ClassNotFoundException exception) {

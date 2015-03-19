@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -66,7 +66,7 @@ public class UnmarshalCallback {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try{
-                    domainClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(domainClassName, true, loader));
+                    domainClass = AccessController.doPrivileged(new PrivilegedClassForName(domainClassName, true, loader));
                 }catch (PrivilegedActionException ex){
                     if (ex.getCause() instanceof ClassNotFoundException){
                         throw (ClassNotFoundException) ex.getCause();
@@ -85,7 +85,7 @@ public class UnmarshalCallback {
                 Method beforeUnmarshal = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try{
-                        beforeUnmarshal = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(domainClass, "beforeUnmarshal", params, false));
+                        beforeUnmarshal = AccessController.doPrivileged(new PrivilegedGetMethod(domainClass, "beforeUnmarshal", params, false));
                     }catch (PrivilegedActionException ex){
                         if (ex.getCause() instanceof NoSuchMethodException){
                             throw (NoSuchMethodException) ex.getCause();
@@ -103,7 +103,7 @@ public class UnmarshalCallback {
                 Method afterUnmarshal = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try{
-                        afterUnmarshal = (Method)AccessController.doPrivileged(new PrivilegedGetMethod(domainClass, "afterUnmarshal", params, false));
+                        afterUnmarshal = AccessController.doPrivileged(new PrivilegedGetMethod(domainClass, "afterUnmarshal", params, false));
                     }catch (PrivilegedActionException ex){
                         if (ex.getCause() instanceof NoSuchMethodException){
                             throw (NoSuchMethodException) ex.getCause();

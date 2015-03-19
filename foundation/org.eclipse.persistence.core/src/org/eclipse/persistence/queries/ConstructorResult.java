@@ -115,7 +115,7 @@ public class ConstructorResult extends SQLResult {
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        targetClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(targetClassName, true, classLoader));
+                        targetClass = AccessController.doPrivileged(new PrivilegedClassForName(targetClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(targetClassName, exception.getException());
                     }

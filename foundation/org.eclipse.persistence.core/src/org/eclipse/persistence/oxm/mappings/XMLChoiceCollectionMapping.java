@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -586,7 +586,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                        elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                     }
@@ -609,7 +609,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                        elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                     }
@@ -631,7 +631,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                            elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                         }
@@ -651,7 +651,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
-                            elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                            elementType = AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
                         }

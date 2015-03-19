@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,15 +14,16 @@ package org.eclipse.persistence.internal.security;
 
 import java.security.PrivilegedAction;
 
-public class PrivilegedGetSystemProperty implements PrivilegedAction {
+public class PrivilegedGetSystemProperty implements PrivilegedAction<String> {
 
-    private String propertyName;
+    private final String propertyName;
     
     public PrivilegedGetSystemProperty(String propertyName) {
         this.propertyName = propertyName;
     }
 
-    public Object run() {
+    @Override
+    public String run() {
         return System.getProperty(propertyName);
     }
 

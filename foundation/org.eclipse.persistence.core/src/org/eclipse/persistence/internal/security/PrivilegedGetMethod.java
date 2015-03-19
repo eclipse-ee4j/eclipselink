@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,26 +18,25 @@ import java.security.PrivilegedExceptionAction;
 
 public class PrivilegedGetMethod implements PrivilegedExceptionAction<Method> {
 
-    private Class clazz;
-    private String methodName;
-    private Class[] methodParameterTypes;
-    private boolean shouldSetAccessible;
-    private boolean publicOnly;
+    private final Class clazz;
+    private final String methodName;
+    private final Class[] methodParameterTypes;
+    private final boolean shouldSetAccessible;
+    private final boolean publicOnly;
     
     public PrivilegedGetMethod(Class clazz, String methodName, Class[] methodParameterTypes, boolean shouldSetAccessible) {
-        this.clazz = clazz;
-        this.methodName = methodName;
-        this.methodParameterTypes = methodParameterTypes;
-        this.publicOnly = false;
+        this(clazz, methodName, methodParameterTypes, shouldSetAccessible, false);
     }
 
     public PrivilegedGetMethod(Class clazz, String methodName, Class[] methodParameterTypes, boolean shouldSetAccessible, boolean publicOnly) {
         this.clazz = clazz;
         this.methodName = methodName;
         this.methodParameterTypes = methodParameterTypes;
+        this.shouldSetAccessible = shouldSetAccessible;
         this.publicOnly = publicOnly;
     }
 
+    @Override
     public Method run() throws NoSuchMethodException {
         if (publicOnly) {
             return PrivilegedAccessHelper.getPublicMethod(clazz, methodName, methodParameterTypes, shouldSetAccessible);

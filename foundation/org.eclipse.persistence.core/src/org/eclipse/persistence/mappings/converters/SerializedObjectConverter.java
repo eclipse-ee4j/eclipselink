@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -93,7 +93,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
             if (this.serializerClassName != null) {
                 Class serializerClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    serializerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(this.serializerClassName, true, classLoader));
+                    serializerClass = AccessController.doPrivileged(new PrivilegedClassForName(this.serializerClassName, true, classLoader));
                 } else {
                     serializerClass = PrivilegedAccessHelper.getClassForName(this.serializerClassName, true, classLoader);
                 }

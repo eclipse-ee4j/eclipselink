@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,9 +14,9 @@ package org.eclipse.persistence.internal.security;
 
 import java.security.PrivilegedExceptionAction;
 
-public class PrivilegedClassForName  implements PrivilegedExceptionAction {
+public class PrivilegedClassForName  implements PrivilegedExceptionAction<Class> {
 
-    private String className;
+    private final String className;
     private boolean initialize;
     private ClassLoader loader;
     
@@ -29,8 +29,9 @@ public class PrivilegedClassForName  implements PrivilegedExceptionAction {
     public PrivilegedClassForName(String className){
         this.className = className;
     }
-    
-    public Object run() throws ClassNotFoundException {
+
+    @Override
+    public Class run() throws ClassNotFoundException {
         if (loader == null){
             return PrivilegedAccessHelper.getClassForName(className);
         } else {

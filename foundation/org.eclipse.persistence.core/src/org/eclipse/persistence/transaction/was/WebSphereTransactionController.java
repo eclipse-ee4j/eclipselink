@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -60,7 +60,7 @@ public class WebSphereTransactionController extends JTATransactionController {
     protected TransactionManager acquireTransactionManager() throws Exception {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
             try{
-                Class clazz = (Class) AccessController.doPrivileged(new PrivilegedClassForName(getTxManagerFactoryClass()));
+                Class clazz = AccessController.doPrivileged(new PrivilegedClassForName(getTxManagerFactoryClass()));
                 Method method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, getTxManagerFactoryMethod(), null, false));
                 return (TransactionManager) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, null, null));
             }catch (PrivilegedActionException ex){

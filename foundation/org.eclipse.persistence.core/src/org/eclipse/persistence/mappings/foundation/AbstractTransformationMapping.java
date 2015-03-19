@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -523,12 +523,12 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        attributeTransformerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(attributeTransformerClassName, true, classLoader));
+                        attributeTransformerClass = AccessController.doPrivileged(new PrivilegedClassForName(attributeTransformerClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exception.getException());
                     }
                 } else {
-                    attributeTransformerClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(attributeTransformerClassName, true, classLoader);
+                    attributeTransformerClass = PrivilegedAccessHelper.getClassForName(attributeTransformerClassName, true, classLoader);
                 }
             } catch (ClassNotFoundException exc){
                 throw ValidationException.classNotFoundWhileConvertingClassNames(attributeTransformerClassName, exc);
@@ -548,12 +548,12 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                         try {
-                            transformerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(transformerClassName, true, classLoader));
+                            transformerClass = AccessController.doPrivileged(new PrivilegedClassForName(transformerClassName, true, classLoader));
                         } catch (PrivilegedActionException exception) {
                             throw ValidationException.classNotFoundWhileConvertingClassNames(transformerClassName, exception.getException());
                         }
                     } else {
-                        transformerClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(transformerClassName, true, classLoader);
+                        transformerClass = PrivilegedAccessHelper.getClassForName(transformerClassName, true, classLoader);
                     }
                 } catch (ClassNotFoundException exc){
                     throw ValidationException.classNotFoundWhileConvertingClassNames(transformerClassName, exc);

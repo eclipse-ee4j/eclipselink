@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -218,7 +218,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return (Constructor)AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(javaClass, new Class[0], true));
+                    return AccessController.doPrivileged(new PrivilegedGetDeclaredConstructorFor(javaClass, new Class[0], true));
                 } catch (PrivilegedActionException exception) {
                     throw DescriptorException.noSuchMethodWhileInitializingInstantiationPolicy(javaClass.getName() + ".<Default Constructor>", getDescriptor(), exception.getException());
                 }
@@ -459,7 +459,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         try{
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    factoryClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(factoryClassName, true, classLoader));
+                    factoryClass = AccessController.doPrivileged(new PrivilegedClassForName(factoryClassName, true, classLoader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(factoryClassName, exception.getException());
                 }

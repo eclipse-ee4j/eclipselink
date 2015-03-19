@@ -236,7 +236,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         if (xmlAdapterClass == null) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    xmlAdapterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(getXmlAdapterClassName(), true, loader));
+                    xmlAdapterClass = AccessController.doPrivileged(new PrivilegedClassForName(getXmlAdapterClassName(), true, loader));
                 } else {
                     xmlAdapterClass = PrivilegedAccessHelper.getClassForName(getXmlAdapterClassName(), true, loader);
                 }

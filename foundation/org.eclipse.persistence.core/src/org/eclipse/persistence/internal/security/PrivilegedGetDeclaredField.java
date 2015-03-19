@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,13 +12,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.security;
 
+import java.lang.reflect.Field;
 import java.security.PrivilegedExceptionAction;
 
-public class PrivilegedGetDeclaredField implements PrivilegedExceptionAction {
+public class PrivilegedGetDeclaredField implements PrivilegedExceptionAction<Field> {
 
-    private Class javaClass;
-    private String fieldName;
-    private boolean shouldSetAccessible;
+    private final Class javaClass;
+    private final String fieldName;
+    private final boolean shouldSetAccessible;
     
     public PrivilegedGetDeclaredField(Class javaClass, String fieldName, boolean shouldSetAccessible) {
         this.javaClass = javaClass;
@@ -26,7 +27,8 @@ public class PrivilegedGetDeclaredField implements PrivilegedExceptionAction {
         this.shouldSetAccessible = shouldSetAccessible;
     }
 
-    public Object run() throws NoSuchFieldException {
+    @Override
+    public Field run() throws NoSuchFieldException {
         return PrivilegedAccessHelper.getDeclaredField(javaClass, fieldName, shouldSetAccessible);
     }
 

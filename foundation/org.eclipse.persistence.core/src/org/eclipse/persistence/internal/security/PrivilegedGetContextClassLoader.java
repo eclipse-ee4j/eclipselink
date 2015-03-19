@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,15 +14,16 @@ package org.eclipse.persistence.internal.security;
 
 import java.security.PrivilegedExceptionAction;
 
-public class PrivilegedGetContextClassLoader implements PrivilegedExceptionAction {
+public class PrivilegedGetContextClassLoader implements PrivilegedExceptionAction<ClassLoader> {
 
-    private Thread thread;
+    private final Thread thread;
     
     public PrivilegedGetContextClassLoader(Thread thread) {
         this.thread = thread;
     }
 
-    public Object run() {
+    @Override
+    public ClassLoader run() {
         return PrivilegedAccessHelper.getContextClassLoader(thread);
     }
 

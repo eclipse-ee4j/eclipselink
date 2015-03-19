@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,15 +15,15 @@ package org.eclipse.persistence.internal.security;
 import java.security.PrivilegedExceptionAction;
 import java.lang.reflect.Field;
 
-public class PrivilegedGetFieldType implements PrivilegedExceptionAction {
+public class PrivilegedGetFieldType implements PrivilegedExceptionAction<Class> {
 
-    private Field field;   
+    private final Field field;   
     
     public PrivilegedGetFieldType(Field field) {
         this.field = field;
     }
 
-    public Object run(){
+    public Class run(){
         return PrivilegedAccessHelper.getFieldType(field);
     }
 

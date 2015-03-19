@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -50,7 +50,7 @@ public class MethodSerialImpl implements Serializable {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    declaringClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(declaringClassName, true, loader));
+                    declaringClass = AccessController.doPrivileged(new PrivilegedClassForName(declaringClassName, true, loader));
                 } catch (PrivilegedActionException exception) {
                     throw ValidationException.unableToLoadClass(declaringClassName, exception.getException());
                 }
@@ -68,7 +68,7 @@ public class MethodSerialImpl implements Serializable {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        argTypes[i++] = (Class) AccessController.doPrivileged(new PrivilegedClassForName(paramType, true, loader));
+                        argTypes[i++] = AccessController.doPrivileged(new PrivilegedClassForName(paramType, true, loader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.unableToLoadClass(paramType, exception.getException());
                     }

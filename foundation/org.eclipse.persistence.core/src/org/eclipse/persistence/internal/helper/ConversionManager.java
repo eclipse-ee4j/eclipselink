@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -851,7 +851,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         if (shouldUseClassLoaderFromCurrentThread()) {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return (ClassLoader)AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
+                    return AccessController.doPrivileged(new PrivilegedGetContextClassLoader(Thread.currentThread()));
                 } catch (PrivilegedActionException exception) {
                     // should not be thrown
                 }
@@ -865,7 +865,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 ClassLoader loader = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try{
-                        loader = (ClassLoader)AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(ClassConstants.ConversionManager_Class));
+                        loader = AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(ClassConstants.ConversionManager_Class));
                     } catch (PrivilegedActionException exc){
                         // will not be thrown
                     }

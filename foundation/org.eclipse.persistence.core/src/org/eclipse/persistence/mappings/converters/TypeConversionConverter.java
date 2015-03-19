@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -76,12 +76,12 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
             if (dataClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        dataClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(dataClassName, true, classLoader));
+                        dataClass = AccessController.doPrivileged(new PrivilegedClassForName(dataClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(dataClassName, exception.getException());
                     }
                 } else {
-                    dataClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(dataClassName, true, classLoader);
+                    dataClass = PrivilegedAccessHelper.getClassForName(dataClassName, true, classLoader);
                 }
                 setDataClass(dataClass);
             }
@@ -92,12 +92,12 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
             if (objectClassName != null){
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        objectClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(objectClassName, true, classLoader));
+                        objectClass = AccessController.doPrivileged(new PrivilegedClassForName(objectClassName, true, classLoader));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(objectClassName, exception.getException());
                     }
                 } else {
-                    objectClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(objectClassName, true, classLoader);
+                    objectClass = PrivilegedAccessHelper.getClassForName(objectClassName, true, classLoader);
                 }
                 setObjectClass(objectClass);
             }

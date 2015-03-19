@@ -151,7 +151,7 @@ public class PrivilegedAccessHelper {
      */
     public static ClassLoader privilegedGetClassLoaderForClass(final Class clazz) {
         try{
-            return (ClassLoader) AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
+            return AccessController.doPrivileged(new PrivilegedGetClassLoaderForClass(clazz));
         }catch (PrivilegedActionException ex){
             throw (RuntimeException) ex.getCause();
         }
@@ -353,7 +353,7 @@ public class PrivilegedAccessHelper {
      */
     public static String getLineSeparator() {
         if (shouldUsePrivilegedAccess()) {
-            return (String)AccessController.doPrivileged(new PrivilegedGetSystemProperty("file.separator"));
+            return AccessController.doPrivileged(new PrivilegedGetSystemProperty("file.separator"));
         } else {
             return org.eclipse.persistence.internal.helper.Helper.cr();
         }
@@ -449,7 +449,7 @@ public class PrivilegedAccessHelper {
         // after explicit call to #setDefaultUseDoPrivilegedValue().
         if (shouldCheckPrivilegedAccess) {
             if (System.getSecurityManager() != null) {    
-                String usePrivileged = (String) AccessController.doPrivileged(new PrivilegedGetSystemProperty("eclipselink.security.usedoprivileged"));
+                String usePrivileged = AccessController.doPrivileged(new PrivilegedGetSystemProperty("eclipselink.security.usedoprivileged"));
                 if (usePrivileged == null) {
                     shouldUsePrivilegedAccess = defaultUseDoPrivilegedValue;
                 } else {

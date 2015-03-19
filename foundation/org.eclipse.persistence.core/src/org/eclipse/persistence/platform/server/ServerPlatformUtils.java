@@ -140,7 +140,7 @@ public final class ServerPlatformUtils {
 
     private static Class findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, false, loader));
+            return AccessController.doPrivileged(new PrivilegedClassForName(className, false, loader));
         } else {
             return PrivilegedAccessHelper.getClassForName(className, false, loader);
         }
