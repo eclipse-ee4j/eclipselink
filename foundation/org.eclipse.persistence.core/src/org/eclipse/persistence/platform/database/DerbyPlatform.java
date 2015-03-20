@@ -54,7 +54,7 @@ public class DerbyPlatform extends DB2Platform {
     /** Allow sequence support to be disabled for Derby {@literal <} 10.6.1. */
     protected boolean isSequenceSupported = false;
 
-    /** <= 10.6.1.0 supports parameters with OFFSET/FETCH - DERBY-4208 */
+    /** {@literal <} = 10.6.1.0 supports parameters with OFFSET/FETCH - DERBY-4208 */
     boolean isOffsetFetchParameterSupported = false;
 
     protected boolean isConnectionDataInitialized;
