@@ -150,7 +150,10 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
             } else {
                 uriBuilder.replaceQueryParam(QueryParameters.JPARS_PAGING_OFFSET, "0");
             }
-            itemLinksBuilder.addPrev(uriBuilder.build().toString());
+
+            if (resultCollection.getItems() != null && !resultCollection.getItems().isEmpty()) {
+                itemLinksBuilder.addPrev(uriBuilder.build().toString());
+            }
         }
 
         itemLinksBuilder.addSelf(uriInfo.getRequestUri().toString());

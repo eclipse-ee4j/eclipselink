@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -101,5 +101,17 @@ public abstract class BaseJparsTest {
     protected boolean checkLinkJson(String response, String rel, String href) throws URISyntaxException {
         final String link = "{\"rel\":\"" + rel + "\",\"href\":\"" + getServerURI() + href + "\"}";
         return response.contains(link);
+    }
+
+    /**
+     * Checks that given JSON 'response' string contains a link with given 'rel'.
+     *
+     * @param response  JSON response string
+     * @param rel       link 'rel'
+     * @return true if link is found
+     * @throws URISyntaxException
+     */
+    protected boolean checkLinkJson(String response, String rel) throws URISyntaxException {
+        return response.contains("{\"rel\":\"" + rel);
     }
 }
