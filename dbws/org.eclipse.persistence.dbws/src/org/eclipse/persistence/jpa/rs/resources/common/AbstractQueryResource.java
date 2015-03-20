@@ -176,7 +176,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
         }
 
         List<Object> results = query.getResultList();
-        if ((results != null) && (!results.isEmpty())) {
+        if (results != null) {
             Object list = responseBuilder.buildReadAllQueryResponse(context, queryParams, results, uriInfo);
             return Response.ok(new StreamingOutputMarshaller(context, list, headers.getAcceptableMediaTypes(), fieldsFilter)).build();
         }

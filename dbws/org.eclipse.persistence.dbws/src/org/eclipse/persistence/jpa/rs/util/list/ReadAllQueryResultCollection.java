@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -29,7 +29,7 @@ import java.util.List;
 @XmlRootElement(name = ReservedWords.NO_ROUTE_JAXB_ELEMENT_LABEL)
 @XmlType(propOrder = { "items", "hasMore", "limit", "offset", "count", "links" })
 public class ReadAllQueryResultCollection implements PageableCollection<Object> {
-    private List<Object> items;
+    private List<Object> items = new ArrayList<>();
     private Boolean hasMore = null;
     private Integer limit = null;
     private Integer offset = null;
@@ -129,10 +129,6 @@ public class ReadAllQueryResultCollection implements PageableCollection<Object> 
      */
     @Override
     public void setLinks(List<LinkV2> links) {
-        if (this.links == null) {
-            this.links = new ArrayList<LinkV2>();
-        }
-
         this.links = links;
     }
 
@@ -142,7 +138,7 @@ public class ReadAllQueryResultCollection implements PageableCollection<Object> 
     @Override
     public void addLink(LinkV2 link) {
         if (this.links == null) {
-            this.links = new ArrayList<LinkV2>();
+            this.links = new ArrayList<>();
         }
 
         this.links.add(link);
@@ -154,9 +150,6 @@ public class ReadAllQueryResultCollection implements PageableCollection<Object> 
      * @param item the item
      */
     public void addItem(Object item) {
-        if (this.items == null) {
-            this.items = new ArrayList<Object>();
-        }
         this.items.add(item);
     }
 }

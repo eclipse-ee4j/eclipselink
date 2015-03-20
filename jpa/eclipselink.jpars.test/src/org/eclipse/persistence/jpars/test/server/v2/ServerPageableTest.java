@@ -195,6 +195,31 @@ public class ServerPageableTest extends BaseJparsTest {
     }
 
     @Test
+    public void testPageableQueryOffsetGtCount() throws URISyntaxException {
+        final Map<String, String> hints = new HashMap<>(1);
+        hints.put("offset", "10");
+
+        final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, hints, MediaType.APPLICATION_JSON_TYPE);
+        logger.info(queryResult);
+        assertNotNull("Query all basket items failed.", queryResult);
+
+        // Empty response
+        assertFalse(basketItemExists(queryResult, 1));
+        assertFalse(basketItemExists(queryResult, 2));
+        assertFalse(basketItemExists(queryResult, 3));
+        assertFalse(basketItemExists(queryResult, 4));
+        assertFalse(basketItemExists(queryResult, 5));
+
+        // Check links
+        assertFalse(checkLinkJson(queryResult, "next"));
+        assertFalse(checkLinkJson(queryResult, "prev"));
+        assertTrue(checkLinkJson(queryResult, "self", "/query/BasketItem.findAllPageable?offset=10"));
+
+        // Check items (limit = 20, offset = 10, count = 0, hasMore = false)
+        checkItemsJson(queryResult, 20, 10, 0, false);
+    }
+
+    @Test
     public void testNoLimitJson() throws URISyntaxException {
         final String queryResult = RestUtils.restNamedMultiResultQuery(context, "BasketItem.findAllPageable", null, null, MediaType.APPLICATION_JSON_TYPE);
         logger.info(queryResult);
