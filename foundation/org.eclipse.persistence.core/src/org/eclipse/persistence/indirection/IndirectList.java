@@ -13,8 +13,11 @@
 package org.eclipse.persistence.indirection;
 
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -823,6 +826,28 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     @Override
     public int size() {
         return getDelegate().size();
+    }
+
+// TODO: Rewrite to work directly with Vector#sort(Comparator) when source level will be at least 1.8
+    /**
+     * Sort content of this instance according to the order induced by provided comparator.
+     * @param c The comparator to determine the order of the array. A {@code null} value
+     *          indicates that the elements' {@linkplain Comparable natural ordering}
+     *          should be used.
+     * @throws UnsupportedOperationException when running with JDK &lt; 1.8.
+     * @since 2.6.0 with JDK 1.8
+     */
+    public void sort(Comparator<? super E> c) {
+        Vector<E> delegate = getDelegate();
+        Method sortM;
+        try {
+            sortM = delegate.getClass().getMethod("sort", Comparator.class);
+            sortM.invoke(delegate, c);
+        } catch (IllegalArgumentException | NoSuchMethodException e) {
+            throw new UnsupportedOperationException(e);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
