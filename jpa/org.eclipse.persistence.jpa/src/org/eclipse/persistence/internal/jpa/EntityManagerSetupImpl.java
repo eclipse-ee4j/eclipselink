@@ -60,6 +60,8 @@
  *       - 458877 : Add national character support
  *     03/04/2015 - Will Dazey 
  *       - 460862 : Added support for JTA schema generation without JTA-DS
+ *     03/23/2015 - Rick Curtis
+ *       - 462888 : SessionCustomizer instance based configuration
  *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -2797,17 +2799,25 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
     
     protected void processSessionCustomizer(Map m, ClassLoader loader) {
-        String sessionCustomizerClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SESSION_CUSTOMIZER, m, session);
-        if (sessionCustomizerClassName == null) {
-            return;
-        }        
-        Class sessionCustomizerClass = findClassForProperty(sessionCustomizerClassName, PersistenceUnitProperties.SESSION_CUSTOMIZER, loader);
         SessionCustomizer sessionCustomizer;
+        Object customizer = getConfigPropertyLogDebug(PersistenceUnitProperties.SESSION_CUSTOMIZER, m, session);
+        if (customizer == null) {
+            return;
+        }
+        if (customizer instanceof String) {
+            Class sessionCustomizerClass = findClassForProperty((String) customizer, PersistenceUnitProperties.SESSION_CUSTOMIZER, loader);
+            try {
+                sessionCustomizer = (SessionCustomizer) sessionCustomizerClass.newInstance();
+            } catch (Exception ex) {
+                throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.SESSION_CUSTOMIZER, (String) customizer, ex);
+            }
+        } else {
+            sessionCustomizer = (SessionCustomizer) customizer;
+        }
         try {
-            sessionCustomizer = (SessionCustomizer)sessionCustomizerClass.newInstance();
             sessionCustomizer.customize(session);
         } catch (Exception ex) {
-            throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.SESSION_CUSTOMIZER, sessionCustomizerClassName, ex);
+            throw EntityManagerSetupException.failedWhileProcessingProperty(PersistenceUnitProperties.SESSION_CUSTOMIZER, customizer.toString(), ex);
         }
     }
 
