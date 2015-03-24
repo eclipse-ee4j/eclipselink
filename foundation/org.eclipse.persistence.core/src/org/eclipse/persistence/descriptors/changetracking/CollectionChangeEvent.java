@@ -25,8 +25,8 @@ import java.beans.PropertyChangeEvent;
  * <b>Responsibilities</b>: Create a CollectionChangeEvent for an object
  */
 public class CollectionChangeEvent extends PropertyChangeEvent {
-    public static int ADD = 0;
-    public static int REMOVE = 1;
+    public static final int ADD = 0;
+    public static final int REMOVE = 1;
 
     /**
      * INTERNAL:

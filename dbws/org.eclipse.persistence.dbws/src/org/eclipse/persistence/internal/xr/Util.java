@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -77,8 +77,8 @@ import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_SHORT_QNAME;
  */
 @SuppressWarnings("serial")
 public class Util {
-    public static XMLPlatform XML_PLATFORM = XMLPlatformFactory.getInstance().getXMLPlatform();
-    public static Document TEMP_DOC = XML_PLATFORM.createDocument();
+    public static final XMLPlatform XML_PLATFORM = XMLPlatformFactory.getInstance().getXMLPlatform();
+    public static final Document TEMP_DOC = XML_PLATFORM.createDocument();
     public static final int OPAQUE = 2007;
     public static final String DEFAULT_ATTACHMENT_MIMETYPE = "application/octet-stream";
     public static final String WEB_INF_DIR = "WEB-INF/";

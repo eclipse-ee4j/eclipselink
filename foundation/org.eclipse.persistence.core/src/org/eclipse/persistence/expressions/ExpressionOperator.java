@@ -44,8 +44,8 @@ public class ExpressionOperator implements Serializable {
     protected int type;
     protected int[] argumentIndices = null;
     protected static Map<Integer, ExpressionOperator> allOperators = initializeOperators();
-    protected static Map<String, Integer> platformOperatorSelectors = initializePlatformOperatorSelectors();
-    protected static Map<Integer, String> platformOperatorNames = initializePlatformOperatorNames();
+    protected static final Map<String, Integer> platformOperatorSelectors = initializePlatformOperatorSelectors();
+    protected static final Map<Integer, String> platformOperatorNames = initializePlatformOperatorNames();
     protected String[] javaStrings;
     /** Allow operator to disable binding. */
     protected boolean isBindingSupported = true;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -393,7 +393,7 @@ public class BeanValidationPlugin extends Plugin {
                     convertToElement(fieldVar);
                 }
             } else {
-                Integer intMaxExc = Integer.valueOf(maxExcValue) - 1;
+                Integer intMaxExc = Integer.parseInt(maxExcValue) - 1;
                 maxExcValue = intMaxExc.toString();
                 if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMaxAnn, maxExcValue)) {
                     a.put(fieldVar.annotate(decimalMaxAnn).param("value", maxExcValue), FacetType.maxExclusive);
@@ -409,7 +409,7 @@ public class BeanValidationPlugin extends Plugin {
                     a.put(fieldVar.annotate(decimalMinAnn).param("value", minExcValue).param("inclusive", false), FacetType.minExclusive);
                     convertToElement(fieldVar);
                 } else {
-                    Integer intMinExc = Integer.valueOf(minExcValue) + 1;
+                    Integer intMinExc = Integer.parseInt(minExcValue) + 1;
                     minExcValue = intMinExc.toString();
                     if (notAnnotatedAndNotDefaultBoundary(fieldVar, decimalMinAnn, minExcValue)) {
                         a.put(fieldVar.annotate(decimalMinAnn).param("value", minExcValue), FacetType.minExclusive);

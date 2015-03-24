@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -243,7 +243,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	/**
 	 * This {@link Filter} is used to say the {@link Expression} is invalid without doing anything.
 	 */
-	protected static Filter<Expression> INVALID_IDENTIFIER_FILTER = new Filter<Expression>() {
+	protected static final Filter<Expression> INVALID_IDENTIFIER_FILTER = new Filter<Expression>() {
 		public boolean accept(Expression expression) {
 			return false;
 		}
@@ -257,7 +257,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	/**
 	 * This {@link Filter} is used to say the {@link Expression} is valid without doing anything.
 	 */
-	protected static Filter<Expression> VALID_IDENTIFIER_FILTER = new Filter<Expression>() {
+	protected static final Filter<Expression> VALID_IDENTIFIER_FILTER = new Filter<Expression>() {
 		public boolean accept(Expression expression) {
 			return true;
 		}

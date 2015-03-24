@@ -1,0 +1,89 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+#******************************************************************************/-->
+
+<FindBugsFilter>
+
+    <!--
+        These are hard to fix, require more robust and complete solution - excluded temporarily.
+    -->
+    <Match>
+        <Bug pattern="DM_DEFAULT_ENCODING"/>
+    </Match>
+
+    <!--
+        Hard to change without breaking backw. compatibility unnecessarily.
+    -->
+    <Match>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+    </Match>
+
+    <!--
+        As designed, minor issue, unimportant code
+    -->
+    <Match>
+        <Or>
+            <Class name="org.eclipse.persistence.internal.eis.cobol.helper.ByteConverter"/>
+        </Or>
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    </Match>
+
+    <!--
+        Unfortunate, but it is not safe to make these public static fields final now.
+        Should make them final in 3.0 and replace with proper apis if needed.
+    -->
+    <Match>
+        <Or>
+            <Class name="org.eclipse.persistence.internal.helper.DeferredLockManager"/>
+            <Class name="org.eclipse.persistence.internal.sessions.MergeManager"/>
+            <Class name="org.eclipse.persistence.tools.schemaframework.SchemaManager"/>
+            <Class name="org.eclipse.persistence.tools.schemaframework.TableCreator"/>
+            <Class name="org.eclipse.persistence.internal.sessions.ObjectChangeSet"/>
+            <Class name="org.eclipse.persistence.internal.sessions.coordination.jms.JMSTopicRemoteConnection"/>
+            <Class name="org.eclipse.persistence.internal.helper.WriteLockManager"/>
+        </Or>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
+    
+    <!--
+        As designed, not an error
+    -->
+    <Match>
+        <Or>
+            <Class name="org.eclipse.persistence.jpa.jpql.tools.AbstractContentAssistVisitor$AppendableExpressionVisitor"/>
+        </Or>
+        <Bug pattern="NS_DANGEROUS_NON_SHORT_CIRCUIT"/>
+    </Match>
+
+    <Match>
+        <Or>
+            <Class name="org.eclipse.persistence.jpa.jpql.tools.AbstractContentAssistVisitor$AppendableExpressionVisitor"/>
+            <Class name="org.eclipse.persistence.jpa.jpql.tools.DefaultContentAssistProposals"/>
+            <Class name="org.eclipse.persistence.jpa.jpql.tools.EclipseLinkContentAssistVisitor$IncompleteCollectionExpressionVisitor"/>
+        </Or>
+        <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ"/>
+    </Match>
+
+    <Match>
+        <Or>
+            <Class name="org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractStateObject"/>
+        </Or>
+        <Bug pattern="NP_NONNULL_PARAM_VIOLATION"/>
+        <Bug pattern="NP_NULL_PARAM_DEREF_NONVIRTUAL"/>
+    </Match>
+
+    <Match>
+        <Or>
+            <Class name="org.eclipse.persistence.internal.oxm.XMLConversionManager"/>
+            <Class name="org.eclipse.persistence.platform.server.JMXServerPlatformBase"/>
+            <Class name="org.eclipse.persistence.services.ClassSummaryDetailBase"/>
+        </Or>
+        <Bug pattern="MS_SHOULD_BE_FINAL"/>
+    </Match>
+
+</FindBugsFilter>

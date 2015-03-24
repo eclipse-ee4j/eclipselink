@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -35,16 +35,16 @@ import org.w3c.dom.*;
  */
 public class JMSPlatform extends EISPlatform {
     // interaction spec properties
-    public static String MODE = "mode";// indicates send or receive interaction
-    public static String SEND = "send";// used with MODE - send interaction
-    public static String RECEIVE = "receive";// used with MODE - receive interaction
-    public static String SEND_RECEIVE = "sendAndReceive";// used with MODE - send/receive in one interaction
-    public static String SELECTOR = "selector";// message selector - JMSCorrelationID
-    public static String TIMEOUT = "timeout";// timeout for receive interaction
-    public static String DESTINATION = "destination";// queue 'name' param of the JNDI entry in jms.xml
-    public static String DESTINATION_URL = "destinationURL";// JNDI lookup name of queue
-    public static String REPLY_TO_DESTINATION = "replyToDestination";// replyTo queue 'name' param of the JNDI entry 
-    public static String REPLY_TO_DESTINATION_URL = "replyToDestinationURL";// JNDI lookup name of queue where response is to be placed (by entity processing the request)
+    public static final String MODE = "mode";// indicates send or receive interaction
+    public static final String SEND = "send";// used with MODE - send interaction
+    public static final String RECEIVE = "receive";// used with MODE - receive interaction
+    public static final String SEND_RECEIVE = "sendAndReceive";// used with MODE - send/receive in one interaction
+    public static final String SELECTOR = "selector";// message selector - JMSCorrelationID
+    public static final String TIMEOUT = "timeout";// timeout for receive interaction
+    public static final String DESTINATION = "destination";// queue 'name' param of the JNDI entry in jms.xml
+    public static final String DESTINATION_URL = "destinationURL";// JNDI lookup name of queue
+    public static final String REPLY_TO_DESTINATION = "replyToDestination";// replyTo queue 'name' param of the JNDI entry
+    public static final String REPLY_TO_DESTINATION_URL = "replyToDestinationURL";// JNDI lookup name of queue where response is to be placed (by entity processing the request)
 
     /**
      * Default constructor.

@@ -40,7 +40,7 @@ import org.eclipse.persistence.logging.*;
  */
 public class ConcurrencyManager implements Serializable {
 
-    public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
+    public static final Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
 
     protected static boolean shouldTrackStack = getPropertyRecordStackOnLock() != null;
 

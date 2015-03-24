@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -86,16 +86,16 @@ public class XRPackager implements DBWSPackager {
     protected String packagerLabel;
     protected ArchiveUse archiveUse;
     
-    protected static String OFF = "off";
-    protected static String SEVERE = "severe";
-    protected static String WARNING = "warning";
-    protected static String INFO = "info";
-    protected static String CONFIG = "config";
-    protected static String FINE = "fine";
-    protected static String FINER = "finer";
-    protected static String FINEST = "finest";
-    protected static String ALL = "all";
-    protected static String XR_STR = "xr";
+    protected static final String OFF = "off";
+    protected static final String SEVERE = "severe";
+    protected static final String WARNING = "warning";
+    protected static final String INFO = "info";
+    protected static final String CONFIG = "config";
+    protected static final String FINE = "fine";
+    protected static final String FINER = "finer";
+    protected static final String FINEST = "finest";
+    protected static final String ALL = "all";
+    protected static final String XR_STR = "xr";
     
     public XRPackager() {
         this(null, XR_STR, noArchive);

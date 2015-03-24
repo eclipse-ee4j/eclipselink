@@ -22,10 +22,10 @@ package org.eclipse.persistence.internal.codegen;
  */
 public class AccessLevel {
     protected int level;
-    public static int PUBLIC = 1;
-    public static int PROTECTED = 2;
-    public static int PACKAGE = 3;
-    public static int PRIVATE = 4;
+    public static final int PUBLIC = 1;
+    public static final int PROTECTED = 2;
+    public static final int PACKAGE = 3;
+    public static final int PRIVATE = 4;
     protected boolean isAbstract;
     protected boolean isFinal;
     protected boolean isNative;

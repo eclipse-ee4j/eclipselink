@@ -45,7 +45,7 @@ import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
  */
 
 public class StoredProcedureQueryHandler extends QueryHandler {
-    public static String CURSOR_STR = "CURSOR";
+    public static final String CURSOR_STR = "CURSOR";
     protected String name;
     protected List<ProcedureArgument> inArguments = new ArrayList<ProcedureArgument>();
     protected List<ProcedureOutputArgument> inOutArguments = new ArrayList<ProcedureOutputArgument>();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -36,12 +36,12 @@ import com.mongodb.WriteConcern;
 public class MongoConnectionSpec extends EISConnectionSpec {
 
     /** Connection spec properties. */
-    public static String HOST = "mongo.host";
-    public static String PORT = "mongo.port";
-    public static String DB = "mongo.db";
-    public static String OPTIONS = "mongo.options";
-    public static String READ_PREFERENCE = "mongo.read-preference";
-    public static String WRITE_CONCERN = "mongo.write-concern";
+    public static final String HOST = "mongo.host";
+    public static final String PORT = "mongo.port";
+    public static final String DB = "mongo.db";
+    public static final String OPTIONS = "mongo.options";
+    public static final String READ_PREFERENCE = "mongo.read-preference";
+    public static final String WRITE_CONCERN = "mongo.write-concern";
 
     /**
      * PUBLIC:
@@ -153,7 +153,7 @@ public class MongoConnectionSpec extends EISConnectionSpec {
             if (options instanceof Number) {
                 spec.setOptions(((Number)options).intValue());
             } else if (options instanceof String) {
-                spec.setOptions(Integer.valueOf(((String)options)));
+                spec.setOptions(Integer.parseInt(((String)options)));
             }
         }
 

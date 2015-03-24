@@ -79,10 +79,10 @@ public class Helper extends CoreHelper implements Serializable {
     public static final Object NULL_VALUE = new Helper();
 
     /** PERF: Used to cache a set of calendars for conversion/printing purposes. */
-    protected static Queue<Calendar> calendarCache = initCalendarCache();
+    protected static final Queue<Calendar> calendarCache = initCalendarCache();
 
     /** PERF: Cache default timezone for calendar conversion. */
-    protected static TimeZone defaultTimeZone = TimeZone.getDefault();
+    protected static final TimeZone defaultTimeZone = TimeZone.getDefault();
 
     // Changed static initialization to lazy initialization for bug 2756643
 
@@ -90,8 +90,8 @@ public class Helper extends CoreHelper implements Serializable {
     protected static String CR = null;
 
     /** formatting strings for indenting */
-    public static String SPACE = " ";
-    public static String INDENT = "  ";
+    public static final String SPACE = " ";
+    public static final String INDENT = "  ";
 
     /** Store newline string */
     public static String NL = "\n";

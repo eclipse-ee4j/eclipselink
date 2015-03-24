@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,7 +25,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class EmptyRecord extends DatabaseRecord {
 
     /** PERF: Store a singleton empty record to avoid creation when not required. */
-    public static DatabaseRecord emptyRecord = new EmptyRecord();
+    public static final DatabaseRecord emptyRecord = new EmptyRecord();
 
     /**
      * Return the singleton empty record.

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -68,17 +68,17 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
 	/**
 	 * Notify the state object representing the <code><b>GROUP BY</b></code> clause has changed.
 	 */
-	public static String GROUP_BY_CLAUSE_PROPERTY = "groupByClause";
+	public static final String GROUP_BY_CLAUSE_PROPERTY = "groupByClause";
 
 	/**
 	 * Notify the state object representing the <code><b>HAVING</b></code> clause has changed.
 	 */
-	public static String HAVING_CLAUSE_PROPERTY = "havingClause";
+	public static final String HAVING_CLAUSE_PROPERTY = "havingClause";
 
 	/**
 	 * Notify the state object representing the <code><b>WHERE</b></code> clause has changed.
 	 */
-	public static String WHERE_CLAUSE_PROPERTY = "whereClause";
+	public static final String WHERE_CLAUSE_PROPERTY = "whereClause";
 
 	/**
 	 * Creates a new <code>AbstractSelectStatementStateObject</code>.

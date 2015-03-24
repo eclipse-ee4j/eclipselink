@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,7 +52,7 @@ public class JPARSLogger {
 
     /**
      * Entering
-     * 
+     *
      * @param sourceClass the source class
      * @param sourceMethod the source method
      * @param in the input stream
@@ -62,7 +63,7 @@ public class JPARSLogger {
 
         // make sure input stream supports mark so that the or create a new BufferedInputStream which supports mark.
         // when mark is supported, the stream remembers all the bytes read after the call to mark and
-        // stands ready to supply those same bytes again if and whenever the method reset is called. 
+        // stands ready to supply those same bytes again if and whenever the method reset is called.
         if (logger.isLoggable(Level.FINEST) && (in.markSupported())) {
             try {
                 String data = readData(in);
@@ -94,7 +95,7 @@ public class JPARSLogger {
     }
 
     /**
-     * Exiting 
+     * Exiting
      *
      * @param sourceClass the source class
      * @param sourceMethod the source method
@@ -109,9 +110,9 @@ public class JPARSLogger {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 context.marshall(object, mediaType, outputStream, true);
                 if (object instanceof PersistenceWeavedRest) {
-                    exiting(sourceClass, sourceMethod, new Object[] { object.getClass().getName(), outputStream.toString("UTF-8") });
+                    exiting(sourceClass, sourceMethod, new Object[] { object.getClass().getName(), outputStream.toString(StandardCharsets.UTF_8.name())});
                 } else {
-                    exiting(sourceClass, sourceMethod, new Object[] { outputStream.toString("UTF-8") });
+                    exiting(sourceClass, sourceMethod, new Object[] { outputStream.toString(StandardCharsets.UTF_8.name()) });
                 }
             } catch (Throwable throwable) {
             }
@@ -219,7 +220,7 @@ public class JPARSLogger {
         StringBuilder sb = new StringBuilder();
         try {
             String line;
-            br = new BufferedReader(new InputStreamReader(is));
+            br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -90,7 +91,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             output.flush();
             output.close();
         } else if (result instanceof String) {
-            OutputStreamWriter writer = new OutputStreamWriter(output);
+            OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
             writer.write((String) result);
             writer.flush();
             writer.close();

@@ -193,11 +193,11 @@ public class DatabasePlatform extends DatasourcePlatform {
     /** Bug#3214927 The default is 32000 for DynamicSQLBatchWritingMechanism.  
      * It would become 100 when switched to ParameterizedSQLBatchWritingMechanism.
      */
-    public static int DEFAULT_MAX_BATCH_WRITING_SIZE = 32000;
-    public static int DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE = 100;
+    public static final int DEFAULT_MAX_BATCH_WRITING_SIZE = 32000;
+    public static final int DEFAULT_PARAMETERIZED_MAX_BATCH_WRITING_SIZE = 100;
     
     /** Timeout used is isValid() check for dead connections. */
-    public static int IS_VALID_TIMEOUT = 0;
+    public static final int IS_VALID_TIMEOUT = 0;
     
     /** This attribute will store the SQL query that will be used to 'ping' the database
      * connection in order to check the health of a connection.

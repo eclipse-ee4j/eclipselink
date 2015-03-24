@@ -74,7 +74,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     public Object buildAttributeResponse(PersistenceContext context, Map<String, Object> queryParams, String attribute, Object results, UriInfo uriInfo) {
         if (results instanceof Collection) {
             if (containsDomainObjects(results)) {
-                final List<Object> items = (Vector)results;
+                final List<Object> items = (List<Object>)results;
                 if ((items != null) && (!items.isEmpty())) {
                     ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
                     response.setItems(items);

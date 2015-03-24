@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -105,12 +106,14 @@ public class DBWSBuilder extends DBWSBuilderModel {
     public static final String TARGET_NAMESPACE_KEY = "targetNamespace";
     public static final String USE_SOAP12_KEY = "useSOAP12";
 
-    public static Map<String,DBWSPackager> PACKAGERS = new HashMap<String,DBWSPackager>();
+    public static final Map<String,DBWSPackager> PACKAGERS;
     static {
+        Map<String,DBWSPackager> packagersMap = new HashMap<String,DBWSPackager>();
         ServiceLoader<DBWSPackager> packagers = ServiceLoader.load(DBWSPackager.class);
         for (DBWSPackager packager : packagers) {
-            PACKAGERS.put(packager.getPackagerLabel(), packager);
+            packagersMap.put(packager.getPackagerLabel(), packager);
         }
+        PACKAGERS = Collections.unmodifiableMap(packagersMap);
     }
     protected DBWSPackager packager;
     protected Logger logger;

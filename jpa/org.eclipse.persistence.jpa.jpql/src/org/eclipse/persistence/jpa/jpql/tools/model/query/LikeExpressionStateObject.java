@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,7 +69,7 @@ public class LikeExpressionStateObject extends AbstractStateObject {
 	/**
 	 * Notifies the visibility of the <code><b>NOT</b></code> identifier has changed.
 	 */
-	public static String NOT_PROPERTY = "not";
+	public static final String NOT_PROPERTY = "not";
 
 	/**
 	 * Notifies the pattern value property has changed.

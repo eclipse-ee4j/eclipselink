@@ -36,8 +36,8 @@
         <orbit.drop>R20130827064939</orbit.drop>
         <!-- orbit.drop>R20130517111416</orbit.drop -->
         <eclipse.drop>kepler</eclipse.drop>
-        <findbugs.version>2.5.5</findbugs.version>
-        <findbugs.threshold>High</findbugs.threshold>
+        <findbugs.version>3.0.0</findbugs.version>
+        <findbugs.threshold>Normal</findbugs.threshold>
     </properties>
 
     <!-- Default modules set and added to by all profiles -->
@@ -323,6 +323,7 @@
                     <threshold>${findbugs.threshold}</threshold>
                     <xmlOutput>true</xmlOutput>
                     <findbugsXmlOutputDirectory>${basedir}/target/findbugs</findbugsXmlOutputDirectory>
+                    <excludeFilterFile>../../findbugs-exclude.xml</excludeFilterFile>
                 </configuration>
             </plugin>
         </plugins>

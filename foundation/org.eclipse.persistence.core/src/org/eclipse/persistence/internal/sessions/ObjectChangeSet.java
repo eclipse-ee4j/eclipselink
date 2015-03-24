@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -123,7 +123,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     
     //This controls how long the thread can wait for other thread to put Entity instance in cache
     //This is not final to allow a way for the value to be changed without supporting API
-    public static int MAX_TRIES = 18000;
+    public static final int MAX_TRIES = 18000;
     
     /**
      * The default constructor.

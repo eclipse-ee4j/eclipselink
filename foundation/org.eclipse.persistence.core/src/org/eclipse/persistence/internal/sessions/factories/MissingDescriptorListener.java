@@ -33,12 +33,12 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
  * @author James Sutherland
  */
 public class MissingDescriptorListener extends SessionEventAdapter {
-    protected static String XML_TYPE_CLASS = "org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping";
-    protected static String EIS_DESCRIPTOR_CLASS = "org.eclipse.persistence.eis.EISDescriptor";
-    protected static String XML_INTERACTION_CLASS = "org.eclipse.persistence.eis.interactions.XMLInteraction";
-    protected static String EIS_LOGIN_CLASS = "org.eclipse.persistence.eis.EISLogin";
-    protected static String XML_BINARY_MAPPING_CLASS = "org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping";
-    protected static String XML_BINARY_COLLECTION_MAPPING_CLASS = "org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping";
+    protected static final String XML_TYPE_CLASS = "org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping";
+    protected static final String EIS_DESCRIPTOR_CLASS = "org.eclipse.persistence.eis.EISDescriptor";
+    protected static final String XML_INTERACTION_CLASS = "org.eclipse.persistence.eis.interactions.XMLInteraction";
+    protected static final String EIS_LOGIN_CLASS = "org.eclipse.persistence.eis.EISLogin";
+    protected static final String XML_BINARY_MAPPING_CLASS = "org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping";
+    protected static final String XML_BINARY_COLLECTION_MAPPING_CLASS = "org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping";
 
     public void missingDescriptor(SessionEvent event) {
         String name = ((Class)event.getResult()).getName();

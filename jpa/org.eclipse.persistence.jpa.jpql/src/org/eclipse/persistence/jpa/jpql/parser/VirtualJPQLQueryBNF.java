@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -30,6 +30,8 @@ import java.util.Random;
  */
 public final class VirtualJPQLQueryBNF extends JPQLQueryBNF {
 
+    private static final Random r = new Random(System.currentTimeMillis());
+
 	/**
 	 * Creates a new <code>VirtualJPQLQueryBNF</code>.
 	 *
@@ -37,7 +39,7 @@ public final class VirtualJPQLQueryBNF extends JPQLQueryBNF {
 	 * @exception NullPointerException If the given {@link JPQLGrammar} is <code>null</code>
 	 */
 	public VirtualJPQLQueryBNF(JPQLGrammar jpqlGrammar) {
-		super(String.valueOf(new Random().nextLong()));
+		super(String.valueOf(r.nextLong()));
 		initialize(jpqlGrammar);
 	}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -69,14 +69,14 @@ import com.mongodb.WriteConcern;
 public class MongoPlatform extends EISPlatform {
 
     /** Mongo interaction spec properties. */
-    public static String OPERATION = "mongo.operation";
-    public static String COLLECTION = "mongo.collection";
-    public static String OPTIONS = "mongo.options";
-    public static String READ_PREFERENCE = "mongo.read-preference";
-    public static String WRITE_CONCERN = "mongo.write-concern";
-    public static String SKIP = "mongo.skip";
-    public static String LIMIT = "mongo.limit";
-    public static String BATCH_SIZE = "mongo.batch-size";
+    public static final String OPERATION = "mongo.operation";
+    public static final String COLLECTION = "mongo.collection";
+    public static final String OPTIONS = "mongo.options";
+    public static final String READ_PREFERENCE = "mongo.read-preference";
+    public static final String WRITE_CONCERN = "mongo.write-concern";
+    public static final String SKIP = "mongo.skip";
+    public static final String LIMIT = "mongo.limit";
+    public static final String BATCH_SIZE = "mongo.batch-size";
 
     /** Configure if like should be SQL or regex. */
     protected boolean isLikeRegex;
@@ -189,7 +189,7 @@ public class MongoPlatform extends EISPlatform {
             if (options instanceof Number) {
                 mongoSpec.setOptions(((Number)options).intValue());
             } else if (options instanceof String) {
-                mongoSpec.setOptions(Integer.valueOf(((String)options)));
+                mongoSpec.setOptions(Integer.parseInt(((String)options)));
             }
             
             // Allows setting of skip as a property.
@@ -197,7 +197,7 @@ public class MongoPlatform extends EISPlatform {
             if (skip instanceof Number) {
                 mongoSpec.setSkip(((Number)skip).intValue());
             } else if (skip instanceof String) {
-                mongoSpec.setSkip(Integer.valueOf(((String)skip)));
+                mongoSpec.setSkip(Integer.parseInt(((String)skip)));
             }
             
             // Allows setting of limit as a property.
@@ -205,7 +205,7 @@ public class MongoPlatform extends EISPlatform {
             if (limit instanceof Number) {
                 mongoSpec.setLimit(((Number)limit).intValue());
             } else if (skip instanceof String) {
-                mongoSpec.setLimit(Integer.valueOf(((String)limit)));
+                mongoSpec.setLimit(Integer.parseInt(((String)limit)));
             }
             
             // Allows setting of batchSize as a property.
@@ -213,7 +213,7 @@ public class MongoPlatform extends EISPlatform {
             if (batchSize instanceof Number) {
                 mongoSpec.setBatchSize(((Number)batchSize).intValue());
             } else if (skip instanceof String) {
-                mongoSpec.setBatchSize(Integer.valueOf(((String)batchSize)));
+                mongoSpec.setBatchSize(Integer.parseInt(((String)batchSize)));
             }
             
             spec = mongoSpec;

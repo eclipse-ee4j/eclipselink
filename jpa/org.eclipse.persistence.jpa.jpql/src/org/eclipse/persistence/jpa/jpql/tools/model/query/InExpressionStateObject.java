@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,7 +67,7 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
 	/**
 	 * Notifies the list of items has changed.
 	 */
-	public static String ITEMS_LIST = "items";
+	public static final String ITEMS_LIST = "items";
 
 	/**
 	 * Notifies the visibility of the <code><b>NOT</b></code> identifier has changed.

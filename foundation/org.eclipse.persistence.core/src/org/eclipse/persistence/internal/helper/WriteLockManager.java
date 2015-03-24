@@ -49,9 +49,9 @@ import org.eclipse.persistence.logging.SessionLog;
 public class WriteLockManager {
 
     // this will allow us to prevent a readlock thread from looping forever.
-    public static int MAXTRIES = 10000;
+    public static final int MAXTRIES = 10000;
     
-    public static int MAX_WAIT = 600000; //10 mins
+    public static final int MAX_WAIT = 600000; //10 mins
 
     /* This attribute stores the list of threads that have had a problem acquiring locks */
     /*  the first element in this list will be the prevailing thread */

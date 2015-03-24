@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,7 +55,7 @@ public class JavaClassImpl implements JavaClass {
     protected boolean isMetadataComplete;
     protected JavaClass superClassOverride;
 
-    protected static String XML_REGISTRY_CLASS_NAME = "javax.xml.bind.annotation.XmlRegistry";
+    protected static final String XML_REGISTRY_CLASS_NAME = "javax.xml.bind.annotation.XmlRegistry";
 
     public JavaClassImpl(Class javaClass, JavaModelImpl javaModelImpl) {
         this.jClass = javaClass;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,7 +19,7 @@ public class AggregateChangeRecord extends ChangeRecord implements org.eclipse.p
     protected org.eclipse.persistence.sessions.changesets.ObjectChangeSet changedObject;
     protected transient Object oldValue;
     // assign NULL to oldValue to indicate that it has been set to null.
-    protected static String NULL = "NULL";
+    protected static final String NULL = "NULL";
 
     /**
      * This default constructor.

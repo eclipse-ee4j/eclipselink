@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -67,9 +67,9 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     protected boolean timeZoneQualified;
     protected TimeZone timeZone;
 
-    protected static int TOTAL_MS_DIGITS = 3;  // total digits for millisecond formatting
-    protected static int TOTAL_NS_DIGITS = 9;  // total digits for nanosecond  formatting
-    protected static long YEAR_ONE_AD_TIME = -62135769600000L; // time of 1 AD
+    protected static final int TOTAL_MS_DIGITS = 3;  // total digits for millisecond formatting
+    protected static final int TOTAL_NS_DIGITS = 9;  // total digits for nanosecond  formatting
+    protected static final long YEAR_ONE_AD_TIME = -62135769600000L; // time of 1 AD
 
     private static final char PLUS = '+';
 

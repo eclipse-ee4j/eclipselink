@@ -24,7 +24,7 @@ import java.util.Set;
 public class XRDynamicEntity_CollectionWrapper extends XRDynamicEntity implements Collection<Object> {
 
     static final String ITEMS_PROPERTY = "items";
-    public static XRDynamicPropertiesManager DPM = new XRDynamicPropertiesManager();
+    public static final XRDynamicPropertiesManager DPM = new XRDynamicPropertiesManager();
     static {
         Set<String> propertiesNameSet = new HashSet<String>();
         propertiesNameSet.add(ITEMS_PROPERTY);
