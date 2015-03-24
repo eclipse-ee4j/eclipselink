@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,14 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
-import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
-import org.eclipse.persistence.jaxb.javamodel.JavaField;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
-import org.eclipse.persistence.jaxb.javamodel.JavaModel;
-import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
+import org.eclipse.persistence.jaxb.javamodel.*;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaAnnotationImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl;
@@ -44,10 +37,10 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl;
  *
  * <p>
  * <b>Responsibilities:</b>
+ * </p>
  * <ul>
  *    <li>Provide Class information to the <code>JavaModel</code>.</li>
  * </ul>
- * </p>
  *
  * @since EclipseLink 2.2
  *
@@ -243,6 +236,11 @@ public class OXMObjectFactoryImpl implements JavaClass {
 
     public boolean isSynthetic() {
         return false;
+    }
+
+    @Override
+    public JavaClassInstanceOf instanceOf() {
+        return JavaClassInstanceOf.OXM_OBJECT_FACTORY_IMPL;
     }
 
     public JavaAnnotation getAnnotation(JavaClass arg0) {

@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -12,36 +12,34 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jaxb;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.HashMap;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.namespace.QName;
 
 /**
  * Converter that wraps an XmlAdapter.
@@ -60,10 +58,8 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
 
     /**
      * The default constructor.  This constructor should be used
-     * in conjunction with the setXmlAdapterClass method or 
+     * in conjunction with the setXmlAdapterClass method or
      * setXmlAdapterClassName method.
-     *
-     * @see setXmlAdapterClass(Class)
      */
     public XMLJavaTypeConverter() {
     }
@@ -72,7 +68,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * This constructor takes the XmlAdapter class to be used with this
      * converter.
      *
-     * @param xmlAdapter
+     * @param xmlAdapterClass
      */
     public XMLJavaTypeConverter(Class xmlAdapterClass) {
         setXmlAdapterClass(xmlAdapterClass);
@@ -95,7 +91,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * the schema type, then from that type to the bound type.  The opposite
      * will occur during marshal.
      *
-     * @param xmlAdapter
+     * @param xmlAdapterClass
      * @param schemaType
      */
     public XMLJavaTypeConverter(Class xmlAdapterClass, QName schemaType) {
@@ -107,10 +103,10 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * This constructor takes the XmlAdapter class name to be used with this
      * converter (loaded during initialization), as well as a schema type to 
      * be used during the conversion operation.  During unmarshal, the value
-     * type will be converted to the schema type, then from that type to the 
+     * type will be converted to the schema type, then from that type to the
      * bound type.  The opposite will occur during marshal.
      *
-     * @param xmlAdapter
+     * @param xmlAdapterClassName
      * @param schemaType
      */
     public XMLJavaTypeConverter(String xmlAdapterClassName, QName schemaType) {
@@ -253,45 +249,22 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         if (!XmlAdapter.class.isAssignableFrom(xmlAdapterClass)) {
             throw JAXBException.invalidAdapterClass(getXmlAdapterClassName());
         }
-        
-        this.mapping = mapping;
-        Method[] methods = null;
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                methods = (Method[]) AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(xmlAdapterClass));
-            } catch (PrivilegedActionException ex) {
-                throw JAXBException.adapterClassMethodsCouldNotBeAccessed(getXmlAdapterClassName(), ex);
-            }
-        } else {
-            methods = PrivilegedAccessHelper.getDeclaredMethods(xmlAdapterClass);
-        }
-        Method method;
-        // look for marshal method
-        for (int i = 0; i < methods.length; i++) {
-            method = methods[i];
 
-            // for some reason, getDeclaredMethods is returning inherited
-            // methods - need to filter
-            if (method.getName().equals("marshal") && (PrivilegedAccessHelper.getMethodReturnType(method) != Object.class) && (method.getParameterTypes()[0] != Object.class)) {
-                valueType = method.getReturnType();
-                boundType = method.getParameterTypes()[0];
-                break;
-            }
-        }
+        setBoundTypeAndValueTypeInCaseOfGenericXmlAdapter();
 
         try {
-        	try {
+		try {
 	            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
 	                xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
 	            } else {
 	                xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
 	            }
-        	} catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 	            Constructor ctor = null;
 	            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-	            	ctor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlAdapterClass, new Class[0], true));	            			            
+                        ctor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlAdapterClass, new Class[0], true));
 	            } else {
-	            	ctor = PrivilegedAccessHelper.getDeclaredConstructorFor(xmlAdapterClass, new Class[0], true);
+			ctor = PrivilegedAccessHelper.getDeclaredConstructorFor(xmlAdapterClass, new Class[0], true);
 	            }
 	            xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.invokeConstructor(ctor, new Object[0]);
 	        }
@@ -303,6 +276,25 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                 ((ObjectTypeConverter)nestedConverter).convertClassNamesToClasses(loader);
             }
             nestedConverter.initialize(mapping, session);
+        }
+    }
+
+    private void setBoundTypeAndValueTypeInCaseOfGenericXmlAdapter() {
+        Type[] parameterizedTypeArguments = GenericsClassHelper.getParameterizedTypeArguments(xmlAdapterClass, XmlAdapter.class);
+
+        if (null != parameterizedTypeArguments) {
+            Class valueTypeClass = GenericsClassHelper.getClassOfType(parameterizedTypeArguments[0]);
+            if (null != valueTypeClass) {
+                valueType = valueTypeClass;
+            }
+            if (valueType.isInterface()) {
+                valueType = Object.class; // during unmarshalling we'll need to instantiate this, so -> no interfaces
+            }
+
+            Class boundTypeClass = GenericsClassHelper.getClassOfType(parameterizedTypeArguments[1]);
+            if (null != boundTypeClass) {
+                boundType = boundTypeClass;
+            }
         }
     }
 
@@ -333,7 +325,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     /**
      * Set the XmlAdapter class to be used with this converter.
      *
-     * @param xmlAdapterClass
+     * @param xmlAdapterClassName
      */
     public void setXmlAdapterClassName(String xmlAdapterClassName) {
         this.xmlAdapterClassName = xmlAdapterClassName;

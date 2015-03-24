@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 - 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,13 +26,7 @@ import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
-import org.eclipse.persistence.jaxb.javamodel.JavaField;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
-import org.eclipse.persistence.jaxb.javamodel.JavaModel;
-import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
+import org.eclipse.persistence.jaxb.javamodel.*;
 
 import com.sun.codemodel.ClassType;
 import com.sun.codemodel.JAnnotationUse;
@@ -55,10 +49,10 @@ import com.sun.codemodel.JTypeVar;
  *
  * <p>
  * <b>Responsibilities:</b>
+ * </p>
  * <ul>
  *    <li>Provide Class information from the underlying <code>JDefinedClass</code>.</li>
  * </ul>
- * </p>
  *
  * @since EclipseLink 2.1
  *
@@ -525,6 +519,9 @@ public class XJCJavaClassImpl implements JavaClass {
         try {
             JClass superClass = (JClass) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_SUPERCLASS, xjcClass);
 
+            if (superClass == null) // if null -> no need to continue
+                return null;
+
             if (superClass instanceof JDefinedClass) {
                 if (javaModel != null) {
                     return this.javaModel.getClass(superClass.fullName());
@@ -699,6 +696,11 @@ public class XJCJavaClassImpl implements JavaClass {
      */
     public boolean isSynthetic() {
         throw new UnsupportedOperationException("isSynthetic");
+    }
+
+    @Override
+    public JavaClassInstanceOf instanceOf() {
+        return JavaClassInstanceOf.XJC_JAVA_CLASS_IMPL;
     }
 
     /**

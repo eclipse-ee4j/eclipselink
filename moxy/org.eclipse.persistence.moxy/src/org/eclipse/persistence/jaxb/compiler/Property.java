@@ -1,8 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998 - 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -24,15 +24,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.jaxb.GenericsClassHelper;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.jaxb.javamodel.Helper;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.jaxb.javamodel.*;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
@@ -70,7 +69,6 @@ public class Property implements Cloneable {
     private boolean isInlineBinaryData;
     private String mimeType;
     private JavaClass type;
-    private JavaClass adapterClass;
     private JavaHasAnnotations element;
     private JavaClass genericType;
     private boolean isAttribute = false;
@@ -78,12 +76,12 @@ public class Property implements Cloneable {
     private boolean isAnyElement = false;
     private Helper helper;
     private Map<Object, Object> userProperties;
-    
+
     //Original get and set methods for this property
     //Used to keep track of overrides
     private String originalGetMethodName;
     private String originalSetMethodName;
-    
+
     private String getMethodName;
     private String setMethodName;
     private boolean isRequired = false;
@@ -122,12 +120,10 @@ public class Property implements Cloneable {
     private String variableAttributeName;
     private String variableClassName;
     private boolean variableNodeAttribute;
-      
-  
 
 	// XmlMap specific attributes
     private JavaClass keyType;
-	private JavaClass valueType;	
+	private JavaClass valueType;
 	public static final String DEFAULT_KEY_NAME =  "key";
 	public static final String DEFAULT_VALUE_NAME =  "value";
 	private boolean isMap = false;
@@ -150,14 +146,23 @@ public class Property implements Cloneable {
 
     private boolean isTransientType;
     private static final String MARSHAL_METHOD_NAME = "marshal";
-    
+
+    private static JavaClass XML_ADAPTER_CLASS;
+    private static JavaClass OBJECT_CLASS;
+
     private boolean isTyped;
-    
-    
+
+
     public Property() {}
 
     public Property(Helper helper) {
         this.helper = helper;
+
+        // let's init static fields
+        if (XML_ADAPTER_CLASS == null)
+            XML_ADAPTER_CLASS = helper.getJavaClass(XmlAdapter.class);
+        if (OBJECT_CLASS == null)
+            OBJECT_CLASS = helper.getJavaClass(Object.class);
     }
 
     public void setHelper(Helper helper) {
@@ -172,65 +177,56 @@ public class Property implements Cloneable {
      * @param adapterCls
      */
     public void setAdapterClass(JavaClass adapterCls) {
-        adapterClass = adapterCls;
+        if (adapterCls.instanceOf() == JavaClassInstanceOf.JAVA_CLASS_IMPL) {
+            Type[] parameterizedTypeArguments = GenericsClassHelper.getParameterizedTypeArguments(((JavaClassImpl)adapterCls).getJavaClass(), XmlAdapter.class);
+            if (null != parameterizedTypeArguments && null != parameterizedTypeArguments[0]) {
+                JavaClass valueTypeClass = getJavaClassFromType(parameterizedTypeArguments[0]);
+                JavaClass boundType = getJavaClassFromType(parameterizedTypeArguments[1]);
 
-        // Walk up the inheritance hierarchy until we find a generic superclass specifying
-        // the value and bound types
-        Type genericSuperClass = adapterCls.getGenericSuperclass();
-        while (genericSuperClass != null && genericSuperClass instanceof Class) {
-            genericSuperClass = ((Class) genericSuperClass).getGenericSuperclass();
-        }
+                if (valueTypeClass.isInterface()) {
+                    valueTypeClass = OBJECT_CLASS; // during unmarshalling we'll need to instantiate this, so -> no interfaces
+                }
 
-        if (genericSuperClass != null) {
-            ParameterizedType parameterizedSuperClass = (ParameterizedType) genericSuperClass;
-            Type[] typeArguments = parameterizedSuperClass.getActualTypeArguments();
-            Type valueType = typeArguments[0];
-            Type boundType = typeArguments.length > 1 ? typeArguments[1] : typeArguments[0];
-            setTypeFromAdapterClass(getJavaClassFromType(valueType), getJavaClassFromType(boundType));
-            return;
+                setTypeFromAdapterClass(valueTypeClass, boundType);
+                return;
+            }
         }
 
         // If no generic superclass was found, use the old method of looking at
         // marshal method return type.  This mechanism is used for Dynamic JAXB.
-        JavaClass newType  = helper.getJavaClass(Object.class);
         ArrayList<JavaMethod> marshalMethods = new ArrayList<JavaMethod>();
 
         // Look for marshal method
-        for (Iterator<JavaMethod> methodIt = adapterClass.getMethods().iterator(); methodIt.hasNext(); ) {
-            JavaMethod method = methodIt.next();
-            if (method.getName().equals(MARSHAL_METHOD_NAME)) {
+        for (JavaMethod method : (Collection<JavaMethod>) adapterCls.getMethods()) {
+            if (!method.isBridge() && method.getName().equals(MARSHAL_METHOD_NAME)) {
+                final JavaClass[] parameterTypes = method.getParameterTypes();
+                if (parameterTypes.length != 1)
+                    continue;
                 JavaClass returnType = method.getReturnType();
+
                 // Try and find a marshal method where Object is not the return type,
                 // to avoid processing an inherited default marshal method
-                if (!returnType.getQualifiedName().equals(newType.getQualifiedName())) {
-                    if (!returnType.isInterface()) {
-                        newType = (JavaClass) method.getReturnType();
-                        setTypeFromAdapterClass(newType, method.getParameterTypes()[0]);
-                        return;
-                    }
+                if (!returnType.getQualifiedName().equals(OBJECT_CLASS.getQualifiedName()) && !returnType.isInterface()) { // if it's interface, we'll use OBJECT instead later
+                    setTypeFromAdapterClass(returnType, parameterTypes[0]);
+                    return;
                 }
-                // Found a marshal method with an Object return type; add
-                // it to the list in case we need to process it later
-                marshalMethods.add(method);
             }
-        }
-        // If there are no marshal methods to process just set type 
-        // and original type, then return
-        if (marshalMethods.size() == 0) {
-            setTypeFromAdapterClass(newType, null);
-            return;
+            // Found a marshal method with an Object return type; add
+            // it to the list in case we need to process it later
+            marshalMethods.add(method);
         }
         // At this point we didn't find a marshal method with a non-Object return type
         for (JavaMethod method : marshalMethods) {
             JavaClass paramType = method.getParameterTypes()[0];
             // look for non-Object parameter type
-            if (!paramType.getQualifiedName().equals(newType.getQualifiedName())) {
-                setTypeFromAdapterClass(newType, paramType);
+            if (!paramType.getQualifiedName().equals(OBJECT_CLASS.getQualifiedName())) {
+                setTypeFromAdapterClass(OBJECT_CLASS, paramType);
                 return;
             }
         }
-        // At this point we will just grab the first marshal method
-        setTypeFromAdapterClass(newType, marshalMethods.get(0).getParameterTypes()[0]);
+        if (!marshalMethods.isEmpty())
+            setTypeFromAdapterClass(OBJECT_CLASS, null);
+        // else impossible? - looks like provided adapted doesn't contain marshal(...) method
     }
 
     private JavaClass getJavaClassFromType(Type t) {
@@ -252,7 +248,7 @@ public class Property implements Cloneable {
                 return helper.getJavaClass(Array.newInstance((Class) rawType, 1).getClass());
             }
         }
-        return null;
+        return OBJECT_CLASS;
     }
 
     /**
@@ -628,9 +624,8 @@ public class Property implements Cloneable {
     
     /**
      * Set indicator for XmlAnyElement.
-     * 
+     *
      * @param isAnyElement
-     * @return
      */
     public void setIsAny(boolean isAnyElement) {
         this.isAnyElement = isAnyElement;
@@ -729,15 +724,15 @@ public class Property implements Cloneable {
      * @return
      */
     public JavaClass getOriginalType() {
+        if (originalType == null) // in case of adapter which returns the same type - original type is the same as type
+            return type;
         return originalType;
     }
-    
+
     /**
      * Set the original type of the property.  This is typically used when
-     * the type will been changed via @XmlElement annotation and the 
+     * the type will been changed via @XmlElement annotation and the
      * original type may be needed.
-     *  
-     * @return
      */
     public void  setOriginalType(JavaClass type) {
         originalType = type;
@@ -774,7 +769,6 @@ public class Property implements Cloneable {
     public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter xmlJavaTypeAdapter) {
         this.xmlJavaTypeAdapter = xmlJavaTypeAdapter;
         if (xmlJavaTypeAdapter == null) {
-            adapterClass = null;
             setType(originalType);
         } else {
             // set the adapter class
@@ -827,10 +821,10 @@ public class Property implements Cloneable {
     public boolean isXmlValue() {
         return this.isXmlValue;
     }
-    
+
     /**
      * Set the isXmlList property.
-     * 
+     *
      * @param isXmlList
      */
     public void setIsXmlList(boolean isXmlList) {
@@ -892,8 +886,8 @@ public class Property implements Cloneable {
 
     /**
      * Sets the indicator that identifies this property as an ID field.
-     * 
-     * @param isXmlIdRef
+     *
+     * @param isXmlId
      */
     public void setIsXmlId(boolean isXmlId) {
         this.isXmlId = isXmlId;
@@ -1253,11 +1247,11 @@ public class Property implements Cloneable {
      * Indicates if nillable='true' should be set on a given schema component.
      * This will typically be called by SchemaGenerator.
      * The value returned will be true if one of the following is true:
-     * 
+     *
      * - isNillable
-     * - isSetNullPolicy && xsi-nil-represents-null == 'true'
-     * - isSetNullPolicy && null-representation-for-xml == 'XSI_NIL'
-     * 
+     * - isSetNullPolicy {@literal &&} xsi-nil-represents-null == 'true'
+     * - isSetNullPolicy {@literal &&} null-representation-for-xml == 'XSI_NIL'
+     *
      * @return
      */
     public boolean shouldSetNillable() {

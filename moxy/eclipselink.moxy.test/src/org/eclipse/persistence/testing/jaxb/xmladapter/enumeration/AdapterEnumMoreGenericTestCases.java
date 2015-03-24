@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 - 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -7,8 +7,6 @@
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Matt MacIvor - 2.4.1 - initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.enumeration;
 
@@ -17,29 +15,35 @@ import java.util.Arrays;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class AdapterEnumTestCases extends JAXBWithJSONTestCases{
+/**
+ * This test represents scenario when more complicated generic XmlAdapter is used.
+ * <p>
+ * Example: GenericSuitsAdapterWithT&lt;T extends Enum> extends XmlAdapter&lt;String, T>
+ * </p>
+ */
+public class AdapterEnumMoreGenericTestCases extends JAXBWithJSONTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/enum.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/enum.json";
 
-    public AdapterEnumTestCases(String name) throws Exception {
+    public AdapterEnumMoreGenericTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = {EnumRoot.class};
+        Class[] classes = {MoreGenericEnumRoot.class};
         setClasses(classes);
     }
 
     protected Object getControlObject() {
-        EnumRoot emp = new EnumRoot();
+        MoreGenericEnumRoot emp = new MoreGenericEnumRoot();
         emp.multi = new ArrayList<Byte>();
         emp.multi.add((byte)1);
         emp.multi.add((byte)3);
         emp.multi.add((byte)1);
-        
+
         emp.single = (byte)2;
 
-        emp.cardSuit = CardSuit.DIAMOND;
-        emp.cardSuits = Arrays.asList(CardSuit.CLUB, CardSuit.HEART, CardSuit.SPADE);
+        emp.cardSuit = MoreGenericCardSuit.DIAMOND;
+        emp.cardSuits = Arrays.asList(MoreGenericCardSuit.CLUB, MoreGenericCardSuit.HEART, MoreGenericCardSuit.SPADE);
         return emp;
     }
 }

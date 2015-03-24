@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,13 +25,7 @@ import javax.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.compiler.XMLProcessor;
-import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
-import org.eclipse.persistence.jaxb.javamodel.JavaField;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
-import org.eclipse.persistence.jaxb.javamodel.JavaModel;
-import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
+import org.eclipse.persistence.jaxb.javamodel.*;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
@@ -54,10 +48,10 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlValue;
  *
  * <p>
  * <b>Responsibilities:</b>
+ * </p>
  * <ul>
  *    <li>Provide Class information from the underlying <code>JavaType</code>.</li>
  * </ul>
- * </p>
  *
  * @since EclipseLink 2.2
  *
@@ -485,7 +479,7 @@ public class OXMJavaClassImpl implements JavaClass {
      * Indicates if this <code>JavaClass</code> is either the same as, or is a superclass of,
      * the <code>javaClass</code> argument.
      *
-     * @param javaClass the <code>Class</code> to test.
+     * @param arg0 the <code>Class</code> to test.
      *
      * @return <code>true</code> if this <code>JavaClass</code> is assignable from
      *         <code>javaClass</code>, otherwise <code>false</code>.
@@ -548,7 +542,7 @@ public class OXMJavaClassImpl implements JavaClass {
     /**
      * Indicates if this <code>JavaClass</code> is an inner <code>Class</code>.
      *
-     * @return <code>true</code> if this <code>JavaClass</code> is an inner </code>Class</code>, otherwise <code>false</code>.
+     * @return <code>true</code> if this <code>JavaClass</code> is an inner <code>Class</code>, otherwise <code>false</code>.
      */
     public boolean isMemberClass() {
         return false;
@@ -606,6 +600,11 @@ public class OXMJavaClassImpl implements JavaClass {
         throw new UnsupportedOperationException("isSynthetic");
     }
 
+    @Override
+    public JavaClassInstanceOf instanceOf() {
+        return JavaClassInstanceOf.OXM_JAVA_CLASS_IMPL;
+    }
+
     /**
      * If this <code>JavaClass</code> is annotated with an <code>Annotation</code> matching <code>aClass</code>,
      * return its <code>JavaAnnotation</code> representation.
@@ -631,7 +630,7 @@ public class OXMJavaClassImpl implements JavaClass {
      * If this <code>JavaClass</code> declares an <code>Annotation</code> matching <code>aClass</code>,
      * return its <code>JavaAnnotation</code> representation.
      *
-     * @param aClass a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
+     * @param arg0 a <code>JavaClass</code> representing the <code>Annotation</code> to look for.
      *
      * @return always returns <code>null</code>, as <code>JavaTypes</code> do not have <code>Annotations</code>.
      */
@@ -649,18 +648,18 @@ public class OXMJavaClassImpl implements JavaClass {
     }
 
     /**
-     * Get this <code>JavaClass'</code> <code>JavaModel</code>.
+     * Set this <code>JavaClass'</code> <code>JavaModel</code>.
      *
-     * @return The <code>JavaModel</code> associated with this <code>JavaClass<code>.
+     * @param model The <code>JavaModel</code> to set.
      */
     public void setJavaModel(JavaModel model) {
         this.javaModel = model;
     }
 
     /**
-     * Set this <code>JavaClass'</code> <code>JavaModel</code>.
+     * Get this <code>JavaClass'</code> <code>JavaModel</code>.
      *
-     * @param javaModel The <code>JavaModel</code> to set.
+     * @return The <code>JavaModel</code> associated with this <code>JavaClass</code>.
      */
     public JavaModel getJavaModel() {
         return this.javaModel;

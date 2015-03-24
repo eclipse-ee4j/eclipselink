@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
@@ -14,12 +14,7 @@ package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
-import org.eclipse.persistence.jaxb.javamodel.JavaField;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
-import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
+import org.eclipse.persistence.jaxb.javamodel.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -34,6 +29,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -79,9 +75,8 @@ public class JavaClassImpl implements JavaClass {
     }
     public Collection getActualTypeArguments() {
         ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
-        if (jType instanceof ParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) jType;
-            Type[] params = pType.getActualTypeArguments();
+        if (jType != null) {
+            Type[] params = jType.getActualTypeArguments();
             for (Type type : params) {
                 if (type instanceof ParameterizedType) {
                     ParameterizedType pt = (ParameterizedType) type;
@@ -163,8 +158,8 @@ public class JavaClassImpl implements JavaClass {
     public Collection getDeclaredFields() {
         ArrayList<JavaField> fieldCollection = new ArrayList<JavaField>();
         Field[] fields = PrivilegedAccessHelper.getDeclaredFields(jClass);
-               
-        for (Field field : fields) {        	
+
+        for (Field field : fields) {
             field.setAccessible(true);
             fieldCollection.add(getJavaField(field));
         }
@@ -513,6 +508,11 @@ public class JavaClassImpl implements JavaClass {
 
     public boolean isSynthetic() {
         return jClass.isSynthetic();
+    }
+
+    @Override
+    public JavaClassInstanceOf instanceOf() {
+        return JavaClassInstanceOf.JAVA_CLASS_IMPL;
     }
 
     public JavaClass getComponentType() {
