@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,6 +25,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen;
 
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -35,14 +38,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.processing.*;
-import javax.lang.model.element.*;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.PrimitiveType;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
-import javax.tools.JavaFileObject;
 import javax.tools.Diagnostic.Kind;
+import javax.tools.JavaFileObject;
 
 import org.eclipse.persistence.Version;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -52,19 +59,12 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappedKe
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-
-import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnitReader;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.TypeVisitor;
-
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
-
-import static javax.lang.model.SourceVersion.RELEASE_6;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT;
 
 /**
  * The main APT processor to generate the JPA 2.0 Canonical model. 
@@ -73,7 +73,6 @@ import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProper
  * @since EclipseLink 1.2
  */
 @SupportedAnnotationTypes({"javax.persistence.*", "org.eclipse.persistence.annotations.*"})
-@SupportedSourceVersion(RELEASE_6)
 public class CanonicalModelProcessor extends AbstractProcessor {
     protected enum AttributeType {CollectionAttribute, ListAttribute, MapAttribute, SetAttribute, SingularAttribute }
     protected MetadataMirrorFactory nonStaticFactory;
@@ -325,7 +324,12 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             }
         }
     }
-    
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
+
     /**
      * INTERNAL:
      */
