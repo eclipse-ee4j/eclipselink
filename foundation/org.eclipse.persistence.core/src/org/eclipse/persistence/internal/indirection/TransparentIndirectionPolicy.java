@@ -397,7 +397,19 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public boolean isAttributeValueFullyBuilt(Object attributeValue){
-    	return attributeValue instanceof IndirectContainer;
+        if (attributeValue == null) {
+            return false;
+        }
+        if (attributeValue instanceof IndirectContainer) {
+            //is indirection in place?
+            return ((IndirectContainer) attributeValue).isInstantiated();
+        } else if (attributeValue instanceof Collection) {
+            //bug #422535:
+            //there can be a regular collection here (ie ArrayList)
+            //in such case treat it built only if it is not empty
+            return !((Collection) attributeValue).isEmpty();
+        }
+        return false;
     }
 
     public Boolean getUseLazyInstantiation() {
