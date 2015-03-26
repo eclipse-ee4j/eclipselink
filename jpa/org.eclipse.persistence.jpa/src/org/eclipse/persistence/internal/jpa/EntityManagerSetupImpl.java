@@ -175,6 +175,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -223,7 +224,6 @@ import org.eclipse.persistence.jpa.metadata.XMLMetadataSource;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
@@ -732,7 +732,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 } else {
                                     login(getDatabaseSession(), deployProperties, requiresConnection);
                                 }
-                                DatabasePlatform platform = getDatabaseSession().getPlatform();
+                                final Platform platform = getDatabaseSession().getDatasourcePlatform();
                                 PropertiesUtils.set(platform, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, (String) deployProperties.get(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES));
                                 
                                 // Make JTA integration throw JPA exceptions.
@@ -918,8 +918,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * Add the StructConverters that were specified by annotation on the DatabasePlatform
      * This method must be called after the DatabasePlatform has been detected
-     * @param session
-     * @param structConverters
      */
     public void addStructConverters(){
         if (this.compositeMemberEmSetupImpls == null) {
@@ -2666,7 +2664,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Note that updateSession may be called several times on the same session
      * (before login), but initSession is called just once - before the first call
      * to updateSession.
-     * @param properties the persistence unit properties.
      */
     protected void initSession() {
         assignCMP3Policy();
